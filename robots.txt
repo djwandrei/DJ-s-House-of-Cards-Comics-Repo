@@ -1,0 +1,7 @@
+﻿User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /wishlist.html
+
+Sitemap: https://www.djshouseofcards-comics.com/sitemap.xml
+

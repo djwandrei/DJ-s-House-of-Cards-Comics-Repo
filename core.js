@@ -1,0 +1,1040 @@
+/**
+ * Core utilities shared by every page.
+ * -----------------------------------------------------------------------------
+ * This module creates the global window.DJ namespace and attaches the low-level
+ * helpers that the rest of the site depends on: HTML escaping, image fallback
+ * handling, theme persistence, wishlist storage, local admin storage, and a few
+ * accessibility helpers such as focus restoration and status messaging.
+ */
+
+window.DJ = window.DJ || {};
+
+(() => {
+  const DJ = window.DJ;
+  const preloadedProductsBySource = new Map();
+  const preloadedBundlePromises = new Map();
+  const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
+    'products.json': 'products-data-full.js',
+    'products-baseball.json': 'products-data-baseball.js',
+    'products-basketball.json': 'products-data-basketball.js',
+    'products-football.json': 'products-data-football.js',
+    'products-comics.json': 'products-data-comics.js',
+    'products-collectibles.json': 'products-data-collectibles.js',
+    'products-sports.json': 'products-data-sports.js',
+    'products-featured.json': 'products-data-featured.js'
+  };
+
+  // Centralize localStorage keys so future refactors only need to update them in one place.
+  const STORAGE_KEYS = {
+    theme: 'theme',
+    wishlist: 'wishlist',
+    customProducts: 'customProducts',
+    productOverrides: 'productOverrides',
+    deletedProductIds: 'deletedProductIds'
+  };
+  const PAGE_LABELS = {
+    home: 'Home',
+    shop: 'Shop',
+    'shop-hub': 'Shop',
+    'sports-hub': 'Sports Cards',
+    'sports-cards': 'Sports Cards',
+    'baseball-cards': 'Baseball Cards',
+    'basketball-cards': 'Basketball Cards',
+    'football-cards': 'Football Cards',
+    comics: 'Comics',
+    collectibles: 'Collectibles',
+    wishlist: 'Wishlist',
+    about: 'About',
+    contact: 'Contact',
+    admin: 'Admin Dashboard'
+  };
+
+  // Remember the last focused element so modal close handlers can restore focus
+  // to the trigger that opened them. This keeps keyboard navigation predictable.
+  let lastFocusedElement = null;
+
+  // ---------------------------------------------------------------------------
+  // Formatting and storage helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Convert raw price values into the storefront display format.
+   * Accepts numbers, strings with currency text, or empty values.
+   */
+  function formatCurrency(value) {
+    if (value == null || value === '') {
+      return 'Contact for price';
+    }
+
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return `$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    }
+
+    const match = String(value).match(/-?\d[\d,]*\.?\d*/);
+    if (!match) {
+      return 'Contact for price';
+    }
+
+    const numericValue = Number(match[0].replace(/,/g, ''));
+    return Number.isFinite(numericValue)
+      ? `$${numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+      : 'Contact for price';
+  }
+
+  function safeStorageGet(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function safeStorageSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function safeStorageRemove(key) {
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
+   * Read JSON from localStorage and normalize it through a transform function.
+   * Returning normalized data here prevents scattered validation throughout the app.
+   */
+  function readJSONFromStorage(key, transform) {
+    try {
+      const parsed = JSON.parse(safeStorageGet(key) || 'null');
+      return transform(parsed);
+    } catch (error) {
+      console.warn(`Invalid localStorage payload for ${key}; resetting.`);
+      safeStorageRemove(key);
+      return null;
+    }
+  }
+
+  /**
+   * Wishlist IDs are stored separately from product data so the same saved list
+   * can work whether products come from static JSON, local overrides, or Supabase.
+   */
+  function getWishlist() {
+    const wishlist = readJSONFromStorage(STORAGE_KEYS.wishlist, (value) => {
+      if (!Array.isArray(value)) {
+        return [];
+      }
+
+      return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    });
+
+    return Array.isArray(wishlist) ? wishlist : [];
+  }
+
+  /**
+   * Update every visible wishlist counter in the header/footer/UI chips.
+   * Keeping this in one place avoids desynchronized badge counts.
+   */
+  function updateWishlistCount() {
+    const count = getWishlist().length;
+    document.querySelectorAll('[data-wishlist-count]').forEach((element) => {
+      element.textContent = count;
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Media behavior helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Apply browser-native lazy loading and bind category-aware fallback images.
+   * This runs once per image element and is reused whenever new cards are rendered.
+   */
+  function applyLazyLoading(scope = document) {
+    scope.querySelectorAll('img').forEach((image) => {
+      const hasHighFetchPriority = (image.getAttribute('fetchpriority') || '').toLowerCase() === 'high';
+      if (!image.hasAttribute('loading') && !hasHighFetchPriority) {
+        image.setAttribute('loading', 'lazy');
+      }
+
+      if (!image.hasAttribute('decoding')) {
+        image.setAttribute('decoding', 'async');
+      }
+
+      if (image.dataset.fallbackBound === 'true') {
+        return;
+      }
+
+      image.dataset.fallbackBound = 'true';
+      if (!image.dataset.originalSrc) {
+        image.dataset.originalSrc = image.getAttribute('src') || '';
+      }
+      image.addEventListener('error', () => {
+        const originalSource = image.dataset.originalSrc || image.getAttribute('src') || '';
+        const triedSources = new Set((image.dataset.assetRetrySources || '').split('\n').filter(Boolean));
+        triedSources.add(image.getAttribute('src') || '');
+        image.dataset.assetRetrySources = Array.from(triedSources).join('\n');
+
+        const candidateSources = image.dataset.assetCandidates
+          ? image.dataset.assetCandidates.split('\n').map((candidate) => candidate.trim()).filter(Boolean)
+          : DJ.getAssetUrlCandidates(originalSource);
+
+        const retrySource = candidateSources.find((candidate) => (
+          candidate
+          && !triedSources.has(candidate)
+        ));
+
+        if (retrySource) {
+          image.setAttribute('src', retrySource);
+          return;
+        }
+
+        const explicitFallback = image.getAttribute('data-fallback-src');
+        const category = image.closest('[data-product-category]')?.getAttribute('data-product-category');
+        const categoryFallback = DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other;
+        const fallbackSource = explicitFallback ? DJ.safeAssetUrl(explicitFallback) : DJ.safeAssetUrl(categoryFallback);
+
+        if (fallbackSource && image.getAttribute('src') !== fallbackSource) {
+          image.setAttribute('src', fallbackSource);
+          image.setAttribute('data-image-fallback-applied', 'true');
+
+          if (!image.getAttribute('alt')) {
+            image.setAttribute('alt', 'Image unavailable');
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Defer non-critical UI work until the browser is idle, while keeping a timeout
+   * fallback for browsers that do not support requestIdleCallback.
+   */
+  function scheduleIdle(callback, timeout = 900) {
+    if (typeof window.requestIdleCallback !== 'function') {
+      window.setTimeout(callback, 1);
+      return;
+    }
+
+    window.requestIdleCallback(callback, { timeout });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Theme handling
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Apply the saved light/dark mode preference and update the visible toggle label.
+   */
+  function getCurrentPageLabel() {
+    const pageKey = document.body?.dataset?.page || '';
+    return PAGE_LABELS[pageKey] || 'DJ\'s House of Cards';
+  }
+
+  function enhanceHeaderLayout() {
+    const headerInner = document.querySelector('.header-inner');
+    const navToggle = document.getElementById('navToggle');
+    const themeToggle = document.getElementById('themeToggle');
+
+    if (!headerInner || !navToggle || !themeToggle) {
+      return;
+    }
+
+    if (!headerInner.querySelector('.header-actions')) {
+      const headerActions = document.createElement('div');
+      headerActions.className = 'header-actions';
+      headerInner.insertBefore(headerActions, themeToggle);
+      headerActions.append(navToggle, themeToggle);
+    }
+
+    if (navToggle.dataset.enhanced !== 'true') {
+      navToggle.dataset.enhanced = 'true';
+      navToggle.innerHTML = `
+        <span class="nav-toggle__icon" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="button-label">Menu</span>
+      `;
+      navToggle.setAttribute('aria-label', 'Open menu');
+      navToggle.setAttribute('data-state', 'closed');
+    }
+  }
+
+  function renderThemeToggleState(isDarkMode) {
+    const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) {
+      return;
+    }
+
+    if (themeToggle.dataset.enhanced !== 'true') {
+      themeToggle.dataset.enhanced = 'true';
+      themeToggle.innerHTML = `
+        <span class="theme-toggle__icon" aria-hidden="true"></span>
+        <span class="button-label"></span>
+      `;
+    }
+
+    const label = themeToggle.querySelector('.button-label');
+    if (label) {
+      label.textContent = isDarkMode ? 'Light Mode' : 'Dark Mode';
+    }
+
+    themeToggle.setAttribute('data-theme-mode', isDarkMode ? 'dark' : 'light');
+    themeToggle.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+
+  function applySavedTheme() {
+    const theme = safeStorageGet(STORAGE_KEYS.theme) || 'light';
+    const themeToggle = document.getElementById('themeToggle');
+    const isDarkMode = theme === 'dark';
+
+    document.body.classList.toggle('dark-mode', isDarkMode);
+
+    if (themeToggle) {
+      renderThemeToggleState(isDarkMode);
+      themeToggle.setAttribute('aria-pressed', String(isDarkMode));
+    }
+  }
+
+  function toggleTheme() {
+    const nextTheme = (safeStorageGet(STORAGE_KEYS.theme) || 'light') === 'dark' ? 'light' : 'dark';
+    safeStorageSet(STORAGE_KEYS.theme, nextTheme);
+    applySavedTheme();
+  }
+
+  function initThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) {
+      return;
+    }
+
+    applySavedTheme();
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+
+  function initBackToTop() {
+    scheduleIdle(() => {
+      const backToTop = document.getElementById('backToTop');
+      if (!backToTop) {
+        return;
+      }
+
+      if (backToTop.dataset.enhanced !== 'true') {
+        backToTop.dataset.enhanced = 'true';
+        backToTop.innerHTML = `
+          <span class="back-to-top__icon" aria-hidden="true"></span>
+          <span class="back-to-top__label">Top</span>
+        `;
+      }
+
+      const updateVisibility = () => {
+        backToTop.classList.toggle('visible', window.scrollY > 300);
+      };
+
+      window.addEventListener('scroll', updateVisibility, { passive: true });
+      updateVisibility();
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  /**
+   * Register the service worker only on secure contexts (or localhost during
+   * testing) so cached shell assets and the offline page can work without
+   * breaking non-secure development snapshots.
+   */
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    const hostname = String(window.location.hostname || '').toLowerCase();
+    const isLocalhost = ['localhost', '127.0.0.1'].includes(hostname);
+    if (!window.isSecureContext && !isLocalhost) {
+      return;
+    }
+
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
+        console.warn('Service worker registration failed.', error);
+      });
+    }, { once: true });
+  }
+
+  function initHeaderScrollState() {
+    scheduleIdle(() => {
+      const siteHeader = document.querySelector('.site-header');
+      if (!siteHeader) {
+        return;
+      }
+
+      const updateHeaderState = () => {
+        siteHeader.classList.toggle('site-header--scrolled', window.scrollY > 18);
+      };
+
+      window.addEventListener('scroll', updateHeaderState, { passive: true });
+      updateHeaderState();
+    });
+  }
+
+  function enhanceFooterContactLinks() {
+    document.querySelectorAll('.footer-links p').forEach((element) => {
+      const email = String(element.textContent || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return;
+      }
+
+      if (element.dataset.enhancedFooterContact === 'true') {
+        return;
+      }
+
+      element.dataset.enhancedFooterContact = 'true';
+      element.className = 'footer-contact-block';
+      element.innerHTML = `
+        <a class="footer-contact-link" href="mailto:${DJ.escapeHtml(email)}">Email DJ directly</a>
+        <span class="footer-contact-meta">${DJ.escapeHtml(email)}</span>
+      `;
+    });
+  }
+
+  function initArchiveImageLightbox() {
+    const archiveImages = [...document.querySelectorAll('.about-archive-section img')];
+
+    if (!archiveImages.length) {
+      return;
+    }
+
+    const lightbox = document.createElement('div');
+    lightbox.className = 'image-lightbox';
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.setAttribute('aria-label', 'Full size image preview');
+    lightbox.hidden = true;
+    lightbox.innerHTML = `
+      <button class="image-lightbox__close" type="button" aria-label="Close full size image">&times;</button>
+      <figure class="image-lightbox__frame">
+        <img alt="" class="image-lightbox__image"/>
+        <figcaption class="image-lightbox__caption"></figcaption>
+      </figure>
+    `;
+    document.body.appendChild(lightbox);
+
+    const lightboxImage = lightbox.querySelector('.image-lightbox__image');
+    const lightboxCaption = lightbox.querySelector('.image-lightbox__caption');
+    const closeButton = lightbox.querySelector('.image-lightbox__close');
+
+    const closeLightbox = () => {
+      lightbox.hidden = true;
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('image-lightbox-open');
+      DJ.restoreFocus();
+    };
+
+    const openLightbox = (image) => {
+      const figure = image.closest('figure');
+      const caption = figure?.querySelector('figcaption')?.textContent?.trim() || image.alt || 'Full size image';
+
+      DJ.setLastFocusedElement(image);
+      lightboxImage.src = image.currentSrc || image.src;
+      lightboxImage.alt = image.alt || caption;
+      lightboxCaption.textContent = caption;
+      lightbox.hidden = false;
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('image-lightbox-open');
+      closeButton.focus();
+    };
+
+    archiveImages.forEach((image) => {
+      if (image.dataset.lightboxBound === 'true') {
+        return;
+      }
+
+      image.dataset.lightboxBound = 'true';
+      image.classList.add('legacy-image-clickable');
+      image.setAttribute('role', 'button');
+      image.setAttribute('tabindex', '0');
+      image.setAttribute('aria-label', `${image.alt || 'Archive image'} - open full size`);
+      image.addEventListener('click', () => openLightbox(image));
+      image.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openLightbox(image);
+        }
+      });
+    });
+
+    closeButton.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !lightbox.hidden) {
+        closeLightbox();
+      }
+    });
+  }
+
+  function buildFooterLinkGroup(title, links) {
+    const group = document.createElement('div');
+    group.className = 'footer-link-group';
+
+    const heading = document.createElement('strong');
+    heading.textContent = title;
+    group.appendChild(heading);
+
+    links.forEach((link) => {
+      group.appendChild(link.cloneNode(true));
+    });
+
+    return group;
+  }
+
+  function enhanceFooterLayout() {
+    document.querySelectorAll('.footer').forEach((footer) => {
+      if (footer.dataset.enhanced === 'true') {
+        return;
+      }
+
+      footer.dataset.enhanced = 'true';
+
+      const footerBrand = footer.querySelector('.footer-brand');
+      const footerLinks = footer.querySelector('.footer-links');
+
+      if (footerBrand && !footerBrand.querySelector('.footer-highlights')) {
+        const highlightRow = document.createElement('div');
+        highlightRow.className = 'footer-highlights';
+        highlightRow.innerHTML = `
+          <span class="footer-highlight">Collector curated</span>
+          <span class="footer-highlight">Live inventory</span>
+          <span class="footer-highlight">Now viewing ${DJ.escapeHtml(getCurrentPageLabel())}</span>
+        `;
+        footerBrand.appendChild(highlightRow);
+      }
+
+      if (footerBrand && !footerBrand.querySelector('.footer-actions')) {
+        const footerActions = document.createElement('div');
+        footerActions.className = 'footer-actions';
+        footerActions.innerHTML = `
+          <a class="footer-action-link footer-action-link--primary" href="contact.html">Contact DJ</a>
+          <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">0</span></a>
+          <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
+            <svg aria-hidden="true" class="social-link__icon" focusable="false" viewBox="0 0 24 24">
+              <path d="M14.2 8.3V6.9c0-.7.5-.9.9-.9h2.3V2.2L14.2 2c-3.6 0-4.4 2.1-4.4 4.3v2H7v4h2.8V22h4.2v-9.7h3.1l.5-4h-3.4z" fill="currentColor"></path>
+            </svg>
+            Facebook
+          </a>
+          <button class="footer-action-link footer-action-link--ghost" data-scroll-top="true" type="button">Back to top</button>
+        `;
+        footerBrand.appendChild(footerActions);
+      }
+
+      if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
+        const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
+        const contactBlock = footerLinks.querySelector('.footer-contact-block');
+        const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
+        const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
+        const groups = document.createElement('div');
+        groups.className = 'footer-link-groups';
+
+        if (browseLinks.length) {
+          groups.appendChild(buildFooterLinkGroup('Browse', browseLinks));
+        }
+
+        if (supportLinks.length) {
+          groups.appendChild(buildFooterLinkGroup('Support', supportLinks));
+        }
+
+        footerLinks.innerHTML = '';
+        footerLinks.appendChild(groups);
+
+        const contactPanel = document.createElement('div');
+        contactPanel.className = 'footer-contact-panel';
+
+        const contactHeading = document.createElement('strong');
+        contactHeading.textContent = 'Direct contact';
+        contactPanel.appendChild(contactHeading);
+
+        if (contactBlock) {
+          contactPanel.appendChild(contactBlock.cloneNode(true));
+        } else {
+          const fallbackLink = document.createElement('a');
+          fallbackLink.className = 'footer-contact-link';
+          fallbackLink.href = 'contact.html';
+          fallbackLink.textContent = 'Open contact page';
+          contactPanel.appendChild(fallbackLink);
+        }
+
+        footerLinks.appendChild(contactPanel);
+      }
+    });
+
+    document.querySelectorAll('[data-scroll-top]').forEach((button) => {
+      if (button.dataset.boundScrollTop === 'true') {
+        return;
+      }
+
+      button.dataset.boundScrollTop = 'true';
+      button.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Public DJ API used by the rest of the site
+  // ---------------------------------------------------------------------------
+
+  // Category-specific placeholder art is reused by product cards, admin previews,
+  // and image fallback logic so missing images degrade gracefully.
+  DJ.fallbackByCategory = {
+    Baseball: 'assets/placeholder-baseball.svg',
+    Basketball: 'assets/placeholder-basketball.svg',
+    Football: 'assets/placeholder-football.svg',
+    Comics: 'assets/placeholder-comics.svg',
+    Collectibles: 'assets/clubhouse-sign.png',
+    Other: 'assets/clubhouse-sign.png'
+  };
+
+  DJ.escapeHtml = function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[character]));
+  };
+
+  DJ.safeAssetUrl = function safeAssetUrl(url) {
+    if (typeof url !== 'string') {
+      return url;
+    }
+
+    if (!/^assets\//i.test(url)) {
+      return url;
+    }
+
+    return url
+      .split('/')
+      .map((segment, index) => {
+        if (index === 0) {
+          return segment;
+        }
+
+        try {
+          return encodeURIComponent(decodeURIComponent(segment));
+        } catch (error) {
+          return encodeURIComponent(segment);
+        }
+      })
+      .join('/')
+      .replace(/%28/g, '(')
+      .replace(/%29/g, ')');
+  };
+
+  /**
+   * Try both common asset-folder casings before giving up on an image.
+   * This cushions live-host uploads that landed in `Assets/` instead of `assets/`.
+   */
+  DJ.getAssetUrlCandidates = function getAssetUrlCandidates(url) {
+    if (typeof url !== 'string' || !url) {
+      return [];
+    }
+
+    const safeUrl = DJ.safeAssetUrl(url);
+    if (!/^assets\//i.test(url)) {
+      return safeUrl ? [safeUrl] : [];
+    }
+
+    const lowerVariant = url.replace(/^Assets\//, 'assets/');
+    const upperVariant = url.replace(/^assets\//, 'Assets/');
+    return [...new Set([
+      safeUrl,
+      DJ.safeAssetUrl(lowerVariant),
+      DJ.safeAssetUrl(upperVariant)
+    ].filter(Boolean))];
+  };
+
+  /**
+   * Only use generated thumbnails for the primary storefront department folders
+   * for now. Everything else continues to use the original uploaded assets.
+   */
+  DJ.thumbnailEligibleRoots = [
+    'baseball-cards',
+    'basketball-cards',
+    'collectibles',
+    'comics',
+    'ebay listing photos',
+    'football-cards'
+  ];
+
+  DJ.isThumbnailEligibleAsset = function isThumbnailEligibleAsset(url) {
+    if (typeof url !== 'string' || !url) {
+      return false;
+    }
+
+    const normalized = String(url).trim().replace(/\\/g, '/');
+    if (!/^assets\//i.test(normalized) || /^assets\/thumbnails\//i.test(normalized)) {
+      return false;
+    }
+
+    const relativePath = normalized.replace(/^assets\//i, '');
+    const rootSegment = relativePath.split('/')[0]?.toLowerCase() || '';
+    return DJ.thumbnailEligibleRoots.includes(rootSegment);
+  };
+
+  /**
+   * Derive a non-destructive thumbnail path that mirrors the original asset tree
+   * under assets/thumbnails and swaps the file extension to WebP.
+   */
+  DJ.getThumbnailAssetUrl = function getThumbnailAssetUrl(url) {
+    if (typeof url !== 'string' || !url) {
+      return '';
+    }
+
+    const normalized = String(url).trim();
+    if (!DJ.isThumbnailEligibleAsset(normalized)) {
+      return DJ.safeAssetUrl(normalized);
+    }
+
+    const relativePath = normalized.replace(/^assets\//i, '');
+    const extension = relativePath.split('.').pop()?.toLowerCase() || '';
+    if (!extension || extension === 'svg') {
+      return DJ.safeAssetUrl(normalized);
+    }
+
+    const thumbnailPath = `assets/thumbnails/${relativePath.replace(/\.[^.]+$/, '.webp')}`;
+    return DJ.safeAssetUrl(thumbnailPath);
+  };
+
+  /**
+   * Prefer generated thumbnails where available, but always keep the original
+   * asset path in the retry chain so the UI still renders if a thumbnail is
+   * missing on the host.
+   */
+  DJ.getThumbnailAssetCandidates = function getThumbnailAssetCandidates(url) {
+    if (typeof url !== 'string' || !url) {
+      return [];
+    }
+
+    const baseCandidates = DJ.getAssetUrlCandidates(url);
+    if (!DJ.isThumbnailEligibleAsset(url)) {
+      return baseCandidates;
+    }
+
+    const thumbnailUrl = DJ.getThumbnailAssetUrl(url);
+    return [...new Set([
+      ...DJ.getAssetUrlCandidates(thumbnailUrl),
+      ...baseCandidates
+    ].filter(Boolean))];
+  };
+
+
+  DJ.getPreloadedProductsForSource = function getPreloadedProductsForSource(source) {
+    if (preloadedProductsBySource.has(source)) {
+      return preloadedProductsBySource.get(source);
+    }
+
+    if (
+      window.DJ_PRELOADED_SOURCE === source &&
+      Array.isArray(window.DJ_PRELOADED_PRODUCTS)
+    ) {
+      preloadedProductsBySource.set(source, window.DJ_PRELOADED_PRODUCTS);
+      return window.DJ_PRELOADED_PRODUCTS;
+    }
+
+    return null;
+  };
+
+  DJ.loadPreloadedProductsForSource = async function loadPreloadedProductsForSource(source) {
+    const existing = DJ.getPreloadedProductsForSource(source);
+    if (existing) {
+      return existing;
+    }
+
+    const scriptName = PRELOADED_PRODUCT_SCRIPT_BY_SOURCE[source];
+    if (!scriptName) {
+      return null;
+    }
+
+    if (preloadedBundlePromises.has(source)) {
+      return preloadedBundlePromises.get(source);
+    }
+
+    const pending = new Promise((resolve, reject) => {
+      const existingScript = document.querySelector(`script[data-preloaded-product-source="${source}"]`);
+      if (existingScript) {
+        // Pages can render shared shells more than once, so reuse an existing
+        // preloaded bundle instead of injecting duplicate script tags.
+        if (existingScript.dataset.preloadedReady === 'true') {
+          const loadedProducts = DJ.getPreloadedProductsForSource(source);
+          if (loadedProducts) {
+            resolve(loadedProducts);
+            return;
+          }
+
+          reject(new Error(`Preloaded product bundle ${scriptName} did not expose ${source}.`));
+          return;
+        }
+
+        existingScript.addEventListener('load', () => {
+          existingScript.dataset.preloadedReady = 'true';
+          const loadedProducts = DJ.getPreloadedProductsForSource(source);
+          if (loadedProducts) {
+            resolve(loadedProducts);
+            return;
+          }
+
+          reject(new Error(`Preloaded product bundle ${scriptName} did not expose ${source}.`));
+        }, { once: true });
+
+        existingScript.addEventListener('error', () => {
+          reject(new Error(`Failed to load preloaded product bundle ${scriptName}.`));
+        }, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = scriptName;
+      script.defer = true;
+      script.dataset.preloadedProductSource = source;
+
+      script.addEventListener('load', () => {
+        script.dataset.preloadedReady = 'true';
+        const loadedProducts = DJ.getPreloadedProductsForSource(source);
+        if (loadedProducts) {
+          resolve(loadedProducts);
+          return;
+        }
+
+        reject(new Error(`Preloaded product bundle ${scriptName} did not expose ${source}.`));
+      }, { once: true });
+
+      script.addEventListener('error', () => {
+        reject(new Error(`Failed to load preloaded product bundle ${scriptName}.`));
+      }, { once: true });
+
+      document.head.appendChild(script);
+    }).catch((error) => {
+      preloadedBundlePromises.delete(source);
+      throw error;
+    });
+
+    preloadedBundlePromises.set(source, pending);
+    return pending;
+  };
+
+  DJ.currency = formatCurrency;
+
+  DJ.displayPrice = function displayPrice(item) {
+    return item?.priceLabel && String(item.priceLabel).trim() ? item.priceLabel : formatCurrency(item?.price);
+  };
+
+  DJ.numericPrice = function numericPrice(item) {
+    const price = item?.price;
+    if (price == null || price === '') {
+      return null;
+    }
+
+    if (typeof price === 'number') {
+      return Number.isFinite(price) ? price : null;
+    }
+
+    const match = String(price).match(/-?\d[\d,]*\.?\d*/);
+    if (!match) {
+      return null;
+    }
+
+    const numericValue = Number(match[0].replace(/,/g, ''));
+    return Number.isFinite(numericValue) ? numericValue : null;
+  };
+
+  DJ.getWishlist = getWishlist;
+  DJ.setWishlist = function setWishlist(items) {
+    const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
+      console.error('Failed to save wishlist.');
+    }
+    updateWishlistCount();
+  };
+
+  DJ.getCustomProducts = function getCustomProducts() {
+    const customProducts = readJSONFromStorage(STORAGE_KEYS.customProducts, (value) => (Array.isArray(value) ? value : []));
+    return Array.isArray(customProducts) ? customProducts : [];
+  };
+
+  DJ.saveCustomProducts = function saveCustomProducts(items) {
+    if (!safeStorageSet(STORAGE_KEYS.customProducts, JSON.stringify(Array.isArray(items) ? items : []))) {
+      console.error('Failed to save custom products.');
+      return false;
+    }
+    return true;
+  };
+
+  DJ.getProductOverrides = function getProductOverrides() {
+    const overrides = readJSONFromStorage(STORAGE_KEYS.productOverrides, (value) => (value && typeof value === 'object' && !Array.isArray(value) ? value : {}));
+    return overrides && typeof overrides === 'object' && !Array.isArray(overrides) ? overrides : {};
+  };
+
+  DJ.saveProductOverrides = function saveProductOverrides(overrides) {
+    if (!safeStorageSet(STORAGE_KEYS.productOverrides, JSON.stringify(overrides && typeof overrides === 'object' && !Array.isArray(overrides) ? overrides : {}))) {
+      console.error('Failed to save product overrides.');
+      return false;
+    }
+    return true;
+  };
+
+  DJ.getDeletedProductIds = function getDeletedProductIds() {
+    const ids = readJSONFromStorage(STORAGE_KEYS.deletedProductIds, (value) => {
+      if (!Array.isArray(value)) {
+        return [];
+      }
+
+      return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    });
+
+    return Array.isArray(ids) ? ids : [];
+  };
+
+  DJ.saveDeletedProductIds = function saveDeletedProductIds(ids) {
+    const normalized = [...new Set((Array.isArray(ids) ? ids : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    if (!safeStorageSet(STORAGE_KEYS.deletedProductIds, JSON.stringify(normalized))) {
+      console.error('Failed to save deleted product IDs.');
+      return false;
+    }
+    return true;
+  };
+
+  DJ.applyStoredCatalogMutations = function applyStoredCatalogMutations(baseProducts, options = {}) {
+    const products = Array.isArray(baseProducts) ? [...baseProducts] : [];
+    const includeCustomProducts = options.includeCustomProducts !== false;
+    const overrides = DJ.getProductOverrides();
+    const deletedIds = new Set(DJ.getDeletedProductIds().map((item) => Number(item)));
+    const seenIds = new Set();
+
+    const mergedProducts = products
+      .filter((product) => product && !deletedIds.has(Number(product.id)))
+      .map((product) => {
+        const productId = Number(product.id);
+        if (Number.isFinite(productId)) {
+          seenIds.add(productId);
+        }
+
+        const override = overrides[String(product.id)] || overrides[productId] || null;
+        if (!override || typeof override !== 'object' || Array.isArray(override)) {
+          return product;
+        }
+
+        const merged = { ...product, ...override };
+
+        if (Object.prototype.hasOwnProperty.call(override, 'image')) {
+          merged.image = override.image;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(override, 'imageGallery')) {
+          merged.imageGallery = Array.isArray(override.imageGallery) ? override.imageGallery : [];
+        }
+
+        return merged;
+      });
+
+    if (!includeCustomProducts) {
+      return mergedProducts;
+    }
+
+    const uniqueCustomProducts = DJ.getCustomProducts().filter((product) => {
+      const productId = Number(product?.id);
+      if (!Number.isFinite(productId)) {
+        return false;
+      }
+
+      if (deletedIds.has(productId) || seenIds.has(productId)) {
+        return false;
+      }
+
+      seenIds.add(productId);
+      return true;
+    });
+
+    return mergedProducts.concat(uniqueCustomProducts);
+  };
+
+  DJ.updateWishlistCount = updateWishlistCount;
+  DJ.applyLazyLoading = applyLazyLoading;
+  DJ.scheduleIdle = scheduleIdle;
+  DJ.setStatus = function setStatus(elementId, message = '', state = 'info') {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      return;
+    }
+
+    if (!message) {
+      element.hidden = true;
+      element.textContent = '';
+      element.removeAttribute('data-state');
+      return;
+    }
+
+    element.hidden = false;
+    element.textContent = message;
+    element.setAttribute('data-state', state);
+  };
+
+  DJ.setLastFocusedElement = function setLastFocusedElement(element) {
+    lastFocusedElement = element;
+  };
+
+  DJ.restoreFocus = function restoreFocus() {
+    if (
+      lastFocusedElement &&
+      lastFocusedElement.isConnected !== false &&
+      typeof lastFocusedElement.focus === 'function'
+    ) {
+      lastFocusedElement.focus();
+    }
+    lastFocusedElement = null;
+  };
+
+  // Initialize shared UI behaviors once the DOM is ready. Individual page
+  // modules layer their own features on top of these helpers later.
+  document.addEventListener('DOMContentLoaded', () => {
+    applyLazyLoading(document);
+    enhanceHeaderLayout();
+    initThemeToggle();
+    initBackToTop();
+    enhanceFooterContactLinks();
+    enhanceFooterLayout();
+    initArchiveImageLightbox();
+    updateWishlistCount();
+    initHeaderScrollState();
+    registerServiceWorker();
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (!event.key) return;
+
+    if (event.key === STORAGE_KEYS.theme) {
+      applySavedTheme();
+      return;
+    }
+
+    if (event.key === STORAGE_KEYS.wishlist) {
+      updateWishlistCount();
+    }
+  });
+})();
