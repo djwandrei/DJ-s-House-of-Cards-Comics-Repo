@@ -1,0 +1,14 @@
+# Local/private deployment material
+.ssl/
+.deploy/
+.tmp/
+.codex/
+
+# Local history and scratch files
+.Rhistory
+tmp-workbook-titles.txt
+
+# OS/editor noise
+Thumbs.db
+Desktop.ini
+.DS_Store
