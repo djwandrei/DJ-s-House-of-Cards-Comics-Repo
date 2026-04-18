@@ -52,6 +52,8 @@ window.DJ = window.DJ || {};
   // Remember the last focused element so modal close handlers can restore focus
   // to the trigger that opened them. This keeps keyboard navigation predictable.
   let lastFocusedElement = null;
+  let sharedImageLightbox = null;
+  let serviceWorkerRefreshPending = false;
 
   // ---------------------------------------------------------------------------
   // Formatting and storage helpers
@@ -145,8 +147,23 @@ window.DJ = window.DJ || {};
   function updateWishlistCount() {
     const count = getWishlist().length;
     document.querySelectorAll('[data-wishlist-count]').forEach((element) => {
-      element.textContent = count;
+      element.textContent = `(${count})`;
     });
+  }
+
+  /**
+   * Broadcast wishlist changes so page-specific modules can keep heart buttons,
+   * modal actions, and dedicated wishlist screens synchronized without polling.
+   */
+  function emitWishlistChange(items = getWishlist(), source = 'local') {
+    const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    window.dispatchEvent(new CustomEvent('dj:wishlistchange', {
+      detail: {
+        items: normalized,
+        count: normalized.length,
+        source
+      }
+    }));
   }
 
   // ---------------------------------------------------------------------------
@@ -365,7 +382,33 @@ window.DJ = window.DJ || {};
     }
 
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (serviceWorkerRefreshPending) {
+          return;
+        }
+        serviceWorkerRefreshPending = true;
+        window.location.reload();
+      });
+
+      const activateWaitingWorker = (registration) => {
+        if (registration?.waiting) {
+          registration.waiting.postMessage({ type: 'DJ_SKIP_WAITING' });
+        }
+      };
+
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((registration) => {
+        activateWaitingWorker(registration);
+
+        registration.addEventListener('updatefound', () => {
+          const installing = registration.installing;
+          if (!installing) return;
+          installing.addEventListener('statechange', () => {
+            if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+              activateWaitingWorker(registration);
+            }
+          });
+        });
+      }).catch((error) => {
         console.warn('Service worker registration failed.', error);
       });
     }, { once: true });
@@ -407,11 +450,9 @@ window.DJ = window.DJ || {};
     });
   }
 
-  function initArchiveImageLightbox() {
-    const archiveImages = [...document.querySelectorAll('.about-archive-section img')];
-
-    if (!archiveImages.length) {
-      return;
+  function ensureImageLightbox() {
+    if (sharedImageLightbox) {
+      return sharedImageLightbox;
     }
 
     const lightbox = document.createElement('div');
@@ -442,20 +483,79 @@ window.DJ = window.DJ || {};
       DJ.restoreFocus();
     };
 
-    const openLightbox = (image) => {
-      const figure = image.closest('figure');
-      const caption = figure?.querySelector('figcaption')?.textContent?.trim() || image.alt || 'Full size image';
+    closeButton.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !lightbox.hidden) {
+        closeLightbox();
+        return;
+      }
 
-      DJ.setLastFocusedElement(image);
-      lightboxImage.src = image.currentSrc || image.src;
-      lightboxImage.alt = image.alt || caption;
-      lightboxCaption.textContent = caption;
-      lightbox.hidden = false;
-      lightbox.classList.add('is-open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('image-lightbox-open');
-      closeButton.focus();
+      if (event.key === 'Tab' && !lightbox.hidden) {
+        event.preventDefault();
+        closeButton.focus();
+      }
+    });
+
+    sharedImageLightbox = {
+      lightbox,
+      lightboxImage,
+      lightboxCaption,
+      closeButton,
+      closeLightbox
     };
+
+    return sharedImageLightbox;
+  }
+
+  DJ.openImageLightbox = function openImageLightbox(options = {}) {
+    const {
+      src = '',
+      alt = '',
+      caption = '',
+      trigger = null
+    } = options;
+
+    if (!src) {
+      return;
+    }
+
+    const {
+      lightbox,
+      lightboxImage,
+      lightboxCaption,
+      closeButton
+    } = ensureImageLightbox();
+
+    if (trigger) {
+      DJ.setLastFocusedElement(trigger);
+    }
+
+    const resolvedCaption = String(caption || alt || 'Full size image').trim();
+    lightboxImage.src = src;
+    lightboxImage.alt = alt || resolvedCaption;
+    lightboxCaption.textContent = resolvedCaption;
+    lightbox.hidden = false;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('image-lightbox-open');
+    closeButton.focus();
+  };
+
+  DJ.closeImageLightbox = function closeImageLightbox() {
+    ensureImageLightbox().closeLightbox();
+  };
+
+  function initArchiveImageLightbox() {
+    const archiveImages = [...document.querySelectorAll('.about-archive-section img')];
+
+    if (!archiveImages.length) {
+      return;
+    }
 
     archiveImages.forEach((image) => {
       if (image.dataset.lightboxBound === 'true') {
@@ -467,25 +567,83 @@ window.DJ = window.DJ || {};
       image.setAttribute('role', 'button');
       image.setAttribute('tabindex', '0');
       image.setAttribute('aria-label', `${image.alt || 'Archive image'} - open full size`);
-      image.addEventListener('click', () => openLightbox(image));
+      image.addEventListener('click', () => {
+        const figure = image.closest('figure');
+        const caption = figure?.querySelector('figcaption')?.textContent?.trim() || image.alt || 'Full size image';
+        DJ.openImageLightbox({
+          src: image.currentSrc || image.src,
+          alt: image.alt || caption,
+          caption,
+          trigger: image
+        });
+      });
       image.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          openLightbox(image);
+          const figure = image.closest('figure');
+          const caption = figure?.querySelector('figcaption')?.textContent?.trim() || image.alt || 'Full size image';
+          DJ.openImageLightbox({
+            src: image.currentSrc || image.src,
+            alt: image.alt || caption,
+            caption,
+            trigger: image
+          });
+        }
+      });
+    });
+  }
+
+  function initArchivePanels() {
+    const panels = [...document.querySelectorAll('.about-archive-panel[id]')];
+    if (!panels.length) {
+      return;
+    }
+
+    const syncArchivePanelFromHash = (shouldScroll = false) => {
+      const targetId = decodeURIComponent(String(window.location.hash || '').replace(/^#/, ''));
+      if (!targetId) {
+        return;
+      }
+
+      const targetPanel = panels.find((panel) => panel.id === targetId);
+      if (!targetPanel) {
+        return;
+      }
+
+      panels.forEach((panel) => {
+        panel.open = panel === targetPanel;
+      });
+
+      if (shouldScroll) {
+        window.requestAnimationFrame(() => {
+          targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    };
+
+    panels.forEach((panel) => {
+      panel.addEventListener('toggle', () => {
+        if (panel.open) {
+          panels.forEach((otherPanel) => {
+            if (otherPanel !== panel) {
+              otherPanel.open = false;
+            }
+          });
+          if (window.location.hash !== `#${panel.id}`) {
+            history.replaceState(null, '', `#${panel.id}`);
+          }
+          return;
+        }
+
+        if (window.location.hash === `#${panel.id}`) {
+          history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
         }
       });
     });
 
-    closeButton.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
-      }
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !lightbox.hidden) {
-        closeLightbox();
-      }
+    syncArchivePanelFromHash(false);
+    window.addEventListener('hashchange', () => {
+      syncArchivePanelFromHash(true);
     });
   }
 
@@ -533,8 +691,9 @@ window.DJ = window.DJ || {};
           <a class="footer-action-link footer-action-link--primary" href="contact.html">Contact DJ</a>
           <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">0</span></a>
           <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
-            <svg aria-hidden="true" class="social-link__icon" focusable="false" viewBox="0 0 24 24">
-              <path d="M14.2 8.3V6.9c0-.7.5-.9.9-.9h2.3V2.2L14.2 2c-3.6 0-4.4 2.1-4.4 4.3v2H7v4h2.8V22h4.2v-9.7h3.1l.5-4h-3.4z" fill="currentColor"></path>
+            <svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="12" fill="#1877F2"></circle>
+              <path d="M13.5 20v-6h2l.3-2.4h-2.3V10c0-.7.2-1.2 1.2-1.2H16V6.6c-.2 0-.9-.1-1.8-.1-1.8 0-3 1.1-3 3.2v1.8H9.4V14h1.8v6h2.3Z" fill="#FFFFFF"></path>
             </svg>
             Facebook
           </a>
@@ -680,6 +839,7 @@ window.DJ = window.DJ || {};
     'collectibles',
     'comics',
     'ebay listing photos',
+    'personal collection',
     'football-cards'
   ];
 
@@ -870,7 +1030,9 @@ window.DJ = window.DJ || {};
     if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
       console.error('Failed to save wishlist.');
     }
+    const persistedWishlist = getWishlist();
     updateWishlistCount();
+    emitWishlistChange(persistedWishlist, 'local');
   };
 
   DJ.getCustomProducts = function getCustomProducts() {
@@ -1020,6 +1182,7 @@ window.DJ = window.DJ || {};
     enhanceFooterContactLinks();
     enhanceFooterLayout();
     initArchiveImageLightbox();
+    initArchivePanels();
     updateWishlistCount();
     initHeaderScrollState();
     registerServiceWorker();
@@ -1035,6 +1198,17 @@ window.DJ = window.DJ || {};
 
     if (event.key === STORAGE_KEYS.wishlist) {
       updateWishlistCount();
+      emitWishlistChange(getWishlist(), 'storage');
     }
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) {
+      return;
+    }
+
+    applySavedTheme();
+    updateWishlistCount();
+    emitWishlistChange(getWishlist(), 'pageshow');
   });
 })();

@@ -1,0 +1,41 @@
+{
+  "id": "/",
+  "name": "DJ's House of Cards & Comics",
+  "short_name": "DJ's Cards",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "browser"],
+  "background_color": "#f3f6fb",
+  "theme_color": "#1f2fa3",
+  "description": "Sports cards, comics, and collectibles storefront.",
+  "categories": ["shopping", "sports", "books", "collectibles"],
+  "shortcuts": [
+    {
+      "name": "Sports Cards",
+      "short_name": "Sports",
+      "url": "/sports-cards.html",
+      "description": "Jump straight to the sports cards hub."
+    },
+    {
+      "name": "Comics",
+      "short_name": "Comics",
+      "url": "/comics.html",
+      "description": "Browse comic listings and filters."
+    },
+    {
+      "name": "Contact DJ",
+      "short_name": "Contact",
+      "url": "/contact.html",
+      "description": "Open the contact page and create an email draft."
+    }
+  ],
+  "icons": [
+    {
+      "src": "assets/dj-logo.png",
+      "sizes": "604x695",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -6,13 +6,14 @@
   <title>Offline | DJ's House of Cards & Comics</title>
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#1f2fa3">
-  <link rel="manifest" href="site.webmanifest?v=20260417b">
+  <link rel="manifest" href="site.webmanifest?v=20260417f">
   <link rel="icon" type="image/png" href="assets/dj-logo.png">
   <link rel="apple-touch-icon" href="assets/dj-logo.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Lobster+Two:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260417b">
+  <link as="font" crossorigin href="assets/fonts/inter-400.ttf" rel="preload" type="font/ttf">
+  <link as="font" crossorigin href="assets/fonts/inter-700.ttf" rel="preload" type="font/ttf">
+  <link as="font" crossorigin href="assets/fonts/bebas-neue-400.ttf" rel="preload" type="font/ttf">
+  <link as="font" crossorigin href="assets/fonts/lobster-two-700.ttf" rel="preload" type="font/ttf">
+  <link rel="stylesheet" href="styles.css?v=20260417f">
 </head>
 <body data-page="offline">
   <main id="mainContent">
@@ -23,14 +24,17 @@
             <img alt="DJ's House of Cards & Comics logo" class="footer-logo" src="assets/dj-logo.png" width="72" height="72">
             <div>
               <div class="brand-script">DJ's House of Cards</div>
-              <div class="brand-kicker">&amp; Comics • Trusted Hobby Finds</div>
+              <div class="brand-kicker">&amp; Comics &bull; Trusted Hobby Finds</div>
             </div>
           </div>
           <span class="kicker">Offline mode</span>
           <h1 class="section-title" style="margin-top:.5rem;">You're offline, but the storefront shell is still available.</h1>
           <p>The connection dropped before we could reach the live catalog. Saved pages, images, and recently viewed sections may still be available from your browser cache.</p>
+          <p class="helper-text" style="margin-top:.75rem;">Requested page: <strong id="offlineRequestedPath">/</strong></p>
+          <p class="helper-text" id="offlineNetworkStatus" style="margin-top:.25rem;">Checking connection status...</p>
           <div class="inline-actions" style="margin-top:1.25rem;">
-            <a class="button" href="index.html">Return home</a>
+            <button class="button" data-offline-retry type="button">Try this page again</button>
+            <a class="button-secondary" href="index.html">Return home</a>
             <a class="button-secondary" href="sports-cards.html">Browse sports cards</a>
             <a class="button-secondary" href="wishlist.html">Open wishlist</a>
           </div>
@@ -39,5 +43,7 @@
       </div>
     </section>
   </main>
+  <script src="offline.js?v=20260417f"></script>
 </body>
 </html>
+
