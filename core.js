@@ -754,6 +754,65 @@ window.DJ = window.DJ || {};
     });
   }
 
+  /**
+   * On compact mobile layouts the theme toggle competes with the brand lockup.
+   * Move the existing toggle into the footer action stack so the header can
+   * prioritize the logo and menu, then restore it to the header on wider screens.
+   */
+  function syncThemeTogglePlacement() {
+    const themeToggle = document.getElementById('themeToggle');
+    const headerActions = document.querySelector('.header-actions');
+    if (!themeToggle || !headerActions) {
+      return;
+    }
+
+    const compactThemeQuery = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 700px)')
+      : null;
+    const isCompactThemeLayout = () => compactThemeQuery ? compactThemeQuery.matches : window.innerWidth <= 700;
+    const bindMediaQueryChange = (query, handler) => {
+      if (!query) return false;
+      if (typeof query.addEventListener === 'function') {
+        query.addEventListener('change', handler);
+        return true;
+      }
+      if (typeof query.addListener === 'function') {
+        query.addListener(handler);
+        return true;
+      }
+      return false;
+    };
+
+    const placeToggle = () => {
+      const footerActions = document.querySelector('.footer-actions');
+      const useFooterPlacement = isCompactThemeLayout() && footerActions;
+
+      if (useFooterPlacement) {
+        const backToTopAction = footerActions.querySelector('[data-scroll-top]');
+        if (themeToggle.parentElement !== footerActions) {
+          footerActions.insertBefore(themeToggle, backToTopAction || null);
+        }
+        themeToggle.classList.add('theme-toggle--footer');
+        return;
+      }
+
+      if (themeToggle.parentElement !== headerActions) {
+        headerActions.appendChild(themeToggle);
+      }
+      themeToggle.classList.remove('theme-toggle--footer');
+    };
+
+    if (themeToggle.dataset.responsivePlacementBound !== 'true') {
+      themeToggle.dataset.responsivePlacementBound = 'true';
+      if (!bindMediaQueryChange(compactThemeQuery, placeToggle)) {
+        window.addEventListener('resize', placeToggle);
+      }
+      window.addEventListener('pageshow', placeToggle);
+    }
+
+    placeToggle();
+  }
+
   // ---------------------------------------------------------------------------
   // Public DJ API used by the rest of the site
   // ---------------------------------------------------------------------------
@@ -1181,6 +1240,7 @@ window.DJ = window.DJ || {};
     initBackToTop();
     enhanceFooterContactLinks();
     enhanceFooterLayout();
+    syncThemeTogglePlacement();
     initArchiveImageLightbox();
     initArchivePanels();
     updateWishlistCount();

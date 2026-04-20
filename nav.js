@@ -117,10 +117,25 @@
     document.body.dataset.primaryNavBound = 'true';
 
     const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const compactNavQuery = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 900px)')
+      : null;
     let lastFocusedBeforeOpen = null;
-    const isCompactNav = () => window.innerWidth <= 900;
+    const isCompactNav = () => compactNavQuery ? compactNavQuery.matches : window.innerWidth <= 900;
     const submenuItems = [...nav.querySelectorAll('.primary-nav__item--has-submenu')];
     const submenuToggleButtons = [...nav.querySelectorAll('.submenu-toggle')];
+    const bindMediaQueryChange = (query, handler) => {
+      if (!query) return false;
+      if (typeof query.addEventListener === 'function') {
+        query.addEventListener('change', handler);
+        return true;
+      }
+      if (typeof query.addListener === 'function') {
+        query.addListener(handler);
+        return true;
+      }
+      return false;
+    };
 
     if (!nav.querySelector('.site-nav__mobile-header')) {
       const mobileHeader = document.createElement('div');
@@ -229,7 +244,7 @@
         return;
       }
 
-      if (window.innerWidth <= 900) {
+      if (isCompactNav()) {
         closeMenu();
       }
     });
@@ -238,7 +253,7 @@
       closeMenu({ restoreFocus: true });
     });
 
-    window.addEventListener('resize', () => {
+    const handleViewportChange = () => {
       if (!isCompactNav()) {
         closeMenu();
         syncMenuAccessibility();
@@ -246,7 +261,11 @@
       }
 
       syncMenuAccessibility();
-    });
+    };
+
+    if (!bindMediaQueryChange(compactNavQuery, handleViewportChange)) {
+      window.addEventListener('resize', handleViewportChange);
+    }
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {

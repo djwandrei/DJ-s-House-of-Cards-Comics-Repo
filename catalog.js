@@ -2182,6 +2182,23 @@ Thank you.`
     if (!filterPanel || filterPanel.dataset.mobileDrawerBound === 'true') return;
 
     const MOBILE_BREAKPOINT = 900;
+    const mobileDrawerQuery = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 900px)')
+      : null;
+    const isMobileDrawerViewport = () => mobileDrawerQuery ? mobileDrawerQuery.matches : window.innerWidth <= MOBILE_BREAKPOINT;
+    const bindMediaQueryChange = (query, handler) => {
+      if (!query) return false;
+      if (typeof query.addEventListener === 'function') {
+        query.addEventListener('change', handler);
+        return true;
+      }
+      if (typeof query.addListener === 'function') {
+        query.addListener(handler);
+        return true;
+      }
+      return false;
+    };
+    let drawerFocusTimer = 0;
 
     filterPanel.dataset.mobileDrawerBound = 'true';
     filterPanel.id = filterPanel.id || 'catalogFiltersPanel';
@@ -2219,11 +2236,11 @@ Thank you.`
     const resetButton = panelFooter.querySelector('.mobile-filter-reset');
     const doneButton = panelFooter.querySelector('.mobile-filter-done');
     const closeButton = filterPanel.querySelector('.filter-panel-dismiss');
+    const titleNode = trigger.querySelector('.mobile-filter-trigger__title');
+    const metaNode = trigger.querySelector('.mobile-filter-trigger__meta');
 
     const syncTrigger = (filters = getCurrentFilters(), count = null, activeConfig = config) => {
       const activeCount = renderActiveFilters(filters, activeConfig).length;
-      const titleNode = trigger.querySelector('.mobile-filter-trigger__title');
-      const metaNode = trigger.querySelector('.mobile-filter-trigger__meta');
       if (titleNode) titleNode.textContent = activeCount ? `Filters (${activeCount})` : 'Filters';
       if (metaNode) {
         if (count == null) {
@@ -2237,7 +2254,7 @@ Thank you.`
     updateMobileFilterState = syncTrigger;
 
     const syncDrawerAccessibility = () => {
-      const isMobileViewport = window.innerWidth <= MOBILE_BREAKPOINT;
+      const isMobileViewport = isMobileDrawerViewport();
       const isDrawerOpen = document.body.classList.contains('filters-open');
 
       trigger.hidden = !isMobileViewport;
@@ -2246,26 +2263,34 @@ Thank you.`
       if (!isMobileViewport) {
         trigger.setAttribute('aria-expanded', 'false');
         filterPanel.setAttribute('aria-hidden', 'false');
+        if ('inert' in filterPanel) {
+          filterPanel.inert = false;
+        }
         document.body.classList.remove('filters-open');
         return;
       }
 
       filterPanel.setAttribute('aria-hidden', String(!isDrawerOpen));
+      if ('inert' in filterPanel) {
+        filterPanel.inert = !isDrawerOpen;
+      }
       trigger.setAttribute('aria-expanded', String(isDrawerOpen));
     };
 
     const closeDrawer = ({ restoreFocus = true } = {}) => {
+      window.clearTimeout(drawerFocusTimer);
       document.body.classList.remove('filters-open');
       syncDrawerAccessibility();
       if (restoreFocus && !trigger.hidden) trigger.focus();
     };
 
     const openDrawer = () => {
-      if (window.innerWidth > MOBILE_BREAKPOINT) return;
+      if (!isMobileDrawerViewport()) return;
+      window.clearTimeout(drawerFocusTimer);
       DJ.setLastFocusedElement(trigger);
       document.body.classList.add('filters-open');
       syncDrawerAccessibility();
-      window.setTimeout(() => {
+      drawerFocusTimer = window.setTimeout(() => {
         filterPanel.querySelector('input, select, textarea, button:not(.filter-panel-dismiss)')?.focus();
       }, 60);
     };
@@ -2284,19 +2309,32 @@ Thank you.`
       syncTrigger();
     });
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > MOBILE_BREAKPOINT && document.body.classList.contains('filters-open')) {
+    const handleViewportChange = () => {
+      if (!isMobileDrawerViewport() && document.body.classList.contains('filters-open')) {
         closeDrawer({ restoreFocus: false });
         return;
       }
 
       syncDrawerAccessibility();
-    });
+    };
+
+    if (!bindMediaQueryChange(mobileDrawerQuery, handleViewportChange)) {
+      window.addEventListener('resize', handleViewportChange);
+    }
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && document.body.classList.contains('filters-open')) {
         closeDrawer();
       }
+    });
+
+    window.addEventListener('pageshow', () => {
+      if (document.body.classList.contains('filters-open')) {
+        closeDrawer({ restoreFocus: false });
+        return;
+      }
+
+      syncDrawerAccessibility();
     });
 
     filterPanel.addEventListener('input', (event) => {

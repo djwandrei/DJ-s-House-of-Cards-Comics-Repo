@@ -286,12 +286,12 @@ body.dark-mode input,body.dark-mode select,body.dark-mode textarea {
   font-weight:800
 }
 .script-accent {
-  font-family:inherit;
+  font-family:"Lobster Two",cursive;
   font-style:italic;
-  font-weight:inherit;
+  font-weight:700;
   color:var(--brand-red);
   text-shadow:0 1px 0 #fff;
-  letter-spacing:-.01em
+  letter-spacing:0
 }
 .contact-card p,.empty-state p,.feature-card p,.hero-copy p,.page-intro,.section-subtitle,.story-copy p {
   color:var(--muted);
@@ -8409,5 +8409,288 @@ body.dark-mode .legacy-blog-original img {
   .brand-kicker {
     font-size:.54rem !important;
     letter-spacing:.08em !important;
+  }
+}
+
+/* Final mobile QA pass:
+   - keep the header/footer brand lockups readable
+   - move the theme toggle into the footer on small screens
+   - stop filter/results controls from sticking over product grids
+   - make modal controls visible and consistent on phones
+   - improve hero/category label contrast in dark mode */
+@media (max-width:900px) {
+  .catalog-results-column .mobile-filter-trigger,
+  .catalog-results-column .results-toolbar {
+    position:static !important;
+    top:auto !important;
+    z-index:auto !important;
+  }
+
+  .catalog-results-column .mobile-filter-trigger {
+    margin-bottom:.85rem;
+  }
+
+  .catalog-results-column .results-toolbar {
+    margin-bottom:1rem;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    width:100%;
+    margin-left:0;
+  }
+}
+
+@media (max-width:700px) {
+  .header-inner {
+    grid-template-columns:minmax(0,1fr) minmax(118px,auto);
+    grid-template-areas:"brand actions";
+    gap:.7rem;
+    align-items:center;
+    padding-block:.45rem;
+  }
+
+  .brand {
+    align-items:center;
+    gap:.62rem;
+  }
+
+  .brand-logo {
+    width:66px !important;
+    height:66px !important;
+    flex:0 0 auto;
+  }
+
+  .brand-copy {
+    gap:.2rem;
+    min-width:0;
+    max-width:calc(100vw - 150px);
+    padding-block:.08rem;
+  }
+
+  .brand-script {
+    font-size:1.12rem !important;
+    line-height:1.04;
+    white-space:nowrap;
+  }
+
+  .brand-kicker {
+    display:block !important;
+    max-width:none;
+    font-size:.42rem !important;
+    line-height:1.16;
+    letter-spacing:.06em !important;
+    white-space:nowrap;
+    overflow:visible;
+    text-overflow:clip;
+  }
+
+  .header-actions {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:.45rem;
+  }
+
+  .header-actions .theme-toggle:not(.theme-toggle--footer) {
+    display:none !important;
+  }
+
+  .footer-brand {
+    gap:.72rem;
+    padding-top:0;
+  }
+
+  .footer-logo-line {
+    align-items:center !important;
+    gap:.62rem;
+    margin-top:0;
+  }
+
+  .footer-logo {
+    width:66px;
+    height:66px;
+    flex:0 0 auto;
+  }
+
+  .footer-logo-line .brand-script {
+    font-size:1.04rem !important;
+    line-height:1.04;
+    white-space:nowrap;
+  }
+
+  .footer-logo-line .brand-kicker {
+    display:block !important;
+    font-size:.42rem !important;
+    line-height:1.16;
+    letter-spacing:.06em !important;
+    white-space:nowrap;
+  }
+
+  .footer-inner {
+    padding-top:4.75rem;
+    padding-bottom:1.75rem;
+    gap:1rem;
+  }
+
+  .footer-actions .theme-toggle--footer {
+    display:inline-flex !important;
+    width:100%;
+    justify-content:center;
+    min-height:48px;
+    padding:0 1rem;
+    margin:0;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.16);
+    color:#fff;
+    box-shadow:0 12px 24px rgba(4,10,24,.18);
+  }
+
+  body.dark-mode .footer-actions .theme-toggle--footer {
+    background:rgba(255,255,255,.08);
+    border-color:rgba(255,255,255,.18);
+    color:#fff;
+  }
+
+  body[data-page="sports-hub"] .department-split-grid .category-card .overlay {
+    background:linear-gradient(180deg,rgba(5,9,20,.18),rgba(5,9,20,.8));
+  }
+
+  body[data-page="sports-hub"] .department-split-grid .category-card .category-pill,
+  body.dark-mode[data-page="sports-hub"] .department-split-grid .category-card .category-pill {
+    min-height:34px;
+    padding:0 .86rem;
+    background:rgba(5,9,20,.88);
+    border-color:rgba(255,255,255,.42);
+    color:#fff;
+    font-size:.9rem;
+    text-shadow:none;
+    box-shadow:0 14px 28px rgba(0,0,0,.3);
+  }
+
+  .modal {
+    align-items:flex-start;
+    padding:calc(env(safe-area-inset-top,0) + .7rem) .45rem .85rem;
+    overflow-y:auto;
+  }
+
+  .modal-content {
+    width:min(100%,calc(100vw - .9rem));
+    max-height:none;
+    padding-top:0;
+    overflow:visible;
+  }
+
+  .modal-media {
+    padding:3.6rem 1rem .35rem;
+  }
+
+  .modal-close {
+    position:absolute;
+    top:.72rem;
+    right:.72rem;
+    width:2.85rem;
+    height:2.85rem;
+    border-radius:14px;
+    z-index:15;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(9,16,34,.94);
+    color:#fff;
+    box-shadow:0 18px 34px rgba(0,0,0,.28);
+  }
+
+  .modal-magnify-toggle {
+    top:1rem !important;
+    right:1rem !important;
+    width:2.85rem;
+    height:2.85rem;
+    min-width:2.85rem;
+    min-height:2.85rem;
+    max-width:none;
+    padding:0;
+    gap:0;
+    border-radius:15px;
+    background:rgba(9,16,34,.9) !important;
+    color:#fff !important;
+    border-color:rgba(255,255,255,.16) !important;
+    box-shadow:0 16px 28px rgba(0,0,0,.24);
+  }
+
+  .modal-magnify-toggle__label {
+    position:absolute;
+    width:1px;
+    height:1px;
+    clip:rect(0 0 0 0);
+    clip-path:inset(50%);
+    overflow:hidden;
+    white-space:nowrap;
+  }
+
+  .image-lightbox__close {
+    top:calc(env(safe-area-inset-top,0) + .7rem);
+    right:.7rem;
+  }
+
+  .product-card .product-card-chip-rail {
+    display:grid;
+    gap:.36rem;
+  }
+
+  .product-card .product-topline,
+  .product-card .product-card-summary,
+  .product-card .product-meta-inline-list,
+  .product-card .product-attribute-list {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:.34rem;
+  }
+
+  .product-card .product-grade-meta,
+  .product-card .product-meta-pill,
+  .product-card .product-attribute-pill,
+  .product-card .product-meta-inline {
+    width:100%;
+    justify-content:center;
+    text-align:center;
+  }
+
+  .product-card .product-meta-pill--context,
+  .product-card .product-meta-inline--athlete {
+    grid-column:1 / -1;
+  }
+}
+
+@media (max-width:480px) {
+  .brand-logo {
+    width:60px !important;
+    height:60px !important;
+  }
+
+  .brand-script {
+    font-size:1.02rem !important;
+  }
+
+  .brand-kicker {
+    font-size:.39rem !important;
+  }
+
+  .footer-logo {
+    width:60px;
+    height:60px;
+  }
+
+  .footer-logo-line .brand-script {
+    font-size:.98rem !important;
+  }
+
+  .footer-logo-line .brand-kicker {
+    font-size:.39rem !important;
+  }
+
+  .product-card .product-topline,
+  .product-card .product-card-summary,
+  .product-card .product-meta-inline-list,
+  .product-card .product-attribute-list {
+    grid-template-columns:1fr;
   }
 }
