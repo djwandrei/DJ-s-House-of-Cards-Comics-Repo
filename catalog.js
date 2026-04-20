@@ -799,7 +799,10 @@ window.DJ = window.DJ || {};
     }
 
     const pendingRequest = (async () => {
-      const response = await fetch(source, { cache: 'force-cache' });
+      const productAssetUrl = typeof DJ.versionedProductAsset === 'function'
+        ? DJ.versionedProductAsset(source)
+        : source;
+      const response = await fetch(productAssetUrl, { cache: 'force-cache' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -2549,43 +2552,6 @@ Thank you.`
   // Product details modal
   // ---------------------------------------------------------------------------
 
-  function bindModalMagnifier(modalInner, fallback) {
-    const stage = modalInner.querySelector('#modalImageStage');
-    const mainImage = modalInner.querySelector('#modalMainImage');
-    const zoomToggle = modalInner.querySelector('#modalMagnifyToggle');
-
-    if (!stage || !mainImage || !zoomToggle) return;
-
-    const syncZoomButton = () => {
-      zoomToggle.setAttribute('aria-pressed', 'false');
-      zoomToggle.setAttribute('aria-label', 'Open product image full screen');
-      zoomToggle.setAttribute('title', 'Open product image full screen');
-      const label = zoomToggle.querySelector('.modal-magnify-toggle__label');
-      if (label) {
-        label.textContent = 'Full screen';
-      }
-    };
-
-    zoomToggle.addEventListener('click', () => {
-      const safeSource = DJ.safeAssetUrl(mainImage.currentSrc || mainImage.getAttribute('src') || fallback);
-      const caption = mainImage.getAttribute('alt') || 'Full size product photo';
-      if (typeof DJ.openImageLightbox === 'function') {
-        DJ.openImageLightbox({
-          src: safeSource,
-          alt: caption,
-          caption,
-          trigger: zoomToggle
-        });
-      } else if (safeSource) {
-        window.open(safeSource, '_blank', 'noopener');
-      }
-    });
-
-    stage.classList.remove('is-zoom-active');
-    mainImage.addEventListener('load', syncZoomButton);
-    syncZoomButton();
-  }
-
   function openModal(product) {
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
@@ -2606,10 +2572,6 @@ Thank you.`
         <div class="modal-media">
           <div class="modal-image-stage" id="modalImageStage">
             <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}">
-            <button type="button" class="modal-magnify-toggle button-secondary" id="modalMagnifyToggle" aria-pressed="false" aria-label="Open product image full screen" title="Open product image full screen">
-              <span class="modal-magnify-toggle__icon" aria-hidden="true"></span>
-              <span class="modal-magnify-toggle__label">Full screen</span>
-            </button>
           </div>
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
@@ -2677,7 +2639,6 @@ Thank you.`
       closeModal();
     });
 
-    bindModalMagnifier(modalInner, fallback);
     DJ.applyLazyLoading(modalInner);
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');

@@ -13,6 +13,7 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
+  const PRODUCT_ASSET_VERSION = '20260420f';
   const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
     'products.json': 'products-data-full.js',
     'products-baseball.json': 'products-data-baseball.js',
@@ -32,6 +33,10 @@ window.DJ = window.DJ || {};
     productOverrides: 'productOverrides',
     deletedProductIds: 'deletedProductIds'
   };
+
+  function versionedProductAsset(path) {
+    return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
+  }
   const PAGE_LABELS = {
     home: 'Home',
     shop: 'Shop',
@@ -677,7 +682,7 @@ window.DJ = window.DJ || {};
         const footerActions = document.createElement('div');
         footerActions.className = 'footer-actions';
         footerActions.innerHTML = `
-          <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">0</span></a>
+          <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">(0)</span></a>
           <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
             <svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="12" fill="#1877F2"></circle>
@@ -947,6 +952,8 @@ window.DJ = window.DJ || {};
     return null;
   };
 
+  DJ.versionedProductAsset = versionedProductAsset;
+
   DJ.loadPreloadedProductsForSource = async function loadPreloadedProductsForSource(source) {
     const existing = DJ.getPreloadedProductsForSource(source);
     if (existing) {
@@ -996,7 +1003,7 @@ window.DJ = window.DJ || {};
       }
 
       const script = document.createElement('script');
-      script.src = scriptName;
+      script.src = versionedProductAsset(scriptName);
       script.defer = true;
       script.dataset.preloadedProductSource = source;
 
