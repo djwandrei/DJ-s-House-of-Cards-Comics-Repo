@@ -1,0 +1,10 @@
+{
+  "protocol": "ftps",
+  "host": "ftp.your-hostname.com",
+  "port": 21,
+  "username": "your-ftp-username",
+  "password": "your-ftp-password",
+  "remoteRoot": "/public_html",
+  "passive": true,
+  "allowInsecureCertificate": false
+}

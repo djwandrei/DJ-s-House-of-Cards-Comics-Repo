@@ -673,22 +673,10 @@ window.DJ = window.DJ || {};
       const footerBrand = footer.querySelector('.footer-brand');
       const footerLinks = footer.querySelector('.footer-links');
 
-      if (footerBrand && !footerBrand.querySelector('.footer-highlights')) {
-        const highlightRow = document.createElement('div');
-        highlightRow.className = 'footer-highlights';
-        highlightRow.innerHTML = `
-          <span class="footer-highlight">Collector curated</span>
-          <span class="footer-highlight">Live inventory</span>
-          <span class="footer-highlight">Now viewing ${DJ.escapeHtml(getCurrentPageLabel())}</span>
-        `;
-        footerBrand.appendChild(highlightRow);
-      }
-
       if (footerBrand && !footerBrand.querySelector('.footer-actions')) {
         const footerActions = document.createElement('div');
         footerActions.className = 'footer-actions';
         footerActions.innerHTML = `
-          <a class="footer-action-link footer-action-link--primary" href="contact.html">Contact DJ</a>
           <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">0</span></a>
           <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
             <svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24">
@@ -697,14 +685,12 @@ window.DJ = window.DJ || {};
             </svg>
             Facebook
           </a>
-          <button class="footer-action-link footer-action-link--ghost" data-scroll-top="true" type="button">Back to top</button>
         `;
         footerBrand.appendChild(footerActions);
       }
 
       if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
-        const contactBlock = footerLinks.querySelector('.footer-contact-block');
         const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
         const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
         const groups = document.createElement('div');
@@ -720,25 +706,6 @@ window.DJ = window.DJ || {};
 
         footerLinks.innerHTML = '';
         footerLinks.appendChild(groups);
-
-        const contactPanel = document.createElement('div');
-        contactPanel.className = 'footer-contact-panel';
-
-        const contactHeading = document.createElement('strong');
-        contactHeading.textContent = 'Direct contact';
-        contactPanel.appendChild(contactHeading);
-
-        if (contactBlock) {
-          contactPanel.appendChild(contactBlock.cloneNode(true));
-        } else {
-          const fallbackLink = document.createElement('a');
-          fallbackLink.className = 'footer-contact-link';
-          fallbackLink.href = 'contact.html';
-          fallbackLink.textContent = 'Open contact page';
-          contactPanel.appendChild(fallbackLink);
-        }
-
-        footerLinks.appendChild(contactPanel);
       }
     });
 

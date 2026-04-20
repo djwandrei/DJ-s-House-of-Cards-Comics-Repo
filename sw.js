@@ -1,4 +1,4 @@
-﻿const CACHE_VERSION = 'dj-house-v2026-04-18-2';
+﻿const CACHE_VERSION = 'dj-house-v2026-04-20-1';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
