@@ -360,7 +360,7 @@ function Get-ChangedFiles {
     }
   }
 
-  $currentHead = (Invoke-Git -Arguments @("rev-parse", "HEAD"))[0].Trim()
+  $currentHead = (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
   if ($state.lastDeployedCommit -ne $currentHead) {
     foreach ($line in (Invoke-Git -Arguments @("diff", "--name-status", "$($state.lastDeployedCommit)..HEAD"))) {
       if (-not $line) { continue }
@@ -444,6 +444,11 @@ $uploadList = @($changeSet.uploads | Where-Object { $_ })
 $deleteList = if ($SkipDelete) { @() } else { @($changeSet.deletes | Where-Object { $_ }) }
 
 if (-not $uploadList.Count -and -not $deleteList.Count) {
+  if (-not $DryRun) {
+    $headCommit = (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
+    Save-DeployState -Commit $headCommit
+  }
+
   Write-Host "No cPanel deploy changes detected."
   exit 0
 }
@@ -461,7 +466,7 @@ foreach ($relativePath in $deleteList) {
 }
 
 if (-not $DryRun) {
-  $headCommit = (Invoke-Git -Arguments @("rev-parse", "HEAD"))[0].Trim()
+  $headCommit = (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
   Save-DeployState -Commit $headCommit
 }
 
