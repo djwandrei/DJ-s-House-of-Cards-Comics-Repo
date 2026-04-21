@@ -146,6 +146,10 @@ window.DJ = window.DJ || {};
 
   function parseConditionDetails(rawCondition = '') {
     const raw = String(rawCondition || '').trim();
+    const defaultUngradedCondition = 'Near Mint or Better';
+    const ungradedCondition = raw.toLowerCase() === 'near mint or better'
+      ? defaultUngradedCondition
+      : (raw || defaultUngradedCondition);
     const companyMatch = raw.match(/\b(PSA\/DNA|PSA|BGS|BVG|BCCG|SGC|CGC|CSG|HGA|GMA|ISA|BECKETT)\b/i);
 
     if (companyMatch) {
@@ -165,7 +169,7 @@ window.DJ = window.DJ || {};
       return { raw, status: 'Graded', company, grade, summary: `Graded | ${company} ${grade}`.trim(), compact: `${company} ${grade}`.trim() };
     }
 
-    return { raw, status: 'Ungraded', company: '', grade: '', summary: 'Ungraded | Near Mint or Better', compact: 'Near Mint or Better' };
+    return { raw, status: 'Ungraded', company: '', grade: '', summary: `Ungraded | ${ungradedCondition}`, compact: ungradedCondition };
   }
 
   function deriveProductAttributes(item = {}) {
@@ -2574,6 +2578,11 @@ Thank you.`
     const galleryCount = gallery.filter(Boolean).length || 1;
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
     const modalMainImageSource = DJ.safeAssetUrl(gallery[0]);
+    const modalThumbs = gallery.map((image, index) => ({
+      image,
+      index,
+      candidates: DJ.getThumbnailAssetCandidates(image)
+    }));
 
     modalInner.innerHTML = `
       <div class="modal-layout">
@@ -2583,9 +2592,9 @@ Thank you.`
           </div>
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
-              ${gallery.map((image, index) => `
+              ${modalThumbs.map(({ image, index, candidates }) => `
                 <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(DJ.safeAssetUrl(image))}" aria-label="View photo ${index + 1}">
-                  <img src="${DJ.escapeHtml((DJ.getThumbnailAssetCandidates(image)[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(DJ.getThumbnailAssetCandidates(image).join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
+                  <img src="${DJ.escapeHtml((candidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(candidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
                 </button>
               `).join('')}
             </div>

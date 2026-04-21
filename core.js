@@ -13,7 +13,7 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
-  const PRODUCT_ASSET_VERSION = '20260421a';
+  const PRODUCT_ASSET_VERSION = '20260421b';
   const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
     'products.json': 'products-data-full.js',
     'products-baseball.json': 'products-data-baseball.js',
@@ -861,8 +861,8 @@ window.DJ = window.DJ || {};
   };
 
   /**
-   * Only use generated thumbnails for the primary storefront department folders
-   * for now. Everything else continues to use the original uploaded assets.
+   * Use generated thumbnails only for live catalog image folders. Everything
+   * else continues to use original assets so icons/logos are never rerouted.
    */
   DJ.thumbnailEligibleRoots = [
     'baseball-cards',
