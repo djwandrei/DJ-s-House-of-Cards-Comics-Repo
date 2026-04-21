@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-04-21-3';
+const CACHE_VERSION = 'dj-house-v2026-04-21-4';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -16,15 +16,15 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260421c',
-  '/core.js?v=20260421c',
-  '/nav.js?v=20260421c',
-  '/catalog.js?v=20260421c',
-  '/contact.js?v=20260421c',
-  '/backend-config.js?v=20260421c',
-  '/supabase-client.js?v=20260421c',
-  '/site.webmanifest?v=20260421c',
-  '/offline.js?v=20260421c',
+  '/styles.css?v=20260421d',
+  '/core.js?v=20260421d',
+  '/nav.js?v=20260421d',
+  '/catalog.js?v=20260421d',
+  '/contact.js?v=20260421d',
+  '/backend-config.js?v=20260421d',
+  '/supabase-client.js?v=20260421d',
+  '/site.webmanifest?v=20260421d',
+  '/offline.js?v=20260421d',
   '/vendor/supabase.min.js',
   '/assets/fonts/bebas-neue-400.ttf',
   '/assets/fonts/inter-400.ttf',

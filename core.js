@@ -13,7 +13,7 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
-  const PRODUCT_ASSET_VERSION = '20260421c';
+  const PRODUCT_ASSET_VERSION = '20260421d';
   const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
     'products.json': 'products-data-full.js',
     'products-baseball.json': 'products-data-baseball.js',

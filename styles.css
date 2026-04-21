@@ -8760,7 +8760,7 @@ body.dark-mode .legacy-blog-original img {
   .brand-copy {
     flex:1 1 auto;
     min-width:0;
-    max-width:calc(100vw - 164px);
+    max-width:min(20ch, calc(100vw - 188px));
   }
 
   .brand-script {
@@ -8800,7 +8800,7 @@ body.dark-mode .legacy-blog-original img {
   .page-title,
   .section-title {
     max-width:100%;
-    font-size:clamp(2rem,10.8vw,3.15rem);
+    font-size:clamp(1.85rem,9.5vw,2.7rem);
     line-height:1.03;
     overflow-wrap:normal;
   }
@@ -8819,21 +8819,33 @@ body.dark-mode .legacy-blog-original img {
 
 @media (max-width:480px) {
   .brand-logo {
-    width:62px !important;
-    height:62px !important;
+    width:58px !important;
+    height:58px !important;
   }
 
   .brand-copy {
-    max-width:calc(100vw - 156px);
+    max-width:min(18.5ch, calc(100vw - 170px));
   }
 
   .brand-script {
-    font-size:clamp(1rem,5.4vw,1.22rem) !important;
+    font-size:clamp(.98rem,5vw,1.14rem) !important;
   }
 
   .brand-kicker {
-    font-size:clamp(.36rem,1.95vw,.52rem) !important;
-    letter-spacing:.02em !important;
+    font-size:clamp(.34rem,1.75vw,.48rem) !important;
+    letter-spacing:.01em !important;
+  }
+
+  .nav-toggle {
+    min-width:88px;
+    padding-inline:.72rem;
+  }
+
+  .hero-title,
+  .page-title,
+  .section-title {
+    font-size:clamp(1.75rem,9vw,2.42rem);
+    line-height:1.05;
   }
 
   .footer-logo-line {
