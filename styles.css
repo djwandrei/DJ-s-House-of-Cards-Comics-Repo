@@ -8713,3 +8713,139 @@ body.dark-mode .legacy-blog-original img {
     letter-spacing:.045em !important;
   }
 }
+
+/* Live mobile overflow guardrail.
+   This final layer intentionally sits at the end of the bundle so it can tame
+   older mobile overrides without changing desktop layout or site behavior. */
+@media (max-width:700px) {
+  html,
+  body {
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .site-header,
+  .hero,
+  main,
+  .footer {
+    max-width:100vw;
+    overflow-x:hidden;
+  }
+
+  .container,
+  .header-inner,
+  .hero-grid,
+  .hero-copy,
+  .hero-brand,
+  .footer-inner,
+  .footer-brand,
+  .footer-logo-line {
+    min-width:0;
+    max-width:100%;
+  }
+
+  .header-inner {
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    column-gap:.55rem;
+    row-gap:.45rem;
+  }
+
+  .brand {
+    min-width:0;
+    max-width:100%;
+    gap:.58rem;
+  }
+
+  .brand-copy {
+    flex:1 1 auto;
+    min-width:0;
+    max-width:calc(100vw - 164px);
+  }
+
+  .brand-script {
+    font-size:clamp(1.02rem,4.8vw,1.3rem) !important;
+    line-height:1.02;
+    white-space:nowrap;
+  }
+
+  .brand-kicker {
+    font-size:clamp(.38rem,1.7vw,.56rem) !important;
+    letter-spacing:.035em !important;
+    line-height:1.08;
+    white-space:nowrap;
+  }
+
+  .nav-toggle {
+    min-width:96px;
+    min-height:46px;
+    padding-inline:.85rem;
+    justify-self:end;
+  }
+
+  .hero-copy,
+  .hero-brand,
+  .page-hero-card {
+    width:100%;
+    padding:1.1rem;
+  }
+
+  .kicker {
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .hero-title,
+  .page-title,
+  .section-title {
+    max-width:100%;
+    font-size:clamp(2rem,10.8vw,3.15rem);
+    line-height:1.03;
+    overflow-wrap:normal;
+  }
+
+  .hero-copy p,
+  .page-intro,
+  .section-subtitle {
+    max-width:100%;
+  }
+
+  .catalog-results-column .results-toolbar {
+    width:100%;
+    max-width:100%;
+  }
+}
+
+@media (max-width:480px) {
+  .brand-logo {
+    width:62px !important;
+    height:62px !important;
+  }
+
+  .brand-copy {
+    max-width:calc(100vw - 156px);
+  }
+
+  .brand-script {
+    font-size:clamp(1rem,5.4vw,1.22rem) !important;
+  }
+
+  .brand-kicker {
+    font-size:clamp(.36rem,1.95vw,.52rem) !important;
+    letter-spacing:.02em !important;
+  }
+
+  .footer-logo-line {
+    gap:.58rem;
+  }
+
+  .footer-logo-line .brand-script {
+    font-size:clamp(1rem,5vw,1.18rem) !important;
+  }
+
+  .footer-logo-line .brand-kicker {
+    font-size:clamp(.38rem,1.85vw,.5rem) !important;
+    letter-spacing:.025em !important;
+  }
+}
