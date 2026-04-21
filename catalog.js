@@ -154,6 +154,14 @@ window.DJ = window.DJ || {};
       grade = grade.replace(/^[\s:\u2013\u2014-]+/, '').trim();
       if (!grade) grade = 'Authenticated';
 
+      // Authenticated-only cards are certified, but not numerically graded.
+      // Keep their exact condition visible while leaving them in the Ungraded facet.
+      const hasNumericGrade = /(?:^|\s)(?:10|9\.5|9|8\.5|8|7\.5|7|6\.5|6|5\.5|5|4\.5|4|3\.5|3|2\.5|2|1\.5|1)(?:\s|$)/i.test(grade);
+      const authenticatedOnly = /authentic|authenticated|certified/i.test(raw) && !hasNumericGrade;
+      if (authenticatedOnly) {
+        return { raw, status: 'Ungraded', company, grade, summary: `Ungraded | ${raw}`, compact: raw };
+      }
+
       return { raw, status: 'Graded', company, grade, summary: `Graded | ${company} ${grade}`.trim(), compact: `${company} ${grade}`.trim() };
     }
 
