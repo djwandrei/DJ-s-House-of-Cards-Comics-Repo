@@ -46,6 +46,18 @@
     return PAGE_LABELS[pageKey] || 'Navigation';
   }
 
+  function addSharedResizeListener(callback, options = {}) {
+    if (window.DJ && typeof window.DJ.addRafResizeListener === 'function') {
+      window.DJ.addRafResizeListener(callback, options);
+      return;
+    }
+
+    window.addEventListener('resize', callback);
+    if (options.runImmediately !== false) {
+      callback();
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Active-state management
   // ---------------------------------------------------------------------------
@@ -270,7 +282,7 @@
     };
 
     if (!bindMediaQueryChange(compactNavQuery, handleViewportChange)) {
-      window.addEventListener('resize', handleViewportChange);
+      addSharedResizeListener(handleViewportChange, { runImmediately: false });
     }
 
     document.addEventListener('keydown', (event) => {
@@ -515,11 +527,11 @@
       }
     });
 
-    window.addEventListener('resize', () => {
+    addSharedResizeListener(() => {
       if (window.innerWidth > 900) {
         closeAllSubmenus();
       }
-    });
+    }, { runImmediately: false });
 
     window.addEventListener('pageshow', (event) => {
       if (!event.persisted) {

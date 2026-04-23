@@ -292,6 +292,41 @@ window.DJ = window.DJ || {};
     callback();
   }
 
+  /**
+   * Resize events can fire in fast bursts on mobile browsers and desktop drags.
+   * Batch resize-driven layout work onto animation frames so shared UI helpers
+   * do not fight each other while the viewport is still settling.
+   */
+  function addRafResizeListener(callback, { runImmediately = true } = {}) {
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    let scheduled = false;
+    const flush = () => {
+      scheduled = false;
+      callback();
+    };
+
+    const onResize = () => {
+      if (scheduled) {
+        return;
+      }
+
+      scheduled = true;
+      if (typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(flush);
+      } else {
+        window.setTimeout(flush, 16);
+      }
+    };
+
+    window.addEventListener('resize', onResize);
+    if (runImmediately) {
+      callback();
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Theme handling
   // ---------------------------------------------------------------------------
@@ -796,9 +831,10 @@ window.DJ = window.DJ || {};
       }
       return false;
     };
+    let footerActions = document.querySelector('.footer-actions');
 
     const placeToggle = () => {
-      const footerActions = document.querySelector('.footer-actions');
+      footerActions = footerActions && footerActions.isConnected ? footerActions : document.querySelector('.footer-actions');
       const useFooterPlacement = isCompactThemeLayout() && footerActions;
 
       if (useFooterPlacement) {
@@ -819,7 +855,7 @@ window.DJ = window.DJ || {};
     if (themeToggle.dataset.responsivePlacementBound !== 'true') {
       themeToggle.dataset.responsivePlacementBound = 'true';
       if (!bindMediaQueryChange(compactThemeQuery, placeToggle)) {
-        window.addEventListener('resize', placeToggle);
+        addRafResizeListener(placeToggle, { runImmediately: false });
       }
       window.addEventListener('pageshow', placeToggle);
     }
@@ -1215,6 +1251,7 @@ window.DJ = window.DJ || {};
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
   DJ.getScrollBehavior = getScrollBehavior;
+  DJ.addRafResizeListener = addRafResizeListener;
   DJ.setStatus = function setStatus(elementId, message = '', state = 'info') {
     const element = document.getElementById(elementId);
     if (!element) {

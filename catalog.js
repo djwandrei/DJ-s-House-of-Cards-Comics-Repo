@@ -144,6 +144,18 @@ window.DJ = window.DJ || {};
     [/\bplayoff\b/g, ' playoffs ']
   ];
 
+  function addSharedResizeListener(callback, options = {}) {
+    if (window.DJ && typeof window.DJ.addRafResizeListener === 'function') {
+      window.DJ.addRafResizeListener(callback, options);
+      return;
+    }
+
+    window.addEventListener('resize', callback);
+    if (options.runImmediately !== false) {
+      callback();
+    }
+  }
+
   function parseConditionDetails(rawCondition = '') {
     const raw = String(rawCondition || '').trim();
     const defaultUngradedCondition = 'Near Mint or Better';
@@ -1933,9 +1945,9 @@ Thank you.`
       });
     }
 
-    window.addEventListener('resize', () => {
+    addSharedResizeListener(() => {
       syncState();
-    });
+    }, { runImmediately: false });
 
     syncState();
   }
@@ -2337,7 +2349,7 @@ Thank you.`
     };
 
     if (!bindMediaQueryChange(mobileDrawerQuery, handleViewportChange)) {
-      window.addEventListener('resize', handleViewportChange);
+      addSharedResizeListener(handleViewportChange, { runImmediately: false });
     }
 
     document.addEventListener('keydown', (event) => {
