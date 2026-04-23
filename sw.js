@@ -1,7 +1,9 @@
-const CACHE_VERSION = 'dj-house-v2026-04-23-2';
+const CACHE_VERSION = 'dj-house-v2026-04-23-3';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
+const CACHE_TRIM_INTERVAL_MS = 30000;
+const cacheTrimTimestamps = new Map();
 const CACHE_ENTRY_LIMITS = {
   [RUNTIME_CACHE]: 120,
   [IMAGE_CACHE]: 350
@@ -99,12 +101,24 @@ async function trimCache(cacheName) {
   await Promise.all(keys.slice(0, keys.length - limit).map((key) => cache.delete(key)));
 }
 
+async function maybeTrimCache(cacheName) {
+  const limit = CACHE_ENTRY_LIMITS[cacheName];
+  if (!limit) return;
+
+  const now = Date.now();
+  const lastTrim = cacheTrimTimestamps.get(cacheName) || 0;
+  if (now - lastTrim < CACHE_TRIM_INTERVAL_MS) return;
+
+  cacheTrimTimestamps.set(cacheName, now);
+  await trimCache(cacheName);
+}
+
 async function putInCache(cacheName, request, response) {
   if (!response) return response;
   if (!(response.ok || response.type === 'opaque')) return response;
   const cache = await caches.open(cacheName);
   await cache.put(request, response.clone());
-  await trimCache(cacheName);
+  await maybeTrimCache(cacheName);
   return response;
 }
 
