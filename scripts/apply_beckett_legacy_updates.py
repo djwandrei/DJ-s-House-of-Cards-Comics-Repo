@@ -150,7 +150,8 @@ def is_no_match(status: Any) -> bool:
 
 
 def has_confirmed_match(row: dict[str, Any]) -> bool:
-    if is_no_match(row.get("Match Status")):
+    status = str(row.get("Match Status") or "").strip().lower()
+    if status != "matched":
         return False
     return bool(row.get("Beckett URL") and row.get("Beckett Matched Title"))
 
@@ -264,6 +265,16 @@ def update_product(product: dict[str, Any], row: dict[str, Any], cache: dict[str
             pass
     if row.get("Site Player / Athlete"):
         updated["playerAthlete"] = str(row["Site Player / Athlete"]).strip()
+
+    # Keep the storefront anchored to the workbook even when a row remains unconfirmed.
+    fallback_name = str(row.get("Title") or updated.get("name", "")).strip()
+    fallback_price_label = normalize_price_label(row.get("Original Price / Range"))
+    fallback_price_value = midpoint_from_label(fallback_price_label)
+    if fallback_name:
+        updated["name"] = fallback_name
+    if fallback_price_label and fallback_price_value is not None:
+        updated["priceLabel"] = fallback_price_label
+        updated["price"] = fallback_price_value
 
     if has_confirmed_match(row):
         updated["name"] = build_product_name(row, updated.get("name", ""))

@@ -979,6 +979,21 @@ def variant_mismatch_notes(product: dict[str, Any], matched_title: str, matched_
     player = normalize_spaces(product.get("playerAthlete", ""))
     source = remove_phrase_tokens(product.get("name", ""), player)
     target = remove_phrase_tokens(f"{matched_title} {matched_url}", player)
+    source_key = normalize_key(source)
+    target_key = normalize_key(target)
+    source_tokens = expanded_token_set(source)
+    target_tokens = expanded_token_set(target)
+
+    def has_variant(text_key: str, token_set: set[str], terms: set[str]) -> bool:
+        for term in terms:
+            cleaned = normalize_key(term)
+            if " " in cleaned:
+                if cleaned and cleaned in text_key:
+                    return True
+            elif cleaned in token_set:
+                return True
+        return False
+
     variant_checks = [
         ({"tiffany"}, {"tiffany"}, "Beckett result includes the Tiffany variant, which is not named in the site title."),
         ({"class 1"}, {"class 1", "c1"}, "Beckett result includes Class 1 wording not shown in the site title."),
@@ -1011,7 +1026,7 @@ def variant_mismatch_notes(product: dict[str, Any], matched_title: str, matched_
     ]
     notes: list[str] = []
     for target_terms, source_terms, note in variant_checks:
-        if any(term in target for term in target_terms) and not any(term in source for term in source_terms):
+        if has_variant(target_key, target_tokens, target_terms) and not has_variant(source_key, source_tokens, source_terms):
             notes.append(note)
     return notes
 
@@ -1236,6 +1251,13 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
         "AB": 52,
     }
 
+    def safe_float(value: Any, default: float = 0.0) -> float:
+        """Keep workbook rebuilds resilient when legacy review cells contain text like SOLD."""
+        try:
+            return float(str(value).replace("%", "").strip() or default)
+        except (TypeError, ValueError):
+            return default
+
     def populate_sheet(ws, data_rows: list[dict[str, Any]]) -> None:
         ws.append(headers)
         for row in data_rows:
@@ -1324,7 +1346,7 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
         key=lambda row: (
             str(row.get("Review Bucket", "")),
             str(row.get("Category", "")),
-            float(row.get("Match Confidence") or 0),
+            safe_float(row.get("Match Confidence")),
             str(row.get("Title", "")),
         ),
     )
@@ -1347,7 +1369,7 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
             str(row.get("Category", "")),
             str(row.get("Review Bucket", "")),
             99 if row.get("Match Confidence") is None else 0,
-            float(row.get("Match Confidence") or 0),
+            safe_float(row.get("Match Confidence")),
             str(row.get("Title", "")),
         ),
     )
@@ -1360,7 +1382,7 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
     ]
     price_review_rows = sorted(
         price_review_rows,
-        key=lambda row: abs(float(str(row.get("Midpoint Delta %", "0")).replace("%", "") or 0)),
+        key=lambda row: abs(safe_float(row.get("Midpoint Delta %", "0"))),
         reverse=True,
     )
     if price_review_rows:
@@ -1381,21 +1403,24 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
         ("Sports-card rows searched", sport_rows),
         ("Non-sports rows included", len(rows) - sport_rows),
     ]
-    summary_rows.extend(sorted(summary_counts.items()))
+    summary_rows.extend(sorted(summary_counts.items(), key=lambda item: str(item[0] or "")))
     for item in summary_rows:
         summary.append(list(item))
     summary.append([])
     summary.append(["Review bucket", "Count"])
     from collections import Counter as _Counter
-    for bucket, count in sorted(_Counter(row.get("Review Bucket", "") for row in rows).items()):
+    for bucket, count in sorted(_Counter(row.get("Review Bucket", "") for row in rows).items(), key=lambda item: str(item[0] or "")):
         summary.append([bucket, count])
     summary.append([])
     summary.append(["Availability", "Count"])
-    for availability, count in sorted(_Counter(row.get("Beckett Availability", "") for row in rows).items()):
+    for availability, count in sorted(
+        _Counter(row.get("Beckett Availability", "") for row in rows).items(),
+        key=lambda item: str(item[0] or ""),
+    ):
         summary.append([availability, count])
     summary.append([])
     summary.append(["Price signal", "Count"])
-    for signal, count in sorted(_Counter(row.get("Price Signal", "") for row in rows).items()):
+    for signal, count in sorted(_Counter(row.get("Price Signal", "") for row in rows).items(), key=lambda item: str(item[0] or "")):
         summary.append([signal, count])
     summary.append([])
     summary.append(["Category", "Matched", "Review", "Unresolved", "Non-sports"])
@@ -1411,7 +1436,7 @@ def build_workbook(rows: list[dict[str, Any]], output_path: Path, scope: str) ->
             category_counts[(category, "Unresolved")] += 1
         elif "non sports-card" in status.lower():
             category_counts[(category, "Non-sports")] += 1
-    for category in sorted({row.get("Category", "") for row in rows}):
+    for category in sorted({row.get("Category", "") for row in rows}, key=lambda value: str(value or "")):
         summary.append(
             [
                 category,
