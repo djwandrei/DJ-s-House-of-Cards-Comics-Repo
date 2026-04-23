@@ -248,6 +248,50 @@ window.DJ = window.DJ || {};
     window.requestIdleCallback(callback, { timeout });
   }
 
+  /**
+   * Centralize motion-sensitive scrolling and paint-frame throttling so sticky
+   * UI elements stay responsive without doing redundant work on every scroll event.
+   */
+  function prefersReducedMotion() {
+    if (typeof window.matchMedia !== 'function') {
+      return false;
+    }
+
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function getScrollBehavior() {
+    return prefersReducedMotion() ? 'auto' : 'smooth';
+  }
+
+  function addRafScrollListener(callback) {
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    let scheduled = false;
+    const flush = () => {
+      scheduled = false;
+      callback();
+    };
+
+    const onScroll = () => {
+      if (scheduled) {
+        return;
+      }
+
+      scheduled = true;
+      if (typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(flush);
+      } else {
+        window.setTimeout(flush, 16);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    callback();
+  }
+
   // ---------------------------------------------------------------------------
   // Theme handling
   // ---------------------------------------------------------------------------
@@ -362,10 +406,9 @@ window.DJ = window.DJ || {};
         backToTop.classList.toggle('visible', window.scrollY > 300);
       };
 
-      window.addEventListener('scroll', updateVisibility, { passive: true });
-      updateVisibility();
+      addRafScrollListener(updateVisibility);
       backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: getScrollBehavior() });
       });
     });
   }
@@ -430,8 +473,7 @@ window.DJ = window.DJ || {};
         siteHeader.classList.toggle('site-header--scrolled', window.scrollY > 18);
       };
 
-      window.addEventListener('scroll', updateHeaderState, { passive: true });
-      updateHeaderState();
+      addRafScrollListener(updateHeaderState);
     });
   }
 
@@ -721,7 +763,7 @@ window.DJ = window.DJ || {};
 
       button.dataset.boundScrollTop = 'true';
       button.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: getScrollBehavior() });
       });
     });
   }
@@ -1172,6 +1214,7 @@ window.DJ = window.DJ || {};
   DJ.updateWishlistCount = updateWishlistCount;
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
+  DJ.getScrollBehavior = getScrollBehavior;
   DJ.setStatus = function setStatus(elementId, message = '', state = 'info') {
     const element = document.getElementById(elementId);
     if (!element) {

@@ -174,9 +174,14 @@
     const syncMenuAccessibility = () => {
       const isOpen = nav.classList.contains('open');
       const compactNav = isCompactNav();
-      nav.setAttribute('aria-hidden', String(compactNav && !isOpen));
+      const shouldHide = compactNav && !isOpen;
+      nav.setAttribute('aria-hidden', String(shouldHide));
 
-      if (compactNav && !isOpen) {
+      if (nav.hidden !== shouldHide) {
+        nav.hidden = shouldHide;
+      }
+
+      if (shouldHide) {
         nav.setAttribute('inert', '');
       } else {
         nav.removeAttribute('inert');
@@ -214,6 +219,7 @@
 
     const openMenu = () => {
       lastFocusedBeforeOpen = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      nav.hidden = false;
       nav.classList.add('open');
       updateMenuToggleState(true);
       document.body.classList.add('menu-open');

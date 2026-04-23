@@ -1727,14 +1727,17 @@ Thank you.`
 
     const headerOffset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 96;
     const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset - 16);
-    window.scrollTo({ top, behavior: 'smooth' });
+    const behavior = window.DJ && typeof window.DJ.getScrollBehavior === 'function'
+      ? window.DJ.getScrollBehavior()
+      : 'smooth';
+    window.scrollTo({ top, behavior });
   }
 
   function bindCatalogPagination(config = {}) {
     if (document.body.dataset.catalogPaginationBound === 'true') return;
     document.body.dataset.catalogPaginationBound = 'true';
 
-    document.body.addEventListener('click', (event) => {
+    document.body.addEventListener('click', async (event) => {
       const button = event.target.closest('[data-pagination-page], [data-pagination-action]');
       if (!button || button.disabled) return;
 
@@ -1746,17 +1749,17 @@ Thank you.`
         currentCatalogPage += 1;
       }
 
-      renderCatalogPage(config);
+      await renderCatalogPage(config);
       scrollCatalogToResults();
     });
 
-    document.body.addEventListener('change', (event) => {
+    document.body.addEventListener('change', async (event) => {
       const select = event.target.closest('[data-items-per-page]');
       if (!select) return;
 
       currentCatalogItemsPerPage = sanitizeItemsPerPage(select.value);
       currentCatalogPage = 1;
-      renderCatalogPage(config);
+      await renderCatalogPage(config);
       scrollCatalogToResults();
     });
   }

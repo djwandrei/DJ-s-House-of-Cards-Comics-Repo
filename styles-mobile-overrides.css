@@ -1,0 +1,558 @@
+/* Shared mobile/storefront stabilization layer.
+   This file stays loaded after styles.css so mobile fixes remain isolated,
+   easier to review, and easier to revert than when they lived at the end of
+   the main bundle. */
+
+/* Remove redundant footer modules that were intentionally retired. */
+.footer-highlights,
+.footer-contact-panel {
+  display:none !important;
+}
+
+@media (max-width:900px) {
+  /* Keep compact catalog controls in the normal flow so they never float over
+     product grids or footer sections on smaller screens. */
+  .mobile-filter-trigger,
+  .results-toolbar {
+    position:static !important;
+    top:auto !important;
+    z-index:auto !important;
+  }
+
+  .catalog-results-column .mobile-filter-trigger {
+    margin-bottom:.85rem;
+  }
+
+  .catalog-results-column .results-toolbar {
+    width:100%;
+    max-width:100%;
+    margin-bottom:1rem;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    width:100%;
+    margin-left:0;
+  }
+
+  /* The header and mobile menu stay available while the user scrolls. */
+  .site-header {
+    position:sticky !important;
+    top:0;
+    z-index:1300;
+    overflow:visible !important;
+  }
+
+  .site-header .brand,
+  .site-header .header-actions {
+    position:relative;
+    z-index:1;
+  }
+
+  .site-nav-backdrop {
+    z-index:1290;
+  }
+
+  .site-nav {
+    position:fixed !important;
+    top:calc(var(--header-h) + .55rem);
+    left:.75rem;
+    right:.75rem;
+    width:auto;
+    max-height:calc(100vh - var(--header-h) - 1.25rem);
+    overflow:auto;
+    padding:1rem;
+    border-radius:28px;
+    background:linear-gradient(180deg,rgba(11,18,38,.98),rgba(15,27,56,.98));
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 28px 56px rgba(0,0,0,.34);
+    visibility:hidden;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-.75rem) scale(.98);
+    transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s;
+    z-index:1295;
+  }
+
+  .site-nav[hidden] {
+    display:none !important;
+  }
+
+  .site-nav.open {
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+    transition-delay:0s;
+  }
+
+  .site-nav .primary-nav__list {
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:.55rem;
+    padding:0;
+  }
+
+  .site-nav .primary-nav__item,
+  .site-nav .primary-nav__item-group {
+    width:100%;
+  }
+
+  .site-nav .primary-nav__item-group {
+    justify-content:space-between;
+  }
+
+  .site-nav .primary-nav__submenu {
+    position:static;
+    min-width:0;
+  }
+
+  /* Restore footer artwork after the streamlined footer cleanup. */
+  .footer::before {
+    opacity:.56 !important;
+    background-position:center 44% !important;
+  }
+
+  .footer-inner {
+    padding-top:4.25rem !important;
+    padding-bottom:1.35rem !important;
+  }
+}
+
+@media (max-width:700px) {
+  html,
+  body {
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .site-header {
+    --header-h:82px;
+  }
+
+  .site-header,
+  .hero,
+  main,
+  .footer {
+    max-width:100vw;
+    overflow-x:hidden;
+  }
+
+  .container,
+  .header-inner,
+  .hero-grid,
+  .hero-copy,
+  .hero-brand,
+  .footer-inner,
+  .footer-brand,
+  .footer-logo-line {
+    min-width:0;
+    max-width:100%;
+  }
+
+  /* Header brand lockup: larger, readable, and non-overlapping. */
+  .header-inner {
+    min-height:var(--header-h);
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"brand actions";
+    align-items:center;
+    column-gap:.55rem;
+    row-gap:.45rem;
+    padding-block:.35rem;
+  }
+
+  .brand {
+    min-width:0;
+    max-width:100%;
+    align-items:center;
+    gap:.58rem;
+  }
+
+  .brand-logo {
+    width:74px !important;
+    height:74px !important;
+    flex:0 0 auto;
+  }
+
+  .brand-copy {
+    flex:1 1 auto;
+    min-width:0;
+    max-width:min(20ch, calc(100vw - 188px));
+    gap:.18rem;
+    padding-block:.08rem;
+    overflow:visible;
+  }
+
+  .brand-script {
+    font-size:clamp(1.02rem,4.8vw,1.3rem) !important;
+    line-height:1.02;
+    white-space:nowrap;
+  }
+
+  .brand-kicker {
+    display:block !important;
+    max-width:none;
+    font-size:clamp(.38rem,1.7vw,.56rem) !important;
+    line-height:1.08;
+    letter-spacing:.035em !important;
+    white-space:nowrap;
+    overflow:visible;
+    text-overflow:clip;
+  }
+
+  .header-actions {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:.45rem;
+  }
+
+  .header-actions .theme-toggle:not(.theme-toggle--footer) {
+    display:none !important;
+  }
+
+  .nav-toggle {
+    min-width:96px;
+    min-height:46px;
+    padding-inline:.85rem;
+    justify-self:end;
+  }
+
+  /* Footer lockup mirrors the larger mobile header treatment. */
+  .footer-brand {
+    gap:.8rem;
+    padding-top:0;
+  }
+
+  .footer-logo-line {
+    align-items:center !important;
+    gap:.75rem;
+    margin-top:0;
+  }
+
+  .footer-logo {
+    width:76px !important;
+    height:76px !important;
+    flex:0 0 auto;
+  }
+
+  .footer-logo-line .brand-script {
+    font-size:1.28rem !important;
+    line-height:1.02;
+    white-space:nowrap;
+  }
+
+  .footer-logo-line .brand-kicker {
+    display:block !important;
+    font-size:.54rem !important;
+    line-height:1.14;
+    letter-spacing:.055em !important;
+    white-space:nowrap;
+  }
+
+  .footer-brand p {
+    margin:0;
+  }
+
+  .footer-inner {
+    gap:1.15rem;
+  }
+
+  .footer-actions {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.55rem;
+    margin-top:.1rem;
+  }
+
+  .footer-action-link,
+  .footer-actions .theme-toggle--footer {
+    min-height:46px;
+    width:100%;
+    justify-content:center;
+    text-align:center;
+    font-size:.9rem;
+  }
+
+  .footer-actions .theme-toggle--footer {
+    display:inline-flex !important;
+    grid-column:1 / -1;
+    max-width:100%;
+    padding:0 1rem;
+    margin:0;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.16);
+    color:#fff;
+    box-shadow:0 12px 24px rgba(4,10,24,.18);
+  }
+
+  body.dark-mode .footer-actions .theme-toggle--footer {
+    background:rgba(255,255,255,.08);
+    border-color:rgba(255,255,255,.18);
+    color:#fff;
+  }
+
+  .footer-bottom {
+    padding-top:1rem;
+    gap:.75rem;
+  }
+
+  .footer-bottom-meta {
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  /* Sports hub labels stay readable in darker hero art. */
+  body[data-page="sports-hub"] .department-split-grid .category-card .overlay {
+    background:linear-gradient(180deg,rgba(5,9,20,.18),rgba(5,9,20,.8));
+  }
+
+  body[data-page="sports-hub"] .department-split-grid .category-card .category-pill,
+  body.dark-mode[data-page="sports-hub"] .department-split-grid .category-card .category-pill {
+    min-height:34px;
+    padding:0 .86rem;
+    background:rgba(5,9,20,.88);
+    border-color:rgba(255,255,255,.42);
+    color:#fff;
+    font-size:.9rem;
+    text-shadow:none;
+    box-shadow:0 14px 28px rgba(0,0,0,.3);
+  }
+
+  /* Compact hero layouts and prevent mobile overflow. */
+  .hero-copy,
+  .hero-brand,
+  .page-hero-card {
+    width:100%;
+    padding:1.1rem;
+  }
+
+  .kicker {
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .hero-title,
+  .page-title,
+  .section-title {
+    max-width:100%;
+    font-size:clamp(1.85rem,9.5vw,2.7rem);
+    line-height:1.03;
+    overflow-wrap:normal;
+  }
+
+  .hero-copy p,
+  .page-intro,
+  .section-subtitle {
+    max-width:100%;
+  }
+
+  /* Modal controls stay visible and usable above the sheet on phones. */
+  .modal {
+    align-items:flex-start;
+    padding:calc(env(safe-area-inset-top,0) + .7rem) .45rem .85rem;
+    overflow-y:auto;
+  }
+
+  .modal-content {
+    width:min(100%,calc(100vw - .9rem));
+    max-height:none;
+    padding-top:0;
+    overflow:visible;
+  }
+
+  .modal-media {
+    padding:3.6rem 1rem .35rem;
+  }
+
+  .modal-close {
+    position:fixed;
+    top:calc(env(safe-area-inset-top,0) + .75rem);
+    right:.75rem;
+    width:2.85rem;
+    height:2.85rem;
+    border-radius:14px;
+    z-index:10020;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(9,16,34,.94);
+    color:#fff;
+    box-shadow:0 18px 34px rgba(0,0,0,.28);
+  }
+
+  .image-lightbox__close {
+    top:calc(env(safe-area-inset-top,0) + .7rem);
+    right:.7rem;
+  }
+
+  /* Product card chips use a predictable two-column pattern on phones. */
+  .product-card .product-card-chip-rail {
+    display:grid;
+    gap:.36rem;
+  }
+
+  .product-card .product-topline,
+  .product-card .product-card-summary,
+  .product-card .product-meta-inline-list,
+  .product-card .product-attribute-list {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:.34rem;
+  }
+
+  .product-card .product-grade-meta,
+  .product-card .product-meta-pill,
+  .product-card .product-attribute-pill,
+  .product-card .product-meta-inline {
+    width:100%;
+    justify-content:center;
+    text-align:center;
+  }
+
+  .product-card .product-meta-pill--context,
+  .product-card .product-meta-inline--athlete {
+    grid-column:1 / -1;
+  }
+}
+
+@media (max-width:640px) {
+  /* Bottom pagination compresses into a tighter mobile layout. */
+  .catalog-pagination--bottom {
+    margin:1rem 0 .35rem;
+    padding:.85rem .9rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__inner {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "range range range"
+      "prev pages next"
+      "per per per";
+    justify-content:stretch;
+    gap:.55rem .45rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__range {
+    grid-area:range;
+    margin:0;
+    font-size:.95rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__arrow:first-of-type {
+    grid-area:prev;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__arrow:last-of-type {
+    grid-area:next;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__arrow {
+    width:2.65rem;
+    height:2.65rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__pages {
+    grid-area:pages;
+    min-width:0;
+    justify-content:center;
+    overflow-x:auto;
+    padding-bottom:.05rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__page {
+    min-width:2rem;
+    height:2.25rem;
+    padding:0 .35rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__per-page {
+    grid-area:per;
+    width:100%;
+    margin:0;
+    justify-content:space-between;
+    gap:.5rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__per-page span {
+    font-size:.82rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__per-page select {
+    min-height:2.5rem;
+    min-width:4.5rem;
+  }
+}
+
+@media (max-width:480px) {
+  .site-header {
+    --header-h:78px;
+  }
+
+  .brand-logo {
+    width:58px !important;
+    height:58px !important;
+  }
+
+  .brand-copy {
+    max-width:min(18.5ch, calc(100vw - 170px));
+  }
+
+  .brand-script {
+    font-size:clamp(.98rem,5vw,1.14rem) !important;
+  }
+
+  .brand-kicker {
+    font-size:clamp(.34rem,1.75vw,.48rem) !important;
+    letter-spacing:.01em !important;
+  }
+
+  .nav-toggle {
+    min-width:88px;
+    padding-inline:.72rem;
+  }
+
+  .footer-inner {
+    padding-top:3.75rem !important;
+  }
+
+  .footer-logo {
+    width:68px !important;
+    height:68px !important;
+  }
+
+  .footer-logo-line {
+    gap:.58rem;
+  }
+
+  .footer-logo-line .brand-script {
+    font-size:clamp(1rem,5vw,1.18rem) !important;
+  }
+
+  .footer-logo-line .brand-kicker {
+    font-size:clamp(.38rem,1.85vw,.5rem) !important;
+    letter-spacing:.025em !important;
+  }
+
+  .hero-title,
+  .page-title,
+  .section-title {
+    font-size:clamp(1.75rem,9vw,2.42rem);
+    line-height:1.05;
+  }
+
+  .product-card .product-topline,
+  .product-card .product-card-summary,
+  .product-card .product-meta-inline-list,
+  .product-card .product-attribute-list {
+    grid-template-columns:1fr;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__range {
+    font-size:.9rem;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__per-page span {
+    font-size:.78rem;
+  }
+}
