@@ -98,6 +98,17 @@ def normalize_key(value: Any) -> str:
     return normalize_spaces(text)
 
 
+def expanded_token_set(value: Any) -> set[str]:
+    tokens = set(normalize_key(value).split())
+    expanded = set(tokens)
+    for token in list(tokens):
+        if token.endswith("ies") and len(token) > 4:
+            expanded.add(token[:-3] + "y")
+        elif token.endswith("s") and len(token) > 3:
+            expanded.add(token[:-1])
+    return expanded
+
+
 def remove_phrase_tokens(text: str, phrase: str) -> str:
     result = normalize_key(text)
     phrase_key = normalize_key(phrase)
@@ -117,6 +128,41 @@ def clean_listing_title(title: str) -> str:
     text = re.sub(r"\b/\d+\b", " ", text)
     text = re.sub(r"[^\w\s.-]", " ", text)
     return normalize_spaces(text)
+
+
+def search_title_core(title: str) -> str:
+    text = normalize_spaces(title)
+    text = re.sub(r"\((?:variant|variation)[^)]+\)", " ", text, flags=re.I)
+    text = re.sub(r"\(\s*\d+\s*/\s*\d+\s*\)", " ", text)
+    text = re.sub(r"\b\d+\s*/\s*\d+\b", " ", text)
+    text = re.sub(r"\bserial(?:ly)?\s+numbered\b", " ", text, flags=re.I)
+    text = re.sub(r"\bblue sharpie\b|\bwith sharpie\b", " ", text, flags=re.I)
+    text = re.sub(r"[()]", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+def descriptor_stripped_title(title: str) -> str:
+    text = search_title_core(title)
+    descriptor_patterns = [
+        r"\bRookie Card\b",
+        r"\bRookie\b",
+        r"\bAutograph(?:s)?\b",
+        r"\bSignature(?:s)?\b",
+        r"\bSigned\b",
+        r"\bGame[- ]Used\b",
+        r"\bGame[- ]Worn\b",
+        r"\bJersey\b",
+        r"\bRelic(?:s)?\b",
+        r"\bMemorabilia\b",
+        r"\bFramed Mini\b",
+        r"\bParallel\b",
+        r"\bCard\b",
+    ]
+    for pattern in descriptor_patterns:
+        text = re.sub(pattern, " ", text, flags=re.I)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 
 def price_label(product: dict[str, Any]) -> str:
@@ -187,6 +233,9 @@ def query_variants(product: dict[str, Any]) -> list[str]:
     set_name = set_guess(product)
     card_number = extract_card_number(title)
     cleaned = clean_listing_title(title)
+    title_core = search_title_core(title)
+    title_no_card = normalize_spaces(re.sub(r"\bcard\b", " ", title_core, flags=re.I))
+    simplified_title = descriptor_stripped_title(title)
     values: list[str] = []
 
     def add(parts: list[str]) -> None:
@@ -194,17 +243,25 @@ def query_variants(product: dict[str, Any]) -> list[str]:
         if query and query not in values:
             values.append(query)
 
+    add([title_core])
+    add([title_no_card])
+    add([simplified_title])
     add([year, set_name, card_number, player])
     add([year, set_name, player, card_number])
+    add([year, set_name, card_number])
+    add([set_name, card_number, player])
+    add([year, simplified_title])
     add([year, player, card_number])
     add([player, year, set_name, card_number])
     add([set_name, player, card_number])
-    add([cleaned])
     add([year, set_name, player])
-    add([year, player])
     add([set_name, player])
+    add([year, set_name])
+    add([player, card_number])
+    add([year, player])
+    add([player])
     add([cleaned])
-    add([year, set_name, card_number])
+    add([cleaned])
     return [q for q in values if len(q) >= 4][:10]
 
 
@@ -638,7 +695,7 @@ def set_mismatch_note(product: dict[str, Any], matched_title: str, matched_url: 
         return ""
     source_tokens = {
         token
-        for token in guessed.split()
+        for token in expanded_token_set(guessed)
         if token
         and token
         not in {
@@ -661,6 +718,74 @@ def set_mismatch_note(product: dict[str, Any], matched_title: str, matched_url: 
             "chrome",
             "cards",
             "card",
+            "mini",
+            "framed",
+            "series",
+            "edition",
+            "collection",
+            "select",
+            "choice",
+            "mark",
+            "marks",
+            "signature",
+            "signatures",
+            "autograph",
+            "autographs",
+            "auto",
+            "autos",
+            "relic",
+            "relics",
+            "memorabilia",
+            "jersey",
+            "jerseys",
+            "swatch",
+            "swatches",
+            "patch",
+            "patches",
+            "thread",
+            "threads",
+            "authentic",
+            "authentics",
+            "future",
+            "phenom",
+            "phenoms",
+            "rookie",
+            "rookies",
+            "prospect",
+            "prospects",
+            "parallel",
+            "refactor",
+            "refractor",
+            "refractors",
+            "gold",
+            "silver",
+            "blue",
+            "red",
+            "green",
+            "black",
+            "purple",
+            "orange",
+            "pink",
+            "sepia",
+            "holo",
+            "holofoil",
+            "bronze",
+            "platinum",
+            "prime",
+            "booklet",
+            "modern",
+            "paint",
+            "fresh",
+            "signing",
+            "signings",
+            "inscription",
+            "inscriptions",
+            "letter",
+            "letters",
+            "campus",
+            "id",
+            "time",
+            "shine",
             "baseball",
             "basketball",
             "football",
@@ -668,7 +793,7 @@ def set_mismatch_note(product: dict[str, Any], matched_title: str, matched_url: 
     }
     if len(source_tokens) < 2:
         return ""
-    target_tokens = set(normalize_key(f"{matched_title} {matched_url}").split())
+    target_tokens = expanded_token_set(f"{matched_title} {matched_url}")
     overlap = len(source_tokens & target_tokens) / len(source_tokens)
     if overlap < 0.34:
         return "Beckett result appears to come from a different set than the site title."
@@ -676,19 +801,59 @@ def set_mismatch_note(product: dict[str, Any], matched_title: str, matched_url: 
 
 
 def type_mismatch_notes(product: dict[str, Any], matched_title: str, matched_url: str) -> list[str]:
-    source = normalize_key(product.get("name", ""))
-    target = normalize_key(f"{matched_title} {matched_url}")
+    source = product.get("name", "")
+    target = f"{matched_title} {matched_url}"
     notes: list[str] = []
+    target_key = normalize_key(target)
     checks = [
-        ({"bat"}, {"bat"}, "Site title says bat, but the Beckett result does not clearly indicate a bat card."),
-        ({"patch"}, {"patch"}, "Site title says patch, but the Beckett result does not clearly indicate a patch card."),
-        ({"jersey"}, {"jersey", "uniform", "uni"}, "Site title says jersey, but the Beckett result does not clearly indicate a jersey/uniform card."),
+        ({"bat", "bats"}, {"bat", "bats"}, "Site title says bat, but the Beckett result does not clearly indicate a bat card."),
         (
-            {"autograph", "signature", "signed"},
+            {"patch", "patches"},
+            {"patch", "patches", "prime", "swatch", "swatches", "letter", "letters", "jsy", "mem"},
+            "Site title says patch, but the Beckett result does not clearly indicate a patch card.",
+        ),
+        (
+            {"jersey", "jerseys"},
+            {
+                "jersey",
+                "jerseys",
+                "jsy",
+                "uniform",
+                "uniforms",
+                "uni",
+                "swatch",
+                "swatches",
+                "thread",
+                "threads",
+                "fabric",
+                "fabrics",
+                "material",
+                "materials",
+                "mem",
+                "relic",
+                "relics",
+                "memorabilia",
+                "letter",
+                "letters",
+                "caps",
+                "authentics",
+                "helmet",
+                "helmets",
+                "glove",
+                "gloves",
+                "ball",
+                "balls",
+                "manufactured",
+            },
+            "Site title says jersey, but the Beckett result does not clearly indicate a jersey/uniform card.",
+        ),
+        (
+            {"autograph", "autographs", "signature", "signatures", "signed", "auto", "autos"},
             {
                 "autograph",
                 "autographs",
                 "auto",
+                "autos",
                 "au",
                 "signature",
                 "signatures",
@@ -699,23 +864,112 @@ def type_mismatch_notes(product: dict[str, Any], matched_title: str, matched_url
                 "playergraphs",
                 "graphs",
                 "chirography",
+                "inscription",
+                "inscriptions",
+                "signing",
+                "signings",
+                "lettermen",
             },
             "Site title says autograph/signature, but the Beckett result does not clearly indicate an autograph card.",
         ),
         (
-            {"checklist"},
-            {"checklist"},
+            {"checklist", "checklists"},
+            {"checklist", "checklists"},
             "Site title says checklist, but the Beckett result does not clearly indicate a checklist card.",
         ),
         (
-            {"relic", "memorabilia"},
-            {"relic", "memorabilia", "bat", "jersey", "uniform", "uni", "patch"},
+            {"relic", "relics", "memorabilia"},
+            {
+                "relic",
+                "relics",
+                "memorabilia",
+                "bat",
+                "bats",
+                "jersey",
+                "jerseys",
+                "uniform",
+                "uniforms",
+                "uni",
+                "patch",
+                "patches",
+                "swatch",
+                "swatches",
+                "thread",
+                "threads",
+                "fabric",
+                "fabrics",
+                "material",
+                "materials",
+                "mem",
+                "letter",
+                "letters",
+                "jsy",
+                "caps",
+                "authentics",
+                "helmet",
+                "helmets",
+                "glove",
+                "gloves",
+                "ball",
+                "balls",
+                "manufactured",
+            },
             "Site title says relic/memorabilia, but the Beckett result does not clearly indicate memorabilia.",
         ),
     ]
-    source_tokens = set(source.split())
-    target_tokens = set(target.split())
+    source_tokens = expanded_token_set(source)
+    target_tokens = expanded_token_set(target)
+    phrase_overrides = [
+        (
+            {"autograph", "autographs", "signature", "signatures", "signed", "auto", "autos"},
+            [
+                "autograph",
+                "autographs",
+                "by the letter",
+                "signatures",
+                "signings",
+                "inscriptions",
+                "modern marks",
+                "marks of brilliance",
+                "fresh paint",
+                "scripts",
+                "rookie signatures",
+                "lettermen autographs",
+                "choice au",
+                " pc au",
+                "time to shine",
+            ],
+        ),
+        (
+            {"jersey", "jerseys", "relic", "relics", "memorabilia"},
+            [
+                "jsy",
+                "jersey",
+                "relic",
+                "relics",
+                "swatch",
+                "swatches",
+                "patch",
+                "patches",
+                "memorabilia",
+                "caps",
+                "authentics",
+                "helmet",
+                "glove",
+                "ball",
+                "material",
+                "materials",
+                "manufactured patch",
+            ],
+        ),
+    ]
     for expected, accepted, note in checks:
+        if not (source_tokens & expected):
+            continue
+        if target_tokens & accepted:
+            continue
+        if any(source_tokens & override_expected and any(phrase in target_key for phrase in phrases) for override_expected, phrases in phrase_overrides):
+            continue
         if source_tokens & expected and not (target_tokens & accepted):
             notes.append(note)
     return notes
