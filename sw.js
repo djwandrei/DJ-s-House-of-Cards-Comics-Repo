@@ -1,11 +1,16 @@
-const CACHE_VERSION = 'dj-house-v2026-04-21-4';
+const CACHE_VERSION = 'dj-house-v2026-04-23-1';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
+const CACHE_ENTRY_LIMITS = {
+  [RUNTIME_CACHE]: 120,
+  [IMAGE_CACHE]: 350
+};
 
 const APP_SHELL_ASSETS = [
   '/',
   '/index.html',
+  '/shop.html',
   '/sports-cards.html',
   '/baseball-cards.html',
   '/basketball-cards.html',
@@ -15,16 +20,20 @@ const APP_SHELL_ASSETS = [
   '/wishlist.html',
   '/about.html',
   '/contact.html',
+  '/admin.html',
   '/offline.html',
-  '/styles.css?v=20260421d',
-  '/core.js?v=20260421d',
-  '/nav.js?v=20260421d',
-  '/catalog.js?v=20260421d',
-  '/contact.js?v=20260421d',
-  '/backend-config.js?v=20260421d',
-  '/supabase-client.js?v=20260421d',
-  '/site.webmanifest?v=20260421d',
-  '/offline.js?v=20260421d',
+  '/styles.css?v=20260423c',
+  '/styles-mobile-overrides.css?v=20260423c',
+  '/core.js?v=20260423c',
+  '/nav.js?v=20260423c',
+  '/catalog.js?v=20260423c',
+  '/contact.js?v=20260423c',
+  '/backend-config.js?v=20260423c',
+  '/supabase-client.js?v=20260423c',
+  '/admin.js?v=20260423c',
+  '/backend-admin.js?v=20260423c',
+  '/site.webmanifest?v=20260423c',
+  '/offline.js?v=20260423c',
   '/vendor/supabase.min.js',
   '/assets/fonts/bebas-neue-400.ttf',
   '/assets/fonts/inter-400.ttf',
@@ -79,11 +88,23 @@ self.addEventListener('message', (event) => {
   }
 });
 
+async function trimCache(cacheName) {
+  const limit = CACHE_ENTRY_LIMITS[cacheName];
+  if (!limit) return;
+
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length <= limit) return;
+
+  await Promise.all(keys.slice(0, keys.length - limit).map((key) => cache.delete(key)));
+}
+
 async function putInCache(cacheName, request, response) {
   if (!response) return response;
   if (!(response.ok || response.type === 'opaque')) return response;
   const cache = await caches.open(cacheName);
   await cache.put(request, response.clone());
+  await trimCache(cacheName);
   return response;
 }
 
@@ -141,6 +162,11 @@ self.addEventListener('fetch', (event) => {
     || url.pathname.includes('products-data-')
   );
   const isRemoteCatalog = /supabase\.co$/i.test(url.hostname);
+  const hasAuthorizationHeader = request.headers.has('authorization');
+
+  if (isRemoteCatalog && hasAuthorizationHeader) {
+    return;
+  }
 
   if (isPageRequest) {
     event.respondWith(networkFirst(request, RUNTIME_CACHE, '/offline.html', event));
