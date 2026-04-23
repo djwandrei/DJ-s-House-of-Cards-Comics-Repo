@@ -114,6 +114,17 @@ def normalize_price_label(value: Any) -> str:
     return f"{format_money(low)}-{format_money(high)}"
 
 
+def normalize_realtime_label(value: Any) -> str:
+    text = str(value or "").strip()
+    if re.search(r"\bN/A\b", text, flags=re.I):
+        return "N/A"
+    return normalize_price_label(text)
+
+
+def has_realtime_price(value: Any) -> bool:
+    return bool(normalize_price_label(value))
+
+
 def midpoint_from_label(label: str) -> float | None:
     values = extract_money_values(label)
     if not values:
@@ -173,10 +184,14 @@ def parse_realtime_pricing(html: str) -> str:
         match = REAL_TIME_RE.search(text)
         if match:
             return normalize_price_label(f"{match.group(1)}-{match.group(2)}")
+        if re.search(r"Beckett\s+Real\s+Time\s+Pricing\s+N/A\b", text, flags=re.I):
+            return "N/A"
     text = soup.get_text(" ", strip=True)
     match = REAL_TIME_RE.search(text)
     if match:
         return normalize_price_label(f"{match.group(1)}-{match.group(2)}")
+    if re.search(r"Beckett\s+Real\s+Time\s+Pricing\s+N/A\b", text, flags=re.I):
+        return "N/A"
     return ""
 
 
@@ -184,7 +199,7 @@ def fetch_realtime_pricing(url: str, session: Any, cache: dict[str, Any], delay:
     card_cache = cache.setdefault("cards", {}).setdefault(url, {})
     cached = str(card_cache.get("real_time_pricing") or "").strip()
     if cached:
-        return normalize_price_label(cached)
+        return normalize_realtime_label(cached)
 
     time.sleep(max(0, delay))
     response = session.get(url, timeout=45)
@@ -194,6 +209,10 @@ def fetch_realtime_pricing(url: str, session: Any, cache: dict[str, Any], delay:
         card_cache["real_time_pricing"] = label
         card_cache["real_time_pricing_fetched_at"] = datetime.now().isoformat(timespec="seconds")
     return label
+
+
+def cached_realtime_pricing(url: str, cache: dict[str, Any]) -> str:
+    return normalize_realtime_label(cache.get("cards", {}).get(url, {}).get("real_time_pricing"))
 
 
 def grade_price_from_cache(url: str, grade_number: int | None, cache: dict[str, Any]) -> str:
@@ -229,11 +248,7 @@ def best_price_for_row(row: dict[str, Any], cache: dict[str, Any]) -> tuple[str,
         return label, "graded"
 
     label = normalize_price_label(row.get("Beckett Real Time Pricing"))
-    if not label:
-        label = normalize_price_label(row.get("Beckett Raw Range"))
-    if not label:
-        label = normalize_price_label(row.get("Beckett Price Range"))
-    return label, "real_time_or_raw"
+    return label, "real_time"
 
 
 def update_product(product: dict[str, Any], row: dict[str, Any], cache: dict[str, Any]) -> dict[str, Any]:
@@ -295,11 +310,20 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--min-id", type=int, default=1)
     parser.add_argument("--max-id", type=int, default=180)
+    parser.add_argument("--fetch-min-id", type=int, default=None)
+    parser.add_argument("--fetch-max-id", type=int, default=None)
+    parser.add_argument("--update-min-id", type=int, default=None)
+    parser.add_argument("--update-max-id", type=int, default=None)
     parser.add_argument("--fetch-realtime", action="store_true")
+    parser.add_argument("--clear-realtime", action="store_true")
     parser.add_argument("--delay", type=float, default=0.15)
     parser.add_argument("--beckett-email", default="")
     parser.add_argument("--beckett-password", default="")
     args = parser.parse_args()
+    fetch_min_id = args.fetch_min_id if args.fetch_min_id is not None else args.min_id
+    fetch_max_id = args.fetch_max_id if args.fetch_max_id is not None else args.max_id
+    update_min_id = args.update_min_id if args.update_min_id is not None else args.min_id
+    update_max_id = args.update_max_id if args.update_max_id is not None else args.max_id
 
     cache = load_cache()
     backup_path = backup_workbook()
@@ -342,10 +366,16 @@ def main() -> int:
                 session is not None
                 and sheet_name == "Legacy Beckett Pricing"
                 and product_id is not None
-                and args.min_id <= product_id <= args.max_id
+                and fetch_min_id <= product_id <= fetch_max_id
             )
+            if args.clear_realtime:
+                ws.cell(row_index, realtime_col).value = None
+                row["Beckett Real Time Pricing"] = None
             existing_rt = str(row.get("Beckett Real Time Pricing") or "").strip()
-            realtime_label = normalize_price_label(existing_rt)
+            realtime_label = normalize_realtime_label(existing_rt)
+
+            if not realtime_label and url:
+                realtime_label = cached_realtime_pricing(url, cache)
 
             if not realtime_label and url and should_fetch_realtime:
                 if url in realtime_by_url:
@@ -359,11 +389,6 @@ def main() -> int:
                         realtime_label = ""
                     realtime_by_url[url] = realtime_label
 
-            if not realtime_label and raw_col:
-                realtime_label = normalize_price_label(row.get("Beckett Raw Range"))
-            if not realtime_label and price_col:
-                realtime_label = normalize_price_label(row.get("Beckett Price Range"))
-
             if realtime_label:
                 ws.cell(row_index, realtime_col).value = realtime_label
                 row["Beckett Real Time Pricing"] = realtime_label
@@ -371,7 +396,7 @@ def main() -> int:
             if (
                 product_id is not None
                 and sheet_name == "Legacy Beckett Pricing"
-                and args.min_id <= product_id <= args.max_id
+                and update_min_id <= product_id <= update_max_id
             ):
                 workbook_rows_by_id[product_id] = row
 
@@ -381,7 +406,7 @@ def main() -> int:
 
     changed_products: list[dict[str, Any]] = []
     skipped_ids: list[int] = []
-    for product_id in range(args.min_id, args.max_id + 1):
+    for product_id in range(update_min_id, update_max_id + 1):
         product = product_by_id.get(product_id)
         row = workbook_rows_by_id.get(product_id)
         if not product or not row:
@@ -419,8 +444,10 @@ def main() -> int:
         "generatedAt": datetime.now().isoformat(timespec="seconds"),
         "workbook": str(WORKBOOK_PATH),
         "backup": str(backup_path),
-        "minId": args.min_id,
-        "maxId": args.max_id,
+        "fetchMinId": fetch_min_id,
+        "fetchMaxId": fetch_max_id,
+        "updateMinId": update_min_id,
+        "updateMaxId": update_max_id,
         "changedProductCount": len(changed_products),
         "changedProducts": changed_products,
         "skippedIds": skipped_ids,
