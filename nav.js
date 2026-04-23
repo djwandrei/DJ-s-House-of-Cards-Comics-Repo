@@ -542,10 +542,18 @@
     });
   }
 
-  // Run navigation setup after the shared header exists in the DOM.
-  document.addEventListener('DOMContentLoaded', () => {
+  // Run navigation setup as soon as the shared header exists. The fallback for
+  // already-interactive documents makes the menu resilient if this deferred
+  // script is restored from cache after DOMContentLoaded has already fired.
+  function bootNavigation() {
     applyActiveNavState();
     initPrimaryNav();
     initSubmenuToggles();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootNavigation, { once: true });
+  } else {
+    bootNavigation();
+  }
 })();

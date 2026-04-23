@@ -9,6 +9,66 @@
   display:none !important;
 }
 
+@media (min-width:901px) and (max-width:1080px) {
+  /* Narrow desktop windows keep the filter rail open, so the results controls
+     need to stack before they can overflow beside the sidebar. */
+  .catalog-results-column {
+    box-sizing:border-box;
+    min-width:0;
+    max-width:100vw;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .catalog-results-column .products-grid,
+  .catalog-results-column .catalog-support-callout,
+  .catalog-results-column .results-toolbar {
+    box-sizing:border-box;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar {
+    display:grid;
+    grid-template-columns:1fr;
+    width:100%;
+    min-width:0;
+    gap:.78rem;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-sort,
+  .catalog-results-column .results-toolbar .results-meta,
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    width:100%;
+    min-width:0;
+    margin-left:0;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-sort {
+    justify-content:space-between;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-sort select {
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:.55rem;
+  }
+
+  .catalog-results-column .results-toolbar .mini-link-button {
+    width:100%;
+    min-width:0;
+    padding-inline:.7rem;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top {
+    display:none !important;
+  }
+}
+
 @media (max-width:900px) {
   /* Keep compact catalog controls in the normal flow so they never float over
      product grids or footer sections on smaller screens. */
@@ -119,14 +179,29 @@
 }
 
 @media (max-width:700px) {
+  :root {
+    --header-h:82px;
+  }
+
   html,
   body {
     max-width:100%;
     overflow-x:hidden;
   }
 
+  html {
+    scroll-padding-top:calc(var(--header-h) + 10px);
+  }
+
+  body {
+    padding-top:var(--header-h);
+  }
+
   .site-header {
     --header-h:82px;
+    position:fixed !important;
+    inset:0 0 auto 0;
+    width:100%;
   }
 
   .site-header,
@@ -485,6 +560,10 @@
 }
 
 @media (max-width:480px) {
+  :root {
+    --header-h:78px;
+  }
+
   .site-header {
     --header-h:78px;
   }
