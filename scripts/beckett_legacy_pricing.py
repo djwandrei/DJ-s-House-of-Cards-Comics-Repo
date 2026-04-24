@@ -36,6 +36,8 @@ SPORT_PATHS = {
     "Football": "/football/",
 }
 
+OPTIONAL_SPORT_PATHS = {"/multisport/"}
+
 MONEY_RE = re.compile(r"\$(?:\d[\d,]*(?:\.\d{1,2})?|\.\d{1,2})")
 YEAR_RE = re.compile(r"\b((?:18|19|20)\d{2}(?:[-/](?:\d{2}|\d{4}))?)\b")
 CARD_NO_RE = re.compile(r"(?:#|no\.?\s*)([A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*)", re.I)
@@ -77,6 +79,33 @@ NOISE_PATTERNS = [
     r"\bUngraded\b",
     r"\bGuide range listed\b",
     r"\bComplete Boxed Set\b",
+]
+
+IMAGE_HINT_PATTERNS: list[tuple[str, list[str]]] = [
+    ("blue", [r"\bblue\b"]),
+    ("silver", [r"\bsilver\b"]),
+    ("gold", [r"\bgold\b"]),
+    ("black", [r"\bblack\b"]),
+    ("green", [r"\bgreen\b"]),
+    ("purple", [r"\bpurple\b"]),
+    ("red", [r"\bred\b"]),
+    ("orange", [r"\borange\b"]),
+    ("yellow", [r"\byellow\b"]),
+    ("holo", [r"\bholo\b"]),
+    ("prismatic", [r"\bprismatic\b"]),
+    ("choice", [r"\bchoice\b"]),
+    ("refractor", [r"\brefractor\b"]),
+    ("xfractor", [r"\bx[\s-]?fractor\b"]),
+    ("mini", [r"\bmini\b"]),
+    ("horizontal", [r"\bhorizontal\b"]),
+    ("booklet", [r"\bbooklet\b"]),
+    ("prime", [r"\bprime\b"]),
+    ("caps", [r"\bcaps?\b"]),
+    ("silhouettes", [r"\bsilhouettes?\b"]),
+    ("swatches", [r"\bswatches?\b"]),
+    ("manufactured", [r"\bmanufactured\b"]),
+    ("campus id", [r"\bcampus\s+id\b"]),
+    ("close up", [r"\bclose\s+up\b"]),
 ]
 
 
@@ -189,11 +218,46 @@ def extract_card_number(title: str) -> str:
     return ""
 
 
+def normalize_card_code(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]+", "", str(value or "")).upper()
+
+
 def player_guess(product: dict[str, Any]) -> str:
     player = normalize_spaces(product.get("playerAthlete"))
     if player:
         return normalize_spaces(player.split("|")[0].split(";")[0])
     return ""
+
+
+def extract_serial_denominator(product: dict[str, Any]) -> str:
+    texts = [
+        str(product.get("condition") or ""),
+        str(product.get("name") or ""),
+        str(product.get("description") or ""),
+    ]
+    for text in texts:
+        for match in re.finditer(r"(\d+)\s*/\s*(\d+)", text):
+            denominator = int(match.group(2))
+            if 2 <= denominator <= 5000:
+                return str(denominator)
+    return ""
+
+
+def image_hint_terms(product: dict[str, Any]) -> list[str]:
+    hints: list[str] = []
+    image_values = [product.get("image")] + list(product.get("imageGallery") or [])
+    for raw in image_values[:6]:
+        if not raw:
+            continue
+        stem = Path(str(raw)).stem
+        text = re.sub(r"([a-z])([A-Z])", r"\1 \2", stem)
+        text = normalize_spaces(text.replace("_", " ").replace("-", " "))
+        for hint, patterns in IMAGE_HINT_PATTERNS:
+            if hint in hints:
+                continue
+            if any(re.search(pattern, text, flags=re.I) for pattern in patterns):
+                hints.append(hint)
+    return hints
 
 
 def set_guess(product: dict[str, Any]) -> str:
@@ -232,6 +296,9 @@ def query_variants(product: dict[str, Any]) -> list[str]:
     player = player_guess(product)
     set_name = set_guess(product)
     card_number = extract_card_number(title)
+    card_code = normalize_card_code(card_number)
+    serial_denom = extract_serial_denominator(product)
+    image_hints = image_hint_terms(product)
     cleaned = clean_listing_title(title)
     title_core = search_title_core(title)
     title_no_card = normalize_spaces(re.sub(r"\bcard\b", " ", title_core, flags=re.I))
@@ -261,8 +328,29 @@ def query_variants(product: dict[str, Any]) -> list[str]:
     add([year, player])
     add([player])
     add([cleaned])
-    add([cleaned])
-    return [q for q in values if len(q) >= 4][:10]
+    if card_code and card_code != card_number:
+        add([year, set_name, card_code, player])
+        add([year, set_name, player, card_code])
+        add([set_name, card_code, player])
+        add([player, card_code])
+    if serial_denom:
+        add([year, set_name, player, card_number, serial_denom])
+        add([year, set_name, player, serial_denom])
+        add([set_name, player, card_number, serial_denom])
+        add([player, card_number, serial_denom])
+        if card_code and card_code != card_number:
+            add([year, set_name, player, card_code, serial_denom])
+            add([set_name, player, card_code, serial_denom])
+    for hint in image_hints[:3]:
+        add([year, set_name, hint, card_number, player])
+        add([year, set_name, hint, player])
+        add([set_name, hint, player, card_number])
+        if card_code and card_code != card_number:
+            add([year, set_name, hint, card_code, player])
+            add([set_name, hint, player, card_code])
+        if serial_denom:
+            add([year, set_name, hint, player, serial_denom])
+    return [q for q in values if len(q) >= 4][:18]
 
 
 def load_cache(cache_path: Path) -> dict[str, Any]:
@@ -330,7 +418,7 @@ def search_beckett(session: requests.Session, query: str, cache: dict[str, Any],
     seen: set[str] = set()
     for anchor in soup.find_all("a", href=True):
         href = urljoin(BECKETT_BASE, anchor.get("href", ""))
-        if not re.search(r"beckett\.com/(baseball|basketball|football)/", href, flags=re.I):
+        if not re.search(r"beckett\.com/(baseball|basketball|football|multisport)/", href, flags=re.I):
             continue
         if not re.search(r"-\d+(?:\?.*)?$", href):
             continue
@@ -351,12 +439,14 @@ def score_candidate(product: dict[str, Any], query: str, candidate: dict[str, st
     product_title = normalize_key(clean_listing_title(product.get("name", "")))
     candidate_text = normalize_key(candidate.get("title", "") + " " + candidate.get("url", ""))
     candidate_raw = normalize_spaces(candidate.get("title", "") + " " + candidate.get("url", ""))
+    candidate_compact = normalize_card_code(candidate_raw)
     if not product_title or not candidate_text:
         return 0.0
 
     category = product.get("category")
     expected_path = SPORT_PATHS.get(category, "").lower()
-    if expected_path and expected_path not in candidate.get("url", "").lower():
+    candidate_url = candidate.get("url", "").lower()
+    if expected_path and expected_path not in candidate_url and not any(path in candidate_url for path in OPTIONAL_SPORT_PATHS):
         return 0.0
 
     p_tokens = set(product_title.split())
@@ -377,10 +467,13 @@ def score_candidate(product: dict[str, Any], query: str, candidate: dict[str, st
 
     card_number = extract_card_number(product.get("name", ""))
     if card_number:
+        card_code = normalize_card_code(card_number)
         number_key = re.escape(card_number.lower())
         number_matches = re.search(rf"(?:^|[^0-9a-z]){number_key}[a-z]?(?:[^0-9a-z]|$)", candidate_text)
         if number_matches:
             score += 0.22
+        elif card_code and len(card_code) >= 3 and card_code in candidate_compact:
+            score += 0.24
         elif re.search(rf"/{number_key.lower()}[a-z]?-", candidate.get("url", "").lower()):
             score += 0.22
         else:
@@ -403,6 +496,18 @@ def score_candidate(product: dict[str, Any], query: str, candidate: dict[str, st
             score += 0.12
         elif set_tokens & c_tokens:
             score += 0.05
+
+    serial_denom = extract_serial_denominator(product)
+    if serial_denom:
+        if re.search(rf"/{re.escape(serial_denom)}(?:[^0-9]|$)", candidate_raw):
+            score += 0.09
+        elif re.search(r"/\d+(?:[^0-9]|$)", candidate_raw):
+            score -= 0.04
+
+    for hint in image_hint_terms(product):
+        hint_key = normalize_key(hint)
+        if hint_key and hint_key in candidate_text:
+            score += 0.04
 
     if normalize_key(query) == normalize_key(candidate.get("title")):
         score += 0.05
