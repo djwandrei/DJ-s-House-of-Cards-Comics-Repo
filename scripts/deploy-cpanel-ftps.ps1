@@ -177,6 +177,7 @@ function Test-DeployablePath {
     "sitemap.xml",
     "sports-cards.html",
     "styles.css",
+    "styles-mobile-overrides.css",
     "supabase-client.js",
     "sw.js",
     "wishlist.html"

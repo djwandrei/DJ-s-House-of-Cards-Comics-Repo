@@ -176,6 +176,22 @@
     padding-top:4.25rem !important;
     padding-bottom:1.35rem !important;
   }
+
+  /* Keep the product-sheet close control below the sticky site header across
+     all mobile breakpoints, not just the narrowest phones. */
+  .modal-close {
+    position:fixed;
+    top:calc(var(--header-h, 4.6rem) + .55rem);
+    right:.55rem;
+    width:2.85rem;
+    height:2.85rem;
+    border-radius:14px;
+    z-index:10020;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(9,16,34,.94);
+    color:#fff;
+    box-shadow:0 18px 34px rgba(0,0,0,.28);
+  }
 }
 
 @media (max-width:700px) {
@@ -427,6 +443,8 @@
     align-items:flex-start;
     padding:calc(env(safe-area-inset-top,0) + .7rem) .45rem .85rem;
     overflow-y:auto;
+    overscroll-behavior:contain;
+    scroll-padding-top:.7rem;
   }
 
   .modal-content {
@@ -442,8 +460,8 @@
 
   .modal-close {
     position:fixed;
-    top:calc(env(safe-area-inset-top,0) + .75rem);
-    right:.75rem;
+    top:calc(var(--header-h, 4.6rem) + .55rem);
+    right:.55rem;
     width:2.85rem;
     height:2.85rem;
     border-radius:14px;

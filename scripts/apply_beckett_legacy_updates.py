@@ -248,7 +248,12 @@ def best_price_for_row(row: dict[str, Any], cache: dict[str, Any]) -> tuple[str,
             label = normalize_price_label(row.get("Beckett Graded Range"))
         return label, "graded"
 
-    label = normalize_price_label(row.get("Beckett Real Time Pricing"))
+    # For ungraded legacy rows, the workbook's Beckett Real Time Pricing column
+    # is the source of truth. Preserve explicit "N/A" values instead of silently
+    # falling back to older guide/original pricing on the storefront.
+    label = normalize_realtime_label(row.get("Beckett Real Time Pricing"))
+    if label == "N/A":
+        return label, "real_time_na"
     return label, "real_time"
 
 
@@ -278,9 +283,12 @@ def update_product(product: dict[str, Any], row: dict[str, Any], cache: dict[str
 
     if has_confirmed_match(row):
         updated["name"] = build_product_name(row, updated.get("name", ""))
-        price_label, _price_basis = best_price_for_row(row, cache)
+        price_label, price_basis = best_price_for_row(row, cache)
         price_value = midpoint_from_label(price_label)
-        if price_label and price_value is not None:
+        if price_basis == "real_time_na":
+            updated["priceLabel"] = "N/A"
+            updated["price"] = None
+        elif price_label and price_value is not None:
             updated["priceLabel"] = price_label
             updated["price"] = price_value
 

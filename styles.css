@@ -6653,11 +6653,13 @@ body.dark-mode .filter-panel-dismiss {
   }
 
   .filter-panel--drawer .filter-panel-dismiss {
-    display:inline-grid;
-    position:sticky;
-    top:0;
-    margin:0 0 .75rem auto;
-    z-index:3;
+    display:grid;
+    position:absolute;
+    top:1rem;
+    right:1rem;
+    left:auto;
+    margin:0;
+    z-index:4;
   }
 
   .filter-panel--drawer .filter-panel-header {
