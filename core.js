@@ -37,22 +37,6 @@ window.DJ = window.DJ || {};
   function versionedProductAsset(path) {
     return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
   }
-  const PAGE_LABELS = {
-    home: 'Home',
-    shop: 'Shop',
-    'shop-hub': 'Shop',
-    'sports-hub': 'Sports Cards',
-    'sports-cards': 'Sports Cards',
-    'baseball-cards': 'Baseball Cards',
-    'basketball-cards': 'Basketball Cards',
-    'football-cards': 'Football Cards',
-    comics: 'Comics',
-    collectibles: 'Collectibles',
-    wishlist: 'Wishlist',
-    about: 'About',
-    contact: 'Contact',
-    admin: 'Admin Dashboard'
-  };
 
   // Remember the last focused element so modal close handlers can restore focus
   // to the trigger that opened them. This keeps keyboard navigation predictable.
@@ -334,11 +318,6 @@ window.DJ = window.DJ || {};
   /**
    * Apply the saved light/dark mode preference and update the visible toggle label.
    */
-  function getCurrentPageLabel() {
-    const pageKey = document.body?.dataset?.page || '';
-    return PAGE_LABELS[pageKey] || 'DJ\'s House of Cards';
-  }
-
   function enhanceHeaderLayout() {
     const headerInner = document.querySelector('.header-inner');
     const navToggle = document.getElementById('navToggle');

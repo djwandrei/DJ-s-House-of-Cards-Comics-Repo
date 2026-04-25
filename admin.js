@@ -630,25 +630,6 @@ window.DJ = window.DJ || {};
     return existingListingsReadyPromise;
   }
 
-  function getProductOverride(productId) {
-    const overrides = DJ.getProductOverrides();
-    return overrides[String(productId)] || {};
-  }
-
-  function mergeProductWithOverride(product, override = {}) {
-    const merged = { ...product, ...override };
-
-    if (Object.prototype.hasOwnProperty.call(override, 'image')) {
-      merged.image = override.image;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'imageGallery')) {
-      merged.imageGallery = Array.isArray(override.imageGallery) ? override.imageGallery : [];
-    }
-
-    return merged;
-  }
-
   function getEffectiveBaseProducts() {
     return DJ.applyStoredCatalogMutations(existingState.baseProducts, { includeCustomProducts: false });
   }

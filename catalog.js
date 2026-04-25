@@ -450,13 +450,6 @@ window.DJ = window.DJ || {};
     return [...new Set(values)];
   }
 
-  function normalizeFacetValue(value) {
-    return String(value || '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '') || 'value';
-  }
-
   function cssEscapeValue(value) {
     if (window.CSS && typeof window.CSS.escape === 'function') {
       return window.CSS.escape(value);
@@ -574,17 +567,6 @@ window.DJ = window.DJ || {};
     }
   }
 
-  function extractSearchSuggestions(text = '') {
-    return [...new Set(
-      String(text || '')
-        .replace(/^examples?:\s*/i, '')
-        .replace(/\.$/, '')
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean)
-    )].slice(0, 5);
-  }
-
   function normalizeSearchString(value = '') {
     let normalized = String(value || '')
       .toLowerCase()
@@ -622,42 +604,6 @@ window.DJ = window.DJ || {};
     }
 
     return tokenizeSearchString(query).every((token) => searchableText.includes(token));
-  }
-
-  function getBrowseActionForPage(page = document.body.dataset.page || '') {
-    const links = {
-      'sports-hub': { href: 'sports-cards.html', label: 'Browse all sports cards' },
-      'sports-cards': { href: 'sports-cards.html', label: 'Browse all sports cards' },
-      'baseball-cards': { href: 'sports-cards.html', label: 'Browse all sports cards' },
-      'basketball-cards': { href: 'sports-cards.html', label: 'Browse all sports cards' },
-      'football-cards': { href: 'sports-cards.html', label: 'Browse all sports cards' },
-      comics: { href: 'comics.html', label: 'Browse comics' },
-      collectibles: { href: 'collectibles.html', label: 'Browse collectibles' },
-      wishlist: { href: 'sports-cards.html', label: 'Browse sports cards' }
-    };
-
-    return links[page] || { href: 'sports-cards.html', label: 'Browse sports cards' };
-  }
-
-  function getTopCountEntry(countMap = new Map(), minimumCount = 1) {
-    return [...countMap.entries()]
-      .filter(([value, count]) => value && count >= minimumCount)
-      .sort((left, right) => {
-        if (right[1] !== left[1]) return right[1] - left[1];
-        return TEXT_COLLATOR.compare(left[0], right[0]);
-      })[0] || null;
-  }
-
-  function getMeaningfulTeamEntry(products = []) {
-    return [...createFacetCountMap(products, '_teamFacet').entries()]
-      .filter(([value, count]) => {
-        const normalized = String(value || '').trim();
-        return normalized && !isGenericTeamFacetValue(normalized) && count >= 2;
-      })
-      .sort((left, right) => {
-        if (right[1] !== left[1]) return right[1] - left[1];
-        return TEXT_COLLATOR.compare(left[0], right[0]);
-      })[0] || null;
   }
 
   function buildFacetMarkup({ name, label, options, selectedValues = [], emptyText = 'No options available', collapsedCount = 5 }) {
@@ -1266,13 +1212,6 @@ Thank you.`
     if (filters.priceMin != null) addFilter('priceMin', 'Min price', DJ.currency(filters.priceMin), 'range');
     if (filters.priceMax != null) addFilter('priceMax', 'Max price', DJ.currency(filters.priceMax), 'range');
     if (filters.sort && filters.sort !== 'nameAsc') {
-      const sortNames = {
-        nameDesc: 'Name Z-A',
-        priceAsc: 'Price Low-High',
-        priceDesc: 'Price High-Low',
-        yearAsc: 'Year Old-New',
-        yearDesc: 'Year New-Old'
-      };
       addFilter('sort', 'Sort', getSortLabel(filters.sort), 'sort');
     }
 
