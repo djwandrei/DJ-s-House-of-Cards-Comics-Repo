@@ -913,11 +913,16 @@ window.DJ = window.DJ || {};
 
         return normalizedProducts;
       } catch (error) {
-        console.error(`Failed to load products from ${source}:`, error);
-
         const preloadedFallback = getPreloadedProductsForSource(source)
           || await loadPreloadedProductsForSource(source).catch(() => null);
         const fallbackProducts = preloadedFallback || await fetchStaticProducts(source).catch(() => []);
+
+        if (fallbackProducts.length) {
+          console.warn(`Using static fallback products for ${source} after the preferred catalog source failed.`, error);
+        } else {
+          console.error(`Failed to load products from ${source}:`, error);
+        }
+
         const mergedFallback = DJ.applyStoredCatalogMutations(fallbackProducts, { includeCustomProducts: true });
         const normalizedFallback = normalizeProducts(mergedFallback);
 
