@@ -1891,38 +1891,20 @@ Thank you.`
     syncState();
   }
 
-  function ensureFilterEnhancements() {
+  function removeRetiredCatalogEnhancements() {
     const filterPanel = document.querySelector('.filter-panel');
-    if (!filterPanel) return null;
-
-    filterPanel.querySelector('.filter-panel-quick-picks')?.remove();
-    filterPanel.querySelector('.filter-panel-insights')?.remove();
-    return { quickPicks: null, insights: null };
-  }
-
-  function updateFilterEnhancements(products, filteredProducts, filters, config = {}) {
-    const ui = ensureFilterEnhancements();
-    if (!ui) return;
-  }
-
-  function ensureCatalogHeroEnhancements() {
     const heroCard = document.querySelector('.page-hero-card');
-    if (!heroCard) return null;
 
-    heroCard.classList.add('catalog-hero-card--streamlined');
+    filterPanel?.querySelector('.filter-panel-quick-picks')?.remove();
+    filterPanel?.querySelector('.filter-panel-insights')?.remove();
 
-    let insightGrid = heroCard.querySelector('.catalog-hero-insight-grid');
-    insightGrid?.remove();
-    heroCard.querySelector('.catalog-hero-support')?.remove();
-    heroCard.querySelector('.catalog-hero-summary')?.remove();
-    heroCard.querySelector('.catalog-hero-actions')?.remove();
-
-    return { heroCard };
-  }
-
-  function updateCatalogHero(products, filteredProducts, filters, config = {}) {
-    const ui = ensureCatalogHeroEnhancements();
-    if (!ui) return;
+    if (heroCard) {
+      heroCard.classList.add('catalog-hero-card--streamlined');
+      heroCard.querySelector('.catalog-hero-insight-grid')?.remove();
+      heroCard.querySelector('.catalog-hero-support')?.remove();
+      heroCard.querySelector('.catalog-hero-summary')?.remove();
+      heroCard.querySelector('.catalog-hero-actions')?.remove();
+    }
   }
 
   function insertCatalogSupportCallout(config = {}) {
@@ -2052,8 +2034,6 @@ Thank you.`
       pageEnd: paginationState.endIndex
     });
     updateCatalogPaginationControls(paginationState);
-    updateFilterEnhancements(allowedProducts, filteredProducts, filters, config);
-    updateCatalogHero(allowedProducts, filteredProducts, filters, config);
     syncFiltersToUrl(filters);
 
     if (!filteredProducts.length) {
@@ -2339,7 +2319,7 @@ Thank you.`
     // never flashes the old top-stacked filter layout during slow backend loads.
     enhanceFilterCopy(config);
     ensureCatalogBrowseLayout();
-    ensureCatalogHeroEnhancements();
+    removeRetiredCatalogEnhancements();
     decorateSearchField(config);
     addToolbarActions();
     ensureCatalogPaginationControls();

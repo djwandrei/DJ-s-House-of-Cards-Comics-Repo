@@ -163,8 +163,10 @@ async def main() -> None:
             await client.send("Page.navigate", {"url": args.url})
             await load_event
 
-            for _ in range(50):
-                count = await client.evaluate("document.querySelectorAll('.product-card').length")
+            for _ in range(80):
+                count = await client.evaluate(
+                    "document.querySelectorAll('.product-card:not(.product-card--loading)[data-product-id]').length"
+                )
                 if count and count > 0:
                     break
                 await asyncio.sleep(0.2)
@@ -211,7 +213,7 @@ async def main() -> None:
                     width: rect.width,
                     height: rect.height
                   }) : null;
-                  const card = document.querySelector('.product-card');
+                  const card = document.querySelector('.product-card:not(.product-card--loading)[data-product-id]');
                   if (!card) return { error: 'missing product card' };
                   card.scrollIntoView({ block: 'center', inline: 'nearest' });
                   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
