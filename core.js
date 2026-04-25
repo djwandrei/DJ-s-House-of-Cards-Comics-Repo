@@ -13,7 +13,7 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
-  const PRODUCT_ASSET_VERSION = '20260425a';
+  const PRODUCT_ASSET_VERSION = '20260425b';
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
   const FOOTER_THEME_BREAKPOINT = 700;

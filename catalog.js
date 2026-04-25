@@ -188,6 +188,7 @@ window.DJ = window.DJ || {};
     const metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
     const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
+    const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
     const text = [
       item.name || '',
       item.description || '',
@@ -207,10 +208,27 @@ window.DJ = window.DJ || {};
       excelFields['CD:Grade - (ID: 27502)'] || ''
     ].join(' ').toLowerCase();
     const attributes = [];
-    if (/\brookie\b|\brc\b/.test(text)) attributes.push('Rookie');
-    if ((/\bauto(graph)?\b|\bsigned\b|\bsignature\b|psa\/dna certified authentic|\bsticker auto\b|\bon-card auto\b/.test(text) || autographedValue === 'yes')) attributes.push('Autograph');
-    if (/\bserial(?:ly)? numbered\b|\bnumbered\b|\b1\/1\b|#\/\d{1,4}\b|\/\d{1,4}\b/.test(text)) attributes.push('Serial Numbered');
-    if (/\bmemorabilia\b|\brelic\b|\bjersey\b|\bpatch\b|\bmaterial\b|\bgame[- ]worn\b|\bplayer[- ]worn\b/.test(text)) attributes.push('Memorabilia');
+    const includesFeature = (feature) => featuresText.split('|').map((value) => value.trim()).includes(feature);
+    const hasAutographLanguage = (
+      /\bauto(?:graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
+      || /\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b/.test(text)
+    );
+    const hasSerialNumberLanguage = (
+      includesFeature('serial numbered')
+      || /\bserial[- ](?:ly[- ])?numbered\b|\bnumbered\s+(?:to|\/)\s*\d+\b|\blimited\s+to\s+\d+\b|\b(?:sn|serial)\s*#?['’]?d?\s*(?:to)?\s*\d+\b/.test(text)
+      || /(?:^|[\s(#])(?:\d{1,4}|[a-z]{1,5})?\s*\/\s*\d{1,4}\b(?!\s*(?:cards?|sets?|pcs?|boxes?))/.test(text)
+      || /\B\/\s*\d{1,4}\b(?!\s*(?:cards?|sets?|pcs?|boxes?))/.test(text)
+      || /\bone\s+of\s+one\b|\b1\s*of\s*1\b|\b1\/1\b/.test(text)
+    );
+    const hasMemorabiliaLanguage = (
+      /\bmemorabilia\b|\brelics?\b|\bjerseys?\b|\bjsy\b|\bpatch(?:es)?\b|\bswatches?\b|\bfabric\b|\bmaterials?\b|\bgame[- ](?:used|worn)\b|\bplayer[- ]worn\b|\bclubhouse collection\b/.test(text)
+      || /\b(?:black gold|throwback|rookie team|team)\s+threads\b|\bhot numbers game used\b|\bauthentic fabric\b|\bfabric of the future\b/.test(text)
+    );
+
+    if (/\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b/.test(text)) attributes.push('Rookie');
+    if (hasAutographLanguage || autographedValue === 'yes') attributes.push('Autograph');
+    if (hasSerialNumberLanguage) attributes.push('Serial Numbered');
+    if (hasMemorabiliaLanguage) attributes.push('Memorabilia');
     return attributes;
   }
 
