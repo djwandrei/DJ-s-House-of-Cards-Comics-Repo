@@ -40,6 +40,12 @@
     contact: 'Contact',
     admin: 'Admin Dashboard'
   };
+  const COMPACT_NAV_BREAKPOINT = 900;
+  // One shared breakpoint keeps the menu drawer and submenu behavior in sync.
+  const COMPACT_NAV_QUERY = typeof window.matchMedia === 'function'
+    ? window.matchMedia(`(max-width: ${COMPACT_NAV_BREAKPOINT}px)`)
+    : null;
+  const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   function getCurrentPageLabel() {
     const pageKey = document.body.dataset.page || '';
@@ -56,6 +62,23 @@
     if (options.runImmediately !== false) {
       callback();
     }
+  }
+
+  function isCompactNavViewport() {
+    return COMPACT_NAV_QUERY ? COMPACT_NAV_QUERY.matches : window.innerWidth <= COMPACT_NAV_BREAKPOINT;
+  }
+
+  function bindMediaQueryChange(query, handler) {
+    if (!query) return false;
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', handler);
+      return true;
+    }
+    if (typeof query.addListener === 'function') {
+      query.addListener(handler);
+      return true;
+    }
+    return false;
   }
 
   // ---------------------------------------------------------------------------
@@ -128,26 +151,10 @@
     }
     document.body.dataset.primaryNavBound = 'true';
 
-    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const compactNavQuery = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 900px)')
-      : null;
     let lastFocusedBeforeOpen = null;
-    const isCompactNav = () => compactNavQuery ? compactNavQuery.matches : window.innerWidth <= 900;
+    const isCompactNav = isCompactNavViewport;
     const submenuItems = [...nav.querySelectorAll('.primary-nav__item--has-submenu')];
     const submenuToggleButtons = [...nav.querySelectorAll('.submenu-toggle')];
-    const bindMediaQueryChange = (query, handler) => {
-      if (!query) return false;
-      if (typeof query.addEventListener === 'function') {
-        query.addEventListener('change', handler);
-        return true;
-      }
-      if (typeof query.addListener === 'function') {
-        query.addListener(handler);
-        return true;
-      }
-      return false;
-    };
 
     if (!nav.querySelector('.site-nav__mobile-header')) {
       const mobileHeader = document.createElement('div');
@@ -238,7 +245,7 @@
       syncMenuAccessibility();
 
       if (isCompactNav()) {
-        const firstFocusable = nav.querySelector(focusableSelector);
+        const firstFocusable = nav.querySelector(FOCUSABLE_SELECTOR);
         if (firstFocusable instanceof HTMLElement) {
           window.setTimeout(() => {
             firstFocusable.focus();
@@ -281,7 +288,7 @@
       syncMenuAccessibility();
     };
 
-    if (!bindMediaQueryChange(compactNavQuery, handleViewportChange)) {
+    if (!bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange)) {
       addSharedResizeListener(handleViewportChange, { runImmediately: false });
     }
 
@@ -297,7 +304,7 @@
         return;
       }
 
-      const focusableElements = [...nav.querySelectorAll(focusableSelector)].filter((element) => (
+      const focusableElements = [...nav.querySelectorAll(FOCUSABLE_SELECTOR)].filter((element) => (
         element instanceof HTMLElement
         && !element.hasAttribute('hidden')
         && !element.closest('[hidden]')
@@ -361,7 +368,7 @@
     document.body.dataset.submenuNavBound = 'true';
 
     const submenuItems = nav.querySelectorAll('.primary-nav__item--has-submenu');
-    const isCompactNav = () => window.innerWidth <= 900;
+    const isCompactNav = isCompactNavViewport;
     const closeTimers = new WeakMap();
 
     const getSubmenuLinks = (item) => [...item.querySelectorAll('.primary-nav__submenu a')]
@@ -528,7 +535,7 @@
     });
 
     addSharedResizeListener(() => {
-      if (window.innerWidth > 900) {
+      if (!isCompactNav()) {
         closeAllSubmenus();
       }
     }, { runImmediately: false });

@@ -171,6 +171,43 @@ async def main() -> None:
                     break
                 await asyncio.sleep(0.2)
 
+            nav_state = await client.evaluate(
+                """(async () => {
+                  const toRect = (rect) => rect ? ({
+                    top: rect.top,
+                    right: rect.right,
+                    bottom: rect.bottom,
+                    left: rect.left,
+                    width: rect.width,
+                    height: rect.height
+                  }) : null;
+                  const toggle = document.getElementById('navToggle');
+                  const nav = document.getElementById('siteNav');
+                  if (!toggle || !nav) return { error: 'missing mobile nav controls' };
+                  toggle.click();
+                  await new Promise((resolve) => setTimeout(resolve, 180));
+                  const openRect = nav.getBoundingClientRect();
+                  const openState = {
+                    isOpen: nav.classList.contains('open'),
+                    isHidden: nav.hidden,
+                    ariaHidden: nav.getAttribute('aria-hidden'),
+                    toggleExpanded: toggle.getAttribute('aria-expanded'),
+                    rect: toRect(openRect)
+                  };
+                  toggle.click();
+                  await new Promise((resolve) => setTimeout(resolve, 180));
+                  return {
+                    openState,
+                    closedState: {
+                      isOpen: nav.classList.contains('open'),
+                      isHidden: nav.hidden,
+                      ariaHidden: nav.getAttribute('aria-hidden'),
+                      toggleExpanded: toggle.getAttribute('aria-expanded')
+                    }
+                  };
+                })()"""
+            )
+
             filter_state = await client.evaluate(
                 """(async () => {
                   const toRect = (rect) => rect ? ({
@@ -276,6 +313,7 @@ async def main() -> None:
                 json.dumps(
                     {
                         "filterState": filter_state,
+                        "navState": nav_state,
                         "modalState": modal_state,
                         "modalClosed": modal_closed,
                         "filterShot": filter_screenshot,

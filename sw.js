@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-04-25-3';
+const CACHE_VERSION = 'dj-house-v2026-04-25-4';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -8,7 +8,11 @@ const CACHE_ENTRY_LIMITS = {
   [RUNTIME_CACHE]: 120,
   [IMAGE_CACHE]: 350
 };
+const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);
+const SUPABASE_HOST_PATTERN = /supabase\.co$/i;
 
+// Keep the offline shell limited to files needed for the storefront to open,
+// then let runtime caching collect product data and thumbnails as shoppers browse.
 const APP_SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -27,7 +31,7 @@ const APP_SHELL_ASSETS = [
   '/styles.css?v=20260424a',
   '/styles-mobile-overrides.css?v=20260424a',
   '/core.js?v=20260425b',
-  '/nav.js?v=20260423d',
+  '/nav.js?v=20260425d',
   '/catalog.js?v=20260425c',
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
@@ -122,6 +126,8 @@ async function putInCache(cacheName, request, response) {
   return response;
 }
 
+// Static assets and images should appear instantly from cache, then refresh in
+// the background so returning shoppers see updates without a hard reload.
 async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = null) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
@@ -141,6 +147,8 @@ async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = nul
   return fallbackUrl ? caches.match(fallbackUrl) : Response.error();
 }
 
+// Page navigations prefer the network so live catalog/page changes show quickly,
+// but cached pages still keep the site usable during spotty mobile connections.
 async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', event = null) {
   try {
     const preloadResponse = event?.preloadResponse ? await event.preloadResponse : null;
@@ -169,15 +177,17 @@ self.addEventListener('fetch', (event) => {
   const isSameOrigin = url.origin === self.location.origin;
   const isPageRequest = request.mode === 'navigate' || request.destination === 'document';
   const isImageRequest = request.destination === 'image';
-  const isStaticAsset = ['style', 'script', 'font', 'manifest'].includes(request.destination);
+  const isStaticAsset = STATIC_ASSET_DESTINATIONS.has(request.destination);
   const isCatalogData = isSameOrigin && (
     url.pathname.endsWith('.json')
     || url.pathname.endsWith('.webmanifest')
     || url.pathname.includes('products-data-')
   );
-  const isRemoteCatalog = /supabase\.co$/i.test(url.hostname);
+  const isRemoteCatalog = SUPABASE_HOST_PATTERN.test(url.hostname);
   const hasAuthorizationHeader = request.headers.has('authorization');
 
+  // Authenticated Supabase calls may include user-specific data, so let the
+  // browser/network handle them instead of writing those responses to cache.
   if (isRemoteCatalog && hasAuthorizationHeader) {
     return;
   }
