@@ -14,6 +14,12 @@ window.DJ = window.DJ || {};
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
   const PRODUCT_ASSET_VERSION = '20260425a';
+  // Below this width the theme button moves out of the header to preserve the
+  // logo/menu lockup on narrow mobile screens.
+  const FOOTER_THEME_BREAKPOINT = 700;
+  const FOOTER_THEME_QUERY = typeof window.matchMedia === 'function'
+    ? window.matchMedia(`(max-width: ${FOOTER_THEME_BREAKPOINT}px)`)
+    : null;
   const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
     'products.json': 'products-data-full.js',
     'products-baseball.json': 'products-data-baseball.js',
@@ -309,6 +315,23 @@ window.DJ = window.DJ || {};
     if (runImmediately) {
       callback();
     }
+  }
+
+  function bindMediaQueryChange(query, handler) {
+    if (!query) return false;
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', handler);
+      return true;
+    }
+    if (typeof query.addListener === 'function') {
+      query.addListener(handler);
+      return true;
+    }
+    return false;
+  }
+
+  function isFooterThemeLayout() {
+    return FOOTER_THEME_QUERY ? FOOTER_THEME_QUERY.matches : window.innerWidth <= FOOTER_THEME_BREAKPOINT;
   }
 
   // ---------------------------------------------------------------------------
@@ -794,27 +817,13 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    const compactThemeQuery = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 700px)')
-      : null;
-    const isCompactThemeLayout = () => compactThemeQuery ? compactThemeQuery.matches : window.innerWidth <= 700;
-    const bindMediaQueryChange = (query, handler) => {
-      if (!query) return false;
-      if (typeof query.addEventListener === 'function') {
-        query.addEventListener('change', handler);
-        return true;
-      }
-      if (typeof query.addListener === 'function') {
-        query.addListener(handler);
-        return true;
-      }
-      return false;
-    };
     let footerActions = document.querySelector('.footer-actions');
 
     const placeToggle = () => {
       footerActions = footerActions && footerActions.isConnected ? footerActions : document.querySelector('.footer-actions');
-      const useFooterPlacement = isCompactThemeLayout() && footerActions;
+      // Mobile headers need the brand and menu to stay readable, so the theme
+      // toggle lives with footer actions until the viewport has room again.
+      const useFooterPlacement = isFooterThemeLayout() && footerActions;
 
       if (useFooterPlacement) {
         const backToTopAction = footerActions.querySelector('[data-scroll-top]');
@@ -833,7 +842,7 @@ window.DJ = window.DJ || {};
 
     if (themeToggle.dataset.responsivePlacementBound !== 'true') {
       themeToggle.dataset.responsivePlacementBound = 'true';
-      if (!bindMediaQueryChange(compactThemeQuery, placeToggle)) {
+      if (!bindMediaQueryChange(FOOTER_THEME_QUERY, placeToggle)) {
         addRafResizeListener(placeToggle, { runImmediately: false });
       }
       window.addEventListener('pageshow', placeToggle);

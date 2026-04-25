@@ -208,6 +208,19 @@ async def main() -> None:
                 })()"""
             )
 
+            theme_state = await client.evaluate(
+                """(() => {
+                  const toggle = document.getElementById('themeToggle');
+                  if (!toggle) return { error: 'missing theme toggle' };
+                  return {
+                    inFooterActions: !!toggle.closest('.footer-actions'),
+                    inHeaderActions: !!toggle.closest('.header-actions'),
+                    hasFooterClass: toggle.classList.contains('theme-toggle--footer'),
+                    label: toggle.textContent.trim()
+                  };
+                })()"""
+            )
+
             filter_state = await client.evaluate(
                 """(async () => {
                   const toRect = (rect) => rect ? ({
@@ -314,6 +327,7 @@ async def main() -> None:
                     {
                         "filterState": filter_state,
                         "navState": nav_state,
+                        "themeState": theme_state,
                         "modalState": modal_state,
                         "modalClosed": modal_closed,
                         "filterShot": filter_screenshot,
