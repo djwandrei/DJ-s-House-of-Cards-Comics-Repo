@@ -10,8 +10,8 @@ RewriteRule ^ https://www.djshouseofcards-comics.com%{REQUEST_URI} [R=301,L]
 # Legacy landing pages and content sections.
 RewriteRule ^index\.htm$ / [R=301,L,NC]
 RewriteRule ^about\.htm$ /about.html [R=301,L,NC]
-RewriteRule ^(?:blog|benchtime_blog)\.htm$ /about.html#benchtime-blog [R=301,L,NC]
-RewriteRule ^(?:photogallery|photo_gallery|photo-gallery)\.htm$ /about.html#photo-gallery [R=301,L,NC]
+RewriteRule ^(?:blog|benchtime_blog)\.htm$ /about.html#benchtime-blog [R=301,L,NC,NE]
+RewriteRule ^(?:photogallery|photo_gallery|photo-gallery)\.htm$ /about.html#photo-gallery [R=301,L,NC,NE]
 RewriteRule ^contact\.htm$ /contact.html [R=301,L,NC]
 RewriteRule ^join2\.htm$ /contact.html [R=301,L,NC]
 
