@@ -100,27 +100,6 @@ window.DJ = window.DJ || {};
     return document.getElementById('backendCategory')?.value || 'Other';
   }
 
-  function isValidHttpUrl(value = '') {
-    try {
-      const url = new URL(String(value || '').trim());
-      return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function isLikelyImageReference(value = '') {
-    const normalized = String(value || '').trim();
-    if (!normalized) return false;
-    if (/^data:image\//i.test(normalized)) return true;
-    if (/^blob:/i.test(normalized)) return true;
-    if (/^https?:\/\/.+\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
-    if (/^https?:\/\//i.test(normalized)) return true;
-    if (/^assets\//i.test(normalized)) return true;
-    if (/^[./A-Za-z0-9 _-]+?\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
-    return false;
-  }
-
   function buildRemoteImageAlt({ name = '', category = 'Other', index = null, isMain = false } = {}) {
     const cleanName = String(name || '').trim();
     const cleanCategory = String(category || 'Other').trim() || 'Other';
@@ -1069,6 +1048,7 @@ window.DJ = window.DJ || {};
     const yearValue = document.getElementById('backendYear').value;
     const priceValue = document.getElementById('backendPrice').value;
     const sortRankValue = document.getElementById('backendSortRank').value;
+    const rawPhotoHostPageUrl = document.getElementById('backendPhotoHostPageUrl').value.trim();
 
     return {
       ...existingProduct,
@@ -1083,7 +1063,7 @@ window.DJ = window.DJ || {};
       image: document.getElementById('backendImage').value.trim(),
       imageGallery: normalizeGallery(state.gallery),
       description: document.getElementById('backendDescription').value.trim(),
-      photoHostPageUrl: document.getElementById('backendPhotoHostPageUrl').value.trim(),
+      photoHostPageUrl: rawPhotoHostPageUrl,
       sortRank: sortRankValue === '' ? 0 : Number(sortRankValue),
       isFeatured: document.getElementById('backendIsFeatured').value === 'true',
       isDeleted: false
@@ -1283,16 +1263,17 @@ window.DJ = window.DJ || {};
       setBackendStatus('Sort rank must be a valid number.', 'error');
       return;
     }
-    if (product.image && !isLikelyImageReference(product.image)) {
+    if (product.image && !DJ.isLikelyImageReference(product.image)) {
       setBackendStatus('Main image should be an uploaded image URL, an assets path, or a direct image link.', 'error');
       document.getElementById('backendImage')?.focus();
       return;
     }
-    if (product.photoHostPageUrl && !isValidHttpUrl(product.photoHostPageUrl)) {
+    if (product.photoHostPageUrl && !DJ.isValidHttpUrl(product.photoHostPageUrl)) {
       setBackendStatus('Photo host page URL must start with http:// or https://.', 'error');
       document.getElementById('backendPhotoHostPageUrl')?.focus();
       return;
     }
+    product.photoHostPageUrl = product.photoHostPageUrl ? DJ.safeExternalUrl(product.photoHostPageUrl) : '';
 
     setBusy(true);
     setBackendStatus('Saving remote listing...', 'info');
@@ -1366,7 +1347,7 @@ window.DJ = window.DJ || {};
     const input = document.getElementById('backendGalleryUrl');
     const value = input?.value.trim();
     if (!value) return false;
-    if (!isLikelyImageReference(value)) {
+    if (!DJ.isLikelyImageReference(value)) {
       setBackendStatus('Gallery image URLs should point to an image file, uploaded asset, or direct image address.', 'error');
       input?.focus();
       return false;

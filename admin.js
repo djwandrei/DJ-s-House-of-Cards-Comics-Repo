@@ -704,27 +704,6 @@ window.DJ = window.DJ || {};
   // Existing listing image and gallery management
   // ---------------------------------------------------------------------------
 
-  function isValidHttpUrl(value = '') {
-    try {
-      const url = new URL(String(value || '').trim());
-      return url.protocol === 'http:' || url.protocol === 'https:';
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function isLikelyImageReference(value = '') {
-    const normalized = String(value || '').trim();
-    if (!normalized) return false;
-    if (/^data:image\//i.test(normalized)) return true;
-    if (/^blob:/i.test(normalized)) return true;
-    if (/^https?:\/\/.+\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
-    if (/^https?:\/\//i.test(normalized)) return true;
-    if (/^assets\//i.test(normalized)) return true;
-    if (/^[./A-Za-z0-9 _-]+?\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
-    return false;
-  }
-
   function buildExistingImageAlt(product = {}, index = null) {
     const name = String(product?.name || '').trim();
     const category = String(product?.category || 'Other').trim() || 'Other';
@@ -1261,7 +1240,7 @@ window.DJ = window.DJ || {};
     addGalleryUrlButton?.addEventListener('click', () => {
       const value = galleryUrlInput?.value.trim();
       if (!value) return;
-      if (!isLikelyImageReference(value)) {
+      if (!DJ.isLikelyImageReference(value)) {
         DJ.setStatus('adminStatus', 'Gallery image URLs should point to an image file, uploaded asset, or direct image address.', 'error');
         galleryUrlInput?.focus();
         return;
@@ -1293,6 +1272,7 @@ window.DJ = window.DJ || {};
 
       const yearInput = document.getElementById('existingYear');
       const priceInput = document.getElementById('existingPrice');
+      const rawPhotoHostPageUrl = document.getElementById('existingPhotoHostPageUrl').value.trim();
       const patch = {
         name: document.getElementById('existingName').value.trim(),
         category: document.getElementById('existingCategory').value.trim() || 'Other',
@@ -1301,7 +1281,7 @@ window.DJ = window.DJ || {};
         condition: document.getElementById('existingCondition').value.trim(),
         price: priceInput.value === '' ? null : Number(priceInput.value),
         priceLabel: document.getElementById('existingPriceLabel').value.trim(),
-        photoHostPageUrl: document.getElementById('existingPhotoHostPageUrl').value.trim(),
+        photoHostPageUrl: rawPhotoHostPageUrl,
         image: document.getElementById('existingImage').value.trim(),
         description: document.getElementById('existingDescription').value.trim(),
         imageGallery: [...existingState.currentGallery]
@@ -1324,16 +1304,17 @@ window.DJ = window.DJ || {};
         document.getElementById('existingPrice').focus();
         return;
       }
-      if (patch.image && !isLikelyImageReference(patch.image)) {
+      if (patch.image && !DJ.isLikelyImageReference(patch.image)) {
         DJ.setStatus('adminStatus', 'Main image should be an uploaded image URL, an assets path, or a direct image link.', 'error');
         document.getElementById('existingImage').focus();
         return;
       }
-      if (patch.photoHostPageUrl && !isValidHttpUrl(patch.photoHostPageUrl)) {
+      if (patch.photoHostPageUrl && !DJ.isValidHttpUrl(patch.photoHostPageUrl)) {
         DJ.setStatus('adminStatus', 'Photo host URL must start with http:// or https://.', 'error');
         document.getElementById('existingPhotoHostPageUrl').focus();
         return;
       }
+      patch.photoHostPageUrl = patch.photoHostPageUrl ? DJ.safeExternalUrl(patch.photoHostPageUrl) : '';
 
       if (saveProductOverride(productId, patch)) {
         DJ.setStatus('adminStatus', 'Listing updated successfully on this browser.', 'success');

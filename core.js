@@ -896,6 +896,28 @@ window.DJ = window.DJ || {};
     }
   };
 
+  // Admin and catalog flows both validate outbound URLs before saving or
+  // rendering them so malformed spreadsheet/import data cannot leak through.
+  DJ.isValidHttpUrl = function isValidHttpUrl(value) {
+    return Boolean(DJ.safeExternalUrl(value));
+  };
+
+  /**
+   * Treat direct image URLs, uploaded assets, and temporary browser object URLs
+   * as acceptable image references for admin previews and saved listing fields.
+   */
+  DJ.isLikelyImageReference = function isLikelyImageReference(value = '') {
+    const normalized = String(value || '').trim();
+    if (!normalized) return false;
+    if (/^data:image\//i.test(normalized)) return true;
+    if (/^blob:/i.test(normalized)) return true;
+    if (/^https?:\/\/.+\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
+    if (/^https?:\/\//i.test(normalized)) return true;
+    if (/^assets\//i.test(normalized)) return true;
+    if (/^[./A-Za-z0-9 _-]+?\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(normalized)) return true;
+    return false;
+  };
+
   DJ.safeAssetUrl = function safeAssetUrl(url) {
     if (typeof url !== 'string') {
       return url;
