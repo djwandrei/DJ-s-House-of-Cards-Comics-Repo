@@ -32,6 +32,7 @@ DEFAULT_WORKBOOK = (
     / "Beckett Legacy Pricing Review.xlsx"
 )
 REPORT_PATH = ROOT / "outputs" / "supabase-legacy-sync-report.json"
+BECKETT_REPORT_PATH = ROOT / "outputs" / "beckett-legacy-update-report.json"
 SUPABASE_URL = "https://gkqdymnmczabcggvigce.supabase.co"
 SUPABASE_KEY = "sb_publishable_BHrJWQtop2ovkpOMOd9w3A_-9MTaeGG"
 ADMIN_EMAIL = "djwandrei@gmail.com"
@@ -66,7 +67,48 @@ def get_headers(ws) -> dict[str, int]:
     return {str(cell.value).strip(): cell.column - 1 for cell in ws[1] if cell.value}
 
 
-def matched_legacy_ids(workbook_path: Path) -> set[int]:
+def product_id_from_value(value: Any) -> int | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)) and float(value).is_integer():
+        return int(value)
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return int(float(text))
+    except ValueError:
+        return None
+
+
+def parse_id_list(value: str) -> set[int]:
+    ids: set[int] = set()
+    for part in re.split(r"[,\s]+", str(value or "").strip()):
+        if not part:
+            continue
+        product_id = product_id_from_value(part)
+        if product_id is not None:
+            ids.add(product_id)
+    return ids
+
+
+def removal_ids_from_report(path: Path) -> set[int]:
+    if not path.exists():
+        return set()
+    report = json.loads(path.read_text(encoding="utf-8"))
+    ids: set[int] = set()
+    for item in report.get("removeListingIds", []):
+        product_id = product_id_from_value(item)
+        if product_id is not None:
+            ids.add(product_id)
+    for item in report.get("removedProducts", []):
+        product_id = product_id_from_value((item or {}).get("id"))
+        if product_id is not None:
+            ids.add(product_id)
+    return ids
+
+
+def matched_legacy_ids(workbook_path: Path, min_id: int, max_id: int) -> set[int]:
     wb = load_workbook(workbook_path, read_only=True, data_only=True)
     ws = wb["Legacy Beckett Pricing"]
     headers = get_headers(ws)
@@ -76,9 +118,8 @@ def matched_legacy_ids(workbook_path: Path) -> set[int]:
     ids: set[int] = set()
 
     for row in ws.iter_rows(min_row=2, values_only=True):
-        try:
-            product_id = int(row[product_col])
-        except (TypeError, ValueError):
+        product_id = product_id_from_value(row[product_col])
+        if product_id is None or not min_id <= product_id <= max_id:
             continue
         status = str(row[status_col] or "").strip().lower()
         title = str(row[title_col] or "").strip()
@@ -102,6 +143,7 @@ def to_remote_patch(product: dict[str, Any]) -> dict[str, Any]:
         "league": str(product.get("league") or "").strip(),
         "sport": str(product.get("sport") or "").strip(),
         "player_athlete": str(product.get("playerAthlete") or "").strip(),
+        "is_deleted": False,
     }
 
 
@@ -109,7 +151,7 @@ def get_remote_rows(ids: list[int], token: str) -> dict[int, dict[str, Any]]:
     if not ids:
         return {}
     id_list = ",".join(str(item) for item in ids)
-    query = urllib.parse.urlencode({"select": "id,name,price_label"})
+    query = urllib.parse.urlencode({"select": "id,name,price_label,is_deleted"})
     url = f"{SUPABASE_URL}/rest/v1/products?{query}&id=in.({id_list})"
     headers = {
         "apikey": SUPABASE_KEY,
@@ -132,10 +174,18 @@ def patch_remote_product(product_id: int, patch: dict[str, Any], token: str) -> 
     request_json(url, method="PATCH", headers=headers, body=patch)
 
 
+def soft_delete_remote_product(product_id: int, token: str) -> None:
+    patch_remote_product(product_id, {"is_deleted": True}, token)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workbook", type=Path, default=DEFAULT_WORKBOOK)
     parser.add_argument("--password", default=os.environ.get("SUPABASE_ADMIN_PASSWORD", ""))
+    parser.add_argument("--min-id", type=int, default=1)
+    parser.add_argument("--max-id", type=int, default=430)
+    parser.add_argument("--remove-ids", default="")
+    parser.add_argument("--removal-report", type=Path, default=BECKETT_REPORT_PATH)
     parser.add_argument("--delay", type=float, default=0.02)
     args = parser.parse_args()
 
@@ -143,7 +193,8 @@ def main() -> int:
         raise SystemExit("Set SUPABASE_ADMIN_PASSWORD or pass --password.")
 
     products = {int(item["id"]): item for item in json.loads((ROOT / "products.json").read_text(encoding="utf-8"))}
-    ids = sorted(product_id for product_id in matched_legacy_ids(args.workbook) if product_id in products)
+    remove_ids = parse_id_list(args.remove_ids) or removal_ids_from_report(args.removal_report)
+    ids = sorted(product_id for product_id in matched_legacy_ids(args.workbook, args.min_id, args.max_id) if product_id in products)
     token = auth_token(args.password)
     before = get_remote_rows(ids, token)
 
@@ -170,6 +221,12 @@ def main() -> int:
         )
         time.sleep(max(0, args.delay))
 
+    removed: list[int] = []
+    for product_id in sorted(remove_ids):
+        soft_delete_remote_product(product_id, token)
+        removed.append(product_id)
+        time.sleep(max(0, args.delay))
+
     after = get_remote_rows(ids, token)
     remaining = []
     for product_id in ids:
@@ -189,17 +246,28 @@ def main() -> int:
                 }
             )
 
+    removed_after = get_remote_rows(sorted(remove_ids), token)
+    removal_remaining = [
+        product_id for product_id in sorted(remove_ids) if not bool((removed_after.get(product_id) or {}).get("is_deleted"))
+    ]
+
     report = {
+        "minId": args.min_id,
+        "maxId": args.max_id,
         "matchedLegacyRows": len(ids),
         "changedRows": len(changed),
+        "softDeletedRows": len(removed),
+        "softDeletedIds": removed,
         "remainingMismatches": len(remaining),
+        "remainingRemovalMismatches": len(removal_remaining),
         "changed": changed,
         "remaining": remaining,
+        "remainingRemovalIds": removal_remaining,
     }
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if not remaining else 1
+    return 0 if not remaining and not removal_remaining else 1
 
 
 if __name__ == "__main__":

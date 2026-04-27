@@ -21,9 +21,27 @@ from scripts.beckett_legacy_pricing import extract_card_number, normalize_spaces
 
 
 GRADE_RE = re.compile(r"\b(PSA|BGS|SGC|CGC|HGA|BCCG|GAI|CSG)\s*([0-9](?:\.\d)?|10)\b", re.I)
-AUTO_RE = re.compile(r"\b(auto(graph)?s?|autographed|signed|signature|signatures|on-card)\b", re.I)
+AUTO_RE = re.compile(r"\b(auto(?:s|graph(?:ed|s)?)?|autographed|signed|signature|signatures|on-card)\b", re.I)
 SEASON_RE = re.compile(r"^((?:19|20)\d{2}-(?:\d{2}))\b")
 YEAR_RE = re.compile(r"^((?:19|20)\d{2})\b")
+SERIAL_SLASH_RE = re.compile(r"/\s*(\d{1,4})\b", re.I)
+EXPLICIT_SERIAL_RE = re.compile(
+    r"\bserial[- ](?:ly[- ])?numbered\b"
+    r"|\bnumbered\s+(?:to|/)\s*\d+\b"
+    r"|\blimited\s+to\s+\d+\b"
+    r"|\bone\s+of\s+one\b"
+    r"|\b1\s*of\s*1\b"
+    r"|\b1/1\b",
+    re.I,
+)
+YEAR_SERIAL_CONTEXT_RE = re.compile(
+    r"\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|"
+    r"tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|"
+    r"speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|the finals|playoff ticket|"
+    r"premium stock|masterpieces|limited|numbered|serial|short print|sp)\b",
+    re.I,
+)
+CARD_COUNT_AFTER_RE = re.compile(r"^\s*(?:cards?|pcs?|boxes?|packs?)\b", re.I)
 
 MANUFACTURER_PATTERNS = [
     (r"\bcollector'?s edge\b", "Collector's Edge"),
@@ -251,6 +269,28 @@ def derive_parallel_variety(title: str, product: dict) -> str:
     return "|".join(unique)
 
 
+def is_serial_numbered_title(title: str) -> bool:
+    """Detect real serial numbering without confusing years for print runs."""
+
+    if EXPLICIT_SERIAL_RE.search(title):
+        return True
+
+    for segment in re.split(r"\s+\+\s+", title):
+        for match in SERIAL_SLASH_RE.finditer(segment):
+            denominator = int(match.group(1))
+            after = segment[match.end() : match.end() + 30]
+            if CARD_COUNT_AFTER_RE.match(after):
+                continue
+
+            before = segment[max(0, match.start() - 90) : match.start()]
+            if 1900 <= denominator <= 2035 and not YEAR_SERIAL_CONTEXT_RE.search(before):
+                continue
+
+            return True
+
+    return False
+
+
 def derive_features(title: str, description: str, product: dict) -> str:
     title = title.lower()
     description = (description or "").lower()
@@ -261,7 +301,7 @@ def derive_features(title: str, description: str, product: dict) -> str:
         features.append("Short Print")
     if re.search(r"\b1/1\b|one of one", title) or title.count("1/1"):
         features.append("One of One")
-    if re.search(r"/\d+|serial numbered", title) or re.search(r"/\d+|serial numbered", description):
+    if is_serial_numbered_title(title):
         features.append("Serial Numbered")
     if re.search(r"jersey|patch|relic|game[- ]used|game[- ]worn|threads|material|memorabilia|helmet", title) or re.search(
         r"jersey|patch|relic|game[- ]used|game[- ]worn|threads|material|memorabilia|helmet", description

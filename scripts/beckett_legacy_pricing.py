@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -745,6 +746,20 @@ def matched_grade_price(condition: str, raw_prices: dict[str, str], graded_price
         if grade_value.is_integer() and exact_labels:
             label = exact_labels[0]
             return graded_prices[label], label, ""
+        # Beckett only exposes whole-number grade buckets in the parsed table.
+        # DJ's pricing rule is to round half-grades up, so PSA/BGS/SGC 5.5 uses
+        # the Beckett 6 bucket rather than discounting down to a 5.
+        rounded_up_grade = math.ceil(grade_value)
+        rounded_up_labels = [
+            label for label in graded_prices if re.search(rf"\(\s*{rounded_up_grade}\s*\)", label)
+        ]
+        if rounded_up_labels:
+            label = rounded_up_labels[0]
+            return (
+                graded_prices[label],
+                label,
+                f"Exact {grade_value:g} grade not listed; used Beckett grade {rounded_up_grade}.",
+            )
         lower_labels: list[tuple[float, str]] = []
         for label in graded_prices:
             match = re.search(r"\(\s*(\d+)\s*\)", label)

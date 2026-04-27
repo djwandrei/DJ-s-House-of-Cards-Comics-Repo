@@ -184,6 +184,39 @@ window.DJ = window.DJ || {};
     return { raw, status: 'Ungraded', company: '', grade: '', summary: `Ungraded | ${ungradedCondition}`, compact: ungradedCondition };
   }
 
+  function hasSerialNumberedSignal(item = {}, excelFields = {}, includesFeature = () => false) {
+    // Serial-number checks intentionally avoid generated description text.
+    // Descriptions can inherit old workbook mistakes, while the title carries
+    // the reliable numbering context buyers actually see.
+    const titleText = [
+      item.name || '',
+      excelFields['Title'] || '',
+      item.condition || '',
+      item.legacyImageLabel || ''
+    ].join(' ').toLowerCase();
+    const explicitSerialText = /\bserial[- ](?:ly[- ])?numbered\b|\bnumbered\s+(?:to|\/)\s*\d+\b|\blimited\s+to\s+\d+\b|\bone\s+of\s+one\b|\b1\s*of\s*1\b|\b1\/1\b/.test(titleText);
+    if (explicitSerialText) return true;
+
+    const hasYearSerialContext = (value = '') => /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp)\b/.test(value);
+    const hasSlashSerial = titleText.split(/\s+\+\s+/).some((segment) => {
+      const matches = segment.matchAll(/\/\s*(\d{1,4})\b/g);
+      for (const match of matches) {
+        const denominator = Number(match[1]);
+        const after = segment.slice((match.index || 0) + match[0].length, (match.index || 0) + match[0].length + 30);
+        if (/^\s*(?:cards?|pcs?|boxes?|packs?)\b/.test(after)) continue;
+        const before = segment.slice(Math.max(0, (match.index || 0) - 90), match.index || 0);
+        if (denominator >= 1900 && denominator <= 2035 && !hasYearSerialContext(before)) continue;
+        return true;
+      }
+      return false;
+    });
+    if (hasSlashSerial) return true;
+
+    // Preserve curated Serial Numbered tags unless the title has the known
+    // false-positive pattern: a second card/set introduced as a year.
+    return includesFeature('serial numbered') && !/\+\s*\/\s*(?:19|20)\d{2}\b/.test(titleText);
+  }
+
   function deriveProductAttributes(item = {}) {
     const metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
@@ -210,15 +243,8 @@ window.DJ = window.DJ || {};
     const attributes = [];
     const includesFeature = (feature) => featuresText.split('|').map((value) => value.trim()).includes(feature);
     const hasAutographLanguage = (
-      /\bauto(?:graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
+      /\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
       || /\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b/.test(text)
-    );
-    const hasSerialNumberLanguage = (
-      includesFeature('serial numbered')
-      || /\bserial[- ](?:ly[- ])?numbered\b|\bnumbered\s+(?:to|\/)\s*\d+\b|\blimited\s+to\s+\d+\b|\b(?:sn|serial)\s*#?['’]?d?\s*(?:to)?\s*\d+\b/.test(text)
-      || /(?:^|[\s(#])(?:\d{1,4}|[a-z]{1,5})?\s*\/\s*\d{1,4}\b(?!\s*(?:cards?|sets?|pcs?|boxes?))/.test(text)
-      || /\B\/\s*\d{1,4}\b(?!\s*(?:cards?|sets?|pcs?|boxes?))/.test(text)
-      || /\bone\s+of\s+one\b|\b1\s*of\s*1\b|\b1\/1\b/.test(text)
     );
     const hasMemorabiliaLanguage = (
       /\bmemorabilia\b|\brelics?\b|\bjerseys?\b|\bjsy\b|\bpatch(?:es)?\b|\bswatches?\b|\bfabric\b|\bmaterials?\b|\bgame[- ](?:used|worn)\b|\bplayer[- ]worn\b|\bclubhouse collection\b/.test(text)
@@ -227,7 +253,7 @@ window.DJ = window.DJ || {};
 
     if (/\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b/.test(text)) attributes.push('Rookie');
     if (hasAutographLanguage || autographedValue === 'yes') attributes.push('Autograph');
-    if (hasSerialNumberLanguage) attributes.push('Serial Numbered');
+    if (hasSerialNumberedSignal(item, excelFields, includesFeature)) attributes.push('Serial Numbered');
     if (hasMemorabiliaLanguage) attributes.push('Memorabilia');
     return attributes;
   }

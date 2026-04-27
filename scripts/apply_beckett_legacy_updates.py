@@ -65,6 +65,7 @@ PRICING_SHEETS = [
 
 MONEY_RE = re.compile(r"\$?\s*(?:\d[\d,]*(?:\.\d+)?|\.\d+)")
 GRADE_RE = re.compile(r"\b(PSA|BGS|SGC|CGC|HGA|BCCG|GAI)\s*(10|[1-9](?:\.\d)?)\b", re.I)
+REMOVE_LISTING_RE = re.compile(r"^\s*remove\s+listing\s*$", re.I)
 REAL_TIME_RE = re.compile(
     r"Beckett\s+Real\s+Time\s+Pricing\s*(\$?\s*\d[\d,]*(?:\.\d+)?)\s*to\s*(\$?\s*\d[\d,]*(?:\.\d+)?)",
     re.I,
@@ -89,6 +90,72 @@ def money_to_float(value: Any) -> float | None:
         return float(text)
     except ValueError:
         return None
+
+
+def product_id_from_value(value: Any) -> int | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)) and float(value).is_integer():
+        return int(value)
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return int(float(text))
+    except ValueError:
+        return None
+
+
+def is_remove_listing(value: Any) -> bool:
+    return bool(REMOVE_LISTING_RE.match(str(value or "")))
+
+
+def row_requests_removal(row: dict[str, Any]) -> bool:
+    """Treat any match-oriented Remove Listing value as a storefront removal."""
+    for header, value in row.items():
+        if "match" in str(header).lower() and is_remove_listing(value):
+            return True
+    return False
+
+
+def remove_listing_rows(wb) -> tuple[list[int], list[dict[str, Any]]]:
+    """Delete workbook rows explicitly marked Remove Listing.
+
+    Product IDs are returned so the matching storefront records can also be
+    removed and the backend can be soft-deleted during the sync step.
+    """
+    removed_ids: set[int] = set()
+    removed_rows: list[dict[str, Any]] = []
+
+    for ws in wb.worksheets:
+        headers = get_headers(ws)
+        product_col = headers.get("Product ID")
+        match_columns = [column for header, column in headers.items() if "match" in header.lower()]
+        if not product_col or not match_columns:
+            continue
+
+        rows_to_delete: list[int] = []
+        for row_index in range(2, ws.max_row + 1):
+            row = row_to_dict(ws, row_index)
+            if not row_requests_removal(row):
+                continue
+            product_id = product_id_from_value(ws.cell(row_index, product_col).value)
+            rows_to_delete.append(row_index)
+            removed_rows.append(
+                {
+                    "sheet": ws.title,
+                    "row": row_index,
+                    "productId": product_id,
+                    "title": str(row.get("Title") or row.get("Beckett Matched Title") or "").strip(),
+                }
+            )
+            if product_id is not None:
+                removed_ids.add(product_id)
+
+        for row_index in reversed(rows_to_delete):
+            ws.delete_rows(row_index, 1)
+
+    return sorted(removed_ids), removed_rows
 
 
 def extract_money_values(value: Any) -> list[float]:
@@ -347,6 +414,7 @@ def main() -> int:
     cache = load_cache()
     backup_path = backup_workbook()
     wb = load_workbook(WORKBOOK_PATH)
+    remove_listing_ids, removed_workbook_rows = remove_listing_rows(wb)
 
     session = None
     if args.fetch_realtime:
@@ -377,10 +445,7 @@ def main() -> int:
         for row_index in range(2, ws.max_row + 1):
             row = row_to_dict(ws, row_index)
             url = str(row.get("Beckett URL") or "").strip() if url_col else ""
-            try:
-                product_id = int(ws.cell(row_index, pid_col).value)
-            except (TypeError, ValueError):
-                product_id = None
+            product_id = product_id_from_value(ws.cell(row_index, pid_col).value)
             should_fetch_realtime = (
                 session is not None
                 and sheet_name == "Legacy Beckett Pricing"
@@ -415,6 +480,7 @@ def main() -> int:
             if (
                 product_id is not None
                 and sheet_name == "Legacy Beckett Pricing"
+                and product_id not in remove_listing_ids
                 and update_min_id <= product_id <= update_max_id
             ):
                 workbook_rows_by_id[product_id] = row
@@ -423,9 +489,24 @@ def main() -> int:
     products = json.loads(products_path.read_text(encoding="utf-8"))
     product_by_id = {int(product["id"]): product for product in products}
 
+    removed_products: list[dict[str, Any]] = []
+    for product_id in remove_listing_ids:
+        removed = product_by_id.pop(product_id, None)
+        if removed:
+            removed_products.append(
+                {
+                    "id": product_id,
+                    "name": removed.get("name"),
+                    "category": removed.get("category"),
+                    "priceLabel": removed.get("priceLabel"),
+                }
+            )
+
     changed_products: list[dict[str, Any]] = []
     skipped_ids: list[int] = []
     for product_id in range(update_min_id, update_max_id + 1):
+        if product_id in remove_listing_ids:
+            continue
         product = product_by_id.get(product_id)
         row = workbook_rows_by_id.get(product_id)
         if not product or not row:
@@ -447,7 +528,7 @@ def main() -> int:
                 }
             )
 
-    updated_products = [product_by_id[int(product["id"])] for product in products]
+    updated_products = [product_by_id[int(product["id"])] for product in products if int(product["id"]) in product_by_id]
     rebuild_product_files(updated_products)
 
     for ws in wb.worksheets:
@@ -467,6 +548,10 @@ def main() -> int:
         "fetchMaxId": fetch_max_id,
         "updateMinId": update_min_id,
         "updateMaxId": update_max_id,
+        "removeListingIds": remove_listing_ids,
+        "removedWorkbookRows": removed_workbook_rows,
+        "removedProductCount": len(removed_products),
+        "removedProducts": removed_products,
         "changedProductCount": len(changed_products),
         "changedProducts": changed_products,
         "skippedIds": skipped_ids,
