@@ -719,7 +719,9 @@ window.DJ = window.DJ || {};
       const sport = item.sport || (category === 'Collectibles' ? 'Other' : category);
       const league = item.league || '';
       const playerAthlete = item.playerAthlete || '';
-      const photoHostPageUrl = item.photoHostPageUrl || '';
+      const photoHostPageUrl = typeof DJ.safeExternalUrl === 'function'
+        ? DJ.safeExternalUrl(item.photoHostPageUrl)
+        : '';
       const image = item.image || DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other;
       const attributes = deriveProductAttributes(item);
 

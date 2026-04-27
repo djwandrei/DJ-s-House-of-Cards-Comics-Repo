@@ -159,11 +159,19 @@
     if (!nav.querySelector('.site-nav__mobile-header')) {
       const mobileHeader = document.createElement('div');
       mobileHeader.className = 'site-nav__mobile-header';
-      mobileHeader.innerHTML = `
-        <span class="site-nav__eyebrow">Navigate the collection</span>
-        <strong class="site-nav__mobile-title">${getCurrentPageLabel()}</strong>
-        <p>Jump between departments, the wishlist, and contact links without losing your place.</p>
-      `;
+
+      const eyebrow = document.createElement('span');
+      eyebrow.className = 'site-nav__eyebrow';
+      eyebrow.textContent = 'Navigate the collection';
+
+      const title = document.createElement('strong');
+      title.className = 'site-nav__mobile-title';
+      title.textContent = getCurrentPageLabel();
+
+      const copy = document.createElement('p');
+      copy.textContent = 'Jump between departments, the wishlist, and contact links without losing your place.';
+
+      mobileHeader.append(eyebrow, title, copy);
       nav.insertBefore(mobileHeader, nav.firstChild);
     }
 

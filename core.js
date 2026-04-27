@@ -876,6 +876,26 @@ window.DJ = window.DJ || {};
     }[character]));
   };
 
+  /**
+   * Only expose external links that use explicitly allowed protocols.
+   * Product data can come from spreadsheets, local JSON, or Supabase rows, so
+   * link rendering should reject malformed or script-like URLs at the final UI
+   * boundary instead of trusting every upstream import path.
+   */
+  DJ.safeExternalUrl = function safeExternalUrl(value, allowedProtocols = ['http:', 'https:']) {
+    const rawValue = String(value || '').trim();
+    if (!rawValue) {
+      return '';
+    }
+
+    try {
+      const parsedUrl = new URL(rawValue);
+      return allowedProtocols.includes(parsedUrl.protocol) ? parsedUrl.href : '';
+    } catch (error) {
+      return '';
+    }
+  };
+
   DJ.safeAssetUrl = function safeAssetUrl(url) {
     if (typeof url !== 'string') {
       return url;
