@@ -102,6 +102,8 @@ window.DJ = window.DJ || {};
   const staticProductCache = new Map();
   const normalizedSourceCache = new Map();
   const catalogPageCache = new Map();
+  const filteredCatalogResultsCache = new Map();
+  const FILTERED_RESULTS_CACHE_LIMIT = 18;
   const gridProductLookups = new WeakMap();
   const DEFAULT_RENDER_BATCH_SIZE = 24;
   const DESKTOP_FILTER_BREAKPOINT = 900;
@@ -210,6 +212,7 @@ window.DJ = window.DJ || {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
     const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
     const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
+    const featureSet = new Set(featuresText.split('|').map((value) => value.trim()).filter(Boolean));
     const text = [
       item.name || '',
       item.description || '',
@@ -229,7 +232,7 @@ window.DJ = window.DJ || {};
       excelFields['CD:Grade - (ID: 27502)'] || ''
     ].join(' ').toLowerCase();
     const attributes = [];
-    const includesFeature = (feature) => featuresText.split('|').map((value) => value.trim()).includes(feature);
+    const includesFeature = (feature) => featureSet.has(String(feature || '').trim());
     const hasAutographLanguage = (
       /\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
       || /\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b/.test(text)
@@ -626,16 +629,37 @@ window.DJ = window.DJ || {};
     )];
   }
 
-  function matchesSearchQuery(product, query) {
+  /**
+   * Compile the shopper's raw search text once per render so the filter loop does
+   * not repeatedly normalize and tokenize the same query for every product card.
+   */
+  function createSearchQueryState(query = '') {
     const normalizedQuery = normalizeSearchString(query);
+    if (!normalizedQuery) {
+      return null;
+    }
+
+    return {
+      normalizedQuery,
+      tokens: tokenizeSearchString(query)
+    };
+  }
+
+  function matchesSearchQuery(product, queryState) {
+    const normalizedQuery = typeof queryState === 'string'
+      ? normalizeSearchString(queryState)
+      : queryState?.normalizedQuery || '';
     if (!normalizedQuery) return true;
 
-    const searchableText = product?._searchNormalized || normalizeSearchString(product?._search || '');
+    const tokens = typeof queryState === 'string'
+      ? tokenizeSearchString(queryState)
+      : Array.isArray(queryState?.tokens) ? queryState.tokens : [];
+    const searchableText = product?._searchNormalized || '';
     if (searchableText.includes(normalizedQuery)) {
       return true;
     }
 
-    return tokenizeSearchString(query).every((token) => searchableText.includes(token));
+    return tokens.every((token) => searchableText.includes(token));
   }
 
   function buildFacetMarkup({ name, label, options, selectedValues = [], emptyText = 'No options available', collapsedCount = 5 }) {
@@ -747,18 +771,6 @@ window.DJ = window.DJ || {};
           yearLabel,
           conditionInfo.summary,
           attributes.join(' ')
-        ].join(' ')),
-        _search: [
-          item.name || '',
-          team,
-          category,
-          sport,
-          league,
-          playerAthlete,
-          searchableDescription,
-          yearLabel,
-          conditionInfo.summary,
-          attributes.join(' ')
         ].join(' ').toLowerCase()
       };
     });
@@ -806,7 +818,9 @@ window.DJ = window.DJ || {};
       const productAssetUrl = typeof DJ.versionedProductAsset === 'function'
         ? DJ.versionedProductAsset(source)
         : source;
-      const response = await fetch(productAssetUrl, { cache: 'force-cache' });
+      // Let the browser/service worker revalidate catalog JSON instead of
+      // pinning older payloads with force-cache across storefront deploys.
+      const response = await fetch(productAssetUrl, { cache: 'default' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -922,6 +936,8 @@ window.DJ = window.DJ || {};
           ? DJ.applyStoredCatalogMutations(sourceProducts, { includeCustomProducts: true })
           : sourceProducts;
         const normalizedProducts = normalizeProducts(mergedProducts);
+        catalogPageCache.clear();
+        filteredCatalogResultsCache.clear();
 
         if (source === DEFAULT_PRODUCT_SOURCE) {
           reconcileWishlistIds(normalizedProducts, { persist: true });
@@ -941,6 +957,8 @@ window.DJ = window.DJ || {};
 
         const mergedFallback = DJ.applyStoredCatalogMutations(fallbackProducts, { includeCustomProducts: true });
         const normalizedFallback = normalizeProducts(mergedFallback);
+        catalogPageCache.clear();
+        filteredCatalogResultsCache.clear();
 
         if (source === DEFAULT_PRODUCT_SOURCE) {
           reconcileWishlistIds(normalizedFallback, { persist: true });
@@ -2026,6 +2044,81 @@ Thank you.`
   }
 
   /**
+   * Cache filtered/sorted result sets by filter signature so pagination and
+   * per-page changes can reuse the expensive work from the previous render.
+   */
+  function buildCatalogResultsCacheKey(filters = {}, config = {}) {
+    return JSON.stringify({
+      page: document.body.dataset.page || '',
+      allowedCategories: Array.isArray(config.allowedCategories) ? [...config.allowedCategories].sort() : null,
+      filterText: normalizeSearchString(filters.filterText || ''),
+      conditions: [...(filters.conditions || [])].sort(),
+      attributes: [...(filters.attributes || [])].sort(),
+      teams: [...(filters.teams || [])].sort(),
+      yearMin: filters.yearMin ?? null,
+      yearMax: filters.yearMax ?? null,
+      priceMin: filters.priceMin ?? null,
+      priceMax: filters.priceMax ?? null,
+      sort: filters.sort || 'nameAsc'
+    });
+  }
+
+  function getCatalogSortComparator(sort = 'nameAsc') {
+    switch (sort) {
+      case 'priceAsc':
+        return (left, right) => (left._price ?? Number.POSITIVE_INFINITY) - (right._price ?? Number.POSITIVE_INFINITY);
+      case 'priceDesc':
+        return (left, right) => (right._price ?? Number.NEGATIVE_INFINITY) - (left._price ?? Number.NEGATIVE_INFINITY);
+      case 'yearAsc':
+        return (left, right) => (left.year ?? Number.POSITIVE_INFINITY) - (right.year ?? Number.POSITIVE_INFINITY);
+      case 'yearDesc':
+        return (left, right) => (right.year ?? Number.NEGATIVE_INFINITY) - (left.year ?? Number.NEGATIVE_INFINITY);
+      case 'nameDesc':
+        return (left, right) => TEXT_COLLATOR.compare(right.name, left.name);
+      default:
+        return (left, right) => TEXT_COLLATOR.compare(left.name, right.name);
+    }
+  }
+
+  function getFilteredCatalogProducts(products = [], filters = {}, config = {}) {
+    const cacheKey = buildCatalogResultsCacheKey(filters, config);
+    if (filteredCatalogResultsCache.has(cacheKey)) {
+      return filteredCatalogResultsCache.get(cacheKey);
+    }
+
+    const searchQuery = createSearchQueryState(filters.filterText);
+    const selectedConditions = new Set((filters.conditions || []).map((value) => value.toLowerCase()));
+    const selectedAttributes = Array.isArray(filters.attributes) ? filters.attributes : [];
+    const selectedTeams = new Set(filters.teams || []);
+    const filteredProducts = [];
+
+    for (const product of Array.isArray(products) ? products : []) {
+      const matchesSearch = !searchQuery || matchesSearchQuery(product, searchQuery);
+      if (!matchesSearch) continue;
+
+      if (selectedConditions.size && !selectedConditions.has(product._conditionLower)) continue;
+      if (selectedAttributes.length && !selectedAttributes.every((attribute) => product.attributes.includes(attribute))) continue;
+      if (selectedTeams.size && !selectedTeams.has(product._teamFacet)) continue;
+      if (filters.yearMin != null && product.year < filters.yearMin) continue;
+      if (filters.yearMax != null && product.year > filters.yearMax) continue;
+      if (filters.priceMin != null && (product._price == null || product._price < filters.priceMin)) continue;
+      if (filters.priceMax != null && (product._price == null || product._price > filters.priceMax)) continue;
+
+      filteredProducts.push(product);
+    }
+
+    filteredProducts.sort(getCatalogSortComparator(filters.sort));
+    if (filteredCatalogResultsCache.size >= FILTERED_RESULTS_CACHE_LIMIT) {
+      const oldestKey = filteredCatalogResultsCache.keys().next().value;
+      if (oldestKey) {
+        filteredCatalogResultsCache.delete(oldestKey);
+      }
+    }
+    filteredCatalogResultsCache.set(cacheKey, filteredProducts);
+    return filteredProducts;
+  }
+
+  /**
    * Render a category page once, then keep filtering in-memory. This keeps the UI
    * responsive because filter changes do not require additional network requests.
    */
@@ -2037,40 +2130,7 @@ Thank you.`
 
     const filters = getCurrentFilters();
     syncToolbarSortControl(filters.sort);
-    const searchTerm = filters.filterText.trim().toLowerCase();
-    const selectedConditions = new Set(filters.conditions.map((value) => value.toLowerCase()));
-    const selectedAttributes = filters.attributes;
-    const selectedTeams = new Set(filters.teams);
-
-    let filteredProducts = allowedProducts.filter((product) => {
-      const matchesSearch = !searchTerm || matchesSearchQuery(product, searchTerm);
-      const matchesCondition = !selectedConditions.size || selectedConditions.has(product._conditionLower);
-      const matchesAttributes = !selectedAttributes.length || selectedAttributes.every((attribute) => product.attributes.includes(attribute));
-      const matchesTeam = !selectedTeams.size || selectedTeams.has(product._teamFacet);
-      const matchesYearMin = filters.yearMin == null || product.year >= filters.yearMin;
-      const matchesYearMax = filters.yearMax == null || product.year <= filters.yearMax;
-      const matchesPriceMin = filters.priceMin == null || (product._price != null && product._price >= filters.priceMin);
-      const matchesPriceMax = filters.priceMax == null || (product._price != null && product._price <= filters.priceMax);
-
-      return matchesSearch && matchesCondition && matchesAttributes && matchesTeam && matchesYearMin && matchesYearMax && matchesPriceMin && matchesPriceMax;
-    });
-
-    filteredProducts.sort((left, right) => {
-      switch (filters.sort) {
-        case 'priceAsc':
-          return (left._price ?? Number.POSITIVE_INFINITY) - (right._price ?? Number.POSITIVE_INFINITY);
-        case 'priceDesc':
-          return (right._price ?? Number.NEGATIVE_INFINITY) - (left._price ?? Number.NEGATIVE_INFINITY);
-        case 'yearAsc':
-          return (left.year ?? Number.POSITIVE_INFINITY) - (right.year ?? Number.POSITIVE_INFINITY);
-        case 'yearDesc':
-          return (right.year ?? Number.NEGATIVE_INFINITY) - (left.year ?? Number.NEGATIVE_INFINITY);
-        case 'nameDesc':
-          return TEXT_COLLATOR.compare(right.name, left.name);
-        default:
-          return TEXT_COLLATOR.compare(left.name, right.name);
-      }
-    });
+    const filteredProducts = getFilteredCatalogProducts(allowedProducts, filters, config);
 
     const resultsCount = document.getElementById('resultsCount');
     if (resultsCount) resultsCount.textContent = `${filteredProducts.length} item${filteredProducts.length === 1 ? '' : 's'} found`;
@@ -2337,7 +2397,6 @@ Thank you.`
     const searchInput = document.getElementById('searchInput');
     if (searchInput && searchInput.dataset.mobileDrawerSyncBound !== 'true') {
       searchInput.dataset.mobileDrawerSyncBound = 'true';
-      searchInput.addEventListener('input', syncTrigger);
       searchInput.addEventListener('change', syncTrigger);
     }
 
@@ -2411,13 +2470,6 @@ Thank you.`
         toggle.setAttribute('aria-expanded', String(expanded));
         toggle.textContent = expanded ? 'Show less' : 'Show more';
       });
-    }
-
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput && searchInput.dataset.catalogSearchBound !== 'true') {
-      searchInput.dataset.catalogSearchBound = 'true';
-      searchInput.addEventListener('input', () => debounce(rerender));
-      searchInput.addEventListener('change', rerender);
     }
 
     const clearButton = document.getElementById('clearFilters');

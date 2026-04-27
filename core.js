@@ -13,7 +13,9 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
-  const PRODUCT_ASSET_VERSION = '20260426a';
+  // Bump this whenever storefront product bundles change so JSON/script fallbacks
+  // immediately bypass stale browser and service-worker catalog caches.
+  const PRODUCT_ASSET_VERSION = '20260427c';
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
   const FOOTER_THEME_BREAKPOINT = 700;

@@ -1,11 +1,13 @@
-const CACHE_VERSION = 'dj-house-v2026-04-27-6';
+const CACHE_VERSION = 'dj-house-v2026-04-27-7';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 const CACHE_TRIM_INTERVAL_MS = 30000;
 const cacheTrimTimestamps = new Map();
 const CACHE_ENTRY_LIMITS = {
   [RUNTIME_CACHE]: 120,
+  [CATALOG_CACHE]: 36,
   [IMAGE_CACHE]: 350
 };
 const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);
@@ -30,9 +32,9 @@ const APP_SHELL_ASSETS = [
   '/offline.html',
   '/styles.css?v=20260427b',
   '/styles-mobile-overrides.css?v=20260427b',
-  '/core.js?v=20260427d',
+  '/core.js?v=20260427e',
   '/nav.js?v=20260427c',
-  '/catalog.js?v=20260427d',
+  '/catalog.js?v=20260427e',
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
   '/supabase-client.js?v=20260423d',
@@ -74,7 +76,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => {
-      if (![SHELL_CACHE, RUNTIME_CACHE, IMAGE_CACHE].includes(key)) {
+      if (![SHELL_CACHE, RUNTIME_CACHE, CATALOG_CACHE, IMAGE_CACHE].includes(key)) {
         return caches.delete(key);
       }
       return Promise.resolve();
@@ -205,13 +207,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (isStaticAsset || isCatalogData) {
+  if (isCatalogData) {
+    event.respondWith(staleWhileRevalidate(request, CATALOG_CACHE, event, null));
+    return;
+  }
+
+  if (isStaticAsset) {
     event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE, event, null));
     return;
   }
 
   if (isRemoteCatalog) {
-    event.respondWith(networkFirst(request, RUNTIME_CACHE, null, event));
+    event.respondWith(networkFirst(request, CATALOG_CACHE, null, event));
   }
 });
 
