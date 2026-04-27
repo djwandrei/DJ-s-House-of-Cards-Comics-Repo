@@ -52,33 +52,8 @@
     return PAGE_LABELS[pageKey] || 'Navigation';
   }
 
-  function addSharedResizeListener(callback, options = {}) {
-    if (window.DJ && typeof window.DJ.addRafResizeListener === 'function') {
-      window.DJ.addRafResizeListener(callback, options);
-      return;
-    }
-
-    window.addEventListener('resize', callback);
-    if (options.runImmediately !== false) {
-      callback();
-    }
-  }
-
   function isCompactNavViewport() {
     return COMPACT_NAV_QUERY ? COMPACT_NAV_QUERY.matches : window.innerWidth <= COMPACT_NAV_BREAKPOINT;
-  }
-
-  function bindMediaQueryChange(query, handler) {
-    if (!query) return false;
-    if (typeof query.addEventListener === 'function') {
-      query.addEventListener('change', handler);
-      return true;
-    }
-    if (typeof query.addListener === 'function') {
-      query.addListener(handler);
-      return true;
-    }
-    return false;
   }
 
   // ---------------------------------------------------------------------------
@@ -296,8 +271,8 @@
       syncMenuAccessibility();
     };
 
-    if (!bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange)) {
-      addSharedResizeListener(handleViewportChange, { runImmediately: false });
+    if (!DJ.bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange)) {
+      DJ.addSharedResizeListener(handleViewportChange, { runImmediately: false });
     }
 
     document.addEventListener('keydown', (event) => {
@@ -542,7 +517,7 @@
       }
     });
 
-    addSharedResizeListener(() => {
+    DJ.addSharedResizeListener(() => {
       if (!isCompactNav()) {
         closeAllSubmenus();
       }

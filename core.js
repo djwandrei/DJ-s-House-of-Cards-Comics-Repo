@@ -1281,7 +1281,11 @@ window.DJ = window.DJ || {};
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
   DJ.getScrollBehavior = getScrollBehavior;
+  // Shared responsive helpers keep resize and media-query wiring consistent
+  // across navigation, catalog, and future page modules.
+  DJ.bindMediaQueryChange = bindMediaQueryChange;
   DJ.addRafResizeListener = addRafResizeListener;
+  DJ.addSharedResizeListener = addRafResizeListener;
   DJ.setStatus = function setStatus(elementId, message = '', state = 'info') {
     const element = document.getElementById(elementId);
     if (!element) {

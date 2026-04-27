@@ -144,18 +144,6 @@ window.DJ = window.DJ || {};
     [/\bplayoff\b/g, ' playoffs ']
   ];
 
-  function addSharedResizeListener(callback, options = {}) {
-    if (window.DJ && typeof window.DJ.addRafResizeListener === 'function') {
-      window.DJ.addRafResizeListener(callback, options);
-      return;
-    }
-
-    window.addEventListener('resize', callback);
-    if (options.runImmediately !== false) {
-      callback();
-    }
-  }
-
   function parseConditionDetails(rawCondition = '') {
     const raw = String(rawCondition || '').trim();
     const defaultUngradedCondition = 'Near Mint or Better';
@@ -1935,7 +1923,7 @@ Thank you.`
       });
     }
 
-    addSharedResizeListener(() => {
+    DJ.addSharedResizeListener(() => {
       syncState();
     }, { runImmediately: false });
 
@@ -2181,23 +2169,11 @@ Thank you.`
     const filterPanel = document.querySelector('.filter-panel');
     if (!filterPanel || filterPanel.dataset.mobileDrawerBound === 'true') return;
 
-    const MOBILE_BREAKPOINT = 900;
+    const MOBILE_BREAKPOINT = DESKTOP_FILTER_BREAKPOINT;
     const mobileDrawerQuery = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 900px)')
+      ? window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
       : null;
     const isMobileDrawerViewport = () => mobileDrawerQuery ? mobileDrawerQuery.matches : window.innerWidth <= MOBILE_BREAKPOINT;
-    const bindMediaQueryChange = (query, handler) => {
-      if (!query) return false;
-      if (typeof query.addEventListener === 'function') {
-        query.addEventListener('change', handler);
-        return true;
-      }
-      if (typeof query.addListener === 'function') {
-        query.addListener(handler);
-        return true;
-      }
-      return false;
-    };
     let drawerFocusTimer = 0;
 
     filterPanel.dataset.mobileDrawerBound = 'true';
@@ -2318,8 +2294,8 @@ Thank you.`
       syncDrawerAccessibility();
     };
 
-    if (!bindMediaQueryChange(mobileDrawerQuery, handleViewportChange)) {
-      addSharedResizeListener(handleViewportChange, { runImmediately: false });
+    if (!DJ.bindMediaQueryChange(mobileDrawerQuery, handleViewportChange)) {
+      DJ.addSharedResizeListener(handleViewportChange, { runImmediately: false });
     }
 
     document.addEventListener('keydown', (event) => {
