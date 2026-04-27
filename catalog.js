@@ -564,6 +564,44 @@ window.DJ = window.DJ || {};
     return countMap;
   }
 
+  /**
+   * Build the catalog facet counts in a single pass so large category pages do
+   * not repeatedly traverse the same product list just to populate filters.
+   */
+  function buildFacetSummary(products = []) {
+    const conditionCounts = new Map();
+    const attributeCounts = new Map();
+    const teamCounts = new Map();
+
+    (Array.isArray(products) ? products : []).forEach((product) => {
+      const condition = String(product?.conditionFacet || '').trim();
+      if (condition) {
+        conditionCounts.set(condition, (conditionCounts.get(condition) || 0) + 1);
+      }
+
+      const team = String(product?._teamFacet || '').trim();
+      if (team) {
+        teamCounts.set(team, (teamCounts.get(team) || 0) + 1);
+      }
+
+      const attributes = Array.isArray(product?.attributes) ? product.attributes : [];
+      attributes
+        .map((attribute) => String(attribute || '').trim())
+        .filter(Boolean)
+        .forEach((attribute) => {
+          attributeCounts.set(attribute, (attributeCounts.get(attribute) || 0) + 1);
+        });
+    });
+
+    return {
+      conditionCounts,
+      attributeCounts,
+      teamCounts,
+      availableAttributes: FILTER_ATTRIBUTE_OPTIONS.filter((attribute) => attributeCounts.has(attribute)),
+      teamValues: [...teamCounts.keys()].sort((left, right) => TEXT_COLLATOR.compare(left, right))
+    };
+  }
+
   function toCountedFacetOptions(values = [], countMap = new Map(), selectedValues = []) {
     const selected = new Set(selectedValues);
 
@@ -1429,6 +1467,7 @@ Thank you.`
 
   function mountFacetFilters(products, config, initialFilters) {
     const allowedProducts = Array.isArray(products) ? products : [];
+    const facetSummary = buildFacetSummary(allowedProducts);
 
     const conditionSelect = document.getElementById('conditionFilter');
     const conditionGroup = conditionSelect?.closest('.field-group');
@@ -1436,12 +1475,11 @@ Thank you.`
     removeCategoryField();
 
     if (conditionGroup) {
-      const conditionCountMap = createFacetCountMap(allowedProducts, (product) => product.conditionFacet);
       conditionGroup.classList.add('field-group--facet');
       conditionGroup.innerHTML = buildFacetMarkup({
         name: 'condition',
         label: 'Condition',
-        options: toCountedFacetOptions(['Graded', 'Ungraded'], conditionCountMap, initialFilters.conditions),
+        options: toCountedFacetOptions(['Graded', 'Ungraded'], facetSummary.conditionCounts, initialFilters.conditions),
         selectedValues: initialFilters.conditions,
         collapsedCount: 5
       });
@@ -1456,12 +1494,10 @@ Thank you.`
     }
 
     if (attributeGroup) {
-      const availableAttributes = FILTER_ATTRIBUTE_OPTIONS.filter((attribute) => allowedProducts.some((product) => product.attributes.includes(attribute)));
-      const attributeCountMap = createFacetCountMap(allowedProducts, (product) => product.attributes);
       attributeGroup.innerHTML = buildFacetMarkup({
         name: 'attribute',
         label: 'Attributes',
-        options: toCountedFacetOptions(availableAttributes, attributeCountMap, initialFilters.attributes),
+        options: toCountedFacetOptions(facetSummary.availableAttributes, facetSummary.attributeCounts, initialFilters.attributes),
         selectedValues: initialFilters.attributes,
         emptyText: 'No enhanced attributes are available for this page yet.',
         collapsedCount: 5
@@ -1478,8 +1514,8 @@ Thank you.`
 
     if (teamGroup) {
       const teamOptions = toCountedFacetOptions(
-        getFacetOptions(allowedProducts, '_teamFacet'),
-        createFacetCountMap(allowedProducts, '_teamFacet'),
+        facetSummary.teamValues,
+        facetSummary.teamCounts,
         initialFilters.teams
       );
       teamGroup.innerHTML = buildFacetMarkup({
