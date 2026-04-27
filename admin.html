@@ -14,7 +14,7 @@
   <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.ttf" rel="preload" type="font/ttf"/>
   <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.ttf" rel="preload" type="font/ttf"/>
   <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260424a" rel="stylesheet"/>
+ <link href="styles.css?v=20260427a" rel="stylesheet"/>
  <link href="styles-mobile-overrides.css?v=20260424a" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
@@ -462,7 +462,7 @@
           <button class="button-secondary" id="importStorefrontEditsButton" type="button">
            Import Storefront Edits
           </button>
-          <input accept="application/json" class="sr-only" id="importStorefrontEditsInput" type="file"/>
+          <input accept="application/json" aria-label="Import storefront edits JSON file" class="sr-only" id="importStorefrontEditsInput" type="file"/>
          </div>
         </div>
         <div class="custom-items" id="existingListingsList">
@@ -584,7 +584,7 @@
            Delete from Storefront
           </button>
          </div>
-         <input accept="image/*" class="sr-only" id="existingReplaceMainPhotoInput" type="file"/>
+         <input accept="image/*" aria-label="Replace selected listing main photo" class="sr-only" id="existingReplaceMainPhotoInput" type="file"/>
          <div class="admin-gallery-editor">
           <div class="admin-gallery-editor__header">
            <h3 class="section-title section-title--small">
@@ -597,14 +597,14 @@
           <div class="admin-gallery-list" id="existingGalleryList">
           </div>
           <div class="admin-gallery-add-row">
-           <input autocomplete="off" id="existingGalleryUrl" placeholder="Paste a gallery image URL" type="text"/>
+           <input aria-label="Gallery image URL" autocomplete="off" id="existingGalleryUrl" placeholder="Paste a gallery image URL" type="text"/>
            <button class="button-secondary" id="existingAddGalleryUrlButton" type="button">
             Add URL
            </button>
            <button class="button-secondary" id="existingAddGalleryFileButton" type="button">
             Upload Photo
            </button>
-           <input accept="image/*" class="sr-only" id="existingGalleryFileInput" type="file"/>
+           <input accept="image/*" aria-label="Upload gallery photo" class="sr-only" id="existingGalleryFileInput" type="file"/>
           </div>
          </div>
          <div class="inline-actions compact">

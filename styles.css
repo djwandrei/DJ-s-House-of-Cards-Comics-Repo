@@ -644,11 +644,15 @@ body.dark-mode .product-badge {
   color:var(--muted)
 }
 .story-list li::before {
-  content:"\2022";
+  content:"";
   position:absolute;
   left:0;
-  color:var(--brand-red);
-  font-weight:800
+  top:.6em;
+  width:.42rem;
+  height:.42rem;
+  border-radius:999px;
+  background:var(--brand-red);
+  box-shadow:0 0 0 .2rem rgba(239,29,53,.12)
 }
 .stats-grid .stat-card {
   text-align:center
