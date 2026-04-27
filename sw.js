@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-04-27-1';
+const CACHE_VERSION = 'dj-house-v2026-04-27-2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -10,9 +10,10 @@ const CACHE_ENTRY_LIMITS = {
 };
 const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);
 const SUPABASE_HOST_PATTERN = /supabase\.co$/i;
+const CACHE_BYPASS_PATHS = new Set(['/admin.html']);
 
-// Keep the offline shell limited to files needed for the storefront to open,
-// then let runtime caching collect product data and thumbnails as shoppers browse.
+// Keep the offline shell limited to public storefront files, then let runtime
+// caching collect product data and thumbnails as shoppers browse.
 const APP_SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -26,7 +27,6 @@ const APP_SHELL_ASSETS = [
   '/wishlist.html',
   '/about.html',
   '/contact.html',
-  '/admin.html',
   '/offline.html',
   '/styles.css?v=20260427a',
   '/styles-mobile-overrides.css?v=20260424a',
@@ -36,8 +36,6 @@ const APP_SHELL_ASSETS = [
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
   '/supabase-client.js?v=20260423d',
-  '/admin.js?v=20260425b',
-  '/backend-admin.js?v=20260423d',
   '/site.webmanifest?v=20260423d',
   '/offline.js?v=20260423d',
   '/vendor/supabase.min.js',
@@ -185,10 +183,15 @@ self.addEventListener('fetch', (event) => {
   );
   const isRemoteCatalog = SUPABASE_HOST_PATTERN.test(url.hostname);
   const hasAuthorizationHeader = request.headers.has('authorization');
+  const shouldBypassCache = isSameOrigin && CACHE_BYPASS_PATHS.has(url.pathname);
 
   // Authenticated Supabase calls may include user-specific data, so let the
   // browser/network handle them instead of writing those responses to cache.
   if (isRemoteCatalog && hasAuthorizationHeader) {
+    return;
+  }
+
+  if (shouldBypassCache) {
     return;
   }
 

@@ -32,7 +32,7 @@ FileETag MTime Size
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), browsing-topics=()"
-  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; form-action 'self' mailto:; manifest-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://gkqdymnmczabcggvigce.supabase.co https://cdn.jsdelivr.net https://unpkg.com; media-src 'self' data: blob: https:"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; form-action 'self' mailto:; manifest-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://gkqdymnmczabcggvigce.supabase.co https://cdn.jsdelivr.net https://unpkg.com; media-src 'self' data: blob: https:; upgrade-insecure-requests"
 
   Header always set Strict-Transport-Security "max-age=31536000"
 
@@ -46,6 +46,10 @@ FileETag MTime Size
 
   <FilesMatch "^(?:index\.html|shop\.html|sports-cards\.html|baseball-cards\.html|basketball-cards\.html|football-cards\.html|comics\.html|collectibles\.html|wishlist\.html|about\.html|contact\.html|admin\.html|offline\.html)$">
     Header set Cache-Control "public, max-age=300, stale-while-revalidate=30"
+  </FilesMatch>
+
+  <FilesMatch "^(?:admin|wishlist|offline)\.html$">
+    Header set X-Robots-Tag "noindex, nofollow, noarchive"
   </FilesMatch>
 
   <Files "sw.js">
