@@ -1302,26 +1302,19 @@ Thank you.`
       return Number.isFinite(numericValue) ? numericValue : null;
     };
 
+    const normalizeRangePair = (minValue, maxValue) => (
+      minValue != null && maxValue != null && minValue > maxValue
+        ? [maxValue, minValue]
+        : [minValue, maxValue]
+    );
+
     let yearMin = numericFieldValue('yearMin');
     let yearMax = numericFieldValue('yearMax');
     let priceMin = numericFieldValue('priceMin');
     let priceMax = numericFieldValue('priceMax');
 
-    if (yearMin != null && yearMax != null && yearMin > yearMax) {
-      [yearMin, yearMax] = [yearMax, yearMin];
-      const yearMinField = document.getElementById('yearMin');
-      const yearMaxField = document.getElementById('yearMax');
-      if (yearMinField) yearMinField.value = String(yearMin);
-      if (yearMaxField) yearMaxField.value = String(yearMax);
-    }
-
-    if (priceMin != null && priceMax != null && priceMin > priceMax) {
-      [priceMin, priceMax] = [priceMax, priceMin];
-      const priceMinField = document.getElementById('priceMin');
-      const priceMaxField = document.getElementById('priceMax');
-      if (priceMinField) priceMinField.value = String(priceMin);
-      if (priceMaxField) priceMaxField.value = String(priceMax);
-    }
+    [yearMin, yearMax] = normalizeRangePair(yearMin, yearMax);
+    [priceMin, priceMax] = normalizeRangePair(priceMin, priceMax);
 
     return {
       filterText: String(document.getElementById('searchInput')?.value || '').trim(),
@@ -1589,6 +1582,26 @@ Thank you.`
       }
 
       resultsToolbar.insertBefore(sortControl, resultsToolbar.firstElementChild);
+    }
+
+    if (!resultsToolbar.querySelector('.toolbar-search')) {
+      const searchInput = document.getElementById('searchInput');
+      const searchFieldGroup = searchInput?.closest('.field-group');
+      const sortControl = resultsToolbar.querySelector('.toolbar-sort');
+      if (searchFieldGroup) {
+        const toolbarSearch = document.createElement('div');
+        toolbarSearch.className = 'toolbar-search';
+        toolbarSearch.setAttribute('role', 'search');
+
+        const searchLabel = searchFieldGroup.querySelector('label[for="searchInput"]');
+        const filterHelp = searchFieldGroup.querySelector('#filterHelp');
+        searchFieldGroup.classList.add('field-group--toolbar-search');
+        searchLabel?.classList.add('sr-only');
+        filterHelp?.classList.add('sr-only');
+
+        toolbarSearch.appendChild(searchFieldGroup);
+        resultsToolbar.insertBefore(toolbarSearch, sortControl ? sortControl.nextSibling : resultsToolbar.firstElementChild);
+      }
     }
 
     if (resultsToolbar.querySelector('.toolbar-actions')) return;
@@ -2321,6 +2334,13 @@ Thank you.`
       if (event.target.matches('input[type=\"checkbox\"], select')) syncTrigger();
     });
 
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && searchInput.dataset.mobileDrawerSyncBound !== 'true') {
+      searchInput.dataset.mobileDrawerSyncBound = 'true';
+      searchInput.addEventListener('input', syncTrigger);
+      searchInput.addEventListener('change', syncTrigger);
+    }
+
     syncTrigger();
     syncDrawerAccessibility();
   }
@@ -2391,7 +2411,14 @@ Thank you.`
         toggle.setAttribute('aria-expanded', String(expanded));
         toggle.textContent = expanded ? 'Show less' : 'Show more';
       });
-      }
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && searchInput.dataset.catalogSearchBound !== 'true') {
+      searchInput.dataset.catalogSearchBound = 'true';
+      searchInput.addEventListener('input', () => debounce(rerender));
+      searchInput.addEventListener('change', rerender);
+    }
 
     const clearButton = document.getElementById('clearFilters');
     if (clearButton && clearButton.dataset.bound !== 'true') {

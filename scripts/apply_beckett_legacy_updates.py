@@ -30,6 +30,7 @@ WORKBOOK_PATH = Path.home() / "Documents" / "eBay Docs" / "Listing Automation" /
 CACHE_PATH = Path.home() / "Documents" / "eBay Docs" / "Listing Automation" / "beckett_legacy_pricing_cache.json"
 BACKUP_ROOT = Path.home() / "Documents" / "eBay Docs" / "Listing Automation" / "backups"
 REPORT_PATH = ROOT / "outputs" / "beckett-legacy-update-report.json"
+REAL_TIME_HEADERS = ("Beckett Live Pricing", "Beckett Real Time Pricing")
 
 PRODUCT_FILES = {
     "products.json": lambda items: items,
@@ -229,14 +230,23 @@ def get_headers(ws) -> dict[str, int]:
 
 def ensure_realtime_column(ws) -> int:
     headers = get_headers(ws)
-    if "Beckett Real Time Pricing" in headers:
-        return headers["Beckett Real Time Pricing"]
+    for header in REAL_TIME_HEADERS:
+        if header in headers:
+            return headers[header]
 
     target_col = ws.max_column + 1
     ws.cell(1, target_col).value = "Beckett Real Time Pricing"
     ws.cell(1, target_col).fill = PatternFill("solid", fgColor="1F2937")
     ws.cell(1, target_col).font = Font(color="FFFFFF", bold=True)
     return target_col
+
+
+def realtime_value_from_row(row: dict[str, Any]) -> Any:
+    for header in REAL_TIME_HEADERS:
+        value = row.get(header)
+        if str(value or "").strip():
+            return value
+    return row.get("Beckett Real Time Pricing")
 
 
 def row_to_dict(ws, row_index: int) -> dict[str, Any]:
@@ -318,7 +328,7 @@ def best_price_for_row(row: dict[str, Any], cache: dict[str, Any]) -> tuple[str,
     # For ungraded legacy rows, the workbook's Beckett Real Time Pricing column
     # is the source of truth. Preserve explicit "N/A" values instead of silently
     # falling back to older guide/original pricing on the storefront.
-    label = normalize_realtime_label(row.get("Beckett Real Time Pricing"))
+    label = normalize_realtime_label(realtime_value_from_row(row))
     if label == "N/A":
         return label, "real_time_na"
     return label, "real_time"
@@ -455,7 +465,7 @@ def main() -> int:
             if args.clear_realtime:
                 ws.cell(row_index, realtime_col).value = None
                 row["Beckett Real Time Pricing"] = None
-            existing_rt = str(row.get("Beckett Real Time Pricing") or "").strip()
+            existing_rt = str(realtime_value_from_row(row) or "").strip()
             realtime_label = normalize_realtime_label(existing_rt)
 
             if not realtime_label and url:
@@ -532,9 +542,10 @@ def main() -> int:
     rebuild_product_files(updated_products)
 
     for ws in wb.worksheets:
-        if "Beckett Real Time Pricing" in get_headers(ws):
-            col = get_headers(ws)["Beckett Real Time Pricing"]
-            ws.column_dimensions[ws.cell(1, col).column_letter].width = 24
+        headers = get_headers(ws)
+        realtime_col = next((headers[header] for header in REAL_TIME_HEADERS if header in headers), None)
+        if realtime_col is not None:
+            ws.column_dimensions[ws.cell(1, realtime_col).column_letter].width = 24
 
     wb.save(WORKBOOK_PATH)
     save_cache(cache)

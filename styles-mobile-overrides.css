@@ -36,6 +36,7 @@
   }
 
   .catalog-results-column .results-toolbar .toolbar-sort,
+  .catalog-results-column .results-toolbar .toolbar-search,
   .catalog-results-column .results-toolbar .results-meta,
   .catalog-results-column .results-toolbar .toolbar-actions {
     width:100%;
@@ -45,6 +46,10 @@
 
   .catalog-results-column .results-toolbar .toolbar-sort {
     justify-content:space-between;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-search .field-group--toolbar-search {
+    padding:.28rem .38rem .28rem .68rem;
   }
 
   .catalog-results-column .results-toolbar .toolbar-sort select {
@@ -183,9 +188,9 @@
     position:fixed;
     top:calc(var(--header-h, 4.6rem) + .55rem);
     right:.55rem;
-    width:2.85rem;
-    height:2.85rem;
-    border-radius:14px;
+    width:3rem;
+    height:3rem;
+    border-radius:18px;
     z-index:10020;
     border:1px solid rgba(255,255,255,.16);
     background:rgba(9,16,34,.94);
@@ -462,9 +467,9 @@
     position:fixed;
     top:calc(var(--header-h, 4.6rem) + .55rem);
     right:.55rem;
-    width:2.85rem;
-    height:2.85rem;
-    border-radius:14px;
+    width:3rem;
+    height:3rem;
+    border-radius:18px;
     z-index:10020;
     border:1px solid rgba(255,255,255,.16);
     background:rgba(9,16,34,.94);
