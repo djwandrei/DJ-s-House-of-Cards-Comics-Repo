@@ -135,6 +135,8 @@ window.DJ = window.DJ || {};
   let currentCatalogPage = 1;
   let currentCatalogItemsPerPage = DEFAULT_CATALOG_ITEMS_PER_PAGE;
   let wishlistPageRefreshTimer = 0;
+  let catalogRenderRequestId = 0;
+  let wishlistRenderRequestId = 0;
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
   const TEXT_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
@@ -1333,16 +1335,23 @@ Thank you.`
       ? `${summaryText}. ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'} active.`
       : `${summaryText}. Showing all available items.`;
 
-    if (resultsSummary) resultsSummary.textContent = longSummary;
-    if (resultsLive) resultsLive.textContent = longSummary;
+    if (resultsSummary && resultsSummary.textContent !== longSummary) {
+      resultsSummary.textContent = longSummary;
+    }
+    if (resultsLive && resultsLive.textContent !== longSummary) {
+      resultsLive.textContent = longSummary;
+    }
 
     if (activeFiltersWrap) {
-      activeFiltersWrap.innerHTML = activeFilters.map((item) => `
+      const nextMarkup = activeFilters.map((item) => `
         <button type="button" class="filter-chip filter-chip--removable" data-clear-filter="${DJ.escapeHtml(item.key)}" aria-label="Clear ${DJ.escapeHtml(item.label)} filter">
           <span>${DJ.escapeHtml(filterLabel(item.label, item.value))}</span>
           <span class="filter-chip-x" aria-hidden="true">&times;</span>
         </button>
       `).join('');
+      if (activeFiltersWrap.innerHTML !== nextMarkup) {
+        activeFiltersWrap.innerHTML = nextMarkup;
+      }
     }
 
     if (typeof updateMobileFilterState === 'function') {
@@ -1773,8 +1782,16 @@ Thank you.`
 
     document.querySelectorAll('.catalog-pagination').forEach((pagination) => {
       const placement = pagination.id === 'catalogPaginationBottom' ? 'bottom' : 'top';
+      const renderSignature = shouldShowPagination
+        ? [placement, state.page, state.totalPages, state.totalCount, state.startIndex, state.endIndex, state.perPage].join('|')
+        : 'hidden';
       pagination.hidden = !shouldShowPagination;
+      if (pagination.dataset.paginationSignature === renderSignature) {
+        return;
+      }
+
       pagination.innerHTML = shouldShowPagination ? renderPaginationMarkup(state, placement) : '';
+      pagination.dataset.paginationSignature = renderSignature;
     });
   }
 
@@ -2155,14 +2172,19 @@ Thank you.`
   }
 
   /**
-   * Render a category page once, then keep filtering in-memory. This keeps the UI
-   * responsive because filter changes do not require additional network requests.
+   * Render a category page once, then keep filtering in-memory. Callers can pass
+   * the already-loaded product list during boot so the first render avoids a
+   * duplicate cached source lookup.
    */
-  async function renderCatalogPage(config = {}) {
+  async function renderCatalogPage(config = {}, cachedAllowedProducts = null) {
     const productContainer = document.getElementById('productContainer');
     if (!productContainer) return;
 
-    const { allowedProducts } = await getCatalogPageProducts(config);
+    const renderRequestId = ++catalogRenderRequestId;
+    const allowedProducts = Array.isArray(cachedAllowedProducts)
+      ? cachedAllowedProducts
+      : (await getCatalogPageProducts(config)).allowedProducts;
+    if (renderRequestId !== catalogRenderRequestId) return;
 
     const filters = getCurrentFilters();
     syncToolbarSortControl(filters.sort);
@@ -2536,12 +2558,13 @@ Thank you.`
       });
     }
 
-    await renderCatalogPage(config);
+    await renderCatalogPage(config, allowedProducts);
   }
 
   async function renderWishlistPage() {
     const wishlistContainer = document.getElementById('wishlistContainer');
     if (!wishlistContainer) return;
+    const renderRequestId = ++wishlistRenderRequestId;
     const wishlistPageCount = document.getElementById('wishlistPageCount');
     const storedWishlist = DJ.getWishlist().map(Number);
 
@@ -2592,6 +2615,8 @@ Thank you.`
       const wishlistIdSet = new Set(storedWishlist);
       wishlistProducts = allProducts.filter((product) => wishlistIdSet.has(Number(product.id)));
     }
+
+    if (renderRequestId !== wishlistRenderRequestId) return;
 
     wishlistProducts = sortProductsByIdOrder(wishlistProducts, storedWishlist);
 

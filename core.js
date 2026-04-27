@@ -16,6 +16,7 @@ window.DJ = window.DJ || {};
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
   const PRODUCT_ASSET_VERSION = '20260427c';
+  const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
   const FOOTER_THEME_BREAKPOINT = 700;
@@ -41,6 +42,30 @@ window.DJ = window.DJ || {};
     productOverrides: 'productOverrides',
     deletedProductIds: 'deletedProductIds'
   };
+  const safeAssetUrlCache = new Map();
+  const assetUrlCandidatesCache = new Map();
+  const thumbnailAssetUrlCache = new Map();
+  const thumbnailAssetCandidatesCache = new Map();
+
+  function setBoundedCacheValue(cache, key, value) {
+    if (!cache.has(key) && cache.size >= ASSET_HELPER_CACHE_LIMIT) {
+      const oldestKey = cache.keys().next().value;
+      if (oldestKey !== undefined) {
+        cache.delete(oldestKey);
+      }
+    }
+
+    cache.set(key, value);
+    return value;
+  }
+
+  function getBoundedCachedValue(cache, key, createValue) {
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    return setBoundedCacheValue(cache, key, createValue());
+  }
 
   function versionedProductAsset(path) {
     return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
@@ -925,26 +950,28 @@ window.DJ = window.DJ || {};
       return url;
     }
 
-    if (!/^assets\//i.test(url)) {
-      return url;
-    }
+    return getBoundedCachedValue(safeAssetUrlCache, url, () => {
+      if (!/^assets\//i.test(url)) {
+        return url;
+      }
 
-    return url
-      .split('/')
-      .map((segment, index) => {
-        if (index === 0) {
-          return segment;
-        }
+      return url
+        .split('/')
+        .map((segment, index) => {
+          if (index === 0) {
+            return segment;
+          }
 
-        try {
-          return encodeURIComponent(decodeURIComponent(segment));
-        } catch (error) {
-          return encodeURIComponent(segment);
-        }
-      })
-      .join('/')
-      .replace(/%28/g, '(')
-      .replace(/%29/g, ')');
+          try {
+            return encodeURIComponent(decodeURIComponent(segment));
+          } catch (error) {
+            return encodeURIComponent(segment);
+          }
+        })
+        .join('/')
+        .replace(/%28/g, '(')
+        .replace(/%29/g, ')');
+    });
   };
 
   /**
@@ -956,18 +983,20 @@ window.DJ = window.DJ || {};
       return [];
     }
 
-    const safeUrl = DJ.safeAssetUrl(url);
-    if (!/^assets\//i.test(url)) {
-      return safeUrl ? [safeUrl] : [];
-    }
+    return getBoundedCachedValue(assetUrlCandidatesCache, url, () => {
+      const safeUrl = DJ.safeAssetUrl(url);
+      if (!/^assets\//i.test(url)) {
+        return safeUrl ? [safeUrl] : [];
+      }
 
-    const lowerVariant = url.replace(/^Assets\//, 'assets/');
-    const upperVariant = url.replace(/^assets\//, 'Assets/');
-    return [...new Set([
-      safeUrl,
-      DJ.safeAssetUrl(lowerVariant),
-      DJ.safeAssetUrl(upperVariant)
-    ].filter(Boolean))];
+      const lowerVariant = url.replace(/^Assets\//, 'assets/');
+      const upperVariant = url.replace(/^assets\//, 'Assets/');
+      return [...new Set([
+        safeUrl,
+        DJ.safeAssetUrl(lowerVariant),
+        DJ.safeAssetUrl(upperVariant)
+      ].filter(Boolean))];
+    });
   };
 
   /**
@@ -1008,19 +1037,21 @@ window.DJ = window.DJ || {};
       return '';
     }
 
-    const normalized = String(url).trim();
-    if (!DJ.isThumbnailEligibleAsset(normalized)) {
-      return DJ.safeAssetUrl(normalized);
-    }
+    return getBoundedCachedValue(thumbnailAssetUrlCache, url, () => {
+      const normalized = String(url).trim();
+      if (!DJ.isThumbnailEligibleAsset(normalized)) {
+        return DJ.safeAssetUrl(normalized);
+      }
 
-    const relativePath = normalized.replace(/^assets\//i, '');
-    const extension = relativePath.split('.').pop()?.toLowerCase() || '';
-    if (!extension || extension === 'svg') {
-      return DJ.safeAssetUrl(normalized);
-    }
+      const relativePath = normalized.replace(/^assets\//i, '');
+      const extension = relativePath.split('.').pop()?.toLowerCase() || '';
+      if (!extension || extension === 'svg') {
+        return DJ.safeAssetUrl(normalized);
+      }
 
-    const thumbnailPath = `assets/thumbnails/${relativePath.replace(/\.[^.]+$/, '.webp')}`;
-    return DJ.safeAssetUrl(thumbnailPath);
+      const thumbnailPath = `assets/thumbnails/${relativePath.replace(/\.[^.]+$/, '.webp')}`;
+      return DJ.safeAssetUrl(thumbnailPath);
+    });
   };
 
   /**
@@ -1033,16 +1064,18 @@ window.DJ = window.DJ || {};
       return [];
     }
 
-    const baseCandidates = DJ.getAssetUrlCandidates(url);
-    if (!DJ.isThumbnailEligibleAsset(url)) {
-      return baseCandidates;
-    }
+    return getBoundedCachedValue(thumbnailAssetCandidatesCache, url, () => {
+      const baseCandidates = DJ.getAssetUrlCandidates(url);
+      if (!DJ.isThumbnailEligibleAsset(url)) {
+        return baseCandidates;
+      }
 
-    const thumbnailUrl = DJ.getThumbnailAssetUrl(url);
-    return [...new Set([
-      ...DJ.getAssetUrlCandidates(thumbnailUrl),
-      ...baseCandidates
-    ].filter(Boolean))];
+      const thumbnailUrl = DJ.getThumbnailAssetUrl(url);
+      return [...new Set([
+        ...DJ.getAssetUrlCandidates(thumbnailUrl),
+        ...baseCandidates
+      ].filter(Boolean))];
+    });
   };
 
 
