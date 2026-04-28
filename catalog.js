@@ -2502,6 +2502,12 @@ Thank you.`
       currentCatalogPage = 1;
       return renderCatalogPage(config);
     };
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && searchInput.dataset.catalogRenderBound !== 'true') {
+      searchInput.dataset.catalogRenderBound = 'true';
+      searchInput.addEventListener('input', () => debounce(rerender));
+      searchInput.addEventListener('change', rerender);
+    }
     const filterPanel = document.querySelector('.filter-panel');
 
     if (filterPanel && filterPanel.dataset.catalogBindings !== 'true') {
