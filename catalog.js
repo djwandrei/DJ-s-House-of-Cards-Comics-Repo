@@ -811,7 +811,7 @@ window.DJ = window.DJ || {};
           yearLabel,
           conditionInfo.summary,
           attributes.join(' ')
-        ].join(' ').toLowerCase()
+        ].join(' ').toLowerCase())
       };
     });
   }
