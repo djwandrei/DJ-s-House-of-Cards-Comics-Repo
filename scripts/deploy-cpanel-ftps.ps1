@@ -325,10 +325,11 @@ function Invoke-Delete {
     return
   }
 
+  $remoteRootUrl = "{0}://{1}:{2}/" -f (Get-CurlUrlScheme), $script:DeployConfig.host, $script:DeployConfig.port
   $args = Get-CurlCommonArguments
   $args += @(
     "--quote", "DELE $remotePath",
-    "{0}://{1}:{2}/" -f (Get-CurlUrlScheme), $script:DeployConfig.host, $script:DeployConfig.port
+    $remoteRootUrl
   )
 
   & curl.exe @args
