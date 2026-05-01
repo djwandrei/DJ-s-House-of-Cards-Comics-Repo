@@ -165,7 +165,7 @@ async def main() -> None:
 
             for _ in range(80):
                 count = await client.evaluate(
-                    "document.querySelectorAll('.product-card:not(.product-card--loading)[data-product-id]').length"
+                    "document.querySelectorAll('.product-card[data-product-id]').length"
                 )
                 if count and count > 0:
                     break
@@ -235,7 +235,7 @@ async def main() -> None:
                   if (!trigger) return { error: 'missing trigger' };
                   trigger.click();
                   await new Promise((resolve) => setTimeout(resolve, 150));
-                  const panel = document.querySelector('.filter-panel--drawer');
+                  const panel = document.querySelector('.filter-panel');
                   const closeButton = document.querySelector('.filter-panel-dismiss');
                   const panelRect = panel?.getBoundingClientRect();
                   const closeRect = closeButton?.getBoundingClientRect();
@@ -263,24 +263,25 @@ async def main() -> None:
                     width: rect.width,
                     height: rect.height
                   }) : null;
-                  const card = document.querySelector('.product-card:not(.product-card--loading)[data-product-id]');
+                  const card = document.querySelector('.product-card[data-product-id]');
                   if (!card) return { error: 'missing product card' };
                   card.scrollIntoView({ block: 'center', inline: 'nearest' });
                   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
                   card.click();
                   for (let i = 0; i < 15; i += 1) {
-                    if (document.querySelector('.modal.active')) break;
+                    if (document.querySelector('#productModal.active')) break;
                     await new Promise((resolve) => setTimeout(resolve, 80));
                   }
-                  if (!document.querySelector('.modal.active')) {
+                  if (!document.querySelector('#productModal.active')) {
                     const media = card.querySelector('.product-media img, .product-media');
                     media?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
                   }
                   for (let i = 0; i < 20; i += 1) {
-                    if (document.querySelector('.modal.active')) break;
+                    if (document.querySelector('#productModal.active')) break;
                     await new Promise((resolve) => setTimeout(resolve, 80));
                   }
-                  const closeButton = document.querySelector('.modal.active .modal-close');
+                  const modal = document.querySelector('#productModal.active');
+                  const closeButton = modal?.querySelector('.modal-close');
                   const rect = closeButton?.getBoundingClientRect();
                   const rootStyles = getComputedStyle(document.documentElement);
                   const closeStyles = closeButton ? getComputedStyle(closeButton) : null;
@@ -301,7 +302,7 @@ async def main() -> None:
                     }
                   });
                   return {
-                    modalOpen: !!document.querySelector('.modal.active'),
+                    modalOpen: !!modal,
                     closeExists: !!closeButton,
                     closeVisible: !!closeButton && !!rect && rect.width > 0 && rect.height > 0,
                     closeRect: toRect(rect),
@@ -316,9 +317,9 @@ async def main() -> None:
 
             modal_closed = await client.evaluate(
                 """(async () => {
-                  document.querySelector('.modal.active .modal-close')?.click();
+                  document.querySelector('#productModal.active .modal-close')?.click();
                   await new Promise((resolve) => setTimeout(resolve, 150));
-                  return { modalStillOpen: !!document.querySelector('.modal.active') };
+                  return { modalStillOpen: !!document.querySelector('#productModal.active') };
                 })()"""
             )
 

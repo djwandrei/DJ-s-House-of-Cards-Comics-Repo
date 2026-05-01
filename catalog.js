@@ -1297,17 +1297,20 @@ Thank you.`
   // Results summary and active-filter UI
   // ---------------------------------------------------------------------------
 
-  function renderActiveFilters(filters, config = {}) {
+  function renderActiveFilters(filters = {}, config = {}) {
     const activeFilters = [];
     const teamLabel = getTeamFacetLabel(config);
+    const conditions = Array.isArray(filters.conditions) ? filters.conditions : [];
+    const attributes = Array.isArray(filters.attributes) ? filters.attributes : [];
+    const teams = Array.isArray(filters.teams) ? filters.teams : [];
     const addFilter = (key, label, value, tone = 'default') => {
       activeFilters.push({ key, label, value, tone });
     };
 
     if (filters.filterText) addFilter('filterText', 'Search', `"${filters.filterText}"`, 'search');
-    filters.conditions.forEach((value) => addFilter(`condition::${encodeURIComponent(value)}`, 'Condition', value, 'facet'));
-    filters.attributes.forEach((value) => addFilter(`attribute::${encodeURIComponent(value)}`, 'Attribute', value, 'facet'));
-    filters.teams.forEach((value) => addFilter(`team::${encodeURIComponent(value)}`, teamLabel, value, 'facet'));
+    conditions.forEach((value) => addFilter(`condition::${encodeURIComponent(value)}`, 'Condition', value, 'facet'));
+    attributes.forEach((value) => addFilter(`attribute::${encodeURIComponent(value)}`, 'Attribute', value, 'facet'));
+    teams.forEach((value) => addFilter(`team::${encodeURIComponent(value)}`, teamLabel, value, 'facet'));
     if (filters.yearMin != null) addFilter('yearMin', 'Year from', filters.yearMin, 'range');
     if (filters.yearMax != null) addFilter('yearMax', 'Year to', filters.yearMax, 'range');
     if (filters.priceMin != null) addFilter('priceMin', 'Min price', DJ.currency(filters.priceMin), 'range');
