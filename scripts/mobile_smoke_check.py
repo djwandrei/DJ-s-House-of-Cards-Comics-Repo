@@ -171,6 +171,18 @@ async def main() -> None:
                     break
                 await asyncio.sleep(0.2)
 
+            # Product cards can render before the responsive helpers finish
+            # inserting the mobile-only filter trigger, so wait for the full
+            # mobile chrome before measuring drawer/menu geometry.
+            await client.evaluate("window.dispatchEvent(new Event('resize'));")
+            for _ in range(80):
+                mobile_controls_ready = await client.evaluate(
+                    "Boolean(document.querySelector('.mobile-filter-trigger') && document.getElementById('navToggle') && document.getElementById('siteNav'))"
+                )
+                if mobile_controls_ready:
+                    break
+                await asyncio.sleep(0.2)
+
             nav_state = await client.evaluate(
                 """(async () => {
                   const toRect = (rect) => rect ? ({
@@ -234,7 +246,9 @@ async def main() -> None:
                   const trigger = document.querySelector('.mobile-filter-trigger');
                   if (!trigger) return { error: 'missing trigger' };
                   trigger.click();
-                  await new Promise((resolve) => setTimeout(resolve, 150));
+                  // Wait through the drawer transition before measuring; otherwise
+                  // the panel can be sampled while it is still off canvas.
+                  await new Promise((resolve) => setTimeout(resolve, 350));
                   const panel = document.querySelector('.filter-panel');
                   const closeButton = document.querySelector('.filter-panel-dismiss');
                   const panelRect = panel?.getBoundingClientRect();
@@ -251,7 +265,7 @@ async def main() -> None:
             filter_screenshot = await client.capture("mobile-filter-drawer.png")
 
             await client.evaluate("document.querySelector('.filter-panel-dismiss')?.click();")
-            await asyncio.sleep(0.12)
+            await asyncio.sleep(0.35)
 
             modal_state = await client.evaluate(
                 """(async () => {
