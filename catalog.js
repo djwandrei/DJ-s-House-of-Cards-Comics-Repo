@@ -1022,7 +1022,7 @@ window.DJ = window.DJ || {};
   // Product card rendering and interaction helpers
   // ---------------------------------------------------------------------------
 
-  function renderProductCard(product, wishlistIds) {
+  function renderProductCard(product, wishlistIds, options = {}) {
     const isWishlisted = wishlistIds.has(Number(product.id));
     const heart = isWishlisted ? '\u2665' : '\u2661';
     const metaLine = [product.yearLabel || product.year || '', product.team || '']
@@ -1037,13 +1037,17 @@ window.DJ = window.DJ || {};
     const cardImageAlt = buildProductImageAlt(product, { context: 'card' });
     const cardImageCandidates = DJ.getThumbnailAssetCandidates(product.image);
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
+    // Give above-the-fold cards a real loading priority, while keeping the rest
+    // lazy so large catalog pages stay light on bandwidth and CPU.
+    const imagePriority = options.imagePriority === 'high' ? 'high' : 'low';
+    const imageLoading = imagePriority === 'high' ? 'eager' : 'lazy';
 
     return `
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" title="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">${heart}</button>
         <div class="product-media">
           ${renderProductCardFlags(product)}
-          <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="lazy" decoding="async" fetchpriority="low">
+          <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
         <div class="product-content">
           <h4>${DJ.escapeHtml(product.name)}</h4>
@@ -2222,7 +2226,11 @@ Thank you.`
 
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
     clearProductGridLoadingState(productContainer);
-    productContainer.innerHTML = visibleProducts.map((product) => renderProductCard(product, wishlistIds)).join('');
+    productContainer.innerHTML = visibleProducts
+      .map((product, index) => renderProductCard(product, wishlistIds, {
+        imagePriority: index < 6 ? 'high' : 'low'
+      }))
+      .join('');
     attachGridHandlers(productContainer, visibleProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(productContainer);
@@ -2661,7 +2669,11 @@ Thank you.`
     }
 
     clearProductGridLoadingState(wishlistContainer);
-    wishlistContainer.innerHTML = wishlistProducts.map((product) => renderProductCard(product, wishlistIds)).join('');
+    wishlistContainer.innerHTML = wishlistProducts
+      .map((product, index) => renderProductCard(product, wishlistIds, {
+        imagePriority: index < 4 ? 'high' : 'low'
+      }))
+      .join('');
     attachGridHandlers(wishlistContainer, wishlistProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(wishlistContainer);
@@ -2884,7 +2896,11 @@ Thank you.`
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
 
     clearProductGridLoadingState(featuredProductsWrap);
-    featuredProductsWrap.innerHTML = featuredProducts.map((product) => renderProductCard(product, wishlistIds)).join('');
+    featuredProductsWrap.innerHTML = featuredProducts
+      .map((product, index) => renderProductCard(product, wishlistIds, {
+        imagePriority: index < 4 ? 'high' : 'low'
+      }))
+      .join('');
     attachGridHandlers(featuredProductsWrap, featuredProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(featuredProductsWrap);
