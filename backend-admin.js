@@ -39,6 +39,7 @@ window.DJ = window.DJ || {};
     localFallbackVisible: false,
     authSubscription: null,
     isBusy: false,
+    editorDirty: false,
     remoteVisibleLimit: REMOTE_LIST_RENDER_LIMIT
   };
 
@@ -328,12 +329,13 @@ window.DJ = window.DJ || {};
               </div>
 
               <aside class="panel admin-side-panel backend-editor-panel">
-                <div class="admin-panel-header">
+                <div class="admin-panel-header admin-panel-header--editor">
                   <div>
                     <span class="admin-mode-pill admin-mode-pill--remote" id="backendEditorEyebrow">Remote editor</span>
                     <h3 class="section-title section-title--small" style="margin-top:0">Edit Remote Listing</h3>
                     <p class="section-subtitle" id="backendEditorContext">Save directly to your Supabase database and storage bucket.</p>
                   </div>
+                  <span class="admin-unsaved-badge" hidden id="backendDirtyBadge">Unsaved changes</span>
                 </div>
 
                 <div class="empty-state compact-empty-state" id="backendEditorEmpty">
@@ -904,6 +906,7 @@ window.DJ = window.DJ || {};
       listings.addEventListener('click', (event) => {
         const editButton = event.target.closest('[data-remote-action="edit"]');
         if (editButton) {
+          if (!confirmDiscardRemoteChanges()) return;
           populateRemoteForm(Number(editButton.dataset.remoteId));
           return;
         }
@@ -947,6 +950,7 @@ window.DJ = window.DJ || {};
           }
 
           renderRemoteGallery();
+          markRemoteEditorDirty();
           return;
         }
 
@@ -957,9 +961,49 @@ window.DJ = window.DJ || {};
             renderRemoteGallery();
           }
           showRemoteMainPreview(imageInput.value, categorySelect?.value || 'Other', getRemoteDraftName());
+          markRemoteEditorDirty();
         }
       });
     }
+  }
+
+  function setRemoteEditorDirty(isDirty, message = 'Unsaved changes') {
+    state.editorDirty = Boolean(isDirty);
+    const badge = document.getElementById('backendDirtyBadge');
+    const form = document.getElementById('backendListingForm');
+
+    if (badge) {
+      badge.hidden = !state.editorDirty;
+      badge.textContent = message;
+    }
+
+    if (form) {
+      form.classList.toggle('is-dirty', state.editorDirty);
+    }
+  }
+
+  function markRemoteEditorDirty(message = 'Unsaved changes') {
+    if (!Number.isFinite(Number(state.editingId))) return;
+    setRemoteEditorDirty(true, message);
+  }
+
+  function confirmDiscardRemoteChanges() {
+    return !state.editorDirty || window.confirm('Discard unsaved remote listing changes?');
+  }
+
+  function highlightRemoteListingSelection() {
+    const list = document.getElementById('backendListingsList');
+    if (!list) return false;
+
+    let selectedCardIsVisible = false;
+    list.querySelectorAll('.admin-listing-card[data-remote-id]').forEach((card) => {
+      const isSelected = Number(card.dataset.remoteId) === Number(state.editingId);
+      card.classList.toggle('is-selected', isSelected);
+      card.setAttribute('aria-current', isSelected ? 'true' : 'false');
+      selectedCardIsVisible = selectedCardIsVisible || isSelected;
+    });
+
+    return selectedCardIsVisible;
   }
 
   function updateRemoteEditorContext(options = {}) {
@@ -985,7 +1029,8 @@ window.DJ = window.DJ || {};
     copy.textContent = 'Save directly to your Supabase database and storage bucket.';
   }
 
-  function clearRemoteForm() {
+  function clearRemoteForm(options = {}) {
+    const { rerender = false } = options;
     state.editingId = null;
     state.gallery = [];
     const form = document.getElementById('backendListingForm');
@@ -1006,7 +1051,12 @@ window.DJ = window.DJ || {};
     if (galleryFile) galleryFile.value = '';
     if (galleryUrl) galleryUrl.value = '';
     updateRemoteEditorContext();
-    renderRemoteListings();
+    setRemoteEditorDirty(false);
+    if (rerender) {
+      renderRemoteListings();
+      return;
+    }
+    highlightRemoteListingSelection();
   }
 
   function populateRemoteForm(productId) {
@@ -1038,7 +1088,10 @@ window.DJ = window.DJ || {};
     showRemoteMainPreview(product.image || '', product.category || 'Other', product.name || '');
     renderRemoteGallery();
     updateRemoteEditorContext({ product });
-    renderRemoteListings();
+    setRemoteEditorDirty(false);
+    if (!highlightRemoteListingSelection()) {
+      renderRemoteListings();
+    }
     document.getElementById('backendName')?.focus();
   }
 
@@ -1083,7 +1136,8 @@ window.DJ = window.DJ || {};
     showRemoteMainPreview('', 'Baseball', '');
     renderRemoteGallery();
     updateRemoteEditorContext({ mode: 'new', id: state.editingId });
-    renderRemoteListings();
+    setRemoteEditorDirty(true, 'New draft not saved');
+    highlightRemoteListingSelection();
     document.getElementById('backendName')?.focus();
   }
 
@@ -1323,7 +1377,9 @@ window.DJ = window.DJ || {};
     try {
       const saved = await backend().upsertProduct(product);
       const syncedProduct = syncRemoteProductInState(saved);
+      renderRemoteListings();
       populateRemoteForm(syncedProduct.id);
+      setRemoteEditorDirty(false);
       setBackendStatus(`Saved remote listing #${saved.id}.`, 'success');
     } catch (error) {
       console.error(error);
@@ -1355,6 +1411,7 @@ window.DJ = window.DJ || {};
       state.remoteProducts = state.remoteProducts.filter((product) => Number(product.id) !== productId);
       state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       clearRemoteForm();
+      renderRemoteListings();
       setBackendStatus(`Deleted remote listing #${productId}.`, 'success');
     } catch (error) {
       console.error(error);
@@ -1377,6 +1434,7 @@ window.DJ = window.DJ || {};
       const imageInput = document.getElementById('backendImage');
       imageInput.value = result.publicUrl;
       showRemoteMainPreview(result.publicUrl, getRemoteDraftCategory(), getRemoteDraftName());
+      markRemoteEditorDirty();
       setBackendStatus('Main photo uploaded to Supabase Storage.', 'success');
     } catch (error) {
       console.error(error);
@@ -1400,6 +1458,7 @@ window.DJ = window.DJ || {};
     state.gallery = normalizeGallery([...state.gallery, value]);
     if (input) input.value = '';
     renderRemoteGallery();
+    markRemoteEditorDirty();
     setBackendStatus('Gallery image URL added to the draft. Save to apply the change.', 'info');
     return true;
   }
@@ -1416,6 +1475,7 @@ window.DJ = window.DJ || {};
       const result = await backend().uploadImage(file, { productId: document.getElementById('backendProductId').value || 'draft' });
       state.gallery = normalizeGallery([...state.gallery, result.publicUrl]);
       renderRemoteGallery();
+      markRemoteEditorDirty();
       setBackendStatus('Gallery photo uploaded to Supabase Storage.', 'success');
     } catch (error) {
       console.error(error);
@@ -1424,6 +1484,16 @@ window.DJ = window.DJ || {};
       setBusy(false);
     }
   }
+
+  function refreshRemoteDraftMediaPreview() {
+    const imageInput = document.getElementById('backendImage');
+    showRemoteMainPreview(imageInput?.value.trim() || '', getRemoteDraftCategory(), getRemoteDraftName());
+    renderRemoteGallery();
+  }
+
+  // Name/category/image URL edits only change preview labels and selected state,
+  // so debounce the gallery repaint while the admin is typing quickly.
+  const debouncedRemoteDraftPreview = debounce(refreshRemoteDraftMediaPreview, 90);
 
   async function initBackendAdmin() {
     if (document.body.dataset.page !== 'admin') return;
@@ -1465,11 +1535,15 @@ window.DJ = window.DJ || {};
       localSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     document.getElementById('backendLoginForm')?.addEventListener('submit', handleBackendSignIn);
-    document.getElementById('backendRefreshProducts')?.addEventListener('click', () => refreshRemoteProducts(true));
+    document.getElementById('backendRefreshProducts')?.addEventListener('click', () => {
+      if (!confirmDiscardRemoteChanges()) return;
+      refreshRemoteProducts(true);
+    });
     document.getElementById('backendSeedProducts')?.addEventListener('click', handleSeedProducts);
     document.getElementById('backendConnectionTest')?.addEventListener('click', handleConnectionTest);
     document.getElementById('backendSignOut')?.addEventListener('click', async () => {
       if (state.isBusy) return;
+      if (!confirmDiscardRemoteChanges()) return;
       try {
         setBusy(true);
         await backend()?.signOut();
@@ -1510,10 +1584,25 @@ window.DJ = window.DJ || {};
       resetRemoteBrowseState();
       setBackendStatus('Remote listing search cleared.', 'info');
     });
-    document.getElementById('backendNewListing')?.addEventListener('click', createNewRemoteListing);
-    document.getElementById('backendListingForm')?.addEventListener('submit', handleSaveRemoteListing);
+    document.getElementById('backendNewListing')?.addEventListener('click', () => {
+      if (!confirmDiscardRemoteChanges()) return;
+      createNewRemoteListing();
+    });
+    const backendListingForm = document.getElementById('backendListingForm');
+    backendListingForm?.addEventListener('submit', handleSaveRemoteListing);
+    backendListingForm?.addEventListener('input', (event) => {
+      if (event.target?.id === 'backendProductId') return;
+      markRemoteEditorDirty();
+    });
+    backendListingForm?.addEventListener('change', (event) => {
+      if (event.target?.id === 'backendProductId') return;
+      markRemoteEditorDirty();
+    });
     document.getElementById('backendDeleteListing')?.addEventListener('click', handleDeleteRemoteListing);
-    document.getElementById('backendClearEditor')?.addEventListener('click', clearRemoteForm);
+    document.getElementById('backendClearEditor')?.addEventListener('click', () => {
+      if (!confirmDiscardRemoteChanges()) return;
+      clearRemoteForm();
+    });
     document.getElementById('backendUploadMainImage')?.addEventListener('click', () => document.getElementById('backendMainImageFile')?.click());
     document.getElementById('backendMainImageFile')?.addEventListener('change', async (event) => {
       const file = event.target.files?.[0];
@@ -1524,19 +1613,17 @@ window.DJ = window.DJ || {};
       document.getElementById('backendImage').value = '';
       showRemoteMainPreview('', getRemoteDraftCategory(), getRemoteDraftName());
       renderRemoteGallery();
+      markRemoteEditorDirty();
       setBackendStatus('Main photo removed from the draft. Save to apply the change.', 'info');
     });
     document.getElementById('backendImage')?.addEventListener('input', () => {
-      showRemoteMainPreview(document.getElementById('backendImage').value.trim(), getRemoteDraftCategory(), getRemoteDraftName());
-      renderRemoteGallery();
+      debouncedRemoteDraftPreview();
     });
     document.getElementById('backendName')?.addEventListener('input', () => {
-      showRemoteMainPreview(document.getElementById('backendImage').value.trim(), getRemoteDraftCategory(), getRemoteDraftName());
-      renderRemoteGallery();
+      debouncedRemoteDraftPreview();
     });
     document.getElementById('backendCategory')?.addEventListener('change', () => {
-      showRemoteMainPreview(document.getElementById('backendImage').value.trim(), getRemoteDraftCategory(), getRemoteDraftName());
-      renderRemoteGallery();
+      debouncedRemoteDraftPreview();
     });
     document.getElementById('backendAddGalleryUrl')?.addEventListener('click', () => {
       addGalleryUrlFromInput();
@@ -1552,6 +1639,12 @@ window.DJ = window.DJ || {};
       const file = event.target.files?.[0];
       if (file) await uploadGalleryImage(file);
       event.target.value = '';
+    });
+
+    window.addEventListener('beforeunload', (event) => {
+      if (!state.editorDirty) return;
+      event.preventDefault();
+      event.returnValue = '';
     });
 
     window.addEventListener('pagehide', () => {

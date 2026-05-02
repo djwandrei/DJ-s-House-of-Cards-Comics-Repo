@@ -1896,6 +1896,29 @@ body.dark-mode .category-pill {
   gap:1rem;
   margin-bottom:1rem
 }
+.admin-panel-header--editor {
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start
+}
+.admin-unsaved-badge {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:34px;
+  padding:0 .85rem;
+  border-radius:999px;
+  border:1px solid rgba(239,24,35,.22);
+  background:linear-gradient(135deg,rgba(239,24,35,.12),rgba(31,47,163,.1));
+  color:var(--brand-red);
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  white-space:nowrap
+}
+.admin-unsaved-badge[hidden] {
+  display:none!important
+}
 .admin-toolbar {
   display:grid;
   gap:.85rem
@@ -3628,6 +3651,7 @@ body.dark-mode .product-card {
 body.dark-mode .custom-item-card--editable.is-selected{border-color:rgba(255,255,255,.26);box-shadow:0 18px 40px rgba(0,0,0,.32)}
 .custom-item-card--editable.is-selected h4{color:var(--brand-blue)}
 body.dark-mode .custom-item-card--editable.is-selected h4{color:#fff}
+.existing-listing-form.is-dirty{border-radius:24px;box-shadow:0 0 0 2px rgba(239,24,35,.14),0 18px 34px rgba(31,47,163,.08)}
 .custom-item-card--editable .inline-actions{margin-top:.75rem}.custom-item-card--compact{grid-template-columns:minmax(0,1fr) auto;align-items:center}.compact-items .custom-item-card{padding:.85rem}.compact-empty-state{padding:1rem;text-align:left}.section-title--small{font-size:1.25rem;line-height:1.1}.locked-filter-note--empty{min-height:auto}@media (max-width:1100px){.admin-existing-layout{grid-template-columns:1fr}.admin-editor-panel{position:static}}@media (max-width:720px){.admin-gallery-add-row{grid-template-columns:1fr}.admin-gallery-item{grid-template-columns:1fr}.admin-gallery-item img{width:100%;height:auto;aspect-ratio:1/1}.custom-item-card--compact{grid-template-columns:1fr}}
 
 /* ==== Supabase Backend Admin ==== */
@@ -3635,10 +3659,12 @@ body.dark-mode .custom-item-card--editable.is-selected h4{color:#fff}
 .backend-setup-callout{display:flex;gap:.5rem;align-items:flex-start;flex-wrap:wrap;padding:1rem 1.1rem;border:1px solid var(--border);border-radius:18px;background:rgba(31,47,163,.06);margin-bottom:1rem}
 .backend-auth-form{margin-bottom:1rem}
 .backend-admin-layout{grid-template-columns:minmax(0,1fr) minmax(360px,.95fr)}
-.backend-editor-panel{position:sticky;top:calc(var(--header-h) + 1rem);max-height:calc(100vh - var(--header-h) - 1.5rem);overflow:auto}
+.backend-editor-panel{position:sticky;top:calc(var(--header-h) + 1rem);max-height:calc(100vh - var(--header-h) - 1.5rem);overflow:auto;background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(245,248,255,.9))}
 .backend-editor-panel .image-preview{margin-top:1rem}
 #backendListingsList .custom-item-card,#hiddenListingsList .custom-item-card{align-items:flex-start}
 #backendListingsList .admin-listing-card,#existingListingsList .admin-listing-card{content-visibility:auto;contain-intrinsic-size:180px}
+#backendListingsList .admin-listing-card{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+#backendListingsList .admin-listing-card:hover{transform:translateY(-1px)}
 #backendSignOut:disabled,#backendSeedProducts:disabled,#backendRefreshProducts:disabled,#backendNewListing:disabled{opacity:.55;cursor:not-allowed}
 @media (max-width: 980px){.backend-admin-layout{grid-template-columns:1fr}.backend-editor-panel{position:static;max-height:none;overflow:visible}}
 
@@ -3949,6 +3975,17 @@ body.dark-mode .admin-card-pill--accent {
   background:rgba(239,24,35,.18);
   border-color:rgba(239,24,35,.24);
 }
+body.dark-mode .backend-editor-panel {
+  background:linear-gradient(180deg,rgba(12,20,42,.96),rgba(9,16,35,.94));
+}
+body.dark-mode .admin-unsaved-badge {
+  background:linear-gradient(135deg,rgba(239,24,35,.2),rgba(255,255,255,.08));
+  border-color:rgba(239,24,35,.34);
+  color:#fff;
+}
+body.dark-mode .existing-listing-form.is-dirty {
+  box-shadow:0 0 0 2px rgba(239,24,35,.24),0 18px 34px rgba(0,0,0,.28);
+}
 @media (max-width:980px) {
   .backend-overview-grid {
     grid-template-columns:1fr;
@@ -3958,6 +3995,12 @@ body.dark-mode .admin-card-pill--accent {
   }
 }
 @media (max-width:720px) {
+  .admin-panel-header--editor {
+    grid-template-columns:1fr;
+  }
+  .admin-unsaved-badge {
+    justify-self:start;
+  }
   .admin-surface-banner {
     flex-direction:column;
   }
