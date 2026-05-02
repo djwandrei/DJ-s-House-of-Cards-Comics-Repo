@@ -19,6 +19,8 @@ window.DJ = window.DJ || {};
   const existingState = {
     search: '',
     baseProducts: [],
+    effectiveProducts: [],
+    sortedEffectiveProducts: [],
     editingId: null,
     currentGallery: []
   };
@@ -40,6 +42,48 @@ window.DJ = window.DJ || {};
   function formatCountLabel(count, singular, plural = `${singular}s`) {
     const numeric = Number(count) || 0;
     return `${numeric} ${numeric === 1 ? singular : plural}`;
+  }
+
+  function debounce(callback, delay = 120) {
+    let timer = 0;
+    const debounced = (...args) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => callback(...args), delay);
+    };
+    debounced.cancel = () => window.clearTimeout(timer);
+    return debounced;
+  }
+
+  function buildAdminSearchIndex(product = {}) {
+    return [
+      product.id,
+      product.name,
+      product.team,
+      product.category,
+      product.description,
+      product.playerAthlete,
+      product.sourcePage,
+      product.condition,
+      product.year
+    ].join(' ').toLowerCase();
+  }
+
+  function indexAdminProduct(product = {}) {
+    return {
+      ...product,
+      _adminSearchIndex: buildAdminSearchIndex(product)
+    };
+  }
+
+  function invalidateExistingProductsCache() {
+    existingState.effectiveProducts = [];
+    existingState.sortedEffectiveProducts = [];
+  }
+
+  function setBaseProducts(products = []) {
+    existingState.baseProducts = Array.isArray(products) ? products : [];
+    invalidateExistingProductsCache();
+    return existingState.baseProducts;
   }
 
   function getStorageFailureMessage() {
@@ -204,7 +248,7 @@ window.DJ = window.DJ || {};
     return `
       <div class="custom-item-card" data-custom-item-id="${item.id}">
         <div class="custom-item-media">
-          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(item.image))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(DJ.fallbackByCategory[item.category] || DJ.fallbackByCategory.Other))}" alt="${DJ.escapeHtml(item.name)}">
+          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(item.image))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(DJ.fallbackByCategory[item.category] || DJ.fallbackByCategory.Other))}" alt="${DJ.escapeHtml(item.name)}" loading="lazy" decoding="async">
           <div class="mini-dropzone" data-image-drop-id="${item.id}" role="button" tabindex="0">Drop new photo here or click to upload</div>
           <input accept="image/*" class="sr-only replace-image-input" data-replace-id="${item.id}" id="replaceImage-${item.id}" type="file">
         </div>
@@ -237,8 +281,7 @@ window.DJ = window.DJ || {};
     const searchText = customState.search.trim().toLowerCase();
     return DJ.getCustomProducts().filter((item) => {
       const matchesCategory = customState.category === 'All' || item.category === customState.category;
-      const haystack = [item.name, item.team, item.category, item.condition, item.description, item.year].join(' ').toLowerCase();
-      const matchesSearch = !searchText || haystack.includes(searchText);
+      const matchesSearch = !searchText || buildAdminSearchIndex(item).includes(searchText);
       return matchesCategory && matchesSearch;
     });
   }
@@ -361,9 +404,13 @@ window.DJ = window.DJ || {};
     const categoryPills = document.querySelectorAll('[data-category-pill]');
     const categorySelect = document.getElementById('category');
 
-    searchInput?.addEventListener('input', () => {
-      customState.search = searchInput.value;
+    const handleCustomSearch = debounce((value) => {
+      customState.search = String(value || '');
       renderCustomItems();
+    }, 120);
+
+    searchInput?.addEventListener('input', () => {
+      handleCustomSearch(searchInput.value);
     });
 
     searchInput?.addEventListener('keydown', (event) => {
@@ -371,6 +418,7 @@ window.DJ = window.DJ || {};
       event.preventDefault();
       searchInput.value = '';
       customState.search = '';
+      handleCustomSearch.cancel?.();
       renderCustomItems();
       DJ.setStatus('adminStatus', 'Local item search cleared.', 'info');
     });
@@ -379,6 +427,7 @@ window.DJ = window.DJ || {};
       if (!searchInput || !searchInput.value) return;
       searchInput.value = '';
       customState.search = '';
+      handleCustomSearch.cancel?.();
       renderCustomItems();
       DJ.setStatus('adminStatus', 'Local item search cleared.', 'info');
     });
@@ -433,6 +482,7 @@ window.DJ = window.DJ || {};
           customState.category = 'All';
           if (searchInput) searchInput.value = '';
           if (categoryFilter) categoryFilter.value = 'All';
+          handleCustomSearch.cancel?.();
           renderCustomItems();
           DJ.setStatus('adminStatus', 'All local items were cleared from this browser.', 'success');
         } else {
@@ -563,15 +613,13 @@ window.DJ = window.DJ || {};
           : null;
 
         if (preloaded) {
-          existingState.baseProducts = preloaded;
-          return existingState.baseProducts;
+          return setBaseProducts(preloaded);
         }
 
         if (window.location.protocol === 'file:' && typeof DJ.loadPreloadedProductsForSource === 'function') {
           const localBundleProducts = await DJ.loadPreloadedProductsForSource('products.json').catch(() => null);
           if (localBundleProducts) {
-            existingState.baseProducts = localBundleProducts;
-            return existingState.baseProducts;
+            return setBaseProducts(localBundleProducts);
           }
         }
 
@@ -581,8 +629,7 @@ window.DJ = window.DJ || {};
         }
 
         const products = await response.json();
-        existingState.baseProducts = Array.isArray(products) ? products : [];
-        return existingState.baseProducts;
+        return setBaseProducts(products);
       })().catch((error) => {
         baseProductsPromise = null;
         throw error;
@@ -631,7 +678,21 @@ window.DJ = window.DJ || {};
   }
 
   function getEffectiveBaseProducts() {
-    return DJ.applyStoredCatalogMutations(existingState.baseProducts, { includeCustomProducts: false });
+    if (!existingState.effectiveProducts.length && existingState.baseProducts.length) {
+      existingState.effectiveProducts = DJ.applyStoredCatalogMutations(existingState.baseProducts, { includeCustomProducts: false })
+        .map(indexAdminProduct);
+    }
+
+    return existingState.effectiveProducts;
+  }
+
+  function getSortedEffectiveBaseProducts() {
+    if (!existingState.sortedEffectiveProducts.length && existingState.baseProducts.length) {
+      existingState.sortedEffectiveProducts = [...getEffectiveBaseProducts()]
+        .sort((left, right) => String(left.name || '').localeCompare(String(right.name || '')));
+    }
+
+    return existingState.sortedEffectiveProducts;
   }
 
   function getDeletedBaseProducts() {
@@ -650,13 +711,17 @@ window.DJ = window.DJ || {};
       ...(overrides[key] || {}),
       ...patch
     };
-    return DJ.saveProductOverrides(overrides);
+    const saved = DJ.saveProductOverrides(overrides);
+    if (saved) invalidateExistingProductsCache();
+    return saved;
   }
 
   function resetProductOverride(productId) {
     const overrides = DJ.getProductOverrides();
     delete overrides[String(productId)];
-    return DJ.saveProductOverrides(overrides);
+    const saved = DJ.saveProductOverrides(overrides);
+    if (saved) invalidateExistingProductsCache();
+    return saved;
   }
 
   function addDeletedProductId(productId) {
@@ -665,11 +730,15 @@ window.DJ = window.DJ || {};
         .map((item) => Number(item))
         .filter((item) => Number.isFinite(item))
     )];
-    return DJ.saveDeletedProductIds(deletedIds);
+    const saved = DJ.saveDeletedProductIds(deletedIds);
+    if (saved) invalidateExistingProductsCache();
+    return saved;
   }
 
   function removeDeletedProductId(productId) {
-    return DJ.saveDeletedProductIds(DJ.getDeletedProductIds().filter((item) => Number(item) !== Number(productId)));
+    const saved = DJ.saveDeletedProductIds(DJ.getDeletedProductIds().filter((item) => Number(item) !== Number(productId)));
+    if (saved) invalidateExistingProductsCache();
+    return saved;
   }
 
   function exportStorefrontEdits() {
@@ -698,6 +767,8 @@ window.DJ = window.DJ || {};
     if (!DJ.saveProductOverrides(nextOverrides) || !DJ.saveDeletedProductIds(nextDeletedIds)) {
       throw new Error(getStorageFailureMessage());
     }
+
+    invalidateExistingProductsCache();
   }
 
   // ---------------------------------------------------------------------------
@@ -848,7 +919,7 @@ window.DJ = window.DJ || {};
     return `
       <article class="custom-item-card custom-item-card--editable admin-listing-card${isSelected ? ' is-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
         <div class="custom-item-media">
-          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}">
+          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
         <div class="admin-card-copy">
           <div class="admin-card-pills">
@@ -872,22 +943,13 @@ window.DJ = window.DJ || {};
   }
 
   function getFilteredExistingProducts() {
-    const products = getEffectiveBaseProducts();
     const search = existingState.search.trim().toLowerCase();
-    const sorted = [...products].sort((left, right) => left.name.localeCompare(right.name));
+    const sorted = getSortedEffectiveBaseProducts();
     const selectedId = Number(existingState.editingId);
 
     const fullList = !search
       ? sorted
-      : sorted.filter((product) => [
-          product.name,
-          product.team,
-          product.category,
-          product.description,
-          product.playerAthlete,
-          product.year,
-          product.condition
-        ].join(' ').toLowerCase().includes(search));
+      : sorted.filter((product) => String(product._adminSearchIndex || '').includes(search));
 
     let visible = fullList.slice(0, MAX_EXISTING_RESULTS);
 
@@ -1133,15 +1195,20 @@ window.DJ = window.DJ || {};
 
     bindExistingListingInteractions();
 
-    searchInput?.addEventListener('input', () => {
-      existingState.search = searchInput.value;
+    const handleExistingSearch = debounce((value) => {
+      existingState.search = String(value || '');
       renderExistingListings();
+    }, 120);
+
+    searchInput?.addEventListener('input', () => {
+      handleExistingSearch(searchInput.value);
     });
 
     clearSearchButton?.addEventListener('click', () => {
       if (!searchInput || !searchInput.value) return;
       searchInput.value = '';
       existingState.search = '';
+      handleExistingSearch.cancel?.();
       renderExistingListings();
       DJ.setStatus('adminStatus', 'Existing listing search cleared.', 'info');
     });
@@ -1152,6 +1219,7 @@ window.DJ = window.DJ || {};
       event.preventDefault();
       searchInput.value = '';
       existingState.search = '';
+      handleExistingSearch.cancel?.();
       renderExistingListings();
       DJ.setStatus('adminStatus', 'Existing listing search cleared.', 'info');
     });

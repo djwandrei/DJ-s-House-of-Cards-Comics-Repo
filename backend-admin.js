@@ -92,6 +92,57 @@ window.DJ = window.DJ || {};
     return `${numeric} ${numeric === 1 ? singular : plural}`;
   }
 
+  function buildRemoteSearchIndex(product = {}) {
+    return [
+      product.id,
+      product.name,
+      product.team,
+      product.category,
+      product.description,
+      product.playerAthlete,
+      product.sourcePage,
+      product.condition,
+      product.year
+    ].join(' ').toLowerCase();
+  }
+
+  function prepareRemoteProduct(product = {}) {
+    return {
+      ...product,
+      _searchIndex: buildRemoteSearchIndex(product)
+    };
+  }
+
+  function sortRemoteProductsInPlace(products = state.remoteProducts) {
+    products.sort((left, right) => {
+      const leftRank = Number.isFinite(Number(left.sortRank)) ? Number(left.sortRank) : 0;
+      const rightRank = Number.isFinite(Number(right.sortRank)) ? Number(right.sortRank) : 0;
+      if (leftRank !== rightRank) return leftRank - rightRank;
+
+      const leftYear = Number.isFinite(Number(left.year)) ? Number(left.year) : -Infinity;
+      const rightYear = Number.isFinite(Number(right.year)) ? Number(right.year) : -Infinity;
+      if (leftYear !== rightYear) return rightYear - leftYear;
+
+      return Number(left.id || 0) - Number(right.id || 0);
+    });
+    return products;
+  }
+
+  function syncRemoteProductInState(product) {
+    const normalized = prepareRemoteProduct(product);
+    const productId = Number(normalized.id);
+    const index = state.remoteProducts.findIndex((item) => Number(item.id) === productId);
+
+    if (index >= 0) {
+      state.remoteProducts[index] = normalized;
+    } else {
+      state.remoteProducts.push(normalized);
+    }
+
+    sortRemoteProductsInPlace();
+    return normalized;
+  }
+
   function getRemoteDraftName() {
     return document.getElementById('backendName')?.value.trim() || '';
   }
@@ -618,7 +669,7 @@ window.DJ = window.DJ || {};
     return `
       <article class="custom-item-card custom-item-card--editable admin-listing-card${isEditing ? ' is-selected' : ''}" data-remote-id="${product.id}" aria-current="${isEditing ? 'true' : 'false'}">
         <div class="custom-item-media">
-          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}">
+          <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
         <div class="admin-card-copy">
           <div class="admin-card-pills">
@@ -1071,8 +1122,9 @@ window.DJ = window.DJ || {};
   }
 
   /**
-   * Pull the latest remote products into memory. The force flag bypasses cache after
-   * create/update/delete actions so the admin always reflects the server truth.
+   * Pull the latest remote products into memory. Routine save/delete actions update
+   * this local state directly; this full refresh is reserved for sign-in, seed, and
+   * explicit refresh so editing does not repeatedly download the whole catalog.
    */
   async function refreshRemoteProducts(force = false) {
     if (!backend() || !backend().isConfigured() || !state.session) {
@@ -1083,18 +1135,9 @@ window.DJ = window.DJ || {};
 
     setBackendStatus('Loading remote products...', 'info');
     try {
-      state.remoteProducts = (await backend().listProducts({ source: 'products.json', force })).map((product) => ({
-        ...product,
-        _searchIndex: [
-          product.name,
-          product.team,
-          product.category,
-          product.description,
-          product.playerAthlete,
-          product.sourcePage,
-          product.id
-        ].join(' ').toLowerCase()
-      }));
+      state.remoteProducts = sortRemoteProductsInPlace(
+        (await backend().listProducts({ source: 'products.json', force })).map(prepareRemoteProduct)
+      );
       state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       renderRemoteListings();
 
@@ -1279,8 +1322,8 @@ window.DJ = window.DJ || {};
     setBackendStatus('Saving remote listing...', 'info');
     try {
       const saved = await backend().upsertProduct(product);
-      await refreshRemoteProducts(true);
-      populateRemoteForm(saved.id);
+      const syncedProduct = syncRemoteProductInState(saved);
+      populateRemoteForm(syncedProduct.id);
       setBackendStatus(`Saved remote listing #${saved.id}.`, 'success');
     } catch (error) {
       console.error(error);
@@ -1309,7 +1352,8 @@ window.DJ = window.DJ || {};
     setBackendStatus('Deleting remote listing...', 'info');
     try {
       await backend().deleteProduct(productId);
-      await refreshRemoteProducts(true);
+      state.remoteProducts = state.remoteProducts.filter((product) => Number(product.id) !== productId);
+      state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       clearRemoteForm();
       setBackendStatus(`Deleted remote listing #${productId}.`, 'success');
     } catch (error) {

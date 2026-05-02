@@ -3635,10 +3635,12 @@ body.dark-mode .custom-item-card--editable.is-selected h4{color:#fff}
 .backend-setup-callout{display:flex;gap:.5rem;align-items:flex-start;flex-wrap:wrap;padding:1rem 1.1rem;border:1px solid var(--border);border-radius:18px;background:rgba(31,47,163,.06);margin-bottom:1rem}
 .backend-auth-form{margin-bottom:1rem}
 .backend-admin-layout{grid-template-columns:minmax(0,1fr) minmax(360px,.95fr)}
+.backend-editor-panel{position:sticky;top:calc(var(--header-h) + 1rem);max-height:calc(100vh - var(--header-h) - 1.5rem);overflow:auto}
 .backend-editor-panel .image-preview{margin-top:1rem}
 #backendListingsList .custom-item-card,#hiddenListingsList .custom-item-card{align-items:flex-start}
+#backendListingsList .admin-listing-card,#existingListingsList .admin-listing-card{content-visibility:auto;contain-intrinsic-size:180px}
 #backendSignOut:disabled,#backendSeedProducts:disabled,#backendRefreshProducts:disabled,#backendNewListing:disabled{opacity:.55;cursor:not-allowed}
-@media (max-width: 980px){.backend-admin-layout{grid-template-columns:1fr}}
+@media (max-width: 980px){.backend-admin-layout{grid-template-columns:1fr}.backend-editor-panel{position:static;max-height:none;overflow:visible}}
 
 
 /* ==== Backend-first admin mode ==== */
