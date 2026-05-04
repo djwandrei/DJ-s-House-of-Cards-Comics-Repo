@@ -195,6 +195,21 @@ window.DJ = window.DJ || {};
     return new Error(describeSupabaseError(error, context));
   }
 
+  async function createFunctionError(error, context) {
+    const response = error?.context || error?.response;
+    if (response && typeof response.clone === 'function') {
+      try {
+        const payload = await response.clone().json();
+        const message = String(payload?.error || payload?.message || '').trim();
+        if (message) return new Error(message);
+      } catch {
+        // Fall through to the normal Supabase message if the response is not JSON.
+      }
+    }
+
+    return createFriendlyError(error, context);
+  }
+
   // ---------------------------------------------------------------------------
   // Setup and bootstrapping helpers
   // ---------------------------------------------------------------------------
@@ -697,6 +712,32 @@ window.DJ = window.DJ || {};
     return data;
   }
 
+  async function signUp(email, password) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${config.siteUrl || window.location.origin}/`
+      }
+    });
+    if (error) throw createFriendlyError(error, 'signUp');
+    return data;
+  }
+
+  async function resetPassword(email) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    const { data, error } = await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${config.siteUrl || window.location.origin}/`
+    });
+    if (error) throw createFriendlyError(error, 'resetPassword');
+    return data;
+  }
+
   async function signOut() {
     await ensureSupabaseLibrary();
     const client = getClient();
@@ -720,6 +761,23 @@ window.DJ = window.DJ || {};
       }
     });
     return data?.subscription || { unsubscribe() {} };
+  }
+
+  async function invokeFunction(functionName, body = {}, options = {}) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+
+    const safeName = String(functionName || '').trim();
+    if (!safeName) throw new Error('Choose a Supabase Edge Function to call.');
+
+    const { data, error } = await client.functions.invoke(safeName, {
+      body,
+      method: options.method || 'POST'
+    });
+
+    if (error) throw await createFunctionError(error, `function:${safeName}`);
+    return data;
   }
 
   function sanitizeFileName(name = 'file') {
@@ -906,8 +964,11 @@ window.DJ = window.DJ || {};
     getClient,
     getSession,
     signIn,
+    signUp,
+    resetPassword,
     signOut,
     onAuthStateChange,
+    invokeFunction,
     listProducts,
     upsertProduct,
     deleteProduct,

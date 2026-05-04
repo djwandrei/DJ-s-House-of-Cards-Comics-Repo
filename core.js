@@ -40,7 +40,8 @@ window.DJ = window.DJ || {};
     wishlist: 'wishlist',
     customProducts: 'customProducts',
     productOverrides: 'productOverrides',
-    deletedProductIds: 'deletedProductIds'
+    deletedProductIds: 'deletedProductIds',
+    siteMetrics: 'djSiteMetricsV1'
   };
   const safeAssetUrlCache = new Map();
   const assetUrlCandidatesCache = new Map();
@@ -186,6 +187,81 @@ window.DJ = window.DJ || {};
         source
       }
     }));
+  }
+
+  function createEmptySiteMetrics() {
+    const now = new Date().toISOString();
+    return {
+      version: 1,
+      createdAt: now,
+      updatedAt: now,
+      totals: {},
+      pageViews: {},
+      productEvents: {}
+    };
+  }
+
+  function normalizeSiteMetrics(value) {
+    const base = createEmptySiteMetrics();
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return base;
+    }
+
+    return {
+      ...base,
+      ...value,
+      totals: value.totals && typeof value.totals === 'object' && !Array.isArray(value.totals) ? value.totals : {},
+      pageViews: value.pageViews && typeof value.pageViews === 'object' && !Array.isArray(value.pageViews) ? value.pageViews : {},
+      productEvents: value.productEvents && typeof value.productEvents === 'object' && !Array.isArray(value.productEvents) ? value.productEvents : {}
+    };
+  }
+
+  function getSiteMetrics() {
+    return readJSONFromStorage(STORAGE_KEYS.siteMetrics, normalizeSiteMetrics) || createEmptySiteMetrics();
+  }
+
+  function pruneProductMetrics(productEvents = {}, limit = 500) {
+    const entries = Object.entries(productEvents);
+    if (entries.length <= limit) return productEvents;
+
+    return Object.fromEntries(
+      entries
+        .sort(([, left], [, right]) => String(right?.lastEventAt || '').localeCompare(String(left?.lastEventAt || '')))
+        .slice(0, limit)
+    );
+  }
+
+  function recordSiteMetric(eventName, detail = {}) {
+    const eventType = String(eventName || '').trim();
+    if (!eventType) return null;
+
+    const now = new Date().toISOString();
+    const metrics = getSiteMetrics();
+    metrics.updatedAt = now;
+    metrics.totals[eventType] = (Number(metrics.totals[eventType]) || 0) + 1;
+
+    if (eventType === 'page_view') {
+      const pageKey = String(detail.page || document.body.dataset.page || window.location.pathname || 'unknown');
+      metrics.pageViews[pageKey] = (Number(metrics.pageViews[pageKey]) || 0) + 1;
+    }
+
+    const productId = Number(detail.productId ?? detail.id);
+    if (Number.isFinite(productId)) {
+      const key = String(productId);
+      const current = metrics.productEvents[key] || {};
+      metrics.productEvents[key] = {
+        ...current,
+        productId,
+        name: detail.name || current.name || '',
+        category: detail.category || current.category || '',
+        lastEventAt: now,
+        [eventType]: (Number(current[eventType]) || 0) + 1
+      };
+      metrics.productEvents = pruneProductMetrics(metrics.productEvents);
+    }
+
+    safeStorageSet(STORAGE_KEYS.siteMetrics, JSON.stringify(metrics));
+    return metrics;
   }
 
   // ---------------------------------------------------------------------------
@@ -1201,6 +1277,8 @@ window.DJ = window.DJ || {};
   };
 
   DJ.getWishlist = getWishlist;
+  DJ.getSiteMetrics = getSiteMetrics;
+  DJ.recordSiteMetric = recordSiteMetric;
   DJ.setWishlist = function setWishlist(items) {
     const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
     if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
@@ -1367,6 +1445,14 @@ window.DJ = window.DJ || {};
     initArchiveImageLightbox();
     initArchivePanels();
     updateWishlistCount();
+    // Local metrics power the admin dashboard, but they are not critical to
+    // first paint. Defer the storage write so page rendering stays responsive.
+    scheduleIdle(() => {
+      recordSiteMetric('page_view', {
+        page: document.body.dataset.page || window.location.pathname,
+        title: document.title
+      });
+    }, 1800);
     initHeaderScrollState();
     registerServiceWorker();
   });

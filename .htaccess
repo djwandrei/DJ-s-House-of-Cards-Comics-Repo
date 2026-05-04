@@ -2,6 +2,11 @@ DirectoryIndex index.html index.htm
 
 RewriteEngine On
 
+# Internal build, deployment, and backend source files should never be served
+# from public_html if the repository is uploaded as a whole.
+RewriteRule ^(?:supabase|scripts|outputs|_backups|\.deploy|\.ssl|\.codex)(?:/|$) - [F,L,NC]
+RewriteRule ^(?:STRIPE-SUPABASE-SETUP|CPANEL-DEPLOY)\.md$ - [F,L,NC]
+
 # The production SSL certificate is now valid, so force the canonical HTTPS host.
 RewriteCond %{HTTPS} !=on [OR]
 RewriteCond %{HTTP_HOST} !^www\.djshouseofcards-comics\.com$ [NC]
@@ -32,7 +37,7 @@ FileETag MTime Size
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), browsing-topics=()"
-  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; form-action 'self' mailto:; manifest-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://gkqdymnmczabcggvigce.supabase.co https://cdn.jsdelivr.net https://unpkg.com; media-src 'self' data: blob: https:; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none'; form-action 'self' mailto: https://checkout.stripe.com; manifest-src 'self'; worker-src 'self' blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://gkqdymnmczabcggvigce.supabase.co https://cdn.jsdelivr.net https://unpkg.com https://api.stripe.com https://checkout.stripe.com; frame-src https://js.stripe.com https://checkout.stripe.com; media-src 'self' data: blob: https:; upgrade-insecure-requests"
 
   Header always set Strict-Transport-Security "max-age=31536000"
 

@@ -307,20 +307,29 @@ window.DJ = window.DJ || {};
     return labels[category] || category;
   }
 
-  function getProductCardContextValue(product = {}) {
+  function isPriceRangeDisplay(displayPrice = '') {
+    return /\$\s*[\d,.]+(?:\s*(?:-|–|—|to)\s*\$?\s*[\d,.]+)/i.test(String(displayPrice || ''));
+  }
+
+  function getProductPriceLabel(product = {}) {
+    const displayPrice = DJ.displayPrice(product);
+    if (/contact/i.test(displayPrice)) return 'Availability';
+    return isPriceRangeDisplay(displayPrice) ? 'Price range' : 'Price';
+  }
+
+  function getProductContextLabel(product = {}) {
     const normalizedCategory = String(product.category || '').trim().toLowerCase();
-    const normalizedTeam = normalizeTeamFacetValue(product.team, product);
-    if (normalizedTeam) {
-      return normalizedTeam;
-    }
+    if (normalizedCategory === 'comics') return 'Publisher';
+    if (normalizedCategory === 'collectibles' || normalizedCategory === 'other') return 'Collection';
+    return 'Team';
+  }
 
-    const sourceValue = String(product.sourcePage || '').trim();
-    const normalizedSource = sourceValue.toLowerCase();
-    if (sourceValue && normalizedSource !== normalizedCategory && normalizedSource !== 'current catalog' && normalizedSource !== 'other') {
-      return sourceValue;
-    }
+  function getProductPrimaryContext(product = {}) {
+    return normalizeTeamFacetValue(product.team, product);
+  }
 
-    return '';
+  function getProductCardContextValue(product = {}) {
+    return getProductPrimaryContext(product);
   }
 
   const GENERIC_TEAM_FACET_VALUES = new Set([
@@ -427,13 +436,72 @@ window.DJ = window.DJ || {};
   function renderProductCardMetaExtras(product = {}) {
     const details = [];
     const athlete = String(product.playerAthlete || '').trim();
+    const league = String(product.league || '').trim();
 
     if (athlete && !String(product.name || '').toLowerCase().includes(athlete.toLowerCase())) {
       details.push(`<span class="product-meta-inline product-meta-inline--athlete">${DJ.escapeHtml(formatDisplayName(athlete))}</span>`);
     }
 
+    if (league && !String(product.category || '').toLowerCase().includes(league.toLowerCase())) {
+      details.push(`<span class="product-meta-inline product-meta-inline--league">${DJ.escapeHtml(league)}</span>`);
+    }
+
     return `
       ${details.length ? `<div class="product-meta-inline-list">${details.join('')}</div>` : ''}
+    `;
+  }
+
+  function renderModalFactStrip(product = {}, galleryCount = 1, displayPrice = DJ.displayPrice(product)) {
+    const facts = [
+      {
+        label: getProductPriceLabel(product),
+        value: displayPrice,
+        tone: 'price'
+      },
+      {
+        label: product.conditionFacet === 'Graded' ? 'Grade' : 'Condition',
+        value: product.conditionCompact || product.conditionFacet || 'Not listed'
+      }
+    ];
+
+    if (Number.isFinite(Number(galleryCount)) && Number(galleryCount) > 1) {
+      facts.push({ label: 'Photos', value: String(galleryCount) });
+    }
+
+    if (product.id != null && product.id !== '') {
+      facts.push({ label: 'Listing ID', value: `#${product.id}` });
+    }
+
+    return `
+      <div class="modal-fact-strip" aria-label="Quick listing facts">
+        ${facts.map((fact) => `
+          <div class="modal-fact${fact.tone ? ` modal-fact--${DJ.escapeHtml(fact.tone)}` : ''}">
+            <span>${DJ.escapeHtml(fact.label)}</span>
+            <strong>${DJ.escapeHtml(fact.value)}</strong>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderModalMetaGrid(product = {}) {
+    const contextValue = getProductPrimaryContext(product);
+    const playerAthlete = String(product.playerAthlete || '').trim();
+    const entries = [
+      ['Year', product.yearLabel && product.yearLabel !== 'Year not listed' ? product.yearLabel : 'Not listed'],
+      [getProductContextLabel(product), contextValue],
+      ['Sport', product.sport || product.category],
+      ['League', product.league],
+      ['Player / Athlete', playerAthlete ? formatDisplayName(playerAthlete) : ''],
+      ['Condition', product.condition]
+    ].filter(([, value]) => String(value || '').trim());
+
+    return `
+      <div class="modal-meta-grid">
+        ${entries.map(([label, value]) => `
+          <p><strong>${DJ.escapeHtml(label)}:</strong> ${DJ.escapeHtml(value)}</p>
+        `).join('')}
+      </div>
     `;
   }
 
@@ -776,9 +844,21 @@ window.DJ = window.DJ || {};
         : '';
       const image = item.image || DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other;
       const attributes = deriveProductAttributes(item);
+      // The static catalog carries admin/import-only fields such as raw eBay
+      // HTML and workbook metadata. Use them above for attribute detection, but
+      // do not keep them in storefront product objects because large pages hold
+      // those normalized objects in memory for filtering, sorting, and modals.
+      const {
+        metadata: _metadata,
+        htmlFullLink: _htmlFullLink,
+        htmlImageUrls: _htmlImageUrls,
+        itemPhotoUrl: _itemPhotoUrl,
+        itemPhotoUrls: _itemPhotoUrls,
+        ...storefrontItem
+      } = item;
 
       return {
-        ...item,
+        ...storefrontItem,
         category,
         price,
         year,
@@ -1032,7 +1112,7 @@ window.DJ = window.DJ || {};
     const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
     const summaryId = `product-card-summary-${product.id}`;
     const displayPrice = DJ.displayPrice(product);
-    const priceLabel = /contact/i.test(displayPrice) ? 'Availability' : 'Price';
+    const priceLabel = getProductPriceLabel(product);
     const pricingClass = /contact/i.test(displayPrice) ? 'product-pricing product-pricing--inquiry' : 'product-pricing';
     const cardImageAlt = buildProductImageAlt(product, { context: 'card' });
     const cardImageCandidates = DJ.getThumbnailAssetCandidates(product.image);
@@ -1131,6 +1211,21 @@ window.DJ = window.DJ || {};
   }
 
   function buyNow(product) {
+    recordProductMetric('checkout_start', product);
+
+    const sendPurchaseInquiry = () => {
+      openPurchaseInquiry(product);
+    };
+
+    if (DJ.payments?.startCheckout) {
+      DJ.payments.startCheckout(product, { fallback: sendPurchaseInquiry });
+      return;
+    }
+
+    sendPurchaseInquiry();
+  }
+
+  function openPurchaseInquiry(product) {
     const currentPageUrl = window.location.href.split('#')[0];
     const subject = encodeURIComponent(`Purchase Inquiry: ${product.name}`);
     const body = encodeURIComponent(
@@ -1149,14 +1244,26 @@ Thank you.`
     window.location.href = `mailto:contact@djshouseofcards-comics.com?subject=${subject}&body=${body}`;
   }
 
-  function toggleWishlist(productId) {
+  function recordProductMetric(eventType, product = {}) {
+    if (typeof DJ.recordSiteMetric !== 'function') return;
+
+    DJ.recordSiteMetric(eventType, {
+      productId: product.id,
+      name: product.name,
+      category: product.category
+    });
+  }
+
+  function toggleWishlist(productId, product = null) {
     const wishlist = DJ.getWishlist();
     const index = wishlist.indexOf(productId);
+    const wasWishlisted = index > -1;
 
-    if (index > -1) wishlist.splice(index, 1);
+    if (wasWishlisted) wishlist.splice(index, 1);
     else wishlist.push(productId);
 
     DJ.setWishlist(wishlist);
+    recordProductMetric(wasWishlisted ? 'wishlist_remove' : 'wishlist_add', product || { id: productId });
     refreshWishlistButtons();
   }
 
@@ -1264,7 +1371,7 @@ Thank you.`
       if (!product) return;
 
       if (event.target.closest('.wishlist-button')) {
-        toggleWishlist(productId);
+        toggleWishlist(productId, product);
         if (document.body.dataset.page === 'wishlist') renderWishlistPage();
         return;
       }
@@ -1666,7 +1773,11 @@ Thank you.`
         const searchLabel = searchFieldGroup.querySelector('label[for="searchInput"]');
         const filterHelp = searchFieldGroup.querySelector('#filterHelp');
         searchFieldGroup.classList.add('field-group--toolbar-search');
-        searchLabel?.classList.add('sr-only');
+        if (searchLabel) {
+          searchLabel.classList.remove('sr-only');
+          searchLabel.classList.add('toolbar-search-label');
+          searchLabel.textContent = searchLabel.textContent.trim() || 'Search listings';
+        }
         filterHelp?.classList.add('sr-only');
 
         toolbarSearch.appendChild(searchFieldGroup);
@@ -2690,6 +2801,7 @@ Thank you.`
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
     if (!modal || !modalInner) return;
+    recordProductMetric('product_view', product);
 
     DJ.setLastFocusedElement(document.activeElement);
 
@@ -2700,6 +2812,7 @@ Thank you.`
     const galleryCount = gallery.filter(Boolean).length || 1;
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
     const modalMainImageSource = DJ.safeAssetUrl(gallery[0]);
+    const displayPrice = DJ.displayPrice(product);
     const modalThumbs = gallery.map((image, index) => ({
       image,
       index,
@@ -2725,14 +2838,8 @@ Thank you.`
         <div class="modal-copy">
           <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
           <h3 id="modalTitle">${DJ.escapeHtml(product.name)}</h3>
-          <div class="modal-meta-grid">
-            <p><strong>Year:</strong> ${DJ.escapeHtml(product.yearLabel || 'Year not listed')}</p>
-            <p><strong>Team / Publisher:</strong> ${DJ.escapeHtml(product.team || product.category)}</p>
-            <p><strong>Sport:</strong> ${DJ.escapeHtml(product.sport || product.category)}</p>
-            ${product.league ? `<p><strong>League:</strong> ${DJ.escapeHtml(product.league)}</p>` : ''}
-            <p><strong>Condition:</strong> ${DJ.escapeHtml(product.condition)}</p>
-            <p><strong>Price:</strong> ${DJ.escapeHtml(DJ.displayPrice(product))}</p>
-          </div>
+          ${renderModalFactStrip(product, galleryCount, displayPrice)}
+          ${renderModalMetaGrid(product)}
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
           <div class="modal-enhanced-card">
@@ -2746,9 +2853,10 @@ Thank you.`
           </div>
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
           <div class="inline-actions">
-            <button type="button" class="modal-cta" id="modalBuy">Buy Now</button>
+            <button type="button" class="modal-cta" id="modalBuy" data-checkout-button>Buy Now</button>
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
           </div>
+          <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
         </div>
       </div>
     `;
@@ -2771,7 +2879,7 @@ Thank you.`
 
     modalInner.querySelector('#modalBuy')?.addEventListener('click', () => buyNow(product));
     modalInner.querySelector('#modalWishlist')?.addEventListener('click', async () => {
-      toggleWishlist(product.id);
+      toggleWishlist(product.id, product);
       if (document.body.dataset.page === 'wishlist') {
         await renderWishlistPage();
       }

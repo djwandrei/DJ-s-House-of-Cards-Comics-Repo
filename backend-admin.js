@@ -144,6 +144,15 @@ window.DJ = window.DJ || {};
     return normalized;
   }
 
+  function emitRemoteAdminCatalogProducts() {
+    window.dispatchEvent(new CustomEvent('dj:admincatalogproducts', {
+      detail: {
+        source: 'supabase',
+        products: state.remoteProducts
+      }
+    }));
+  }
+
   function getRemoteDraftName() {
     return document.getElementById('backendName')?.value.trim() || '';
   }
@@ -1184,6 +1193,7 @@ window.DJ = window.DJ || {};
     if (!backend() || !backend().isConfigured() || !state.session) {
       state.remoteProducts = [];
       renderRemoteListings();
+      emitRemoteAdminCatalogProducts();
       return;
     }
 
@@ -1194,6 +1204,7 @@ window.DJ = window.DJ || {};
       );
       state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       renderRemoteListings();
+      emitRemoteAdminCatalogProducts();
 
       if (Number.isFinite(state.editingId)) {
         const stillExists = state.remoteProducts.some((product) => Number(product.id) === Number(state.editingId));
@@ -1209,6 +1220,7 @@ window.DJ = window.DJ || {};
       console.error(error);
       state.remoteProducts = [];
       renderRemoteListings();
+      emitRemoteAdminCatalogProducts();
       setBackendStatus(error.message || 'Unable to load remote listings.', 'error');
     }
   }

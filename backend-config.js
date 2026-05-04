@@ -21,6 +21,8 @@
     productsTable: 'products',
     storageBucket: 'product-images',
     imageFolder: 'products',
+    stripeCheckoutEnabled: true,
+    stripeCheckoutFunction: 'create-checkout-session',
     siteUrl: isUsableOrigin ? origin : 'https://www.djshouseofcards-comics.com'
   };
 })();

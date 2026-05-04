@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
  <head>
   <meta charset="utf-8"/>
@@ -13,9 +13,8 @@
 <link as="font" crossorigin="" href="assets/fonts/inter-700.ttf" rel="preload" type="font/ttf"/>
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.ttf" rel="preload" type="font/ttf"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.ttf" rel="preload" type="font/ttf"/>
-<link crossorigin="" href="https://gkqdymnmczabcggvigce.supabase.co" rel="preconnect"/>
 <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260502b" rel="stylesheet"/>
+ <link href="styles.css?v=20260504a" rel="stylesheet"/>
  <link href="styles-mobile-overrides.css?v=20260427b" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
@@ -157,6 +156,84 @@
     </div>
    </section>
      <div id="backendAdminMount"></div>
+   <section class="section admin-insights-section" id="adminInsightsSection">
+    <div class="container">
+     <div class="panel admin-insights-panel">
+      <div class="admin-panel-header">
+       <div>
+        <span class="kicker">
+         Admin Insights
+        </span>
+        <h2 class="section-title" style="margin-top:.5rem">
+         Metrics and collection summary
+        </h2>
+        <p class="section-subtitle">
+         Review local engagement trends and catalog totals before making pricing, photo, or product-page decisions.
+        </p>
+       </div>
+       <div aria-label="Admin insights sections" class="admin-insights-tabs" role="tablist">
+        <button aria-controls="adminEngagementPanel" aria-selected="true" class="admin-insight-tab is-active" data-admin-insight-tab="engagement" id="adminEngagementTab" role="tab" type="button">
+         Engagement
+        </button>
+        <button aria-controls="adminSummaryPanel" aria-selected="false" class="admin-insight-tab" data-admin-insight-tab="summary" id="adminSummaryTab" role="tab" type="button">
+         Collection Summary
+        </button>
+       </div>
+      </div>
+      <p aria-live="polite" class="helper-text" id="adminMetricsStatus">
+       Loading catalog metrics...
+      </p>
+      <div aria-labelledby="adminEngagementTab" class="admin-insight-panel" data-admin-insight-panel="engagement" id="adminEngagementPanel" role="tabpanel">
+       <div class="admin-metric-grid" id="adminEngagementMetricGrid">
+       </div>
+       <div class="admin-insight-note">
+        <strong>
+         Engagement source:
+        </strong>
+        <span>
+         These visit and product-click trends are privacy-friendly local browser metrics. Connect a server analytics table later if you want all-visitor reporting.
+        </span>
+       </div>
+       <div class="admin-rank-grid">
+        <div>
+         <h3 class="section-title section-title--small">
+          Most viewed locally
+         </h3>
+         <div class="admin-rank-list" id="adminEngagementList">
+         </div>
+        </div>
+        <div>
+         <h3 class="section-title section-title--small">
+          Page visits on this browser
+         </h3>
+         <div class="admin-rank-list" id="adminPageVisitList">
+         </div>
+        </div>
+       </div>
+      </div>
+      <div aria-labelledby="adminSummaryTab" class="admin-insight-panel" data-admin-insight-panel="summary" hidden="" id="adminSummaryPanel" role="tabpanel">
+       <div class="admin-metric-grid" id="adminSummaryMetricGrid">
+       </div>
+       <div class="admin-rank-grid">
+        <div>
+         <h3 class="section-title section-title--small">
+          Products by department
+         </h3>
+         <div class="admin-rank-list" id="adminCategorySummary">
+         </div>
+        </div>
+        <div>
+         <h3 class="section-title section-title--small">
+          Top players / subjects
+         </h3>
+         <div class="admin-rank-list" id="adminPlayerSummary">
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
     <section class="section admin-local-section" id="localAdminSection">
      <div class="container">
       <div class="admin-surface-banner admin-surface-banner--local">
@@ -699,15 +776,15 @@
   </button>
   <script defer="" src="backend-config.js?v=20260423d">
   </script>
-  <script defer="" src="supabase-client.js?v=20260423d">
+  <script defer="" src="supabase-client.js?v=20260503a">
   </script>
-<script defer="" src="core.js?v=20260501d">
+<script defer="" src="core.js?v=20260503b">
   </script>
 <script defer="" src="nav.js?v=20260427c">
   </script>
-<script defer="" src="admin.js?v=20260502a">
+<script defer="" src="admin.js?v=20260503a">
   </script>
-<script defer="" src="backend-admin.js?v=20260502b">
+<script defer="" src="backend-admin.js?v=20260503a">
   </script>
  </body>
 </html>

@@ -27,6 +27,8 @@ window.DJ = window.DJ || {};
   const MAX_EXISTING_RESULTS = 80;
   let existingEditorInitialized = false;
   let existingListingsReadyPromise = null;
+  let adminInsightsRemoteProducts = null;
+  let adminInsightsRefreshTimer = 0;
 
   // ---------------------------------------------------------------------------
   // Shared helpers for the browser-local admin experience
@@ -277,6 +279,230 @@ window.DJ = window.DJ || {};
     if (categoriesElement) categoriesElement.textContent = String(categories);
   }
 
+  function formatAdminCurrency(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 'Not priced';
+    if (typeof DJ.currency === 'function') return DJ.currency(numeric);
+    return `$${numeric.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+  }
+
+  function renderAdminMetricCard(label, value, helper = '') {
+    return `
+      <article class="admin-metric-card">
+        <span class="admin-stat-label">${DJ.escapeHtml(label)}</span>
+        <strong class="admin-stat-value">${DJ.escapeHtml(value)}</strong>
+        ${helper ? `<p>${DJ.escapeHtml(helper)}</p>` : ''}
+      </article>
+    `;
+  }
+
+  function getProductPlayers(product = {}) {
+    const raw = product.playerAthlete || product.metadata?.playerAthlete || product.metadata?.excelFields?.['C:Player/Athlete'] || '';
+    return String(raw)
+      .split(/\s+\|\s+|[,;/]+|\s+&\s+/)
+      .map((item) => item.trim())
+      .filter((item) => item && !/^n\/?a$/i.test(item));
+  }
+
+  function productHasKeyword(product = {}, pattern) {
+    const haystack = [
+      product.name,
+      product.condition,
+      Array.isArray(product.attributes) ? product.attributes.join(' ') : product.attributes,
+      product.description,
+      product.metadata?.excelFields?.['C:Features'],
+      product.metadata?.excelFields?.['C:Autographed']
+    ].join(' ');
+    return pattern.test(haystack);
+  }
+
+  function isSportsCard(product = {}) {
+    return ['Baseball', 'Basketball', 'Football'].includes(product.category) || ['Baseball', 'Basketball', 'Football'].includes(product.sport);
+  }
+
+  function isGradedProduct(product = {}) {
+    return productHasKeyword(product, /\b(PSA|BGS|SGC|CGC|CSG|BCCG|GMA)\b\s*(?:\d+(?:\.\d+)?|auth|auto)?/i);
+  }
+
+  function countBy(items = [], getKey) {
+    const counts = new Map();
+    items.forEach((item) => {
+      const key = getKey(item);
+      if (!key) return;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    return Array.from(counts.entries())
+      .map(([label, count]) => ({ label, count }))
+      .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
+  }
+
+  function renderRankList(elementId, rows = [], emptyText = 'No data available yet.') {
+    const container = document.getElementById(elementId);
+    if (!container) return;
+
+    if (!rows.length) {
+      container.innerHTML = `<p class="helper-text">${DJ.escapeHtml(emptyText)}</p>`;
+      return;
+    }
+
+    container.innerHTML = rows.slice(0, 10).map((row, index) => `
+      <div class="admin-rank-item">
+        <span class="admin-rank-index">${index + 1}</span>
+        <span class="admin-rank-copy">
+          <strong>${DJ.escapeHtml(row.label)}</strong>
+          ${row.helper ? `<small>${DJ.escapeHtml(row.helper)}</small>` : ''}
+        </span>
+        <b>${DJ.escapeHtml(String(row.count))}</b>
+      </div>
+    `).join('');
+  }
+
+  function getAdminInsightProducts() {
+    if (Array.isArray(adminInsightsRemoteProducts) && adminInsightsRemoteProducts.length) {
+      return {
+        products: adminInsightsRemoteProducts,
+        source: 'Supabase live catalog'
+      };
+    }
+
+    return {
+      products: DJ.applyStoredCatalogMutations(existingState.baseProducts, { includeCustomProducts: true }),
+      source: 'products.json plus browser overrides'
+    };
+  }
+
+  function summarizeProducts(products = []) {
+    const pricedValues = products.map((product) => DJ.numericPrice(product)).filter((price) => Number.isFinite(price));
+    const totalValue = pricedValues.reduce((sum, price) => sum + price, 0);
+    const averagePrice = pricedValues.length ? totalValue / pricedValues.length : 0;
+    const sportsCards = products.filter(isSportsCard);
+    const players = new Map();
+
+    products.forEach((product) => {
+      getProductPlayers(product).forEach((player) => {
+        players.set(player, (players.get(player) || 0) + 1);
+      });
+    });
+
+    return {
+      totalProducts: products.length,
+      sportsCards: sportsCards.length,
+      totalValue,
+      averagePrice,
+      pricedCount: pricedValues.length,
+      gradedCount: products.filter(isGradedProduct).length,
+      autographCount: products.filter((product) => productHasKeyword(product, /\b(auto|autograph|autographed|signed)\b/i)).length,
+      memorabiliaCount: products.filter((product) => productHasKeyword(product, /\b(memorabilia|relic|patch|jersey|bat|ball)\b/i)).length,
+      categoryRows: countBy(products, (product) => product.category || product.sport || 'Other'),
+      playerRows: Array.from(players.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label))
+    };
+  }
+
+  function renderEngagementInsights(products = []) {
+    const metrics = typeof DJ.getSiteMetrics === 'function' ? DJ.getSiteMetrics() : null;
+    const totals = metrics?.totals || {};
+    const productNames = new Map(products.map((product) => [Number(product.id), product.name]));
+    const productEvents = Object.values(metrics?.productEvents || {})
+      .map((item) => ({
+        label: item.name || productNames.get(Number(item.productId)) || `Product #${item.productId}`,
+        count: Number(item.product_view) || 0,
+        helper: [
+          `${Number(item.wishlist_add) || 0} wishlist adds`,
+          `${Number(item.checkout_start) || 0} checkout starts`
+        ].join(' | ')
+      }))
+      .filter((item) => item.count || !item.helper.startsWith('0 wishlist adds | 0 checkout starts'))
+      .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
+    const pageRows = Object.entries(metrics?.pageViews || {})
+      .map(([label, count]) => ({ label, count: Number(count) || 0 }))
+      .filter((row) => row.count)
+      .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
+    const grid = document.getElementById('adminEngagementMetricGrid');
+
+    if (grid) {
+      grid.innerHTML = [
+        renderAdminMetricCard('Page visits', String(Number(totals.page_view) || 0), 'Views recorded in this browser.'),
+        renderAdminMetricCard('Product opens', String(Number(totals.product_view) || 0), 'Detail-card opens from product grids.'),
+        renderAdminMetricCard('Wishlist adds', String(Number(totals.wishlist_add) || 0), 'Saved-item actions on this browser.'),
+        renderAdminMetricCard('Checkout starts', String(Number(totals.checkout_start) || 0), 'Buy Now attempts before Stripe/mail fallback.')
+      ].join('');
+    }
+
+    renderRankList('adminEngagementList', productEvents, 'No product engagement recorded in this browser yet.');
+    renderRankList('adminPageVisitList', pageRows, 'No page visits recorded in this browser yet.');
+  }
+
+  async function renderAdminInsights() {
+    const status = document.getElementById('adminMetricsStatus');
+    if (!document.getElementById('adminInsightsSection')) return;
+
+    if (!existingState.baseProducts.length) {
+      await loadBaseProducts();
+    }
+
+    const { products, source } = getAdminInsightProducts();
+    const summary = summarizeProducts(products);
+    const summaryGrid = document.getElementById('adminSummaryMetricGrid');
+
+    if (summaryGrid) {
+      summaryGrid.innerHTML = [
+        renderAdminMetricCard('Total listings', String(summary.totalProducts), 'Visible products after local deletes/overrides.'),
+        renderAdminMetricCard('Sports cards', String(summary.sportsCards), 'Baseball, basketball, and football listings.'),
+        renderAdminMetricCard('Total collection value', formatAdminCurrency(summary.totalValue), `${summary.pricedCount} priced listings included.`),
+        renderAdminMetricCard('Average price', formatAdminCurrency(summary.averagePrice), 'Based on numeric product price values.'),
+        renderAdminMetricCard('Graded listings', String(summary.gradedCount), 'Detected PSA/BGS/SGC/CGC/CSG/BCCG/GMA labels.'),
+        renderAdminMetricCard('Autograph listings', String(summary.autographCount), 'Detected auto, autograph, or signed wording.')
+      ].join('');
+    }
+
+    renderEngagementInsights(products);
+    renderRankList('adminCategorySummary', summary.categoryRows);
+    renderRankList('adminPlayerSummary', summary.playerRows, 'No player/subject attributes found yet.');
+
+    if (status) {
+      status.textContent = `Metrics refreshed from ${source}.`;
+    }
+  }
+
+  function scheduleAdminInsightsRender() {
+    window.clearTimeout(adminInsightsRefreshTimer);
+    adminInsightsRefreshTimer = window.setTimeout(() => {
+      renderAdminInsights().catch((error) => {
+        console.error(error);
+        const status = document.getElementById('adminMetricsStatus');
+        if (status) status.textContent = 'Metrics could not be refreshed right now.';
+      });
+    }, 80);
+  }
+
+  function initAdminInsights() {
+    const tabs = document.querySelectorAll('[data-admin-insight-tab]');
+    const panels = document.querySelectorAll('[data-admin-insight-panel]');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.adminInsightTab;
+        tabs.forEach((node) => {
+          const isActive = node === tab;
+          node.classList.toggle('is-active', isActive);
+          node.setAttribute('aria-selected', String(isActive));
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.adminInsightPanel !== target;
+        });
+      });
+    });
+
+    window.addEventListener('dj:admincatalogproducts', (event) => {
+      adminInsightsRemoteProducts = Array.isArray(event.detail?.products) ? event.detail.products : null;
+      scheduleAdminInsightsRender();
+    });
+
+    scheduleAdminInsightsRender();
+  }
+
   function getFilteredCustomProducts() {
     const searchText = customState.search.trim().toLowerCase();
     return DJ.getCustomProducts().filter((item) => {
@@ -294,6 +520,7 @@ window.DJ = window.DJ || {};
     const customProducts = DJ.getCustomProducts();
     const filteredProducts = getFilteredCustomProducts();
     updateAdminStats(customProducts);
+    scheduleAdminInsightsRender();
     updateSearchShellState('customItemSearch', 'customItemSearchShell');
 
     if (count) {
@@ -1067,6 +1294,7 @@ window.DJ = window.DJ || {};
     DJ.applyLazyLoading(container);
     highlightExistingListingSelection();
     renderHiddenListings();
+    scheduleAdminInsightsRender();
   }
 
   async function addGalleryImageFromFile(file) {
@@ -1402,6 +1630,7 @@ window.DJ = window.DJ || {};
 
   // Boot the local admin panels after the page and shared DJ helpers are ready.
   document.addEventListener('DOMContentLoaded', () => {
+    initAdminInsights();
     initNewItemForm();
     initCustomProductsPanel();
     bindCustomItemInteractions();

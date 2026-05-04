@@ -3,6 +3,9 @@
 .deploy/
 .tmp/
 .codex/
+supabase/.env
+supabase/functions/.env
+supabase/functions/*/.env
 
 # Local history and scratch files
 .Rhistory

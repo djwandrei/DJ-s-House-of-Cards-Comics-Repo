@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-02-02';
+﻿const CACHE_VERSION = 'dj-house-v2026-05-04-02';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -30,14 +30,15 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260502b',
+  '/styles.css?v=20260504a',
   '/styles-mobile-overrides.css?v=20260427b',
-  '/core.js?v=20260501d',
+  '/core.js?v=20260503b',
   '/nav.js?v=20260427c',
-  '/catalog.js?v=20260501b',
+  '/catalog.js?v=20260504b',
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
-  '/supabase-client.js?v=20260423d',
+  '/supabase-client.js?v=20260503a',
+  '/payments.js?v=20260503c',
   '/site.webmanifest?v=20260423d',
   '/offline.js?v=20260423d',
   '/vendor/supabase.min.js',
