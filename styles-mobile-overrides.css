@@ -49,7 +49,25 @@
   }
 
   .catalog-results-column .results-toolbar .toolbar-search .field-group--toolbar-search {
-    padding:.28rem .38rem .28rem .68rem;
+    display:grid;
+    gap:.38rem;
+    padding:.6rem .7rem .7rem;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-search-label {
+    display:block !important;
+    margin:0;
+    color:var(--text);
+    font-family:"Bebas Neue",sans-serif;
+    font-size:.88rem;
+    font-weight:800;
+    letter-spacing:.15em;
+    line-height:1;
+    text-transform:uppercase;
+  }
+
+  body.dark-mode .catalog-results-column .results-toolbar .toolbar-search-label {
+    color:#f8fbff;
   }
 
   .catalog-results-column .results-toolbar .toolbar-sort select {
@@ -58,6 +76,7 @@
   }
 
   .catalog-results-column .results-toolbar .toolbar-actions {
+    order:2;
     display:grid !important;
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:.55rem;
@@ -70,7 +89,65 @@
   }
 
   .catalog-results-column .results-toolbar .catalog-pagination--top {
-    display:none !important;
+    display:block !important;
+    order:1;
+    width:100%;
+    min-width:0;
+    margin:0;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:.4rem;
+    width:100%;
+    min-width:0;
+    padding:.55rem .65rem;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:rgba(255,255,255,.58);
+  }
+
+  body.dark-mode .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    background:rgba(255,255,255,.055);
+    border-color:rgba(255,255,255,.12);
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__range {
+    display:none;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__pages {
+    display:flex;
+    justify-content:center;
+    gap:.18rem;
+    min-width:0;
+    overflow:hidden;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page {
+    width:1.95rem;
+    min-width:1.95rem;
+    height:1.95rem;
+    padding:0;
+    border-radius:10px;
+    font-size:.82rem;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page:nth-child(n+6) {
+    display:none;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__arrow {
+    width:2.15rem;
+    min-width:2.15rem;
+    height:2.15rem;
+    font-size:1.45rem;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__per-page {
+    display:none;
   }
 }
 
@@ -94,7 +171,88 @@
     margin-bottom:1rem;
   }
 
+  .catalog-results-column .results-toolbar .toolbar-search .field-group--toolbar-search {
+    display:grid !important;
+    gap:.38rem;
+    padding:.55rem .65rem .65rem !important;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-search-label {
+    display:block !important;
+    margin:0;
+    color:var(--text);
+    font-family:"Bebas Neue",sans-serif;
+    font-size:.86rem;
+    font-weight:800;
+    letter-spacing:.14em;
+    line-height:1;
+    text-transform:uppercase;
+  }
+
+  body.dark-mode .catalog-results-column .results-toolbar .toolbar-search-label {
+    color:#f8fbff;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top {
+    display:block !important;
+    order:1;
+    width:100%;
+    min-width:0;
+    margin:0;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:.35rem;
+    width:100%;
+    min-width:0;
+    padding:.5rem .55rem;
+    border:1px solid var(--border);
+    border-radius:17px;
+    background:rgba(255,255,255,.58);
+  }
+
+  body.dark-mode .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    background:rgba(255,255,255,.055);
+    border-color:rgba(255,255,255,.12);
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__range,
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__per-page {
+    display:none;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__pages {
+    display:flex;
+    justify-content:center;
+    gap:.18rem;
+    min-width:0;
+    overflow:hidden;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page {
+    width:2rem;
+    min-width:2rem;
+    height:2rem;
+    padding:0;
+    font-size:.85rem;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page:nth-child(n+6) {
+    display:none;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__arrow {
+    width:2.2rem;
+    min-width:2.2rem;
+    height:2.2rem;
+    font-size:1.45rem;
+  }
+
   .catalog-results-column .results-toolbar .toolbar-actions {
+    order:2;
     width:100%;
     margin-left:0;
   }
