@@ -139,6 +139,7 @@ window.DJ = window.DJ || {};
   let wishlistRenderRequestId = 0;
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
+  const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
   const TEXT_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
   const SEARCH_ALIAS_RULES = [
     [/\brc\b/g, ' rookie '],
@@ -255,6 +256,25 @@ window.DJ = window.DJ || {};
     if (!Array.isArray(attributes) || !attributes.length) return '';
     const className = options.className || 'product-attribute-list';
     return `<div class="${DJ.escapeHtml(className)}">${attributes.map((attribute) => `<span class="product-attribute-pill">${DJ.escapeHtml(attribute)}</span>`).join('')}</div>`;
+  }
+
+  function getProductCardAttributes(attributes = []) {
+    if (!Array.isArray(attributes) || !attributes.length) return [];
+
+    // Product cards are intentionally slimmer than filters/modals. Keep only
+    // buyer-facing card flags so source-page, rookie, and import-helper tags do
+    // not compete with the title and price on dense catalog grids.
+    return attributes.filter((attribute) => PRODUCT_CARD_ATTRIBUTE_ALLOWLIST.has(String(attribute || '').trim()));
+  }
+
+  function getProductCardGradeLabel(product = {}) {
+    const compact = String(product.conditionCompact || '').trim();
+    if (!compact) return product.conditionFacet === 'Graded' ? 'Graded' : 'Ungraded';
+
+    // "Guide range listed" is a pricing note, not a grade. Replacing it on cards
+    // keeps the chip aligned with the allowed grade/status banner role.
+    if (/^guide range listed$/i.test(compact)) return product.conditionFacet || 'Ungraded';
+    return compact;
   }
 
   /**
@@ -413,34 +433,9 @@ window.DJ = window.DJ || {};
     `;
   }
 
-  function renderProductCardFlags(product) {
-    const flags = [];
-    const galleryCount = Array.isArray(product.imageGallery)
-      ? product.imageGallery.filter(Boolean).length
-      : (product.image ? 1 : 0);
-    const copyCount = Number(product.copyCount);
-
-    if (galleryCount > 1) {
-      flags.push(`<span class="product-media-flag">${galleryCount} photos</span>`);
-    }
-
-    if (Number.isFinite(copyCount) && copyCount > 1) {
-      flags.push(`<span class="product-media-flag">${copyCount} copies</span>`);
-    }
-
-    return flags.length
-      ? `<div class="product-media-flags" aria-hidden="true">${flags.join('')}</div>`
-      : '';
-  }
-
   function renderProductCardMetaExtras(product = {}) {
     const details = [];
-    const athlete = String(product.playerAthlete || '').trim();
     const league = String(product.league || '').trim();
-
-    if (athlete && !String(product.name || '').toLowerCase().includes(athlete.toLowerCase())) {
-      details.push(`<span class="product-meta-inline product-meta-inline--athlete">${DJ.escapeHtml(formatDisplayName(athlete))}</span>`);
-    }
 
     if (league && !String(product.category || '').toLowerCase().includes(league.toLowerCase())) {
       details.push(`<span class="product-meta-inline product-meta-inline--league">${DJ.escapeHtml(league)}</span>`);
@@ -1117,6 +1112,8 @@ window.DJ = window.DJ || {};
     const cardImageAlt = buildProductImageAlt(product, { context: 'card' });
     const cardImageCandidates = DJ.getThumbnailAssetCandidates(product.image);
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
+    const cardGradeLabel = getProductCardGradeLabel(product);
+    const cardAttributes = getProductCardAttributes(product.attributes);
     // Give above-the-fold cards a real loading priority, while keeping the rest
     // lazy so large catalog pages stay light on bandwidth and CPU.
     const imagePriority = options.imagePriority === 'high' ? 'high' : 'low';
@@ -1126,18 +1123,17 @@ window.DJ = window.DJ || {};
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" title="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">${heart}</button>
         <div class="product-media">
-          ${renderProductCardFlags(product)}
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
         <div class="product-content">
           <h4>${DJ.escapeHtml(product.name)}</h4>
           <div class="product-card-chip-rail">
             <div class="product-topline">
-              <span class="product-meta product-grade-meta">${DJ.escapeHtml(product.conditionCompact)}</span>
+              <span class="product-meta product-grade-meta">${DJ.escapeHtml(cardGradeLabel)}</span>
             </div>
             ${renderProductCardSummary(product, summaryId, metaLine)}
             ${renderProductCardMetaExtras(product)}
-            ${renderAttributeTags(product.attributes)}
+            ${renderAttributeTags(cardAttributes)}
           </div>
           <div class="product-card-footer">
             <div class="${pricingClass}">
