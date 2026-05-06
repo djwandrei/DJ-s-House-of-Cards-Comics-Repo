@@ -186,6 +186,22 @@ function Test-DeployablePath {
   return $allowedRootFiles -icontains $normalizedPath
 }
 
+function Test-DeployableFile {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$RelativePath
+  )
+
+  if (-not (Test-DeployablePath -RelativePath $RelativePath)) {
+    return $false
+  }
+
+  # Upload operations must target files only. Git can report newly-created
+  # directories while assets are still untracked, so keep folders out of curl.
+  $localPath = Join-Path $script:RepoRoot $RelativePath
+  return (Test-Path -LiteralPath $localPath -PathType Leaf)
+}
+
 function Get-StatePath {
   return Join-Path $script:RepoRoot ".deploy/cpanel-deploy.state.json"
 }
@@ -294,7 +310,7 @@ function Invoke-Upload {
   )
 
   $localPath = Join-Path $script:RepoRoot $RelativePath
-  if (-not (Test-Path $localPath)) {
+  if (-not (Test-Path -LiteralPath $localPath -PathType Leaf)) {
     throw "Cannot upload missing file '$RelativePath'."
   }
 
@@ -342,7 +358,7 @@ function Get-FullUploadList {
   $tracked = Invoke-Git -Arguments @("ls-files")
   $untracked = Invoke-Git -Arguments @("ls-files", "--others", "--exclude-standard")
   return @($tracked + $untracked |
-    Where-Object { $_ -and (Test-DeployablePath -RelativePath $_) } |
+    Where-Object { $_ -and (Test-DeployableFile -RelativePath $_) } |
     Sort-Object -Unique)
 }
 
@@ -374,7 +390,7 @@ function Get-ChangedFiles {
           if (Test-DeployablePath -RelativePath $parts[1]) {
             [void]$deletes.Add($parts[1])
           }
-          if (Test-DeployablePath -RelativePath $parts[2]) {
+          if (Test-DeployableFile -RelativePath $parts[2]) {
             [void]$uploads.Add($parts[2])
           }
         }
@@ -388,7 +404,7 @@ function Get-ChangedFiles {
         continue
       }
 
-      if ($parts.Count -ge 2 -and (Test-DeployablePath -RelativePath $parts[1])) {
+      if ($parts.Count -ge 2 -and (Test-DeployableFile -RelativePath $parts[1])) {
         [void]$uploads.Add($parts[1])
       }
     }
@@ -405,7 +421,7 @@ function Get-ChangedFiles {
         if (Test-DeployablePath -RelativePath $renameParts[0]) {
           [void]$deletes.Add($renameParts[0])
         }
-        if (Test-DeployablePath -RelativePath $renameParts[1]) {
+        if (Test-DeployableFile -RelativePath $renameParts[1]) {
           [void]$uploads.Add($renameParts[1])
         }
       }
@@ -419,13 +435,13 @@ function Get-ChangedFiles {
       continue
     }
 
-    if (Test-DeployablePath -RelativePath $path) {
+    if (Test-DeployableFile -RelativePath $path) {
       [void]$uploads.Add($path)
     }
   }
 
   foreach ($path in (Invoke-Git -Arguments @("ls-files", "--others", "--exclude-standard"))) {
-    if ($path -and (Test-DeployablePath -RelativePath $path)) {
+    if ($path -and (Test-DeployableFile -RelativePath $path)) {
       [void]$uploads.Add($path)
     }
   }
