@@ -97,6 +97,33 @@ NOISE_TOKENS = {
     "nl",
     "al",
     "mini",
+    "heritage",
+    "buybacks",
+    "buyback",
+    "variation",
+    "autographs",
+    "autograph",
+    "autos",
+    "auto",
+    "relics",
+    "relic",
+    "refractors",
+    "refractor",
+    "chrome",
+    "platinum",
+    "bowman",
+    "panini",
+    "prizm",
+    "leaf",
+    "draft",
+    "prospect",
+    "prospects",
+    "signature",
+    "signatures",
+    "franchise",
+    "futures",
+    "edition",
+    "extra",
 }
 
 VARIANT_COLOR_TOKENS = {
@@ -115,6 +142,7 @@ VARIANT_COLOR_TOKENS = {
     "silver",
     "superfractor",
     "superfractors",
+    "white",
     "yellow",
 }
 
@@ -242,7 +270,16 @@ def parse_card_number(value: Any) -> str:
 
 def lookup_title(value: str) -> str:
     """Repair small workbook typos for lookup while preserving the raw note."""
-    return normalize_spaces(re.sub(r"\b23011\b", "2011", value))
+    replacements = [
+        (r"\b23011\b", "2011"),
+        (r"\bMiquel\b", "Miguel"),
+        (r"\bTopp\b", "Topps"),
+        (r"\bTeixiera\b", "Teixeira"),
+    ]
+    repaired = value
+    for pattern, replacement in replacements:
+        repaired = re.sub(pattern, replacement, repaired, flags=re.I)
+    return normalize_spaces(repaired)
 
 
 def base_copy_title(value: str) -> str:
@@ -301,6 +338,76 @@ def workbook_rows() -> tuple[list[dict[str, str]], list[dict[str, str]]]:
                 seen_removes.add(normalize_key(remove_value))
                 removes.append({"sheet": ws.title, "row": str(row_index), "title": remove_value})
     return adds, removes
+
+
+def processed_titles_from_report(path: Path) -> tuple[set[str], set[str]]:
+    """Return workbook rows already handled by a previous importer run.
+
+    The add/remove workbook is cumulative. When DJ adds a fresh batch to the
+    bottom, rerunning every historical row would risk removing a second copy of
+    listings that were intentionally "remove one copy" rows. Comparing against
+    the previous report keeps repeat imports narrow and safe.
+    """
+    if not path.exists():
+        return set(), set()
+    try:
+        report = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return set(), set()
+
+    add_titles = {
+        normalize_key(entry.get("request") or entry.get("title"))
+        for entry in [*report.get("added", []), *report.get("unresolvedAdds", [])]
+        if entry.get("request") or entry.get("title")
+    }
+    remove_titles = {
+        normalize_key(entry.get("request") or entry.get("title"))
+        for entry in [*report.get("removed", []), *report.get("unresolvedRemovals", [])]
+        if entry.get("request") or entry.get("title")
+    }
+    return add_titles, remove_titles
+
+
+def filter_previously_processed_rows(
+    adds: list[dict[str, str]],
+    removes: list[dict[str, str]],
+    report_path: Path,
+) -> tuple[list[dict[str, str]], list[dict[str, str]], dict[str, Any]]:
+    previous_adds, previous_removes = processed_titles_from_report(report_path)
+    filtered_adds = [row for row in adds if normalize_key(row["title"]) not in previous_adds]
+    filtered_removes = [row for row in removes if normalize_key(row["title"]) not in previous_removes]
+    return filtered_adds, filtered_removes, {
+        "previousReport": str(report_path),
+        "originalAdds": len(adds),
+        "originalRemoves": len(removes),
+        "skippedPreviouslyProcessedAdds": len(adds) - len(filtered_adds),
+        "skippedPreviouslyProcessedRemoves": len(removes) - len(filtered_removes),
+    }
+
+
+def unresolved_add_rows_from_report(path: Path) -> list[dict[str, str]]:
+    """Build retry rows from a prior report's unresolved additions only."""
+    if not path.exists():
+        raise SystemExit(f"Retry report not found: {path}")
+    report = json.loads(path.read_text(encoding="utf-8"))
+    rows: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for entry in report.get("unresolvedAdds", []):
+        title = normalize_spaces(entry.get("title") or entry.get("request"))
+        if not title:
+            continue
+        key = normalize_key(title)
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append(
+            {
+                "sheet": str(entry.get("sheet") or "Retry"),
+                "row": str(entry.get("row") or ""),
+                "title": title,
+            }
+        )
+    return rows
 
 
 def image_files() -> list[Path]:
@@ -994,9 +1101,29 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--apply", action="store_true", help="Write catalog changes.")
     parser.add_argument("--skip-beckett", action="store_true", help="Do not login to Beckett; useful for dry local checks.")
+    parser.add_argument(
+        "--only-new-since-report",
+        type=Path,
+        help="Filter out workbook rows already recorded in a previous add/remove report.",
+    )
+    parser.add_argument(
+        "--retry-unresolved-adds-from-report",
+        type=Path,
+        help="Ignore workbook removals and retry only unresolved add rows from the given report.",
+    )
     args = parser.parse_args()
 
     adds, removes = workbook_rows()
+    filter_report: dict[str, Any] | None = None
+    if args.retry_unresolved_adds_from_report:
+        adds = unresolved_add_rows_from_report(args.retry_unresolved_adds_from_report)
+        removes = []
+        filter_report = {
+            "retryReport": str(args.retry_unresolved_adds_from_report),
+            "retryUnresolvedAdds": len(adds),
+        }
+    if args.only_new_since_report:
+        adds, removes, filter_report = filter_previously_processed_rows(adds, removes, args.only_new_since_report)
     products = json.loads(PRODUCTS_PATH.read_text(encoding="utf-8"))
     original_count = len(products)
 
@@ -1025,6 +1152,7 @@ def main() -> int:
         "finalProductCount": len(products),
         "requestedAdds": len(adds),
         "requestedRemovals": len(removes),
+        "filter": filter_report,
         "removed": removed,
         "unresolvedRemovals": unresolved_removals,
         "added": added,
