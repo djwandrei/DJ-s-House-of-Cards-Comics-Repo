@@ -39,9 +39,7 @@ from apply_beckett_legacy_updates import (  # noqa: E402
 )
 
 WORKBOOK_PATH = Path.home() / "Documents" / "Cards to remove and add.xlsx"
-PHOTO_ROOT = Path("H:/My Drive/Unused Assets/unused-legacy-photos/baseball_cardx")
-NEW_PHOTO_DIR = PHOTO_ROOT / "New Site Listings"
-REPLACE_PHOTO_DIR = PHOTO_ROOT / "Replace Photos"
+PHOTO_ROOT = Path("H:/My Drive/Unused Assets/unused-legacy-photos")
 PRODUCTS_PATH = ROOT / "products.json"
 OUTPUT_DIR = ROOT / "outputs"
 REPORT_PATH = OUTPUT_DIR / "cards-remove-add-report.json"
@@ -54,12 +52,63 @@ YEAR_RE = re.compile(r"\b(19\d{2}|20\d{2})\b")
 CARD_NO_RE = re.compile(r"#\s*([A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*)", re.I)
 MONEY_RE = re.compile(r"\$(?:\d[\d,]*(?:\.\d{1,2})?|\.\d{1,2})")
 
+SPORT_CONFIG: dict[str, dict[str, Any]] = {
+    "Baseball": {
+        "category": "Baseball",
+        "sport": "Baseball",
+        "league": "MLB",
+        "asset_dir": "baseball-cards",
+        "placeholder": "assets/placeholder-baseball.svg",
+        "add_photo_dirs": [PHOTO_ROOT / "baseball_cardx" / "New Site Listings"],
+        "replace_photo_dirs": [PHOTO_ROOT / "baseball_cardx" / "Replace Photos"],
+    },
+    "Basketball": {
+        "category": "Basketball",
+        "sport": "Basketball",
+        "league": "NBA",
+        "asset_dir": "basketball-cards",
+        "placeholder": "assets/placeholder-basketball.svg",
+        "add_photo_dirs": [PHOTO_ROOT / "basketball_cards"],
+        "replace_photo_dirs": [PHOTO_ROOT / "basketball_cards" / "Replace Photos"],
+    },
+    "Football": {
+        "category": "Football",
+        "sport": "Football",
+        "league": "NFL",
+        "asset_dir": "football-cards",
+        "placeholder": "assets/placeholder-football.svg",
+        "add_photo_dirs": [PHOTO_ROOT / "football_cards"],
+        "replace_photo_dirs": [PHOTO_ROOT / "football_cards" / "Replace Photos"],
+    },
+}
+
 NOISE_TOKENS = {
     "topps",
+    "upper",
+    "deck",
+    "fleer",
+    "hoops",
+    "skybox",
+    "collector",
+    "collectors",
+    "choice",
+    "z",
+    "force",
+    "artifacts",
+    "hardcourt",
+    "finest",
+    "press",
+    "pass",
+    "score",
+    "sage",
+    "certified",
+    "absolute",
     "kelloggs",
     "kellogg",
     "donruss",
     "baseball",
+    "basketball",
+    "football",
     "best",
     "bronze",
     "rookies",
@@ -231,6 +280,26 @@ MANUAL_BECKETT_OVERRIDES: dict[str, str] = {
         "https://www.beckett.com/baseball/2011/topps-60/57-sandy-koufax-8177432",
     "2010 bowman platinum prospect autograph bpapg paul goldschmidt psa 9":
         "https://www.beckett.com/baseball/2010/bowman-platinum-prospect-autographs-refractors/pg-paul-goldschmidt-7927083",
+    "1995 signature rookies prime top 10 signatures tt5 kevin garnett 1000":
+        "https://www.beckett.com/basketball/1995/signature-rookies-prime-top-10-signatures/tt5-kevin-garnett-3091078",
+    "1999 collector s edge impulse kb8 kb3 kobe bryant":
+        "https://www.beckett.com/basketball/1998/collectors-edge-impulse-kb8-holofoil/3-kobe-bryant-3153393",
+    "2012 13 panini brilliance marks of brilliance autographs 104 antoine walker 199":
+        "https://www.beckett.com/basketball/2012-13/panini-brilliance-marks-of-brilliance/104-antoine-walker199-9200042",
+    "2013 14 totally certified rookie roll call silver autographs 28 gorgui dieng":
+        "https://www.beckett.com/basketball/2013-14/totally-certified-rookie-roll-call-autographs/28-gorgui-dieng-9587765",
+    "2021 22 panini chronicles draft picks in flight signatures ifs js jalen suggs":
+        "https://www.beckett.com/basketball/2021-22/panini-chronicles-draft-picks-in-flight-signatures/1-jalen-suggs-20450022",
+    "2011 certified mirror blue freshman fabric 252 cam newton jsy auto":
+        "https://www.beckett.com/football/2011/certified-mirror-blue/252-cam-newton-jsy-au50-8402313",
+    "2011 rookies stars longevity freshman orientation jerseys 23 a j green":
+        "https://www.beckett.com/football/2011/rookies-and-stars-longevity-freshman-orientation-jerseys/27-aj-green-8440801",
+    "2011 sage hit 100ab blue orange cam newton":
+        "https://www.beckett.com/football/2011/sage-hit/100b-cam-newton-bluorg-8104584",
+    "2011 sage hit make ready 54 a j green cyan plate":
+        "https://www.beckett.com/football/2011/sage-hit-make-ready-cyan/54-aj-green-art-8053637",
+    "2011 topps 200 cam newton":
+        "https://www.beckett.com/football/2011/topps/200a-cam-newton-rcstands-in-backgroundsilver-wall-8225897",
 }
 
 PLAYER_OVERRIDES: dict[tuple[str, str], str] = {
@@ -246,6 +315,53 @@ PLAYER_OVERRIDES: dict[tuple[str, str], str] = {
     ("1979", "1"): "Rod Carew | Dave Parker",
     ("1979", "3"): "Jim Rice | George Foster",
     ("1979", "413"): "Roger Maris | Hank Aaron",
+}
+
+PLAYER_TEAM_HINTS: dict[str, str] = {
+    "kevin garnett": "Minnesota Timberwolves",
+    "tim duncan": "San Antonio Spurs",
+    "gary payton": "Seattle SuperSonics",
+    "kobe bryant": "Los Angeles Lakers",
+    "stephon marbury": "Phoenix Suns",
+    "carmelo anthony": "Denver Nuggets",
+    "lebron james": "Cleveland Cavaliers",
+    "t.j. ford": "Milwaukee Bucks",
+    "darko milicic": "Detroit Pistons",
+    "al horford": "Atlanta Hawks",
+    "kevin durant": "Seattle SuperSonics",
+    "derrick rose": "Chicago Bulls",
+    "ricky rubio": "Minnesota Timberwolves",
+    "iman shumpert": "New York Knicks",
+    "sam perkins": "Los Angeles Lakers",
+    "antoine walker": "Boston Celtics",
+    "damian lillard": "Portland Trail Blazers",
+    "amare stoudemire": "New York Knicks",
+    "j.r. smith": "New York Knicks",
+    "kevin love": "Minnesota Timberwolves",
+    "gorgui dieng": "Minnesota Timberwolves",
+    "jalen suggs": "Orlando Magic",
+    "adam jones": "Tennessee Titans",
+    "adrian peterson": "Minnesota Vikings",
+    "jordy nelson": "Green Bay Packers",
+    "matt ryan": "Atlanta Falcons",
+    "jonathan stewart": "Carolina Panthers",
+    "cam newton": "Carolina Panthers",
+    "aaron rodgers": "Green Bay Packers",
+    "ryan mallett": "New England Patriots",
+    "tyrod taylor": "Baltimore Ravens",
+    "eric decker": "Denver Broncos",
+    "a.j. green": "Cincinnati Bengals",
+    "kyle rudolph": "Minnesota Vikings",
+    "prince amukamara": "New York Giants",
+    "ryan williams": "Arizona Cardinals",
+    "john elway": "Denver Broncos",
+    "larry johnson": "Kansas City Chiefs",
+    "robert griffin": "Washington Redskins",
+    "trent richardson": "Cleveland Browns",
+    "russell wilson": "Seattle Seahawks",
+    "j.j. watt": "Houston Texans",
+    "lamar miller": "Miami Dolphins",
+    "alfred morris": "Washington Redskins",
 }
 
 
@@ -268,11 +384,39 @@ def parse_card_number(value: Any) -> str:
     return match.group(1).upper() if match else ""
 
 
+def sport_from_sheet(value: Any) -> str:
+    """Map workbook sheet names to the storefront's product departments."""
+    sheet_key = normalize_key(value)
+    for sport in SPORT_CONFIG:
+        if sport.lower() in sheet_key:
+            return sport
+    return "Baseball"
+
+
+def sport_from_row(row: dict[str, str]) -> str:
+    return sport_from_sheet(row.get("sheet"))
+
+
+def sport_config(sport: str) -> dict[str, Any]:
+    return SPORT_CONFIG.get(sport, SPORT_CONFIG["Baseball"])
+
+
 def lookup_title(value: str) -> str:
     """Repair small workbook typos for lookup while preserving the raw note."""
     replacements = [
         (r"\b23011\b", "2011"),
+        (r"\b(19\d{2})-19(\d{2})\b", r"\1-\2"),
+        (r"\b(20\d{2})-20(\d{2})\b", r"\1-\2"),
+        (r"\bTop Ten\b", "Top 10"),
         (r"\bMiquel\b", "Miguel"),
+        (r"\bCarmello\b", "Carmelo"),
+        (r"\bAntonie\b", "Antoine"),
+        (r"\bMallet\b", "Mallett"),
+        (r"\bNewtron\b", "Newton"),
+        (r"\bGereen\b", "Green"),
+        (r"\bAutgraphs\b", "Autographs"),
+        (r"\bAutgraph\b", "Autograph"),
+        (r"\bJame\b", "James"),
         (r"\bTopp\b", "Topps"),
         (r"\bTeixiera\b", "Teixeira"),
     ]
@@ -410,12 +554,22 @@ def unresolved_add_rows_from_report(path: Path) -> list[dict[str, str]]:
     return rows
 
 
-def image_files() -> list[Path]:
+def image_files(sport: str | None = None) -> list[Path]:
+    """Return candidate source images for a sport without crossing departments.
+
+    Keeping photo pools sport-specific avoids a common migration failure where
+    a similarly numbered card in another sport wins the image match.
+    """
     files: list[Path] = []
-    for folder in [NEW_PHOTO_DIR, PHOTO_ROOT]:
+    config = sport_config(sport or "Baseball")
+    folders = list(config.get("add_photo_dirs") or [])
+    if sport is None:
+        for other_config in SPORT_CONFIG.values():
+            folders.extend(other_config.get("add_photo_dirs") or [])
+    for folder in folders:
         if not folder.exists():
             continue
-        for file in folder.iterdir():
+        for file in folder.rglob("*"):
             if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS:
                 files.append(file)
     return files
@@ -455,7 +609,7 @@ def image_match_score(title: str, image: Path) -> tuple[float, str]:
 
     if normalize_key(title).replace(" ", "") in normalize_key(image.stem).replace(" ", ""):
         score += 8
-    if image.parent == NEW_PHOTO_DIR:
+    if any(image.parent == folder for config in SPORT_CONFIG.values() for folder in config.get("add_photo_dirs", [])):
         score += 0.5
     return score, ""
 
@@ -500,6 +654,8 @@ def card_numbers_compatible(requested: str, candidate: str) -> bool:
     if not candidate:
         return False
     if requested.isdigit() or candidate.isdigit():
+        if requested.isdigit() and candidate.startswith(requested) and candidate[len(requested) :].isalpha():
+            return True
         return requested == candidate
     return requested == candidate or requested.endswith(candidate) or candidate.endswith(requested) or candidate.startswith(requested)
 
@@ -538,6 +694,10 @@ def enhanced_query_variants(product: dict[str, Any]) -> list[str]:
 
     clean = re.sub(r"\([^)]*\)", " ", title)
     clean = re.sub(r"\s*/\s*\d{2,5}\b", " ", clean)
+    clean = re.sub(r"\b(PSA|BGS|SGC|CGC|HGA|BCCG|GAI)\s*(10|[1-9](?:\.\d)?)\b", " ", clean, flags=re.I)
+    clean = re.sub(r"\bRC\b", "Rookie", clean, flags=re.I)
+    clean = re.sub(r"\bJsy\b", "Jersey", clean, flags=re.I)
+    clean = re.sub(r"\bMem\b", "Memorabilia", clean, flags=re.I)
     clean = re.sub(r"\bAU\b", "Autograph", clean, flags=re.I)
     clean = re.sub(r"\bAutograph\b", "Autographs", clean, flags=re.I)
     clean = re.sub(r"\bProspect Autographs\b", "Prospect Autographs", clean, flags=re.I)
@@ -571,11 +731,18 @@ def enhanced_query_variants(product: dict[str, Any]) -> list[str]:
     set_guess = beckett.set_guess(product)
     if year and set_guess and number and player:
         add(f"{year} {set_guess} {number} {player}")
+        add(f"{year} {set_guess} #{number} {player}")
+        add(f"{year} {set_guess} {player} #{number}")
         for old, new in replacements.items():
             if number.upper() == old.replace("#", "").upper():
                 add(f"{year} {set_guess} {new.replace('#', '')} {player}")
         if number.upper() == "BCP205":
             add(f"{year} {set_guess} BCP205B {player}")
+    if year and player and number:
+        add(f"{year} {player} #{number}")
+        add(f"{year} #{number} {player}")
+    if player and number:
+        add(f"{player} #{number}")
     return variants
 
 
@@ -635,8 +802,9 @@ def best_compatible_candidate(session: Any, product: dict[str, Any], cache: dict
     return best
 
 
-def copy_asset(source: Path, subfolder: str) -> str:
-    target_dir = ROOT / "assets" / "baseball-cards" / subfolder
+def copy_asset(source: Path, subfolder: str, sport: str = "Baseball") -> str:
+    config = sport_config(sport)
+    target_dir = ROOT / "assets" / str(config["asset_dir"]) / subfolder
     target_dir.mkdir(parents=True, exist_ok=True)
     target = target_dir / safe_asset_name(source)
     if not target.exists() or target.stat().st_size != source.stat().st_size:
@@ -676,6 +844,10 @@ def removal_score(query: str, product: dict[str, Any]) -> float:
     product_key = normalize_key(title)
     if not query_key or not product_key:
         return 0.0
+    query_subject_tokens = card_tokens(query)
+    product_subject_tokens = card_tokens(title)
+    if query_subject_tokens and product_subject_tokens and not (query_subject_tokens & product_subject_tokens):
+        return 0.0
     score = SequenceMatcher(None, query_key, product_key).ratio()
     query_tokens = set(query_key.split())
     product_tokens = set(product_key.split())
@@ -684,6 +856,10 @@ def removal_score(query: str, product: dict[str, Any]) -> float:
     query_number = parse_card_number(query)
     product_year = str(product.get("year") or parse_year(title))
     product_number = parse_card_number(title)
+    if query_year and product_year and product_year != query_year:
+        return 0.0
+    if query_number and product_number and not card_numbers_compatible(query_number, product_number):
+        return 0.0
     if query_year:
         score += 0.25 if product_year == query_year else -0.25
     if query_number:
@@ -747,22 +923,48 @@ def player_from_title(title: str, year: str, card_number: str) -> str:
         return override
     text = re.sub(r"\b(19\d{2}|20\d{2})(?:[-/]\d{2})?\b", " ", title)
     text = re.sub(r"#\s*[A-Za-z0-9]+", " ", text)
-    text = re.sub(r"\b(Topps|Kelloggs?|Donruss|Baseball's|Best|Bronze|Rookies|UPD)\b", " ", text, flags=re.I)
-    text = re.sub(r"\b(PSA|BGS|SGC|CGC|GEM|MINT|NM|EX|VG|MC|Rookie|Card|All-Star|AS)\b", " ", text, flags=re.I)
+    text = re.sub(
+        r"\b(Topps|Kelloggs?|Donruss|Fleer|Hoops|Skybox|Upper|Deck|Panini|Bowman|Score|Sage|Press|Pass|Leaf|Baseball's|Best|Bronze|Rookies|UPD|Collector'?s|Choice|Artifacts|Hardcourt|Finest|Certified|Absolute|Memorabilia)\b",
+        " ",
+        text,
+        flags=re.I,
+    )
+    text = re.sub(r"\b(PSA|BGS|SGC|CGC|GEM|MINT|NM|EX|VG|MC|Rookie|Card|All-Star|AS|RC|Auto|Autographs?|Signatures?|Jersey|Patch|Materials?)\b", " ", text, flags=re.I)
     text = re.sub(r"\([^)]*\)", " ", text)
     text = normalize_spaces(re.sub(r"[,/]+", " | ", text))
     text = re.sub(r"\s*\|\s*$", "", text)
     return text or ""
 
 
-def source_page_for(year: str) -> str:
+def team_from_title(title: str, sport: str, year: str, card_number: str, player: str) -> str:
+    """Prefer exact legacy baseball overrides, then safe player-team hints.
+
+    The add workbook does not have a separate team column, so we only fill team
+    when the card is a known single-player/single-team case. Multi-player cards
+    stay blank unless an existing override is explicit.
+    """
+    if sport == "Baseball":
+        override = TEAM_OVERRIDES.get((year, card_number), "")
+        if override:
+            return override
+    if "|" in player:
+        return ""
+    key = normalize_key(player)
+    title_key = normalize_key(title)
+    for player_key, team in PLAYER_TEAM_HINTS.items():
+        if player_key in {key, title_key} or player_key in title_key:
+            return team
+    return ""
+
+
+def source_page_for(year: str, sport: str = "Baseball") -> str:
     if year.startswith("19"):
         decade = f"{year[:3]}0s"
     elif year.startswith("20"):
         decade = f"{year[:3]}0s"
     else:
         decade = "Legacy"
-    return f"Baseball {decade}"
+    return f"{sport} {decade}"
 
 
 def condition_from_title(raw_title: str, price_basis: str) -> str:
@@ -824,7 +1026,7 @@ def details_from_beckett(raw_title: str, match: beckett.SearchCandidate, page: d
 
 
 def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]], session: Any, cache: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
-    files = image_files()
+    files_by_sport = {sport: image_files(sport) for sport in SPORT_CONFIG}
     next_id = max(product["id"] for product in products) + 1
     next_rank = max(int(product.get("sortRank") or 0) for product in products) + 1
     added: list[dict[str, Any]] = []
@@ -835,21 +1037,24 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
         if isinstance(product.get("metadata"), dict)
     }
 
-    products_by_base: dict[str, dict[str, Any]] = {}
+    products_by_base: dict[tuple[str, str], dict[str, Any]] = {}
     for product in products:
         raw = ""
         metadata = product.get("metadata")
         if isinstance(metadata, dict):
             raw = normalize_spaces(metadata.get("cardsAddRawTitle"))
+        product_sport = str(product.get("sport") or product.get("category") or "Baseball")
         key = normalize_key(base_copy_title(raw or product.get("name", "")))
-        if key and key not in products_by_base:
-            products_by_base[key] = product
+        if key and (product_sport, key) not in products_by_base:
+            products_by_base[(product_sport, key)] = product
 
     def add_cloned_copy(row: dict[str, str], reason: str) -> dict[str, Any] | None:
         nonlocal next_id, next_rank
         raw_title = row["title"]
+        sport = sport_from_row(row)
+        files = files_by_sport.get(sport, [])
         base_key = normalize_key(base_copy_title(raw_title))
-        source = products_by_base.get(base_key)
+        source = products_by_base.get((sport, base_key))
         if not source:
             return None
         product = deepcopy(source)
@@ -863,7 +1068,7 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
         product["metadata"] = metadata
         image_source, image_score, image_reason = best_image_for_add(raw_title, files)
         if image_source:
-            image_path = copy_asset(image_source, "legacy-additions")
+            image_path = copy_asset(image_source, "legacy-additions", sport)
             product["image"] = image_path
             product["imageGallery"] = [image_path]
             thumb = write_thumbnail(image_path)
@@ -876,7 +1081,7 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
             product["metadata"]["needsPhotoReview"] = True
             product["metadata"]["imageReason"] = image_reason
         products.append(product)
-        products_by_base[base_key] = product
+        products_by_base[(sport, base_key)] = product
         added.append(
             {
                 "request": raw_title,
@@ -898,6 +1103,9 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
 
     for row in add_rows:
         raw_title = row["title"]
+        sport = sport_from_row(row)
+        config = sport_config(sport)
+        files = files_by_sport.get(sport, [])
         search_title = lookup_title(raw_title)
         if normalize_key(raw_title) in existing_raw_titles:
             continue
@@ -907,8 +1115,8 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
         player = player_from_title(search_title, year, card_number)
         product_stub = {
             "name": search_title,
-            "category": "Baseball",
-            "sport": "Baseball",
+            "category": config["category"],
+            "sport": config["sport"],
             "playerAthlete": player,
             "year": int(year) if year else None,
         }
@@ -926,7 +1134,7 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
             unresolved.append({**row, "reason": "No Beckett price found for matched card", "beckettUrl": match.url, "score": match.score})
             continue
         image_source, image_score, image_reason = best_image_for_add(search_title, files)
-        image_path = copy_asset(image_source, "legacy-additions") if image_source else "assets/placeholder-baseball.svg"
+        image_path = copy_asset(image_source, "legacy-additions", sport) if image_source else config["placeholder"]
         thumbnail_path = write_thumbnail(image_path)
 
         attributes: list[str] = []
@@ -939,9 +1147,9 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
         if re.search(r"/\s*\d{2,5}\b", raw_title):
             attributes.append("Serial Numbered")
 
-        team = TEAM_OVERRIDES.get((year, card_number), "")
+        team = team_from_title(search_title, sport, year, card_number, player)
         description = (
-            f"Legacy baseball listing matched to Beckett as {details['beckettTitle']}. "
+            f"Legacy {sport.lower()} listing matched to Beckett as {details['beckettTitle']}. "
             "Please review the photos for the exact card you will receive."
         )
         if not image_source:
@@ -950,7 +1158,7 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
         product = {
             "id": next_id,
             "name": details["displayName"],
-            "category": "Baseball",
+            "category": config["category"],
             "team": team,
             "year": int(year) if year else None,
             "condition": details["condition"],
@@ -961,9 +1169,9 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
             "description": description,
             "photoHostPageUrl": match.url,
             "legacyImageLabel": Path(image_path).stem if image_path else "",
-            "sourcePage": source_page_for(year),
-            "league": "MLB",
-            "sport": "Baseball",
+            "sourcePage": source_page_for(year, sport),
+            "league": config["league"],
+            "sport": config["sport"],
             "playerAthlete": player,
             "displayPrice": details["priceLabel"],
             "copyCount": 1,
@@ -996,7 +1204,7 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
             product["attributes"] = attributes
 
         products.append(product)
-        products_by_base[normalize_key(base_copy_title(raw_title))] = product
+        products_by_base[(sport, normalize_key(base_copy_title(raw_title)))] = product
         added.append(
             {
                 "request": raw_title,
@@ -1019,16 +1227,21 @@ def add_products(products: list[dict[str, Any]], add_rows: list[dict[str, str]],
 def replace_photos(products: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     replaced: list[dict[str, Any]] = []
     skipped: list[dict[str, Any]] = []
-    files = [file for file in REPLACE_PHOTO_DIR.iterdir() if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS]
+    files: list[tuple[str, Path]] = []
+    for sport, config in SPORT_CONFIG.items():
+        for folder in config.get("replace_photo_dirs", []):
+            if not folder.exists():
+                continue
+            files.extend((sport, file) for file in folder.rglob("*") if file.is_file() and file.suffix.lower() in IMAGE_EXTENSIONS)
 
-    for file in files:
+    for sport, file in files:
         year = parse_year(file.stem)
         number = parse_card_number(file.stem)
         file_grade, file_grade_value = parse_grade(file.stem)
         file_tokens = card_tokens(file.stem)
         candidates: list[tuple[float, dict[str, Any]]] = []
         for product in products:
-            if product.get("category") != "Baseball":
+            if product.get("category") != sport:
                 continue
             product_title = str(product.get("name") or "")
             product_year = str(product.get("year") or parse_year(product_title))
@@ -1050,7 +1263,7 @@ def replace_photos(products: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
             continue
         product = candidates[0][1]
         old_image = product.get("image")
-        new_path = copy_asset(file, "legacy-replacements")
+        new_path = copy_asset(file, "legacy-replacements", sport)
         thumb = write_thumbnail(new_path)
         gallery = [new_path]
         for item in product.get("imageGallery") or []:

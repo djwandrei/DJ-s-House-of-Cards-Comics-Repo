@@ -351,7 +351,10 @@ def query_variants(product: dict[str, Any]) -> list[str]:
             add([set_name, hint, player, card_code])
         if serial_denom:
             add([year, set_name, hint, player, serial_denom])
-    return [q for q in values if len(q) >= 4][:18]
+    # Add/remove batches are small enough that a deeper query fan-out is worth
+    # the extra requests. The broader set catches checklist-code quirks without
+    # relaxing the downstream year/card-number/set compatibility checks.
+    return [q for q in values if len(q) >= 4][:28]
 
 
 def load_cache(cache_path: Path) -> dict[str, Any]:
