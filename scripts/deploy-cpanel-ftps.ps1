@@ -155,6 +155,7 @@ function Test-DeployablePath {
     "nav.js",
     "offline.html",
     "offline.js",
+    "payments.js",
     "products-baseball.json",
     "products-basketball.json",
     "products-collectibles.json",

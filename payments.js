@@ -3,6 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
+ * Deploy cache version: 20260507b.
  */
 
 window.DJ = window.DJ || {};
