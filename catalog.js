@@ -130,6 +130,7 @@ window.DJ = window.DJ || {};
   };
   const DEFAULT_CATALOG_ITEMS_PER_PAGE = 72;
   const CATALOG_ITEMS_PER_PAGE_OPTIONS = [24, 48, 72];
+  const MODAL_FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   let debounceTimer = 0;
   let updateMobileFilterState = null;
@@ -1087,6 +1088,7 @@ window.DJ = window.DJ || {};
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
+    const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     // Give above-the-fold cards a real loading priority, while keeping the rest
     // lazy so large catalog pages stay light on bandwidth and CPU.
     const imagePriority = options.imagePriority === 'high' ? 'high' : 'low';
@@ -1094,7 +1096,7 @@ window.DJ = window.DJ || {};
 
     return `
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
-        <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" title="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">${heart}</button>
+        <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}" title="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}">${heart}</button>
         <div class="product-media">
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
@@ -1251,9 +1253,13 @@ Thank you.`
       if (!button) return;
 
       const isWishlisted = wishlistIds.has(productId);
+      const productName = card.querySelector('h4')?.textContent?.trim() || 'this item';
+      const actionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
       button.classList.toggle('filled', isWishlisted);
       button.textContent = isWishlisted ? '\u2665' : '\u2661';
-      button.setAttribute('aria-label', isWishlisted ? 'Remove from wishlist' : 'Add to wishlist');
+      button.setAttribute('aria-label', `${actionLabel}: ${productName}`);
+      button.setAttribute('title', `${actionLabel}: ${productName}`);
+      button.setAttribute('aria-pressed', String(isWishlisted));
     });
 
     DJ.updateWishlistCount();
@@ -1271,8 +1277,10 @@ Thank you.`
     if (!Number.isFinite(productId)) return;
 
     const isWishlisted = wishlistIds.has(productId);
+    const modalTitle = document.getElementById('modalTitle')?.textContent?.trim() || 'this item';
     modalWishlistButton.textContent = isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist';
-    modalWishlistButton.setAttribute('aria-label', isWishlisted ? 'Remove from wishlist' : 'Save to wishlist');
+    modalWishlistButton.setAttribute('aria-label', `${isWishlisted ? 'Remove from wishlist' : 'Save to wishlist'}: ${modalTitle}`);
+    modalWishlistButton.setAttribute('aria-pressed', String(isWishlisted));
   }
 
   function scheduleWishlistPageRefresh() {
@@ -2848,7 +2856,7 @@ Thank you.`
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
               ${modalThumbs.map(({ image, index, candidates }) => `
-                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(DJ.safeAssetUrl(image))}" aria-label="View photo ${index + 1}">
+                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(DJ.safeAssetUrl(image))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
                   <img src="${DJ.escapeHtml((candidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(candidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
                 </button>
               `).join('')}
@@ -2893,7 +2901,9 @@ Thank you.`
           }
         }
         modalInner.querySelectorAll('.modal-thumb').forEach((thumb) => thumb.classList.remove('active'));
+        modalInner.querySelectorAll('.modal-thumb').forEach((thumb) => thumb.setAttribute('aria-current', 'false'));
         button.classList.add('active');
+        button.setAttribute('aria-current', 'true');
       });
     });
 
@@ -2921,6 +2931,53 @@ Thank you.`
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
     DJ.restoreFocus();
+  }
+
+  function trapProductModalFocus(event) {
+    const modal = document.getElementById('productModal');
+    if (!modal || !modal.classList.contains('active')) {
+      return false;
+    }
+
+    if (event.key === 'Escape' && !document.body.classList.contains('image-lightbox-open')) {
+      closeModal();
+      return true;
+    }
+
+    if (event.key !== 'Tab') {
+      return false;
+    }
+
+    const focusableElements = [...modal.querySelectorAll(MODAL_FOCUSABLE_SELECTOR)].filter((element) => (
+      element instanceof HTMLElement
+      && !element.hasAttribute('hidden')
+      && !element.closest('[hidden]')
+      && element.getClientRects().length > 0
+    ));
+
+    if (!focusableElements.length) {
+      event.preventDefault();
+      modal.querySelector('.modal-close')?.focus();
+      return true;
+    }
+
+    // Product detail sheets are modal dialogs, so keyboard focus should loop
+    // inside the sheet until the shopper closes it.
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+    if (event.shiftKey && document.activeElement === firstFocusable) {
+      event.preventDefault();
+      lastFocusable.focus();
+      return true;
+    }
+
+    if (!event.shiftKey && document.activeElement === lastFocusable) {
+      event.preventDefault();
+      firstFocusable.focus();
+      return true;
+    }
+
+    return false;
   }
 
   // ---------------------------------------------------------------------------
@@ -3064,7 +3121,7 @@ Thank you.`
     }
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !document.body.classList.contains('image-lightbox-open')) closeModal();
+      trapProductModalFocus(event);
     });
   });
 

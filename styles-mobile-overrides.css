@@ -912,3 +912,78 @@ body.dark-mode .modal-image-stage {
     border-radius:24px;
   }
 }
+
+/* Accessibility and interaction polish.
+   This pass keeps the existing visual direction but makes the most-used cards,
+   controls, and dialogs feel steadier across keyboard, mouse, and touch input. */
+.product-card:focus-visible,
+.category-card:focus-visible,
+.brand-card:focus-within,
+.contact-card:focus-within,
+.about-archive-panel:focus-within {
+  outline:3px solid var(--brand-gold);
+  outline-offset:4px;
+  box-shadow:0 0 0 6px rgba(228,177,65,.18), 0 18px 34px rgba(16,27,57,.14);
+}
+
+.product-card:active,
+.category-card:active,
+.mini-link-button:active,
+.footer-action-link:active {
+  transform:translateY(0) scale(.99);
+}
+
+.modal-thumb[aria-current="true"] {
+  border-color:var(--brand-red);
+  box-shadow:0 0 0 3px rgba(239,24,35,.18);
+}
+
+.modal-thumb:focus-visible,
+.catalog-pagination__page:focus-visible,
+.catalog-pagination__arrow:focus-visible,
+.facet-toggle:focus-visible,
+.filter-panel-dismiss:focus-visible,
+.mobile-filter-trigger:focus-visible {
+  outline:3px solid var(--brand-gold);
+  outline-offset:3px;
+  box-shadow:0 0 0 6px rgba(228,177,65,.18);
+}
+
+.page-hero-card,
+.hero-copy,
+.hero-brand,
+.catalog-support-callout,
+.footer {
+  overflow-wrap:break-word;
+}
+
+@media (hover:none), (pointer:coarse) {
+  .product-card:hover,
+  .category-card:hover,
+  .mini-link-button:hover,
+  .button:hover,
+  .button-secondary:hover,
+  .footer-action-link:hover {
+    transform:none;
+  }
+}
+
+@media (max-width:640px) {
+  .page-hero-actions,
+  .hero-brand-actions,
+  .inline-actions,
+  .contact-quick-actions {
+    display:grid;
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .page-hero-actions > *,
+  .hero-brand-actions > *,
+  .inline-actions > *,
+  .contact-quick-actions > * {
+    width:100%;
+    justify-content:center;
+  }
+
+}
