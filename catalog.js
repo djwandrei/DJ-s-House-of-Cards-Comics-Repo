@@ -328,7 +328,7 @@ window.DJ = window.DJ || {};
   }
 
   function isPriceRangeDisplay(displayPrice = '') {
-    return /\$\s*[\d,.]+(?:\s*(?:-|–|—|to)\s*\$?\s*[\d,.]+)/i.test(String(displayPrice || ''));
+    return /\$\s*[\d,.]+(?:\s*(?:-|[\u2013\u2014]|to)\s*\$?\s*[\d,.]+)/i.test(String(displayPrice || ''));
   }
 
   function getProductPriceLabel(product = {}) {
@@ -1121,7 +1121,7 @@ window.DJ = window.DJ || {};
 
     return `
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
-        <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" title="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">${heart}</button>
+        <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}" title="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">${heart}</button>
         <div class="product-media">
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
@@ -1192,6 +1192,14 @@ window.DJ = window.DJ || {};
   function clearProductGridLoadingState(container) {
     if (!container) return;
     container.removeAttribute('aria-busy');
+  }
+
+  function getProductGridRenderSignature(products = [], wishlistIds = new Set()) {
+    // Filtering can fire repeatedly while typing. This compact signature lets us
+    // skip expensive DOM replacement when the visible card set has not changed.
+    return (Array.isArray(products) ? products : [])
+      .map((product) => `${Number(product.id)}:${wishlistIds.has(Number(product.id)) ? 1 : 0}`)
+      .join('|');
   }
 
   function setCatalogLoadingState(message = 'Loading inventory...') {
@@ -2324,6 +2332,7 @@ Thank you.`
       const emptyTitle = config.emptyTitle || document.body.dataset.emptyTitle || 'No items matched your filters';
       const emptyCopy = config.emptyCopy || document.body.dataset.emptyCopy || 'Try widening the year or price range, or clear a few filters and search again.';
       clearProductGridLoadingState(productContainer);
+      productContainer.dataset.productRenderSignature = 'empty';
       productContainer.innerHTML = `
         <div class="empty-state">
           <h3>${DJ.escapeHtml(emptyTitle)}</h3>
@@ -2335,15 +2344,19 @@ Thank you.`
     }
 
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
+    const renderSignature = getProductGridRenderSignature(visibleProducts, wishlistIds);
     clearProductGridLoadingState(productContainer);
-    productContainer.innerHTML = visibleProducts
-      .map((product, index) => renderProductCard(product, wishlistIds, {
-        imagePriority: index < 6 ? 'high' : 'low'
-      }))
-      .join('');
-    attachGridHandlers(productContainer, visibleProducts);
+    if (productContainer.dataset.productRenderSignature !== renderSignature) {
+      productContainer.innerHTML = visibleProducts
+        .map((product, index) => renderProductCard(product, wishlistIds, {
+          imagePriority: index < 6 ? 'high' : 'low'
+        }))
+        .join('');
+      productContainer.dataset.productRenderSignature = renderSignature;
+      attachGridHandlers(productContainer, visibleProducts);
+      DJ.applyLazyLoading(productContainer);
+    }
     DJ.updateWishlistCount();
-    DJ.applyLazyLoading(productContainer);
   }
 
   function clearSpecificFilter(filterKey, config) {
@@ -2850,7 +2863,7 @@ Thank you.`
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
           <div class="inline-actions">
             <button type="button" class="modal-cta" id="modalBuy" data-checkout-button>Buy Now</button>
-            <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
+            <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
           </div>
           <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
         </div>

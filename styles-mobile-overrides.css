@@ -816,3 +816,99 @@
     font-size:.78rem;
   }
 }
+
+/* Final storefront optimization pass.
+   These rules live in the override sheet so the broad visual polish is easy to
+   review: fewer accidental overflows, clearer controls, and less off-screen
+   rendering work while preserving the existing design language. */
+.product-card {
+  contain:layout paint style;
+}
+
+.product-card .product-media {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255,255,255,.9), rgba(255,255,255,.42) 44%, rgba(31,47,163,.06) 100%);
+}
+
+body.dark-mode .product-card .product-media {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255,255,255,.16), rgba(255,255,255,.055) 48%, rgba(4,8,20,.22) 100%);
+}
+
+.product-card .product-meta-pill,
+.product-card .product-meta-inline,
+.product-card .product-attribute-pill,
+.product-card .product-grade-meta {
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+
+.product-card .product-meta-pill--context,
+.product-card .product-meta-inline--league {
+  text-transform:none;
+}
+
+.wishlist-button[aria-pressed="true"] {
+  box-shadow:0 14px 28px rgba(239,24,35,.26);
+}
+
+.modal-close {
+  display:grid;
+  place-items:center;
+  font-size:1.35rem;
+  font-weight:900;
+  line-height:1;
+}
+
+.modal-content {
+  scroll-padding-top:4.5rem;
+}
+
+.modal-image-stage {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 18px 34px rgba(16,27,57,.08);
+}
+
+body.dark-mode .modal-image-stage {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 18px 38px rgba(0,0,0,.32);
+}
+
+.results-toolbar {
+  isolation:isolate;
+}
+
+.results-toolbar .toolbar-search input {
+  min-height:48px;
+}
+
+.catalog-pagination__arrow:disabled {
+  cursor:not-allowed;
+  opacity:.45;
+}
+
+@media (min-width:901px) {
+  .catalog-results-column .products-grid {
+    align-items:stretch;
+  }
+
+  .catalog-results-column .product-card {
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar {
+    align-items:center;
+  }
+}
+
+@media (max-width:900px) {
+  .modal-content {
+    border-radius:24px;
+  }
+
+  .modal-copy {
+    padding-bottom:calc(1.1rem + env(safe-area-inset-bottom,0));
+  }
+
+  .product-card {
+    border-radius:24px;
+  }
+}

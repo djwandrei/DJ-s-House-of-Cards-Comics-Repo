@@ -15,7 +15,7 @@ window.DJ = window.DJ || {};
   const preloadedBundlePromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260501d';
+  const PRODUCT_ASSET_VERSION = '20260507b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -95,7 +95,15 @@ window.DJ = window.DJ || {};
       return `$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
     }
 
-    const match = String(value).match(/-?\d[\d,]*\.?\d*/);
+    const rawText = String(value).trim();
+    const rangeMatch = rawText.match(/(\$?\s*-?\d[\d,]*\.?\d*)\s*(?:-|[\u2013\u2014]|\bto\b)\s*(\$?\s*-?\d[\d,]*\.?\d*)/i);
+    if (rangeMatch) {
+      const lowPrice = formatCurrency(rangeMatch[1]);
+      const highPrice = formatCurrency(rangeMatch[2]);
+      return lowPrice === highPrice ? lowPrice : `${lowPrice}-${highPrice}`;
+    }
+
+    const match = rawText.match(/-?\d[\d,]*\.?\d*/);
     if (!match) {
       return 'Contact for price';
     }
