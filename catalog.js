@@ -103,6 +103,7 @@ window.DJ = window.DJ || {};
   const normalizedSourceCache = new Map();
   const catalogPageCache = new Map();
   const filteredCatalogResultsCache = new Map();
+  const catalogProductsSignatureCache = new WeakMap();
   const FILTERED_RESULTS_CACHE_LIMIT = 18;
   const gridProductLookups = new WeakMap();
   const DEFAULT_RENDER_BATCH_SIZE = 24;
@@ -611,24 +612,6 @@ window.DJ = window.DJ || {};
     return Array.from({ length: maxVisible }, (_, index) => start + index);
   }
 
-  function createFacetCountMap(products, resolver) {
-    const countMap = new Map();
-
-    (Array.isArray(products) ? products : []).forEach((product) => {
-      const rawValues = typeof resolver === 'function' ? resolver(product) : product?.[resolver];
-      const values = Array.isArray(rawValues) ? rawValues : [rawValues];
-
-      values
-        .map((value) => String(value || '').trim())
-        .filter(Boolean)
-        .forEach((value) => {
-          countMap.set(value, (countMap.get(value) || 0) + 1);
-        });
-    });
-
-    return countMap;
-  }
-
   /**
    * Build the catalog facet counts in a single pass so large category pages do
    * not repeatedly traverse the same product list just to populate filters.
@@ -802,16 +785,6 @@ window.DJ = window.DJ || {};
         ${shouldCollapse ? '<button type="button" class="facet-toggle" aria-expanded="false">Show more</button>' : ''}
       </div>
     `;
-  }
-
-  function getFacetOptions(products, key, options = {}) {
-    const values = products
-      .map((product) => product[key])
-      .map((value) => String(value || '').trim())
-      .filter(Boolean);
-
-    const unique = [...new Set(values)];
-    return options.sort === false ? unique : unique.sort((left, right) => TEXT_COLLATOR.compare(left, right));
   }
 
   /**
@@ -2222,9 +2195,46 @@ Thank you.`
    * Cache filtered/sorted result sets by filter signature so pagination and
    * per-page changes can reuse the expensive work from the previous render.
    */
-  function buildCatalogResultsCacheKey(filters = {}, config = {}) {
+  function getCatalogProductsCacheSignature(products = []) {
+    const list = Array.isArray(products) ? products : [];
+    if (!list.length) return '0';
+    if (catalogProductsSignatureCache.has(list)) {
+      return catalogProductsSignatureCache.get(list);
+    }
+
+    // A compact source signature keeps filter-cache entries from leaking across
+    // static JSON, Supabase, and browser-override catalog snapshots without
+    // serializing thousands of full product records on every keystroke.
+    let idChecksum = 0;
+    let contentChecksum = 2166136261;
+    list.forEach((product, index) => {
+      const id = Number(product?.id) || 0;
+      idChecksum = (idChecksum + ((id * (index + 1)) % 1000000007)) % 1000000007;
+      const contentToken = [
+        product?.updated_at,
+        product?.name,
+        product?.category,
+        product?.team,
+        product?.condition,
+        product?.price_label || product?.display_price || product?.price
+      ].map((value) => String(value || '')).join('|');
+      for (let charIndex = 0; charIndex < contentToken.length; charIndex += 1) {
+        contentChecksum ^= contentToken.charCodeAt(charIndex);
+        contentChecksum = Math.imul(contentChecksum, 16777619) >>> 0;
+      }
+    });
+
+    const firstId = Number(list[0]?.id) || 0;
+    const lastId = Number(list[list.length - 1]?.id) || 0;
+    const signature = `${list.length}:${firstId}:${lastId}:${idChecksum}:${contentChecksum}`;
+    catalogProductsSignatureCache.set(list, signature);
+    return signature;
+  }
+
+  function buildCatalogResultsCacheKey(filters = {}, config = {}, products = []) {
     return JSON.stringify({
       page: document.body.dataset.page || '',
+      productSource: getCatalogProductsCacheSignature(products),
       allowedCategories: Array.isArray(config.allowedCategories) ? [...config.allowedCategories].sort() : null,
       filterText: normalizeSearchString(filters.filterText || ''),
       conditions: [...(filters.conditions || [])].sort(),
@@ -2256,7 +2266,7 @@ Thank you.`
   }
 
   function getFilteredCatalogProducts(products = [], filters = {}, config = {}) {
-    const cacheKey = buildCatalogResultsCacheKey(filters, config);
+    const cacheKey = buildCatalogResultsCacheKey(filters, config, products);
     if (filteredCatalogResultsCache.has(cacheKey)) {
       return filteredCatalogResultsCache.get(cacheKey);
     }
@@ -2340,6 +2350,7 @@ Thank you.`
         </div>
       `;
       DJ.applyLazyLoading(productContainer);
+      DJ.updateWishlistCount();
       return;
     }
 

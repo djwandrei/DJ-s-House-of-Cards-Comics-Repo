@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260507b.
+ * Deploy cache version: 20260508a.
  */
 
 window.DJ = window.DJ || {};
@@ -17,7 +17,8 @@ window.DJ = window.DJ || {};
     authReady: false,
     checkoutInFlight: false,
     authHydrationPromise: null,
-    authListenerBound: false
+    authListenerBound: false,
+    lastAuthFocusedElement: null
   };
 
   function isBackendReady() {
@@ -107,6 +108,9 @@ window.DJ = window.DJ || {};
     if (options.product) {
       state.pendingCheckoutProduct = options.product;
     }
+    state.lastAuthFocusedElement = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
     setAuthStatus(options.message || '', 'info');
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
@@ -121,6 +125,14 @@ window.DJ = window.DJ || {};
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('customer-auth-open');
     state.pendingCheckoutProduct = null;
+    if (
+      state.lastAuthFocusedElement
+      && state.lastAuthFocusedElement.isConnected !== false
+      && typeof state.lastAuthFocusedElement.focus === 'function'
+    ) {
+      state.lastAuthFocusedElement.focus();
+    }
+    state.lastAuthFocusedElement = null;
   }
 
   function getAuthFields() {
@@ -287,6 +299,7 @@ window.DJ = window.DJ || {};
   function setCheckoutButtonsBusy(isBusy) {
     document.querySelectorAll('[data-checkout-button], #modalBuy').forEach((button) => {
       button.disabled = Boolean(isBusy);
+      button.setAttribute('aria-busy', String(Boolean(isBusy)));
       button.classList.toggle('is-busy', Boolean(isBusy));
     });
   }

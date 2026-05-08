@@ -110,34 +110,39 @@ window.DJ = window.DJ || {};
       throw new Error('Please choose an image file.');
     }
 
-    const fileDataUrl = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error('Could not read that image file.'));
-      reader.readAsDataURL(file);
-    });
+    const objectUrl = URL.createObjectURL(file);
 
-    const image = await new Promise((resolve, reject) => {
-      const imageElement = new Image();
-      imageElement.onload = () => resolve(imageElement);
-      imageElement.onerror = () => reject(new Error('That image could not be processed.'));
-      imageElement.src = fileDataUrl;
-    });
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const imageElement = new Image();
+        imageElement.onload = () => resolve(imageElement);
+        imageElement.onerror = () => reject(new Error('That image could not be processed.'));
+        // Object URLs avoid creating a second base64 copy of large admin uploads
+        // before the canvas resize step, keeping browser memory use noticeably lower.
+        imageElement.src = objectUrl;
+      });
 
-    const maxDimension = 1400;
-    let { width, height } = image;
+      const maxDimension = 1400;
+      let { width, height } = image;
 
-    if (width > maxDimension || height > maxDimension) {
-      const ratio = Math.min(maxDimension / width, maxDimension / height);
-      width = Math.max(1, Math.round(width * ratio));
-      height = Math.max(1, Math.round(height * ratio));
+      if (width > maxDimension || height > maxDimension) {
+        const ratio = Math.min(maxDimension / width, maxDimension / height);
+        width = Math.max(1, Math.round(width * ratio));
+        height = Math.max(1, Math.round(height * ratio));
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('This browser could not prepare the image editor.');
+      }
+      context.drawImage(image, 0, 0, width, height);
+      return canvas.toDataURL('image/jpeg', 0.88);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
     }
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-    return canvas.toDataURL('image/jpeg', 0.88);
   }
 
   function wireDropzone(element, handlers = {}) {
