@@ -1089,6 +1089,12 @@ window.DJ = window.DJ || {};
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
+    const cardImageSizes = [
+      '(max-width: 640px) calc(100vw - 3rem)',
+      '(max-width: 900px) 31vw',
+      '(max-width: 1280px) 22vw',
+      '210px'
+    ].join(', ');
     // Give above-the-fold cards a real loading priority, while keeping the rest
     // lazy so large catalog pages stay light on bandwidth and CPU.
     const imagePriority = options.imagePriority === 'high' ? 'high' : 'low';
@@ -1098,7 +1104,7 @@ window.DJ = window.DJ || {};
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}" title="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}">${heart}</button>
         <div class="product-media">
-          <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
+          <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
         <div class="product-content">
           <h4>${DJ.escapeHtml(product.name)}</h4>
@@ -1763,6 +1769,13 @@ Thank you.`
           searchLabel.classList.add('toolbar-search-label');
           searchLabel.textContent = searchLabel.textContent.trim() || 'Search listings';
         }
+        if (searchInput) {
+          searchInput.type = 'search';
+          searchInput.autocomplete = 'off';
+          searchInput.inputMode = 'search';
+          searchInput.setAttribute('enterkeyhint', 'search');
+          searchInput.setAttribute('aria-label', searchLabel?.textContent?.trim() || 'Search listings');
+        }
         filterHelp?.classList.add('sr-only');
 
         toolbarSearch.appendChild(searchFieldGroup);
@@ -1829,11 +1842,14 @@ Thank you.`
 
   function renderPaginationButton(pageNumber, state) {
     const isActive = pageNumber === state.page;
+    const label = isActive ? `Page ${pageNumber}, current page` : `Go to page ${pageNumber}`;
     return `
       <button
         type="button"
         class="catalog-pagination__page${isActive ? ' is-active' : ''}"
         data-pagination-page="${pageNumber}"
+        aria-label="${DJ.escapeHtml(label)}"
+        title="${DJ.escapeHtml(label)}"
         ${isActive ? 'aria-current="page"' : ''}
       >${pageNumber}</button>
     `;
@@ -1853,6 +1869,7 @@ Thank you.`
           class="catalog-pagination__arrow"
           data-pagination-action="prev"
           aria-label="Previous page"
+          title="Previous page"
           ${state.page <= 1 ? 'disabled' : ''}
         >&lsaquo;</button>
         <div class="catalog-pagination__pages" aria-label="Pages">
@@ -1863,6 +1880,7 @@ Thank you.`
           class="catalog-pagination__arrow"
           data-pagination-action="next"
           aria-label="Next page"
+          title="Next page"
           ${state.page >= state.totalPages ? 'disabled' : ''}
         >&rsaquo;</button>
         <label class="catalog-pagination__per-page">

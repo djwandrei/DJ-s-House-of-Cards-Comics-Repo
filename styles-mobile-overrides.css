@@ -822,12 +822,25 @@
    review: fewer accidental overflows, clearer controls, and less off-screen
    rendering work while preserving the existing design language. */
 .product-card {
-  contain:layout paint style;
+  contain:paint style;
+  contain-intrinsic-size:auto 540px;
 }
 
 .product-card .product-media {
   background:
     radial-gradient(circle at 50% 28%, rgba(255,255,255,.9), rgba(255,255,255,.42) 44%, rgba(31,47,163,.06) 100%);
+}
+
+.product-card .product-media,
+.product-card .product-content,
+.product-card .product-card-footer {
+  min-width:0;
+}
+
+.product-card .product-media img {
+  display:block;
+  width:100%;
+  height:auto;
 }
 
 body.dark-mode .product-card .product-media {
@@ -986,4 +999,91 @@ body.dark-mode .modal-image-stage {
     justify-content:center;
   }
 
+}
+
+/* Final responsive control pass:
+   keep top pagination usable on narrow product pages without recreating the
+   tall control block that previously covered product cards. */
+@media (min-width:861px) and (max-width:1180px) {
+  .catalog-results-column,
+  .catalog-results-column .results-toolbar,
+  .catalog-results-column .products-grid {
+    max-width:100%;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar {
+    flex-wrap:wrap;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-search {
+    flex:1 1 260px;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    flex:1 1 auto;
+    min-width:0;
+  }
+}
+
+@media (max-width:860px) {
+  .catalog-results-column .results-toolbar .catalog-pagination--top {
+    display:block !important;
+    order:1;
+    width:100%;
+    min-width:0;
+    margin:0;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:.32rem;
+    width:100%;
+    min-width:0;
+    padding:.5rem;
+    border:1px solid rgba(31,47,163,.12);
+    border-radius:18px;
+    background:rgba(255,255,255,.56);
+  }
+
+  body.dark-mode .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__inner {
+    border-color:rgba(255,255,255,.12);
+    background:rgba(255,255,255,.055);
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__range,
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__per-page {
+    display:none !important;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__pages {
+    display:flex;
+    justify-content:center;
+    gap:.16rem;
+    min-width:0;
+    overflow:hidden;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page {
+    width:1.95rem;
+    min-width:1.95rem;
+    height:1.95rem;
+    padding:0;
+    border-radius:10px;
+    font-size:.82rem;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__page:nth-child(n+6) {
+    display:none;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top .catalog-pagination__arrow {
+    width:2.15rem;
+    min-width:2.15rem;
+    height:2.15rem;
+    font-size:1.45rem;
+  }
 }
