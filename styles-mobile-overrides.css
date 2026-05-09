@@ -1087,3 +1087,101 @@ body.dark-mode .modal-image-stage {
     font-size:1.45rem;
   }
 }
+
+/* Quiet layout polish:
+   - file inputs stay accessible to labels/JS but no longer reserve strange
+     off-screen geometry in admin layouts
+   - admin previews keep full cards visible instead of cropping important art
+   - mobile footers stay compact while preserving the page-specific artwork */
+input.sr-only[type="file"] {
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  width:1px !important;
+  height:1px !important;
+  min-width:1px !important;
+  min-height:1px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  opacity:0 !important;
+  overflow:hidden !important;
+}
+
+.image-preview[hidden],
+.admin-local-section[hidden],
+.backend-local-tools-banner[hidden] {
+  display:none !important;
+}
+
+.image-preview,
+.image-preview--inline,
+#backendMainImagePreviewWrap {
+  align-items:start;
+  min-width:0;
+}
+
+.image-preview img,
+.image-preview--inline img,
+#backendMainImagePreview {
+  display:block;
+  background:#fff;
+  object-fit:contain;
+}
+
+.image-preview-copy {
+  min-width:0;
+}
+
+@media (min-width:901px) {
+  .admin-editor-panel .image-preview--inline,
+  .backend-editor-panel .image-preview {
+    grid-template-columns:minmax(150px,220px) minmax(0,1fr);
+  }
+}
+
+@media (max-width:700px) {
+  .footer::before {
+    min-height:210px;
+    background-size:cover !important;
+  }
+
+  .footer-inner {
+    gap:.9rem;
+    padding-top:3.15rem !important;
+    padding-bottom:1.05rem !important;
+  }
+
+  .footer-brand {
+    gap:.62rem;
+  }
+
+  .footer-brand p {
+    font-size:.96rem;
+    line-height:1.45;
+  }
+
+  .footer-actions {
+    gap:.45rem;
+  }
+
+  .footer-link-groups {
+    gap:.65rem;
+  }
+
+  .footer-links {
+    gap:.72rem;
+  }
+}
+
+@media (max-width:480px) {
+  .footer-inner {
+    padding-top:2.85rem !important;
+  }
+
+  .image-preview img,
+  .image-preview--inline img,
+  #backendMainImagePreview {
+    max-height:170px;
+  }
+}

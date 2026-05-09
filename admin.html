@@ -15,7 +15,7 @@
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.ttf" rel="preload" type="font/ttf"/>
 <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
  <link href="styles.css?v=20260507b" rel="stylesheet"/>
- <link href="styles-mobile-overrides.css?v=20260508c" rel="stylesheet"/>
+ <link href="styles-mobile-overrides.css?v=20260509a" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
   <meta content="light dark" name="color-scheme"/>
@@ -395,7 +395,7 @@
           <button class="button-secondary dropzone-button" id="imageBrowseButton" type="button">
            Choose Image
           </button>
-          <input accept="image/*" class="sr-only" id="imageFile" type="file"/>
+          <input accept="image/*" aria-hidden="true" class="sr-only" id="imageFile" tabindex="-1" type="file"/>
          </div>
          <p class="helper-text" id="imageDropHint">
           Dropped images are resized in the browser and saved locally with the new entry on this device.
@@ -487,7 +487,7 @@
           <label class="button-secondary file-action-button" for="importCustomItems">
            Import JSON
           </label>
-          <input accept="application/json" class="sr-only" id="importCustomItems" type="file"/>
+          <input accept="application/json" aria-hidden="true" class="sr-only" id="importCustomItems" tabindex="-1" type="file"/>
           <button class="button-ghost" id="clearCustomItems" type="button">
            Clear all
           </button>
@@ -540,7 +540,7 @@
           <button class="button-secondary" id="importStorefrontEditsButton" type="button">
            Import Storefront Edits
           </button>
-          <input accept="application/json" aria-label="Import storefront edits JSON file" class="sr-only" id="importStorefrontEditsInput" type="file"/>
+          <input accept="application/json" aria-hidden="true" class="sr-only" id="importStorefrontEditsInput" tabindex="-1" type="file"/>
          </div>
         </div>
         <div class="custom-items" id="existingListingsList">
@@ -662,7 +662,7 @@
            Delete from Storefront
           </button>
          </div>
-         <input accept="image/*" aria-label="Replace selected listing main photo" class="sr-only" id="existingReplaceMainPhotoInput" type="file"/>
+         <input accept="image/*" aria-hidden="true" class="sr-only" id="existingReplaceMainPhotoInput" tabindex="-1" type="file"/>
          <div class="admin-gallery-editor">
           <div class="admin-gallery-editor__header">
            <h3 class="section-title section-title--small">
@@ -682,7 +682,7 @@
            <button class="button-secondary" id="existingAddGalleryFileButton" type="button">
             Upload Photo
            </button>
-           <input accept="image/*" aria-label="Upload gallery photo" class="sr-only" id="existingGalleryFileInput" type="file"/>
+           <input accept="image/*" aria-hidden="true" class="sr-only" id="existingGalleryFileInput" tabindex="-1" type="file"/>
           </div>
          </div>
          <div class="inline-actions compact">
@@ -782,9 +782,9 @@
   </script>
 <script defer="" src="nav.js?v=20260427c">
   </script>
-<script defer="" src="admin.js?v=20260508a">
+  <script defer="" src="admin.js?v=20260509a">
   </script>
-<script defer="" src="backend-admin.js?v=20260508a">
+<script defer="" src="backend-admin.js?v=20260509a">
   </script>
  </body>
 </html>

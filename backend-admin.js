@@ -402,7 +402,7 @@ window.DJ = window.DJ || {};
                       </div>
                     </div>
                     <p class="helper-text admin-side-note">The main image is what shoppers see first in the product grid. Use Set as Main in the gallery to promote any photo.</p>
-                    <input accept="image/*" class="sr-only" id="backendMainImageFile" type="file">
+                    <input accept="image/*" aria-hidden="true" class="sr-only" id="backendMainImageFile" tabindex="-1" type="file">
 
                     <div class="admin-gallery-editor">
                       <div class="admin-gallery-editor__header">
@@ -414,7 +414,7 @@ window.DJ = window.DJ || {};
                         <input autocomplete="off" id="backendGalleryUrl" placeholder="Paste a gallery image URL" type="text">
                         <button class="button-secondary" id="backendAddGalleryUrl" type="button">Add URL</button>
                         <button class="button-secondary" id="backendAddGalleryFile" type="button">Upload Photo</button>
-                        <input accept="image/*" class="sr-only" id="backendGalleryFile" type="file">
+                        <input accept="image/*" aria-hidden="true" class="sr-only" id="backendGalleryFile" tabindex="-1" type="file">
                       </div>
                     </div>
                   </div>

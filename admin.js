@@ -1168,7 +1168,7 @@ window.DJ = window.DJ || {};
             <button type="button" class="button-secondary" data-existing-action="remove-main" data-existing-id="${product.id}">Remove Main Photo</button>
             <button type="button" class="button-ghost" data-existing-action="hide" data-existing-id="${product.id}">Delete from Storefront</button>
           </div>
-          <input accept="image/*" class="sr-only" data-existing-main-input="${product.id}" type="file">
+          <input accept="image/*" aria-hidden="true" class="sr-only" data-existing-main-input="${product.id}" tabindex="-1" type="file">
         </div>
       </article>
     `;
