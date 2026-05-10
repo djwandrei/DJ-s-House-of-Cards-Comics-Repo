@@ -965,12 +965,15 @@ window.DJ = window.DJ || {};
     }
 
     if (DJ.remoteCatalog?.isConfigured()) {
+      // Remote data is preferred, but the static catalog is fully deploy-synced.
+      // Keep this timeout short so a slow backend never leaves buyers staring at
+      // an empty product page before the local fallback can render.
       const remote = await withTimeout(
         DJ.remoteCatalog.listProducts({
           source,
           featuredOnly: source === 'products-featured.json'
         }),
-        5500,
+        3800,
         'Remote catalog'
       );
 

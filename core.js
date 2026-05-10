@@ -77,6 +77,8 @@ window.DJ = window.DJ || {};
   let lastFocusedElement = null;
   let sharedImageLightbox = null;
   let serviceWorkerRefreshPending = false;
+  let siteMetricsCache = null;
+  let siteMetricsFlushHandle = 0;
 
   // ---------------------------------------------------------------------------
   // Formatting and storage helpers
@@ -225,7 +227,31 @@ window.DJ = window.DJ || {};
   }
 
   function getSiteMetrics() {
-    return readJSONFromStorage(STORAGE_KEYS.siteMetrics, normalizeSiteMetrics) || createEmptySiteMetrics();
+    if (!siteMetricsCache) {
+      siteMetricsCache = readJSONFromStorage(STORAGE_KEYS.siteMetrics, normalizeSiteMetrics) || createEmptySiteMetrics();
+    }
+
+    return siteMetricsCache;
+  }
+
+  function flushSiteMetrics() {
+    if (!siteMetricsCache) return;
+    if (siteMetricsFlushHandle) {
+      window.clearTimeout(siteMetricsFlushHandle);
+      siteMetricsFlushHandle = 0;
+    }
+    safeStorageSet(STORAGE_KEYS.siteMetrics, JSON.stringify(siteMetricsCache));
+  }
+
+  function scheduleSiteMetricsFlush() {
+    if (siteMetricsFlushHandle) return;
+
+    // Metrics are useful for the admin dashboard, but they should never compete
+    // with browsing. Batch rapid wishlist/modal events into one storage write.
+    siteMetricsFlushHandle = window.setTimeout(() => {
+      siteMetricsFlushHandle = 0;
+      scheduleIdle(flushSiteMetrics, 1600);
+    }, 250);
   }
 
   function pruneProductMetrics(productEvents = {}, limit = 500) {
@@ -268,7 +294,7 @@ window.DJ = window.DJ || {};
       metrics.productEvents = pruneProductMetrics(metrics.productEvents);
     }
 
-    safeStorageSet(STORAGE_KEYS.siteMetrics, JSON.stringify(metrics));
+    scheduleSiteMetricsFlush();
     return metrics;
   }
 
@@ -1465,6 +1491,8 @@ window.DJ = window.DJ || {};
     registerServiceWorker();
   });
 
+  window.addEventListener('pagehide', flushSiteMetrics);
+
   window.addEventListener('storage', (event) => {
     if (!event.key) return;
 
@@ -1476,6 +1504,11 @@ window.DJ = window.DJ || {};
     if (event.key === STORAGE_KEYS.wishlist) {
       updateWishlistCount();
       emitWishlistChange(getWishlist(), 'storage');
+      return;
+    }
+
+    if (event.key === STORAGE_KEYS.siteMetrics) {
+      siteMetricsCache = null;
     }
   });
 

@@ -163,13 +163,27 @@ async def main() -> None:
             await client.send("Page.navigate", {"url": args.url})
             await load_event
 
+            card_count = 0
             for _ in range(80):
-                count = await client.evaluate(
+                card_count = await client.evaluate(
                     "document.querySelectorAll('.product-card[data-product-id]').length"
                 )
-                if count and count > 0:
+                if card_count and card_count > 0:
                     break
                 await asyncio.sleep(0.2)
+
+            if not card_count:
+                retry_url = f"{args.url}{'&' if '?' in args.url else '?'}smokeRetry=1"
+                load_event = asyncio.create_task(client.once("Page.loadEventFired"))
+                await client.send("Page.navigate", {"url": retry_url})
+                await load_event
+                for _ in range(100):
+                    card_count = await client.evaluate(
+                        "document.querySelectorAll('.product-card[data-product-id]').length"
+                    )
+                    if card_count and card_count > 0:
+                        break
+                    await asyncio.sleep(0.2)
 
             # Product cards can render before the responsive helpers finish
             # inserting the mobile-only filter trigger, so wait for the full

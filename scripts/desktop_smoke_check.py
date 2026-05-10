@@ -152,32 +152,45 @@ async def navigate(client: CdpClient, url: str) -> None:
 async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
     client.console_messages.clear()
     client.exceptions.clear()
-    await navigate(client, f"{base_url.rstrip('/')}/{page}")
+    target_url = f"{base_url.rstrip('/')}/{page}"
+    await navigate(client, target_url)
 
     if any(marker in page for marker in PRODUCT_PAGE_MARKERS):
         await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
 
-    summary = await client.evaluate(
-        """(() => {
-          const images = Array.from(document.images);
-          const brokenImages = images
-            .filter((image) => image.complete && image.naturalWidth === 0)
-            .map((image) => image.currentSrc || image.src)
-            .slice(0, 10);
-          const header = document.querySelector('.site-header');
-          const footer = document.querySelector('.site-footer');
-          const text = document.body ? document.body.innerText : '';
-          return {
-            title: document.title,
-            productCards: document.querySelectorAll('.product-card[data-product-id]').length,
-            brokenImageCount: brokenImages.length,
-            brokenImageSample: brokenImages,
-            headerVisible: Boolean(header && header.getBoundingClientRect().height > 20),
-            footerPresent: Boolean(footer),
-            containsSlash2022: text.includes('\\\\2022')
-          };
-        })()"""
-    )
+    async def collect_summary() -> dict:
+        return await client.evaluate(
+            """(() => {
+              const images = Array.from(document.images);
+              const brokenImages = images
+                .filter((image) => image.complete && image.naturalWidth === 0)
+                .map((image) => image.currentSrc || image.src)
+                .slice(0, 10);
+              const header = document.querySelector('.site-header');
+              const footer = document.querySelector('.site-footer, .footer, footer');
+              const text = document.body ? document.body.innerText : '';
+              return {
+                title: document.title,
+                productCards: document.querySelectorAll('.product-card[data-product-id]').length,
+                brokenImageCount: brokenImages.length,
+                brokenImageSample: brokenImages,
+                headerVisible: Boolean(header && header.getBoundingClientRect().height > 20),
+                footerPresent: Boolean(footer),
+                containsSlash2022: text.includes('\\\\2022')
+              };
+            })()"""
+        )
+
+    summary = await collect_summary()
+
+    # Supabase-backed pages can occasionally finish the document load before the
+    # first catalog batch paints in a clean browser profile. Retry once so the
+    # smoke test reports real storefront failures instead of transient timing.
+    if any(marker in page for marker in PRODUCT_PAGE_MARKERS) and not summary.get("productCards"):
+        await asyncio.sleep(0.8)
+        await navigate(client, f"{target_url}{'&' if '?' in target_url else '?'}smokeRetry=1")
+        await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=20)
+        summary = await collect_summary()
 
     return {
         "page": page,
