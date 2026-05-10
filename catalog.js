@@ -951,6 +951,24 @@ window.DJ = window.DJ || {};
     });
   }
 
+  function delay(ms) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
+  }
+
+  async function getStaticSourceResult(source, origin = 'static') {
+    const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
+    if (bundledProducts) {
+      return { products: bundledProducts, origin: `${origin}-bundle` };
+    }
+
+    return {
+      products: await fetchStaticProducts(source),
+      origin
+    };
+  }
+
   async function getBestAvailableSourceResult(source) {
     const preloaded = getPreloadedProductsForSource(source);
     if (preloaded) {
@@ -958,34 +976,38 @@ window.DJ = window.DJ || {};
     }
 
     if (window.location.protocol === 'file:') {
-      const localBundleProducts = await loadPreloadedProductsForSource(source).catch(() => null);
-      if (localBundleProducts) {
-        return { products: localBundleProducts, origin: 'preloaded-bundle' };
-      }
+      return getStaticSourceResult(source, 'preloaded');
     }
 
     if (DJ.remoteCatalog?.isConfigured()) {
       // Remote data is preferred, but the static catalog is fully deploy-synced.
-      // Keep this timeout short so a slow backend never leaves buyers staring at
-      // an empty product page before the local fallback can render.
-      const remote = await withTimeout(
+      // Race it against the local product bundle so a slow backend, stalled SDK
+      // CDN, or mobile network hiccup never leaves shoppers on a loading state.
+      const remotePromise = withTimeout(
         DJ.remoteCatalog.listProducts({
           source,
           featuredOnly: source === 'products-featured.json'
         }),
         3800,
         'Remote catalog'
-      );
+      ).then((remote) => {
+        if (Array.isArray(remote)) {
+          return { products: remote, origin: 'remote' };
+        }
+        throw new Error('Remote catalog did not return a product list.');
+      });
 
-      if (Array.isArray(remote)) {
-        return { products: remote, origin: 'remote' };
+      const staticFallbackPromise = delay(1300).then(() => getStaticSourceResult(source, 'static-fast-fallback'));
+
+      try {
+        return await Promise.race([remotePromise, staticFallbackPromise]);
+      } catch (error) {
+        console.warn(`Remote catalog was not ready for ${source}; using static catalog fallback.`, error);
+        return getStaticSourceResult(source);
       }
     }
 
-    return {
-      products: await fetchStaticProducts(source),
-      origin: 'static'
-    };
+    return getStaticSourceResult(source);
   }
 
   function shouldApplyBrowserCatalogMutations(origin) {
@@ -2860,25 +2882,27 @@ Thank you.`
     const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
     const galleryCount = gallery.filter(Boolean).length || 1;
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
-    const modalMainImageSource = DJ.safeAssetUrl(gallery[0]);
+    const modalMainImageCandidates = DJ.getAssetUrlCandidates(gallery[0]);
+    const modalMainImageSource = modalMainImageCandidates[0] || DJ.safeAssetUrl(gallery[0]);
     const displayPrice = DJ.displayPrice(product);
     const modalThumbs = gallery.map((image, index) => ({
       image,
       index,
-      candidates: DJ.getThumbnailAssetCandidates(image)
+      thumbnailCandidates: DJ.getThumbnailAssetCandidates(image),
+      fullSizeCandidates: DJ.getAssetUrlCandidates(image)
     }));
 
     modalInner.innerHTML = `
       <div class="modal-layout">
         <div class="modal-media">
           <div class="modal-image-stage" id="modalImageStage">
-            <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}">
+            <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-asset-candidates="${DJ.escapeHtml(modalMainImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}" decoding="async" fetchpriority="high">
           </div>
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
-              ${modalThumbs.map(({ image, index, candidates }) => `
-                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(DJ.safeAssetUrl(image))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
-                  <img src="${DJ.escapeHtml((candidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(candidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
+              ${modalThumbs.map(({ image, index, thumbnailCandidates, fullSizeCandidates }) => `
+                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-candidates="${DJ.escapeHtml(fullSizeCandidates.join('\n'))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
+                  <img src="${DJ.escapeHtml((thumbnailCandidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(thumbnailCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
                 </button>
               `).join('')}
             </div>
@@ -2915,6 +2939,10 @@ Thank you.`
       button.addEventListener('click', () => {
         const nextImage = button.dataset.gallerySrc;
         if (modalMainImage && nextImage) {
+          const nextCandidates = button.dataset.galleryCandidates || nextImage;
+          modalMainImage.dataset.originalSrc = nextImage;
+          modalMainImage.dataset.assetRetrySources = '';
+          modalMainImage.dataset.assetCandidates = nextCandidates;
           modalMainImage.src = nextImage;
           const thumbImage = button.querySelector('img');
           if (thumbImage?.alt) {
