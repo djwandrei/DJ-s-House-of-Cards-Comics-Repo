@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import shutil
 import sys
@@ -66,7 +67,7 @@ PRICING_SHEETS = [
 
 MONEY_RE = re.compile(r"\$?\s*(?:\d[\d,]*(?:\.\d+)?|\.\d+)")
 GRADE_RE = re.compile(r"\b(PSA|BGS|SGC|CGC|HGA|BCCG|GAI)\s*(10|[1-9](?:\.\d)?)\b", re.I)
-REMOVE_LISTING_RE = re.compile(r"^\s*remove\s+listing\s*$", re.I)
+REMOVE_LISTING_RE = re.compile(r"^\s*(?:remove(?:\s+listing)?|removed|delete(?:\s+listing)?)\s*$", re.I)
 REAL_TIME_RE = re.compile(
     r"Beckett\s+Real\s+Time\s+Pricing\s*(\$?\s*\d[\d,]*(?:\.\d+)?)\s*to\s*(\$?\s*\d[\d,]*(?:\.\d+)?)",
     re.I,
@@ -219,7 +220,12 @@ def is_no_match(status: Any) -> bool:
 
 def has_confirmed_match(row: dict[str, Any]) -> bool:
     status = str(row.get("Match Status") or "").strip().lower()
-    if status != "matched":
+    if not (
+        status == "matched"
+        or status == "now matched"
+        or status.startswith("confirmed")
+        or (status.startswith("match") and "no " not in status)
+    ):
         return False
     return bool(row.get("Beckett URL") and row.get("Beckett Matched Title"))
 
@@ -413,8 +419,8 @@ def main() -> int:
     parser.add_argument("--fetch-realtime", action="store_true")
     parser.add_argument("--clear-realtime", action="store_true")
     parser.add_argument("--delay", type=float, default=0.15)
-    parser.add_argument("--beckett-email", default="")
-    parser.add_argument("--beckett-password", default="")
+    parser.add_argument("--beckett-email", default=os.environ.get("BECKETT_EMAIL", ""))
+    parser.add_argument("--beckett-password", default=os.environ.get("BECKETT_PASSWORD", ""))
     args = parser.parse_args()
     fetch_min_id = args.fetch_min_id if args.fetch_min_id is not None else args.min_id
     fetch_max_id = args.fetch_max_id if args.fetch_max_id is not None else args.max_id

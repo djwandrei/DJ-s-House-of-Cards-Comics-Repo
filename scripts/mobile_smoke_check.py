@@ -243,7 +243,11 @@ async def main() -> None:
                     width: rect.width,
                     height: rect.height
                   }) : null;
-                  const trigger = document.querySelector('.mobile-filter-trigger');
+                  let trigger = document.querySelector('.mobile-filter-trigger');
+                  for (let i = 0; !trigger && i < 40; i += 1) {
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                    trigger = document.querySelector('.mobile-filter-trigger');
+                  }
                   if (!trigger) return { error: 'missing trigger' };
                   trigger.click();
                   // Wait through the drawer transition before measuring; otherwise
@@ -351,6 +355,19 @@ async def main() -> None:
                     indent=2,
                 )
             )
+            failures = []
+            if filter_state.get("error") or not filter_state.get("bodyOpen"):
+                failures.append({"check": "filter drawer opens", "state": filter_state})
+            if not filter_state.get("closeOnRightHalf") or not filter_state.get("closeNearTop"):
+                failures.append({"check": "filter close button placement", "state": filter_state})
+            if not nav_state.get("openState", {}).get("isOpen") or not nav_state.get("closedState", {}).get("isHidden"):
+                failures.append({"check": "mobile nav toggles", "state": nav_state})
+            if not modal_state.get("modalOpen") or not modal_state.get("closeWithinViewport"):
+                failures.append({"check": "product modal close visible", "state": modal_state})
+            if modal_closed.get("modalStillOpen"):
+                failures.append({"check": "product modal closes", "state": modal_closed})
+            if failures:
+                raise SystemExit(json.dumps({"mobileSmokeFailures": failures}, indent=2))
     finally:
         try:
             edge.kill()

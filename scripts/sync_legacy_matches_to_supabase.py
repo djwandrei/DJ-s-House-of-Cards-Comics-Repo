@@ -123,7 +123,13 @@ def matched_legacy_ids(workbook_path: Path, min_id: int, max_id: int) -> set[int
             continue
         status = str(row[status_col] or "").strip().lower()
         title = str(row[title_col] or "").strip()
-        if status == "matched" and title:
+        is_confirmed = (
+            status == "matched"
+            or status == "now matched"
+            or status.startswith("confirmed")
+            or (status.startswith("match") and "no " not in status)
+        )
+        if is_confirmed and title:
             ids.add(product_id)
 
     return ids
@@ -143,6 +149,14 @@ def to_remote_patch(product: dict[str, Any]) -> dict[str, Any]:
         "league": str(product.get("league") or "").strip(),
         "sport": str(product.get("sport") or "").strip(),
         "player_athlete": str(product.get("playerAthlete") or "").strip(),
+        # Keep remote media paths in lockstep with local product JSON. The live
+        # storefront prefers Supabase, so renamed local assets must be reflected
+        # here or shoppers can still receive stale thumbnail paths.
+        "image": str(product.get("image") or "").strip(),
+        "image_gallery": product.get("imageGallery") or [],
+        "item_photo_url": str(product.get("itemPhotoUrl") or "").strip(),
+        "item_photo_urls": product.get("itemPhotoUrls") or [],
+        "html_image_urls": product.get("htmlImageUrls") or [],
         "is_deleted": False,
     }
 
@@ -151,7 +165,7 @@ def get_remote_rows(ids: list[int], token: str) -> dict[int, dict[str, Any]]:
     if not ids:
         return {}
     id_list = ",".join(str(item) for item in ids)
-    query = urllib.parse.urlencode({"select": "id,name,price_label,is_deleted"})
+    query = urllib.parse.urlencode({"select": "id,name,price_label,image,image_gallery,is_deleted"})
     url = f"{SUPABASE_URL}/rest/v1/products?{query}&id=in.({id_list})"
     headers = {
         "apikey": SUPABASE_KEY,
@@ -202,9 +216,12 @@ def main() -> int:
     for product_id in ids:
         product = products[product_id]
         remote = before.get(product_id, {})
+        local_gallery = product.get("imageGallery") or []
         if (
             str(remote.get("name") or "").strip() == str(product.get("name") or "").strip()
             and str(remote.get("price_label") or "").strip() == str(product.get("priceLabel") or "").strip()
+            and str(remote.get("image") or "").strip() == str(product.get("image") or "").strip()
+            and (remote.get("image_gallery") or []) == local_gallery
         ):
             continue
 
@@ -217,6 +234,8 @@ def main() -> int:
                 "newName": product.get("name", ""),
                 "oldPriceLabel": remote.get("price_label", ""),
                 "newPriceLabel": product.get("priceLabel", ""),
+                "oldImage": remote.get("image", ""),
+                "newImage": product.get("image", ""),
             }
         )
         time.sleep(max(0, args.delay))
@@ -235,6 +254,8 @@ def main() -> int:
         if (
             str(remote.get("name") or "").strip() != str(local.get("name") or "").strip()
             or str(remote.get("price_label") or "").strip() != str(local.get("priceLabel") or "").strip()
+            or str(remote.get("image") or "").strip() != str(local.get("image") or "").strip()
+            or (remote.get("image_gallery") or []) != (local.get("imageGallery") or [])
         ):
             remaining.append(
                 {
@@ -243,6 +264,8 @@ def main() -> int:
                     "remoteName": remote.get("name", ""),
                     "localPriceLabel": local.get("priceLabel", ""),
                     "remotePriceLabel": remote.get("price_label", ""),
+                    "localImage": local.get("image", ""),
+                    "remoteImage": remote.get("image", ""),
                 }
             )
 

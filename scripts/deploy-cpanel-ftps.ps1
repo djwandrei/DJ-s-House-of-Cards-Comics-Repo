@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
   [string]$ConfigPath = ".deploy/cpanel-deploy.local.json",
+  [string]$PathList,
   [switch]$Full,
   [switch]$DryRun,
   [switch]$SkipDelete
@@ -322,7 +323,18 @@ function Invoke-Upload {
   }
 
   $args = Get-CurlCommonArguments
-  $args += @("--ftp-create-dirs", "-T", $localPath, $remoteUrl)
+  # Shared hosting FTP occasionally returns transient 4xx statuses after the
+  # data transfer completes. Retrying the individual file is much cheaper than
+  # restarting the whole deployment.
+  $args += @(
+    "--retry", "4",
+    "--retry-delay", "2",
+    "--retry-all-errors",
+    "--connect-timeout", "30",
+    "--ftp-create-dirs",
+    "-T", $localPath,
+    $remoteUrl
+  )
   & curl.exe @args
   if ($LASTEXITCODE -ne 0) {
     throw "Upload failed for '$RelativePath'."
@@ -453,12 +465,43 @@ function Get-ChangedFiles {
   }
 }
 
+function Get-PathListUploadSet {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$ListPath
+  )
+
+  $resolvedListPath = if ([System.IO.Path]::IsPathRooted($ListPath)) { $ListPath } else { Join-Path $script:RepoRoot $ListPath }
+  if (-not (Test-Path -LiteralPath $resolvedListPath -PathType Leaf)) {
+    throw "Path list not found at '$ListPath'."
+  }
+
+  $uploads = New-Object System.Collections.Generic.HashSet[string]
+  foreach ($line in (Get-Content -LiteralPath $resolvedListPath)) {
+    $path = ($line -replace "\\", "/").Trim()
+    if (-not $path -or $path.StartsWith("#")) {
+      continue
+    }
+
+    if (Test-DeployableFile -RelativePath $path) {
+      [void]$uploads.Add($path)
+    } else {
+      Write-Warning "Skipping non-deployable or missing path from list: $path"
+    }
+  }
+
+  return [pscustomobject]@{
+    uploads = @($uploads | Sort-Object)
+    deletes = @()
+  }
+}
+
 $script:RepoRoot = Get-RepoRoot
 $script:GitExe = Get-GitExecutable
 $resolvedConfigPath = if ([System.IO.Path]::IsPathRooted($ConfigPath)) { $ConfigPath } else { Join-Path $script:RepoRoot $ConfigPath }
 $script:DeployConfig = Load-DeployConfig -Path $resolvedConfigPath
 
-$changeSet = Get-ChangedFiles
+$changeSet = if ($PathList) { Get-PathListUploadSet -ListPath $PathList } else { Get-ChangedFiles }
 $uploadList = @($changeSet.uploads | Where-Object { $_ })
 $deleteList = if ($SkipDelete) { @() } else { @($changeSet.deletes | Where-Object { $_ }) }
 
