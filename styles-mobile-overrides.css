@@ -809,7 +809,8 @@
    rendering work while preserving the existing design language. */
 .product-card {
   contain:paint style;
-  contain-intrinsic-size:auto 540px;
+  /* Match the current mobile card height more closely so deep scrolling stays steady. */
+  contain-intrinsic-size:auto 575px;
 }
 
 .product-card .product-media {
