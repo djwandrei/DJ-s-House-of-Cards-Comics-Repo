@@ -848,6 +848,14 @@ body.dark-mode .product-card .product-media {
   text-transform:none;
 }
 
+/* Long team/player chips should wrap inside the card instead of pushing the
+   product grid wider on tablet-width layouts. */
+.product-card .product-meta-pill--context {
+  flex:1 1 min(100%, 11rem);
+  min-width:0;
+  white-space:normal;
+}
+
 .wishlist-button[aria-pressed="true"] {
   box-shadow:0 14px 28px rgba(239,24,35,.26);
 }
@@ -1271,6 +1279,27 @@ input.sr-only[type="file"] {
 
   .back-to-top {
     bottom:calc(.8rem + env(safe-area-inset-bottom,0));
+  }
+}
+
+@media (max-width:520px) {
+  /* Product-page hero switches use two tidy rows instead of clipping the last
+     option off-screen on narrow phones. Breadcrumbs keep their horizontal
+     scroll behavior because paths can be longer and less predictable. */
+  .catalog-switcher {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.5rem;
+    overflow:visible;
+    padding-bottom:0;
+  }
+
+  .catalog-switcher a {
+    min-width:0;
+    width:100%;
+    padding-inline:.62rem;
+    text-align:center;
+    white-space:normal;
   }
 }
 
