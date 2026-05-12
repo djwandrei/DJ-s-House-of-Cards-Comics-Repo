@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Sync confirmed legacy Beckett title and price updates into Supabase.
+"""Sync confirmed legacy Beckett title, price, and detail updates into Supabase.
 
 The static product files are rebuilt from the Beckett Legacy workbook, but the
-live storefront reads Supabase when backend mode is enabled. This script patches
-only the buyer-facing fields that the workbook owns, leaving remote media and
-admin-only fields untouched.
+live storefront reads Supabase when backend mode is enabled. This script upserts
+confirmed legacy rows so newly restored workbook products are inserted remotely
+and existing rows receive the same verified names, prices, teams, years, and
+renamed local media paths as the static catalog.
 """
 
 from __future__ import annotations
@@ -139,7 +140,9 @@ def to_remote_patch(product: dict[str, Any]) -> dict[str, Any]:
     price = product.get("price")
     year = product.get("year")
     return {
+        "id": int(product["id"]),
         "name": str(product.get("name") or "").strip(),
+        "category": str(product.get("category") or "").strip(),
         "team": str(product.get("team") or "").strip(),
         "year": int(year) if isinstance(year, int) or str(year or "").isdigit() else None,
         "condition": str(product.get("condition") or "").strip(),
@@ -154,9 +157,18 @@ def to_remote_patch(product: dict[str, Any]) -> dict[str, Any]:
         # here or shoppers can still receive stale thumbnail paths.
         "image": str(product.get("image") or "").strip(),
         "image_gallery": product.get("imageGallery") or [],
+        "description": str(product.get("description") or "").strip(),
+        "photo_host_page_url": str(product.get("photoHostPageUrl") or "").strip(),
+        "legacy_image_label": str(product.get("legacyImageLabel") or "").strip(),
+        "source_page": str(product.get("sourcePage") or "").strip(),
         "item_photo_url": str(product.get("itemPhotoUrl") or "").strip(),
         "item_photo_urls": product.get("itemPhotoUrls") or [],
+        "html_full_link": str(product.get("htmlFullLink") or "").strip(),
         "html_image_urls": product.get("htmlImageUrls") or [],
+        "metadata": product.get("metadata") or {},
+        "copy_count": int(product.get("copyCount") or 1),
+        "is_featured": bool(product.get("isFeatured")),
+        "sort_rank": int(product.get("sortRank") or 0),
         "is_deleted": False,
     }
 
@@ -165,7 +177,14 @@ def get_remote_rows(ids: list[int], token: str) -> dict[int, dict[str, Any]]:
     if not ids:
         return {}
     id_list = ",".join(str(item) for item in ids)
-    query = urllib.parse.urlencode({"select": "id,name,price_label,image,image_gallery,is_deleted"})
+    query = urllib.parse.urlencode(
+        {
+            "select": (
+                "id,name,category,team,year,condition,price,price_label,display_price,"
+                "league,sport,player_athlete,image,image_gallery,metadata,is_deleted"
+            )
+        }
+    )
     url = f"{SUPABASE_URL}/rest/v1/products?{query}&id=in.({id_list})"
     headers = {
         "apikey": SUPABASE_KEY,
@@ -186,6 +205,18 @@ def patch_remote_product(product_id: int, patch: dict[str, Any], token: str) -> 
         "Prefer": "return=minimal",
     }
     request_json(url, method="PATCH", headers=headers, body=patch)
+
+
+def upsert_remote_product(product_id: int, patch: dict[str, Any], token: str) -> None:
+    query = urllib.parse.urlencode({"on_conflict": "id"})
+    url = f"{SUPABASE_URL}/rest/v1/products?{query}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Prefer": "resolution=merge-duplicates,return=minimal",
+    }
+    request_json(url, method="POST", headers=headers, body=patch)
 
 
 def soft_delete_remote_product(product_id: int, token: str) -> None:
@@ -217,16 +248,20 @@ def main() -> int:
         product = products[product_id]
         remote = before.get(product_id, {})
         local_gallery = product.get("imageGallery") or []
+        local_metadata = product.get("metadata") or {}
         if (
-            str(remote.get("name") or "").strip() == str(product.get("name") or "").strip()
+            remote
+            and str(remote.get("name") or "").strip() == str(product.get("name") or "").strip()
+            and str(remote.get("team") or "").strip() == str(product.get("team") or "").strip()
             and str(remote.get("price_label") or "").strip() == str(product.get("priceLabel") or "").strip()
             and str(remote.get("image") or "").strip() == str(product.get("image") or "").strip()
             and (remote.get("image_gallery") or []) == local_gallery
+            and (remote.get("metadata") or {}).get("manufacturer") == local_metadata.get("manufacturer")
         ):
             continue
 
         patch = to_remote_patch(product)
-        patch_remote_product(product_id, patch, token)
+        upsert_remote_product(product_id, patch, token)
         changed.append(
             {
                 "id": product_id,
@@ -236,6 +271,8 @@ def main() -> int:
                 "newPriceLabel": product.get("priceLabel", ""),
                 "oldImage": remote.get("image", ""),
                 "newImage": product.get("image", ""),
+                "oldTeam": remote.get("team", ""),
+                "newTeam": product.get("team", ""),
             }
         )
         time.sleep(max(0, args.delay))
@@ -253,9 +290,11 @@ def main() -> int:
         remote = after.get(product_id, {})
         if (
             str(remote.get("name") or "").strip() != str(local.get("name") or "").strip()
+            or str(remote.get("team") or "").strip() != str(local.get("team") or "").strip()
             or str(remote.get("price_label") or "").strip() != str(local.get("priceLabel") or "").strip()
             or str(remote.get("image") or "").strip() != str(local.get("image") or "").strip()
             or (remote.get("image_gallery") or []) != (local.get("imageGallery") or [])
+            or (remote.get("metadata") or {}).get("manufacturer") != (local.get("metadata") or {}).get("manufacturer")
         ):
             remaining.append(
                 {
@@ -266,6 +305,8 @@ def main() -> int:
                     "remotePriceLabel": remote.get("price_label", ""),
                     "localImage": local.get("image", ""),
                     "remoteImage": remote.get("image", ""),
+                    "localTeam": local.get("team", ""),
+                    "remoteTeam": remote.get("team", ""),
                 }
             )
 

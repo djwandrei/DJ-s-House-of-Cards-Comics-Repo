@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-10-04';
+const CACHE_VERSION = 'dj-house-v2026-05-10-05';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -38,7 +38,7 @@ const APP_SHELL_ASSETS = [
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
   '/supabase-client.js?v=20260503a',
-  '/payments.js?v=20260508a',
+  '/payments.js?v=20260510a',
   '/site.webmanifest?v=20260423d',
   '/offline.js?v=20260423d',
   '/vendor/supabase.min.js',
@@ -127,12 +127,23 @@ async function putInCache(cacheName, request, response) {
   return response;
 }
 
+async function fetchWithTimeout(request, timeoutMs = 6500) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(request, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 // Static assets and images should appear instantly from cache, then refresh in
 // the background so returning shoppers see updates without a hard reload.
 async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = null) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  const networkPromise = fetch(request)
+  const networkPromise = fetchWithTimeout(request)
     .then((response) => putInCache(cacheName, request, response))
     .catch(() => null);
 
@@ -157,7 +168,7 @@ async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', e
       await putInCache(cacheName, request, preloadResponse);
       return preloadResponse;
     }
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     await putInCache(cacheName, request, response);
     return response;
   } catch (error) {

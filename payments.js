@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260508a.
+ * Deploy cache version: 20260510a.
  */
 
 window.DJ = window.DJ || {};
@@ -89,11 +89,41 @@ window.DJ = window.DJ || {};
     modal.querySelector('[data-auth-action="signup"]')?.addEventListener('click', signUpFromModal);
     modal.querySelector('[data-auth-action="reset"]')?.addEventListener('click', resetPasswordFromModal);
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && modal.classList.contains('active')) {
+      if (!modal.classList.contains('active')) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
         closeAuthModal();
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        trapAuthModalFocus(event, modal);
       }
     });
     return modal;
+  }
+
+  function getFocusableAuthElements(modal) {
+    return [...modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((element) => element instanceof HTMLElement && element.offsetParent !== null);
+  }
+
+  function trapAuthModalFocus(event, modal) {
+    const focusableElements = getFocusableAuthElements(modal);
+    if (!focusableElements.length) return;
+
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstFocusable) {
+      event.preventDefault();
+      lastFocusable.focus();
+    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+      event.preventDefault();
+      firstFocusable.focus();
+    }
   }
 
   function setAuthStatus(message = '', tone = 'info') {
