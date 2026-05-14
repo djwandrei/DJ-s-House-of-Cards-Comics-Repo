@@ -604,7 +604,16 @@ window.DJ = window.DJ || {};
     }
 
     window.addEventListener('load', () => {
+      const pageWasAlreadyControlled = Boolean(navigator.serviceWorker.controller);
+
       navigator.serviceWorker.addEventListener('controllerchange', () => {
+        // A newly installed worker can claim first-time visitors after load.
+        // Avoid reloading that initial session; only refresh pages that were
+        // already controlled and are receiving an update.
+        if (!pageWasAlreadyControlled) {
+          return;
+        }
+
         if (serviceWorkerRefreshPending) {
           return;
         }

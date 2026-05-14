@@ -1317,3 +1317,216 @@ input.sr-only[type="file"] {
     padding:.46rem .48rem;
   }
 }
+
+/*
+  2026-05-14 design polish pass.
+
+  This final layer focuses on shared visual quality instead of page-specific
+  behavior: clearer typography rhythm, richer cards, steadier desktop catalog
+  controls, and more intentional hover/focus states. Keeping the rules here
+  lets the main generated stylesheet stay stable while the live design can be
+  tuned safely.
+*/
+:root {
+  --design-border-soft:rgba(31,47,163,.14);
+  --design-surface-glow:0 22px 54px rgba(16,27,57,.14);
+  --design-surface-glow-strong:0 26px 64px rgba(16,27,57,.2);
+}
+
+body.dark-mode {
+  --design-border-soft:rgba(255,255,255,.14);
+  --design-surface-glow:0 24px 58px rgba(0,0,0,.34);
+  --design-surface-glow-strong:0 30px 72px rgba(0,0,0,.44);
+}
+
+.hero-title,
+.page-title,
+.section-title,
+.category-card h3,
+.product-card h4,
+.modal-copy h3 {
+  text-wrap:balance;
+}
+
+.hero-copy p,
+.page-hero-card p,
+.section-heading p,
+.category-card p,
+.product-card-summary,
+.modal-copy p {
+  text-wrap:pretty;
+}
+
+.glass-card,
+.panel,
+.contact-card,
+.brand-card,
+.story-card,
+.stat-card,
+.feature-card,
+.page-hero-card,
+.results-toolbar,
+.product-card {
+  border-color:var(--design-border-soft);
+}
+
+.page-hero-card,
+.hero-copy,
+.hero-brand {
+  box-shadow:var(--design-surface-glow);
+}
+
+.section-heading {
+  position:relative;
+  padding-bottom:.4rem;
+}
+
+.section-heading::after {
+  content:"";
+  flex:1 1 auto;
+  min-width:84px;
+  height:1px;
+  margin-bottom:.65rem;
+  background:linear-gradient(90deg,rgba(239,24,35,.42),rgba(31,47,163,.18),transparent);
+}
+
+.section-heading > div {
+  min-width:0;
+}
+
+.category-card {
+  transform:translateZ(0);
+  box-shadow:0 22px 48px rgba(16,27,57,.16);
+}
+
+.category-card::before {
+  transition:transform .35s ease, filter .35s ease;
+}
+
+.category-card .category-pill {
+  background:rgba(8,14,32,.78);
+  border-color:rgba(255,255,255,.32);
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .category-card:hover::before {
+    transform:scale(1.045);
+    filter:saturate(1.08) contrast(1.03);
+  }
+
+  .product-card:hover {
+    transform:translateY(-4px);
+    box-shadow:var(--design-surface-glow-strong);
+  }
+
+  .product-card:hover .product-media img {
+    transform:scale(1.018);
+  }
+}
+
+.product-card {
+  transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.product-card h4 {
+  letter-spacing:-.018em;
+}
+
+.product-card .product-price {
+  letter-spacing:-.015em;
+}
+
+.product-card .product-meta-pill,
+.product-card .product-meta-inline,
+.product-card .product-attribute-pill,
+.product-card .product-grade-meta {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.56);
+}
+
+body.dark-mode .product-card .product-meta-pill,
+body.dark-mode .product-card .product-meta-inline,
+body.dark-mode .product-card .product-attribute-pill,
+body.dark-mode .product-card .product-grade-meta {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+@media (min-width:1181px) {
+  /* Desktop product pages breathe better as a two-row command center:
+     search/sort/summary on top, pagination/actions beneath. */
+  .catalog-results-column .results-toolbar {
+    display:grid;
+    grid-template-columns:minmax(280px,1.18fr) minmax(230px,.72fr) minmax(260px,1fr);
+    grid-template-areas:
+      "search sort meta"
+      "pages pages actions";
+    gap:.85rem .95rem;
+    align-items:center;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-search {
+    grid-area:search;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-sort {
+    grid-area:sort;
+    width:100%;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-sort select {
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  .catalog-results-column .results-toolbar .results-meta {
+    grid-area:meta;
+    justify-self:end;
+    min-width:0;
+    text-align:right;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination--top {
+    grid-area:pages;
+    min-width:0;
+    margin:0;
+  }
+
+  .catalog-results-column .results-toolbar .catalog-pagination__inner {
+    justify-content:flex-start;
+  }
+
+  .catalog-results-column .results-toolbar .toolbar-actions {
+    grid-area:actions;
+    justify-content:end;
+    min-width:0;
+  }
+}
+
+@media (max-width:1180px) {
+  .section-heading::after {
+    display:none;
+  }
+}
+
+@media (max-width:640px) {
+  .page-hero-card,
+  .hero-copy,
+  .hero-brand,
+  .results-toolbar,
+  .catalog-support-callout {
+    box-shadow:0 16px 38px rgba(16,27,57,.13);
+  }
+
+  body.dark-mode .page-hero-card,
+  body.dark-mode .hero-copy,
+  body.dark-mode .hero-brand,
+  body.dark-mode .results-toolbar,
+  body.dark-mode .catalog-support-callout {
+    box-shadow:0 18px 42px rgba(0,0,0,.32);
+  }
+
+  .product-card h4 {
+    line-height:1.22;
+  }
+}
