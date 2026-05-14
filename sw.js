@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-14-02';
+const CACHE_VERSION = 'dj-house-v2026-05-14-03';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -30,7 +30,7 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260507b',
+  '/styles.css?v=20260514c',
   '/styles-mobile-overrides.css?v=20260514b',
   '/core.js?v=20260514a',
   '/nav.js?v=20260427c',
@@ -42,14 +42,14 @@ const APP_SHELL_ASSETS = [
   '/site.webmanifest?v=20260423d',
   '/offline.js?v=20260423d',
   '/vendor/supabase.min.js',
-  '/assets/fonts/bebas-neue-400.ttf',
-  '/assets/fonts/inter-400.ttf',
-  '/assets/fonts/inter-500.ttf',
-  '/assets/fonts/inter-600.ttf',
-  '/assets/fonts/inter-700.ttf',
-  '/assets/fonts/inter-800.ttf',
-  '/assets/fonts/lobster-two-400.ttf',
-  '/assets/fonts/lobster-two-700.ttf',
+  '/assets/fonts/bebas-neue-400.woff2',
+  '/assets/fonts/inter-400.woff2',
+  '/assets/fonts/inter-500.woff2',
+  '/assets/fonts/inter-600.woff2',
+  '/assets/fonts/inter-700.woff2',
+  '/assets/fonts/inter-800.woff2',
+  '/assets/fonts/lobster-two-400.woff2',
+  '/assets/fonts/lobster-two-700.woff2',
   '/assets/dj-logo.png',
   '/assets/grass.jpg',
   '/assets/baseball-main.jpg',
