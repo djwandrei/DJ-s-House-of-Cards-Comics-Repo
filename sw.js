@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-14-01';
+const CACHE_VERSION = 'dj-house-v2026-05-14-02';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -31,7 +31,7 @@ const APP_SHELL_ASSETS = [
   '/contact.html',
   '/offline.html',
   '/styles.css?v=20260507b',
-  '/styles-mobile-overrides.css?v=20260514a',
+  '/styles-mobile-overrides.css?v=20260514b',
   '/core.js?v=20260514a',
   '/nav.js?v=20260427c',
   '/catalog.js?v=20260510c',
