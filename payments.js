@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260510a.
+ * Deploy cache version: 20260515a.
  */
 
 window.DJ = window.DJ || {};
@@ -40,6 +40,31 @@ window.DJ = window.DJ || {};
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
     if (/\$\s*[\d,.]+\s*(?:-|\u2013|\u2014|\bto\b)\s*\$?\s*[\d,.]+/.test(displayPrice)) return false;
     return true;
+  }
+
+  /**
+   * Customer auth can wait on static pages. Product-heavy pages hydrate after
+   * paint so checkout/account state is ready, while About/Contact hub pages
+   * avoid unnecessary Supabase work until a shopper explicitly opens Account.
+   */
+  function shouldHydrateAuthAtStartup() {
+    const commercePages = new Set([
+      'home',
+      'wishlist',
+      'baseball-cards',
+      'basketball-cards',
+      'football-cards',
+      'comics',
+      'collectibles'
+    ]);
+    const page = document.body?.dataset?.page || '';
+    if (commercePages.has(page)) {
+      return true;
+    }
+
+    return Boolean(document.querySelector(
+      '[data-checkout-button], #modalBuy, #featuredProducts, #productContainer, #wishlistContainer'
+    ));
   }
 
   function ensureAuthModal() {
@@ -388,7 +413,7 @@ window.DJ = window.DJ || {};
     injectAccountControl();
     updateAccountControls();
 
-    if (isBackendReady()) {
+    if (isBackendReady() && shouldHydrateAuthAtStartup()) {
       const hydrateAfterPaint = () => ensureAuthSession().catch(() => {});
       if (typeof DJ.scheduleIdle === 'function') {
         DJ.scheduleIdle(hydrateAfterPaint, 2400);
