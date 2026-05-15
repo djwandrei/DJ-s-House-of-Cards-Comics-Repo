@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-14-03';
+const CACHE_VERSION = 'dj-house-v2026-05-14-04';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -30,7 +30,7 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260514c',
+  '/styles.css?v=20260514d',
   '/styles-mobile-overrides.css?v=20260514b',
   '/core.js?v=20260514a',
   '/nav.js?v=20260427c',
@@ -51,12 +51,23 @@ const APP_SHELL_ASSETS = [
   '/assets/fonts/lobster-two-400.woff2',
   '/assets/fonts/lobster-two-700.woff2',
   '/assets/dj-logo.png',
+  '/assets/grass.webp',
   '/assets/grass.jpg',
+  '/assets/baseball-main.webp',
   '/assets/baseball-main.jpg',
+  '/assets/basketball-main.webp',
   '/assets/basketball-main.jpg',
+  '/assets/football-main.webp',
   '/assets/football-main.jpg',
+  '/assets/comics-main.webp',
   '/assets/comics-main.jpeg',
-  '/assets/Jordan.jpg'
+  '/assets/Jordan.webp',
+  '/assets/Jordan.jpg',
+  '/assets/clubhouse-sign.webp',
+  '/assets/baseball-footer.webp',
+  '/assets/basketball-footer.webp',
+  '/assets/football-footer.webp',
+  '/assets/comics-footer.webp'
 ];
 
 self.addEventListener('install', (event) => {

@@ -82,6 +82,22 @@
   --brand-white:#ffffff;
   --brand-gold:#e4b141;
   --brand-green:#1b8d3d;
+  /*
+   * Static design images are served through WebP-first image sets. The
+   * original JPG/PNG files remain as fallbacks for older browsers and for
+   * any host-level caching edge cases.
+   */
+  --image-grass:image-set(url("assets/grass.webp") type("image/webp"),url("assets/grass.jpg") type("image/jpeg"));
+  --image-baseball-main:image-set(url("assets/baseball-main.webp") type("image/webp"),url("assets/baseball-main.jpg") type("image/jpeg"));
+  --image-basketball-main:image-set(url("assets/basketball-main.webp") type("image/webp"),url("assets/basketball-main.jpg") type("image/jpeg"));
+  --image-football-main:image-set(url("assets/football-main.webp") type("image/webp"),url("assets/football-main.jpg") type("image/jpeg"));
+  --image-comics-main:image-set(url("assets/comics-main.webp") type("image/webp"),url("assets/comics-main.jpeg") type("image/jpeg"));
+  --image-jordan:image-set(url("assets/Jordan.webp") type("image/webp"),url("assets/Jordan.jpg") type("image/jpeg"));
+  --image-clubhouse:image-set(url("assets/clubhouse-sign.webp") type("image/webp"),url("assets/clubhouse-sign.png") type("image/png"));
+  --image-baseball-footer:image-set(url("assets/baseball-footer.webp") type("image/webp"),url("assets/baseball-footer.jpg") type("image/jpeg"));
+  --image-basketball-footer:image-set(url("assets/basketball-footer.webp") type("image/webp"),url("assets/basketball-footer.jpg") type("image/jpeg"));
+  --image-football-footer:image-set(url("assets/football-footer.webp") type("image/webp"),url("assets/football-footer.jpg") type("image/jpeg"));
+  --image-comics-footer:image-set(url("assets/comics-footer.webp") type("image/webp"),url("assets/comics-footer.jpeg") type("image/jpeg"));
   --page-bg:#f3f6fb;
   --surface:rgba(255, 255, 255, 0.94);
   --surface-strong:#ffffff;
@@ -248,7 +264,7 @@ body.dark-mode input,body.dark-mode select,body.dark-mode textarea {
   position:absolute;
   inset:1.25rem 0 auto;
   height:min(72vh,660px);
-  background:linear-gradient(180deg,rgba(8,14,32,.25),rgba(8,14,32,.65)),url("assets/grass.jpg") center/cover no-repeat;
+  background:linear-gradient(180deg,rgba(8,14,32,.25),rgba(8,14,32,.65)),var(--image-grass) center/cover no-repeat;
   border-radius:0 0 34px 34px;
   box-shadow:inset 0 -30px 40px rgba(0,0,0,.18)
 }
@@ -927,7 +943,7 @@ body.dark-mode .modal-close {
   display:grid;
   gap:.85rem;
   border-radius:28px;
-  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.82)),url("assets/grass.jpg") center/cover no-repeat;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.82)),var(--image-grass) center/cover no-repeat;
   background-blend-mode:screen;
   border:1px solid var(--border);
   box-shadow:var(--shadow)
@@ -1275,7 +1291,7 @@ main:focus {
   }
 }
 .footer::before {
-  background:url("assets/baseball-footer.jpg") center/cover no-repeat;
+  background:var(--image-baseball-footer) center/cover no-repeat;
   border-bottom:3px solid rgba(255,255,255,.14);
   opacity:.98
 }
@@ -2044,46 +2060,46 @@ body[data-page=basketball-cards] .page-hero-card::before,body[data-page=comics] 
   display:none
 }
 body[data-page=football-cards] .page-hero-card {
-  background:linear-gradient(180deg,rgba(8,14,32,.32),rgba(8,14,32,.62)),url("assets/football-main.jpg") center 36%/cover no-repeat;
+  background:linear-gradient(180deg,rgba(8,14,32,.32),rgba(8,14,32,.62)),var(--image-football-main) center 36%/cover no-repeat;
   color:#fff
 }
 body.dark-mode[data-page=football-cards] .page-hero-card {
-  background:linear-gradient(180deg,rgba(7,12,26,.42),rgba(7,12,26,.72)),url("assets/football-main.jpg") center 36%/cover no-repeat
+  background:linear-gradient(180deg,rgba(7,12,26,.42),rgba(7,12,26,.72)),var(--image-football-main) center 36%/cover no-repeat
 }
 body.dark-mode[data-page=football-cards] .page-hero-card .utility-chip,body.dark-mode[data-page=football-cards] .page-hero-card p,body[data-page=football-cards] .page-hero-card .utility-chip,body[data-page=football-cards] .page-hero-card p {
   color:rgba(255,255,255,.92)
 }
 body[data-page=football-cards] .footer::before {
   height:92px;
-  background:url("assets/football-footer.jpg") center/cover no-repeat
+  background:var(--image-football-footer) center/cover no-repeat
 }
 body[data-page=basketball-cards] .page-hero-card {
-  background:linear-gradient(180deg,rgba(7,13,24,.28),rgba(7,13,24,.56)),url("assets/basketball-main.jpg") center 34%/cover no-repeat;
+  background:linear-gradient(180deg,rgba(7,13,24,.28),rgba(7,13,24,.56)),var(--image-basketball-main) center 34%/cover no-repeat;
   color:#fff
 }
 body.dark-mode[data-page=basketball-cards] .page-hero-card {
-  background:linear-gradient(180deg,rgba(7,12,26,.36),rgba(7,12,26,.7)),url("assets/basketball-main.jpg") center 34%/cover no-repeat
+  background:linear-gradient(180deg,rgba(7,12,26,.36),rgba(7,12,26,.7)),var(--image-basketball-main) center 34%/cover no-repeat
 }
 body.dark-mode[data-page=basketball-cards] .page-hero-card .utility-chip,body.dark-mode[data-page=basketball-cards] .page-hero-card p,body[data-page=basketball-cards] .page-hero-card .utility-chip,body[data-page=basketball-cards] .page-hero-card p {
   color:rgba(255,255,255,.92)
 }
 body[data-page=basketball-cards] .footer::before {
   height:92px;
-  background:url("assets/basketball-footer.jpg") center 52%/cover no-repeat
+  background:var(--image-basketball-footer) center 52%/cover no-repeat
 }
 body[data-page=comics] .page-hero-card {
-  background:linear-gradient(180deg,rgba(16,10,29,.18),rgba(16,10,29,.5)),url("assets/comics-main.jpeg") center 38%/cover no-repeat;
+  background:linear-gradient(180deg,rgba(16,10,29,.18),rgba(16,10,29,.5)),var(--image-comics-main) center 38%/cover no-repeat;
   color:#fff
 }
 body.dark-mode[data-page=comics] .page-hero-card {
-  background:linear-gradient(180deg,rgba(12,8,21,.26),rgba(12,8,21,.62)),url("assets/comics-main.jpeg") center 38%/cover no-repeat
+  background:linear-gradient(180deg,rgba(12,8,21,.26),rgba(12,8,21,.62)),var(--image-comics-main) center 38%/cover no-repeat
 }
 body.dark-mode[data-page=comics] .page-hero-card .utility-chip,body.dark-mode[data-page=comics] .page-hero-card p,body[data-page=comics] .page-hero-card .utility-chip,body[data-page=comics] .page-hero-card p {
   color:rgba(255,255,255,.92)
 }
 body[data-page=comics] .footer::before {
   height:92px;
-  background:url("assets/comics-footer.jpeg") center 42%/cover no-repeat
+  background:var(--image-comics-footer) center 42%/cover no-repeat
 }
 @media (max-width:1180px) {
   .site-nav ul {
@@ -2345,11 +2361,11 @@ body.dark-mode .product-card img {
   }
 }
 body[data-page=baseball-cards] .page-hero-card,body[data-page=collectibles] .page-hero-card,body[data-page=contact] .page-hero-card,body[data-page=shop-hub] .page-hero-card,body[data-page=sports-hub] .page-hero-card,body[data-page=wishlist] .page-hero-card {
-  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.82)),url("assets/baseball-main.jpg") center/cover no-repeat;
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.82)),var(--image-baseball-main) center/cover no-repeat;
   background-blend-mode:screen
 }
 body.dark-mode[data-page=baseball-cards] .page-hero-card,body.dark-mode[data-page=collectibles] .page-hero-card,body.dark-mode[data-page=contact] .page-hero-card,body.dark-mode[data-page=shop-hub] .page-hero-card,body.dark-mode[data-page=sports-hub] .page-hero-card,body.dark-mode[data-page=wishlist] .page-hero-card {
-  background:linear-gradient(180deg,rgba(17,25,45,.92),rgba(17,25,45,.92)),url("assets/baseball-main.jpg") center/cover no-repeat
+  background:linear-gradient(180deg,rgba(17,25,45,.92),rgba(17,25,45,.92)),var(--image-baseball-main) center/cover no-repeat
 }
 @media (max-width:1180px) {
   .site-header {
@@ -2550,7 +2566,7 @@ body.dark-mode .product-card img {
 body.dark-mode .page-hero-card {
   position:relative;
   overflow:hidden;
-  background:linear-gradient(180deg,rgba(6,10,21,.88),rgba(9,14,28,.82)),url("assets/grass.jpg") center/cover no-repeat
+  background:linear-gradient(180deg,rgba(6,10,21,.88),rgba(9,14,28,.82)),var(--image-grass) center/cover no-repeat
 }
 body.dark-mode .page-hero-card .kicker,body.dark-mode .page-hero-card .page-title,body.dark-mode .page-hero-card .utility-chip,body.dark-mode .page-hero-card h1,body.dark-mode .page-hero-card h2,body.dark-mode .page-hero-card p,body.dark-mode .page-hero-card strong {
   color:#f7fbff!important;
@@ -2565,10 +2581,10 @@ body.dark-mode .page-hero-card .utility-chip {
   border:1px solid rgba(255,255,255,.18)
 }
 body[data-page=about] .page-hero-card {
-  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.84)),url("assets/baseball-main.jpg") center/cover no-repeat
+  background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.84)),var(--image-baseball-main) center/cover no-repeat
 }
 body.dark-mode[data-page=about] .page-hero-card {
-  background:linear-gradient(180deg,rgba(6,10,21,.9),rgba(9,14,28,.84)),url("assets/baseball-main.jpg") center/cover no-repeat
+  background:linear-gradient(180deg,rgba(6,10,21,.9),rgba(9,14,28,.84)),var(--image-baseball-main) center/cover no-repeat
 }
 .product-host-link {
   color:var(--primary);
@@ -2902,35 +2918,35 @@ body.dark-mode .facet-toggle {
 
 /* === Step 3: Visual hierarchy and design pass === */
 :root {
-  --hero-image:url("assets/grass.jpg");
-  --footer-image:url("assets/baseball-footer.jpg");
+  --hero-image:var(--image-grass);
+  --footer-image:var(--image-baseball-footer);
 }
 body[data-page="home"] {
-  --footer-image:url("assets/baseball-footer.jpg");
+  --footer-image:var(--image-baseball-footer);
 }
 body[data-page="sports-hub"], body[data-page="sports-cards"], body[data-page="shop-hub"], body[data-page="shop"] {
-  --hero-image:url("assets/baseball-main.jpg");
-  --footer-image:url("assets/baseball-footer.jpg");
+  --hero-image:var(--image-baseball-main);
+  --footer-image:var(--image-baseball-footer);
 }
 body[data-page="baseball-cards"] {
-  --hero-image:url("assets/baseball-main.jpg");
-  --footer-image:url("assets/baseball-footer.jpg");
+  --hero-image:var(--image-baseball-main);
+  --footer-image:var(--image-baseball-footer);
 }
 body[data-page="basketball-cards"] {
-  --hero-image:url("assets/basketball-main.jpg");
-  --footer-image:url("assets/basketball-footer.jpg");
+  --hero-image:var(--image-basketball-main);
+  --footer-image:var(--image-basketball-footer);
 }
 body[data-page="football-cards"] {
-  --hero-image:url("assets/football-main.jpg");
-  --footer-image:url("assets/football-footer.jpg");
+  --hero-image:var(--image-football-main);
+  --footer-image:var(--image-football-footer);
 }
 body[data-page="comics"] {
-  --hero-image:url("assets/comics-main.jpeg");
-  --footer-image:url("assets/comics-footer.jpeg");
+  --hero-image:var(--image-comics-main);
+  --footer-image:var(--image-comics-footer);
 }
 body[data-page="collectibles"], body[data-page="about"], body[data-page="contact"], body[data-page="wishlist"], body[data-page="admin"] {
-  --hero-image:url("assets/clubhouse-sign.png");
-  --footer-image:url("assets/baseball-footer.jpg");
+  --hero-image:var(--image-clubhouse);
+  --footer-image:var(--image-baseball-footer);
 }
 .site-header {
   background:     linear-gradient(180deg,rgba(6,11,23,.94),rgba(10,16,32,.9)),     linear-gradient(90deg,var(--brand-blue),var(--brand-blue-dark));
@@ -4034,7 +4050,7 @@ body.dark-mode .existing-listing-form.is-dirty {
 
 /* 2026 next fixes: stronger hero images, improved filters, richer item modal */
 .hero::before {
-  background:linear-gradient(180deg,rgba(8,14,32,.08),rgba(8,14,32,.32)),url("assets/grass.jpg") center/cover no-repeat !important;
+  background:linear-gradient(180deg,rgba(8,14,32,.08),rgba(8,14,32,.32)),var(--image-grass) center/cover no-repeat !important;
 }
 .page-hero-card {
   background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.62)),var(--hero-image) center/cover no-repeat !important;
@@ -7898,7 +7914,7 @@ body[data-page="home"] .brand-card p {
 }
 
 body[data-page="collectibles"] {
-  --hero-image:url("assets/Jordan.jpg");
+  --hero-image:var(--image-jordan);
   --hero-image-position:center 30%;
   --hero-image-size:cover;
 }
