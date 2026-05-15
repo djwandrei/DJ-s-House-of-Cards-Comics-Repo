@@ -631,6 +631,43 @@ body.dark-mode .product-badge {
   margin:0 0 .45rem;
   font-size:1.3rem
 }
+.empty-state--catalog {
+  grid-column:1/-1;
+  max-width:720px;
+  margin:1.5rem auto;
+  padding:clamp(2rem,5vw,3.25rem);
+  border:1px solid var(--border);
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 18% 18%,rgba(31,95,255,.14),transparent 32%),
+    radial-gradient(circle at 82% 16%,rgba(239,24,35,.12),transparent 30%),
+    rgba(255,255,255,.76);
+  box-shadow:0 20px 44px rgba(16,27,57,.12);
+}
+.empty-state-kicker {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:.7rem;
+  padding:.34rem .78rem;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--brand-blue),var(--brand-red));
+  color:#fff;
+  font-family:"Bebas Neue",sans-serif;
+  font-size:.92rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.empty-state-actions {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:.75rem;
+  margin-top:1.2rem;
+}
+.empty-state-actions > * {
+  min-width:190px;
+}
 .brand-card,.contact-card,.story-card {
   display:grid;
   gap:1rem
@@ -2519,6 +2556,12 @@ body.dark-mode .admin-form,body.dark-mode .admin-shell .panel,body.dark-mode .br
   background:rgba(13,20,38,.98);
   border-color:rgba(255,255,255,.14)
 }
+body.dark-mode .empty-state--catalog {
+  background:
+    radial-gradient(circle at 18% 18%,rgba(31,95,255,.18),transparent 34%),
+    radial-gradient(circle at 82% 16%,rgba(239,24,35,.16),transparent 32%),
+    rgba(12,20,42,.94);
+}
 body.dark-mode .page-hero-card {
   color:#fff;
   box-shadow:0 16px 40px rgba(0,0,0,.42)
@@ -2833,6 +2876,16 @@ body.dark-mode .filter-chip--removable {
 body.dark-mode .filter-chip--removable:hover {
   background:rgba(255,255,255,.12);
   border-color:rgba(255,255,255,.18)
+}
+.filter-chip--clear-all {
+  background:rgba(239,24,35,.1);
+  border-color:rgba(239,24,35,.18);
+  color:var(--brand-red);
+}
+body.dark-mode .filter-chip--clear-all {
+  background:rgba(239,24,35,.16);
+  border-color:rgba(255,138,154,.28);
+  color:#ffb4bf;
 }
 .filter-chip-x {
   display:inline-grid;
@@ -7641,6 +7694,17 @@ body.dark-mode .results-toolbar .toolbar-search input {
   transition:transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease;
 }
 
+.catalog-pagination__ellipsis {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:26px;
+  height:38px;
+  color:var(--muted);
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
 .catalog-pagination__page {
   min-width:34px;
   height:38px;
@@ -7734,6 +7798,10 @@ body.dark-mode .catalog-pagination__page {
   color:#f6f9ff;
 }
 
+body.dark-mode .catalog-pagination__ellipsis {
+  color:rgba(246,249,255,.66);
+}
+
 body.dark-mode .catalog-pagination__page.is-active {
   color:#ff8a9a;
 }
@@ -7767,6 +7835,25 @@ body.dark-mode .catalog-pagination__page.is-active {
 
   .catalog-pagination__page {
     min-width:32px;
+  }
+
+  .catalog-pagination__ellipsis {
+    min-width:20px;
+  }
+
+  .empty-state--catalog {
+    margin:.75rem auto;
+    padding:1.5rem 1rem;
+  }
+
+  .empty-state-actions {
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .empty-state-actions > * {
+    width:100%;
+    min-width:0;
   }
 }
 

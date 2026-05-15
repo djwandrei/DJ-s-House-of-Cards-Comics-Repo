@@ -608,9 +608,22 @@ window.DJ = window.DJ || {};
       return Array.from({ length: totalPages }, (_, index) => index + 1);
     }
 
-    const halfWindow = Math.floor(maxVisible / 2);
-    const start = Math.max(1, Math.min(page - halfWindow, totalPages - maxVisible + 1));
-    return Array.from({ length: maxVisible }, (_, index) => start + index);
+    // Keep the first and last pages reachable while centering the current page.
+    // Ellipses make large catalogs less overwhelming without hiding navigation.
+    const middleSlots = Math.max(3, maxVisible - 4);
+    const halfWindow = Math.floor(middleSlots / 2);
+    let start = Math.max(2, page - halfWindow);
+    let end = Math.min(totalPages - 1, start + middleSlots - 1);
+    start = Math.max(2, Math.min(start, end - middleSlots + 1));
+
+    const pages = [1];
+    if (start > 2) pages.push(start === 3 ? 2 : 'start-ellipsis');
+    for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
+      pages.push(pageNumber);
+    }
+    if (end < totalPages - 1) pages.push(end === totalPages - 2 ? totalPages - 1 : 'end-ellipsis');
+    pages.push(totalPages);
+    return pages;
   }
 
   /**
@@ -1473,12 +1486,20 @@ Thank you.`
     }
 
     if (activeFiltersWrap) {
-      const nextMarkup = activeFilters.map((item) => `
+      const clearAllMarkup = activeFilters.length
+        ? `
+          <button type="button" class="filter-chip filter-chip--removable filter-chip--clear-all" data-clear-filter="all" aria-label="Clear all filters">
+            <span>Clear all</span>
+            <span class="filter-chip-x" aria-hidden="true">&times;</span>
+          </button>
+        `
+        : '';
+      const nextMarkup = `${activeFilters.map((item) => `
         <button type="button" class="filter-chip filter-chip--removable" data-clear-filter="${DJ.escapeHtml(item.key)}" aria-label="Clear ${DJ.escapeHtml(item.label)} filter">
           <span>${DJ.escapeHtml(filterLabel(item.label, item.value))}</span>
           <span class="filter-chip-x" aria-hidden="true">&times;</span>
         </button>
-      `).join('');
+      `).join('')}${clearAllMarkup}`;
       if (activeFiltersWrap.innerHTML !== nextMarkup) {
         activeFiltersWrap.innerHTML = nextMarkup;
       }
@@ -1880,6 +1901,12 @@ Thank you.`
     `;
   }
 
+  function renderPaginationItem(pageItem, state) {
+    return typeof pageItem === 'number'
+      ? renderPaginationButton(pageItem, state)
+      : '<span class="catalog-pagination__ellipsis" aria-hidden="true">&hellip;</span>';
+  }
+
   function renderPaginationMarkup(state, placement = 'top') {
     const pageNumbers = getVisiblePageNumbers(state.page, state.totalPages);
     const rangeText = state.totalCount
@@ -1898,7 +1925,7 @@ Thank you.`
           ${state.page <= 1 ? 'disabled' : ''}
         >&lsaquo;</button>
         <div class="catalog-pagination__pages" aria-label="Pages">
-          ${pageNumbers.map((pageNumber) => renderPaginationButton(pageNumber, state)).join('')}
+          ${pageNumbers.map((pageItem) => renderPaginationItem(pageItem, state)).join('')}
         </div>
         <button
           type="button"
@@ -2395,11 +2422,19 @@ Thank you.`
       clearProductGridLoadingState(productContainer);
       productContainer.dataset.productRenderSignature = 'empty';
       productContainer.innerHTML = `
-        <div class="empty-state">
+        <div class="empty-state empty-state--catalog">
+          <span class="empty-state-kicker">No matches</span>
           <h3>${DJ.escapeHtml(emptyTitle)}</h3>
           <p>${DJ.escapeHtml(emptyCopy)}</p>
+          <div class="empty-state-actions">
+            <button type="button" class="button" data-empty-reset>Clear filters</button>
+            <a class="button-secondary" href="contact.html">Ask DJ to help find it</a>
+          </div>
         </div>
       `;
+      attachGridHandlers(productContainer, [], {
+        onResetFilters: () => resetCatalogFilters(config)
+      });
       DJ.applyLazyLoading(productContainer);
       DJ.updateWishlistCount();
       return;
@@ -2459,6 +2494,35 @@ Thank you.`
     renderCatalogPage(config);
   }
 
+  function resetCatalogFilters(config = {}, options = {}) {
+    ['searchInput', 'yearMin', 'yearMax', 'priceMin', 'priceMax'].forEach((id) => {
+      const field = document.getElementById(id);
+      if (field) field.value = '';
+    });
+
+    document.querySelectorAll('input[name="condition"], input[name="attribute"], input[name="team"]').forEach((input) => {
+      input.checked = false;
+    });
+
+    const primarySort = document.getElementById('sortSelect');
+    const toolbarSort = document.getElementById('toolbarSortSelect');
+    if (primarySort) primarySort.value = 'nameAsc';
+    if (toolbarSort) toolbarSort.value = 'nameAsc';
+
+    document.querySelectorAll('.facet-group.is-expanded').forEach((group) => group.classList.remove('is-expanded'));
+    document.querySelectorAll('.facet-toggle').forEach((toggle) => {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.textContent = 'Show more';
+    });
+
+    currentCatalogPage = 1;
+    renderCatalogPage(config);
+
+    if (options.focusSearch !== false) {
+      document.getElementById('searchInput')?.focus();
+    }
+  }
+
   function bindActiveFilterActions(config) {
     const activeFiltersWrap = document.getElementById('activeFilters');
     if (!activeFiltersWrap || activeFiltersWrap.dataset.bound === 'true') return;
@@ -2467,6 +2531,10 @@ Thank you.`
     activeFiltersWrap.addEventListener('click', (event) => {
       const button = event.target.closest('[data-clear-filter]');
       if (!button) return;
+      if (button.dataset.clearFilter === 'all') {
+        resetCatalogFilters(config, { focusSearch: false });
+        return;
+      }
       clearSpecificFilter(button.dataset.clearFilter, config);
     });
   }
@@ -2732,29 +2800,7 @@ Thank you.`
     const clearButton = document.getElementById('clearFilters');
     if (clearButton && clearButton.dataset.bound !== 'true') {
       clearButton.dataset.bound = 'true';
-      clearButton.addEventListener('click', async () => {
-        ['searchInput', 'yearMin', 'yearMax', 'priceMin', 'priceMax'].forEach((id) => {
-          const field = document.getElementById(id);
-          if (field) field.value = '';
-        });
-
-        document.querySelectorAll('input[name=\"condition\"], input[name=\"attribute\"], input[name=\"team\"]').forEach((input) => {
-          input.checked = false;
-        });
-
-        const sortField = document.getElementById('sortSelect');
-        if (sortField) sortField.value = 'nameAsc';
-
-        document.querySelectorAll('.facet-group.is-expanded').forEach((group) => group.classList.remove('is-expanded'));
-        document.querySelectorAll('.facet-toggle').forEach((toggle) => {
-          toggle.setAttribute('aria-expanded', 'false');
-          toggle.textContent = 'Show more';
-        });
-
-        currentCatalogPage = 1;
-        await renderCatalogPage(config);
-        document.getElementById('searchInput')?.focus();
-      });
+      clearButton.addEventListener('click', () => resetCatalogFilters(config));
     }
 
     await renderCatalogPage(config, allowedProducts);
