@@ -1109,6 +1109,25 @@ window.DJ = window.DJ || {};
   // Product card rendering and interaction helpers
   // ---------------------------------------------------------------------------
 
+  function getPriorityProductCardCount() {
+    // Only the immediately visible cards should compete for high-priority image
+    // loading. Narrow screens show fewer cards above the fold, so this trims
+    // bandwidth and decode work on mobile without changing the catalog layout.
+    if (typeof window.matchMedia !== 'function') {
+      return 6;
+    }
+
+    if (window.matchMedia('(max-width: 640px)').matches) {
+      return 2;
+    }
+
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      return 4;
+    }
+
+    return 6;
+  }
+
   function renderProductCard(product, wishlistIds, options = {}) {
     const isWishlisted = wishlistIds.has(Number(product.id));
     const heart = isWishlisted ? '\u2665' : '\u2661';
@@ -2442,11 +2461,12 @@ Thank you.`
 
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
     const renderSignature = getProductGridRenderSignature(visibleProducts, wishlistIds);
+    const priorityCardCount = getPriorityProductCardCount();
     clearProductGridLoadingState(productContainer);
     if (productContainer.dataset.productRenderSignature !== renderSignature) {
       productContainer.innerHTML = visibleProducts
         .map((product, index) => renderProductCard(product, wishlistIds, {
-          imagePriority: index < 6 ? 'high' : 'low'
+          imagePriority: index < priorityCardCount ? 'high' : 'low'
         }))
         .join('');
       productContainer.dataset.productRenderSignature = renderSignature;
@@ -2900,9 +2920,10 @@ Thank you.`
     }
 
     clearProductGridLoadingState(wishlistContainer);
+    const priorityCardCount = getPriorityProductCardCount();
     wishlistContainer.innerHTML = wishlistProducts
       .map((product, index) => renderProductCard(product, wishlistIds, {
-        imagePriority: index < 4 ? 'high' : 'low'
+        imagePriority: index < Math.min(4, priorityCardCount) ? 'high' : 'low'
       }))
       .join('');
     attachGridHandlers(wishlistContainer, wishlistProducts);
@@ -3179,9 +3200,10 @@ Thank you.`
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
 
     clearProductGridLoadingState(featuredProductsWrap);
+    const priorityCardCount = getPriorityProductCardCount();
     featuredProductsWrap.innerHTML = featuredProducts
       .map((product, index) => renderProductCard(product, wishlistIds, {
-        imagePriority: index < 4 ? 'high' : 'low'
+        imagePriority: index < Math.min(4, priorityCardCount) ? 'high' : 'low'
       }))
       .join('');
     attachGridHandlers(featuredProductsWrap, featuredProducts);

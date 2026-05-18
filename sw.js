@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-15-04';
+const CACHE_VERSION = 'dj-house-v2026-05-18-01';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -32,7 +32,7 @@ const APP_SHELL_ASSETS = [
   '/offline.html',
   '/styles.css?v=20260515a',
   '/styles-mobile-overrides.css?v=20260514b',
-  '/core.js?v=20260514a',
+  '/core.js?v=20260518a',
   '/nav.js?v=20260427c',
   '/catalog.js?v=20260515a',
   '/contact.js?v=20260423d',
@@ -172,14 +172,14 @@ async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = nul
 
 // Page navigations prefer the network so live catalog/page changes show quickly,
 // but cached pages still keep the site usable during spotty mobile connections.
-async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', event = null) {
+async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', event = null, timeoutMs = 6500) {
   try {
     const preloadResponse = event?.preloadResponse ? await event.preloadResponse : null;
     if (preloadResponse) {
       await putInCache(cacheName, request, preloadResponse);
       return preloadResponse;
     }
-    const response = await fetchWithTimeout(request);
+    const response = await fetchWithTimeout(request, timeoutMs);
     await putInCache(cacheName, request, response);
     return response;
   } catch (error) {
@@ -231,7 +231,9 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isCatalogData) {
-    event.respondWith(staleWhileRevalidate(request, CATALOG_CACHE, event, null));
+    // Product bundles and JSON should favor freshness so live listing, price,
+    // and image corrections appear immediately, with cache as the offline backup.
+    event.respondWith(networkFirst(request, CATALOG_CACHE, null, event, 4000));
     return;
   }
 
