@@ -177,6 +177,7 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 brokenImageSample: brokenImages,
                 headerVisible: Boolean(header && header.getBoundingClientRect().height > 20),
                 footerPresent: Boolean(footer),
+                preloadedProductScriptCount: document.querySelectorAll('script[data-preloaded-product-source]').length,
                 containsSlash2022: text.includes('\\\\2022')
               };
             })()"""

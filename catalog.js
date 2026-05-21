@@ -971,15 +971,31 @@ window.DJ = window.DJ || {};
   }
 
   async function getStaticSourceResult(source, origin = 'static') {
-    const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
-    if (bundledProducts) {
-      return { products: bundledProducts, origin: `${origin}-bundle` };
+    const isFilePreview = window.location.protocol === 'file:';
+
+    // Local file previews cannot reliably fetch JSON in every browser, so keep
+    // the generated JS bundles as the first fallback there. Live HTTP/HTTPS
+    // pages should prefer JSON to avoid parsing multi-megabyte script bundles.
+    if (isFilePreview) {
+      const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
+      if (bundledProducts) {
+        return { products: bundledProducts, origin: `${origin}-bundle` };
+      }
     }
 
-    return {
-      products: await fetchStaticProducts(source),
-      origin
-    };
+    try {
+      return {
+        products: await fetchStaticProducts(source),
+        origin
+      };
+    } catch (error) {
+      const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
+      if (bundledProducts) {
+        return { products: bundledProducts, origin: `${origin}-bundle` };
+      }
+
+      throw error;
+    }
   }
 
   async function getBestAvailableSourceResult(source) {
