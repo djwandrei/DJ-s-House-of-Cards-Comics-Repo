@@ -225,6 +225,116 @@ async def inspect_product_modal(client: CdpClient, base_url: str) -> dict:
     )
 
 
+async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/account.html")
+    return await client.evaluate(
+        """(() => {
+          localStorage.removeItem('djCustomerProfileV1');
+          const nameInput = document.getElementById('account_fullName');
+          const notesInput = document.getElementById('account_notes');
+          const form = document.getElementById('accountProfileForm');
+          const status = document.getElementById('accountStatus');
+          if (!nameInput || !notesInput || !form || !status) {
+            return { ready: false, reason: 'missing account form nodes' };
+          }
+          nameInput.value = 'Smoke Test Buyer';
+          notesInput.value = 'Interested in Braves, Bulls, and graded vintage.';
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          const savedProfile = JSON.parse(localStorage.getItem('djCustomerProfileV1') || '{}');
+          const navAccountLink = document.querySelector('.site-nav a[href="account.html"]');
+          const footerAccountLink = document.querySelector('.footer a[href="account.html"]');
+          const orderPanel = document.getElementById('accountOrders');
+          return {
+            ready: true,
+            savedName: savedProfile.fullName || '',
+            savedNotes: savedProfile.notes || '',
+            statusText: status.textContent.trim(),
+            navAccountLink: Boolean(navAccountLink),
+            footerAccountLink: Boolean(footerAccountLink),
+            orderPanelReady: Boolean(orderPanel && orderPanel.textContent.includes('No online orders'))
+          };
+        })()"""
+    )
+
+
+async def inspect_checkout_auth_flow(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/baseball-cards.html")
+    await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
+    return await client.evaluate(
+        """(async () => {
+          const cards = Array.from(document.querySelectorAll('.product-card[data-product-id]'));
+          const directPriceCard = cards.find((card) => {
+            const price = card.querySelector('.product-price')?.textContent || '';
+            return /^\\s*\\$\\s*\\d/.test(price) && !/(?:-|\\u2013|\\u2014|\\bto\\b|contact|ask|inquir)/i.test(price);
+          });
+
+          if (!directPriceCard) {
+            return { eligibleCardFound: false, reason: 'no single-price product card on first page' };
+          }
+
+          directPriceCard.scrollIntoView({ block: 'center', inline: 'nearest' });
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+          const productId = directPriceCard.dataset.productId || '';
+          directPriceCard.click();
+          for (let i = 0; i < 30; i += 1) {
+            if (document.querySelector('#productModal.active')) break;
+            await new Promise((resolve) => setTimeout(resolve, 80));
+          }
+
+          const buyButton = document.getElementById('modalBuy');
+          const modalTitle = document.getElementById('modalTitle')?.textContent?.trim() || '';
+          if (!buyButton) {
+            return { eligibleCardFound: true, authModalOpen: false, reason: 'missing Buy Now button' };
+          }
+
+          const paymentsReady = Boolean(window.DJ?.payments?.startCheckout);
+          const backendReady = Boolean(window.DJ?.remoteCatalog?.isConfigured?.());
+          const invokeReady = Boolean(window.DJ?.remoteCatalog?.invokeFunction);
+          let checkoutBridgeCalled = false;
+          let checkoutBridgeProductId = '';
+          if (paymentsReady && !window.__desktopSmokeCheckoutWrapped) {
+            const originalStartCheckout = window.DJ.payments.startCheckout;
+            window.DJ.payments.startCheckout = (product, options) => {
+              checkoutBridgeCalled = true;
+              checkoutBridgeProductId = String(product?.id || '');
+              return originalStartCheckout(product, options);
+            };
+            window.__desktopSmokeCheckoutWrapped = true;
+          }
+          const beforeUrl = window.location.href;
+          buyButton.click();
+          for (let i = 0; i < 90; i += 1) {
+            if (document.querySelector('#customerAuthModal.active')) break;
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
+
+          const authModal = document.getElementById('customerAuthModal');
+          const authModalOpenBeforeClose = Boolean(authModal?.classList.contains('active'));
+          const statusText = document.getElementById('modalCheckoutStatus')?.textContent?.trim() || '';
+          const authClose = authModal?.querySelector('[data-customer-auth-close]');
+          authClose?.click();
+          document.querySelector('#productModal.active .modal-close')?.click();
+          await new Promise((resolve) => setTimeout(resolve, 120));
+
+          return {
+            eligibleCardFound: true,
+            productId,
+            modalTitle,
+            paymentsReady,
+            backendReady,
+            invokeReady,
+            checkoutBridgeCalled,
+            checkoutBridgeProductId,
+            urlChanged: beforeUrl !== window.location.href,
+            authModalOpen: authModalOpenBeforeClose,
+            authModalClosed: !document.querySelector('#customerAuthModal.active'),
+            productModalClosed: !document.querySelector('#productModal.active'),
+            statusText
+          };
+        })()"""
+    )
+
+
 async def main() -> int:
     args = parse_args()
     out_path = Path(args.out)
@@ -276,6 +386,28 @@ async def main() -> int:
             report["desktopModalCheck"] = modal_report
             if not (modal_report.get("modalOpen") and modal_report.get("closeVisible") and modal_report.get("closeWithinViewport") and modal_report.get("modalClosed")):
                 report["failures"].append({"page": "baseball-cards.html", "modal": modal_report})
+
+            account_report = await inspect_account_page(client, args.base_url)
+            report["accountPageCheck"] = account_report
+            if not (
+                account_report.get("ready")
+                and account_report.get("savedName") == "Smoke Test Buyer"
+                and account_report.get("statusText") == "Account details saved on this device."
+                and account_report.get("navAccountLink")
+                and account_report.get("footerAccountLink")
+                and account_report.get("orderPanelReady")
+            ):
+                report["failures"].append({"page": "account.html", "account": account_report})
+
+            checkout_report = await inspect_checkout_auth_flow(client, args.base_url)
+            report["checkoutAuthCheck"] = checkout_report
+            if not (
+                checkout_report.get("eligibleCardFound")
+                and checkout_report.get("authModalOpen")
+                and checkout_report.get("authModalClosed")
+                and checkout_report.get("productModalClosed")
+            ):
+                report["failures"].append({"page": "baseball-cards.html", "checkoutAuth": checkout_report})
     finally:
         edge.terminate()
         try:

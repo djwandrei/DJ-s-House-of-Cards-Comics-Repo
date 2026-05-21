@@ -13,9 +13,12 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const PROFILE_KEY = 'djCustomerProfileV1';
   const ORDER_HISTORY_KEY = 'djCustomerOrderHistoryV1';
+  const MAX_PROFILE_FIELD_LENGTH = 240;
+  const MAX_PROFILE_NOTES_LENGTH = 1200;
   const state = {
     session: null,
-    isReady: false
+    isReady: false,
+    authSubscription: null
   };
 
   const fields = [
@@ -32,6 +35,19 @@ window.DJ = window.DJ || {};
   ];
 
   const $ = (id) => document.getElementById(id);
+
+  function normalizeProfileValue(field, value) {
+    const maxLength = field === 'notes' ? MAX_PROFILE_NOTES_LENGTH : MAX_PROFILE_FIELD_LENGTH;
+    return String(value || '').trim().slice(0, maxLength);
+  }
+
+  function createElement(tagName, options = {}) {
+    const element = document.createElement(tagName);
+    if (options.className) element.className = options.className;
+    if (options.text) element.textContent = options.text;
+    if (options.href) element.setAttribute('href', options.href);
+    return element;
+  }
 
   function setStatus(message = '', tone = 'info') {
     const status = $('accountStatus');
@@ -88,7 +104,7 @@ window.DJ = window.DJ || {};
     const profile = readLocalProfile();
     fields.forEach((field) => {
       const input = $(`account_${field}`);
-      if (input) profile[field] = String(input.value || '').trim();
+      if (input) profile[field] = normalizeProfileValue(field, input.value);
     });
     profile.email = getEmail() || profile.email || '';
     profile.updatedAt = new Date().toISOString();
@@ -123,29 +139,49 @@ window.DJ = window.DJ || {};
   function renderOrderHistory() {
     const container = $('accountOrders');
     if (!container) return;
+    container.replaceChildren();
 
     const orders = readLocalOrders();
     if (!orders.length) {
-      container.innerHTML = `
-        <div class="account-empty-state">
-          <strong>No online orders are stored here yet.</strong>
-          <p>Once Stripe checkout is connected to a secure order-history function, completed purchases can appear in this panel. Until then, save favorite items to the wishlist or use the contact page for order questions.</p>
-          <div class="account-empty-actions">
-            <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
-            <a class="button-secondary" href="contact.html">Ask About An Order</a>
-          </div>
-        </div>
-      `;
+      const emptyState = createElement('div', { className: 'account-empty-state' });
+      emptyState.append(
+        createElement('strong', { text: 'No online orders are stored here yet.' }),
+        createElement('p', { text: 'Once Stripe checkout is connected to a secure order-history function, completed purchases can appear in this panel. Until then, save favorite items to the wishlist or use the contact page for order questions.' })
+      );
+
+      const actions = createElement('div', { className: 'account-empty-actions' });
+      actions.append(
+        createElement('a', { className: 'button-secondary', href: 'wishlist.html', text: 'Open Wishlist' }),
+        createElement('a', { className: 'button-secondary', href: 'contact.html', text: 'Ask About An Order' })
+      );
+      emptyState.appendChild(actions);
+      container.appendChild(emptyState);
       return;
     }
 
-    container.innerHTML = orders.map((order) => `
-      <article class="account-order-card">
-        <strong>${DJ.escapeHtml(order.title || 'Order')}</strong>
-        <span>${DJ.escapeHtml(order.status || 'Pending')}</span>
-        <small>${DJ.escapeHtml(order.date || '')}</small>
-      </article>
-    `).join('');
+    const fragment = document.createDocumentFragment();
+    orders.forEach((order) => {
+      const card = createElement('article', { className: 'account-order-card' });
+      card.append(
+        createElement('strong', { text: order.title || 'Order' }),
+        createElement('span', { text: order.status || 'Pending' }),
+        createElement('small', { text: order.date || '' })
+      );
+      fragment.appendChild(card);
+    });
+    container.appendChild(fragment);
+  }
+
+  function bindAuthStateSync() {
+    if (state.authSubscription || !DJ.remoteCatalog?.onAuthStateChange) {
+      return;
+    }
+
+    state.authSubscription = DJ.remoteCatalog.onAuthStateChange((_event, session) => {
+      state.session = session || null;
+      state.isReady = true;
+      renderAuthState();
+    });
   }
 
   async function hydrateSession() {
@@ -159,6 +195,7 @@ window.DJ = window.DJ || {};
 
     try {
       state.session = await DJ.remoteCatalog.getSession();
+      bindAuthStateSync();
       setStatus(state.session?.user ? 'Signed in and ready.' : 'Sign in to connect checkout and account tools.', 'info');
     } catch (error) {
       state.session = null;
@@ -183,6 +220,7 @@ window.DJ = window.DJ || {};
     try {
       await DJ.remoteCatalog.signIn(email, password);
       state.session = await DJ.remoteCatalog.getSession();
+      bindAuthStateSync();
       renderAuthState();
       setStatus('Signed in successfully.', 'success');
     } catch (error) {
@@ -203,6 +241,7 @@ window.DJ = window.DJ || {};
     try {
       await DJ.remoteCatalog.signUp(email, password);
       state.session = await DJ.remoteCatalog.getSession();
+      bindAuthStateSync();
       renderAuthState();
       setStatus('Account created. If email confirmation is required, check your inbox before checkout.', 'success');
     } catch (error) {

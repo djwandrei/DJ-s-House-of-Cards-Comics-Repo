@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260520a.
+ * Deploy cache version: 20260521c.
  */
 
 window.DJ = window.DJ || {};
@@ -11,6 +11,7 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   const config = window.DJ_BACKEND_CONFIG || {};
+  const AUTH_SESSION_CHECK_TIMEOUT_MS = 6500;
   const state = {
     session: null,
     pendingCheckoutProduct: null,
@@ -42,30 +43,20 @@ window.DJ = window.DJ || {};
     return true;
   }
 
+  function timeoutAfter(milliseconds, message) {
+    return new Promise((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), milliseconds);
+    });
+  }
+
   /**
-   * Customer auth can wait on static pages. Product-heavy pages hydrate after
-   * paint so checkout/account state is ready, while About/Contact hub pages
-   * avoid unnecessary Supabase work until a shopper explicitly opens Account.
+   * Auth now hydrates on demand. Checkout calls ensureAuthSession() before it
+   * creates a Stripe session, and the dedicated account page manages its own
+   * status. That keeps product-heavy catalog pages from doing background auth
+   * network work when shoppers are only browsing.
    */
   function shouldHydrateAuthAtStartup() {
-    const commercePages = new Set([
-      'account',
-      'home',
-      'wishlist',
-      'baseball-cards',
-      'basketball-cards',
-      'football-cards',
-      'comics',
-      'collectibles'
-    ]);
-    const page = document.body?.dataset?.page || '';
-    if (commercePages.has(page)) {
-      return true;
-    }
-
-    return Boolean(document.querySelector(
-      '[data-checkout-button], #modalBuy, #featuredProducts, #productContainer, #wishlistContainer'
-    ));
+    return Boolean(document.querySelector('[data-customer-auth-autoload]'));
   }
 
   function ensureAuthModal() {
@@ -313,6 +304,23 @@ window.DJ = window.DJ || {};
     return state.authHydrationPromise;
   }
 
+  function continueCheckoutIfExistingSession(product) {
+    Promise.race([
+      ensureAuthSession(),
+      timeoutAfter(AUTH_SESSION_CHECK_TIMEOUT_MS, 'Customer account check timed out.')
+    ])
+      .then((session) => {
+        const pendingProductId = Number(state.pendingCheckoutProduct?.id);
+        if (!session?.user || pendingProductId !== Number(product.id)) return;
+        state.pendingCheckoutProduct = null;
+        closeAuthModal();
+        startCheckout(product);
+      })
+      .catch(() => {
+        setAuthStatus('Sign in or create an account to continue checkout.', 'info');
+      });
+  }
+
   function updateAccountControls() {
     const email = state.session?.user?.email || '';
     document.querySelectorAll('[data-customer-account-button]').forEach((button) => {
@@ -351,10 +359,12 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    try {
-      state.session = await ensureAuthSession();
-    } catch (error) {
-      options.fallback?.();
+    if (!state.authReady) {
+      openAuthModal({
+        product,
+        message: 'Checking for an existing customer session. You can sign in or create an account to continue checkout.'
+      });
+      continueCheckoutIfExistingSession(product);
       return;
     }
 
