@@ -138,6 +138,8 @@ function Test-DeployablePath {
 
   $allowedRootFiles = @(
     ".htaccess",
+    "account.html",
+    "account.js",
     "about.html",
     "admin.html",
     "admin.js",
