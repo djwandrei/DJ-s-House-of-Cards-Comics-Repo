@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260515a.
+ * Deploy cache version: 20260520a.
  */
 
 window.DJ = window.DJ || {};
@@ -49,6 +49,7 @@ window.DJ = window.DJ || {};
    */
   function shouldHydrateAuthAtStartup() {
     const commercePages = new Set([
+      'account',
       'home',
       'wishlist',
       'baseball-cards',
@@ -260,12 +261,11 @@ window.DJ = window.DJ || {};
     const item = document.createElement('li');
     item.className = 'primary-nav__item customer-account-item';
     item.innerHTML = `
-      <button type="button" class="primary-nav__link customer-account-button" data-customer-account-button>
+      <a class="primary-nav__link customer-account-button" href="account.html" data-customer-account-button>
         Account
-      </button>
+      </a>
     `;
     navList.appendChild(item);
-    item.querySelector('[data-customer-account-button]')?.addEventListener('click', handleAccountButtonClick);
   }
 
   function bindAuthStateSync() {
@@ -313,33 +313,11 @@ window.DJ = window.DJ || {};
     return state.authHydrationPromise;
   }
 
-  async function handleAccountButtonClick() {
-    if (!isBackendReady()) {
-      openAuthModal({ message: 'Customer accounts need the Supabase backend to be configured.' });
-      return;
-    }
-
-    await ensureAuthSession();
-
-    if (state.session?.user) {
-      try {
-        await DJ.remoteCatalog.signOut();
-        state.session = null;
-        updateAccountControls();
-      } catch (error) {
-        openAuthModal({ message: error.message || 'Could not sign out.' });
-      }
-      return;
-    }
-
-    openAuthModal();
-  }
-
   function updateAccountControls() {
     const email = state.session?.user?.email || '';
     document.querySelectorAll('[data-customer-account-button]').forEach((button) => {
-      button.textContent = email ? 'Sign Out' : 'Account';
-      button.setAttribute('aria-label', email ? `Signed in as ${email}. Sign out.` : 'Sign in or create a customer account');
+      button.textContent = 'Account';
+      button.setAttribute('aria-label', email ? `Open customer account for ${email}` : 'Open customer account sign-in and order history');
       button.classList.toggle('is-signed-in', Boolean(email));
     });
   }

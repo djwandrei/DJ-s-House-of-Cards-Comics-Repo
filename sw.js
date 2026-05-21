@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-18-02';
+const CACHE_VERSION = 'dj-house-v2026-05-20-01';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -27,18 +27,20 @@ const APP_SHELL_ASSETS = [
   '/comics.html',
   '/collectibles.html',
   '/wishlist.html',
+  '/account.html',
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260515a',
-  '/styles-mobile-overrides.css?v=20260514b',
-  '/core.js?v=20260518a',
-  '/nav.js?v=20260427c',
+  '/styles.css?v=20260520a',
+  '/styles-mobile-overrides.css?v=20260520a',
+  '/core.js?v=20260520a',
+  '/nav.js?v=20260520a',
   '/catalog.js?v=20260518a',
   '/contact.js?v=20260423d',
   '/backend-config.js?v=20260423d',
   '/supabase-client.js?v=20260503a',
-  '/payments.js?v=20260515a',
+  '/payments.js?v=20260520a',
+  '/account.js?v=20260520a',
   '/site.webmanifest?v=20260423d',
   '/offline.js?v=20260423d',
   '/vendor/supabase.min.js',
@@ -246,6 +248,3 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request, CATALOG_CACHE, null, event));
   }
 });
-
-
-

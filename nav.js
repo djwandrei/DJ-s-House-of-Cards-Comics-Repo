@@ -20,6 +20,7 @@
     comics: 'comics.html',
     collectibles: 'collectibles.html',
     wishlist: 'wishlist.html',
+    account: 'account.html',
     about: 'about.html',
     contact: 'contact.html',
     admin: 'admin.html'
@@ -36,6 +37,7 @@
     comics: 'Comics',
     collectibles: 'Collectibles',
     wishlist: 'Wishlist',
+    account: 'Account',
     about: 'About',
     contact: 'Contact',
     admin: 'Admin Dashboard'

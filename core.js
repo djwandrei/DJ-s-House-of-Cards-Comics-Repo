@@ -923,6 +923,12 @@ window.DJ = window.DJ || {};
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
         const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
         const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
+        if (!supportLinks.some((link) => link.getAttribute('href') === 'account.html')) {
+          const accountLink = document.createElement('a');
+          accountLink.href = 'account.html';
+          accountLink.textContent = 'Account';
+          supportLinks.splice(1, 0, accountLink);
+        }
         const groups = document.createElement('div');
         groups.className = 'footer-link-groups';
 

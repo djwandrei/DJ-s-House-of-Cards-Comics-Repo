@@ -35,6 +35,7 @@ DEFAULT_PAGES = (
     "collectibles.html",
     "about.html",
     "contact.html",
+    "account.html",
     "wishlist.html",
     "admin.html",
 )

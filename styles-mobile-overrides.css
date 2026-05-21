@@ -1616,3 +1616,27 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
     min-height:auto;
   }
 }
+
+/* Final mobile footer image clearance:
+   keep the page-specific footer artwork as a top banner, then start all footer
+   information below it so the logo, buttons, and link cards no longer creep
+   into the image border on narrow screens. */
+@media (max-width:700px) {
+  .footer::before {
+    inset:0 0 auto 0 !important;
+    min-height:0 !important;
+    height:clamp(9.5rem,42vw,12.25rem) !important;
+    background-position:center 42% !important;
+    background-size:cover !important;
+  }
+
+  .footer-inner {
+    padding-top:calc(clamp(9.5rem,42vw,12.25rem) + 1.15rem) !important;
+  }
+
+  .footer-brand,
+  .footer-links,
+  .footer-bottom {
+    transform:none !important;
+  }
+}
