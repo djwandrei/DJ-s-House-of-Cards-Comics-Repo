@@ -800,7 +800,10 @@ window.DJ = window.DJ || {};
     const client = getClient();
     if (!client) throw new Error('Backend is not configured.');
     if (!(file instanceof File)) throw new Error('Choose a valid image file.');
-    if (!String(file.type || '').startsWith('image/')) throw new Error('Choose an image file to upload.');
+    const allowedImageTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+    if (!allowedImageTypes.has(String(file.type || '').toLowerCase())) {
+      throw new Error('Choose a JPG, PNG, WebP, or GIF image to upload.');
+    }
 
     const safeName = sanitizeFileName(file.name || 'image');
     const path = [

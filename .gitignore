@@ -9,6 +9,10 @@ supabase/functions/*/.env
 
 # Local history and scratch files
 .Rhistory
+*.log
+*.pid
+*.pyc
+*.zip
 tmp-workbook-titles.txt
 _backups/
 __pycache__/
@@ -18,4 +22,5 @@ outputs/
 # OS/editor noise
 Thumbs.db
 Desktop.ini
+desktop.ini
 .DS_Store

@@ -51,6 +51,11 @@ That uploads the whole current site and saves the deployed commit in:
 
 - `.deploy/cpanel-deploy.state.json`
 
+If this folder is a copied export without a `.git` directory, `-Full` and
+`-PathList` still work as manual upload modes. Incremental deploys require the
+real Git checkout so the script can compare the last deployed commit with the
+current commit.
+
 ## 4. Future incremental deploys
 
 After the first full upload, run:
@@ -66,6 +71,10 @@ That only uploads:
 - current local untracked files
 
 and deletes removed files remotely unless `-SkipDelete` is used.
+
+The deploy allow-list intentionally skips local build/source folders and common
+workspace noise such as `desktop.ini`, `.pyc`, logs, spreadsheets, CSVs, zips,
+and local state files even if those files live under `assets/`.
 
 ## Optional flags
 

@@ -13,6 +13,30 @@ function Get-RepoRoot {
   return (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+function Convert-ToRepoRelativePath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$FullPath
+  )
+
+  $root = $script:RepoRoot.TrimEnd([char[]]@(
+    [System.IO.Path]::DirectorySeparatorChar,
+    [System.IO.Path]::AltDirectorySeparatorChar
+  ))
+  $normalizedFullPath = [System.IO.Path]::GetFullPath($FullPath)
+  $rootPrefix = $root + [System.IO.Path]::DirectorySeparatorChar
+
+  if ($normalizedFullPath.StartsWith($rootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    return ($normalizedFullPath.Substring($rootPrefix.Length) -replace "\\", "/")
+  }
+
+  if ($normalizedFullPath.Equals($root, [System.StringComparison]::OrdinalIgnoreCase)) {
+    return ""
+  }
+
+  throw "Path '$FullPath' is not inside the project root."
+}
+
 function Get-GitExecutable {
   $gitFromPath = $null
   try {
@@ -31,10 +55,27 @@ function Get-GitExecutable {
   ) | Where-Object { $_ -and (Test-Path $_) })
 
   if (-not $candidates) {
-    throw "Git executable not found. Install Git or GitHub Desktop first."
+    return $null
   }
 
   return [string]($candidates | Select-Object -First 1)
+}
+
+function Test-GitRepository {
+  if (-not $script:GitExe) {
+    return $false
+  }
+
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $output = & $script:GitExe -C $script:RepoRoot rev-parse --is-inside-work-tree 2>$null
+    return ($LASTEXITCODE -eq 0 -and ([string]$output).Trim() -eq "true")
+  } catch {
+    return $false
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
 }
 
 function Invoke-Git {
@@ -42,6 +83,10 @@ function Invoke-Git {
     [Parameter(Mandatory = $true)]
     [string[]]$Arguments
   )
+
+  if (-not $script:IsGitRepository) {
+    throw "This operation requires a Git checkout. Run from the real repository, or use -Full/-PathList for a manual upload from this folder."
+  }
 
   $output = & $script:GitExe -C $script:RepoRoot -c core.quotepath=off @Arguments 2>&1
   if ($LASTEXITCODE -ne 0) {
@@ -99,6 +144,34 @@ function Test-DeployablePath {
 
   $normalizedPath = ($RelativePath -replace "\\", "/").Trim()
   if (-not $normalizedPath) {
+    return $false
+  }
+
+  $leafName = Split-Path -Leaf $normalizedPath
+  $extension = [System.IO.Path]::GetExtension($normalizedPath).ToLowerInvariant()
+  $excludedFileNamesAnywhere = @(
+    ".Rhistory",
+    ".DS_Store",
+    "desktop.ini",
+    "Thumbs.db"
+  )
+  $excludedExtensionsAnywhere = @(
+    ".csv",
+    ".log",
+    ".pid",
+    ".pyc",
+    ".xls",
+    ".xlsx",
+    ".zip"
+  )
+
+  foreach ($fileName in $excludedFileNamesAnywhere) {
+    if ($leafName.Equals($fileName, [System.StringComparison]::OrdinalIgnoreCase)) {
+      return $false
+    }
+  }
+
+  if ($excludedExtensionsAnywhere -icontains $extension) {
     return $false
   }
 
@@ -259,7 +332,7 @@ function Load-DeployState {
 
 function Save-DeployState {
   param(
-    [Parameter(Mandatory = $true)]
+    [AllowNull()]
     [string]$Commit
   )
 
@@ -272,7 +345,16 @@ function Save-DeployState {
   [pscustomobject]@{
     lastDeployedCommit = $Commit
     deployedAt = (Get-Date).ToString("o")
+    mode = if ($Commit) { "git" } else { "manual" }
   } | ConvertTo-Json | Set-Content -Path $statePath -Encoding UTF8
+}
+
+function Get-CurrentCommit {
+  if (-not $script:IsGitRepository) {
+    return $null
+  }
+
+  return (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
 }
 
 function Convert-ToRemoteUrl {
@@ -370,6 +452,15 @@ function Invoke-Delete {
 }
 
 function Get-FullUploadList {
+  if (-not $script:IsGitRepository) {
+    return @(Get-ChildItem -LiteralPath $script:RepoRoot -Recurse -File -Force |
+      ForEach-Object {
+        Convert-ToRepoRelativePath -FullPath $_.FullName
+      } |
+      Where-Object { $_ -and (Test-DeployableFile -RelativePath $_) } |
+      Sort-Object -Unique)
+  }
+
   $tracked = Invoke-Git -Arguments @("ls-files")
   $untracked = Invoke-Git -Arguments @("ls-files", "--others", "--exclude-standard")
   return @($tracked + $untracked |
@@ -381,6 +472,21 @@ function Get-ChangedFiles {
   $state = Load-DeployState
   $uploads = New-Object System.Collections.Generic.HashSet[string]
   $deletes = New-Object System.Collections.Generic.HashSet[string]
+
+  if (-not $script:IsGitRepository) {
+    if (-not $Full) {
+      throw "Incremental deploy requires Git metadata. Run from the real repository, or rerun with -Full or -PathList from this folder."
+    }
+
+    foreach ($path in (Get-FullUploadList)) {
+      [void]$uploads.Add($path)
+    }
+
+    return [pscustomobject]@{
+      uploads = @($uploads)
+      deletes = @($deletes)
+    }
+  }
 
   if ($Full -or -not $state.lastDeployedCommit) {
     foreach ($path in (Get-FullUploadList)) {
@@ -500,6 +606,7 @@ function Get-PathListUploadSet {
 
 $script:RepoRoot = Get-RepoRoot
 $script:GitExe = Get-GitExecutable
+$script:IsGitRepository = Test-GitRepository
 $resolvedConfigPath = if ([System.IO.Path]::IsPathRooted($ConfigPath)) { $ConfigPath } else { Join-Path $script:RepoRoot $ConfigPath }
 $script:DeployConfig = Load-DeployConfig -Path $resolvedConfigPath
 
@@ -509,7 +616,7 @@ $deleteList = if ($SkipDelete) { @() } else { @($changeSet.deletes | Where-Objec
 
 if (-not $uploadList.Count -and -not $deleteList.Count) {
   if (-not $DryRun) {
-    $headCommit = (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
+    $headCommit = Get-CurrentCommit
     Save-DeployState -Commit $headCommit
   }
 
@@ -530,7 +637,7 @@ foreach ($relativePath in $deleteList) {
 }
 
 if (-not $DryRun) {
-  $headCommit = (@(Invoke-Git -Arguments @("rev-parse", "HEAD"))[0]).Trim()
+  $headCommit = Get-CurrentCommit
   Save-DeployState -Commit $headCommit
 }
 

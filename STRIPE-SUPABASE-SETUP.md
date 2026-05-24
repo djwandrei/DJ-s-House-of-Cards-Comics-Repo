@@ -14,7 +14,12 @@ live payments only work after the Supabase server-side pieces are deployed.
 
 ## Supabase SQL
 
-Run `supabase/stripe-schema.sql` in the Supabase SQL Editor. It creates:
+Run `supabase-schema.sql` in the Supabase SQL Editor first if the project does
+not already have the current `products` table and `product-images` storage
+bucket. It creates the storefront catalog table, public read policy for visible
+listings, admin-only write policies, and the product image bucket policies.
+
+Then run `supabase/stripe-schema.sql` in the Supabase SQL Editor. It creates:
 
 - `customer_profiles`
 - `checkout_orders`
@@ -74,6 +79,11 @@ so payment behavior does not change because of a future package release.
 supabase functions deploy create-checkout-session
 supabase functions deploy stripe-webhook
 ```
+
+After deploy, a missing function response such as `Requested function was not
+found` means the storefront checkout buttons are wired but the Supabase project
+has not received the Edge Functions yet, or they were deployed to a different
+project ref.
 
 `supabase/config.toml` keeps JWT verification on for customer-created checkout
 sessions and disables it only for the Stripe webhook, because Stripe signs the

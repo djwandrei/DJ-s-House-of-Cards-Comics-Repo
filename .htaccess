@@ -6,6 +6,7 @@ RewriteEngine On
 # from public_html if the repository is uploaded as a whole.
 RewriteRule ^(?:supabase|scripts|outputs|_backups|\.deploy|\.ssl|\.codex)(?:/|$) - [F,L,NC]
 RewriteRule ^(?:STRIPE-SUPABASE-SETUP|CPANEL-DEPLOY)\.md$ - [F,L,NC]
+RewriteRule \.sql$ - [F,L,NC]
 
 # The production SSL certificate is now valid, so force the canonical HTTPS host.
 RewriteCond %{HTTPS} !=on [OR]
