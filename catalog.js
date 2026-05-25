@@ -130,6 +130,7 @@ window.DJ = window.DJ || {};
   };
   const DEFAULT_CATALOG_ITEMS_PER_PAGE = 72;
   const CATALOG_ITEMS_PER_PAGE_OPTIONS = [24, 48, 72];
+  const PRODUCT_LINK_PARAM = 'item';
   const MODAL_FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   let debounceTimer = 0;
@@ -139,6 +140,7 @@ window.DJ = window.DJ || {};
   let wishlistPageRefreshTimer = 0;
   let catalogRenderRequestId = 0;
   let wishlistRenderRequestId = 0;
+  let linkedProductAutoOpenedId = null;
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
   const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
@@ -1170,6 +1172,7 @@ window.DJ = window.DJ || {};
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
+    const quickActionLabel = /contact/i.test(displayPrice) ? 'Ask' : 'Buy Now';
     const cardImageSizes = [
       '(max-width: 640px) calc(100vw - 3rem)',
       '(max-width: 900px) 31vw',
@@ -1201,6 +1204,10 @@ window.DJ = window.DJ || {};
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
+            </div>
+            <div class="product-actions product-card-actions" aria-label="Listing actions">
+              <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}">Details</button>
+              <button type="button" class="buy-button" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
         </div>
@@ -1318,6 +1325,75 @@ Thank you.`
       name: product.name,
       category: product.category
     });
+  }
+
+  function getLinkedProductId() {
+    const params = new URLSearchParams(window.location.search);
+    const rawId = params.get(PRODUCT_LINK_PARAM);
+    const productId = Number(rawId);
+    return Number.isFinite(productId) && productId > 0 ? productId : null;
+  }
+
+  function getProductShareUrl(product) {
+    const productId = Number(product?.id);
+    const url = new URL(window.location.href);
+    if (Number.isFinite(productId) && productId > 0) {
+      url.searchParams.set(PRODUCT_LINK_PARAM, String(productId));
+    }
+    return url.toString();
+  }
+
+  function replaceProductUrl(product = null) {
+    if (!window.history?.replaceState) return;
+    const url = new URL(window.location.href);
+    const productId = Number(product?.id);
+
+    if (Number.isFinite(productId) && productId > 0) {
+      url.searchParams.set(PRODUCT_LINK_PARAM, String(productId));
+    } else {
+      url.searchParams.delete(PRODUCT_LINK_PARAM);
+    }
+
+    const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState({}, '', nextUrl);
+    }
+  }
+
+  function maybeOpenLinkedProduct(products = []) {
+    const linkedProductId = getLinkedProductId();
+    if (!linkedProductId || linkedProductAutoOpenedId === linkedProductId) return;
+
+    const product = (Array.isArray(products) ? products : [])
+      .find((item) => Number(item.id) === linkedProductId);
+
+    linkedProductAutoOpenedId = linkedProductId;
+    if (product) {
+      openModal(product, { preserveUrl: true });
+    }
+  }
+
+  function setModalStatus(message = '', tone = 'info') {
+    const target = document.getElementById('modalCheckoutStatus');
+    if (!target) return;
+    target.textContent = message;
+    target.dataset.tone = tone;
+  }
+
+  async function copyProductLink(product) {
+    const shareUrl = getProductShareUrl(product);
+
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error('Clipboard writing is not available in this browser.');
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      setModalStatus('Product link copied.', 'success');
+    } catch (error) {
+      setModalStatus(`Copy this link: ${shareUrl}`, 'info');
+    }
   }
 
   function toggleWishlist(productId, product = null) {
@@ -1445,6 +1521,16 @@ Thank you.`
       if (event.target.closest('.wishlist-button')) {
         toggleWishlist(productId, product);
         if (document.body.dataset.page === 'wishlist') renderWishlistPage();
+        return;
+      }
+
+      if (event.target.closest('[data-product-buy]')) {
+        buyNow(product);
+        return;
+      }
+
+      if (event.target.closest('[data-product-details]')) {
+        openModal(product);
         return;
       }
 
@@ -2458,6 +2544,7 @@ Thank you.`
     });
     updateCatalogPaginationControls(paginationState);
     syncFiltersToUrl(filters);
+    maybeOpenLinkedProduct(allowedProducts);
 
     if (!filteredProducts.length) {
       const emptyTitle = config.emptyTitle || document.body.dataset.emptyTitle || 'No items matched your filters';
@@ -2959,11 +3046,14 @@ Thank you.`
   // Product details modal
   // ---------------------------------------------------------------------------
 
-  function openModal(product) {
+  function openModal(product, options = {}) {
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
     if (!modal || !modalInner) return;
     recordProductMetric('product_view', product);
+    if (!options.preserveUrl) {
+      replaceProductUrl(product);
+    }
 
     DJ.setLastFocusedElement(document.activeElement);
 
@@ -3019,6 +3109,7 @@ Thank you.`
           <div class="inline-actions">
             <button type="button" class="modal-cta" id="modalBuy" data-checkout-button>Buy Now</button>
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
+            <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
           <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
         </div>
@@ -3048,6 +3139,7 @@ Thank you.`
     });
 
     modalInner.querySelector('#modalBuy')?.addEventListener('click', () => buyNow(product));
+    modalInner.querySelector('#modalCopyLink')?.addEventListener('click', () => copyProductLink(product));
     modalInner.querySelector('#modalWishlist')?.addEventListener('click', async () => {
       toggleWishlist(product.id, product);
       if (document.body.dataset.page === 'wishlist') {
@@ -3070,6 +3162,7 @@ Thank you.`
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    replaceProductUrl(null);
     DJ.restoreFocus();
   }
 

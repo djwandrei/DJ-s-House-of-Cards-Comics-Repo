@@ -9160,3 +9160,61 @@ body.dark-mode .account-order-card {
 /* The late mobile/storefront stabilization layer was extracted to
    styles-mobile-overrides.css so the fix-only cascade remains easier to review,
    diff, and revert without reopening this main bundle. */
+
+.product-card-actions {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.45rem;
+  margin-top:.42rem;
+}
+
+.product-card-actions button {
+  min-height:38px;
+  padding:.55rem .5rem;
+  border-radius:14px;
+  font-size:.78rem;
+  line-height:1;
+  white-space:nowrap;
+}
+
+.product-card-actions .details-button {
+  background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(238,244,255,.94)) !important;
+  color:var(--text) !important;
+  border:1px solid rgba(31,47,163,.14) !important;
+}
+
+.product-card-actions .buy-button {
+  background:linear-gradient(135deg,var(--product-accent),var(--brand-red)) !important;
+}
+
+.product-card-actions .buy-button[aria-busy="true"]::after {
+  content:"";
+  width:.85em;
+  height:.85em;
+  margin-left:.35rem;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.48);
+  border-top-color:#fff;
+  animation:productActionSpin .75s linear infinite;
+}
+
+.modal-link-button {
+  min-width:9rem;
+}
+
+@keyframes productActionSpin {
+  to {
+    transform:rotate(360deg);
+  }
+}
+
+@media (max-width:520px) {
+  .product-card-actions {
+    gap:.55rem;
+  }
+
+  .product-card-actions button {
+    min-height:42px;
+    font-size:.84rem;
+  }
+}
