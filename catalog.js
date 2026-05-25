@@ -471,6 +471,11 @@ window.DJ = window.DJ || {};
       facts.push({ label: 'Listing ID', value: `#${product.id}` });
     }
 
+    const sourcePage = String(product.sourcePage || '').trim();
+    if (sourcePage && facts.length < 4) {
+      facts.push({ label: 'Source', value: sourcePage });
+    }
+
     return `
       <div class="modal-fact-strip" aria-label="Quick listing facts">
         ${facts.map((fact) => `
@@ -1006,6 +1011,58 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function hasImprovedLegacyDescription(product = {}) {
+    return /^Legacy Site listing for\b/.test(String(product.description || '').trim());
+  }
+
+  async function applyStaticLegacyDescriptionOverlay(source, remoteProducts = []) {
+    if (!Array.isArray(remoteProducts) || !remoteProducts.length) {
+      return remoteProducts;
+    }
+
+    const staticProducts = await fetchStaticProducts(source).catch((error) => {
+      console.warn(`Could not load static catalog copy overlay for ${source}; using remote descriptions.`, error);
+      return null;
+    });
+    if (!Array.isArray(staticProducts) || !staticProducts.length) {
+      return remoteProducts;
+    }
+
+    const staticProductsById = new Map(
+      staticProducts
+        .filter(hasImprovedLegacyDescription)
+        .map((product) => [Number(product.id), product])
+        .filter(([productId]) => Number.isFinite(productId))
+    );
+    if (!staticProductsById.size) {
+      return remoteProducts;
+    }
+
+    return remoteProducts.map((product) => {
+      const staticProduct = staticProductsById.get(Number(product.id));
+      if (!staticProduct) {
+        return product;
+      }
+
+      const staticDescription = String(staticProduct.description || '').trim();
+      const remoteDescription = String(product.description || '').trim();
+      if (
+        remoteDescription === staticDescription
+        && (product.sourcePage || !staticProduct.sourcePage)
+        && (product.legacyImageLabel || !staticProduct.legacyImageLabel)
+      ) {
+        return product;
+      }
+
+      return {
+        ...product,
+        description: staticDescription,
+        sourcePage: product.sourcePage || staticProduct.sourcePage,
+        legacyImageLabel: product.legacyImageLabel || staticProduct.legacyImageLabel
+      };
+    });
+  }
+
   async function getBestAvailableSourceResult(source) {
     const preloaded = getPreloadedProductsForSource(source);
     if (preloaded) {
@@ -1085,9 +1142,12 @@ window.DJ = window.DJ || {};
     const pending = (async () => {
       try {
         const { products: sourceProducts, origin } = await getBestAvailableSourceResult(source);
-        const mergedProducts = shouldApplyBrowserCatalogMutations(origin)
-          ? DJ.applyStoredCatalogMutations(sourceProducts, { includeCustomProducts: true })
+        const syncedSourceProducts = origin === 'remote'
+          ? await applyStaticLegacyDescriptionOverlay(source, sourceProducts)
           : sourceProducts;
+        const mergedProducts = shouldApplyBrowserCatalogMutations(origin)
+          ? DJ.applyStoredCatalogMutations(syncedSourceProducts, { includeCustomProducts: true })
+          : syncedSourceProducts;
         const normalizedProducts = normalizeProducts(mergedProducts);
         catalogPageCache.clear();
         filteredCatalogResultsCache.clear();
@@ -1299,7 +1359,9 @@ window.DJ = window.DJ || {};
   }
 
   function openPurchaseInquiry(product) {
-    const currentPageUrl = window.location.href.split('#')[0];
+    const listingUrl = getProductShareUrl(product);
+    const descriptionExcerpt = getProductDescriptionExcerpt(product);
+    const sourcePage = String(product.sourcePage || '').trim();
     const subject = encodeURIComponent(`Purchase Inquiry: ${product.name}`);
     const body = encodeURIComponent(
       `Hello DJ,
@@ -1307,14 +1369,22 @@ window.DJ = window.DJ || {};
 I'm interested in "${product.name}" (${product.yearLabel || product.year || 'Year not listed'}, ${product.condition || 'Condition not listed'}) listed for ${DJ.displayPrice(product)}.
 
 Listing ID: ${product.id || 'Not listed'}
+${sourcePage ? `Source page: ${sourcePage}\n` : ''}${descriptionExcerpt ? `Description: ${descriptionExcerpt}\n` : ''}
 Page: ${document.title}
-URL: ${currentPageUrl}
+Listing link: ${listingUrl}
 
 Please let me know if it is still available.
 
 Thank you.`
     );
     window.location.href = `mailto:contact@djshouseofcards-comics.com?subject=${subject}&body=${body}`;
+  }
+
+  function getProductDescriptionExcerpt(product = {}, maxLength = 420) {
+    const description = String(product.description || '').replace(/\s+/g, ' ').trim();
+    if (!description) return '';
+    if (description.length <= maxLength) return description;
+    return `${description.slice(0, maxLength - 3).trim().replace(/[.,;:]*$/, '')}...`;
   }
 
   function recordProductMetric(eventType, product = {}) {
