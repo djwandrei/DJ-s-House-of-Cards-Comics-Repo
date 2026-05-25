@@ -156,6 +156,11 @@ window.DJ = window.DJ || {};
       return 'Unexpected Supabase error.';
     }
 
+    if (String(context || '').startsWith('function:')) {
+      const functionMessage = describeFunctionMessage(originalMessage, context);
+      if (functionMessage !== originalMessage) return functionMessage;
+    }
+
     if (lower.includes('failed to fetch') || lower.includes('networkerror')) {
       return 'Could not reach Supabase. Check the project URL, network access, and whether the Supabase project is paused.';
     }
@@ -195,13 +200,30 @@ window.DJ = window.DJ || {};
     return new Error(describeSupabaseError(error, context));
   }
 
+  function describeFunctionMessage(message = '', context = '') {
+    const text = String(message || '').trim();
+    const lower = text.toLowerCase();
+    const functionName = String(context || '').replace(/^function:/, '').trim();
+
+    if (
+      lower.includes('requested function was not found') ||
+      lower.includes('function was not found') ||
+      (lower.includes('function') && lower.includes('not found'))
+    ) {
+      const label = functionName ? `The ${functionName} Supabase Edge Function` : 'The Supabase Edge Function';
+      return `${label} is not deployed to this Supabase project yet. Secure checkout is unavailable right now, so please use the purchase inquiry email.`;
+    }
+
+    return text;
+  }
+
   async function createFunctionError(error, context) {
     const response = error?.context || error?.response;
     if (response && typeof response.clone === 'function') {
       try {
         const payload = await response.clone().json();
         const message = String(payload?.error || payload?.message || '').trim();
-        if (message) return new Error(message);
+        if (message) return new Error(describeFunctionMessage(message, context));
       } catch {
         // Fall through to the normal Supabase message if the response is not JSON.
       }

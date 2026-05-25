@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260521c.
+ * Deploy cache version: 20260525a.
  */
 
 window.DJ = window.DJ || {};
@@ -15,6 +15,7 @@ window.DJ = window.DJ || {};
   const state = {
     session: null,
     pendingCheckoutProduct: null,
+    pendingCheckoutOptions: null,
     authReady: false,
     checkoutInFlight: false,
     authHydrationPromise: null,
@@ -154,6 +155,7 @@ window.DJ = window.DJ || {};
     const modal = ensureAuthModal();
     if (options.product) {
       state.pendingCheckoutProduct = options.product;
+      state.pendingCheckoutOptions = options.checkoutOptions || null;
     }
     state.lastAuthFocusedElement = document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -172,6 +174,7 @@ window.DJ = window.DJ || {};
     modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('customer-auth-open');
     state.pendingCheckoutProduct = null;
+    state.pendingCheckoutOptions = null;
     if (
       state.lastAuthFocusedElement
       && state.lastAuthFocusedElement.isConnected !== false
@@ -200,9 +203,11 @@ window.DJ = window.DJ || {};
       setAuthStatus('Signed in. Opening checkout...', 'success');
       updateAccountControls();
       const product = state.pendingCheckoutProduct;
+      const checkoutOptions = state.pendingCheckoutOptions || {};
       state.pendingCheckoutProduct = null;
+      state.pendingCheckoutOptions = null;
       closeAuthModal();
-      if (product) await startCheckout(product);
+      if (product) await startCheckout(product, checkoutOptions);
     } catch (error) {
       setAuthStatus(error.message || 'Sign-in failed.', 'error');
     }
@@ -221,9 +226,11 @@ window.DJ = window.DJ || {};
       setAuthStatus('Account created. If Supabase requires confirmation, check your email before checkout.', 'success');
       if (state.session && state.pendingCheckoutProduct) {
         const product = state.pendingCheckoutProduct;
+        const checkoutOptions = state.pendingCheckoutOptions || {};
         state.pendingCheckoutProduct = null;
+        state.pendingCheckoutOptions = null;
         closeAuthModal();
-        await startCheckout(product);
+        await startCheckout(product, checkoutOptions);
       }
     } catch (error) {
       setAuthStatus(error.message || 'Account creation failed.', 'error');
@@ -304,7 +311,7 @@ window.DJ = window.DJ || {};
     return state.authHydrationPromise;
   }
 
-  function continueCheckoutIfExistingSession(product) {
+  function continueCheckoutIfExistingSession(product, options = {}) {
     Promise.race([
       ensureAuthSession(),
       timeoutAfter(AUTH_SESSION_CHECK_TIMEOUT_MS, 'Customer account check timed out.')
@@ -312,9 +319,11 @@ window.DJ = window.DJ || {};
       .then((session) => {
         const pendingProductId = Number(state.pendingCheckoutProduct?.id);
         if (!session?.user || pendingProductId !== Number(product.id)) return;
+        const checkoutOptions = state.pendingCheckoutOptions || options;
         state.pendingCheckoutProduct = null;
+        state.pendingCheckoutOptions = null;
         closeAuthModal();
-        startCheckout(product);
+        startCheckout(product, checkoutOptions);
       })
       .catch(() => {
         setAuthStatus('Sign in or create an account to continue checkout.', 'info');
@@ -337,6 +346,29 @@ window.DJ = window.DJ || {};
     target.dataset.tone = tone;
   }
 
+  function shouldOpenInquiryFallback(error) {
+    const message = String(error?.message || error || '').toLowerCase();
+    return [
+      'edge function is not deployed',
+      'not deployed to this supabase project',
+      'requested function was not found',
+      'secure checkout is not fully configured',
+      'shipping is not configured',
+      'checkout could not be started',
+      'stripe checkout did not return a checkout url',
+      'could not reach supabase',
+      'failed to fetch',
+      'this listing needs confirmation before checkout'
+    ].some((phrase) => message.includes(phrase));
+  }
+
+  function openInquiryFallback(options = {}, message = 'Secure checkout is unavailable right now, so the inquiry email is opening instead.') {
+    if (typeof options.fallback !== 'function') return false;
+    showCheckoutMessage(message, 'info');
+    options.fallback();
+    return true;
+  }
+
   function setCheckoutButtonsBusy(isBusy) {
     document.querySelectorAll('[data-checkout-button], #modalBuy').forEach((button) => {
       button.disabled = Boolean(isBusy);
@@ -349,28 +381,29 @@ window.DJ = window.DJ || {};
     if (state.checkoutInFlight) return;
 
     if (!isCheckoutEnabled() || !isBackendReady() || !DJ.remoteCatalog?.invokeFunction) {
-      options.fallback?.();
+      openInquiryFallback(options);
       return;
     }
 
     if (!isDirectCheckoutEligible(product)) {
-      showCheckoutMessage('This item needs confirmation before checkout, so the inquiry email is opening instead.', 'info');
-      options.fallback?.();
+      openInquiryFallback(options, 'This item needs confirmation before checkout, so the inquiry email is opening instead.');
       return;
     }
 
     if (!state.authReady) {
       openAuthModal({
         product,
+        checkoutOptions: options,
         message: 'Checking for an existing customer session. You can sign in or create an account to continue checkout.'
       });
-      continueCheckoutIfExistingSession(product);
+      continueCheckoutIfExistingSession(product, options);
       return;
     }
 
     if (!state.session?.user) {
       openAuthModal({
         product,
+        checkoutOptions: options,
         message: 'Sign in or create a customer account before checkout.'
       });
       return;
@@ -393,7 +426,11 @@ window.DJ = window.DJ || {};
     } catch (error) {
       state.checkoutInFlight = false;
       setCheckoutButtonsBusy(false);
-      showCheckoutMessage(error.message || 'Could not start checkout.', 'error');
+      const message = error.message || 'Could not start checkout.';
+      if (shouldOpenInquiryFallback(error) && openInquiryFallback(options)) {
+        return;
+      }
+      showCheckoutMessage(message, 'error');
     }
   }
 
