@@ -970,6 +970,12 @@ window.DJ = window.DJ || {};
     });
   }
 
+  function getCatalogTimingValue(configKey, fallbackValue, minValue, maxValue) {
+    const rawValue = Number(window.DJ_BACKEND_CONFIG?.[configKey]);
+    if (!Number.isFinite(rawValue)) return fallbackValue;
+    return Math.min(maxValue, Math.max(minValue, Math.round(rawValue)));
+  }
+
   async function getStaticSourceResult(source, origin = 'static') {
     const isFilePreview = window.location.protocol === 'file:';
 
@@ -1012,12 +1018,14 @@ window.DJ = window.DJ || {};
       // Remote data is preferred, but the static catalog is fully deploy-synced.
       // Race it against the local product bundle so a slow backend, stalled SDK
       // CDN, or mobile network hiccup never leaves shoppers on a loading state.
+      const remoteCatalogTimeoutMs = getCatalogTimingValue('remoteCatalogTimeoutMs', 3200, 800, 10000);
+      const staticCatalogFallbackDelayMs = getCatalogTimingValue('staticCatalogFallbackDelayMs', 700, 0, 5000);
       const remotePromise = withTimeout(
         DJ.remoteCatalog.listProducts({
           source,
           featuredOnly: source === 'products-featured.json'
         }),
-        3800,
+        remoteCatalogTimeoutMs,
         'Remote catalog'
       ).then((remote) => {
         if (Array.isArray(remote)) {
@@ -1026,7 +1034,7 @@ window.DJ = window.DJ || {};
         throw new Error('Remote catalog did not return a product list.');
       });
 
-      const staticFallbackPromise = delay(1300).then(() => getStaticSourceResult(source, 'static-fast-fallback'));
+      const staticFallbackPromise = delay(staticCatalogFallbackDelayMs).then(() => getStaticSourceResult(source, 'static-fast-fallback'));
 
       try {
         return await Promise.race([remotePromise, staticFallbackPromise]);

@@ -23,6 +23,8 @@
     imageFolder: 'products',
     stripeCheckoutEnabled: true,
     stripeCheckoutFunction: 'create-checkout-session',
+    remoteCatalogTimeoutMs: 3200,
+    staticCatalogFallbackDelayMs: 700,
     siteUrl: isUsableOrigin ? origin : 'https://www.djshouseofcards-comics.com'
   };
 })();
