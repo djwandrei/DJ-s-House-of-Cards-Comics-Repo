@@ -1673,3 +1673,47 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
     transform:none !important;
   }
 }
+
+/*
+  2026-05-25 product action pass.
+
+  Guide-range and contact-first listings now read as inquiry actions instead of
+  fixed-price checkout. On phones, keep modal actions in the normal document
+  flow so they do not cover the listing facts or description while browsing.
+*/
+.product-card-actions .buy-button--inquiry,
+.modal-cta--inquiry {
+  background:linear-gradient(135deg,#1646b8 0%,#e4b141 100%) !important;
+  color:#fff !important;
+}
+
+.product-card-actions .buy-button--inquiry:hover,
+.product-card-actions .buy-button--inquiry:focus-visible,
+.modal-cta--inquiry:hover,
+.modal-cta--inquiry:focus-visible {
+  box-shadow:0 16px 30px rgba(22,70,184,.24), 0 0 0 1px rgba(228,177,65,.22);
+}
+
+@media (max-width:900px) {
+  .modal-copy .inline-actions {
+    position:static !important;
+    bottom:auto !important;
+    margin-top:.7rem;
+    padding:.65rem 0 0 !important;
+    background:none !important;
+  }
+
+  .modal-copy .inline-actions > * {
+    min-height:52px;
+  }
+}
+
+@media (max-width:640px) {
+  .modal-copy .inline-actions {
+    gap:.68rem;
+  }
+
+  .modal-copy .inline-actions .modal-cta {
+    min-height:56px;
+  }
+}

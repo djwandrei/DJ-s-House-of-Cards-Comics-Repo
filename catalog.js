@@ -341,6 +341,23 @@ window.DJ = window.DJ || {};
     return isPriceRangeDisplay(displayPrice) ? 'Price range' : 'Price';
   }
 
+  function isDirectCheckoutCandidate(product = {}) {
+    if (typeof DJ.payments?.isDirectCheckoutEligible === 'function') {
+      return DJ.payments.isDirectCheckoutEligible(product);
+    }
+
+    const price = Number(product.price);
+    const displayPrice = DJ.displayPrice(product).toLowerCase();
+    if (!Number.isFinite(price) || price <= 0) return false;
+    if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
+    return !isPriceRangeDisplay(displayPrice);
+  }
+
+  function getProductActionLabel(product = {}, context = 'card') {
+    if (isDirectCheckoutCandidate(product)) return 'Buy Now';
+    return context === 'modal' ? 'Ask About This Item' : 'Ask';
+  }
+
   function getProductContextLabel(product = {}) {
     const normalizedCategory = String(product.category || '').trim().toLowerCase();
     if (normalizedCategory === 'comics') return 'Publisher';
@@ -1232,7 +1249,8 @@ window.DJ = window.DJ || {};
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
-    const quickActionLabel = /contact/i.test(displayPrice) ? 'Ask' : 'Buy Now';
+    const isDirectCheckout = isDirectCheckoutCandidate(product);
+    const quickActionLabel = getProductActionLabel(product);
     const cardImageSizes = [
       '(max-width: 640px) calc(100vw - 3rem)',
       '(max-width: 900px) 31vw',
@@ -1267,7 +1285,7 @@ window.DJ = window.DJ || {};
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}">Details</button>
-              <button type="button" class="buy-button" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}">${DJ.escapeHtml(quickActionLabel)}</button>
+              <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
         </div>
@@ -3049,7 +3067,8 @@ Thank you.`
           source: DEFAULT_PRODUCT_SOURCE,
           ids: storedWishlist
         });
-        wishlistProducts = normalizeProducts(remoteWishlistProducts);
+        const syncedRemoteWishlistProducts = await applyStaticLegacyDescriptionOverlay(DEFAULT_PRODUCT_SOURCE, remoteWishlistProducts);
+        wishlistProducts = normalizeProducts(syncedRemoteWishlistProducts);
         loadedWishlistFromRemote = true;
       } catch (error) {
         console.error('Failed to load wishlist products from Supabase:', error);
@@ -3136,6 +3155,8 @@ Thank you.`
     const modalMainImageCandidates = DJ.getAssetUrlCandidates(gallery[0]);
     const modalMainImageSource = modalMainImageCandidates[0] || DJ.safeAssetUrl(gallery[0]);
     const displayPrice = DJ.displayPrice(product);
+    const modalActionLabel = getProductActionLabel(product, 'modal');
+    const isDirectCheckout = isDirectCheckoutCandidate(product);
     const modalThumbs = gallery.map((image, index) => ({
       image,
       index,
@@ -3177,7 +3198,7 @@ Thank you.`
           </div>
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
           <div class="inline-actions">
-            <button type="button" class="modal-cta" id="modalBuy" data-checkout-button>Buy Now</button>
+            <button type="button" class="modal-cta${isDirectCheckout ? '' : ' modal-cta--inquiry'}" id="modalBuy" data-checkout-button>${DJ.escapeHtml(modalActionLabel)}</button>
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
             <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
