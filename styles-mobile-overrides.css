@@ -1648,6 +1648,25 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
   body[data-page="wishlist"] #wishlistContainer {
     min-height:auto;
   }
+
+  .wishlist-actions-panel {
+    grid-template-columns:1fr;
+    padding:1rem;
+  }
+
+  .wishlist-actions-buttons {
+    min-width:0;
+  }
+
+  .wishlist-actions-list li {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:.16rem;
+  }
+
+  .wishlist-actions-list span {
+    white-space:normal;
+  }
 }
 
 /* Final mobile footer image clearance:

@@ -1638,6 +1638,15 @@ Thank you.`
         return;
       }
 
+      const wishlistClear = event.target.closest('[data-wishlist-clear]');
+      if (wishlistClear) {
+        if (window.confirm('Clear all saved items from your wishlist?')) {
+          DJ.setWishlist([]);
+          renderWishlistPage();
+        }
+        return;
+      }
+
       const productCard = event.target.closest('.product-card');
       if (!productCard) return;
 
@@ -3067,6 +3076,79 @@ Thank you.`
     await renderCatalogPage(config, allowedProducts);
   }
 
+  function renderWishlistEmptyState() {
+    return `
+      <div class="empty-state wishlist-empty-state">
+        <span class="empty-state-kicker">Nothing saved yet</span>
+        <h3>Your wishlist is empty</h3>
+        <p>Tap the heart icon on any listing to save it here for comparing, revisiting, or sending DJ a focused inquiry.</p>
+        <div class="empty-state-actions">
+          <a class="button" href="sports-cards.html">Browse Sports Cards</a>
+          <a class="button-secondary" href="comics.html">Browse Comics</a>
+          <a class="button-secondary" href="collectibles.html">Browse Collectibles</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function buildWishlistInquiryUrl(products = []) {
+    const savedProducts = normalizeModalContextProducts(products);
+    const listedProducts = savedProducts.slice(0, 12);
+    const extraCount = Math.max(0, savedProducts.length - listedProducts.length);
+    const lines = listedProducts.map((product, index) => (
+      `${index + 1}. ${product.name} | ${DJ.displayPrice(product)} | Listing ID #${product.id}`
+    ));
+
+    if (extraCount) {
+      lines.push(`...and ${extraCount} more saved item${extraCount === 1 ? '' : 's'}.`);
+    }
+
+    const subject = encodeURIComponent(`Wishlist Inquiry (${savedProducts.length} item${savedProducts.length === 1 ? '' : 's'})`);
+    const body = encodeURIComponent(`Hello DJ,
+
+I'm interested in the saved items below:
+
+${lines.join('\n')}
+
+Wishlist page: ${window.location.href}
+
+Please let me know what is available.
+
+Thank you.`);
+
+    return `mailto:contact@djshouseofcards-comics.com?subject=${subject}&body=${body}`;
+  }
+
+  function renderWishlistActionsPanel(products = []) {
+    const savedProducts = normalizeModalContextProducts(products);
+    if (!savedProducts.length) return '';
+
+    const previewProducts = savedProducts.slice(0, 3);
+    const moreCount = Math.max(0, savedProducts.length - previewProducts.length);
+    const countLabel = `${savedProducts.length} saved item${savedProducts.length === 1 ? '' : 's'}`;
+
+    return `
+      <aside class="wishlist-actions-panel panel" aria-label="Wishlist actions">
+        <div class="wishlist-actions-copy">
+          <span class="wishlist-actions-kicker">Saved list ready</span>
+          <h2>${DJ.escapeHtml(countLabel)} in your wishlist</h2>
+          <p>Turn saved items into one focused email, keep browsing, or clear the list when you are done comparing.</p>
+          <ul class="wishlist-actions-list" aria-label="Saved item preview">
+            ${previewProducts.map((product) => `
+              <li><span>${DJ.escapeHtml(product.name)}</span><strong>${DJ.escapeHtml(DJ.displayPrice(product))}</strong></li>
+            `).join('')}
+            ${moreCount ? `<li><span>Additional saved items</span><strong>+${moreCount}</strong></li>` : ''}
+          </ul>
+        </div>
+        <div class="wishlist-actions-buttons">
+          <a class="button" href="${DJ.escapeHtml(buildWishlistInquiryUrl(savedProducts))}">Email DJ About Saved Items</a>
+          <a class="button-secondary" href="sports-cards.html">Browse More</a>
+          <button type="button" class="button-secondary wishlist-clear-button" data-wishlist-clear>Clear Wishlist</button>
+        </div>
+      </aside>
+    `;
+  }
+
   async function renderWishlistPage() {
     const wishlistContainer = document.getElementById('wishlistContainer');
     if (!wishlistContainer) return;
@@ -3079,15 +3161,7 @@ Thank you.`
     }
 
     if (!storedWishlist.length) {
-      wishlistContainer.innerHTML = `
-        <div class="empty-state">
-          <h3>Your wishlist is empty</h3>
-          <p>Tap the heart icon on any listing to save it here for later.</p>
-          <div class="inline-actions">
-            <a class="button" href="sports-cards.html">Browse Sports Cards</a>
-          </div>
-        </div>
-      `;
+      wishlistContainer.innerHTML = renderWishlistEmptyState();
       DJ.updateWishlistCount();
       DJ.applyLazyLoading(wishlistContainer);
       return;
@@ -3148,26 +3222,18 @@ Thank you.`
 
     if (!wishlistProducts.length) {
       clearProductGridLoadingState(wishlistContainer);
-      wishlistContainer.innerHTML = `
-        <div class="empty-state">
-          <h3>Your wishlist is empty</h3>
-          <p>Tap the heart icon on any listing to save it here for later.</p>
-          <div class="inline-actions">
-            <a class="button" href="sports-cards.html">Browse Sports Cards</a>
-          </div>
-        </div>
-      `;
+      wishlistContainer.innerHTML = renderWishlistEmptyState();
       DJ.applyLazyLoading(wishlistContainer);
       return;
     }
 
     clearProductGridLoadingState(wishlistContainer);
     const priorityCardCount = getPriorityProductCardCount();
-    wishlistContainer.innerHTML = wishlistProducts
+    wishlistContainer.innerHTML = `${renderWishlistActionsPanel(wishlistProducts)}${wishlistProducts
       .map((product, index) => renderProductCard(product, wishlistIds, {
         imagePriority: index < Math.min(4, priorityCardCount) ? 'high' : 'low'
       }))
-      .join('');
+      .join('')}`;
     attachGridHandlers(wishlistContainer, wishlistProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(wishlistContainer);
