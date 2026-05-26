@@ -106,6 +106,7 @@ window.DJ = window.DJ || {};
   const catalogProductsSignatureCache = new WeakMap();
   const FILTERED_RESULTS_CACHE_LIMIT = 18;
   const gridProductLookups = new WeakMap();
+  const gridProductSequences = new WeakMap();
   const DEFAULT_RENDER_BATCH_SIZE = 24;
   const DESKTOP_FILTER_BREAKPOINT = 900;
   const FILTER_SIDEBAR_VISIBILITY_KEY = 'catalogSidebarVisible';
@@ -141,6 +142,8 @@ window.DJ = window.DJ || {};
   let catalogRenderRequestId = 0;
   let wishlistRenderRequestId = 0;
   let linkedProductAutoOpenedId = null;
+  let activeModalProductId = null;
+  let activeModalContextProducts = [];
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
   const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
@@ -1487,7 +1490,10 @@ Thank you.`
 
     linkedProductAutoOpenedId = linkedProductId;
     if (product) {
-      openModal(product, { preserveUrl: true });
+      openModal(product, {
+        preserveUrl: true,
+        contextProducts: products
+      });
     }
   }
 
@@ -1613,7 +1619,9 @@ Thank you.`
 
   function attachGridHandlers(container, products, options = {}) {
     if (!container) return;
-    gridProductLookups.set(container, createProductLookup(products));
+    const productSequence = normalizeModalContextProducts(products);
+    gridProductLookups.set(container, createProductLookup(productSequence));
+    gridProductSequences.set(container, productSequence);
 
     container.onclick = (event) => {
       const loadMoreAction = event.target.closest('[data-load-more]');
@@ -1634,6 +1642,7 @@ Thank you.`
       const productId = Number(productCard.dataset.productId);
       const product = gridProductLookups.get(container)?.get(productId);
       if (!product) return;
+      const contextProducts = gridProductSequences.get(container) || productSequence;
 
       if (event.target.closest('.wishlist-button')) {
         toggleWishlist(productId, product);
@@ -1647,11 +1656,11 @@ Thank you.`
       }
 
       if (event.target.closest('[data-product-details]')) {
-        openModal(product);
+        openModal(product, { contextProducts });
         return;
       }
 
-      openModal(product);
+      openModal(product, { contextProducts });
     };
 
     if (container.dataset.cardKeyboardBound === 'true') return;
@@ -1667,7 +1676,7 @@ Thank you.`
       if (!product) return;
 
       event.preventDefault();
-      openModal(product);
+      openModal(product, { contextProducts: gridProductSequences.get(container) || productSequence });
     });
   }
 
@@ -2661,7 +2670,7 @@ Thank you.`
     });
     updateCatalogPaginationControls(paginationState);
     syncFiltersToUrl(filters);
-    maybeOpenLinkedProduct(allowedProducts);
+    maybeOpenLinkedProduct(filteredProducts);
 
     if (!filteredProducts.length) {
       const emptyTitle = config.emptyTitle || document.body.dataset.emptyTitle || 'No items matched your filters';
@@ -3164,6 +3173,68 @@ Thank you.`
   // Product details modal
   // ---------------------------------------------------------------------------
 
+  function normalizeModalContextProducts(products = []) {
+    return (Array.isArray(products) ? products : [])
+      .filter((product) => product && Number.isFinite(Number(product.id)));
+  }
+
+  function getModalNavigationState(product = {}, contextProducts = activeModalContextProducts) {
+    const productId = Number(product?.id ?? activeModalProductId);
+    const sequence = normalizeModalContextProducts(contextProducts);
+    const currentIndex = sequence.findIndex((item) => Number(item.id) === productId);
+
+    if (!sequence.length || currentIndex < 0) {
+      return {
+        currentIndex: -1,
+        total: sequence.length,
+        previousProduct: null,
+        nextProduct: null
+      };
+    }
+
+    return {
+      currentIndex,
+      total: sequence.length,
+      previousProduct: currentIndex > 0 ? sequence[currentIndex - 1] : null,
+      nextProduct: currentIndex < sequence.length - 1 ? sequence[currentIndex + 1] : null
+    };
+  }
+
+  function renderModalListingNav(product = {}) {
+    const state = getModalNavigationState(product);
+    if (state.total < 2 || state.currentIndex < 0) return '';
+
+    const previousLabel = state.previousProduct
+      ? `Previous listing: ${state.previousProduct.name}`
+      : 'This is the first visible listing';
+    const nextLabel = state.nextProduct
+      ? `Next listing: ${state.nextProduct.name}`
+      : 'This is the last visible listing';
+
+    return `
+      <nav class="modal-listing-nav" aria-label="Browse visible listings">
+        <button type="button" class="modal-listing-nav__button" data-modal-nav="prev" aria-label="${DJ.escapeHtml(previousLabel)}" title="${DJ.escapeHtml(previousLabel)}"${state.previousProduct ? '' : ' disabled'}>
+          <span aria-hidden="true">&lsaquo;</span>
+        </button>
+        <span class="modal-listing-nav__status">${state.currentIndex + 1} of ${state.total} visible listings</span>
+        <button type="button" class="modal-listing-nav__button" data-modal-nav="next" aria-label="${DJ.escapeHtml(nextLabel)}" title="${DJ.escapeHtml(nextLabel)}"${state.nextProduct ? '' : ' disabled'}>
+          <span aria-hidden="true">&rsaquo;</span>
+        </button>
+      </nav>
+    `;
+  }
+
+  function navigateModalListing(direction = 1) {
+    const state = getModalNavigationState({ id: activeModalProductId });
+    const target = direction < 0 ? state.previousProduct : state.nextProduct;
+    if (!target) return false;
+
+    openModal(target, {
+      contextProducts: activeModalContextProducts
+    });
+    return true;
+  }
+
   function openModal(product, options = {}) {
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
@@ -3174,6 +3245,13 @@ Thank you.`
     }
 
     DJ.setLastFocusedElement(document.activeElement);
+    const contextProducts = normalizeModalContextProducts(options.contextProducts);
+    if (contextProducts.length) {
+      activeModalContextProducts = contextProducts;
+    } else if (!activeModalContextProducts.some((item) => Number(item.id) === Number(product.id))) {
+      activeModalContextProducts = normalizeModalContextProducts([product]);
+    }
+    activeModalProductId = Number(product.id);
 
     const gallery = Array.isArray(product.imageGallery) && product.imageGallery.length
       ? product.imageGallery
@@ -3212,6 +3290,7 @@ Thank you.`
         <div class="modal-copy">
           <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
           <h3 id="modalTitle">${DJ.escapeHtml(product.name)}</h3>
+          ${renderModalListingNav(product)}
           ${renderModalFactStrip(product, galleryCount, displayPrice)}
           ${renderModalMetaGrid(product)}
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
@@ -3252,6 +3331,11 @@ Thank you.`
 
     modalInner.querySelector('#modalBuy')?.addEventListener('click', () => buyNow(product));
     modalInner.querySelector('#modalCopyLink')?.addEventListener('click', () => copyProductLink(product));
+    modalInner.querySelectorAll('[data-modal-nav]').forEach((button) => {
+      button.addEventListener('click', () => {
+        navigateModalListing(button.dataset.modalNav === 'prev' ? -1 : 1);
+      });
+    });
     modalInner.querySelector('#modalWishlist')?.addEventListener('click', async () => {
       toggleWishlist(product.id, product);
       if (document.body.dataset.page === 'wishlist') {
@@ -3274,6 +3358,7 @@ Thank you.`
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    activeModalProductId = null;
     replaceProductUrl(null);
     DJ.restoreFocus();
   }
@@ -3290,6 +3375,18 @@ Thank you.`
     }
 
     if (event.key !== 'Tab') {
+      const isArrowNavigation = event.key === 'ArrowLeft' || event.key === 'ArrowRight';
+      const activeElement = document.activeElement;
+      const isTypingField = activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName);
+
+      if (isArrowNavigation && !isTypingField && !document.body.classList.contains('image-lightbox-open')) {
+        const didNavigate = navigateModalListing(event.key === 'ArrowLeft' ? -1 : 1);
+        if (didNavigate) {
+          event.preventDefault();
+          return true;
+        }
+      }
+
       return false;
     }
 

@@ -82,6 +82,8 @@
   --brand-white:#ffffff;
   --brand-gold:#e4b141;
   --brand-green:#1b8d3d;
+  --font-display:"Bebas Neue",sans-serif;
+  --font-script:"Lobster Two",cursive;
   /*
    * Static design images are served through WebP-first image sets. The
    * original JPG/PNG files remain as fallbacks for older browsers and for
