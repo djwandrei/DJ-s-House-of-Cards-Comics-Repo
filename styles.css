@@ -141,6 +141,9 @@ img {
   max-width:100%;
   display:block
 }
+[hidden] {
+  display:none !important
+}
 a {
   color:inherit;
   text-decoration:none
@@ -9256,6 +9259,182 @@ body.dark-mode .account-order-card {
   align-items:center;
 }
 
+.account-readiness {
+  display:grid;
+  gap:.58rem;
+  padding:1rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(31,47,163,.07),rgba(228,177,65,.12));
+}
+
+.account-readiness-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  font-weight:900;
+}
+
+.account-readiness-head strong {
+  color:var(--brand-red);
+  font-size:1.18rem;
+}
+
+.account-progress-track {
+  width:100%;
+  height:.62rem;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(16,27,57,.1);
+}
+
+.account-progress-track span {
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--brand-blue),var(--brand-red));
+  transition:width .25s ease;
+}
+
+.account-summary-tools {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:.68rem;
+}
+
+.account-summary-tools .button,
+.account-summary-tools .button-secondary {
+  width:100%;
+}
+
+.account-summary-tools button:disabled,
+.offline-actions button:disabled {
+  cursor:not-allowed;
+  opacity:.58;
+  transform:none;
+  box-shadow:none;
+}
+
+body.dark-mode .account-readiness {
+  background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(228,177,65,.1));
+  border-color:rgba(255,255,255,.12);
+}
+
+body.dark-mode .account-progress-track {
+  background:rgba(255,255,255,.12);
+}
+
+/* Offline recovery page --------------------------------------------------- */
+.offline-panel {
+  display:grid;
+  gap:1rem;
+  max-width:56rem;
+  margin:3rem auto;
+  padding:clamp(1.1rem,2.6vw,1.7rem);
+  border-radius:28px;
+}
+
+.offline-brand {
+  margin-bottom:.1rem;
+}
+
+.offline-title {
+  margin-top:.5rem;
+}
+
+.offline-status-row {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.7rem;
+  padding:.82rem .9rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:20px;
+  background:rgba(31,47,163,.055);
+}
+
+.offline-status-row .helper-text,
+.offline-helper,
+.offline-requested-path {
+  margin:0;
+}
+
+.offline-status-pill {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:34px;
+  padding:0 .78rem;
+  border-radius:999px;
+  background:rgba(16,27,57,.12);
+  color:var(--text);
+  font-weight:900;
+}
+
+.offline-status-pill[data-state="online"] {
+  background:rgba(31,157,88,.14);
+  color:#167a45;
+}
+
+.offline-status-pill[data-state="offline"] {
+  background:rgba(217,31,61,.12);
+  color:#bd1832;
+}
+
+.offline-requested-path strong {
+  overflow-wrap:anywhere;
+}
+
+.offline-actions {
+  margin-top:.1rem;
+}
+
+.offline-shortcuts {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.72rem;
+}
+
+.offline-shortcuts a {
+  display:grid;
+  gap:.18rem;
+  min-height:76px;
+  padding:.9rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:20px;
+  background:rgba(255,255,255,.68);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+
+.offline-shortcuts a:hover,
+.offline-shortcuts a:focus-visible {
+  transform:translateY(-1px);
+  border-color:rgba(31,47,163,.28);
+  box-shadow:0 14px 28px rgba(16,27,57,.1);
+}
+
+.offline-shortcuts span {
+  color:var(--muted);
+  font-size:.92rem;
+}
+
+body.dark-mode .offline-status-row,
+body.dark-mode .offline-shortcuts a {
+  background:rgba(255,255,255,.055);
+  border-color:rgba(255,255,255,.12);
+}
+
+body.dark-mode .offline-status-pill[data-state="online"] {
+  color:#61e49e;
+}
+
+body.dark-mode .offline-status-pill[data-state="offline"] {
+  color:#ff8392;
+}
+
 @media (max-width:900px) {
   .admin-insights-tabs {
     justify-content:flex-start;
@@ -9272,6 +9451,26 @@ body.dark-mode .account-order-card {
   .account-orders-card {
     grid-template-columns:1fr;
     grid-column:auto;
+  }
+}
+
+@media (max-width:640px) {
+  .account-panel,
+  .offline-panel {
+    border-radius:22px;
+  }
+
+  .offline-panel {
+    margin:1.25rem auto;
+  }
+
+  .offline-shortcuts {
+    grid-template-columns:1fr;
+  }
+
+  .offline-actions {
+    display:grid;
+    grid-template-columns:1fr;
   }
 }
 

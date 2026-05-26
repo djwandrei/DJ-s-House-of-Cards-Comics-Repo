@@ -12,7 +12,7 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/clubhouse-sign.webp" rel="preload" type="image/webp"/>
-<link href="styles.css?v=20260526c" rel="stylesheet"/>
+<link href="styles.css?v=20260526d" rel="stylesheet"/>
 <link href="styles-mobile-overrides.css?v=20260526c" rel="stylesheet"/>
 <meta content="noindex,nofollow" name="robots"/>
 <meta content="#1f2fa3" name="theme-color"/>
@@ -136,6 +136,18 @@
 <span>Wishlist items</span>
 <strong id="accountWishlistCount">0</strong>
 </div>
+<div class="account-readiness" aria-live="polite">
+<div class="account-readiness-head">
+<span>Profile readiness</span>
+<strong id="accountProfileCompletionLabel">0%</strong>
+</div>
+<div aria-hidden="true" class="account-progress-track"><span id="accountProfileCompletionBar"></span></div>
+<p class="account-muted" id="accountProfileSavedAt">No saved buyer details yet.</p>
+</div>
+<div class="account-summary-tools">
+<a class="button" href="contact.html" id="accountEmailPreferences">Email Saved Preferences</a>
+<button class="button-secondary" id="accountClearProfile" type="button">Clear Local Details</button>
+</div>
 <div class="account-link-grid">
 <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
 <a class="button-secondary" href="sports-cards.html">Browse Sports Cards</a>
@@ -176,6 +188,6 @@
 <script defer="" src="payments.js?v=20260525a"></script>
 <script defer="" src="core.js?v=20260526a"></script>
 <script defer="" src="nav.js?v=20260520a"></script>
-<script defer="" src="account.js?v=20260521c"></script>
+<script defer="" src="account.js?v=20260526a"></script>
 </body>
 </html>

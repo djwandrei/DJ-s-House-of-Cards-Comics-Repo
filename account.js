@@ -33,6 +33,30 @@ window.DJ = window.DJ || {};
     'postalCode',
     'notes'
   ];
+  const profileCompletionFields = [
+    'fullName',
+    'phone',
+    'preferredContact',
+    'shippingName',
+    'addressLine1',
+    'city',
+    'state',
+    'postalCode',
+    'notes'
+  ];
+  const profileFieldLabels = {
+    fullName: 'Full name',
+    phone: 'Phone',
+    preferredContact: 'Preferred contact',
+    shippingName: 'Shipping name',
+    addressLine1: 'Address line 1',
+    addressLine2: 'Address line 2',
+    city: 'City',
+    state: 'State',
+    postalCode: 'ZIP / postal code',
+    notes: 'Collecting notes'
+  };
+  const contactEmail = 'contact@djshouseofcards-comics.com';
 
   const $ = (id) => document.getElementById(id);
 
@@ -82,6 +106,15 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function removeLocalProfile() {
+    try {
+      localStorage.removeItem(PROFILE_KEY);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   function readLocalOrders() {
     try {
       const parsed = JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY) || '[]');
@@ -99,6 +132,77 @@ window.DJ = window.DJ || {};
     });
   }
 
+  function readProfileForm() {
+    const storedProfile = readLocalProfile();
+    const profile = {};
+    fields.forEach((field) => {
+      const input = $(`account_${field}`);
+      profile[field] = input
+        ? normalizeProfileValue(field, input.value)
+        : normalizeProfileValue(field, storedProfile[field]);
+    });
+    profile.email = getEmail() || storedProfile.email || '';
+    profile.updatedAt = storedProfile.updatedAt || '';
+    return profile;
+  }
+
+  function hasProfileDetails(profile) {
+    return fields.some((field) => Boolean(normalizeProfileValue(field, profile?.[field])));
+  }
+
+  function getProfileCompletion(profile) {
+    const completed = profileCompletionFields.filter((field) => (
+      Boolean(normalizeProfileValue(field, profile?.[field]))
+    )).length;
+    return {
+      completed,
+      total: profileCompletionFields.length,
+      percent: Math.round((completed / profileCompletionFields.length) * 100)
+    };
+  }
+
+  function hasUnsavedProfileChanges(currentProfile, storedProfile) {
+    return fields.some((field) => (
+      normalizeProfileValue(field, currentProfile?.[field]) !== normalizeProfileValue(field, storedProfile?.[field])
+    ));
+  }
+
+  function formatSavedAt(value) {
+    if (!value) return 'No saved buyer details yet.';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Buyer details are saved on this device.';
+    return `Last saved ${date.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    })}.`;
+  }
+
+  function buildPreferencesEmailUrl(profile, wishlistCount) {
+    const lines = [
+      'Hi DJ,',
+      '',
+      'I wanted to send over my saved buyer preferences.',
+      '',
+      `Wishlist items: ${wishlistCount}`
+    ];
+    const email = getEmail() || profile.email || '';
+    if (email) {
+      lines.push(`Account email: ${email}`);
+    }
+    fields.forEach((field) => {
+      const value = normalizeProfileValue(field, profile[field]);
+      if (value) {
+        lines.push(`${profileFieldLabels[field]}: ${value}`);
+      }
+    });
+    lines.push('', 'Thanks!');
+
+    return `mailto:${contactEmail}?subject=${encodeURIComponent('Saved buyer preferences')}&body=${encodeURIComponent(lines.join('\n'))}`;
+  }
+
   function saveProfileForm(event) {
     event?.preventDefault();
     const profile = readLocalProfile();
@@ -113,6 +217,7 @@ window.DJ = window.DJ || {};
       saved ? 'Account details saved on this device.' : 'This browser blocked local profile storage.',
       saved ? 'success' : 'error'
     );
+    renderAccountSummary();
   }
 
   function renderAuthState() {
@@ -126,14 +231,69 @@ window.DJ = window.DJ || {};
     if (signedOutPanel) signedOutPanel.hidden = Boolean(email);
     if (signInForm) signInForm.hidden = Boolean(email);
     if (emailTarget) emailTarget.textContent = email || 'Not signed in';
+    renderAccountSummary();
   }
 
-  function renderWishlistSummary() {
+  function getWishlistIds() {
+    return typeof DJ.getWishlist === 'function' ? DJ.getWishlist() : [];
+  }
+
+  function renderAccountSummary() {
     const countTarget = $('accountWishlistCount');
-    const wishlistIds = typeof DJ.getWishlist === 'function' ? DJ.getWishlist() : [];
+    const completionLabel = $('accountProfileCompletionLabel');
+    const completionBar = $('accountProfileCompletionBar');
+    const savedAt = $('accountProfileSavedAt');
+    const emailLink = $('accountEmailPreferences');
+    const clearButton = $('accountClearProfile');
+    const wishlistIds = getWishlistIds();
+    const currentProfile = readProfileForm();
+    const storedProfile = readLocalProfile();
+    const completion = getProfileCompletion(currentProfile);
+    const hasDetails = hasProfileDetails(currentProfile);
+    const hasSavedDetails = hasProfileDetails(storedProfile);
+    const hasUnsavedChanges = hasUnsavedProfileChanges(currentProfile, storedProfile);
+
     if (countTarget) {
       countTarget.textContent = String(wishlistIds.length);
     }
+    if (completionLabel) {
+      completionLabel.textContent = `${completion.percent}%`;
+      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} profile details filled`);
+    }
+    if (completionBar) {
+      completionBar.style.width = `${completion.percent}%`;
+    }
+    if (savedAt) {
+      savedAt.textContent = hasUnsavedChanges && hasDetails
+        ? 'Unsaved changes in the form.'
+        : formatSavedAt(storedProfile.updatedAt);
+    }
+    if (emailLink) {
+      emailLink.href = buildPreferencesEmailUrl(currentProfile, wishlistIds.length);
+      emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Saved Preferences' : 'Email DJ';
+    }
+    if (clearButton) {
+      clearButton.disabled = !hasSavedDetails;
+    }
+  }
+
+  function clearLocalProfile() {
+    const storedProfile = readLocalProfile();
+    if (!hasProfileDetails(storedProfile)) {
+      setStatus('There are no saved buyer details to clear.', 'info');
+      return;
+    }
+
+    const confirmed = window.confirm('Clear the buyer details saved on this device? Your wishlist will stay intact.');
+    if (!confirmed) return;
+
+    const removed = removeLocalProfile();
+    loadProfileForm();
+    renderAccountSummary();
+    setStatus(
+      removed ? 'Saved buyer details cleared from this device.' : 'This browser blocked clearing local profile storage.',
+      removed ? 'success' : 'error'
+    );
   }
 
   function renderOrderHistory() {
@@ -283,14 +443,18 @@ window.DJ = window.DJ || {};
     $('accountCreateButton')?.addEventListener('click', createAccount);
     $('accountResetButton')?.addEventListener('click', resetPassword);
     $('accountSignOutButton')?.addEventListener('click', signOut);
-    $('accountProfileForm')?.addEventListener('submit', saveProfileForm);
-    window.addEventListener('dj:wishlistchange', renderWishlistSummary);
+    $('accountClearProfile')?.addEventListener('click', clearLocalProfile);
+    const profileForm = $('accountProfileForm');
+    profileForm?.addEventListener('submit', saveProfileForm);
+    profileForm?.addEventListener('input', renderAccountSummary);
+    profileForm?.addEventListener('change', renderAccountSummary);
+    window.addEventListener('dj:wishlistchange', renderAccountSummary);
   }
 
   async function init() {
     bindEvents();
     loadProfileForm();
-    renderWishlistSummary();
+    renderAccountSummary();
     renderOrderHistory();
     await hydrateSession();
   }

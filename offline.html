@@ -13,15 +13,15 @@
   <link as="font" crossorigin href="assets/fonts/inter-700.woff2" rel="preload" type="font/woff2">
   <link as="font" crossorigin href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2">
   <link as="font" crossorigin href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2">
-<link rel="stylesheet" href="styles.css?v=20260526c">
+<link rel="stylesheet" href="styles.css?v=20260526d">
 <link rel="stylesheet" href="styles-mobile-overrides.css?v=20260526c">
 </head>
 <body data-page="offline">
   <main id="mainContent">
     <section class="section section-top">
       <div class="container">
-        <article class="panel" style="padding:1.5rem; max-width:52rem; margin:3rem auto;">
-          <div class="footer-logo-line" style="margin-bottom:1rem;">
+        <article class="panel offline-panel">
+          <div class="footer-logo-line offline-brand">
             <img alt="DJ's House of Cards & Comics logo" class="footer-logo" src="assets/dj-logo.png" width="72" height="72">
             <div>
               <div class="brand-script">DJ's House of Cards</div>
@@ -29,21 +29,28 @@
             </div>
           </div>
           <span class="kicker">Offline mode</span>
-          <h1 class="section-title" style="margin-top:.5rem;">You're offline, but the storefront shell is still available.</h1>
+          <h1 class="section-title offline-title">You're offline, but the storefront shell is still available.</h1>
           <p>The connection dropped before we could reach the live catalog. Saved pages, images, and recently viewed sections may still be available from your browser cache.</p>
-          <p class="helper-text" style="margin-top:.75rem;">Requested page: <strong id="offlineRequestedPath">/</strong></p>
-          <p class="helper-text" id="offlineNetworkStatus" style="margin-top:.25rem;">Checking connection status...</p>
-          <div class="inline-actions" style="margin-top:1.25rem;">
+          <div class="offline-status-row">
+            <span class="offline-status-pill" id="offlineStatusPill">Checking</span>
+            <p class="helper-text" id="offlineNetworkStatus">Checking connection status...</p>
+          </div>
+          <p class="helper-text offline-requested-path">Requested page: <strong id="offlineRequestedPath">/</strong></p>
+          <div class="inline-actions offline-actions">
             <button class="button" data-offline-retry type="button">Try this page again</button>
             <a class="button-secondary" href="index.html">Return home</a>
-            <a class="button-secondary" href="sports-cards.html">Browse sports cards</a>
-            <a class="button-secondary" href="wishlist.html">Open wishlist</a>
           </div>
-          <p class="helper-text" style="margin-top:1rem;">Reconnect to reload the latest inventory from Supabase and restore all search and filter features.</p>
+          <div class="offline-shortcuts" aria-label="Cached storefront shortcuts">
+            <a href="sports-cards.html"><strong>Sports cards</strong><span>Baseball, basketball, football</span></a>
+            <a href="comics.html"><strong>Comics</strong><span>Vintage and modern books</span></a>
+            <a href="collectibles.html"><strong>Collectibles</strong><span>Signed balls and display pieces</span></a>
+            <a href="wishlist.html"><strong>Wishlist</strong><span>Items saved on this device</span></a>
+          </div>
+          <p class="helper-text offline-helper">Reconnect to reload the latest inventory from Supabase and restore all search and filter features.</p>
         </article>
       </div>
     </section>
   </main>
-  <script src="offline.js?v=20260423d"></script>
+  <script src="offline.js?v=20260526a"></script>
 </body>
 </html>
