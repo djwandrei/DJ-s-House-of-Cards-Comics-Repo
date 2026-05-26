@@ -1619,8 +1619,10 @@ Thank you.`
 
   function attachGridHandlers(container, products, options = {}) {
     if (!container) return;
-    const productSequence = normalizeModalContextProducts(products);
-    gridProductLookups.set(container, createProductLookup(productSequence));
+    const renderedProducts = normalizeModalContextProducts(products);
+    const modalContextProducts = normalizeModalContextProducts(options.modalContextProducts);
+    const productSequence = modalContextProducts.length ? modalContextProducts : renderedProducts;
+    gridProductLookups.set(container, createProductLookup(renderedProducts));
     gridProductSequences.set(container, productSequence);
 
     container.onclick = (event) => {
@@ -2707,9 +2709,11 @@ Thank you.`
         }))
         .join('');
       productContainer.dataset.productRenderSignature = renderSignature;
-      attachGridHandlers(productContainer, visibleProducts);
       DJ.applyLazyLoading(productContainer);
     }
+    attachGridHandlers(productContainer, visibleProducts, {
+      modalContextProducts: filteredProducts
+    });
     DJ.updateWishlistCount();
   }
 
@@ -3216,7 +3220,7 @@ Thank you.`
         <button type="button" class="modal-listing-nav__button" data-modal-nav="prev" aria-label="${DJ.escapeHtml(previousLabel)}" title="${DJ.escapeHtml(previousLabel)}"${state.previousProduct ? '' : ' disabled'}>
           <span aria-hidden="true">&lsaquo;</span>
         </button>
-        <span class="modal-listing-nav__status">${state.currentIndex + 1} of ${state.total} visible listings</span>
+        <span class="modal-listing-nav__status">${state.currentIndex + 1} of ${state.total} matching listings</span>
         <button type="button" class="modal-listing-nav__button" data-modal-nav="next" aria-label="${DJ.escapeHtml(nextLabel)}" title="${DJ.escapeHtml(nextLabel)}"${state.nextProduct ? '' : ' disabled'}>
           <span aria-hidden="true">&rsaquo;</span>
         </button>
@@ -3230,7 +3234,9 @@ Thank you.`
     if (!target) return false;
 
     openModal(target, {
-      contextProducts: activeModalContextProducts
+      contextProducts: activeModalContextProducts,
+      focusSelector: `[data-modal-nav="${direction < 0 ? 'prev' : 'next'}"]`,
+      preserveFocusOrigin: true
     });
     return true;
   }
@@ -3244,7 +3250,10 @@ Thank you.`
       replaceProductUrl(product);
     }
 
-    DJ.setLastFocusedElement(document.activeElement);
+    const wasModalActive = modal.classList.contains('active');
+    if (!wasModalActive && !options.preserveFocusOrigin) {
+      DJ.setLastFocusedElement(document.activeElement);
+    }
     const contextProducts = normalizeModalContextProducts(options.contextProducts);
     if (contextProducts.length) {
       activeModalContextProducts = contextProducts;
@@ -3348,7 +3357,15 @@ Thank you.`
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => modal.querySelector('.modal-close')?.focus());
+    requestAnimationFrame(() => {
+      const preferredFocus = options.focusSelector ? modal.querySelector(options.focusSelector) : null;
+      const fallbackFocus = modal.querySelector('.modal-listing-nav__button:not([disabled])')
+        || modal.querySelector('.modal-close');
+      const focusTarget = preferredFocus instanceof HTMLElement && !preferredFocus.disabled
+        ? preferredFocus
+        : fallbackFocus;
+      focusTarget?.focus();
+    });
   }
 
   function closeModal() {
