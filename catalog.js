@@ -526,6 +526,31 @@ window.DJ = window.DJ || {};
     `;
   }
 
+  function renderModalDetailsCard(product = {}, galleryCount = 1) {
+    const attributes = Array.isArray(product.attributes) && product.attributes.length
+      ? product.attributes.join(', ')
+      : 'Standard listing';
+    const photoCount = Math.max(1, Number(galleryCount) || 1);
+    const rows = [
+      ['Grade status', product.conditionFacet],
+      ['Grade detail', product.conditionCompact],
+      ['Attributes', attributes],
+      ['Source page', product.sourcePage || 'Current catalog'],
+      ['Photos', `${photoCount} photo${photoCount === 1 ? '' : 's'}`]
+    ].filter(([, value]) => String(value || '').trim());
+
+    return `
+      <div class="modal-enhanced-card">
+        <strong>Listing details</strong>
+        <ul class="modal-enhanced-list">
+          ${rows.map(([label, value]) => `
+            <li><span>${DJ.escapeHtml(label)}</span><span>${DJ.escapeHtml(value)}</span></li>
+          `).join('')}
+        </ul>
+      </div>
+    `;
+  }
+
   function buildProductImageAlt(product = {}, options = {}) {
     const yearLabel = String(product.yearLabel || product.year || '').trim();
     const name = String(product.name || '').trim();
@@ -1028,17 +1053,21 @@ window.DJ = window.DJ || {};
     }
   }
 
-  function hasImprovedLegacyDescription(product = {}) {
-    return /^Legacy Site listing for\b/.test(String(product.description || '').trim());
+  function isLegacyStaticProduct(product = {}) {
+    return Boolean(
+      String(product.legacyImageLabel || '').trim()
+      || String(product.sourcePage || '').trim()
+      || /legacy/i.test(String(product.description || ''))
+    );
   }
 
-  async function applyStaticLegacyDescriptionOverlay(source, remoteProducts = []) {
+  async function applyStaticLegacyListingOverlay(source, remoteProducts = []) {
     if (!Array.isArray(remoteProducts) || !remoteProducts.length) {
       return remoteProducts;
     }
 
     const staticProducts = await fetchStaticProducts(source).catch((error) => {
-      console.warn(`Could not load static catalog copy overlay for ${source}; using remote descriptions.`, error);
+      console.warn(`Could not load static Legacy listing overlay for ${source}; using remote listing details.`, error);
       return null;
     });
     if (!Array.isArray(staticProducts) || !staticProducts.length) {
@@ -1047,7 +1076,7 @@ window.DJ = window.DJ || {};
 
     const staticProductsById = new Map(
       staticProducts
-        .filter(hasImprovedLegacyDescription)
+        .filter(isLegacyStaticProduct)
         .map((product) => [Number(product.id), product])
         .filter(([productId]) => Number.isFinite(productId))
     );
@@ -1160,7 +1189,7 @@ window.DJ = window.DJ || {};
       try {
         const { products: sourceProducts, origin } = await getBestAvailableSourceResult(source);
         const syncedSourceProducts = origin === 'remote'
-          ? await applyStaticLegacyDescriptionOverlay(source, sourceProducts)
+          ? await applyStaticLegacyListingOverlay(source, sourceProducts)
           : sourceProducts;
         const mergedProducts = shouldApplyBrowserCatalogMutations(origin)
           ? DJ.applyStoredCatalogMutations(syncedSourceProducts, { includeCustomProducts: true })
@@ -3067,7 +3096,7 @@ Thank you.`
           source: DEFAULT_PRODUCT_SOURCE,
           ids: storedWishlist
         });
-        const syncedRemoteWishlistProducts = await applyStaticLegacyDescriptionOverlay(DEFAULT_PRODUCT_SOURCE, remoteWishlistProducts);
+        const syncedRemoteWishlistProducts = await applyStaticLegacyListingOverlay(DEFAULT_PRODUCT_SOURCE, remoteWishlistProducts);
         wishlistProducts = normalizeProducts(syncedRemoteWishlistProducts);
         loadedWishlistFromRemote = true;
       } catch (error) {
@@ -3187,15 +3216,7 @@ Thank you.`
           ${renderModalMetaGrid(product)}
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
-          <div class="modal-enhanced-card">
-            <strong>Enhanced item details</strong>
-            <ul class="modal-enhanced-list">
-              <li><span>Grade status</span><span>${DJ.escapeHtml(product.conditionFacet)}</span></li>
-              <li><span>Grade detail</span><span>${DJ.escapeHtml(product.conditionCompact)}</span></li>
-              <li><span>Attributes</span><span>${DJ.escapeHtml(product.attributes.length ? product.attributes.join(', ') : 'Standard listing')}</span></li>
-              <li><span>Source page</span><span>${DJ.escapeHtml(product.sourcePage || 'Current catalog')}</span></li>
-            </ul>
-          </div>
+          ${renderModalDetailsCard(product, galleryCount)}
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
           <div class="inline-actions">
             <button type="button" class="modal-cta${isDirectCheckout ? '' : ' modal-cta--inquiry'}" id="modalBuy" data-checkout-button>${DJ.escapeHtml(modalActionLabel)}</button>

@@ -1717,3 +1717,69 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
     min-height:56px;
   }
 }
+
+/*
+  Legacy description cleanup pass.
+
+  With generated Legacy prose removed, the structured listing details card does
+  the explanatory work. Give that panel clearer hierarchy and roomier rows so
+  source, attributes, and photo count scan well on desktop and mobile.
+*/
+.modal-enhanced-card > strong {
+  color:var(--text);
+  font-family:var(--font-display);
+  font-size:.88rem;
+  letter-spacing:.12em;
+  line-height:1;
+  text-transform:uppercase;
+}
+
+.modal-enhanced-list {
+  gap:0;
+  overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(31,47,163,.08);
+  background:rgba(255,255,255,.42);
+}
+
+.modal-enhanced-list li {
+  padding:.58rem .64rem;
+}
+
+.modal-enhanced-list li + li {
+  border-top:1px solid rgba(31,47,163,.08);
+}
+
+body.dark-mode .modal-enhanced-list {
+  border-color:rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+}
+
+body.dark-mode .modal-enhanced-list li + li {
+  border-top-color:rgba(255,255,255,.1);
+}
+
+@media (max-width:640px) {
+  .modal-media {
+    padding:3.35rem .75rem .25rem;
+  }
+
+  .modal-image-stage {
+    padding:.55rem;
+  }
+
+  .modal-image-stage img {
+    max-height:min(42vh,360px);
+  }
+
+  .modal-enhanced-list li {
+    display:grid;
+    grid-template-columns:1fr;
+    gap:.18rem;
+  }
+
+  .modal-enhanced-list li span:last-child {
+    max-width:100%;
+    text-align:left;
+  }
+}
