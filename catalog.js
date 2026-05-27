@@ -3381,6 +3381,8 @@ Thank you.`);
         </div>
       </div>
     `;
+    modal.removeAttribute('aria-label');
+    modal.setAttribute('aria-labelledby', 'modalTitle');
 
     const modalMainImage = modalInner.querySelector('#modalMainImage');
     modalInner.querySelectorAll('.modal-thumb').forEach((button) => {
@@ -3440,6 +3442,8 @@ Thank you.`);
 
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
+    modal.removeAttribute('aria-labelledby');
+    modal.setAttribute('aria-label', 'Product details');
     document.body.style.overflow = '';
     activeModalProductId = null;
     replaceProductUrl(null);

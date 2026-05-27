@@ -82,6 +82,8 @@
   --brand-white:#ffffff;
   --brand-gold:#e4b141;
   --brand-green:#1b8d3d;
+  --primary:var(--brand-blue);
+  --accent-blue:var(--brand-blue);
   --font-display:"Bebas Neue",sans-serif;
   --font-script:"Lobster Two",cursive;
   /*
@@ -135,6 +137,8 @@ body.dark-mode {
   --muted:#afbdd9;
   --border:rgba(255, 255, 255, 0.12);
   --shadow:0 14px 34px rgba(0, 0, 0, 0.32);
+  --primary:#9fd0ff;
+  --accent-blue:#9fd0ff;
   background:radial-gradient(circle at top left,rgba(31,47,163,.22),transparent 34%),radial-gradient(circle at top right,rgba(239,24,35,.16),transparent 28%),linear-gradient(180deg,#0b1020 0,#111a30 100%)
 }
 img {
@@ -482,7 +486,7 @@ body.dark-mode .trust-item .icon {
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,rgba(11,18,39,.03),rgba(11,18,39,.68)),var(--category-bg) center/cover no-repeat;
+  background:linear-gradient(180deg,rgba(11,18,39,.03),rgba(11,18,39,.68)),var(--category-bg,var(--image-grass)) center/cover no-repeat;
   opacity:1
 }
 .category-card .overlay {
