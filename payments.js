@@ -60,6 +60,16 @@ window.DJ = window.DJ || {};
     return Boolean(document.querySelector('[data-customer-auth-autoload]'));
   }
 
+  function setAuthModalOpenState(modal, isOpen) {
+    if (!modal) return;
+    modal.hidden = !isOpen;
+    modal.classList.toggle('active', Boolean(isOpen));
+    modal.setAttribute('aria-hidden', String(!isOpen));
+    if ('inert' in modal) {
+      modal.inert = !isOpen;
+    }
+  }
+
   function ensureAuthModal() {
     let modal = document.getElementById('customerAuthModal');
     if (modal) return modal;
@@ -67,7 +77,7 @@ window.DJ = window.DJ || {};
     modal = document.createElement('div');
     modal.id = 'customerAuthModal';
     modal.className = 'customer-auth-modal';
-    modal.setAttribute('aria-hidden', 'true');
+    setAuthModalOpenState(modal, false);
     modal.innerHTML = `
       <div class="customer-auth-backdrop" data-customer-auth-close></div>
       <section class="customer-auth-panel" role="dialog" aria-modal="true" aria-labelledby="customerAuthTitle">
@@ -161,8 +171,7 @@ window.DJ = window.DJ || {};
       ? document.activeElement
       : null;
     setAuthStatus(options.message || '', 'info');
-    modal.classList.add('active');
-    modal.setAttribute('aria-hidden', 'false');
+    setAuthModalOpenState(modal, true);
     document.body.classList.add('customer-auth-open');
     window.setTimeout(() => modal.querySelector('#customerAuthEmail')?.focus(), 40);
   }
@@ -170,8 +179,7 @@ window.DJ = window.DJ || {};
   function closeAuthModal() {
     const modal = document.getElementById('customerAuthModal');
     if (!modal) return;
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden', 'true');
+    setAuthModalOpenState(modal, false);
     document.body.classList.remove('customer-auth-open');
     state.pendingCheckoutProduct = null;
     state.pendingCheckoutOptions = null;

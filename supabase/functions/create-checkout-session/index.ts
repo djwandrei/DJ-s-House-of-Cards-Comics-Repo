@@ -64,14 +64,47 @@ function isServerConfigured() {
 function absoluteSiteUrl(path = '/') {
   const rawPath = String(path || '/').trim();
   const safePath = rawPath.startsWith('/') && !rawPath.startsWith('//') ? rawPath : '/';
-  return `${siteUrl}${safePath}`;
+  try {
+    const site = new URL(siteUrl);
+    const url = new URL(safePath, `${site.origin}/`);
+    if (url.origin !== site.origin) return `${site.origin}/`;
+    return url.href;
+  } catch {
+    return `${siteUrl}/`;
+  }
+}
+
+function encodePathSegments(path = '') {
+  return String(path || '')
+    .split('/')
+    .map((segment) => {
+      try {
+        return encodeURIComponent(decodeURIComponent(segment));
+      } catch {
+        return encodeURIComponent(segment);
+      }
+    })
+    .join('/')
+    .replace(/%28/g, '(')
+    .replace(/%29/g, ')');
 }
 
 function absoluteImageUrl(image = '') {
   const value = String(image || '').trim();
   if (!value) return '';
-  if (/^https?:\/\//i.test(value)) return value;
-  return absoluteSiteUrl(`/${value.replace(/^\/+/, '')}`);
+  try {
+    const url = /^https?:\/\//i.test(value) ? new URL(value) : null;
+    if (url) {
+      url.pathname = encodePathSegments(url.pathname);
+      return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+    }
+    const localPath = encodePathSegments(value.replace(/^\/+/, ''));
+    const localUrl = new URL(`/${localPath}`, `${siteUrl}/`);
+    if (localUrl.protocol !== 'http:' && localUrl.protocol !== 'https:') return '';
+    return localUrl.href;
+  } catch {
+    return '';
+  }
 }
 
 async function expireStaleReservations(productId: number) {
@@ -275,7 +308,6 @@ Deno.serve(async (request) => {
   try {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
-      payment_method_types: ['card'],
       client_reference_id: String(product.id),
       ...customerOptions,
       allow_promotion_codes: allowPromotionCodes,
