@@ -145,6 +145,11 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function isKeyboardInteractiveDropzone(element) {
+    const tabIndex = Number(element.getAttribute('tabindex'));
+    return element.getAttribute('role') === 'button' || (Number.isFinite(tabIndex) && tabIndex >= 0);
+  }
+
   function wireDropzone(element, handlers = {}) {
     if (!element) return;
     const { onFiles, onClick } = handlers;
@@ -176,12 +181,14 @@ window.DJ = window.DJ || {};
       if (typeof onClick === 'function') onClick();
     });
 
-    element.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        if (typeof onClick === 'function') onClick();
-      }
-    });
+    if (isKeyboardInteractiveDropzone(element)) {
+      element.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          if (typeof onClick === 'function') onClick();
+        }
+      });
+    }
   }
 
   // ---------------------------------------------------------------------------

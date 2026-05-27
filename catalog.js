@@ -1295,7 +1295,7 @@ window.DJ = window.DJ || {};
     const imageLoading = imagePriority === 'high' ? 'eager' : 'lazy';
 
     return `
-      <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" role="button" tabindex="0" aria-label="View details for ${DJ.escapeHtml(product.name)}" aria-describedby="${summaryId}" aria-haspopup="dialog">
+      <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}" title="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}">${heart}</button>
         <div class="product-media">
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
@@ -1316,8 +1316,8 @@ window.DJ = window.DJ || {};
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions">
-              <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}">Details</button>
-              <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}">${DJ.escapeHtml(quickActionLabel)}</button>
+              <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
+              <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}" aria-describedby="${summaryId}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
         </div>
@@ -2837,6 +2837,7 @@ Thank you.`
       : null;
     const isMobileDrawerViewport = () => mobileDrawerQuery ? mobileDrawerQuery.matches : window.innerWidth <= MOBILE_BREAKPOINT;
     let drawerFocusTimer = 0;
+    const drawerFocusableSelector = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
     filterPanel.dataset.mobileDrawerBound = 'true';
     filterPanel.id = filterPanel.id || 'catalogFiltersPanel';
@@ -2891,6 +2892,26 @@ Thank you.`
 
     updateMobileFilterState = syncTrigger;
 
+    const setDrawerDescendantsFocusable = (enabled) => {
+      filterPanel.querySelectorAll(drawerFocusableSelector).forEach((element) => {
+        if (!(element instanceof HTMLElement)) return;
+        if (enabled) {
+          if (element.dataset.mobileDrawerPreviousTabindex != null) {
+            const previous = element.dataset.mobileDrawerPreviousTabindex;
+            if (previous) element.setAttribute('tabindex', previous);
+            else element.removeAttribute('tabindex');
+            delete element.dataset.mobileDrawerPreviousTabindex;
+          }
+          return;
+        }
+
+        if (element.dataset.mobileDrawerPreviousTabindex == null) {
+          element.dataset.mobileDrawerPreviousTabindex = element.getAttribute('tabindex') || '';
+        }
+        element.setAttribute('tabindex', '-1');
+      });
+    };
+
     const syncDrawerAccessibility = () => {
       const isMobileViewport = isMobileDrawerViewport();
       const isDrawerOpen = document.body.classList.contains('filters-open');
@@ -2899,19 +2920,23 @@ Thank you.`
       overlay.hidden = !isMobileViewport || !isDrawerOpen;
 
       if (!isMobileViewport) {
+        filterPanel.hidden = false;
         trigger.setAttribute('aria-expanded', 'false');
         filterPanel.setAttribute('aria-hidden', 'false');
         if ('inert' in filterPanel) {
           filterPanel.inert = false;
         }
+        setDrawerDescendantsFocusable(true);
         document.body.classList.remove('filters-open');
         return;
       }
 
+      filterPanel.hidden = !isDrawerOpen;
       filterPanel.setAttribute('aria-hidden', String(!isDrawerOpen));
       if ('inert' in filterPanel) {
         filterPanel.inert = !isDrawerOpen;
       }
+      setDrawerDescendantsFocusable(isDrawerOpen);
       trigger.setAttribute('aria-expanded', String(isDrawerOpen));
     };
 
