@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-26-08';
+const CACHE_VERSION = 'dj-house-v2026-05-26-09';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -53,6 +53,8 @@ const APP_SHELL_ASSETS = [
   '/assets/fonts/lobster-two-400.woff2',
   '/assets/fonts/lobster-two-700.woff2',
   '/assets/dj-logo.png',
+  '/assets/icons/apple-touch-icon.png',
+  '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
   '/assets/grass.webp',
