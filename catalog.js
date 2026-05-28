@@ -133,6 +133,7 @@ window.DJ = window.DJ || {};
   const CATALOG_ITEMS_PER_PAGE_OPTIONS = [24, 48, 72];
   const PRODUCT_LINK_PARAM = 'item';
   const MODAL_FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const FILTER_PANEL_FOCUSABLE_SELECTOR = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
   let debounceTimer = 0;
   let updateMobileFilterState = null;
@@ -144,6 +145,27 @@ window.DJ = window.DJ || {};
   let linkedProductAutoOpenedId = null;
   let activeModalProductId = null;
   let activeModalContextProducts = [];
+
+  function setFilterPanelDescendantsFocusable(filterPanel, enabled) {
+    if (!filterPanel) return;
+    filterPanel.querySelectorAll(FILTER_PANEL_FOCUSABLE_SELECTOR).forEach((element) => {
+      if (!(element instanceof HTMLElement)) return;
+      if (enabled) {
+        if (element.dataset.filterPanelPreviousTabindex != null) {
+          const previous = element.dataset.filterPanelPreviousTabindex;
+          if (previous) element.setAttribute('tabindex', previous);
+          else element.removeAttribute('tabindex');
+          delete element.dataset.filterPanelPreviousTabindex;
+        }
+        return;
+      }
+
+      if (element.dataset.filterPanelPreviousTabindex == null) {
+        element.dataset.filterPanelPreviousTabindex = element.getAttribute('tabindex') || '';
+      }
+      element.setAttribute('tabindex', '-1');
+    });
+  }
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
   const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
@@ -2409,10 +2431,12 @@ Thank you.`
       browseShell.classList.toggle('filters-collapsed', collapseSidebar);
       document.body.classList.toggle('filters-sidebar-open', isDesktop && !collapseSidebar);
       document.body.classList.toggle('filters-sidebar-collapsed', isDesktop && collapseSidebar);
-      filterPanel.setAttribute('aria-hidden', String(collapseSidebar));
-
-      if ('inert' in filterPanel) {
-        filterPanel.inert = collapseSidebar;
+      if (isDesktop) {
+        filterPanel.setAttribute('aria-hidden', String(collapseSidebar));
+        if ('inert' in filterPanel) {
+          filterPanel.inert = collapseSidebar;
+        }
+        setFilterPanelDescendantsFocusable(filterPanel, !collapseSidebar);
       }
 
       if (dockToggle) {
@@ -2837,7 +2861,6 @@ Thank you.`
       : null;
     const isMobileDrawerViewport = () => mobileDrawerQuery ? mobileDrawerQuery.matches : window.innerWidth <= MOBILE_BREAKPOINT;
     let drawerFocusTimer = 0;
-    const drawerFocusableSelector = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
     filterPanel.dataset.mobileDrawerBound = 'true';
     filterPanel.id = filterPanel.id || 'catalogFiltersPanel';
@@ -2892,26 +2915,6 @@ Thank you.`
 
     updateMobileFilterState = syncTrigger;
 
-    const setDrawerDescendantsFocusable = (enabled) => {
-      filterPanel.querySelectorAll(drawerFocusableSelector).forEach((element) => {
-        if (!(element instanceof HTMLElement)) return;
-        if (enabled) {
-          if (element.dataset.mobileDrawerPreviousTabindex != null) {
-            const previous = element.dataset.mobileDrawerPreviousTabindex;
-            if (previous) element.setAttribute('tabindex', previous);
-            else element.removeAttribute('tabindex');
-            delete element.dataset.mobileDrawerPreviousTabindex;
-          }
-          return;
-        }
-
-        if (element.dataset.mobileDrawerPreviousTabindex == null) {
-          element.dataset.mobileDrawerPreviousTabindex = element.getAttribute('tabindex') || '';
-        }
-        element.setAttribute('tabindex', '-1');
-      });
-    };
-
     const syncDrawerAccessibility = () => {
       const isMobileViewport = isMobileDrawerViewport();
       const isDrawerOpen = document.body.classList.contains('filters-open');
@@ -2920,13 +2923,14 @@ Thank you.`
       overlay.hidden = !isMobileViewport || !isDrawerOpen;
 
       if (!isMobileViewport) {
+        const isDesktopSidebarCollapsed = document.body.classList.contains('filters-sidebar-collapsed');
         filterPanel.hidden = false;
         trigger.setAttribute('aria-expanded', 'false');
-        filterPanel.setAttribute('aria-hidden', 'false');
+        filterPanel.setAttribute('aria-hidden', String(isDesktopSidebarCollapsed));
         if ('inert' in filterPanel) {
-          filterPanel.inert = false;
+          filterPanel.inert = isDesktopSidebarCollapsed;
         }
-        setDrawerDescendantsFocusable(true);
+        setFilterPanelDescendantsFocusable(filterPanel, !isDesktopSidebarCollapsed);
         document.body.classList.remove('filters-open');
         return;
       }
@@ -2936,7 +2940,7 @@ Thank you.`
       if ('inert' in filterPanel) {
         filterPanel.inert = !isDrawerOpen;
       }
-      setDrawerDescendantsFocusable(isDrawerOpen);
+      setFilterPanelDescendantsFocusable(filterPanel, isDrawerOpen);
       trigger.setAttribute('aria-expanded', String(isDrawerOpen));
     };
 
