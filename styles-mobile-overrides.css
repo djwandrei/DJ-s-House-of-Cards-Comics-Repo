@@ -1868,6 +1868,14 @@ body.dark-mode .modal-listing-nav__button {
     max-height:min(42vh,360px);
   }
 
+  .modal-image-zoom__hint {
+    right:.6rem;
+    bottom:.6rem;
+    min-height:30px;
+    padding:.36rem .58rem;
+    font-size:.68rem;
+  }
+
   .modal-listing-nav {
     grid-template-columns:2.6rem minmax(0,1fr) 2.6rem;
     gap:.36rem;

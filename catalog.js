@@ -3378,13 +3378,14 @@ Thank you.`);
     modalInner.innerHTML = `
       <div class="modal-layout">
         <div class="modal-media">
-          <div class="modal-image-stage" id="modalImageStage">
+          <button type="button" class="modal-image-stage modal-image-zoom" id="modalImageStage" aria-label="${DJ.escapeHtml(`Open full size image${galleryCount > 1 ? ` 1 of ${galleryCount}` : ''} for ${product.name}`)}">
             <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-asset-candidates="${DJ.escapeHtml(modalMainImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}" decoding="async" fetchpriority="high">
-          </div>
+            <span class="modal-image-zoom__hint" aria-hidden="true">View full size</span>
+          </button>
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
               ${modalThumbs.map(({ image, index, thumbnailCandidates, fullSizeCandidates }) => `
-                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-src="${DJ.escapeHtml(fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-candidates="${DJ.escapeHtml(fullSizeCandidates.join('\n'))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
+                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-index="${index}" data-gallery-src="${DJ.escapeHtml(fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-candidates="${DJ.escapeHtml(fullSizeCandidates.join('\n'))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
                   <img src="${DJ.escapeHtml((thumbnailCandidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(thumbnailCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
                 </button>
               `).join('')}
@@ -3413,9 +3414,30 @@ Thank you.`);
     modal.removeAttribute('aria-label');
     modal.setAttribute('aria-labelledby', 'modalTitle');
 
+    const modalImageStage = modalInner.querySelector('#modalImageStage');
     const modalMainImage = modalInner.querySelector('#modalMainImage');
+    let activeGalleryIndex = 0;
+
+    const getModalImagePreviewLabel = () => (
+      `Open full size image${galleryCount > 1 ? ` ${activeGalleryIndex + 1} of ${galleryCount}` : ''} for ${product.name}`
+    );
+    const openModalImagePreview = () => {
+      if (!modalMainImage || typeof DJ.openImageLightbox !== 'function') return;
+      const src = modalMainImage.currentSrc || modalMainImage.getAttribute('src') || modalMainImage.dataset.originalSrc || '';
+      if (!src) return;
+      const caption = `${product.name}${galleryCount > 1 ? ` - photo ${activeGalleryIndex + 1} of ${galleryCount}` : ''}`;
+      DJ.openImageLightbox({
+        src,
+        alt: modalMainImage.alt || caption,
+        caption,
+        trigger: modalImageStage || modalMainImage
+      });
+    };
+
+    modalImageStage?.addEventListener('click', openModalImagePreview);
     modalInner.querySelectorAll('.modal-thumb').forEach((button) => {
       button.addEventListener('click', () => {
+        activeGalleryIndex = Number(button.dataset.galleryIndex || 0);
         const nextImage = button.dataset.gallerySrc;
         if (modalMainImage && nextImage) {
           const nextCandidates = button.dataset.galleryCandidates || nextImage;
@@ -3428,6 +3450,7 @@ Thank you.`);
             modalMainImage.alt = thumbImage.alt.replace(/,\s*photo\s+\d+(?:\s+of\s+\d+)?$/i, ', full-size product photo');
           }
         }
+        modalImageStage?.setAttribute('aria-label', getModalImagePreviewLabel());
         modalInner.querySelectorAll('.modal-thumb').forEach((thumb) => thumb.classList.remove('active'));
         modalInner.querySelectorAll('.modal-thumb').forEach((thumb) => thumb.setAttribute('aria-current', 'false'));
         button.classList.add('active');

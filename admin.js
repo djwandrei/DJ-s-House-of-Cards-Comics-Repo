@@ -29,6 +29,14 @@ window.DJ = window.DJ || {};
   let existingListingsReadyPromise = null;
   let adminInsightsRemoteProducts = null;
   let adminInsightsRefreshTimer = 0;
+  let adminPageIsUnloading = false;
+
+  window.addEventListener('pagehide', () => {
+    adminPageIsUnloading = true;
+  });
+  window.addEventListener('pageshow', () => {
+    adminPageIsUnloading = false;
+  });
 
   // ---------------------------------------------------------------------------
   // Shared helpers for the browser-local admin experience
@@ -482,6 +490,7 @@ window.DJ = window.DJ || {};
     window.clearTimeout(adminInsightsRefreshTimer);
     adminInsightsRefreshTimer = window.setTimeout(() => {
       renderAdminInsights().catch((error) => {
+        if (shouldSuppressExistingListingsLoadError(error)) return;
         console.error(error);
         const status = document.getElementById('adminMetricsStatus');
         if (status) status.textContent = 'Metrics could not be refreshed right now.';
@@ -862,13 +871,28 @@ window.DJ = window.DJ || {};
           }
         }
 
-        const response = await fetch('products.json', { cache: 'force-cache' });
-        if (!response.ok) {
-          throw new Error(`Failed to load products.json (${response.status})`);
+        const controller = typeof AbortController === 'function' ? new AbortController() : null;
+        const abortOnPageHide = () => controller?.abort();
+        if (controller) {
+          window.addEventListener('pagehide', abortOnPageHide, { once: true });
         }
 
-        const products = await response.json();
-        return setBaseProducts(products);
+        try {
+          const response = await fetch('products.json', {
+            cache: 'force-cache',
+            signal: controller?.signal
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to load products.json (${response.status})`);
+          }
+
+          const products = await response.json();
+          return setBaseProducts(products);
+        } finally {
+          if (controller) {
+            window.removeEventListener('pagehide', abortOnPageHide);
+          }
+        }
       })().catch((error) => {
         baseProductsPromise = null;
         throw error;
@@ -878,7 +902,12 @@ window.DJ = window.DJ || {};
     return baseProductsPromise;
   }
 
+  function shouldSuppressExistingListingsLoadError(error) {
+    return adminPageIsUnloading || error?.name === 'AbortError';
+  }
+
   function reportExistingListingsLoadError(error) {
+    if (shouldSuppressExistingListingsLoadError(error)) return;
     console.error(error);
     DJ.setStatus('adminStatus', 'Existing listings could not be loaded for editing right now.', 'error');
     const count = document.getElementById('existingListingsCount');
@@ -909,6 +938,7 @@ window.DJ = window.DJ || {};
       renderExistingListings();
     })().catch((error) => {
       existingListingsReadyPromise = null;
+      if (shouldSuppressExistingListingsLoadError(error)) return;
       reportExistingListingsLoadError(error);
       throw error;
     });

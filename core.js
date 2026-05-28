@@ -685,6 +685,7 @@ window.DJ = window.DJ || {};
       return sharedImageLightbox;
     }
 
+    let returnFocusElement = null;
     const lightbox = document.createElement('div');
     lightbox.className = 'image-lightbox';
     lightbox.setAttribute('aria-hidden', 'true');
@@ -710,7 +711,14 @@ window.DJ = window.DJ || {};
       lightbox.classList.remove('is-open');
       lightbox.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('image-lightbox-open');
-      DJ.restoreFocus();
+      if (
+        returnFocusElement &&
+        returnFocusElement.isConnected !== false &&
+        typeof returnFocusElement.focus === 'function'
+      ) {
+        returnFocusElement.focus();
+      }
+      returnFocusElement = null;
     };
 
     closeButton.addEventListener('click', closeLightbox);
@@ -736,7 +744,10 @@ window.DJ = window.DJ || {};
       lightboxImage,
       lightboxCaption,
       closeButton,
-      closeLightbox
+      closeLightbox,
+      setReturnFocusElement(element) {
+        returnFocusElement = element;
+      }
     };
 
     return sharedImageLightbox;
@@ -758,12 +769,11 @@ window.DJ = window.DJ || {};
       lightbox,
       lightboxImage,
       lightboxCaption,
-      closeButton
+      closeButton,
+      setReturnFocusElement
     } = ensureImageLightbox();
 
-    if (trigger) {
-      DJ.setLastFocusedElement(trigger);
-    }
+    setReturnFocusElement(trigger || document.activeElement || null);
 
     const resolvedCaption = String(caption || alt || 'Full size image').trim();
     lightboxImage.src = src;

@@ -145,13 +145,33 @@ window.DJ = window.DJ || {};
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
-    if (event.shiftKey && document.activeElement === firstFocusable) {
+    if (!modal.contains(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? lastFocusable : firstFocusable).focus();
+    } else if (event.shiftKey && document.activeElement === firstFocusable) {
       event.preventDefault();
       lastFocusable.focus();
     } else if (!event.shiftKey && document.activeElement === lastFocusable) {
       event.preventDefault();
       firstFocusable.focus();
     }
+  }
+
+  function focusAuthModal(modal) {
+    const focusTarget = modal.querySelector('#customerAuthEmail') || getFocusableAuthElements(modal)[0];
+    if (!focusTarget) return;
+
+    const focusWhenOpen = () => {
+      if (!modal.classList.contains('active')) return;
+      focusTarget.focus({ preventScroll: true });
+      if (!modal.contains(document.activeElement)) {
+        getFocusableAuthElements(modal)[0]?.focus({ preventScroll: true });
+      }
+    };
+
+    focusWhenOpen();
+    window.requestAnimationFrame(focusWhenOpen);
+    window.setTimeout(focusWhenOpen, 90);
   }
 
   function setAuthStatus(message = '', tone = 'info') {
@@ -173,7 +193,7 @@ window.DJ = window.DJ || {};
     setAuthStatus(options.message || '', 'info');
     setAuthModalOpenState(modal, true);
     document.body.classList.add('customer-auth-open');
-    window.setTimeout(() => modal.querySelector('#customerAuthEmail')?.focus(), 40);
+    focusAuthModal(modal);
   }
 
   function closeAuthModal() {
