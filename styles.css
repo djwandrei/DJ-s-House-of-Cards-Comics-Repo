@@ -9602,3 +9602,164 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
     font-size:.84rem;
   }
 }
+
+/* Screenshot follow-up fixes: keep sparse search results card-sized, simplify
+   condition output, and make admin editing read more like an active listings table. */
+@media (min-width:901px) {
+  .catalog-results-column .products-grid,
+  .catalog-browse-shell.filters-collapsed .catalog-results-column .products-grid {
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr)) !important;
+    justify-content:start;
+  }
+}
+
+.admin-existing-list-wrap .custom-items {
+  display:block;
+}
+
+.admin-listing-table-header,
+.admin-listing-row {
+  display:grid;
+  grid-template-columns:86px minmax(280px,1.6fr) minmax(120px,.55fr) minmax(130px,.65fr) minmax(220px,.9fr);
+  align-items:center;
+  gap:.85rem;
+}
+
+.admin-listing-table-header {
+  position:sticky;
+  top:0;
+  z-index:2;
+  margin-bottom:.45rem;
+  padding:.62rem .8rem;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(246,248,252,.96);
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  box-shadow:0 10px 24px rgba(16,27,57,.08);
+}
+
+.admin-listing-row {
+  margin-bottom:.55rem;
+  padding:.68rem .8rem;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.92);
+  box-shadow:0 10px 22px rgba(16,27,57,.08);
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+
+.admin-listing-row:hover,
+.admin-listing-row:focus-within,
+.admin-listing-row.is-selected {
+  border-color:rgba(31,47,163,.34);
+  box-shadow:0 14px 30px rgba(31,47,163,.14);
+}
+
+.admin-listing-row.is-selected {
+  transform:translateY(-1px);
+}
+
+.admin-listing-cell {
+  min-width:0;
+}
+
+.admin-listing-cell--photo img {
+  width:72px;
+  height:72px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#f6f8fc;
+}
+
+.admin-listing-kicker,
+.admin-listing-cell span {
+  display:block;
+  color:var(--muted);
+  font-size:.78rem;
+  line-height:1.2;
+}
+
+.admin-listing-cell h4 {
+  margin:.12rem 0 .2rem;
+  color:var(--text);
+  font-size:.96rem;
+  line-height:1.22;
+}
+
+.admin-listing-cell p {
+  margin:0;
+  color:var(--muted);
+  font-size:.82rem;
+  line-height:1.28;
+}
+
+.admin-listing-cell strong {
+  display:block;
+  color:var(--text);
+  font-size:.92rem;
+  line-height:1.2;
+}
+
+.admin-listing-cell--actions {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:.38rem;
+}
+
+.admin-listing-cell--actions button {
+  min-height:34px;
+  padding:.48rem .62rem;
+  border-radius:12px;
+  font-size:.75rem;
+}
+
+body.dark-mode .admin-listing-table-header {
+  background:rgba(19,27,51,.96);
+}
+
+body.dark-mode .admin-listing-row {
+  background:rgba(255,255,255,.045);
+}
+
+@media (max-width:920px) {
+  .admin-listing-table-header {
+    display:none;
+  }
+
+  .admin-listing-row {
+    grid-template-columns:72px minmax(0,1fr);
+    align-items:start;
+  }
+
+  .admin-listing-cell--photo {
+    grid-row:span 4;
+  }
+
+  .admin-listing-cell--price,
+  .admin-listing-cell--status,
+  .admin-listing-cell--actions {
+    grid-column:2;
+  }
+
+  .admin-listing-cell--price::before,
+  .admin-listing-cell--status::before {
+    content:attr(data-label);
+    display:block;
+    margin-bottom:.18rem;
+    color:var(--muted);
+    font-size:.68rem;
+    font-weight:900;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .admin-listing-cell--actions {
+    justify-content:flex-start;
+  }
+}

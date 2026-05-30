@@ -185,29 +185,50 @@ window.DJ = window.DJ || {};
   function parseConditionDetails(rawCondition = '') {
     const raw = String(rawCondition || '').trim();
     const defaultUngradedCondition = 'Near Mint or Better';
-    const ungradedCondition = raw.toLowerCase() === 'near mint or better'
+    const rawParts = raw
+      .split('|')
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const uniqueRawParts = [];
+    const seenRawParts = new Set();
+    rawParts.forEach((part) => {
+      const key = part.toLowerCase();
+      if (seenRawParts.has(key)) return;
+      seenRawParts.add(key);
+      uniqueRawParts.push(part);
+    });
+    const hasUngradedPart = uniqueRawParts.some((part) => /^ungraded$/i.test(part));
+    const hasGuideRangePart = uniqueRawParts.some((part) => /^guide range listed$/i.test(part));
+    const displayRaw = hasUngradedPart
+      ? 'Ungraded'
+      : (uniqueRawParts.length ? uniqueRawParts.join(' | ') : raw);
+    const ungradedCondition = displayRaw.toLowerCase() === 'near mint or better'
       ? defaultUngradedCondition
-      : (raw || defaultUngradedCondition);
-    const companyMatch = raw.match(/\b(PSA\/DNA|PSA|BGS|BVG|BCCG|SGC|CGC|CSG|HGA|GMA|ISA|BECKETT)\b/i);
+      : (displayRaw || defaultUngradedCondition);
+    const companyMatch = displayRaw.match(/\b(PSA\/DNA|PSA|BGS|BVG|BCCG|SGC|CGC|CSG|HGA|GMA|ISA|BECKETT)\b/i);
 
     if (companyMatch) {
       const company = companyMatch[1].toUpperCase() === 'BECKETT' ? 'Beckett' : companyMatch[1].toUpperCase();
-      let grade = raw.slice((companyMatch.index || 0) + companyMatch[0].length).trim();
+      let grade = displayRaw.slice((companyMatch.index || 0) + companyMatch[0].length).trim();
       grade = grade.replace(/^[\s:\u2013\u2014-]+/, '').trim();
       if (!grade) grade = 'Authenticated';
 
       // Authenticated-only cards are certified, but not numerically graded.
       // Keep their exact condition visible while leaving them in the Ungraded facet.
       const hasNumericGrade = /(?:^|\s)(?:10|9\.5|9|8\.5|8|7\.5|7|6\.5|6|5\.5|5|4\.5|4|3\.5|3|2\.5|2|1\.5|1)(?:\s|$)/i.test(grade);
-      const authenticatedOnly = /authentic|authenticated|certified/i.test(raw) && !hasNumericGrade;
+      const authenticatedOnly = /authentic|authenticated|certified/i.test(displayRaw) && !hasNumericGrade;
       if (authenticatedOnly) {
-        return { raw, status: 'Ungraded', company, grade, summary: `Ungraded | ${raw}`, compact: raw };
+        return { raw, status: 'Ungraded', company, grade, summary: displayRaw, compact: displayRaw };
       }
 
       return { raw, status: 'Graded', company, grade, summary: `Graded | ${company} ${grade}`.trim(), compact: `${company} ${grade}`.trim() };
     }
 
-    return { raw, status: 'Ungraded', company: '', grade: '', summary: `Ungraded | ${ungradedCondition}`, compact: ungradedCondition };
+    if (hasUngradedPart || hasGuideRangePart || /^ungraded$/i.test(ungradedCondition)) {
+      return { raw, status: 'Ungraded', company: '', grade: '', summary: 'Ungraded', compact: 'Ungraded' };
+    }
+
+    return { raw, status: 'Ungraded', company: '', grade: '', summary: ungradedCondition, compact: ungradedCondition };
   }
 
   function hasSerialNumberingContext(value = '') {
@@ -546,8 +567,7 @@ window.DJ = window.DJ || {};
       [getProductContextLabel(product), contextValue],
       ['Sport', product.sport || product.category],
       ['League', product.league],
-      ['Player / Athlete', playerAthlete ? formatDisplayName(playerAthlete) : ''],
-      ['Condition', product.condition]
+      ['Player / Athlete', playerAthlete ? formatDisplayName(playerAthlete) : '']
     ].filter(([, value]) => String(value || '').trim());
 
     return `

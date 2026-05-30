@@ -1126,6 +1126,36 @@ window.DJ = window.DJ || {};
     });
   }
 
+  function formatAdminCondition(value = '') {
+    const parts = String(value || '')
+      .split('|')
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const uniqueParts = [];
+    const seen = new Set();
+
+    parts.forEach((part) => {
+      const key = part.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      uniqueParts.push(part);
+    });
+
+    if (uniqueParts.some((part) => /^ungraded$/i.test(part))) {
+      return 'Ungraded';
+    }
+
+    if (uniqueParts.some((part) => /^graded$/i.test(part))) {
+      return uniqueParts.find((part) => !/^graded$/i.test(part)) || 'Graded';
+    }
+
+    if (uniqueParts.some((part) => /^guide range listed$/i.test(part))) {
+      return 'Ungraded';
+    }
+
+    return uniqueParts.join(' | ') || 'Condition not listed';
+  }
+
   function populateExistingListingForm(productId) {
     const product = getEffectiveBaseProducts().find((item) => Number(item.id) === Number(productId));
     if (!product) return;
@@ -1185,28 +1215,37 @@ window.DJ = window.DJ || {};
     const galleryCount = Array.isArray(product.imageGallery) ? product.imageGallery.length : 0;
     const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
     const isSelected = Number(existingState.editingId) === Number(product.id);
+    const conditionLabel = formatAdminCondition(product.condition);
+    const listingContext = [
+      product.year || 'Year not listed',
+      product.team || 'No team / publisher'
+    ].filter(Boolean).join(' | ');
     return `
-      <article class="custom-item-card custom-item-card--editable admin-listing-card${isSelected ? ' is-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
-        <div class="custom-item-media">
+      <article class="admin-listing-row admin-listing-card${isSelected ? ' is-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
+        <div class="admin-listing-cell admin-listing-cell--photo">
           <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
-        <div class="admin-card-copy">
-          <div class="admin-card-pills">
-            <span class="admin-card-pill">${DJ.escapeHtml(product.category || 'Other')}</span>
-          </div>
+        <div class="admin-listing-cell admin-listing-cell--item">
+          <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))}</span>
           <h4>${DJ.escapeHtml(product.name)}</h4>
-          <p>${DJ.escapeHtml(String(product.year || 'Year not listed'))} | ${DJ.escapeHtml(product.category || 'Other')}</p>
-          <p>${DJ.escapeHtml(product.team || 'No team / publisher listed')}</p>
-          <p>${DJ.escapeHtml(DJ.displayPrice(product))} | ${DJ.escapeHtml(product.condition || 'Condition not listed')}</p>
-          <p class="helper-text">Gallery photos: ${galleryCount}</p>
-          <div class="inline-actions compact">
-            <button type="button" data-existing-action="edit" data-existing-id="${product.id}">Open Editor</button>
-            <button type="button" class="button-secondary" data-existing-action="replace-main" data-existing-id="${product.id}">Replace Main Photo</button>
-            <button type="button" class="button-secondary" data-existing-action="remove-main" data-existing-id="${product.id}">Remove Main Photo</button>
-            <button type="button" class="button-ghost" data-existing-action="hide" data-existing-id="${product.id}">Delete from Storefront</button>
-          </div>
-          <input accept="image/*" aria-hidden="true" class="sr-only" data-existing-main-input="${product.id}" tabindex="-1" type="file">
+          <p>${DJ.escapeHtml(listingContext)}</p>
+          <p class="helper-text">${galleryCount} gallery photo${galleryCount === 1 ? '' : 's'}</p>
         </div>
+        <div class="admin-listing-cell admin-listing-cell--price" data-label="Price">
+          <strong>${DJ.escapeHtml(DJ.displayPrice(product))}</strong>
+          <span>Fixed price</span>
+        </div>
+        <div class="admin-listing-cell admin-listing-cell--status" data-label="Status">
+          <strong>Active</strong>
+          <span>${DJ.escapeHtml(conditionLabel)}</span>
+        </div>
+        <div class="admin-listing-cell admin-listing-cell--actions">
+          <button type="button" data-existing-action="edit" data-existing-id="${product.id}">Edit</button>
+          <button type="button" class="button-secondary" data-existing-action="replace-main" data-existing-id="${product.id}">Photo</button>
+          <button type="button" class="button-secondary" data-existing-action="remove-main" data-existing-id="${product.id}">Clear</button>
+          <button type="button" class="button-ghost" data-existing-action="hide" data-existing-id="${product.id}">End</button>
+        </div>
+        <input accept="image/*" aria-hidden="true" class="sr-only" data-existing-main-input="${product.id}" tabindex="-1" type="file">
       </article>
     `;
   }
@@ -1331,7 +1370,16 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    container.innerHTML = products.map(renderExistingListingCard).join('');
+    container.innerHTML = `
+      <div class="admin-listing-table-header" aria-hidden="true">
+        <span>Photo</span>
+        <span>Listing</span>
+        <span>Price</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+      ${products.map(renderExistingListingCard).join('')}
+    `;
 
     DJ.applyLazyLoading(container);
     highlightExistingListingSelection();
