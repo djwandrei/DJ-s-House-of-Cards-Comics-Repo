@@ -97,7 +97,7 @@
   --image-football-main:image-set(url("assets/football-main.webp") type("image/webp"),url("assets/football-main.jpg") type("image/jpeg"));
   --image-comics-main:image-set(url("assets/comics-main.webp") type("image/webp"),url("assets/comics-main.jpeg") type("image/jpeg"));
   --image-jordan:image-set(url("assets/Jordan.webp") type("image/webp"),url("assets/Jordan.jpg") type("image/jpeg"));
-  --image-clubhouse:image-set(url("assets/clubhouse-sign.webp") type("image/webp"),url("assets/clubhouse-sign.png") type("image/png"));
+  --image-clubhouse:image-set(url("assets/clubhouse-sign.webp?v=20260530a") type("image/webp"),url("assets/clubhouse-sign.png?v=20260530a") type("image/png"));
   --image-baseball-footer:image-set(url("assets/baseball-footer.webp") type("image/webp"),url("assets/baseball-footer.jpg") type("image/jpeg"));
   --image-basketball-footer:image-set(url("assets/basketball-footer.webp") type("image/webp"),url("assets/basketball-footer.jpg") type("image/jpeg"));
   --image-football-footer:image-set(url("assets/football-footer.webp") type("image/webp"),url("assets/football-footer.jpg") type("image/jpeg"));
@@ -9130,8 +9130,12 @@ body.dark-mode .admin-rank-item {
 /* Customer account page --------------------------------------------------- */
 body[data-page="account"] .page-hero-card {
   background:
-    linear-gradient(135deg,rgba(8,14,32,.82),rgba(20,30,72,.76)),
-    var(--image-clubhouse) center 48%/cover no-repeat;
+    var(--image-clubhouse) right clamp(1rem,4vw,3rem) bottom -2.6rem/min(44%,380px) auto no-repeat,
+    radial-gradient(circle at 88% 80%,rgba(228,177,65,.28),rgba(228,177,65,0) 34%),
+    linear-gradient(135deg,rgba(7,13,28,.96),rgba(31,47,163,.84) 52%,rgba(239,24,35,.7));
+  background-blend-mode:normal;
+  min-height:clamp(250px,34vw,390px);
+  align-content:center;
 }
 
 .account-section {
@@ -9143,6 +9147,10 @@ body[data-page="account"] .page-hero-card {
   grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr);
   gap:clamp(1rem,2vw,1.35rem);
   align-items:start;
+}
+
+.account-grid--simple {
+  grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);
 }
 
 .account-panel {
@@ -9171,6 +9179,11 @@ body.dark-mode .account-panel {
 .account-profile-card,
 .account-orders-card {
   grid-column:2;
+}
+
+.account-grid--simple .account-profile-card,
+.account-grid--simple .account-summary-card {
+  grid-column:auto;
 }
 
 .account-eyebrow {

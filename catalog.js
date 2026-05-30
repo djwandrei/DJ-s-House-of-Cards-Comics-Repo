@@ -169,6 +169,10 @@ window.DJ = window.DJ || {};
 
   const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
   const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
+  const REMOVED_VIDEO_GAME_LISTING_IDS = new Set([
+    2700, 2701, 2702, 2703, 2704, 2705, 2706, 2707, 2708, 2709,
+    2710, 2711, 2713, 2714, 2715, 2716, 2717, 2718, 2719
+  ]);
   const TEXT_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
   const SEARCH_ALIAS_RULES = [
     [/\brc\b/g, ' rookie '],
@@ -206,10 +210,16 @@ window.DJ = window.DJ || {};
     return { raw, status: 'Ungraded', company: '', grade: '', summary: `Ungraded | ${ungradedCondition}`, compact: ungradedCondition };
   }
 
+  function hasSerialNumberingContext(value = '') {
+    return /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp|ssp|auto|autograph|signature|patch|relic|memorabilia|jersey|materials?|swatch|prospect)\b/.test(value);
+  }
+
   function hasSerialNumberedSignal(item = {}, excelFields = {}, includesFeature = () => false) {
     // Serial-number checks intentionally avoid generated description text.
     // Descriptions can inherit old workbook mistakes, while the title carries
-    // the reliable numbering context buyers actually see.
+    // the reliable numbering context buyers actually see. Be conservative:
+    // vintage card numbers such as "John Long/18 Magic Johnson AS/237" are
+    // not serial-numbered without a surrounding parallel/limited-print signal.
     const titleText = [
       item.name || '',
       excelFields['Title'] || '',
@@ -219,7 +229,6 @@ window.DJ = window.DJ || {};
     const explicitSerialText = /\bserial[- ](?:ly[- ])?numbered\b|\bnumbered\s+(?:to|\/)\s*\d+\b|\blimited\s+to\s+\d+\b|\bone\s+of\s+one\b|\b1\s*of\s*1\b|\b1\/1\b/.test(titleText);
     if (explicitSerialText) return true;
 
-    const hasYearSerialContext = (value = '') => /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp)\b/.test(value);
     const hasSlashSerial = titleText.split(/\s+\+\s+/).some((segment) => {
       const matches = segment.matchAll(/\/\s*(\d{1,4})\b/g);
       for (const match of matches) {
@@ -227,16 +236,15 @@ window.DJ = window.DJ || {};
         const after = segment.slice((match.index || 0) + match[0].length, (match.index || 0) + match[0].length + 30);
         if (/^\s*(?:cards?|pcs?|boxes?|packs?)\b/.test(after)) continue;
         const before = segment.slice(Math.max(0, (match.index || 0) - 90), match.index || 0);
-        if (denominator >= 1900 && denominator <= 2035 && !hasYearSerialContext(before)) continue;
+        if (denominator >= 1900 && denominator <= 2035 && !hasSerialNumberingContext(before)) continue;
+        if (!hasSerialNumberingContext(before)) continue;
         return true;
       }
       return false;
     });
     if (hasSlashSerial) return true;
 
-    // Preserve curated Serial Numbered tags unless the title has the known
-    // false-positive pattern: a second card/set introduced as a year.
-    return includesFeature('serial numbered') && !/\+\s*\/\s*(?:19|20)\d{2}\b/.test(titleText);
+    return false;
   }
 
   function deriveProductAttributes(item = {}) {
@@ -547,31 +555,6 @@ window.DJ = window.DJ || {};
         ${entries.map(([label, value]) => `
           <p><strong>${DJ.escapeHtml(label)}:</strong> ${DJ.escapeHtml(value)}</p>
         `).join('')}
-      </div>
-    `;
-  }
-
-  function renderModalDetailsCard(product = {}, galleryCount = 1) {
-    const attributes = Array.isArray(product.attributes) && product.attributes.length
-      ? product.attributes.join(', ')
-      : 'Standard listing';
-    const photoCount = Math.max(1, Number(galleryCount) || 1);
-    const rows = [
-      ['Grade status', product.conditionFacet],
-      ['Grade detail', product.conditionCompact],
-      ['Attributes', attributes],
-      ['Source page', product.sourcePage || 'Current catalog'],
-      ['Photos', `${photoCount} photo${photoCount === 1 ? '' : 's'}`]
-    ].filter(([, value]) => String(value || '').trim());
-
-    return `
-      <div class="modal-enhanced-card">
-        <strong>Listing details</strong>
-        <ul class="modal-enhanced-list">
-          ${rows.map(([label, value]) => `
-            <li><span>${DJ.escapeHtml(label)}</span><span>${DJ.escapeHtml(value)}</span></li>
-          `).join('')}
-        </ul>
       </div>
     `;
   }
@@ -952,6 +935,12 @@ window.DJ = window.DJ || {};
     });
   }
 
+  function filterStorefrontProducts(items = []) {
+    return (Array.isArray(items) ? items : []).filter((item) => (
+      !REMOVED_VIDEO_GAME_LISTING_IDS.has(Number(item?.id))
+    ));
+  }
+
   function getProductSource(page = document.body.dataset.page || '') {
     return PRODUCT_SOURCE_BY_PAGE[page] || DEFAULT_PRODUCT_SOURCE;
   }
@@ -1219,7 +1208,7 @@ window.DJ = window.DJ || {};
         const mergedProducts = shouldApplyBrowserCatalogMutations(origin)
           ? DJ.applyStoredCatalogMutations(syncedSourceProducts, { includeCustomProducts: true })
           : syncedSourceProducts;
-        const normalizedProducts = normalizeProducts(mergedProducts);
+        const normalizedProducts = normalizeProducts(filterStorefrontProducts(mergedProducts));
         catalogPageCache.clear();
         filteredCatalogResultsCache.clear();
 
@@ -1240,7 +1229,7 @@ window.DJ = window.DJ || {};
         }
 
         const mergedFallback = DJ.applyStoredCatalogMutations(fallbackProducts, { includeCustomProducts: true });
-        const normalizedFallback = normalizeProducts(mergedFallback);
+        const normalizedFallback = normalizeProducts(filterStorefrontProducts(mergedFallback));
         catalogPageCache.clear();
         filteredCatalogResultsCache.clear();
 
@@ -3400,7 +3389,6 @@ Thank you.`);
           ${renderModalMetaGrid(product)}
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
-          ${renderModalDetailsCard(product, galleryCount)}
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
           <div class="inline-actions">
             <button type="button" class="modal-cta${isDirectCheckout ? '' : ' modal-cta--inquiry'}" id="modalBuy" data-checkout-button>${DJ.escapeHtml(modalActionLabel)}</button>

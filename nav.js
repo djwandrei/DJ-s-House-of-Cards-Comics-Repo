@@ -146,7 +146,7 @@
       title.textContent = getCurrentPageLabel();
 
       const copy = document.createElement('p');
-      copy.textContent = 'Jump between departments, the wishlist, and contact links without losing your place.';
+      copy.textContent = 'Jump between departments and saved items without losing your place.';
 
       mobileHeader.append(eyebrow, title, copy);
       nav.insertBefore(mobileHeader, nav.firstChild);

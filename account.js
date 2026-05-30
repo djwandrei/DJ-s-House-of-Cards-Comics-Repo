@@ -1,10 +1,8 @@
 /**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
- * This page is intentionally browser-safe: Supabase Auth handles sign-in, while
- * profile preferences are stored locally until a server-side customer profile
- * table/function is added. Stripe order history must come from a trusted backend
- * endpoint, so the order panel gracefully explains that state instead of guessing.
+ * This page is intentionally browser-safe: buyer notes are optional and stay
+ * local to this device, while the wishlist remains the main account utility.
  */
 
 window.DJ = window.DJ || {};
@@ -214,7 +212,7 @@ window.DJ = window.DJ || {};
     profile.updatedAt = new Date().toISOString();
     const saved = writeLocalProfile(profile);
     setStatus(
-      saved ? 'Account details saved on this device.' : 'This browser blocked local profile storage.',
+      saved ? 'Buyer details saved on this device.' : 'This browser blocked local buyer detail storage.',
       saved ? 'success' : 'error'
     );
     renderAccountSummary();
@@ -232,6 +230,10 @@ window.DJ = window.DJ || {};
     if (signInForm) signInForm.hidden = Boolean(email);
     if (emailTarget) emailTarget.textContent = email || 'Not signed in';
     renderAccountSummary();
+  }
+
+  function hasAuthUi() {
+    return Boolean($('accountSignInForm') || $('accountSignedIn'));
   }
 
   function getWishlistIds() {
@@ -291,7 +293,7 @@ window.DJ = window.DJ || {};
     loadProfileForm();
     renderAccountSummary();
     setStatus(
-      removed ? 'Saved buyer details cleared from this device.' : 'This browser blocked clearing local profile storage.',
+      removed ? 'Saved buyer details cleared from this device.' : 'This browser blocked clearing local buyer details.',
       removed ? 'success' : 'error'
     );
   }
@@ -305,14 +307,14 @@ window.DJ = window.DJ || {};
     if (!orders.length) {
       const emptyState = createElement('div', { className: 'account-empty-state' });
       emptyState.append(
-        createElement('strong', { text: 'No online orders are stored here yet.' }),
-        createElement('p', { text: 'Once Stripe checkout is connected to a secure order-history function, completed purchases can appear in this panel. Until then, save favorite items to the wishlist or use the contact page for order questions.' })
+        createElement('strong', { text: 'No saved orders are available here.' }),
+        createElement('p', { text: 'Use the wishlist to keep track of items you may want to revisit.' })
       );
 
       const actions = createElement('div', { className: 'account-empty-actions' });
       actions.append(
         createElement('a', { className: 'button-secondary', href: 'wishlist.html', text: 'Open Wishlist' }),
-        createElement('a', { className: 'button-secondary', href: 'contact.html', text: 'Ask About An Order' })
+        createElement('a', { className: 'button-secondary', href: 'sports-cards.html', text: 'Browse Cards' })
       );
       emptyState.appendChild(actions);
       container.appendChild(emptyState);
@@ -345,18 +347,25 @@ window.DJ = window.DJ || {};
   }
 
   async function hydrateSession() {
+    if (!hasAuthUi()) {
+      state.session = null;
+      state.isReady = true;
+      renderAccountSummary();
+      return;
+    }
+
     if (!isBackendReady()) {
       state.session = null;
       state.isReady = true;
       renderAuthState();
-      setStatus('Customer sign-in needs the Supabase backend to be enabled. You can still save account details on this device.', 'info');
+      setStatus('Sign-in is not available right now. You can still save buyer details on this device.', 'info');
       return;
     }
 
     try {
       state.session = await DJ.remoteCatalog.getSession();
       bindAuthStateSync();
-      setStatus(state.session?.user ? 'Signed in and ready.' : 'Sign in to connect checkout and account tools.', 'info');
+      setStatus(state.session?.user ? 'Signed in and ready.' : 'Sign in to continue.', 'info');
     } catch (error) {
       state.session = null;
       setStatus(error.message || 'Could not load account session.', 'error');

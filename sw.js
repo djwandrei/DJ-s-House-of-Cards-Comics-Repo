@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-05-29-01';
+const CACHE_VERSION = 'dj-house-v2026-05-30-01';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -31,16 +31,16 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260529a',
+  '/styles.css?v=20260530a',
   '/styles-mobile-overrides.css?v=20260528a',
-  '/core.js?v=20260529a',
-  '/nav.js?v=20260520a',
-  '/catalog.js?v=20260528a',
+  '/core.js?v=20260530a',
+  '/nav.js?v=20260530a',
+  '/catalog.js?v=20260530a',
   '/contact.js?v=20260526a',
   '/backend-config.js?v=20260525a',
   '/supabase-client.js?v=20260525a',
   '/payments.js?v=20260528a',
-  '/account.js?v=20260526a',
+  '/account.js?v=20260530a',
   '/site.webmanifest?v=20260526e',
   '/offline.js?v=20260526a',
   '/vendor/supabase.min.js',
@@ -69,7 +69,7 @@ const APP_SHELL_ASSETS = [
   '/assets/comics-main.jpeg',
   '/assets/Jordan.webp',
   '/assets/Jordan.jpg',
-  '/assets/clubhouse-sign.webp',
+  '/assets/clubhouse-sign.webp?v=20260530a',
   '/assets/baseball-footer.webp',
   '/assets/basketball-footer.webp',
   '/assets/football-footer.webp',
