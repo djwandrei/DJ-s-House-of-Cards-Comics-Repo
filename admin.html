@@ -14,7 +14,7 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260531a" rel="stylesheet"/>
+ <link href="styles.css?v=20260531b" rel="stylesheet"/>
 <link href="styles-mobile-overrides.css?v=20260531a" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
@@ -528,6 +528,119 @@
          <p aria-live="polite" class="helper-text" id="existingListingsCount">
           Loading listings...
          </p>
+         <div class="admin-listing-controls" aria-label="Existing listing filters and sorting">
+          <label for="existingListingCategoryFilter">
+           Category
+           <select id="existingListingCategoryFilter">
+            <option value="All">
+             All categories
+            </option>
+            <option value="Baseball">
+             Baseball
+            </option>
+            <option value="Basketball">
+             Basketball
+            </option>
+            <option value="Football">
+             Football
+            </option>
+            <option value="Comics">
+             Comics
+            </option>
+            <option value="Collectibles">
+             Collectibles
+            </option>
+            <option value="Other">
+             Other
+            </option>
+           </select>
+          </label>
+          <label for="existingListingStatusFilter">
+           View
+           <select id="existingListingStatusFilter">
+            <option value="All">
+             Active listings
+            </option>
+            <option value="Edited">
+             Edited locally
+            </option>
+            <option value="NoPhoto">
+             No main photo
+            </option>
+            <option value="NoGallery">
+             No gallery photos
+            </option>
+            <option value="Priced">
+             Priced listings
+            </option>
+            <option value="Unpriced">
+             No listed price
+            </option>
+           </select>
+          </label>
+          <label for="existingListingSort">
+           Sort
+           <select id="existingListingSort">
+            <option value="name-asc">
+             Name A to Z
+            </option>
+            <option value="price-desc">
+             Price high to low
+            </option>
+            <option value="price-asc">
+             Price low to high
+            </option>
+            <option value="year-desc">
+             Newest year
+            </option>
+            <option value="year-asc">
+             Oldest year
+            </option>
+            <option value="id-desc">
+             Recently added
+            </option>
+           </select>
+          </label>
+          <button class="button-secondary" id="resetExistingListingFilters" type="button">
+           Clear Filters
+          </button>
+         </div>
+         <div class="admin-listing-summary" id="existingListingsSummary" aria-live="polite">
+         </div>
+         <div class="admin-bulk-actions" id="existingBulkActions" aria-label="Bulk listing actions">
+          <div class="admin-bulk-actions__status">
+           <strong id="existingSelectionCount">
+            0 selected
+           </strong>
+           <span>
+            Use checkboxes to update multiple active listings.
+           </span>
+          </div>
+          <div class="admin-bulk-actions__controls">
+           <button class="button-secondary" id="existingBulkSelectVisible" type="button">
+            Select Visible
+           </button>
+           <button class="button-secondary" id="existingBulkClearSelection" type="button">
+            Clear Selection
+           </button>
+           <label for="existingBulkPricePercent">
+            Price %
+            <input id="existingBulkPricePercent" inputmode="decimal" placeholder="-10" step="0.5" type="number"/>
+           </label>
+           <button class="button-secondary" id="existingBulkApplyPriceChange" type="button">
+            Apply Price Change
+           </button>
+           <button class="button-secondary" id="existingBulkClearPhotos" type="button">
+            Clear Photos
+           </button>
+           <button class="button-secondary" id="existingBulkResetOverrides" type="button">
+            Reset Edits
+           </button>
+           <button class="button-ghost" id="existingBulkEndListings" type="button">
+            End Selected
+           </button>
+          </div>
+         </div>
          <div class="inline-actions compact">
           <button class="button-secondary" id="exportStorefrontEdits" type="button">
            Export Storefront Edits
@@ -777,9 +890,9 @@
   </script>
 <script defer="" src="nav.js?v=20260530a">
   </script>
-  <script defer="" src="admin.js?v=20260531a">
+  <script defer="" src="admin.js?v=20260531b">
   </script>
-<script defer="" src="backend-admin.js?v=20260509a">
+<script defer="" src="backend-admin.js?v=20260531a">
   </script>
  </body>
 </html>

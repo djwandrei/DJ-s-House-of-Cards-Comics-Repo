@@ -677,25 +677,35 @@ window.DJ = window.DJ || {};
     const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
     const isEditing = Number(state.editingId) === Number(product.id);
     const galleryCount = Array.isArray(product.imageGallery) ? product.imageGallery.length : 0;
+    const statusLabel = product.isFeatured ? 'Featured' : 'Active';
+    const listingContext = [
+      product.year || 'Year not listed',
+      product.team || 'No team / publisher listed'
+    ].filter(Boolean).join(' | ');
     return `
-      <article class="custom-item-card custom-item-card--editable admin-listing-card${isEditing ? ' is-selected' : ''}" data-remote-id="${product.id}" aria-current="${isEditing ? 'true' : 'false'}">
-        <div class="custom-item-media">
+      <article class="admin-listing-row admin-listing-card${isEditing ? ' is-selected' : ''}" data-remote-id="${product.id}" aria-current="${isEditing ? 'true' : 'false'}">
+        <div class="admin-listing-cell admin-listing-cell--select">
+          <span class="admin-live-dot" aria-label="Live Supabase listing"></span>
+        </div>
+        <div class="admin-listing-cell admin-listing-cell--photo">
           <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
-        <div class="admin-card-copy">
-          <div class="admin-card-pills">
-            <span class="admin-card-pill">${DJ.escapeHtml(product.category || 'Other')}</span>
-            ${product.isFeatured ? '<span class="admin-card-pill admin-card-pill--accent">Featured</span>' : ''}
-          </div>
+        <div class="admin-listing-cell admin-listing-cell--item">
+          <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))}</span>
           <h4>${DJ.escapeHtml(product.name)}</h4>
-          <p>${DJ.escapeHtml(String(product.year || 'Year not listed'))} | ${DJ.escapeHtml(product.category || 'Other')}</p>
-          <p>${DJ.escapeHtml(product.team || 'No team / publisher listed')}</p>
-          <p>${DJ.escapeHtml(DJ.displayPrice(product))} | ${DJ.escapeHtml(product.condition || 'Condition not listed')}</p>
-          <p class="helper-text">ID ${DJ.escapeHtml(String(product.id))}${product.isFeatured ? ' | Featured' : ''}</p>
-          <p class="helper-text">Gallery photos: ${galleryCount}</p>
+          <p>${DJ.escapeHtml(listingContext)}</p>
+          <p class="helper-text">${galleryCount} gallery photo${galleryCount === 1 ? '' : 's'}</p>
         </div>
-        <div class="inline-actions compact">
-          <button type="button" class="button-secondary" data-remote-action="edit" data-remote-id="${product.id}">Open Editor</button>
+        <div class="admin-listing-cell admin-listing-cell--price" data-label="Price">
+          <strong>${DJ.escapeHtml(DJ.displayPrice(product))}</strong>
+          <span>Fixed price</span>
+        </div>
+        <div class="admin-listing-cell admin-listing-cell--status" data-label="Status">
+          <strong>${DJ.escapeHtml(statusLabel)}</strong>
+          <span>${DJ.escapeHtml(product.condition || 'Condition not listed')}</span>
+        </div>
+        <div class="admin-listing-cell admin-listing-cell--actions">
+          <button type="button" data-remote-action="edit" data-remote-id="${product.id}">Edit</button>
         </div>
       </article>
     `;
@@ -831,6 +841,14 @@ window.DJ = window.DJ || {};
     }
 
     container.innerHTML = `
+      <div class="admin-listing-table-header" aria-hidden="true">
+        <span>Live</span>
+        <span>Photo</span>
+        <span>Listing</span>
+        <span>Price</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
       ${visibleProducts.map(remoteListingCard).join('')}
       ${isTruncated ? `
         <div class="inline-actions compact backend-load-more-row">

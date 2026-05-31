@@ -16,11 +16,17 @@ window.DJ = window.DJ || {};
   // across search, edit, restore, and import flows without refetching products.json.
   let baseProductsPromise = null;
   const customState = { search: '', category: 'All' };
+  // Existing listings are managed like a compact Seller Hub table: filters and
+  // selected ids stay separate so bulk actions only touch the rows the user chose.
   const existingState = {
     search: '',
+    category: 'All',
+    status: 'All',
+    sort: 'name-asc',
+    selectedIds: new Set(),
+    visibleIds: [],
     baseProducts: [],
     effectiveProducts: [],
-    sortedEffectiveProducts: [],
     editingId: null,
     currentGallery: []
   };
@@ -87,7 +93,6 @@ window.DJ = window.DJ || {};
 
   function invalidateExistingProductsCache() {
     existingState.effectiveProducts = [];
-    existingState.sortedEffectiveProducts = [];
   }
 
   function setBaseProducts(products = []) {
@@ -955,13 +960,51 @@ window.DJ = window.DJ || {};
     return existingState.effectiveProducts;
   }
 
-  function getSortedEffectiveBaseProducts() {
-    if (!existingState.sortedEffectiveProducts.length && existingState.baseProducts.length) {
-      existingState.sortedEffectiveProducts = [...getEffectiveBaseProducts()]
-        .sort((left, right) => String(left.name || '').localeCompare(String(right.name || '')));
-    }
+  function hasMainPhoto(product = {}) {
+    const image = String(product.image || '').trim();
+    return Boolean(image && !/placeholder-/i.test(image));
+  }
 
-    return existingState.sortedEffectiveProducts;
+  function getExistingListingSku(product = {}) {
+    const categoryPrefix = String(product.category || 'X').trim().slice(0, 3).toUpperCase() || 'DJH';
+    return `DJH-${categoryPrefix}-${String(product.id || '').padStart(4, '0')}`;
+  }
+
+  function productHasLocalOverride(productId) {
+    return Object.prototype.hasOwnProperty.call(DJ.getProductOverrides(), String(productId));
+  }
+
+  function productMatchesExistingStatus(product = {}) {
+    const status = existingState.status;
+    if (!status || status === 'All') return true;
+    if (status === 'Edited') return productHasLocalOverride(product.id);
+    if (status === 'NoPhoto') return !hasMainPhoto(product);
+    if (status === 'NoGallery') return !(Array.isArray(product.imageGallery) && product.imageGallery.length);
+    if (status === 'Priced') return Number.isFinite(DJ.numericPrice(product));
+    if (status === 'Unpriced') return !Number.isFinite(DJ.numericPrice(product));
+    return true;
+  }
+
+  function compareExistingListings(left = {}, right = {}) {
+    const sort = existingState.sort || 'name-asc';
+    const compareName = () => String(left.name || '').localeCompare(String(right.name || ''));
+    const leftPrice = DJ.numericPrice(left);
+    const rightPrice = DJ.numericPrice(right);
+    const leftYear = Number(left.year) || 0;
+    const rightYear = Number(right.year) || 0;
+    const leftId = Number(left.id) || 0;
+    const rightId = Number(right.id) || 0;
+
+    if (sort === 'price-desc') return (rightPrice ?? -Infinity) - (leftPrice ?? -Infinity) || compareName();
+    if (sort === 'price-asc') return (leftPrice ?? Infinity) - (rightPrice ?? Infinity) || compareName();
+    if (sort === 'year-desc') return rightYear - leftYear || compareName();
+    if (sort === 'year-asc') return leftYear - rightYear || compareName();
+    if (sort === 'id-desc') return rightId - leftId || compareName();
+    return compareName();
+  }
+
+  function getSortedEffectiveBaseProducts() {
+    return [...getEffectiveBaseProducts()].sort(compareExistingListings);
   }
 
   function getDeletedBaseProducts() {
@@ -1215,7 +1258,9 @@ window.DJ = window.DJ || {};
     const galleryCount = Array.isArray(product.imageGallery) ? product.imageGallery.length : 0;
     const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
     const isSelected = Number(existingState.editingId) === Number(product.id);
+    const isBulkSelected = existingState.selectedIds.has(Number(product.id));
     const conditionLabel = formatAdminCondition(product.condition);
+    const sku = getExistingListingSku(product);
     const listingContext = [
       product.year || 'Year not listed',
       product.team || 'No team / publisher'
@@ -1225,12 +1270,15 @@ window.DJ = window.DJ || {};
     // price, status, then action buttons. That keeps bulk edits faster than
     // card-style blocks when the catalog is long.
     return `
-      <article class="admin-listing-row admin-listing-card${isSelected ? ' is-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
+      <article class="admin-listing-row admin-listing-card${isSelected ? ' is-selected' : ''}${isBulkSelected ? ' is-bulk-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
+        <div class="admin-listing-cell admin-listing-cell--select">
+          <input type="checkbox" data-existing-select-id="${product.id}" aria-label="${DJ.escapeHtml(`Select listing ${product.name}`)}"${isBulkSelected ? ' checked' : ''}>
+        </div>
         <div class="admin-listing-cell admin-listing-cell--photo">
           <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
         <div class="admin-listing-cell admin-listing-cell--item">
-          <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))}</span>
+          <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))} | SKU ${DJ.escapeHtml(sku)}</span>
           <h4>${DJ.escapeHtml(product.name)}</h4>
           <p>${DJ.escapeHtml(listingContext)}</p>
           <p class="helper-text">${galleryCount} gallery photo${galleryCount === 1 ? '' : 's'}</p>
@@ -1259,9 +1307,11 @@ window.DJ = window.DJ || {};
     const sorted = getSortedEffectiveBaseProducts();
     const selectedId = Number(existingState.editingId);
 
-    const fullList = !search
-      ? sorted
-      : sorted.filter((product) => String(product._adminSearchIndex || '').includes(search));
+    const fullList = sorted.filter((product) => {
+      const matchesSearch = !search || String(product._adminSearchIndex || '').includes(search);
+      const matchesCategory = existingState.category === 'All' || String(product.category || 'Other') === existingState.category;
+      return matchesSearch && matchesCategory && productMatchesExistingStatus(product);
+    });
 
     let visible = fullList.slice(0, MAX_EXISTING_RESULTS);
 
@@ -1349,13 +1399,221 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function updateExistingListingSummary(total = 0, visible = 0) {
+    const summary = document.getElementById('existingListingsSummary');
+    if (!summary) return;
+
+    const products = getEffectiveBaseProducts();
+    const overrideIds = new Set(Object.keys(DJ.getProductOverrides()).map(Number));
+    const hiddenCount = DJ.getDeletedProductIds().length;
+    const editedCount = products.filter((product) => overrideIds.has(Number(product.id))).length;
+    const noPhotoCount = products.filter((product) => !hasMainPhoto(product)).length;
+    const noGalleryCount = products.filter((product) => !(Array.isArray(product.imageGallery) && product.imageGallery.length)).length;
+
+    summary.innerHTML = [
+      ['Shown', visible],
+      ['Matches', total],
+      ['Edited', editedCount],
+      ['No main photo', noPhotoCount],
+      ['No gallery', noGalleryCount],
+      ['Ended', hiddenCount]
+    ].map(([label, value]) => `
+      <span class="admin-listing-summary-chip">
+        <b>${DJ.escapeHtml(String(value))}</b>
+        ${DJ.escapeHtml(label)}
+      </span>
+    `).join('');
+  }
+
+  function updateExistingBulkControls() {
+    const selectedCount = existingState.selectedIds.size;
+    const selectionCount = document.getElementById('existingSelectionCount');
+    const selectedButtons = [
+      'existingBulkClearSelection',
+      'existingBulkApplyPriceChange',
+      'existingBulkClearPhotos',
+      'existingBulkResetOverrides',
+      'existingBulkEndListings'
+    ];
+    const selectVisibleButton = document.getElementById('existingBulkSelectVisible');
+    const visibleSet = new Set(existingState.visibleIds);
+    const selectedVisibleCount = [...existingState.selectedIds].filter((id) => visibleSet.has(id)).length;
+    const allVisibleSelected = Boolean(existingState.visibleIds.length && selectedVisibleCount === existingState.visibleIds.length);
+
+    if (selectionCount) {
+      selectionCount.textContent = `${formatCountLabel(selectedCount, 'listing')} selected`;
+    }
+
+    if (selectVisibleButton) {
+      selectVisibleButton.disabled = !existingState.visibleIds.length;
+      selectVisibleButton.textContent = allVisibleSelected ? 'Unselect Visible' : 'Select Visible';
+    }
+
+    selectedButtons.forEach((id) => {
+      const button = document.getElementById(id);
+      if (button) button.disabled = !selectedCount;
+    });
+
+    document.querySelectorAll('[data-existing-select-id]').forEach((input) => {
+      const productId = Number(input.getAttribute('data-existing-select-id'));
+      const checked = existingState.selectedIds.has(productId);
+      input.checked = checked;
+      input.closest('.admin-listing-row')?.classList.toggle('is-bulk-selected', checked);
+    });
+  }
+
+  function clearInvisibleExistingSelections() {
+    const activeIds = new Set(getEffectiveBaseProducts().map((product) => Number(product.id)));
+    existingState.selectedIds.forEach((id) => {
+      if (!activeIds.has(Number(id))) {
+        existingState.selectedIds.delete(id);
+      }
+    });
+  }
+
+  function clearExistingSelection(message = '') {
+    existingState.selectedIds.clear();
+    updateExistingBulkControls();
+    if (message) DJ.setStatus('adminStatus', message, 'info');
+  }
+
+  function selectVisibleExistingListings() {
+    const visibleSet = new Set(existingState.visibleIds);
+    const selectedVisibleCount = [...existingState.selectedIds].filter((id) => visibleSet.has(id)).length;
+    const shouldSelect = selectedVisibleCount !== existingState.visibleIds.length;
+
+    existingState.visibleIds.forEach((id) => {
+      if (shouldSelect) {
+        existingState.selectedIds.add(Number(id));
+      } else {
+        existingState.selectedIds.delete(Number(id));
+      }
+    });
+
+    updateExistingBulkControls();
+  }
+
+  function getSelectedExistingProducts() {
+    const selectedIds = new Set([...existingState.selectedIds].map(Number));
+    return getEffectiveBaseProducts().filter((product) => selectedIds.has(Number(product.id)));
+  }
+
+  function saveBulkExistingOverrides(patchesById) {
+    // Batch local catalog patches into one storage write so multi-row actions do
+    // not thrash localStorage or partially refresh the editor state.
+    const overrides = DJ.getProductOverrides();
+
+    patchesById.forEach((patch, productId) => {
+      overrides[String(productId)] = {
+        ...(overrides[String(productId)] || {}),
+        ...patch
+      };
+    });
+
+    const saved = DJ.saveProductOverrides(overrides);
+    if (saved) invalidateExistingProductsCache();
+    return saved;
+  }
+
+  function bulkClearMainPhotos() {
+    const products = getSelectedExistingProducts();
+    if (!products.length) return;
+    if (!window.confirm(`Clear the main photo on ${formatCountLabel(products.length, 'selected listing')}?`)) return;
+
+    const patches = new Map(products.map((product) => [Number(product.id), { image: '' }]));
+    if (saveBulkExistingOverrides(patches)) {
+      DJ.setStatus('adminStatus', `Main photos cleared for ${formatCountLabel(products.length, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
+  function bulkResetOverrides() {
+    const ids = [...existingState.selectedIds].map(Number);
+    if (!ids.length) return;
+    if (!window.confirm(`Reset browser-saved edits for ${formatCountLabel(ids.length, 'selected listing')}?`)) return;
+
+    const overrides = DJ.getProductOverrides();
+    ids.forEach((id) => delete overrides[String(id)]);
+    if (DJ.saveProductOverrides(overrides)) {
+      invalidateExistingProductsCache();
+      DJ.setStatus('adminStatus', `Browser edits reset for ${formatCountLabel(ids.length, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
+  function bulkEndListings() {
+    const ids = [...existingState.selectedIds].map(Number);
+    if (!ids.length) return;
+    if (!window.confirm(`End ${formatCountLabel(ids.length, 'selected listing')} from the storefront on this browser?`)) return;
+
+    const deletedIds = [...new Set([...DJ.getDeletedProductIds().map(Number), ...ids])].filter(Number.isFinite);
+    if (DJ.saveDeletedProductIds(deletedIds)) {
+      invalidateExistingProductsCache();
+      if (ids.some((id) => Number(existingState.editingId) === id)) {
+        clearExistingListingEditor('That listing is currently hidden from the storefront. Restore it below to edit it again.');
+      }
+      existingState.selectedIds.clear();
+      DJ.setStatus('adminStatus', `${formatCountLabel(ids.length, 'listing')} ended from this browser storefront.`, 'success');
+      renderExistingListings();
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
+  function bulkApplyPricePercent() {
+    const input = document.getElementById('existingBulkPricePercent');
+    const percent = Number(input?.value);
+    const products = getSelectedExistingProducts();
+    if (!products.length) return;
+    if (!Number.isFinite(percent) || percent === 0) {
+      DJ.setStatus('adminStatus', 'Enter a positive or negative percent, such as -10 or 12.5.', 'error');
+      input?.focus();
+      return;
+    }
+
+    const patches = new Map();
+    products.forEach((product) => {
+      const currentPrice = DJ.numericPrice(product);
+      if (!Number.isFinite(currentPrice)) return;
+      const nextPrice = Math.max(0, Math.round((currentPrice * (1 + percent / 100)) * 100) / 100);
+      patches.set(Number(product.id), {
+        price: nextPrice,
+        priceLabel: DJ.currency(nextPrice)
+      });
+    });
+
+    if (!patches.size) {
+      DJ.setStatus('adminStatus', 'No selected listings have a numeric price to adjust.', 'error');
+      return;
+    }
+
+    if (!window.confirm(`Apply a ${percent > 0 ? '+' : ''}${percent}% price change to ${formatCountLabel(patches.size, 'selected listing')}?`)) return;
+
+    if (saveBulkExistingOverrides(patches)) {
+      DJ.setStatus('adminStatus', `Prices updated for ${formatCountLabel(patches.size, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
   function renderExistingListings() {
     const container = document.getElementById('existingListingsList');
     const count = document.getElementById('existingListingsCount');
     if (!container) return;
 
     const { products, total, limited } = getFilteredExistingProducts();
+    existingState.visibleIds = products.map((product) => Number(product.id));
+    clearInvisibleExistingSelections();
     updateSearchShellState('existingListingSearch', 'existingListingSearchShell');
+    updateExistingListingSummary(total, products.length);
 
     if (count) {
       count.textContent = limited
@@ -1370,12 +1628,14 @@ window.DJ = window.DJ || {};
           <p>Try a broader search to find the product you want to edit.</p>
         </div>
       `;
+      updateExistingBulkControls();
       renderHiddenListings();
       return;
     }
 
     container.innerHTML = `
       <div class="admin-listing-table-header" aria-hidden="true">
+        <span>Select</span>
         <span>Photo</span>
         <span>Listing</span>
         <span>Price</span>
@@ -1387,6 +1647,7 @@ window.DJ = window.DJ || {};
 
     DJ.applyLazyLoading(container);
     highlightExistingListingSelection();
+    updateExistingBulkControls();
     renderHiddenListings();
     scheduleAdminInsightsRender();
   }
@@ -1448,6 +1709,12 @@ window.DJ = window.DJ || {};
       listings.dataset.bound = 'true';
       listings.addEventListener('click', (event) => {
         if (!(event.target instanceof Element)) return;
+        const selectionInput = event.target.closest('[data-existing-select-id]');
+        if (selectionInput) {
+          event.stopPropagation();
+          return;
+        }
+
         const actionButton = event.target.closest('[data-existing-action]');
         if (actionButton) {
           const productId = actionButton.dataset.existingId;
@@ -1484,6 +1751,20 @@ window.DJ = window.DJ || {};
 
       listings.addEventListener('change', (event) => {
         if (!(event.target instanceof Element)) return;
+        const selectionInput = event.target.closest('[data-existing-select-id]');
+        if (selectionInput) {
+          const productId = Number(selectionInput.getAttribute('data-existing-select-id'));
+          if (Number.isFinite(productId)) {
+            if (selectionInput.checked) {
+              existingState.selectedIds.add(productId);
+            } else {
+              existingState.selectedIds.delete(productId);
+            }
+            updateExistingBulkControls();
+          }
+          return;
+        }
+
         const input = event.target.closest('[data-existing-main-input]');
         if (!input) return;
         const file = input.files?.[0];
@@ -1500,6 +1781,16 @@ window.DJ = window.DJ || {};
   function initExistingListingEditor() {
     const searchInput = document.getElementById('existingListingSearch');
     const clearSearchButton = document.getElementById('existingListingSearchClear');
+    const categoryFilter = document.getElementById('existingListingCategoryFilter');
+    const statusFilter = document.getElementById('existingListingStatusFilter');
+    const sortSelect = document.getElementById('existingListingSort');
+    const resetFiltersButton = document.getElementById('resetExistingListingFilters');
+    const bulkSelectVisibleButton = document.getElementById('existingBulkSelectVisible');
+    const bulkClearSelectionButton = document.getElementById('existingBulkClearSelection');
+    const bulkApplyPriceButton = document.getElementById('existingBulkApplyPriceChange');
+    const bulkClearPhotosButton = document.getElementById('existingBulkClearPhotos');
+    const bulkResetOverridesButton = document.getElementById('existingBulkResetOverrides');
+    const bulkEndListingsButton = document.getElementById('existingBulkEndListings');
     const form = document.getElementById('existingListingForm');
     const replaceMainInput = document.getElementById('existingReplaceMainPhotoInput');
     const replaceMainButton = document.getElementById('existingReplaceMainPhotoButton');
@@ -1545,6 +1836,43 @@ window.DJ = window.DJ || {};
       renderExistingListings();
       DJ.setStatus('adminStatus', 'Existing listing search cleared.', 'info');
     });
+
+    categoryFilter?.addEventListener('change', () => {
+      existingState.category = categoryFilter.value || 'All';
+      renderExistingListings();
+    });
+
+    statusFilter?.addEventListener('change', () => {
+      existingState.status = statusFilter.value || 'All';
+      renderExistingListings();
+    });
+
+    sortSelect?.addEventListener('change', () => {
+      existingState.sort = sortSelect.value || 'name-asc';
+      renderExistingListings();
+    });
+
+    resetFiltersButton?.addEventListener('click', () => {
+      existingState.search = '';
+      existingState.category = 'All';
+      existingState.status = 'All';
+      existingState.sort = 'name-asc';
+      existingState.selectedIds.clear();
+      if (searchInput) searchInput.value = '';
+      if (categoryFilter) categoryFilter.value = 'All';
+      if (statusFilter) statusFilter.value = 'All';
+      if (sortSelect) sortSelect.value = 'name-asc';
+      handleExistingSearch.cancel?.();
+      renderExistingListings();
+      DJ.setStatus('adminStatus', 'Existing listing filters cleared.', 'info');
+    });
+
+    bulkSelectVisibleButton?.addEventListener('click', selectVisibleExistingListings);
+    bulkClearSelectionButton?.addEventListener('click', () => clearExistingSelection('Selection cleared.'));
+    bulkApplyPriceButton?.addEventListener('click', bulkApplyPricePercent);
+    bulkClearPhotosButton?.addEventListener('click', bulkClearMainPhotos);
+    bulkResetOverridesButton?.addEventListener('click', bulkResetOverrides);
+    bulkEndListingsButton?.addEventListener('click', bulkEndListings);
 
     exportEditsButton?.addEventListener('click', () => {
       exportStorefrontEdits();
