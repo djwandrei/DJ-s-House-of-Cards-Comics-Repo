@@ -245,6 +245,8 @@ async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
           const navAccountLink = document.querySelector('.site-nav a[href="account.html"]');
           const footerAccountLink = document.querySelector('.footer a[href="account.html"]');
           const orderPanel = document.getElementById('accountOrders');
+          const readiness = document.getElementById('accountProfileCompletionLabel');
+          const wishlistPreview = document.getElementById('accountWishlistPreview');
           return {
             ready: true,
             savedName: savedProfile.fullName || '',
@@ -252,7 +254,9 @@ async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
             statusText: status.textContent.trim(),
             navAccountLink: Boolean(navAccountLink),
             footerAccountLink: Boolean(footerAccountLink),
-            orderPanelReady: Boolean(orderPanel && orderPanel.textContent.includes('No online orders'))
+            readinessReady: Boolean(readiness && readiness.textContent.trim()),
+            wishlistPreviewReady: Boolean(wishlistPreview),
+            orderPanelReady: Boolean(orderPanel && orderPanel.textContent.includes('No saved checkout activity yet'))
           };
         })()"""
     )
@@ -396,6 +400,8 @@ async def main() -> int:
                 and account_report.get("statusText") == "Account details saved on this device."
                 and account_report.get("navAccountLink")
                 and account_report.get("footerAccountLink")
+                and account_report.get("readinessReady")
+                and account_report.get("wishlistPreviewReady")
                 and account_report.get("orderPanelReady")
             ):
                 report["failures"].append({"page": "account.html", "account": account_report})

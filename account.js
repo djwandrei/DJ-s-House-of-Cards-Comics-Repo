@@ -1,8 +1,9 @@
 /**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
- * This page is intentionally browser-safe: buyer notes are optional and stay
- * local to this device, while the wishlist remains the main account utility.
+ * Buyer details stay local to this browser. The page focuses on practical buyer
+ * utilities: reusable contact/shipping notes, a wishlist preview, and quick
+ * copy/export tools for messages to DJ.
  */
 
 window.DJ = window.DJ || {};
@@ -11,16 +12,17 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const PROFILE_KEY = 'djCustomerProfileV1';
   const ORDER_HISTORY_KEY = 'djCustomerOrderHistoryV1';
+  const PRODUCT_SOURCE = 'products.json';
   const MAX_PROFILE_FIELD_LENGTH = 240;
   const MAX_PROFILE_NOTES_LENGTH = 1200;
-  const state = {
-    session: null,
-    isReady: false,
-    authSubscription: null
-  };
+  const WISHLIST_PREVIEW_LIMIT = 5;
+  const contactEmail = 'contact@djshouseofcards-comics.com';
+  let accountProductsPromise = null;
+  let wishlistRenderTimer = 0;
 
   const fields = [
     'fullName',
+    'email',
     'phone',
     'preferredContact',
     'shippingName',
@@ -33,7 +35,7 @@ window.DJ = window.DJ || {};
   ];
   const profileCompletionFields = [
     'fullName',
-    'phone',
+    'email',
     'preferredContact',
     'shippingName',
     'addressLine1',
@@ -44,6 +46,7 @@ window.DJ = window.DJ || {};
   ];
   const profileFieldLabels = {
     fullName: 'Full name',
+    email: 'Email',
     phone: 'Phone',
     preferredContact: 'Preferred contact',
     shippingName: 'Shipping name',
@@ -54,7 +57,6 @@ window.DJ = window.DJ || {};
     postalCode: 'ZIP / postal code',
     notes: 'Collecting notes'
   };
-  const contactEmail = 'contact@djshouseofcards-comics.com';
 
   const $ = (id) => document.getElementById(id);
 
@@ -66,8 +68,13 @@ window.DJ = window.DJ || {};
   function createElement(tagName, options = {}) {
     const element = document.createElement(tagName);
     if (options.className) element.className = options.className;
-    if (options.text) element.textContent = options.text;
+    if (options.text != null) element.textContent = options.text;
     if (options.href) element.setAttribute('href', options.href);
+    if (options.attributes) {
+      Object.entries(options.attributes).forEach(([name, value]) => {
+        if (value != null) element.setAttribute(name, String(value));
+      });
+    }
     return element;
   }
 
@@ -78,18 +85,10 @@ window.DJ = window.DJ || {};
     status.dataset.tone = tone;
   }
 
-  function isBackendReady() {
-    return Boolean(DJ.remoteCatalog?.isConfigured?.());
-  }
-
-  function getEmail() {
-    return String(state.session?.user?.email || '').trim();
-  }
-
   function readLocalProfile() {
     try {
       const parsed = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
-      return parsed && typeof parsed === 'object' ? parsed : {};
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch {
       return {};
     }
@@ -122,6 +121,10 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function getWishlistIds() {
+    return typeof DJ.getWishlist === 'function' ? DJ.getWishlist().map(Number).filter(Number.isFinite) : [];
+  }
+
   function loadProfileForm() {
     const profile = readLocalProfile();
     fields.forEach((field) => {
@@ -139,7 +142,6 @@ window.DJ = window.DJ || {};
         ? normalizeProfileValue(field, input.value)
         : normalizeProfileValue(field, storedProfile[field]);
     });
-    profile.email = getEmail() || storedProfile.email || '';
     profile.updatedAt = storedProfile.updatedAt || '';
     return profile;
   }
@@ -149,9 +151,7 @@ window.DJ = window.DJ || {};
   }
 
   function getProfileCompletion(profile) {
-    const completed = profileCompletionFields.filter((field) => (
-      Boolean(normalizeProfileValue(field, profile?.[field]))
-    )).length;
+    const completed = profileCompletionFields.filter((field) => Boolean(normalizeProfileValue(field, profile?.[field]))).length;
     return {
       completed,
       total: profileCompletionFields.length,
@@ -178,7 +178,62 @@ window.DJ = window.DJ || {};
     })}.`;
   }
 
-  function buildPreferencesEmailUrl(profile, wishlistCount) {
+  function formatShippingAddress(profile = {}) {
+    return [
+      profile.shippingName || profile.fullName,
+      profile.addressLine1,
+      profile.addressLine2,
+      [profile.city, profile.state, profile.postalCode].filter(Boolean).join(', ').replace(', ', ', ')
+    ].map((line) => normalizeProfileValue('addressLine1', line)).filter(Boolean).join('\n');
+  }
+
+  function buildProductUrl(product = {}) {
+    const category = String(product.category || '').toLowerCase();
+    const page = category.includes('baseball')
+      ? 'baseball-cards.html'
+      : category.includes('basketball')
+        ? 'basketball-cards.html'
+        : category.includes('football')
+          ? 'football-cards.html'
+          : category.includes('comic')
+            ? 'comics.html'
+            : category.includes('collect')
+              ? 'collectibles.html'
+              : 'shop.html';
+    return `${page}?item=${encodeURIComponent(String(product.id || ''))}`;
+  }
+
+  function loadAccountProducts() {
+    if (accountProductsPromise) return accountProductsPromise;
+    accountProductsPromise = fetch(PRODUCT_SOURCE, { cache: 'force-cache' })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Unable to load ${PRODUCT_SOURCE}`);
+        return response.json();
+      })
+      .then((products) => {
+        const safeProducts = Array.isArray(products) ? products : [];
+        return typeof DJ.applyStoredCatalogMutations === 'function'
+          ? DJ.applyStoredCatalogMutations(safeProducts, { includeCustomProducts: true })
+          : safeProducts;
+      })
+      .catch((error) => {
+        console.error(error);
+        return [];
+      });
+    return accountProductsPromise;
+  }
+
+  async function getWishlistProducts() {
+    const wishlistIds = getWishlistIds();
+    if (!wishlistIds.length) return [];
+    const order = new Map(wishlistIds.map((id, index) => [Number(id), index]));
+    const products = await loadAccountProducts();
+    return products
+      .filter((product) => order.has(Number(product.id)))
+      .sort((left, right) => order.get(Number(left.id)) - order.get(Number(right.id)));
+  }
+
+  function buildBuyerSummary(profile, wishlistCount, wishlistProducts = []) {
     const lines = [
       'Hi DJ,',
       '',
@@ -186,19 +241,58 @@ window.DJ = window.DJ || {};
       '',
       `Wishlist items: ${wishlistCount}`
     ];
-    const email = getEmail() || profile.email || '';
-    if (email) {
-      lines.push(`Account email: ${email}`);
-    }
+
     fields.forEach((field) => {
       const value = normalizeProfileValue(field, profile[field]);
       if (value) {
         lines.push(`${profileFieldLabels[field]}: ${value}`);
       }
     });
-    lines.push('', 'Thanks!');
 
-    return `mailto:${contactEmail}?subject=${encodeURIComponent('Saved buyer preferences')}&body=${encodeURIComponent(lines.join('\n'))}`;
+    if (wishlistProducts.length) {
+      lines.push('', 'Wishlist preview:');
+      wishlistProducts.slice(0, WISHLIST_PREVIEW_LIMIT).forEach((product, index) => {
+        lines.push(`${index + 1}. ${product.name || 'Saved item'} - ${DJ.displayPrice?.(product) || ''} - #${product.id || ''}`.trim());
+      });
+    }
+
+    lines.push('', 'Thanks!');
+    return lines.join('\n');
+  }
+
+  function buildPreferencesEmailUrl(profile, wishlistCount, wishlistProducts = []) {
+    const subject = 'Saved buyer preferences';
+    const body = buildBuyerSummary(profile, wishlistCount, wishlistProducts);
+    return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function downloadTextFile(content, filenamePrefix, extension, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyText(text) {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const textarea = createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    return copied;
   }
 
   function saveProfileForm(event) {
@@ -208,7 +302,6 @@ window.DJ = window.DJ || {};
       const input = $(`account_${field}`);
       if (input) profile[field] = normalizeProfileValue(field, input.value);
     });
-    profile.email = getEmail() || profile.email || '';
     profile.updatedAt = new Date().toISOString();
     const saved = writeLocalProfile(profile);
     setStatus(
@@ -218,26 +311,38 @@ window.DJ = window.DJ || {};
     renderAccountSummary();
   }
 
-  function renderAuthState() {
-    const signedInPanel = $('accountSignedIn');
-    const signedOutPanel = $('accountSignedOut');
-    const signInForm = $('accountSignInForm');
-    const emailTarget = $('accountEmailDisplay');
-    const email = getEmail();
+  function renderReadinessChecklist(profile, wishlistIds) {
+    const container = $('accountReadinessChecklist');
+    if (!container) return;
+    const items = [
+      {
+        label: 'Contact saved',
+        complete: Boolean(profile.fullName && (profile.email || profile.phone))
+      },
+      {
+        label: 'Shipping address ready',
+        complete: Boolean(profile.addressLine1 && profile.city && profile.state && profile.postalCode)
+      },
+      {
+        label: 'Wishlist started',
+        complete: Boolean(wishlistIds.length)
+      },
+      {
+        label: 'Collecting notes added',
+        complete: Boolean(profile.notes)
+      }
+    ];
 
-    if (signedInPanel) signedInPanel.hidden = !email;
-    if (signedOutPanel) signedOutPanel.hidden = Boolean(email);
-    if (signInForm) signInForm.hidden = Boolean(email);
-    if (emailTarget) emailTarget.textContent = email || 'Not signed in';
-    renderAccountSummary();
-  }
-
-  function hasAuthUi() {
-    return Boolean($('accountSignInForm') || $('accountSignedIn'));
-  }
-
-  function getWishlistIds() {
-    return typeof DJ.getWishlist === 'function' ? DJ.getWishlist() : [];
+    container.replaceChildren(...items.map((item) => {
+      const row = createElement('div', {
+        className: `account-checklist-item${item.complete ? ' is-complete' : ''}`
+      });
+      row.append(
+        createElement('span', { text: item.complete ? 'OK' : '--', attributes: { 'aria-hidden': 'true' } }),
+        createElement('strong', { text: item.label })
+      );
+      return row;
+    }));
   }
 
   function renderAccountSummary() {
@@ -247,6 +352,7 @@ window.DJ = window.DJ || {};
     const savedAt = $('accountProfileSavedAt');
     const emailLink = $('accountEmailPreferences');
     const clearButton = $('accountClearProfile');
+    const profileStatus = $('accountProfileStatus');
     const wishlistIds = getWishlistIds();
     const currentProfile = readProfileForm();
     const storedProfile = readLocalProfile();
@@ -255,28 +361,126 @@ window.DJ = window.DJ || {};
     const hasSavedDetails = hasProfileDetails(storedProfile);
     const hasUnsavedChanges = hasUnsavedProfileChanges(currentProfile, storedProfile);
 
-    if (countTarget) {
-      countTarget.textContent = String(wishlistIds.length);
-    }
+    if (countTarget) countTarget.textContent = String(wishlistIds.length);
     if (completionLabel) {
       completionLabel.textContent = `${completion.percent}%`;
-      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} profile details filled`);
+      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} buyer details filled`);
     }
-    if (completionBar) {
-      completionBar.style.width = `${completion.percent}%`;
-    }
+    if (completionBar) completionBar.style.width = `${completion.percent}%`;
     if (savedAt) {
       savedAt.textContent = hasUnsavedChanges && hasDetails
         ? 'Unsaved changes in the form.'
         : formatSavedAt(storedProfile.updatedAt);
     }
+    if (profileStatus) {
+      profileStatus.textContent = hasDetails
+        ? `${completion.completed} of ${completion.total} buyer details filled.`
+        : 'Add buyer details once, then reuse them when asking about cards.';
+    }
     if (emailLink) {
       emailLink.href = buildPreferencesEmailUrl(currentProfile, wishlistIds.length);
-      emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Saved Preferences' : 'Email DJ';
+      emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Buyer Summary' : 'Email DJ';
     }
-    if (clearButton) {
-      clearButton.disabled = !hasSavedDetails;
+    if (clearButton) clearButton.disabled = !hasSavedDetails;
+    renderReadinessChecklist(currentProfile, wishlistIds);
+  }
+
+  async function renderWishlistPreview() {
+    const container = $('accountWishlistPreview');
+    const meta = $('accountWishlistPreviewMeta');
+    const totalTarget = $('accountWishlistTotal');
+    if (!container) return;
+    const wishlistIds = getWishlistIds();
+
+    if (!wishlistIds.length) {
+      if (meta) meta.textContent = 'No saved items yet.';
+      if (totalTarget) totalTarget.textContent = '$0';
+      container.innerHTML = `
+        <div class="account-empty-state">
+          <strong>Your wishlist is empty.</strong>
+          <p>Save cards, comics, or collectibles while browsing and they will appear here.</p>
+          <div class="account-empty-actions">
+            <a class="button-secondary" href="sports-cards.html">Browse Cards</a>
+            <a class="button-secondary" href="comics.html">Browse Comics</a>
+          </div>
+        </div>
+      `;
+      return;
     }
+
+    if (meta) meta.textContent = `Loading ${wishlistIds.length} saved item${wishlistIds.length === 1 ? '' : 's'}...`;
+    container.innerHTML = '<div class="account-empty-state"><p>Loading saved items...</p></div>';
+
+    const products = await getWishlistProducts();
+    const visible = products.slice(0, WISHLIST_PREVIEW_LIMIT);
+    const numericPrices = products.map((product) => DJ.numericPrice?.(product)).filter((price) => Number.isFinite(price));
+    const total = numericPrices.reduce((sum, price) => sum + price, 0);
+    const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
+
+    if (totalTarget) {
+      totalTarget.textContent = numericPrices.length ? DJ.currency(total) : 'Ask';
+    }
+    if (meta) {
+      meta.textContent = unresolvedCount
+        ? `${products.length} saved item${products.length === 1 ? '' : 's'} shown. ${unresolvedCount} saved item${unresolvedCount === 1 ? '' : 's'} no longer match the catalog.`
+        : `Showing ${visible.length} of ${products.length} saved item${products.length === 1 ? '' : 's'}.`;
+    }
+
+    if (!visible.length) {
+      container.innerHTML = `
+        <div class="account-empty-state">
+          <strong>Saved items need a refresh.</strong>
+          <p>Open the wishlist to remove stale saved items or browse the latest catalog.</p>
+          <div class="account-empty-actions">
+            <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
+            <a class="button-secondary" href="sports-cards.html">Browse Cards</a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.replaceChildren(...visible.map((product) => {
+      const fallback = DJ.fallbackByCategory?.[product.category] || DJ.fallbackByCategory?.Other || 'assets/placeholder-baseball.svg';
+      const row = createElement('a', {
+        className: 'account-wishlist-row',
+        href: buildProductUrl(product)
+      });
+      const image = createElement('img', {
+        attributes: {
+          src: DJ.safeAssetUrl?.(product.image || fallback) || product.image || fallback,
+          alt: product.name || 'Saved item',
+          loading: 'lazy',
+          decoding: 'async'
+        }
+      });
+      image.setAttribute('data-fallback-src', DJ.safeAssetUrl?.(fallback) || fallback);
+      const copy = createElement('span');
+      copy.append(
+        createElement('strong', { text: product.name || 'Saved item' }),
+        createElement('small', { text: [product.year, product.category, product.team].filter(Boolean).join(' | ') || 'Saved listing' })
+      );
+      row.append(image, copy, createElement('b', { text: DJ.displayPrice?.(product) || 'Ask' }));
+      return row;
+    }));
+
+    if (products.length > WISHLIST_PREVIEW_LIMIT) {
+      const moreLink = createElement('a', {
+        className: 'button-secondary account-view-all-link',
+        href: 'wishlist.html',
+        text: `View all ${products.length} saved items`
+      });
+      container.appendChild(moreLink);
+    }
+    DJ.applyLazyLoading?.(container);
+  }
+
+  function scheduleWishlistPreviewRender() {
+    if (wishlistRenderTimer) window.clearTimeout(wishlistRenderTimer);
+    wishlistRenderTimer = window.setTimeout(() => {
+      wishlistRenderTimer = 0;
+      renderWishlistPreview();
+    }, 80);
   }
 
   function clearLocalProfile() {
@@ -301,31 +505,24 @@ window.DJ = window.DJ || {};
   function renderOrderHistory() {
     const container = $('accountOrders');
     if (!container) return;
+    const orders = readLocalOrders();
     container.replaceChildren();
 
-    const orders = readLocalOrders();
     if (!orders.length) {
       const emptyState = createElement('div', { className: 'account-empty-state' });
       emptyState.append(
-        createElement('strong', { text: 'No saved orders are available here.' }),
-        createElement('p', { text: 'Use the wishlist to keep track of items you may want to revisit.' })
+        createElement('strong', { text: 'No saved checkout activity yet.' }),
+        createElement('p', { text: 'Wishlist saves and buyer details are ready here when you want to ask about an item.' })
       );
-
-      const actions = createElement('div', { className: 'account-empty-actions' });
-      actions.append(
-        createElement('a', { className: 'button-secondary', href: 'wishlist.html', text: 'Open Wishlist' }),
-        createElement('a', { className: 'button-secondary', href: 'sports-cards.html', text: 'Browse Cards' })
-      );
-      emptyState.appendChild(actions);
       container.appendChild(emptyState);
       return;
     }
 
     const fragment = document.createDocumentFragment();
-    orders.forEach((order) => {
+    orders.slice(0, 6).forEach((order) => {
       const card = createElement('article', { className: 'account-order-card' });
       card.append(
-        createElement('strong', { text: order.title || 'Order' }),
+        createElement('strong', { text: order.title || 'Checkout activity' }),
         createElement('span', { text: order.status || 'Pending' }),
         createElement('small', { text: order.date || '' })
       );
@@ -334,138 +531,134 @@ window.DJ = window.DJ || {};
     container.appendChild(fragment);
   }
 
-  function bindAuthStateSync() {
-    if (state.authSubscription || !DJ.remoteCatalog?.onAuthStateChange) {
+  function useNameForShipping() {
+    const fullName = normalizeProfileValue('fullName', $('account_fullName')?.value);
+    const shippingName = $('account_shippingName');
+    if (!fullName || !shippingName) {
+      setStatus('Enter a full name first.', 'error');
       return;
     }
+    shippingName.value = fullName;
+    renderAccountSummary();
+    setStatus('Shipping name updated from the buyer name.', 'success');
+  }
 
-    state.authSubscription = DJ.remoteCatalog.onAuthStateChange((_event, session) => {
-      state.session = session || null;
-      state.isReady = true;
-      renderAuthState();
+  async function copyBuyerSummary() {
+    const profile = readProfileForm();
+    const wishlistProducts = await getWishlistProducts();
+    const summary = buildBuyerSummary(profile, getWishlistIds().length, wishlistProducts);
+    try {
+      await copyText(summary);
+      setStatus('Buyer summary copied.', 'success');
+    } catch {
+      setStatus('This browser blocked clipboard access.', 'error');
+    }
+  }
+
+  async function copyShippingAddress() {
+    const address = formatShippingAddress(readProfileForm());
+    if (!address) {
+      setStatus('Add a shipping address before copying it.', 'error');
+      return;
+    }
+    try {
+      await copyText(address);
+      setStatus('Shipping address copied.', 'success');
+    } catch {
+      setStatus('This browser blocked clipboard access.', 'error');
+    }
+  }
+
+  async function refreshEmailPreferencesLink() {
+    const link = $('accountEmailPreferences');
+    if (!link) return;
+    const products = await getWishlistProducts();
+    link.href = buildPreferencesEmailUrl(readProfileForm(), getWishlistIds().length, products);
+  }
+
+  async function exportBuyerDetails() {
+    const products = await getWishlistProducts();
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      profile: readProfileForm(),
+      wishlistIds: getWishlistIds(),
+      wishlistPreview: products.slice(0, WISHLIST_PREVIEW_LIMIT).map((product) => ({
+        id: product.id,
+        name: product.name,
+        price: DJ.displayPrice?.(product) || ''
+      }))
+    };
+    downloadTextFile(JSON.stringify(payload, null, 2), 'dj-buyer-details', 'json', 'application/json');
+    setStatus('Buyer details exported.', 'success');
+  }
+
+  async function importBuyerDetails(file) {
+    const parsed = JSON.parse(await file.text());
+    const sourceProfile = parsed?.profile && typeof parsed.profile === 'object'
+      ? parsed.profile
+      : parsed;
+    if (!sourceProfile || typeof sourceProfile !== 'object' || Array.isArray(sourceProfile)) {
+      throw new Error('That file does not contain buyer details.');
+    }
+
+    const profile = readLocalProfile();
+    fields.forEach((field) => {
+      profile[field] = normalizeProfileValue(field, sourceProfile[field]);
     });
-  }
-
-  async function hydrateSession() {
-    if (!hasAuthUi()) {
-      state.session = null;
-      state.isReady = true;
-      renderAccountSummary();
-      return;
+    profile.updatedAt = new Date().toISOString();
+    if (!writeLocalProfile(profile)) {
+      throw new Error('This browser blocked local buyer detail storage.');
     }
-
-    if (!isBackendReady()) {
-      state.session = null;
-      state.isReady = true;
-      renderAuthState();
-      setStatus('Sign-in is not available right now. You can still save buyer details on this device.', 'info');
-      return;
-    }
-
-    try {
-      state.session = await DJ.remoteCatalog.getSession();
-      bindAuthStateSync();
-      setStatus(state.session?.user ? 'Signed in and ready.' : 'Sign in to continue.', 'info');
-    } catch (error) {
-      state.session = null;
-      setStatus(error.message || 'Could not load account session.', 'error');
-    } finally {
-      state.isReady = true;
-      renderAuthState();
-    }
-  }
-
-  async function signIn(event) {
-    event.preventDefault();
-    const email = String($('accountEmail')?.value || '').trim();
-    const password = String($('accountPassword')?.value || '');
-    if (!email || !password) return;
-    if (!isBackendReady()) {
-      setStatus('Customer sign-in is not available until the backend is configured.', 'error');
-      return;
-    }
-
-    setStatus('Signing in...', 'info');
-    try {
-      await DJ.remoteCatalog.signIn(email, password);
-      state.session = await DJ.remoteCatalog.getSession();
-      bindAuthStateSync();
-      renderAuthState();
-      setStatus('Signed in successfully.', 'success');
-    } catch (error) {
-      setStatus(error.message || 'Sign-in failed.', 'error');
-    }
-  }
-
-  async function createAccount() {
-    const email = String($('accountEmail')?.value || '').trim();
-    const password = String($('accountPassword')?.value || '');
-    if (!email || !password) return;
-    if (!isBackendReady()) {
-      setStatus('Customer account creation is not available until the backend is configured.', 'error');
-      return;
-    }
-
-    setStatus('Creating account...', 'info');
-    try {
-      await DJ.remoteCatalog.signUp(email, password);
-      state.session = await DJ.remoteCatalog.getSession();
-      bindAuthStateSync();
-      renderAuthState();
-      setStatus('Account created. If email confirmation is required, check your inbox before checkout.', 'success');
-    } catch (error) {
-      setStatus(error.message || 'Account creation failed.', 'error');
-    }
-  }
-
-  async function resetPassword() {
-    const email = String($('accountEmail')?.value || getEmail() || '').trim();
-    if (!email || !isBackendReady()) {
-      setStatus('Enter your email first, then request a reset link.', 'error');
-      return;
-    }
-
-    setStatus('Sending password reset email...', 'info');
-    try {
-      await DJ.remoteCatalog.resetPassword(email);
-      setStatus('Password reset email sent.', 'success');
-    } catch (error) {
-      setStatus(error.message || 'Password reset failed.', 'error');
-    }
-  }
-
-  async function signOut() {
-    if (!isBackendReady()) return;
-    setStatus('Signing out...', 'info');
-    try {
-      await DJ.remoteCatalog.signOut();
-      state.session = null;
-      renderAuthState();
-      setStatus('Signed out.', 'success');
-    } catch (error) {
-      setStatus(error.message || 'Could not sign out.', 'error');
-    }
+    loadProfileForm();
+    renderAccountSummary();
+    await refreshEmailPreferencesLink();
   }
 
   function bindEvents() {
-    $('accountSignInForm')?.addEventListener('submit', signIn);
-    $('accountCreateButton')?.addEventListener('click', createAccount);
-    $('accountResetButton')?.addEventListener('click', resetPassword);
-    $('accountSignOutButton')?.addEventListener('click', signOut);
     $('accountClearProfile')?.addEventListener('click', clearLocalProfile);
+    $('accountUseNameForShipping')?.addEventListener('click', useNameForShipping);
+    $('accountCopyProfile')?.addEventListener('click', copyBuyerSummary);
+    $('accountCopyShipping')?.addEventListener('click', copyShippingAddress);
+    $('accountExportProfile')?.addEventListener('click', exportBuyerDetails);
+    $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
+    $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);
+    const importButton = $('accountImportProfileButton');
+    const importInput = $('accountImportProfileInput');
+    importButton?.addEventListener('click', () => importInput?.click());
+    importInput?.addEventListener('change', async () => {
+      const file = importInput.files?.[0];
+      if (!file) return;
+      try {
+        await importBuyerDetails(file);
+        setStatus('Buyer details imported.', 'success');
+      } catch (error) {
+        setStatus(error.message || 'Unable to import buyer details.', 'error');
+      } finally {
+        importInput.value = '';
+      }
+    });
+
     const profileForm = $('accountProfileForm');
     profileForm?.addEventListener('submit', saveProfileForm);
     profileForm?.addEventListener('input', renderAccountSummary);
     profileForm?.addEventListener('change', renderAccountSummary);
-    window.addEventListener('dj:wishlistchange', renderAccountSummary);
+    window.addEventListener('dj:wishlistchange', () => {
+      renderAccountSummary();
+      scheduleWishlistPreviewRender();
+    });
+    window.addEventListener('pageshow', () => {
+      renderAccountSummary();
+      scheduleWishlistPreviewRender();
+    });
   }
 
-  async function init() {
+  function init() {
     bindEvents();
     loadProfileForm();
     renderAccountSummary();
     renderOrderHistory();
-    await hydrateSession();
+    renderWishlistPreview();
+    refreshEmailPreferencesLink();
   }
 
   if (document.readyState === 'loading') {

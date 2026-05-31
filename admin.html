@@ -14,7 +14,7 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260531b" rel="stylesheet"/>
+ <link href="styles.css?v=20260531c" rel="stylesheet"/>
 <link href="styles-mobile-overrides.css?v=20260531a" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
@@ -573,8 +573,14 @@
             <option value="Priced">
              Priced listings
             </option>
-            <option value="Unpriced">
+           <option value="Unpriced">
              No listed price
+            </option>
+            <option value="NeedsReview">
+             Needs review
+            </option>
+            <option value="Selected">
+             Selected listings
             </option>
            </select>
           </label>
@@ -615,6 +621,9 @@
            <span>
             Use checkboxes to update multiple active listings.
            </span>
+           <span id="existingSelectionMeta">
+            No listings selected.
+           </span>
           </div>
           <div class="admin-bulk-actions__controls">
            <button class="button-secondary" id="existingBulkSelectVisible" type="button">
@@ -630,11 +639,53 @@
            <button class="button-secondary" id="existingBulkApplyPriceChange" type="button">
             Apply Price Change
            </button>
+           <label for="existingBulkCondition">
+            Condition
+            <input id="existingBulkCondition" placeholder="Ungraded" type="text"/>
+           </label>
+           <button class="button-secondary" id="existingBulkApplyCondition" type="button">
+            Set Condition
+           </button>
+           <label for="existingBulkCategory">
+            Category
+            <select id="existingBulkCategory">
+             <option value="">
+              Choose
+             </option>
+             <option value="Baseball">
+              Baseball
+             </option>
+             <option value="Basketball">
+              Basketball
+             </option>
+             <option value="Football">
+              Football
+             </option>
+             <option value="Comics">
+              Comics
+             </option>
+             <option value="Collectibles">
+              Collectibles
+             </option>
+             <option value="Other">
+              Other
+             </option>
+            </select>
+           </label>
+           <button class="button-secondary" id="existingBulkApplyCategory" type="button">
+            Set Category
+           </button>
            <button class="button-secondary" id="existingBulkClearPhotos" type="button">
             Clear Photos
            </button>
            <button class="button-secondary" id="existingBulkResetOverrides" type="button">
             Reset Edits
+           </button>
+           <button class="button-secondary" id="existingExportVisibleCsv" type="button">
+            Export Visible CSV
+           </button>
+           <button class="button-secondary" id="existingExportSelectedCsv" type="button">
+            Export Selected CSV
            </button>
            <button class="button-ghost" id="existingBulkEndListings" type="button">
             End Selected
@@ -890,7 +941,7 @@
   </script>
 <script defer="" src="nav.js?v=20260530a">
   </script>
-  <script defer="" src="admin.js?v=20260531b">
+  <script defer="" src="admin.js?v=20260531c">
   </script>
 <script defer="" src="backend-admin.js?v=20260531a">
   </script>

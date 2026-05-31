@@ -12,7 +12,7 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/clubhouse-sign.webp?v=20260530a" rel="preload" type="image/webp"/>
-<link href="styles.css?v=20260531b" rel="stylesheet"/>
+<link href="styles.css?v=20260531c" rel="stylesheet"/>
 <link href="styles-mobile-overrides.css?v=20260531a" rel="stylesheet"/>
 <meta content="noindex,nofollow" name="robots"/>
 <meta content="#1f2fa3" name="theme-color"/>
@@ -93,6 +93,7 @@
 <form class="account-form account-profile-form" id="accountProfileForm">
 <div class="account-form-grid">
 <label>Full name<input autocomplete="name" id="account_fullName" type="text"/></label>
+<label>Email<input autocomplete="email" id="account_email" type="email"/></label>
 <label>Phone<input autocomplete="tel" id="account_phone" type="tel"/></label>
 <label>Preferred contact<select id="account_preferredContact"><option value="">Choose one</option><option>Email</option><option>Phone</option><option>Facebook</option></select></label>
 <label>Shipping name<input autocomplete="shipping name" id="account_shippingName" type="text"/></label>
@@ -105,6 +106,7 @@
 <label>Collecting notes<textarea id="account_notes" rows="4" placeholder="Players, teams, sets, trade interests, or condition preferences"></textarea></label>
 <div class="account-button-row">
 <button class="button" type="submit">Save Buyer Details</button>
+<button class="button-secondary" id="accountUseNameForShipping" type="button">Use Name for Shipping</button>
 <button class="button-secondary" id="accountClearProfile" type="button">Clear Details</button>
 </div>
 <p aria-live="polite" class="account-status" id="accountStatus"></p>
@@ -117,9 +119,28 @@
 <span>Wishlist items</span>
 <strong id="accountWishlistCount">0</strong>
 </div>
+<div class="account-mini-stat">
+<span>Estimated wishlist value</span>
+<strong id="accountWishlistTotal">$0</strong>
+</div>
+<div class="account-readiness">
+<div class="account-readiness-head">
+<span>Checkout readiness</span>
+<strong id="accountProfileCompletionLabel">0%</strong>
+</div>
+<div class="account-progress-track" aria-hidden="true"><span id="accountProfileCompletionBar"></span></div>
+</div>
+<div class="account-checklist" id="accountReadinessChecklist" aria-label="Buyer detail checklist"></div>
 <p class="account-muted" id="accountProfileSavedAt">No saved buyer details yet.</p>
+<p class="account-muted" id="accountProfileStatus">Add buyer details once, then reuse them when asking about cards.</p>
 <div class="account-summary-tools">
 <a class="button" href="wishlist.html">Open Wishlist</a>
+<a class="button-secondary" id="accountEmailPreferences" href="mailto:contact@djshouseofcards-comics.com">Email DJ</a>
+<button class="button-secondary" id="accountCopyProfile" type="button">Copy Buyer Summary</button>
+<button class="button-secondary" id="accountCopyShipping" type="button">Copy Shipping Address</button>
+<button class="button-secondary" id="accountExportProfile" type="button">Export Details</button>
+<button class="button-secondary" id="accountImportProfileButton" type="button">Import Details</button>
+<input accept="application/json" aria-hidden="true" class="sr-only" id="accountImportProfileInput" tabindex="-1" type="file"/>
 </div>
 <div class="account-link-grid">
 <a class="button-secondary" href="sports-cards.html">Browse Sports Cards</a>
@@ -127,6 +148,19 @@
 <a class="button-secondary" href="collectibles.html">Browse Collectibles</a>
 </div>
 </aside>
+<article class="account-panel account-wishlist-card">
+<div>
+<span class="account-eyebrow">Saved preview</span>
+<h2>Wishlist snapshot</h2>
+<p class="account-muted" id="accountWishlistPreviewMeta">Saved items from this browser will show here.</p>
+</div>
+<div class="account-wishlist-preview" id="accountWishlistPreview"></div>
+</article>
+<article class="account-panel account-orders-card">
+<span class="account-eyebrow">Recent activity</span>
+<h2>Checkout activity</h2>
+<div class="account-orders" id="accountOrders"></div>
+</article>
 </div>
 </section>
 </main>
@@ -155,11 +189,8 @@
 </div>
 </footer>
 <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-<script defer="" src="backend-config.js?v=20260525a"></script>
-<script defer="" src="supabase-client.js?v=20260525a"></script>
-<script defer="" src="payments.js?v=20260528a"></script>
 <script defer="" src="core.js?v=20260530a"></script>
 <script defer="" src="nav.js?v=20260530a"></script>
-<script defer="" src="account.js?v=20260530a"></script>
+<script defer="" src="account.js?v=20260531a"></script>
 </body>
 </html>

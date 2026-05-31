@@ -9129,7 +9129,6 @@ body.dark-mode .account-panel {
   box-shadow:0 20px 48px rgba(0,0,0,.26);
 }
 
-.account-auth-card,
 .account-summary-card {
   grid-column:1;
 }
@@ -9206,7 +9205,7 @@ body.dark-mode .account-form textarea {
 .account-empty-actions,
 .account-link-grid {
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:.7rem;
 }
 
@@ -9244,7 +9243,6 @@ body.dark-mode .account-status[data-tone="error"] {
   color:#ff7080;
 }
 
-.account-session-card,
 .account-empty-state,
 .account-mini-stat,
 .account-order-card {
@@ -9256,7 +9254,6 @@ body.dark-mode .account-status[data-tone="error"] {
   background:rgba(31,47,163,.06);
 }
 
-body.dark-mode .account-session-card,
 body.dark-mode .account-empty-state,
 body.dark-mode .account-mini-stat,
 body.dark-mode .account-order-card {
@@ -9264,7 +9261,6 @@ body.dark-mode .account-order-card {
   border-color:rgba(255,255,255,.12);
 }
 
-.account-session-card strong,
 .account-mini-stat strong {
   font-size:1.7rem;
 }
@@ -9325,7 +9321,7 @@ body.dark-mode .account-order-card {
 
 .account-summary-tools {
   display:grid;
-  grid-template-columns:1fr;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:.68rem;
 }
 
@@ -9349,6 +9345,123 @@ body.dark-mode .account-readiness {
 
 body.dark-mode .account-progress-track {
   background:rgba(255,255,255,.12);
+}
+
+.account-checklist {
+  display:grid;
+  gap:.45rem;
+}
+
+.account-checklist-item {
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  color:var(--muted);
+  font-size:.88rem;
+  font-weight:900;
+}
+
+.account-checklist-item span {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:32px;
+  height:26px;
+  border-radius:999px;
+  background:rgba(16,27,57,.08);
+  color:var(--muted);
+  font-size:.72rem;
+  letter-spacing:.04em;
+}
+
+.account-checklist-item.is-complete {
+  color:var(--text);
+}
+
+.account-checklist-item.is-complete span {
+  background:rgba(31,157,88,.14);
+  color:#157a43;
+}
+
+.account-wishlist-card,
+.account-orders-card {
+  align-self:stretch;
+}
+
+.account-wishlist-preview {
+  display:grid;
+  gap:.58rem;
+}
+
+.account-wishlist-row {
+  display:grid;
+  grid-template-columns:62px minmax(0,1fr) auto;
+  align-items:center;
+  gap:.72rem;
+  min-width:0;
+  padding:.62rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:16px;
+  background:rgba(31,47,163,.055);
+  color:var(--text);
+  text-decoration:none;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+
+.account-wishlist-row:hover,
+.account-wishlist-row:focus-visible {
+  transform:translateY(-1px);
+  border-color:rgba(31,47,163,.28);
+  box-shadow:0 12px 24px rgba(16,27,57,.1);
+}
+
+.account-wishlist-row img {
+  width:62px;
+  height:62px;
+  object-fit:cover;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#f6f8fc;
+}
+
+.account-wishlist-row span {
+  display:grid;
+  min-width:0;
+  gap:.18rem;
+}
+
+.account-wishlist-row strong,
+.account-wishlist-row small {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.account-wishlist-row small {
+  color:var(--muted);
+  font-weight:800;
+}
+
+.account-wishlist-row b {
+  color:var(--brand-red);
+  font-size:.94rem;
+  white-space:nowrap;
+}
+
+.account-view-all-link {
+  justify-self:start;
+  margin-top:.2rem;
+}
+
+body.dark-mode .account-checklist-item span,
+body.dark-mode .account-wishlist-row {
+  background:rgba(255,255,255,.055);
+  border-color:rgba(255,255,255,.12);
+}
+
+body.dark-mode .account-checklist-item.is-complete span {
+  background:rgba(68,217,138,.16);
+  color:#65e7a3;
 }
 
 /* Offline recovery page --------------------------------------------------- */
@@ -9470,7 +9583,6 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
   #backendMainImagePreviewWrap,
   .account-grid,
   .account-form-grid,
-  .account-auth-card,
   .account-summary-card,
   .account-profile-card,
   .account-orders-card {
@@ -9483,6 +9595,24 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
   .account-panel,
   .offline-panel {
     border-radius:22px;
+  }
+
+  .account-summary-tools,
+  .account-wishlist-row {
+    grid-template-columns:1fr;
+  }
+
+  .account-wishlist-row {
+    grid-template-columns:54px minmax(0,1fr);
+  }
+
+  .account-wishlist-row img {
+    width:54px;
+    height:54px;
+  }
+
+  .account-wishlist-row b {
+    grid-column:2;
   }
 
   .offline-panel {
@@ -9594,7 +9724,8 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
 }
 
 .admin-listing-controls select,
-.admin-bulk-actions__controls input {
+.admin-bulk-actions__controls input,
+.admin-bulk-actions__controls select {
   width:100%;
   min-height:42px;
   border:1px solid var(--border);
@@ -9659,6 +9790,11 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
   line-height:1.25;
 }
 
+#existingSelectionMeta {
+  color:var(--text);
+  font-weight:800;
+}
+
 .admin-bulk-actions__controls {
   display:flex;
   flex-wrap:wrap;
@@ -9667,7 +9803,7 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
 }
 
 .admin-bulk-actions__controls label {
-  width:104px;
+  width:118px;
 }
 
 .admin-bulk-actions button:disabled {
@@ -9776,6 +9912,37 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
   line-height:1.28;
 }
 
+.admin-listing-badges {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.28rem;
+  margin-top:.42rem;
+}
+
+.admin-listing-badge {
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:.22rem .48rem;
+  border-radius:999px;
+  background:rgba(31,47,163,.08);
+  color:var(--brand-blue);
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.admin-listing-badge--warning {
+  background:rgba(239,24,35,.1);
+  color:var(--brand-red);
+}
+
+.admin-listing-badge--muted {
+  background:rgba(16,27,57,.08);
+  color:var(--muted);
+}
+
 .admin-listing-cell strong {
   display:block;
   color:var(--text);
@@ -9790,7 +9957,11 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
   gap:.38rem;
 }
 
-.admin-listing-cell--actions button {
+.admin-listing-cell--actions button,
+.admin-listing-cell--actions a {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   min-height:34px;
   padding:.48rem .62rem;
   border-radius:12px;
@@ -9806,7 +9977,8 @@ body.dark-mode .admin-listing-row {
 }
 
 body.dark-mode .admin-listing-controls select,
-body.dark-mode .admin-bulk-actions__controls input {
+body.dark-mode .admin-bulk-actions__controls input,
+body.dark-mode .admin-bulk-actions__controls select {
   background:rgba(255,255,255,.07);
   border-color:rgba(255,255,255,.14);
   color:#f8fbff;
