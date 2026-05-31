@@ -437,7 +437,7 @@
   }
 
   .brand-script {
-    font-size:clamp(1.02rem,4.8vw,1.3rem) !important;
+    font-size:1.16rem !important;
     line-height:1.02;
     white-space:nowrap;
   }
@@ -445,7 +445,7 @@
   .brand-kicker {
     display:block !important;
     max-width:none;
-    font-size:clamp(.38rem,1.7vw,.56rem) !important;
+    font-size:.48rem !important;
     line-height:1.08;
     letter-spacing:.035em !important;
     white-space:nowrap;
@@ -590,7 +590,7 @@
   .page-title,
   .section-title {
     max-width:100%;
-    font-size:clamp(1.85rem,9.5vw,2.7rem);
+    font-size:2.2rem;
     line-height:1.03;
     overflow-wrap:normal;
   }
@@ -745,11 +745,11 @@
   }
 
   .brand-script {
-    font-size:clamp(.98rem,5vw,1.14rem) !important;
+    font-size:1.06rem !important;
   }
 
   .brand-kicker {
-    font-size:clamp(.34rem,1.75vw,.48rem) !important;
+    font-size:.42rem !important;
     letter-spacing:.01em !important;
   }
 
@@ -772,18 +772,18 @@
   }
 
   .footer-logo-line .brand-script {
-    font-size:clamp(1rem,5vw,1.18rem) !important;
+    font-size:1.08rem !important;
   }
 
   .footer-logo-line .brand-kicker {
-    font-size:clamp(.38rem,1.85vw,.5rem) !important;
+    font-size:.44rem !important;
     letter-spacing:.025em !important;
   }
 
   .hero-title,
   .page-title,
   .section-title {
-    font-size:clamp(1.75rem,9vw,2.42rem);
+    font-size:2.08rem;
     line-height:1.05;
   }
 
@@ -1221,11 +1221,11 @@ input.sr-only[type="file"] {
   }
 
   .footer-logo-line .brand-script {
-    font-size:clamp(1.04rem,5.4vw,1.24rem) !important;
+    font-size:1.12rem !important;
   }
 
   .footer-logo-line .brand-kicker {
-    font-size:clamp(.38rem,1.9vw,.5rem) !important;
+    font-size:.44rem !important;
   }
 
   .footer-brand p {
@@ -1429,11 +1429,11 @@ body.dark-mode {
 }
 
 .product-card h4 {
-  letter-spacing:-.018em;
+  letter-spacing:0;
 }
 
 .product-card .product-price {
-  letter-spacing:-.015em;
+  letter-spacing:0;
 }
 
 .product-card .product-meta-pill,
@@ -1630,9 +1630,9 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
   body[data-page="admin"] .page-title,
   body[data-page="contact"] .page-title,
   body[data-page="wishlist"] .page-title {
-    font-size:clamp(1.72rem,8.25vw,2.36rem);
+    font-size:2rem;
     line-height:1.08;
-    letter-spacing:-.035em;
+    letter-spacing:0;
   }
 
   body[data-page="admin"] .page-hero-card,
@@ -1642,7 +1642,7 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
 
   body[data-page="admin"] .page-hero-card p,
   body[data-page="wishlist"] .page-hero-card p {
-    font-size:clamp(.98rem,4vw,1.08rem);
+    font-size:1.02rem;
   }
 
   body[data-page="wishlist"] #wishlistContainer {

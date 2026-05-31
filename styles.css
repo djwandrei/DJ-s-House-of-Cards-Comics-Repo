@@ -313,9 +313,9 @@ body.dark-mode input,body.dark-mode select,body.dark-mode textarea {
 }
 .hero-title,.page-title,.section-title {
   margin:.9rem 0 .55rem;
-  font-size:clamp(2.4rem, 4.8vw, 4.35rem);
+  font-size:3.35rem;
   line-height:.98;
-  letter-spacing:-.03em;
+  letter-spacing:0;
   font-weight:800
 }
 .script-accent {
@@ -730,7 +730,7 @@ body.dark-mode .product-badge {
 .stat-number {
   margin:0;
   font-family:"Bebas Neue",sans-serif;
-  font-size:clamp(2rem, 4vw, 3.25rem);
+  font-size:2.75rem;
   letter-spacing:.06em;
   color:var(--brand-blue)
 }
@@ -1326,7 +1326,7 @@ main:focus {
   min-height:320px
 }
 .department-split-grid .category-card h3 {
-  font-size:clamp(1.8rem, 2.8vw, 2.4rem)
+  font-size:2.1rem
 }
 .department-split-note {
   margin-top:1rem;
@@ -1631,7 +1631,7 @@ body {
   pointer-events:none
 }
 .page-title {
-  font-size:clamp(2rem, 4vw, 3rem);
+  font-size:2.5rem;
   line-height:.96;
   letter-spacing:.01em
 }
@@ -1917,7 +1917,7 @@ body.dark-mode .admin-stat-card {
 .admin-stat-value {
   display:block;
   margin-top:.45rem;
-  font-size:clamp(1.9rem, 4vw, 2.5rem);
+  font-size:2.2rem;
   line-height:1
 }
 .admin-overview-copy,.admin-stat-card p {
@@ -3707,7 +3707,7 @@ body.dark-mode .product-card {
     font-size:1.08rem
   }
   .page-title,.section-title {
-    font-size:clamp(1.9rem,10vw,2.5rem)
+    font-size:2.15rem
   }
   .hero-copy,.hero-brand,.page-hero-card,.panel,.contact-card,.brand-card,.category-card,.story-card,.stat-card,.feature-card {
     padding:1rem
@@ -3822,7 +3822,7 @@ body.dark-mode .custom-item-card--editable.is-selected h4{color:#fff}
 }
 .backend-summary-value {
   display:block;
-  font-size:clamp(1.35rem,3vw,1.9rem);
+  font-size:1.6rem;
   line-height:1.05;
 }
 .backend-setup-callout {
@@ -4631,7 +4631,7 @@ body.dark-mode .contact-quick-actions .button-secondary.is-selected {
 
 .wishlist-actions-panel h2 {
   margin:0;
-  font-size:clamp(1.35rem,2.3vw,1.9rem);
+  font-size:1.6rem;
   line-height:1.05;
 }
 
@@ -5131,7 +5131,7 @@ body.dark-mode .catalog-support-kicker {
   margin:0;
   font-size:.97rem;
   line-height:1.28;
-  letter-spacing:-.01em;
+  letter-spacing:0;
   min-height:0;
   display:block;
   -webkit-line-clamp:unset;
@@ -6351,7 +6351,7 @@ body.dark-mode .footer-action-count {
 .filter-insight-value {
   font-size:1.08rem;
   line-height:1.15;
-  letter-spacing:-.02em;
+  letter-spacing:0;
 }
 
 .filter-insight-meta {
@@ -6388,7 +6388,7 @@ body.dark-mode .footer-action-count {
 .catalog-hero-stat__value {
   font-size:1.28rem;
   line-height:1.08;
-  letter-spacing:-.03em;
+  letter-spacing:0;
 }
 
 .catalog-hero-stat__meta,
@@ -7047,7 +7047,7 @@ body.dark-mode .catalog-sidebar-dock-toggle {
   color:var(--text);
   font-size:1.04rem;
   font-weight:800;
-  letter-spacing:-.01em;
+  letter-spacing:0;
   text-transform:none;
 }
 
@@ -8236,7 +8236,7 @@ body[data-page="collectibles"] {
 .about-archive-panel summary span {
   display:block;
   grid-column:1;
-  font-size:clamp(1.04rem,2vw,1.28rem);
+  font-size:1.16rem;
 }
 
 .about-archive-panel summary small {
@@ -8417,7 +8417,7 @@ body[data-page="collectibles"] {
 .legacy-blog-original .body_header_blue {
   margin:.1rem 0;
   color:var(--text);
-  font-size:clamp(1.22rem,2.2vw,1.7rem);
+  font-size:1.45rem;
   font-weight:900;
   line-height:1.14;
 }
@@ -8850,7 +8850,7 @@ body:not(.dark-mode) .customer-auth-panel {
 }
 
 .customer-auth-panel h2 {
-  font-size: clamp(1.7rem, 5vw, 2.5rem);
+  font-size:2.1rem;
   line-height: .98;
   margin: 0 3rem .75rem 0;
 }
@@ -9197,7 +9197,7 @@ body.dark-mode .account-panel {
 
 .account-panel h2 {
   margin:0;
-  font-size:clamp(1.45rem,3vw,2.15rem);
+  font-size:1.8rem;
   line-height:1.02;
 }
 
@@ -9308,7 +9308,7 @@ body.dark-mode .account-order-card {
 
 .account-session-card strong,
 .account-mini-stat strong {
-  font-size:clamp(1.4rem,3.5vw,2rem);
+  font-size:1.7rem;
 }
 
 .account-orders {

@@ -1220,6 +1220,10 @@ window.DJ = window.DJ || {};
       product.year || 'Year not listed',
       product.team || 'No team / publisher'
     ].filter(Boolean).join(' | ');
+
+    // Match the scan pattern of eBay's active listings: thumbnail, item,
+    // price, status, then action buttons. That keeps bulk edits faster than
+    // card-style blocks when the catalog is long.
     return `
       <article class="admin-listing-row admin-listing-card${isSelected ? ' is-selected' : ''}" data-existing-id="${product.id}" aria-current="${isSelected ? 'true' : 'false'}">
         <div class="admin-listing-cell admin-listing-cell--photo">

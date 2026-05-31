@@ -522,6 +522,9 @@ window.DJ = window.DJ || {};
   }
 
   function renderModalFactStrip(product = {}, galleryCount = 1, displayPrice = DJ.displayPrice(product)) {
+    // Keep condition/grade as the single source of truth in the quick facts.
+    // The meta grid below intentionally skips it so modals do not show
+    // duplicated values such as "Ungraded | Ungraded | Guide range listed".
     const facts = [
       {
         label: getProductPriceLabel(product),
@@ -562,6 +565,8 @@ window.DJ = window.DJ || {};
   function renderModalMetaGrid(product = {}) {
     const contextValue = getProductPrimaryContext(product);
     const playerAthlete = String(product.playerAthlete || '').trim();
+    // These are context fields only; price and condition live in the fact strip
+    // where shoppers can scan them quickly without repeated labels.
     const entries = [
       ['Year', product.yearLabel && product.yearLabel !== 'Year not listed' ? product.yearLabel : 'Not listed'],
       [getProductContextLabel(product), contextValue],
