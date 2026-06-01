@@ -80,7 +80,8 @@ window.DJ = window.DJ || {};
       product.playerAthlete,
       product.sourcePage,
       product.condition,
-      product.year
+      product.year,
+      product.isFeatured ? 'featured' : 'not featured'
     ].join(' ').toLowerCase();
   }
 
@@ -995,6 +996,8 @@ window.DJ = window.DJ || {};
     if (status === 'NoGallery') return !(Array.isArray(product.imageGallery) && product.imageGallery.length);
     if (status === 'Priced') return Number.isFinite(DJ.numericPrice(product));
     if (status === 'Unpriced') return !Number.isFinite(DJ.numericPrice(product));
+    if (status === 'Featured') return Boolean(product.isFeatured);
+    if (status === 'NotFeatured') return !product.isFeatured;
     if (status === 'NeedsReview') return productNeedsListingReview(product);
     if (status === 'Selected') return existingState.selectedIds.has(Number(product.id));
     return true;
@@ -1221,24 +1224,9 @@ window.DJ = window.DJ || {};
     return uniqueParts.join(' | ') || 'Condition not listed';
   }
 
-  function getProductListingPath(product = {}) {
-    const category = String(product.category || '').toLowerCase();
-    const page = category.includes('baseball')
-      ? 'baseball-cards.html'
-      : category.includes('basketball')
-        ? 'basketball-cards.html'
-        : category.includes('football')
-          ? 'football-cards.html'
-          : category.includes('comic')
-            ? 'comics.html'
-            : category.includes('collect')
-              ? 'collectibles.html'
-              : 'shop.html';
-    return `${page}?item=${encodeURIComponent(String(product.id || ''))}`;
-  }
-
   function getExistingListingBadges(product = {}) {
     const badges = [];
+    if (product.isFeatured) badges.push({ label: 'Featured', tone: 'success' });
     if (productHasLocalOverride(product.id)) badges.push({ label: 'Edited', tone: 'accent' });
     if (!hasMainPhoto(product)) badges.push({ label: 'No main photo', tone: 'warning' });
     if (!(Array.isArray(product.imageGallery) && product.imageGallery.length)) badges.push({ label: 'No gallery', tone: 'muted' });
@@ -1270,6 +1258,7 @@ window.DJ = window.DJ || {};
     document.getElementById('existingName').value = product.name || '';
     document.getElementById('existingCategory').value = product.category || 'Other';
     document.getElementById('existingTeam').value = product.team || '';
+    document.getElementById('existingIsFeatured').value = product.isFeatured ? 'true' : 'false';
     document.getElementById('existingYear').value = product.year || '';
     document.getElementById('existingCondition').value = product.condition || '';
     document.getElementById('existingPrice').value = product.price ?? '';
@@ -1321,7 +1310,7 @@ window.DJ = window.DJ || {};
     const isBulkSelected = existingState.selectedIds.has(Number(product.id));
     const conditionLabel = formatAdminCondition(product.condition);
     const sku = getExistingListingSku(product);
-    const listingPath = getProductListingPath(product);
+    const listingPath = DJ.productPageUrl(product);
     const listingContext = [
       product.year || 'Year not listed',
       product.team || 'No team / publisher'
@@ -1473,21 +1462,30 @@ window.DJ = window.DJ || {};
     const noPhotoCount = products.filter((product) => !hasMainPhoto(product)).length;
     const noGalleryCount = products.filter((product) => !(Array.isArray(product.imageGallery) && product.imageGallery.length)).length;
     const needsReviewCount = products.filter(productNeedsListingReview).length;
+    const featuredCount = products.filter((product) => product.isFeatured).length;
 
     summary.innerHTML = [
-      ['Shown', visible],
-      ['Matches', total],
-      ['Edited', editedCount],
-      ['No main photo', noPhotoCount],
-      ['No gallery', noGalleryCount],
-      ['Needs review', needsReviewCount],
-      ['Ended', hiddenCount]
-    ].map(([label, value]) => `
-      <span class="admin-listing-summary-chip">
+      { label: 'Shown', value: visible, status: null },
+      { label: 'Matches', value: total, status: null },
+      { label: 'Featured', value: featuredCount, status: 'Featured' },
+      { label: 'Edited', value: editedCount, status: 'Edited' },
+      { label: 'No main photo', value: noPhotoCount, status: 'NoPhoto' },
+      { label: 'No gallery', value: noGalleryCount, status: 'NoGallery' },
+      { label: 'Needs review', value: needsReviewCount, status: 'NeedsReview' },
+      { label: 'Ended', value: hiddenCount, status: null }
+    ].map(({ label, value, status }) => {
+      const isActive = status && existingState.status === status;
+      const tagName = status ? 'button' : 'span';
+      const attributes = status
+        ? ` type="button" data-existing-summary-filter="${DJ.escapeHtml(status)}" aria-pressed="${isActive ? 'true' : 'false'}"`
+        : '';
+      return `
+      <${tagName} class="admin-listing-summary-chip${isActive ? ' is-active' : ''}"${attributes}>
         <b>${DJ.escapeHtml(String(value))}</b>
         ${DJ.escapeHtml(label)}
-      </span>
-    `).join('');
+      </${tagName}>
+    `;
+    }).join('');
   }
 
   function updateExistingBulkControls() {
@@ -1497,14 +1495,18 @@ window.DJ = window.DJ || {};
     const selectedButtons = [
       'existingBulkClearSelection',
       'existingBulkApplyPriceChange',
+      'existingBulkApplyPriceLabel',
       'existingBulkApplyCondition',
       'existingBulkApplyCategory',
+      'existingBulkApplyFeatured',
       'existingBulkClearPhotos',
       'existingBulkResetOverrides',
       'existingBulkEndListings',
       'existingExportSelectedCsv'
     ];
     const selectVisibleButton = document.getElementById('existingBulkSelectVisible');
+    const selectNeedsReviewButton = document.getElementById('existingBulkSelectNeedsReview');
+    const selectNoPhotoButton = document.getElementById('existingBulkSelectNoPhoto');
     const exportVisibleButton = document.getElementById('existingExportVisibleCsv');
     const visibleSet = new Set(existingState.visibleIds);
     const selectedVisibleCount = [...existingState.selectedIds].filter((id) => visibleSet.has(id)).length;
@@ -1528,6 +1530,12 @@ window.DJ = window.DJ || {};
     if (selectVisibleButton) {
       selectVisibleButton.disabled = !existingState.visibleIds.length;
       selectVisibleButton.textContent = allVisibleSelected ? 'Unselect Visible' : 'Select Visible';
+    }
+    if (selectNeedsReviewButton) {
+      selectNeedsReviewButton.disabled = !getEffectiveBaseProducts().some(productNeedsListingReview);
+    }
+    if (selectNoPhotoButton) {
+      selectNoPhotoButton.disabled = !getEffectiveBaseProducts().some((product) => !hasMainPhoto(product));
     }
     if (exportVisibleButton) {
       exportVisibleButton.disabled = !existingState.visibleIds.length;
@@ -1577,12 +1585,42 @@ window.DJ = window.DJ || {};
     updateExistingBulkControls();
   }
 
+  function selectExistingListingsByPredicate(predicate, successMessage) {
+    const matches = getSortedEffectiveBaseProducts()
+      .filter((product) => predicate(product))
+      .map((product) => Number(product.id))
+      .filter(Number.isFinite);
+
+    existingState.selectedIds = new Set(matches);
+    if (existingState.status === 'Selected') {
+      renderExistingListings();
+    } else {
+      updateExistingBulkControls();
+    }
+    DJ.setStatus('adminStatus', matches.length ? successMessage(matches.length) : 'No matching listings found.', matches.length ? 'success' : 'info');
+  }
+
+  function selectNeedsReviewListings() {
+    selectExistingListingsByPredicate(
+      productNeedsListingReview,
+      (count) => `${formatCountLabel(count, 'listing')} needing review selected.`
+    );
+  }
+
+  function selectNoPhotoListings() {
+    selectExistingListingsByPredicate(
+      (product) => !hasMainPhoto(product),
+      (count) => `${formatCountLabel(count, 'listing')} without a main photo selected.`
+    );
+  }
+
   function getSelectedExistingProducts() {
     const selectedIds = new Set([...existingState.selectedIds].map(Number));
     return getEffectiveBaseProducts().filter((product) => selectedIds.has(Number(product.id)));
   }
 
   function csvEscape(value = '') {
+    if (typeof DJ.csvEscape === 'function') return DJ.csvEscape(value);
     const text = String(value ?? '');
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   }
@@ -1602,6 +1640,7 @@ window.DJ = window.DJ || {};
       'Gallery Count',
       'Photo Host URL',
       'Storefront URL',
+      'Featured',
       'Edited Locally',
       'Needs Review'
     ];
@@ -1621,7 +1660,8 @@ window.DJ = window.DJ || {};
       product.image || '',
       Array.isArray(product.imageGallery) ? product.imageGallery.length : 0,
       product.photoHostPageUrl || '',
-      `${origin}/${getProductListingPath(product)}`.replace(/([^:]\/)\/+/g, '$1'),
+      `${origin}/${DJ.productPageUrl(product)}`.replace(/([^:]\/)\/+/g, '$1'),
+      product.isFeatured ? 'Yes' : 'No',
       productHasLocalOverride(product.id) ? 'Yes' : 'No',
       productNeedsListingReview(product) ? 'Yes' : 'No'
     ]);
@@ -1746,6 +1786,28 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function bulkApplyPriceLabel() {
+    const input = document.getElementById('existingBulkPriceLabel');
+    const priceLabel = String(input?.value || '').trim();
+    const products = getSelectedExistingProducts();
+    if (!products.length) return;
+    if (!priceLabel) {
+      DJ.setStatus('adminStatus', 'Enter the price label to apply to the selected listings.', 'error');
+      input?.focus();
+      return;
+    }
+    if (!window.confirm(`Set display price to "${priceLabel}" for ${formatCountLabel(products.length, 'selected listing')}?`)) return;
+
+    const patches = new Map(products.map((product) => [Number(product.id), { priceLabel }]));
+    if (saveBulkExistingOverrides(patches)) {
+      DJ.setStatus('adminStatus', `Display price updated for ${formatCountLabel(products.length, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
   function bulkApplyCondition() {
     const input = document.getElementById('existingBulkCondition');
     const condition = String(input?.value || '').trim();
@@ -1783,6 +1845,29 @@ window.DJ = window.DJ || {};
     const patches = new Map(products.map((product) => [Number(product.id), { category }]));
     if (saveBulkExistingOverrides(patches)) {
       DJ.setStatus('adminStatus', `Category updated for ${formatCountLabel(products.length, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
+  function bulkApplyFeaturedMode() {
+    const select = document.getElementById('existingBulkFeaturedMode');
+    const value = String(select?.value || '').trim();
+    const products = getSelectedExistingProducts();
+    if (!products.length) return;
+    if (!value) {
+      DJ.setStatus('adminStatus', 'Choose Featured or Not featured before applying it to selected listings.', 'error');
+      select?.focus();
+      return;
+    }
+    const isFeatured = value === 'true';
+    if (!window.confirm(`${isFeatured ? 'Feature' : 'Remove featured status from'} ${formatCountLabel(products.length, 'selected listing')}?`)) return;
+
+    const patches = new Map(products.map((product) => [Number(product.id), { isFeatured }]));
+    if (saveBulkExistingOverrides(patches)) {
+      DJ.setStatus('adminStatus', `${formatCountLabel(products.length, 'listing')} ${isFeatured ? 'marked featured' : 'removed from featured'}.`, 'success');
       renderExistingListings();
       if (existingState.editingId) populateExistingListingForm(existingState.editingId);
     } else {
@@ -1890,6 +1975,21 @@ window.DJ = window.DJ || {};
       });
     }
 
+    const summary = document.getElementById('existingListingsSummary');
+    if (summary && summary.dataset.bound !== 'true') {
+      summary.dataset.bound = 'true';
+      summary.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest('[data-existing-summary-filter]');
+        if (!button) return;
+        const status = button.getAttribute('data-existing-summary-filter') || 'All';
+        existingState.status = existingState.status === status ? 'All' : status;
+        const statusFilter = document.getElementById('existingListingStatusFilter');
+        if (statusFilter) statusFilter.value = existingState.status;
+        renderExistingListings();
+      });
+    }
+
     const listings = document.getElementById('existingListingsList');
     if (listings && listings.dataset.bound !== 'true') {
       listings.dataset.bound = 'true';
@@ -1976,13 +2076,19 @@ window.DJ = window.DJ || {};
     const sortSelect = document.getElementById('existingListingSort');
     const resetFiltersButton = document.getElementById('resetExistingListingFilters');
     const bulkSelectVisibleButton = document.getElementById('existingBulkSelectVisible');
+    const bulkSelectNeedsReviewButton = document.getElementById('existingBulkSelectNeedsReview');
+    const bulkSelectNoPhotoButton = document.getElementById('existingBulkSelectNoPhoto');
     const bulkClearSelectionButton = document.getElementById('existingBulkClearSelection');
     const bulkApplyPriceButton = document.getElementById('existingBulkApplyPriceChange');
+    const bulkApplyPriceLabelButton = document.getElementById('existingBulkApplyPriceLabel');
     const bulkApplyConditionButton = document.getElementById('existingBulkApplyCondition');
     const bulkApplyCategoryButton = document.getElementById('existingBulkApplyCategory');
+    const bulkApplyFeaturedButton = document.getElementById('existingBulkApplyFeatured');
     const bulkPriceInput = document.getElementById('existingBulkPricePercent');
+    const bulkPriceLabelInput = document.getElementById('existingBulkPriceLabel');
     const bulkConditionInput = document.getElementById('existingBulkCondition');
     const bulkCategorySelect = document.getElementById('existingBulkCategory');
+    const bulkFeaturedSelect = document.getElementById('existingBulkFeaturedMode');
     const bulkClearPhotosButton = document.getElementById('existingBulkClearPhotos');
     const bulkResetOverridesButton = document.getElementById('existingBulkResetOverrides');
     const bulkEndListingsButton = document.getElementById('existingBulkEndListings');
@@ -2060,18 +2166,24 @@ window.DJ = window.DJ || {};
       if (statusFilter) statusFilter.value = 'All';
       if (sortSelect) sortSelect.value = 'name-asc';
       if (bulkPriceInput) bulkPriceInput.value = '';
+      if (bulkPriceLabelInput) bulkPriceLabelInput.value = '';
       if (bulkConditionInput) bulkConditionInput.value = '';
       if (bulkCategorySelect) bulkCategorySelect.value = '';
+      if (bulkFeaturedSelect) bulkFeaturedSelect.value = '';
       handleExistingSearch.cancel?.();
       renderExistingListings();
       DJ.setStatus('adminStatus', 'Existing listing filters cleared.', 'info');
     });
 
     bulkSelectVisibleButton?.addEventListener('click', selectVisibleExistingListings);
+    bulkSelectNeedsReviewButton?.addEventListener('click', selectNeedsReviewListings);
+    bulkSelectNoPhotoButton?.addEventListener('click', selectNoPhotoListings);
     bulkClearSelectionButton?.addEventListener('click', () => clearExistingSelection('Selection cleared.'));
     bulkApplyPriceButton?.addEventListener('click', bulkApplyPricePercent);
+    bulkApplyPriceLabelButton?.addEventListener('click', bulkApplyPriceLabel);
     bulkApplyConditionButton?.addEventListener('click', bulkApplyCondition);
     bulkApplyCategoryButton?.addEventListener('click', bulkApplyCategory);
+    bulkApplyFeaturedButton?.addEventListener('click', bulkApplyFeaturedMode);
     bulkClearPhotosButton?.addEventListener('click', bulkClearMainPhotos);
     bulkResetOverridesButton?.addEventListener('click', bulkResetOverrides);
     bulkEndListingsButton?.addEventListener('click', bulkEndListings);
@@ -2203,6 +2315,7 @@ window.DJ = window.DJ || {};
         name: document.getElementById('existingName').value.trim(),
         category: document.getElementById('existingCategory').value.trim() || 'Other',
         team: document.getElementById('existingTeam').value.trim(),
+        isFeatured: document.getElementById('existingIsFeatured').value === 'true',
         year: yearInput.value === '' ? null : Number(yearInput.value),
         condition: document.getElementById('existingCondition').value.trim(),
         price: priceInput.value === '' ? null : Number(priceInput.value),

@@ -25,6 +25,10 @@ window.DJ = window.DJ || {};
     'email',
     'phone',
     'preferredContact',
+    'favoritePlayers',
+    'favoriteTeams',
+    'budgetRange',
+    'preferredCondition',
     'shippingName',
     'addressLine1',
     'addressLine2',
@@ -37,6 +41,9 @@ window.DJ = window.DJ || {};
     'fullName',
     'email',
     'preferredContact',
+    'favoritePlayers',
+    'favoriteTeams',
+    'budgetRange',
     'shippingName',
     'addressLine1',
     'city',
@@ -49,6 +56,10 @@ window.DJ = window.DJ || {};
     email: 'Email',
     phone: 'Phone',
     preferredContact: 'Preferred contact',
+    favoritePlayers: 'Favorite players / characters',
+    favoriteTeams: 'Favorite teams / titles',
+    budgetRange: 'Budget range',
+    preferredCondition: 'Preferred condition',
     shippingName: 'Shipping name',
     addressLine1: 'Address line 1',
     addressLine2: 'Address line 2',
@@ -183,24 +194,8 @@ window.DJ = window.DJ || {};
       profile.shippingName || profile.fullName,
       profile.addressLine1,
       profile.addressLine2,
-      [profile.city, profile.state, profile.postalCode].filter(Boolean).join(', ').replace(', ', ', ')
+      [profile.city, profile.state, profile.postalCode].filter(Boolean).join(', ')
     ].map((line) => normalizeProfileValue('addressLine1', line)).filter(Boolean).join('\n');
-  }
-
-  function buildProductUrl(product = {}) {
-    const category = String(product.category || '').toLowerCase();
-    const page = category.includes('baseball')
-      ? 'baseball-cards.html'
-      : category.includes('basketball')
-        ? 'basketball-cards.html'
-        : category.includes('football')
-          ? 'football-cards.html'
-          : category.includes('comic')
-            ? 'comics.html'
-            : category.includes('collect')
-              ? 'collectibles.html'
-              : 'shop.html';
-    return `${page}?item=${encodeURIComponent(String(product.id || ''))}`;
   }
 
   function loadAccountProducts() {
@@ -266,7 +261,44 @@ window.DJ = window.DJ || {};
     return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
+  function buildWishlistText(products = []) {
+    if (!products.length) {
+      return 'DJ wishlist: no matching saved items in the current catalog.';
+    }
+    const lines = ['DJ wishlist'];
+    products.forEach((product, index) => {
+      lines.push(`${index + 1}. ${product.name || 'Saved item'} | ${DJ.displayPrice?.(product) || 'Ask'} | ${DJ.productPageUrl(product)}`);
+    });
+    return lines.join('\n');
+  }
+
+  function buildWishlistCsv(products = []) {
+    const escape = typeof DJ.csvEscape === 'function'
+      ? DJ.csvEscape
+      : (value) => {
+        const text = String(value ?? '');
+        return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+      };
+    const headers = ['Listing ID', 'Title', 'Category', 'Year', 'Team / Publisher', 'Condition', 'Price', 'Storefront URL'];
+    const origin = window.location.origin && window.location.origin !== 'null' ? window.location.origin : '';
+    const rows = products.map((product) => [
+      product.id || '',
+      product.name || '',
+      product.category || '',
+      product.year || '',
+      product.team || '',
+      product.condition || '',
+      DJ.displayPrice?.(product) || '',
+      `${origin}/${DJ.productPageUrl(product)}`.replace(/([^:]\/)\/+/g, '$1')
+    ]);
+    return [headers, ...rows].map((row) => row.map(escape).join(',')).join('\r\n');
+  }
+
   function downloadTextFile(content, filenamePrefix, extension, type) {
+    if (typeof DJ.downloadTextFile === 'function') {
+      DJ.downloadTextFile(content, filenamePrefix, extension, type);
+      return;
+    }
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -328,6 +360,10 @@ window.DJ = window.DJ || {};
         complete: Boolean(wishlistIds.length)
       },
       {
+        label: 'Collecting preferences saved',
+        complete: Boolean(profile.favoritePlayers || profile.favoriteTeams || profile.budgetRange || profile.preferredCondition)
+      },
+      {
         label: 'Collecting notes added',
         complete: Boolean(profile.notes)
       }
@@ -352,6 +388,7 @@ window.DJ = window.DJ || {};
     const savedAt = $('accountProfileSavedAt');
     const emailLink = $('accountEmailPreferences');
     const clearButton = $('accountClearProfile');
+    const cleanWishlistButton = $('accountCleanWishlist');
     const profileStatus = $('accountProfileStatus');
     const wishlistIds = getWishlistIds();
     const currentProfile = readProfileForm();
@@ -382,6 +419,11 @@ window.DJ = window.DJ || {};
       emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Buyer Summary' : 'Email DJ';
     }
     if (clearButton) clearButton.disabled = !hasSavedDetails;
+    ['accountCopyWishlist', 'accountExportWishlistCsv'].forEach((id) => {
+      const button = $(id);
+      if (button) button.disabled = !wishlistIds.length;
+    });
+    if (cleanWishlistButton && !wishlistIds.length) cleanWishlistButton.disabled = true;
     renderReadinessChecklist(currentProfile, wishlistIds);
   }
 
@@ -395,6 +437,8 @@ window.DJ = window.DJ || {};
     if (!wishlistIds.length) {
       if (meta) meta.textContent = 'No saved items yet.';
       if (totalTarget) totalTarget.textContent = '$0';
+      const cleanButton = $('accountCleanWishlist');
+      if (cleanButton) cleanButton.disabled = true;
       container.innerHTML = `
         <div class="account-empty-state">
           <strong>Your wishlist is empty.</strong>
@@ -416,6 +460,11 @@ window.DJ = window.DJ || {};
     const numericPrices = products.map((product) => DJ.numericPrice?.(product)).filter((price) => Number.isFinite(price));
     const total = numericPrices.reduce((sum, price) => sum + price, 0);
     const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
+    const cleanButton = $('accountCleanWishlist');
+    if (cleanButton) {
+      cleanButton.disabled = unresolvedCount === 0;
+      cleanButton.textContent = unresolvedCount ? `Clean ${unresolvedCount} Stale Item${unresolvedCount === 1 ? '' : 's'}` : 'Clean Stale Items';
+    }
 
     if (totalTarget) {
       totalTarget.textContent = numericPrices.length ? DJ.currency(total) : 'Ask';
@@ -444,7 +493,7 @@ window.DJ = window.DJ || {};
       const fallback = DJ.fallbackByCategory?.[product.category] || DJ.fallbackByCategory?.Other || 'assets/placeholder-baseball.svg';
       const row = createElement('a', {
         className: 'account-wishlist-row',
-        href: buildProductUrl(product)
+        href: DJ.productPageUrl(product)
       });
       const image = createElement('img', {
         attributes: {
@@ -569,6 +618,55 @@ window.DJ = window.DJ || {};
     }
   }
 
+  async function copyWishlistList() {
+    const products = await getWishlistProducts();
+    if (!getWishlistIds().length) {
+      setStatus('Your wishlist is empty.', 'info');
+      return;
+    }
+    try {
+      await copyText(buildWishlistText(products));
+      setStatus('Wishlist copied.', 'success');
+    } catch {
+      setStatus('This browser blocked clipboard access.', 'error');
+    }
+  }
+
+  async function exportWishlistCsv() {
+    const products = await getWishlistProducts();
+    if (!getWishlistIds().length) {
+      setStatus('Your wishlist is empty.', 'info');
+      return;
+    }
+    downloadTextFile(buildWishlistCsv(products), 'dj-wishlist', 'csv', 'text/csv');
+    setStatus('Wishlist CSV exported.', 'success');
+  }
+
+  async function cleanStaleWishlistItems() {
+    const wishlistIds = getWishlistIds();
+    if (!wishlistIds.length) {
+      setStatus('Your wishlist is already empty.', 'info');
+      return;
+    }
+    const products = await getWishlistProducts();
+    const activeIds = new Set(products.map((product) => Number(product.id)));
+    const cleanedIds = wishlistIds.filter((id) => activeIds.has(Number(id)));
+    const removedCount = wishlistIds.length - cleanedIds.length;
+    if (!removedCount) {
+      setStatus('No stale wishlist items found.', 'info');
+      return;
+    }
+    if (!window.confirm(`Remove ${removedCount} stale wishlist item${removedCount === 1 ? '' : 's'} from this browser?`)) return;
+    if (typeof DJ.setWishlist !== 'function') {
+      setStatus('Wishlist cleanup is unavailable in this browser.', 'error');
+      return;
+    }
+    DJ.setWishlist(cleanedIds);
+    renderAccountSummary();
+    await renderWishlistPreview();
+    setStatus(`${removedCount} stale wishlist item${removedCount === 1 ? '' : 's'} removed.`, 'success');
+  }
+
   async function refreshEmailPreferencesLink() {
     const link = $('accountEmailPreferences');
     if (!link) return;
@@ -585,7 +683,9 @@ window.DJ = window.DJ || {};
       wishlistPreview: products.slice(0, WISHLIST_PREVIEW_LIMIT).map((product) => ({
         id: product.id,
         name: product.name,
-        price: DJ.displayPrice?.(product) || ''
+        category: product.category || '',
+        price: DJ.displayPrice?.(product) || '',
+        url: DJ.productPageUrl(product)
       }))
     };
     downloadTextFile(JSON.stringify(payload, null, 2), 'dj-buyer-details', 'json', 'application/json');
@@ -619,6 +719,9 @@ window.DJ = window.DJ || {};
     $('accountUseNameForShipping')?.addEventListener('click', useNameForShipping);
     $('accountCopyProfile')?.addEventListener('click', copyBuyerSummary);
     $('accountCopyShipping')?.addEventListener('click', copyShippingAddress);
+    $('accountCopyWishlist')?.addEventListener('click', copyWishlistList);
+    $('accountExportWishlistCsv')?.addEventListener('click', exportWishlistCsv);
+    $('accountCleanWishlist')?.addEventListener('click', cleanStaleWishlistItems);
     $('accountExportProfile')?.addEventListener('click', exportBuyerDetails);
     $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
     $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);

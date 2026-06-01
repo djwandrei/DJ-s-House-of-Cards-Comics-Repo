@@ -232,6 +232,9 @@ async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
         """(() => {
           localStorage.removeItem('djCustomerProfileV1');
           const nameInput = document.getElementById('account_fullName');
+          const emailInput = document.getElementById('account_email');
+          const preferredContactInput = document.getElementById('account_preferredContact');
+          const favoritePlayersInput = document.getElementById('account_favoritePlayers');
           const notesInput = document.getElementById('account_notes');
           const form = document.getElementById('accountProfileForm');
           const status = document.getElementById('accountStatus');
@@ -239,24 +242,31 @@ async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
             return { ready: false, reason: 'missing account form nodes' };
           }
           nameInput.value = 'Smoke Test Buyer';
+          if (emailInput) emailInput.value = 'smoke@example.com';
+          if (preferredContactInput) preferredContactInput.value = 'Email';
+          if (favoritePlayersInput) favoritePlayersInput.value = 'Hank Aaron, Magic Johnson';
           notesInput.value = 'Interested in Braves, Bulls, and graded vintage.';
           form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
           const savedProfile = JSON.parse(localStorage.getItem('djCustomerProfileV1') || '{}');
-          const navAccountLink = document.querySelector('.site-nav a[href="account.html"]');
+          const navAccountLink = document.querySelector('.site-nav a[href="account.html"], .primary-nav a[href="account.html"]');
           const footerAccountLink = document.querySelector('.footer a[href="account.html"]');
           const orderPanel = document.getElementById('accountOrders');
           const readiness = document.getElementById('accountProfileCompletionLabel');
           const wishlistPreview = document.getElementById('accountWishlistPreview');
+          const buyerToolsReady = ['accountCopyProfile', 'accountCopyWishlist', 'accountExportWishlistCsv', 'accountCleanWishlist']
+            .every((id) => Boolean(document.getElementById(id)));
           return {
             ready: true,
             savedName: savedProfile.fullName || '',
             savedNotes: savedProfile.notes || '',
+            savedFavoritePlayers: savedProfile.favoritePlayers || '',
             statusText: status.textContent.trim(),
             navAccountLink: Boolean(navAccountLink),
             footerAccountLink: Boolean(footerAccountLink),
             readinessReady: Boolean(readiness && readiness.textContent.trim()),
             wishlistPreviewReady: Boolean(wishlistPreview),
-            orderPanelReady: Boolean(orderPanel && orderPanel.textContent.includes('No saved checkout activity yet'))
+            orderPanelReady: Boolean(orderPanel && orderPanel.textContent.includes('No saved checkout activity yet')),
+            buyerToolsReady
           };
         })()"""
     )
@@ -397,12 +407,13 @@ async def main() -> int:
             if not (
                 account_report.get("ready")
                 and account_report.get("savedName") == "Smoke Test Buyer"
-                and account_report.get("statusText") == "Account details saved on this device."
+                and account_report.get("statusText") == "Buyer details saved on this device."
                 and account_report.get("navAccountLink")
                 and account_report.get("footerAccountLink")
                 and account_report.get("readinessReady")
                 and account_report.get("wishlistPreviewReady")
                 and account_report.get("orderPanelReady")
+                and account_report.get("buyerToolsReady")
             ):
                 report["failures"].append({"page": "account.html", "account": account_report})
 

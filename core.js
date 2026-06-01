@@ -1335,6 +1335,40 @@ window.DJ = window.DJ || {};
     return Number.isFinite(numericValue) ? numericValue : null;
   };
 
+  DJ.productPageUrl = function productPageUrl(product = {}) {
+    const category = String(product.category || '').toLowerCase();
+    const page = category.includes('baseball')
+      ? 'baseball-cards.html'
+      : category.includes('basketball')
+        ? 'basketball-cards.html'
+        : category.includes('football')
+          ? 'football-cards.html'
+          : category.includes('comic')
+            ? 'comics.html'
+            : category.includes('collect')
+              ? 'collectibles.html'
+              : 'shop.html';
+    const id = product.id == null ? '' : String(product.id).trim();
+    return id ? `${page}?item=${encodeURIComponent(id)}` : page;
+  };
+
+  DJ.csvEscape = function csvEscape(value = '') {
+    const text = String(value ?? '');
+    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+
+  DJ.downloadTextFile = function downloadTextFile(content, filenamePrefix, extension, type = 'text/plain') {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   DJ.getWishlist = getWishlist;
   DJ.getSiteMetrics = getSiteMetrics;
   DJ.recordSiteMetric = recordSiteMetric;
