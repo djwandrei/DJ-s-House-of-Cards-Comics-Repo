@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Static contact form helper.
  * -----------------------------------------------------------------------------
  * The site remains a static frontend, so the contact page builds a mailto link
@@ -11,7 +11,11 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   let mailtoFallbackTimer = 0;
-  const CONTACT_EMAIL = 'contact@djshouseofcards-comics.com';
+  let contactDraftTimer = 0;
+  let mailtoHandoffPending = false;
+  const CONTACT_EMAIL = 'djscardscomics13@gmail.com';
+  const CONTACT_DRAFT_KEY = 'djContactDraftV1';
+  const CONTACT_DRAFT_FIELDS = ['name', 'email', 'subject', 'message'];
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const CONTACT_TOPICS = {
     buying: {
@@ -44,6 +48,65 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function readContactDraft() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CONTACT_DRAFT_KEY) || '{}');
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function writeContactDraft(form) {
+    try {
+      const draft = CONTACT_DRAFT_FIELDS.reduce((payload, fieldName) => {
+        payload[fieldName] = getFieldValue(form, fieldName);
+        return payload;
+      }, { updatedAt: new Date().toISOString() });
+
+      if (CONTACT_DRAFT_FIELDS.some((fieldName) => draft[fieldName])) {
+        localStorage.setItem(CONTACT_DRAFT_KEY, JSON.stringify(draft));
+      } else {
+        localStorage.removeItem(CONTACT_DRAFT_KEY);
+      }
+    } catch {
+      // Contact drafts are a convenience only; blocked storage should not stop the form.
+    }
+  }
+
+  function scheduleContactDraftSave(form) {
+    window.clearTimeout(contactDraftTimer);
+    contactDraftTimer = window.setTimeout(() => {
+      contactDraftTimer = 0;
+      writeContactDraft(form);
+    }, 180);
+  }
+
+  function restoreContactDraft(form) {
+    const draft = readContactDraft();
+    let restored = false;
+    CONTACT_DRAFT_FIELDS.forEach((fieldName) => {
+      const field = form.elements.namedItem(fieldName);
+      if (!field || typeof field.value !== 'string' || field.value.trim() || !draft[fieldName]) return;
+      field.value = String(draft[fieldName]);
+      restored = true;
+    });
+
+    if (restored) {
+      DJ.setStatus('contactStatus', 'Restored your saved contact draft from this browser.', 'info');
+    }
+  }
+
+  function clearContactDraft() {
+    window.clearTimeout(contactDraftTimer);
+    contactDraftTimer = 0;
+    try {
+      localStorage.removeItem(CONTACT_DRAFT_KEY);
+    } catch {
+      // Ignore blocked storage cleanup.
+    }
+  }
+
   function initContactTopics(form) {
     const topicLinks = [...document.querySelectorAll('[data-contact-topic]')];
     if (!topicLinks.length || form.dataset.boundContactTopics === 'true') return;
@@ -70,6 +133,7 @@ window.DJ = window.DJ || {};
 
         topicLinks.forEach((candidate) => candidate.classList.toggle('is-selected', candidate === link));
         DJ.setStatus('contactStatus', topic.status, 'info');
+        writeContactDraft(form);
         focusField(form, 'message');
       });
     });
@@ -86,6 +150,7 @@ window.DJ = window.DJ || {};
     form.dataset.boundContactForm = 'true';
 
     const submitButton = form.querySelector('button[type="submit"]');
+    restoreContactDraft(form);
     initContactTopics(form);
 
     const setSubmittingState = (isSubmitting) => {
@@ -99,8 +164,15 @@ window.DJ = window.DJ || {};
         window.clearTimeout(mailtoFallbackTimer);
         mailtoFallbackTimer = 0;
       }
+      if (mailtoHandoffPending) {
+        clearContactDraft();
+        mailtoHandoffPending = false;
+      }
       setSubmittingState(false);
     };
+
+    form.addEventListener('input', () => scheduleContactDraftSave(form));
+    form.addEventListener('change', () => writeContactDraft(form));
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -143,6 +215,7 @@ window.DJ = window.DJ || {};
       );
       mailtoFallbackTimer = window.setTimeout(() => {
         mailtoFallbackTimer = 0;
+        mailtoHandoffPending = false;
         DJ.setStatus(
           'contactStatus',
           `If your email app did not open, send your message to ${CONTACT_EMAIL} and mention the subject line you entered above.`,
@@ -150,6 +223,7 @@ window.DJ = window.DJ || {};
         );
         setSubmittingState(false);
       }, 1400);
+      mailtoHandoffPending = true;
       window.location.assign(`mailto:${CONTACT_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`);
       window.setTimeout(() => {
         setSubmittingState(false);
@@ -170,3 +244,5 @@ window.DJ = window.DJ || {};
   // Wait for the contact form markup to exist before attaching listeners.
   document.addEventListener('DOMContentLoaded', initContactForm);
 })();
+
+

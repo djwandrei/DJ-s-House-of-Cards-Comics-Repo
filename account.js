@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
  * Buyer details stay local to this browser. The page focuses on practical buyer
@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const MAX_PROFILE_FIELD_LENGTH = 240;
   const MAX_PROFILE_NOTES_LENGTH = 1200;
   const WISHLIST_PREVIEW_LIMIT = 5;
-  const contactEmail = 'contact@djshouseofcards-comics.com';
+  const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
   let wishlistRenderTimer = 0;
 
@@ -176,6 +176,10 @@ window.DJ = window.DJ || {};
     ));
   }
 
+  function hasUnsavedProfileFormChanges() {
+    return Boolean($('accountProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), readLocalProfile());
+  }
+
   function formatSavedAt(value) {
     if (!value) return 'No saved buyer details yet.';
     const date = new Date(value);
@@ -200,10 +204,20 @@ window.DJ = window.DJ || {};
 
   function loadAccountProducts() {
     if (accountProductsPromise) return accountProductsPromise;
-    accountProductsPromise = fetch(PRODUCT_SOURCE, { cache: 'force-cache' })
+    const productSource = typeof DJ.versionedProductAsset === 'function'
+      ? DJ.versionedProductAsset(PRODUCT_SOURCE)
+      : PRODUCT_SOURCE;
+    accountProductsPromise = fetch(productSource, { cache: 'default' })
       .then((response) => {
         if (!response.ok) throw new Error(`Unable to load ${PRODUCT_SOURCE}`);
         return response.json();
+      })
+      .catch(async (error) => {
+        const bundledProducts = typeof DJ.loadPreloadedProductsForSource === 'function'
+          ? await DJ.loadPreloadedProductsForSource(PRODUCT_SOURCE).catch(() => null)
+          : null;
+        if (Array.isArray(bundledProducts)) return bundledProducts;
+        throw error;
       })
       .then((products) => {
         const safeProducts = Array.isArray(products) ? products : [];
@@ -261,70 +275,95 @@ window.DJ = window.DJ || {};
     return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  function buildWishlistText(products = []) {
-    if (!products.length) {
-      return 'DJ wishlist: no matching saved items in the current catalog.';
-    }
-    const lines = ['DJ wishlist'];
-    products.forEach((product, index) => {
-      lines.push(`${index + 1}. ${product.name || 'Saved item'} | ${DJ.displayPrice?.(product) || 'Ask'} | ${DJ.productPageUrl(product)}`);
-    });
-    return lines.join('\n');
+  function parsePreferenceTerms(value = '') {
+    return [...new Set(String(value || '')
+      .split(/[,;\n]+/)
+      .map((term) => term.trim())
+      .filter((term) => term.length >= 2))]
+      .slice(0, 8);
   }
 
-  function buildWishlistCsv(products = []) {
-    const escape = typeof DJ.csvEscape === 'function'
-      ? DJ.csvEscape
-      : (value) => {
-        const text = String(value ?? '');
-        return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-      };
-    const headers = ['Listing ID', 'Title', 'Category', 'Year', 'Team / Publisher', 'Condition', 'Price', 'Storefront URL'];
-    const origin = window.location.origin && window.location.origin !== 'null' ? window.location.origin : '';
-    const rows = products.map((product) => [
-      product.id || '',
-      product.name || '',
-      product.category || '',
-      product.year || '',
-      product.team || '',
-      product.condition || '',
-      DJ.displayPrice?.(product) || '',
-      `${origin}/${DJ.productPageUrl(product)}`.replace(/([^:]\/)\/+/g, '$1')
-    ]);
-    return [headers, ...rows].map((row) => row.map(escape).join(',')).join('\r\n');
+  function getSavedSearchTerms(profile = {}) {
+    return [
+      ...parsePreferenceTerms(profile.favoritePlayers),
+      ...parsePreferenceTerms(profile.favoriteTeams)
+    ].slice(0, 8);
   }
 
-  function downloadTextFile(content, filenamePrefix, extension, type) {
-    if (typeof DJ.downloadTextFile === 'function') {
-      DJ.downloadTextFile(content, filenamePrefix, extension, type);
+  function buildSearchUrl(term = '') {
+    return `sports-cards.html?search=${encodeURIComponent(term)}`;
+  }
+
+  function renderSavedSearches(profile = readProfileForm()) {
+    const container = $('accountSavedSearches');
+    if (!container) return;
+
+    const terms = getSavedSearchTerms(profile);
+
+    if (!terms.length) {
+      container.innerHTML = '';
       return;
     }
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.${extension}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+
+    container.replaceChildren(
+      createElement('strong', { text: 'Saved searches' }),
+      ...terms.map((term) => createElement('a', {
+        className: 'account-saved-search-link',
+        href: buildSearchUrl(term),
+        text: term
+      }))
+    );
   }
 
-  async function copyText(text) {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
+  function renderWishlistInsights(products = [], wishlistIds = getWishlistIds()) {
+    const container = $('accountWishlistInsights');
+    if (!container) return;
+
+    if (!wishlistIds.length) {
+      container.innerHTML = '';
+      return;
     }
-    const textarea = createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand('copy');
-    textarea.remove();
-    return copied;
+
+    const categoryCounts = new Map();
+    products.forEach((product) => {
+      const category = String(product.category || 'Other').trim() || 'Other';
+      categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
+    });
+
+    const numericProducts = products
+      .map((product) => ({ product, price: DJ.numericPrice?.(product) }))
+      .filter((entry) => Number.isFinite(entry.price));
+    const highest = numericProducts.sort((left, right) => right.price - left.price)[0];
+    const topCategory = [...categoryCounts.entries()].sort((left, right) => right[1] - left[1])[0];
+    const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
+
+    const insights = [
+      {
+        label: 'Top category',
+        value: topCategory ? `${topCategory[0]} (${topCategory[1]})` : 'No matches'
+      },
+      {
+        label: 'Highest saved price',
+        value: highest ? DJ.displayPrice?.(highest.product) || DJ.currency(highest.price) : 'Ask'
+      },
+      {
+        label: 'Catalog matches',
+        value: `${products.length} of ${wishlistIds.length}`
+      }
+    ];
+
+    if (unresolvedCount) {
+      insights.push({ label: 'Needs cleanup', value: String(unresolvedCount) });
+    }
+
+    container.replaceChildren(...insights.map((insight) => {
+      const item = createElement('div', { className: 'account-insight-card' });
+      item.append(
+        createElement('span', { text: insight.label }),
+        createElement('strong', { text: insight.value })
+      );
+      return item;
+    }));
   }
 
   function saveProfileForm(event) {
@@ -383,12 +422,14 @@ window.DJ = window.DJ || {};
 
   function renderAccountSummary() {
     const countTarget = $('accountWishlistCount');
+    const heroCountTarget = $('accountHeroWishlistCount');
+    const heroSavedStatus = $('accountHeroSavedStatus');
+    const heroReadiness = $('accountHeroReadiness');
     const completionLabel = $('accountProfileCompletionLabel');
     const completionBar = $('accountProfileCompletionBar');
     const savedAt = $('accountProfileSavedAt');
     const emailLink = $('accountEmailPreferences');
     const clearButton = $('accountClearProfile');
-    const cleanWishlistButton = $('accountCleanWishlist');
     const profileStatus = $('accountProfileStatus');
     const wishlistIds = getWishlistIds();
     const currentProfile = readProfileForm();
@@ -399,6 +440,17 @@ window.DJ = window.DJ || {};
     const hasUnsavedChanges = hasUnsavedProfileChanges(currentProfile, storedProfile);
 
     if (countTarget) countTarget.textContent = String(wishlistIds.length);
+    if (heroCountTarget) {
+      heroCountTarget.textContent = `${wishlistIds.length} item${wishlistIds.length === 1 ? '' : 's'}`;
+    }
+    if (heroSavedStatus) {
+      heroSavedStatus.textContent = hasSavedDetails
+        ? 'Saved on this device'
+        : hasDetails
+          ? 'Draft in progress'
+          : 'Not saved yet';
+    }
+    if (heroReadiness) heroReadiness.textContent = `${completion.percent}%`;
     if (completionLabel) {
       completionLabel.textContent = `${completion.percent}%`;
       completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} buyer details filled`);
@@ -419,12 +471,8 @@ window.DJ = window.DJ || {};
       emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Buyer Summary' : 'Email DJ';
     }
     if (clearButton) clearButton.disabled = !hasSavedDetails;
-    ['accountCopyWishlist', 'accountExportWishlistCsv'].forEach((id) => {
-      const button = $(id);
-      if (button) button.disabled = !wishlistIds.length;
-    });
-    if (cleanWishlistButton && !wishlistIds.length) cleanWishlistButton.disabled = true;
     renderReadinessChecklist(currentProfile, wishlistIds);
+    renderSavedSearches(currentProfile);
   }
 
   async function renderWishlistPreview() {
@@ -437,8 +485,7 @@ window.DJ = window.DJ || {};
     if (!wishlistIds.length) {
       if (meta) meta.textContent = 'No saved items yet.';
       if (totalTarget) totalTarget.textContent = '$0';
-      const cleanButton = $('accountCleanWishlist');
-      if (cleanButton) cleanButton.disabled = true;
+      renderWishlistInsights([], wishlistIds);
       container.innerHTML = `
         <div class="account-empty-state">
           <strong>Your wishlist is empty.</strong>
@@ -460,11 +507,7 @@ window.DJ = window.DJ || {};
     const numericPrices = products.map((product) => DJ.numericPrice?.(product)).filter((price) => Number.isFinite(price));
     const total = numericPrices.reduce((sum, price) => sum + price, 0);
     const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
-    const cleanButton = $('accountCleanWishlist');
-    if (cleanButton) {
-      cleanButton.disabled = unresolvedCount === 0;
-      cleanButton.textContent = unresolvedCount ? `Clean ${unresolvedCount} Stale Item${unresolvedCount === 1 ? '' : 's'}` : 'Clean Stale Items';
-    }
+    renderWishlistInsights(products, wishlistIds);
 
     if (totalTarget) {
       totalTarget.textContent = numericPrices.length ? DJ.currency(total) : 'Ask';
@@ -592,81 +635,6 @@ window.DJ = window.DJ || {};
     setStatus('Shipping name updated from the buyer name.', 'success');
   }
 
-  async function copyBuyerSummary() {
-    const profile = readProfileForm();
-    const wishlistProducts = await getWishlistProducts();
-    const summary = buildBuyerSummary(profile, getWishlistIds().length, wishlistProducts);
-    try {
-      await copyText(summary);
-      setStatus('Buyer summary copied.', 'success');
-    } catch {
-      setStatus('This browser blocked clipboard access.', 'error');
-    }
-  }
-
-  async function copyShippingAddress() {
-    const address = formatShippingAddress(readProfileForm());
-    if (!address) {
-      setStatus('Add a shipping address before copying it.', 'error');
-      return;
-    }
-    try {
-      await copyText(address);
-      setStatus('Shipping address copied.', 'success');
-    } catch {
-      setStatus('This browser blocked clipboard access.', 'error');
-    }
-  }
-
-  async function copyWishlistList() {
-    const products = await getWishlistProducts();
-    if (!getWishlistIds().length) {
-      setStatus('Your wishlist is empty.', 'info');
-      return;
-    }
-    try {
-      await copyText(buildWishlistText(products));
-      setStatus('Wishlist copied.', 'success');
-    } catch {
-      setStatus('This browser blocked clipboard access.', 'error');
-    }
-  }
-
-  async function exportWishlistCsv() {
-    const products = await getWishlistProducts();
-    if (!getWishlistIds().length) {
-      setStatus('Your wishlist is empty.', 'info');
-      return;
-    }
-    downloadTextFile(buildWishlistCsv(products), 'dj-wishlist', 'csv', 'text/csv');
-    setStatus('Wishlist CSV exported.', 'success');
-  }
-
-  async function cleanStaleWishlistItems() {
-    const wishlistIds = getWishlistIds();
-    if (!wishlistIds.length) {
-      setStatus('Your wishlist is already empty.', 'info');
-      return;
-    }
-    const products = await getWishlistProducts();
-    const activeIds = new Set(products.map((product) => Number(product.id)));
-    const cleanedIds = wishlistIds.filter((id) => activeIds.has(Number(id)));
-    const removedCount = wishlistIds.length - cleanedIds.length;
-    if (!removedCount) {
-      setStatus('No stale wishlist items found.', 'info');
-      return;
-    }
-    if (!window.confirm(`Remove ${removedCount} stale wishlist item${removedCount === 1 ? '' : 's'} from this browser?`)) return;
-    if (typeof DJ.setWishlist !== 'function') {
-      setStatus('Wishlist cleanup is unavailable in this browser.', 'error');
-      return;
-    }
-    DJ.setWishlist(cleanedIds);
-    renderAccountSummary();
-    await renderWishlistPreview();
-    setStatus(`${removedCount} stale wishlist item${removedCount === 1 ? '' : 's'} removed.`, 'success');
-  }
-
   async function refreshEmailPreferencesLink() {
     const link = $('accountEmailPreferences');
     if (!link) return;
@@ -674,78 +642,27 @@ window.DJ = window.DJ || {};
     link.href = buildPreferencesEmailUrl(readProfileForm(), getWishlistIds().length, products);
   }
 
-  async function exportBuyerDetails() {
-    const products = await getWishlistProducts();
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      profile: readProfileForm(),
-      wishlistIds: getWishlistIds(),
-      wishlistPreview: products.slice(0, WISHLIST_PREVIEW_LIMIT).map((product) => ({
-        id: product.id,
-        name: product.name,
-        category: product.category || '',
-        price: DJ.displayPrice?.(product) || '',
-        url: DJ.productPageUrl(product)
-      }))
-    };
-    downloadTextFile(JSON.stringify(payload, null, 2), 'dj-buyer-details', 'json', 'application/json');
-    setStatus('Buyer details exported.', 'success');
-  }
-
-  async function importBuyerDetails(file) {
-    const parsed = JSON.parse(await file.text());
-    const sourceProfile = parsed?.profile && typeof parsed.profile === 'object'
-      ? parsed.profile
-      : parsed;
-    if (!sourceProfile || typeof sourceProfile !== 'object' || Array.isArray(sourceProfile)) {
-      throw new Error('That file does not contain buyer details.');
-    }
-
-    const profile = readLocalProfile();
-    fields.forEach((field) => {
-      profile[field] = normalizeProfileValue(field, sourceProfile[field]);
-    });
-    profile.updatedAt = new Date().toISOString();
-    if (!writeLocalProfile(profile)) {
-      throw new Error('This browser blocked local buyer detail storage.');
-    }
-    loadProfileForm();
-    renderAccountSummary();
-    await refreshEmailPreferencesLink();
-  }
-
   function bindEvents() {
     $('accountClearProfile')?.addEventListener('click', clearLocalProfile);
     $('accountUseNameForShipping')?.addEventListener('click', useNameForShipping);
-    $('accountCopyProfile')?.addEventListener('click', copyBuyerSummary);
-    $('accountCopyShipping')?.addEventListener('click', copyShippingAddress);
-    $('accountCopyWishlist')?.addEventListener('click', copyWishlistList);
-    $('accountExportWishlistCsv')?.addEventListener('click', exportWishlistCsv);
-    $('accountCleanWishlist')?.addEventListener('click', cleanStaleWishlistItems);
-    $('accountExportProfile')?.addEventListener('click', exportBuyerDetails);
     $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
     $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);
-    const importButton = $('accountImportProfileButton');
-    const importInput = $('accountImportProfileInput');
-    importButton?.addEventListener('click', () => importInput?.click());
-    importInput?.addEventListener('change', async () => {
-      const file = importInput.files?.[0];
-      if (!file) return;
-      try {
-        await importBuyerDetails(file);
-        setStatus('Buyer details imported.', 'success');
-      } catch (error) {
-        setStatus(error.message || 'Unable to import buyer details.', 'error');
-      } finally {
-        importInput.value = '';
-      }
-    });
 
     const profileForm = $('accountProfileForm');
     profileForm?.addEventListener('submit', saveProfileForm);
     profileForm?.addEventListener('input', renderAccountSummary);
     profileForm?.addEventListener('change', renderAccountSummary);
+    window.addEventListener('beforeunload', (event) => {
+      if (!hasUnsavedProfileFormChanges()) return;
+      event.preventDefault();
+      event.returnValue = '';
+    });
     window.addEventListener('dj:wishlistchange', () => {
+      renderAccountSummary();
+      scheduleWishlistPreviewRender();
+    });
+    window.addEventListener('dj:catalogmutation', () => {
+      accountProductsPromise = null;
       renderAccountSummary();
       scheduleWishlistPreviewRender();
     });
@@ -770,3 +687,5 @@ window.DJ = window.DJ || {};
     init();
   }
 })();
+
+

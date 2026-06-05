@@ -41,12 +41,34 @@ function friendlyServerError(error: unknown, fallback = 'Checkout could not be s
   return jsonResponse({ error: fallback }, 500);
 }
 
-function isDirectCheckoutEligible(product: Record<string, unknown>) {
+function parsePriceRangeLabel(value = '') {
+  const label = String(value || '').trim();
+  const match = label.match(/\$?\s*([\d,]+(?:\.\d{1,2})?)\s*(?:-|[\u2013\u2014]|\bto\b)\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  if (!match) return null;
+
+  const first = Number(match[1].replace(/,/g, ''));
+  const second = Number(match[2].replace(/,/g, ''));
+  if (!Number.isFinite(first) || !Number.isFinite(second)) return null;
+
+  return {
+    label,
+    low: Math.min(first, second),
+    high: Math.max(first, second)
+  };
+}
+
+function checkoutPriceDollars(product: Record<string, unknown>) {
+  const range = parsePriceRangeLabel(String(product.display_price || product.price_label || ''));
+  if (range) return range.high;
   const price = Number(product.price);
+  return Number.isFinite(price) ? price : null;
+}
+
+function isDirectCheckoutEligible(product: Record<string, unknown>) {
+  const price = checkoutPriceDollars(product);
   const display = String(product.display_price || product.price_label || '').toLowerCase();
   if (!Number.isFinite(price) || price <= 0) return false;
   if (/contact|ask|inquir|availability/.test(display)) return false;
-  if (/\$\s*[\d,.]+\s*(?:-|\u2013|\u2014|\bto\b)\s*\$?\s*[\d,.]+/.test(display)) return false;
   return true;
 }
 
@@ -260,7 +282,9 @@ Deno.serve(async (request) => {
   const customerOptions = stripeCustomerId
     ? { customer: stripeCustomerId }
     : { customer_email: email, customer_creation: 'always' as const };
-  const amount = Math.round(Number(product.price) * 100);
+  const priceRange = parsePriceRangeLabel(String(product.display_price || product.price_label || ''));
+  const checkoutPrice = checkoutPriceDollars(product);
+  const amount = Math.round(Number(checkoutPrice) * 100);
   if (!Number.isSafeInteger(amount) || amount < 50) {
     return jsonResponse({ error: 'This listing needs confirmation before checkout.' }, 409);
   }
@@ -268,6 +292,8 @@ Deno.serve(async (request) => {
   const image = absoluteImageUrl(String(product.image || imageGallery[0] || ''));
   const description = [
     product.description,
+    priceRange ? `Guide price range: ${priceRange.label}` : '',
+    `Checkout price: $${(amount / 100).toFixed(2)}`,
     product.year ? `Year: ${product.year}` : '',
     product.condition ? `Condition: ${product.condition}` : '',
     product.team ? `Team/Publisher: ${product.team}` : ''
@@ -301,7 +327,9 @@ Deno.serve(async (request) => {
   const metadata = {
     product_id: String(product.id),
     buyer_user_id: userResult.user.id,
-    reservation_id: String(reservation.id)
+    reservation_id: String(reservation.id),
+    checkout_price: (amount / 100).toFixed(2),
+    guide_price_range: priceRange?.label || ''
   };
 
   let checkoutSession: Stripe.Checkout.Session;
@@ -326,7 +354,9 @@ Deno.serve(async (request) => {
             images: image ? [image] : [],
             metadata: {
               product_id: String(product.id),
-              category: String(product.category || '')
+              category: String(product.category || ''),
+              checkout_price: (amount / 100).toFixed(2),
+              guide_price_range: priceRange?.label || ''
             }
           }
         }

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Offline page helper.
  * ---------------------------------------------------------------------------
  * Keep the offline fallback lightweight while still giving the user a clear way
@@ -85,3 +85,4 @@
   window.addEventListener('online', updateOfflineStatus);
   window.addEventListener('offline', updateOfflineStatus);
 })();
+

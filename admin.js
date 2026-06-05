@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Browser-local admin tools.
  * -----------------------------------------------------------------------------
  * This file powers the original static-site admin workflow: add custom products,
@@ -16,6 +16,8 @@ window.DJ = window.DJ || {};
   // across search, edit, restore, and import flows without refetching products.json.
   let baseProductsPromise = null;
   const customState = { search: '', category: 'All' };
+  const ADMIN_VIEW_PREFS_KEY = 'djAdminViewPrefsV1';
+  const MAX_ADMIN_JSON_IMPORT_BYTES = 15 * 1024 * 1024;
   // Existing listings are managed like a compact Seller Hub table: filters and
   // selected ids stay separate so bulk actions only touch the rows the user chose.
   const existingState = {
@@ -23,6 +25,7 @@ window.DJ = window.DJ || {};
     category: 'All',
     status: 'All',
     sort: 'name-asc',
+    density: readAdminViewPreference('density', 'comfortable'),
     selectedIds: new Set(),
     visibleIds: [],
     baseProducts: [],
@@ -68,6 +71,40 @@ window.DJ = window.DJ || {};
     };
     debounced.cancel = () => window.clearTimeout(timer);
     return debounced;
+  }
+
+  function readAdminViewPrefs() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(ADMIN_VIEW_PREFS_KEY) || '{}');
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function readAdminViewPreference(key, fallback) {
+    const preferences = readAdminViewPrefs();
+    return preferences[key] || fallback;
+  }
+
+  function writeAdminViewPreference(key, value) {
+    try {
+      localStorage.setItem(ADMIN_VIEW_PREFS_KEY, JSON.stringify({
+        ...readAdminViewPrefs(),
+        [key]: value
+      }));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyExistingDensityPreference() {
+    const panel = document.querySelector('.admin-existing-panel');
+    const select = document.getElementById('existingListingDensity');
+    const density = existingState.density === 'compact' ? 'compact' : 'comfortable';
+    if (panel) panel.dataset.density = density;
+    if (select) select.value = density;
   }
 
   function buildAdminSearchIndex(product = {}) {
@@ -130,6 +167,20 @@ window.DJ = window.DJ || {};
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+  }
+
+  function validateAdminJsonImportFile(file) {
+    if (!file) {
+      throw new Error('Choose a JSON backup file to import.');
+    }
+
+    if (file.size > MAX_ADMIN_JSON_IMPORT_BYTES) {
+      throw new Error('That backup is too large for a browser-local import.');
+    }
+
+    if (file.name && !/\.json$/i.test(file.name)) {
+      throw new Error('Admin imports must be JSON backup files.');
+    }
   }
 
   async function resizeImageToDataUrl(file) {
@@ -720,6 +771,7 @@ window.DJ = window.DJ || {};
       if (!file) return;
 
       try {
+        validateAdminJsonImportFile(file);
         const imported = parseImportedCustomProducts(JSON.parse(await file.text()));
         if (!imported.length) {
           throw new Error('No valid items were found in that file.');
@@ -728,6 +780,11 @@ window.DJ = window.DJ || {};
         if (!DJ.saveCustomProducts(merged)) {
           throw new Error('Unable to save the imported items in this browser.');
         }
+        customState.search = '';
+        customState.category = 'All';
+        if (searchInput) searchInput.value = '';
+        if (categoryFilter) categoryFilter.value = 'All';
+        handleCustomSearch.cancel?.();
         renderCustomItems();
         DJ.setStatus('adminStatus', `${imported.length} item${imported.length === 1 ? '' : 's'} imported successfully.`, 'success');
       } catch (error) {
@@ -897,8 +954,11 @@ window.DJ = window.DJ || {};
         }
 
         try {
-          const response = await fetch('products.json', {
-            cache: 'force-cache',
+          const productSource = typeof DJ.versionedProductAsset === 'function'
+            ? DJ.versionedProductAsset('products.json')
+            : 'products.json';
+          const response = await fetch(productSource, {
+            cache: 'default',
             signal: controller?.signal
           });
           if (!response.ok) {
@@ -907,6 +967,14 @@ window.DJ = window.DJ || {};
 
           const products = await response.json();
           return setBaseProducts(products);
+        } catch (error) {
+          const bundledProducts = typeof DJ.loadPreloadedProductsForSource === 'function'
+            ? await DJ.loadPreloadedProductsForSource('products.json').catch(() => null)
+            : null;
+          if (bundledProducts) {
+            return setBaseProducts(bundledProducts);
+          }
+          throw error;
         } finally {
           if (controller) {
             window.removeEventListener('pagehide', abortOnPageHide);
@@ -979,6 +1047,10 @@ window.DJ = window.DJ || {};
     return Boolean(image && !/placeholder-/i.test(image));
   }
 
+  function isContactPriceProduct(product = {}) {
+    return /contact|ask|inquir/i.test(String(DJ.displayPrice(product) || product.priceLabel || product.price || ''));
+  }
+
   function getExistingListingSku(product = {}) {
     const categoryPrefix = String(product.category || 'X').trim().slice(0, 3).toUpperCase() || 'DJH';
     return `DJH-${categoryPrefix}-${String(product.id || '').padStart(4, '0')}`;
@@ -996,6 +1068,7 @@ window.DJ = window.DJ || {};
     if (status === 'NoGallery') return !(Array.isArray(product.imageGallery) && product.imageGallery.length);
     if (status === 'Priced') return Number.isFinite(DJ.numericPrice(product));
     if (status === 'Unpriced') return !Number.isFinite(DJ.numericPrice(product));
+    if (status === 'ContactPrice') return isContactPriceProduct(product);
     if (status === 'Featured') return Boolean(product.isFeatured);
     if (status === 'NotFeatured') return !product.isFeatured;
     if (status === 'NeedsReview') return productNeedsListingReview(product);
@@ -1087,19 +1160,36 @@ window.DJ = window.DJ || {};
   }
 
   async function importStorefrontEdits(file) {
-    // Storefront edit exports are intentionally forgiving: missing sections fall
-    // back to empty objects/arrays so partial exports can still be restored.
+    validateAdminJsonImportFile(file);
+
+    // Storefront edit exports are intentionally forgiving: missing sections keep
+    // the current local values so partial backups can be restored without
+    // accidentally wiping unrelated browser edits.
     const parsed = JSON.parse(await file.text());
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
       throw new Error('That file did not contain storefront edit data.');
     }
 
-    const nextOverrides = parsed.productOverrides && typeof parsed.productOverrides === 'object' && !Array.isArray(parsed.productOverrides)
-      ? parsed.productOverrides
-      : {};
-    const nextDeletedIds = Array.isArray(parsed.deletedProductIds)
-      ? parsed.deletedProductIds
-      : [];
+    const hasOverridesSection = Object.prototype.hasOwnProperty.call(parsed, 'productOverrides');
+    const hasDeletedIdsSection = Object.prototype.hasOwnProperty.call(parsed, 'deletedProductIds');
+    if (!hasOverridesSection && !hasDeletedIdsSection) {
+      throw new Error('That backup does not include product overrides or deleted listing ids.');
+    }
+
+    if (hasOverridesSection && (
+      !parsed.productOverrides
+      || typeof parsed.productOverrides !== 'object'
+      || Array.isArray(parsed.productOverrides)
+    )) {
+      throw new Error('Product overrides in that backup are not valid.');
+    }
+
+    if (hasDeletedIdsSection && !Array.isArray(parsed.deletedProductIds)) {
+      throw new Error('Deleted listing ids in that backup are not valid.');
+    }
+
+    const nextOverrides = hasOverridesSection ? parsed.productOverrides : DJ.getProductOverrides();
+    const nextDeletedIds = hasDeletedIdsSection ? parsed.deletedProductIds : DJ.getDeletedProductIds();
 
     if (!DJ.saveProductOverrides(nextOverrides) || !DJ.saveDeletedProductIds(nextDeletedIds)) {
       throw new Error(getStorageFailureMessage());
@@ -1195,6 +1285,10 @@ window.DJ = window.DJ || {};
   }
 
   function formatAdminCondition(value = '') {
+    if (typeof DJ.formatConditionLabel === 'function') {
+      return DJ.formatConditionLabel(value);
+    }
+
     const parts = String(value || '')
       .split('|')
       .map((part) => part.trim())
@@ -1231,6 +1325,7 @@ window.DJ = window.DJ || {};
     if (!hasMainPhoto(product)) badges.push({ label: 'No main photo', tone: 'warning' });
     if (!(Array.isArray(product.imageGallery) && product.imageGallery.length)) badges.push({ label: 'No gallery', tone: 'muted' });
     if (!Number.isFinite(DJ.numericPrice(product))) badges.push({ label: 'No price', tone: 'warning' });
+    if (isContactPriceProduct(product)) badges.push({ label: 'Contact price', tone: 'accent' });
     if (!String(product.condition || '').trim()) badges.push({ label: 'No condition', tone: 'warning' });
     return badges;
   }
@@ -1461,6 +1556,7 @@ window.DJ = window.DJ || {};
     const editedCount = products.filter((product) => overrideIds.has(Number(product.id))).length;
     const noPhotoCount = products.filter((product) => !hasMainPhoto(product)).length;
     const noGalleryCount = products.filter((product) => !(Array.isArray(product.imageGallery) && product.imageGallery.length)).length;
+    const contactPriceCount = products.filter(isContactPriceProduct).length;
     const needsReviewCount = products.filter(productNeedsListingReview).length;
     const featuredCount = products.filter((product) => product.isFeatured).length;
 
@@ -1471,6 +1567,7 @@ window.DJ = window.DJ || {};
       { label: 'Edited', value: editedCount, status: 'Edited' },
       { label: 'No main photo', value: noPhotoCount, status: 'NoPhoto' },
       { label: 'No gallery', value: noGalleryCount, status: 'NoGallery' },
+      { label: 'Contact price', value: contactPriceCount, status: 'ContactPrice' },
       { label: 'Needs review', value: needsReviewCount, status: 'NeedsReview' },
       { label: 'Ended', value: hiddenCount, status: null }
     ].map(({ label, value, status }) => {
@@ -1499,15 +1596,21 @@ window.DJ = window.DJ || {};
       'existingBulkApplyCondition',
       'existingBulkApplyCategory',
       'existingBulkApplyFeatured',
+      'existingBulkSyncPriceLabels',
       'existingBulkClearPhotos',
       'existingBulkResetOverrides',
       'existingBulkEndListings',
-      'existingExportSelectedCsv'
+      'existingExportSelectedCsv',
+      'existingCopySelectedLinks'
     ];
     const selectVisibleButton = document.getElementById('existingBulkSelectVisible');
     const selectNeedsReviewButton = document.getElementById('existingBulkSelectNeedsReview');
     const selectNoPhotoButton = document.getElementById('existingBulkSelectNoPhoto');
+    const selectNoGalleryButton = document.getElementById('existingBulkSelectNoGallery');
+    const selectContactPriceButton = document.getElementById('existingBulkSelectContactPrice');
+    const selectEditedButton = document.getElementById('existingBulkSelectEdited');
     const exportVisibleButton = document.getElementById('existingExportVisibleCsv');
+    const copyVisibleButton = document.getElementById('existingCopyVisibleLinks');
     const visibleSet = new Set(existingState.visibleIds);
     const selectedVisibleCount = [...existingState.selectedIds].filter((id) => visibleSet.has(id)).length;
     const allVisibleSelected = Boolean(existingState.visibleIds.length && selectedVisibleCount === existingState.visibleIds.length);
@@ -1537,8 +1640,20 @@ window.DJ = window.DJ || {};
     if (selectNoPhotoButton) {
       selectNoPhotoButton.disabled = !getEffectiveBaseProducts().some((product) => !hasMainPhoto(product));
     }
+    if (selectNoGalleryButton) {
+      selectNoGalleryButton.disabled = !getEffectiveBaseProducts().some((product) => !(Array.isArray(product.imageGallery) && product.imageGallery.length));
+    }
+    if (selectContactPriceButton) {
+      selectContactPriceButton.disabled = !getEffectiveBaseProducts().some(isContactPriceProduct);
+    }
+    if (selectEditedButton) {
+      selectEditedButton.disabled = !getEffectiveBaseProducts().some((product) => productHasLocalOverride(product.id));
+    }
     if (exportVisibleButton) {
       exportVisibleButton.disabled = !existingState.visibleIds.length;
+    }
+    if (copyVisibleButton) {
+      copyVisibleButton.disabled = !existingState.visibleIds.length;
     }
 
     selectedButtons.forEach((id) => {
@@ -1614,9 +1729,37 @@ window.DJ = window.DJ || {};
     );
   }
 
+  function selectNoGalleryListings() {
+    selectExistingListingsByPredicate(
+      (product) => !(Array.isArray(product.imageGallery) && product.imageGallery.length),
+      (count) => `${formatCountLabel(count, 'listing')} without gallery photos selected.`
+    );
+  }
+
+  function selectContactPriceListings() {
+    selectExistingListingsByPredicate(
+      isContactPriceProduct,
+      (count) => `${formatCountLabel(count, 'contact-price listing')} selected.`
+    );
+  }
+
+  function selectEditedListings() {
+    selectExistingListingsByPredicate(
+      (product) => productHasLocalOverride(product.id),
+      (count) => `${formatCountLabel(count, 'edited listing')} selected.`
+    );
+  }
+
   function getSelectedExistingProducts() {
     const selectedIds = new Set([...existingState.selectedIds].map(Number));
     return getEffectiveBaseProducts().filter((product) => selectedIds.has(Number(product.id)));
+  }
+
+  function buildStorefrontUrl(product = {}) {
+    const origin = window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : '';
+    return `${origin}/${DJ.productPageUrl(product)}`.replace(/([^:]\/)\/+/g, '$1');
   }
 
   function csvEscape(value = '') {
@@ -1644,9 +1787,6 @@ window.DJ = window.DJ || {};
       'Edited Locally',
       'Needs Review'
     ];
-    const origin = window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : '';
     const rows = products.map((product) => [
       getExistingListingSku(product),
       product.id || '',
@@ -1660,7 +1800,7 @@ window.DJ = window.DJ || {};
       product.image || '',
       Array.isArray(product.imageGallery) ? product.imageGallery.length : 0,
       product.photoHostPageUrl || '',
-      `${origin}/${DJ.productPageUrl(product)}`.replace(/([^:]\/)\/+/g, '$1'),
+      buildStorefrontUrl(product),
       product.isFeatured ? 'Yes' : 'No',
       productHasLocalOverride(product.id) ? 'Yes' : 'No',
       productNeedsListingReview(product) ? 'Yes' : 'No'
@@ -1875,11 +2015,78 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function bulkSyncPriceLabels() {
+    const products = getSelectedExistingProducts();
+    if (!products.length) return;
+
+    const patches = new Map();
+    products.forEach((product) => {
+      const price = DJ.numericPrice(product);
+      if (!Number.isFinite(price)) return;
+      const nextLabel = DJ.currency(price);
+      if (String(product.priceLabel || '') !== nextLabel) {
+        patches.set(Number(product.id), { priceLabel: nextLabel });
+      }
+    });
+
+    if (!patches.size) {
+      DJ.setStatus('adminStatus', 'Selected listings already have matching price labels.', 'info');
+      return;
+    }
+
+    if (!window.confirm(`Sync price labels for ${formatCountLabel(patches.size, 'selected listing')}?`)) return;
+
+    if (saveBulkExistingOverrides(patches)) {
+      DJ.setStatus('adminStatus', `Price labels synced for ${formatCountLabel(patches.size, 'listing')}.`, 'success');
+      renderExistingListings();
+      if (existingState.editingId) populateExistingListingForm(existingState.editingId);
+    } else {
+      DJ.setStatus('adminStatus', getStorageFailureMessage(), 'error');
+    }
+  }
+
+  async function copyListingLinks(products = [], label = 'listing link') {
+    if (!products.length) return;
+
+    const lines = products.map((product) => [
+      product.name || `Listing #${product.id}`,
+      DJ.displayPrice(product),
+      buildStorefrontUrl(product)
+    ].filter(Boolean).join(' | '));
+
+    try {
+      if (typeof DJ.copyText === 'function') {
+        await DJ.copyText(lines.join('\n'));
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = lines.join('\n');
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      }
+      DJ.setStatus('adminStatus', `${formatCountLabel(products.length, label)} copied.`, 'success');
+    } catch {
+      DJ.setStatus('adminStatus', 'This browser blocked clipboard access.', 'error');
+    }
+  }
+
+  async function copySelectedListingLinks() {
+    await copyListingLinks(getSelectedExistingProducts(), 'selected listing link');
+  }
+
+  async function copyVisibleListingLinks() {
+    await copyListingLinks(getFilteredExistingProducts().products, 'visible listing link');
+  }
+
   function renderExistingListings() {
     const container = document.getElementById('existingListingsList');
     const count = document.getElementById('existingListingsCount');
     if (!container) return;
 
+    applyExistingDensityPreference();
     const { products, total, limited } = getFilteredExistingProducts();
     existingState.visibleIds = products.map((product) => Number(product.id));
     clearInvisibleExistingSelections();
@@ -2074,16 +2281,21 @@ window.DJ = window.DJ || {};
     const categoryFilter = document.getElementById('existingListingCategoryFilter');
     const statusFilter = document.getElementById('existingListingStatusFilter');
     const sortSelect = document.getElementById('existingListingSort');
+    const densitySelect = document.getElementById('existingListingDensity');
     const resetFiltersButton = document.getElementById('resetExistingListingFilters');
     const bulkSelectVisibleButton = document.getElementById('existingBulkSelectVisible');
     const bulkSelectNeedsReviewButton = document.getElementById('existingBulkSelectNeedsReview');
     const bulkSelectNoPhotoButton = document.getElementById('existingBulkSelectNoPhoto');
+    const bulkSelectNoGalleryButton = document.getElementById('existingBulkSelectNoGallery');
+    const bulkSelectContactPriceButton = document.getElementById('existingBulkSelectContactPrice');
+    const bulkSelectEditedButton = document.getElementById('existingBulkSelectEdited');
     const bulkClearSelectionButton = document.getElementById('existingBulkClearSelection');
     const bulkApplyPriceButton = document.getElementById('existingBulkApplyPriceChange');
     const bulkApplyPriceLabelButton = document.getElementById('existingBulkApplyPriceLabel');
     const bulkApplyConditionButton = document.getElementById('existingBulkApplyCondition');
     const bulkApplyCategoryButton = document.getElementById('existingBulkApplyCategory');
     const bulkApplyFeaturedButton = document.getElementById('existingBulkApplyFeatured');
+    const bulkSyncPriceLabelsButton = document.getElementById('existingBulkSyncPriceLabels');
     const bulkPriceInput = document.getElementById('existingBulkPricePercent');
     const bulkPriceLabelInput = document.getElementById('existingBulkPriceLabel');
     const bulkConditionInput = document.getElementById('existingBulkCondition');
@@ -2094,6 +2306,8 @@ window.DJ = window.DJ || {};
     const bulkEndListingsButton = document.getElementById('existingBulkEndListings');
     const exportVisibleCsvButton = document.getElementById('existingExportVisibleCsv');
     const exportSelectedCsvButton = document.getElementById('existingExportSelectedCsv');
+    const copySelectedLinksButton = document.getElementById('existingCopySelectedLinks');
+    const copyVisibleLinksButton = document.getElementById('existingCopyVisibleLinks');
     const form = document.getElementById('existingListingForm');
     const replaceMainInput = document.getElementById('existingReplaceMainPhotoInput');
     const replaceMainButton = document.getElementById('existingReplaceMainPhotoButton');
@@ -2110,6 +2324,7 @@ window.DJ = window.DJ || {};
     const importEditsInput = document.getElementById('importStorefrontEditsInput');
 
     bindExistingListingInteractions();
+    applyExistingDensityPreference();
 
     const handleExistingSearch = debounce((value) => {
       existingState.search = String(value || '');
@@ -2155,6 +2370,13 @@ window.DJ = window.DJ || {};
       renderExistingListings();
     });
 
+    densitySelect?.addEventListener('change', () => {
+      existingState.density = densitySelect.value === 'compact' ? 'compact' : 'comfortable';
+      writeAdminViewPreference('density', existingState.density);
+      applyExistingDensityPreference();
+      DJ.setStatus('adminStatus', existingState.density === 'compact' ? 'Compact listing rows enabled.' : 'Comfortable listing rows enabled.', 'info');
+    });
+
     resetFiltersButton?.addEventListener('click', () => {
       existingState.search = '';
       existingState.category = 'All';
@@ -2165,6 +2387,8 @@ window.DJ = window.DJ || {};
       if (categoryFilter) categoryFilter.value = 'All';
       if (statusFilter) statusFilter.value = 'All';
       if (sortSelect) sortSelect.value = 'name-asc';
+      existingState.density = readAdminViewPreference('density', 'comfortable');
+      applyExistingDensityPreference();
       if (bulkPriceInput) bulkPriceInput.value = '';
       if (bulkPriceLabelInput) bulkPriceLabelInput.value = '';
       if (bulkConditionInput) bulkConditionInput.value = '';
@@ -2178,12 +2402,16 @@ window.DJ = window.DJ || {};
     bulkSelectVisibleButton?.addEventListener('click', selectVisibleExistingListings);
     bulkSelectNeedsReviewButton?.addEventListener('click', selectNeedsReviewListings);
     bulkSelectNoPhotoButton?.addEventListener('click', selectNoPhotoListings);
+    bulkSelectNoGalleryButton?.addEventListener('click', selectNoGalleryListings);
+    bulkSelectContactPriceButton?.addEventListener('click', selectContactPriceListings);
+    bulkSelectEditedButton?.addEventListener('click', selectEditedListings);
     bulkClearSelectionButton?.addEventListener('click', () => clearExistingSelection('Selection cleared.'));
     bulkApplyPriceButton?.addEventListener('click', bulkApplyPricePercent);
     bulkApplyPriceLabelButton?.addEventListener('click', bulkApplyPriceLabel);
     bulkApplyConditionButton?.addEventListener('click', bulkApplyCondition);
     bulkApplyCategoryButton?.addEventListener('click', bulkApplyCategory);
     bulkApplyFeaturedButton?.addEventListener('click', bulkApplyFeaturedMode);
+    bulkSyncPriceLabelsButton?.addEventListener('click', bulkSyncPriceLabels);
     bulkClearPhotosButton?.addEventListener('click', bulkClearMainPhotos);
     bulkResetOverridesButton?.addEventListener('click', bulkResetOverrides);
     bulkEndListingsButton?.addEventListener('click', bulkEndListings);
@@ -2193,6 +2421,8 @@ window.DJ = window.DJ || {};
     exportSelectedCsvButton?.addEventListener('click', () => {
       exportExistingListingsCsv(getSelectedExistingProducts(), 'dj-selected-listings');
     });
+    copySelectedLinksButton?.addEventListener('click', copySelectedListingLinks);
+    copyVisibleLinksButton?.addEventListener('click', copyVisibleListingLinks);
 
     exportEditsButton?.addEventListener('click', () => {
       exportStorefrontEdits();
@@ -2386,3 +2616,4 @@ window.DJ = window.DJ || {};
 
   window.deleteCustomItem = deleteCustomProduct;
 })();
+

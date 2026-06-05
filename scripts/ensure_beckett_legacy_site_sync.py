@@ -365,7 +365,8 @@ def build_missing_product(row: dict[str, Any], source_photo: Path | None, source
         copy_asset(source_photo, image_path)
         gallery = [image_path]
     else:
-        image_path = f"assets/placeholder-{category.lower()}.svg"
+        placeholder_name = f"placeholder-{category.lower()}.svg"
+        image_path = str(PurePosixPath("assets", placeholder_name))
         gallery = [image_path]
 
     features = card_features(name, row.get("Title"), condition)

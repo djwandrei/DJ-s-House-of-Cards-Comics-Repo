@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "/",
   "name": "DJ's House of Cards & Comics",
   "short_name": "DJ's Cards",
@@ -24,10 +24,10 @@
       "description": "Browse comic listings and filters."
     },
     {
-      "name": "Contact DJ",
-      "short_name": "Contact",
-      "url": "/contact.html",
-      "description": "Open the contact page and create an email draft."
+      "name": "Wishlist",
+      "short_name": "Wishlist",
+      "url": "/wishlist.html",
+      "description": "Open saved items on this device."
     }
   ],
   "icons": [
@@ -45,3 +45,4 @@
     }
   ]
 }
+

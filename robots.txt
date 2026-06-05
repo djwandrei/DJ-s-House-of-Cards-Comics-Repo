@@ -1,6 +1,7 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /account.html
 Disallow: /wishlist.html
 Disallow: /offline.html
 

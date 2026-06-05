@@ -3,6 +3,7 @@
 .deploy/
 .tmp/
 .codex/
+.codex-screenshots/
 supabase/.env
 supabase/functions/.env
 supabase/functions/*/.env

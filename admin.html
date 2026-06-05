@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
  <head>
   <meta charset="utf-8"/>
@@ -14,7 +14,7 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260531d" rel="stylesheet"/>
+ <link href="styles.css?v=20260605a" rel="stylesheet"/>
 <link href="styles-mobile-overrides.css?v=20260531a" rel="stylesheet"/>
   <meta content="noindex,nofollow" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
@@ -31,12 +31,12 @@
   <meta content="Admin dashboard for managing a Supabase-backed product catalog on DJ's House of Cards &amp; Comics." name="twitter:description"/>
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" name="twitter:image"/>
   <link href="https://www.djshouseofcards-comics.com/admin.html" rel="canonical"/>
-  <link href="site.webmanifest?v=20260526e" rel="manifest"/>
+  <link href="site.webmanifest?v=20260605a" rel="manifest"/>
   <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
   <link href="assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
   <!-- Shared JavaScript bundles. Load order matters because later files depend on window.DJ helpers. -->
   <script id="seo-structured-data" type="application/ld+json">
-   {"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://www.djshouseofcards-comics.com/#organization", "name": "DJ's House of Cards & Comics", "url": "https://www.djshouseofcards-comics.com/", "logo": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "image": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "email": "contact@djshouseofcards-comics.com"}, {"@type": "WebSite", "@id": "https://www.djshouseofcards-comics.com/#website", "url": "https://www.djshouseofcards-comics.com/", "name": "DJ's House of Cards & Comics", "publisher": {"@id": "https://www.djshouseofcards-comics.com/#organization"}}, {"@type": "WebPage", "@id": "https://www.djshouseofcards-comics.com/admin.html#webpage", "url": "https://www.djshouseofcards-comics.com/admin.html", "name": "Admin Dashboard | DJ's House of Cards & Comics", "description": "Admin dashboard for managing a Supabase-backed product catalog on DJ's House of Cards & Comics.", "isPartOf": {"@id": "https://www.djshouseofcards-comics.com/#website"}, "about": {"@id": "https://www.djshouseofcards-comics.com/#organization"}, "primaryImageOfPage": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "inLanguage": "en-US"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.djshouseofcards-comics.com/"}, {"@type": "ListItem", "position": 2, "name": "Admin", "item": "https://www.djshouseofcards-comics.com/admin.html"}]}]}
+   {"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://www.djshouseofcards-comics.com/#organization", "name": "DJ's House of Cards & Comics", "url": "https://www.djshouseofcards-comics.com/", "logo": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "image": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "email": "djscardscomics13@gmail.com"}, {"@type": "WebSite", "@id": "https://www.djshouseofcards-comics.com/#website", "url": "https://www.djshouseofcards-comics.com/", "name": "DJ's House of Cards & Comics", "publisher": {"@id": "https://www.djshouseofcards-comics.com/#organization"}}, {"@type": "WebPage", "@id": "https://www.djshouseofcards-comics.com/admin.html#webpage", "url": "https://www.djshouseofcards-comics.com/admin.html", "name": "Admin Dashboard | DJ's House of Cards & Comics", "description": "Admin dashboard for managing a Supabase-backed product catalog on DJ's House of Cards & Comics.", "isPartOf": {"@id": "https://www.djshouseofcards-comics.com/#website"}, "about": {"@id": "https://www.djshouseofcards-comics.com/#organization"}, "primaryImageOfPage": "https://www.djshouseofcards-comics.com/assets/dj-logo.png", "inLanguage": "en-US"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.djshouseofcards-comics.com/"}, {"@type": "ListItem", "position": 2, "name": "Admin", "item": "https://www.djshouseofcards-comics.com/admin.html"}]}]}
   </script>
  </head>
  <body data-page="admin">
@@ -141,13 +141,13 @@
       </ol>
      </nav>
      <span class="kicker">
-      Admin Dashboard
+      Live catalog tools
      </span>
      <h1 class="page-title">
-      Manage your live catalog with Supabase-backed product, photo, and listing controls.
+      Admin Dashboard
      </h1>
      <p>
-      Configure backend-config.js, then sign in below to edit listings remotely, upload photos to storage, and manage your live storefront from one backend-first admin.
+      Sign in to manage listings, photos, pricing, product details, and storefront checks from one backend-first workspace.
      </p>
     </div>
    </section>
@@ -164,7 +164,7 @@
          Metrics and collection summary
         </h2>
         <p class="section-subtitle">
-         Review local engagement trends and catalog totals before making pricing, photo, or product-page decisions.
+         Review local engagement trends and catalog totals before making pricing, photo, or listing updates.
         </p>
        </div>
        <div aria-label="Admin insights sections" class="admin-insights-tabs" role="tablist">
@@ -577,6 +577,9 @@
             <option value="Unpriced">
              No listed price
             </option>
+            <option value="ContactPrice">
+             Contact price
+            </option>
             <option value="Featured">
              Featured
             </option>
@@ -614,6 +617,17 @@
             </option>
            </select>
           </label>
+          <label for="existingListingDensity">
+           Rows
+           <select id="existingListingDensity">
+            <option value="comfortable">
+             Comfortable
+            </option>
+            <option value="compact">
+             Compact
+            </option>
+           </select>
+          </label>
           <button class="button-secondary" id="resetExistingListingFilters" type="button">
            Clear Filters
           </button>
@@ -640,7 +654,16 @@
             Select Needs Review
            </button>
            <button class="button-secondary" id="existingBulkSelectNoPhoto" type="button">
-            Select No Photo
+           Select No Photo
+           </button>
+           <button class="button-secondary" id="existingBulkSelectNoGallery" type="button">
+            Select No Gallery
+           </button>
+           <button class="button-secondary" id="existingBulkSelectContactPrice" type="button">
+            Select Contact Price
+           </button>
+           <button class="button-secondary" id="existingBulkSelectEdited" type="button">
+            Select Edited
            </button>
            <button class="button-secondary" id="existingBulkClearSelection" type="button">
             Clear Selection
@@ -710,7 +733,10 @@
             </select>
            </label>
            <button class="button-secondary" id="existingBulkApplyFeatured" type="button">
-            Set Featured
+           Set Featured
+           </button>
+           <button class="button-secondary" id="existingBulkSyncPriceLabels" type="button">
+            Sync Price Labels
            </button>
            <button class="button-secondary" id="existingBulkClearPhotos" type="button">
             Clear Photos
@@ -722,7 +748,13 @@
             Export Visible CSV
            </button>
            <button class="button-secondary" id="existingExportSelectedCsv" type="button">
-            Export Selected CSV
+           Export Selected CSV
+           </button>
+           <button class="button-secondary" id="existingCopySelectedLinks" type="button">
+            Copy Selected Links
+           </button>
+           <button class="button-secondary" id="existingCopyVisibleLinks" type="button">
+            Copy Visible Links
            </button>
            <button class="button-ghost" id="existingBulkEndListings" type="button">
             End Selected
@@ -736,7 +768,7 @@
           <button class="button-secondary" id="importStorefrontEditsButton" type="button">
            Import Storefront Edits
           </button>
-          <input accept="application/json" aria-hidden="true" class="sr-only" id="importStorefrontEditsInput" tabindex="-1" type="file"/>
+          <input accept="application/json" aria-hidden="true" aria-label="Import storefront edits JSON" class="sr-only" id="importStorefrontEditsInput" tabindex="-1" type="file"/>
          </div>
         </div>
         <div class="custom-items" id="existingListingsList">
@@ -871,7 +903,7 @@
            Delete from Storefront
           </button>
          </div>
-         <input accept="image/*" aria-hidden="true" class="sr-only" id="existingReplaceMainPhotoInput" tabindex="-1" type="file"/>
+         <input accept="image/*" aria-hidden="true" aria-label="Upload replacement main photo" class="sr-only" id="existingReplaceMainPhotoInput" tabindex="-1" type="file"/>
          <div class="admin-gallery-editor">
           <div class="admin-gallery-editor__header">
            <h3 class="section-title section-title--small">
@@ -891,7 +923,7 @@
            <button class="button-secondary" id="existingAddGalleryFileButton" type="button">
             Upload Photo
            </button>
-           <input accept="image/*" aria-hidden="true" class="sr-only" id="existingGalleryFileInput" tabindex="-1" type="file"/>
+           <input accept="image/*" aria-hidden="true" aria-label="Upload gallery photo" class="sr-only" id="existingGalleryFileInput" tabindex="-1" type="file"/>
           </div>
          </div>
          <div class="inline-actions compact">
@@ -987,13 +1019,15 @@
   </script>
   <script defer="" src="supabase-client.js?v=20260525a">
   </script>
-<script defer="" src="core.js?v=20260530a">
+<script defer="" src="core.js?v=20260605a">
   </script>
-<script defer="" src="nav.js?v=20260530a">
+<script defer="" src="nav.js?v=20260605a">
   </script>
-  <script defer="" src="admin.js?v=20260531d">
+  <script defer="" src="admin.js?v=20260602b">
   </script>
-<script defer="" src="backend-admin.js?v=20260531a">
+<script defer="" src="backend-admin.js?v=20260605a">
   </script>
  </body>
 </html>
+
+

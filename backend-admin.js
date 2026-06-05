@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Backend-first admin workflow.
  * -----------------------------------------------------------------------------
  * This file powers the Supabase-facing admin experience: sign in, browse remote
@@ -402,7 +402,7 @@ window.DJ = window.DJ || {};
                       </div>
                     </div>
                     <p class="helper-text admin-side-note">The main image is what shoppers see first in the product grid. Use Set as Main in the gallery to promote any photo.</p>
-                    <input accept="image/*" aria-hidden="true" class="sr-only" id="backendMainImageFile" tabindex="-1" type="file">
+                    <input accept="image/*" aria-hidden="true" aria-label="Upload backend main photo" class="sr-only" id="backendMainImageFile" tabindex="-1" type="file">
 
                     <div class="admin-gallery-editor">
                       <div class="admin-gallery-editor__header">
@@ -414,7 +414,7 @@ window.DJ = window.DJ || {};
                         <input autocomplete="off" id="backendGalleryUrl" placeholder="Paste a gallery image URL" type="text">
                         <button class="button-secondary" id="backendAddGalleryUrl" type="button">Add URL</button>
                         <button class="button-secondary" id="backendAddGalleryFile" type="button">Upload Photo</button>
-                        <input accept="image/*" aria-hidden="true" class="sr-only" id="backendGalleryFile" tabindex="-1" type="file">
+                        <input accept="image/*" aria-hidden="true" aria-label="Upload backend gallery photo" class="sr-only" id="backendGalleryFile" tabindex="-1" type="file">
                       </div>
                     </div>
                   </div>
@@ -614,12 +614,12 @@ window.DJ = window.DJ || {};
     const enabled = Boolean(backend()?.isConfigured());
     if (title) {
       title.textContent = enabled
-        ? 'Manage your live catalog with Supabase-backed product, photo, and listing controls.'
-        : 'Connect this admin to Supabase to manage products, photos, and listings remotely.';
+        ? 'Admin Dashboard'
+        : 'Connect Supabase Admin';
     }
     if (copy) {
       copy.textContent = enabled
-        ? 'This admin is running in backend-first mode. Use the Supabase tools below for live catalog updates, and keep the browser-only fallback tools below for recovery or on-device testing.'
+        ? 'Manage listings, photos, pricing, product details, and storefront checks from the Supabase-backed workspace below.'
         : 'Configure backend-config.js with your Supabase project details, then sign in below to manage the live storefront remotely.';
     }
   }
@@ -1301,9 +1301,19 @@ window.DJ = window.DJ || {};
       products = await DJ.loadPreloadedProductsForSource(source).catch(() => null);
     }
     if (!products) {
-      const response = await fetch(source, { cache: 'force-cache' });
-      if (!response.ok) throw new Error(`Failed to fetch ${source} (${response.status})`);
-      products = await response.json();
+      const versionedSource = typeof DJ.versionedProductAsset === 'function'
+        ? DJ.versionedProductAsset(source)
+        : source;
+      try {
+        const response = await fetch(versionedSource, { cache: 'default' });
+        if (!response.ok) throw new Error(`Failed to fetch ${source} (${response.status})`);
+        products = await response.json();
+      } catch (error) {
+        products = typeof DJ.loadPreloadedProductsForSource === 'function'
+          ? await DJ.loadPreloadedProductsForSource(source).catch(() => null)
+          : null;
+        if (!products) throw error;
+      }
     }
 
     return Array.isArray(products) ? products : [];
@@ -1691,3 +1701,4 @@ window.DJ = window.DJ || {};
   // Wait for the admin page shell and shared DJ helpers before wiring the backend UI.
   document.addEventListener('DOMContentLoaded', initBackendAdmin);
 })();
+

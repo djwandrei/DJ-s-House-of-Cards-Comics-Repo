@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Navigation helpers for the shared site header.
  * -----------------------------------------------------------------------------
  * This module keeps the primary navigation in sync with the current page,
@@ -58,6 +58,27 @@
     return COMPACT_NAV_QUERY ? COMPACT_NAV_QUERY.matches : window.innerWidth <= COMPACT_NAV_BREAKPOINT;
   }
 
+  function dedupePrimaryNavLinks() {
+    const navList = document.querySelector('.site-nav .primary-nav__list');
+    if (!navList) return;
+
+    const seen = new Set();
+    [...navList.children].forEach((item) => {
+      const link = item.querySelector(':scope > a[href], :scope > .primary-nav__item-group > a[href]');
+      if (!link) return;
+
+      const label = link.textContent.trim().toLowerCase();
+      const href = link.getAttribute('href') || '';
+      const key = `${href}|${label}`;
+      if (seen.has(key)) {
+        item.remove();
+        return;
+      }
+
+      seen.add(key);
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // Active-state management
   // ---------------------------------------------------------------------------
@@ -68,6 +89,7 @@
    * link and the current submenu link as aria-current at the same time.
    */
   function applyActiveNavState() {
+    dedupePrimaryNavLinks();
     const pageKey = document.body.dataset.page || '';
     const currentFile = window.location.pathname.split('/').pop() || 'index.html';
     const targetFile = PAGE_TO_NAV_TARGET[pageKey] || currentFile;
@@ -123,6 +145,8 @@
     const nav = document.getElementById('siteNav');
     const navToggle = document.getElementById('navToggle');
 
+    dedupePrimaryNavLinks();
+
     if (!nav || !navToggle || document.body.dataset.primaryNavBound === 'true') {
       return;
     }
@@ -146,7 +170,7 @@
       title.textContent = getCurrentPageLabel();
 
       const copy = document.createElement('p');
-      copy.textContent = 'Jump between departments and saved items without losing your place.';
+      copy.textContent = 'Move between sports cards, comics, collectibles, wishlist, and account tools.';
 
       mobileHeader.append(eyebrow, title, copy);
       nav.insertBefore(mobileHeader, nav.firstChild);
@@ -549,3 +573,4 @@
     bootNavigation();
   }
 })();
+

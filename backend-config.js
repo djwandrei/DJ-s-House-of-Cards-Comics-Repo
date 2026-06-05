@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Backend configuration
  * -----------------------------------------------------------------------------
  * Browser-safe public config only. Never put a service-role key in this file.
@@ -28,4 +28,5 @@
     siteUrl: isUsableOrigin ? origin : 'https://www.djshouseofcards-comics.com'
   };
 })();
+
 

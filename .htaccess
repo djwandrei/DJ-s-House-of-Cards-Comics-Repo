@@ -4,7 +4,8 @@ RewriteEngine On
 
 # Internal build, deployment, and backend source files should never be served
 # from public_html if the repository is uploaded as a whole.
-RewriteRule ^(?:supabase|scripts|outputs|_backups|\.deploy|\.ssl|\.codex)(?:/|$) - [F,L,NC]
+RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L,NC]
+RewriteRule ^(?:supabase|scripts|outputs|_backups|\.deploy|\.ssl|\.codex(?:-screenshots)?)(?:/|$) - [F,L,NC]
 RewriteRule ^(?:STRIPE-SUPABASE-SETUP|CPANEL-DEPLOY)\.md$ - [F,L,NC]
 RewriteRule \.sql$ - [F,L,NC]
 

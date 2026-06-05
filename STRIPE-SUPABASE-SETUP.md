@@ -90,8 +90,10 @@ sessions and disables it only for the Stripe webhook, because Stripe signs the
 webhook with `STRIPE_WEBHOOK_SECRET` instead of a Supabase user token.
 
 The storefront calls `create-checkout-session` when a signed-in customer clicks
-Buy Now on a fixed-price listing. Listings with price ranges or "contact for
-price" still open the inquiry email instead of taking payment.
+Buy Now on a fixed-price listing. Listings with price ranges charge the high
+end of the range in Stripe while keeping the original range visible as guide
+information in the item details. Listings marked "contact for price" still
+open the inquiry email instead of taking payment.
 
 ## Stripe webhook
 

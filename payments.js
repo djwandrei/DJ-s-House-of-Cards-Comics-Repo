@@ -1,9 +1,8 @@
-/**
+﻿/**
  * Customer accounts and Stripe Checkout bridge.
  * -----------------------------------------------------------------------------
  * This file only uses browser-safe Supabase auth and Edge Function calls. Stripe
  * secret keys must stay in Supabase function secrets, never in site JavaScript.
- * Deploy cache version: 20260525a.
  */
 
 window.DJ = window.DJ || {};
@@ -36,11 +35,10 @@ window.DJ = window.DJ || {};
   }
 
   function isDirectCheckoutEligible(product = {}) {
-    const price = Number(product.price);
+    const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = getPriceLabel(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
-    if (/\$\s*[\d,.]+\s*(?:-|\u2013|\u2014|\bto\b)\s*\$?\s*[\d,.]+/.test(displayPrice)) return false;
     return true;
   }
 
@@ -282,7 +280,21 @@ window.DJ = window.DJ || {};
 
   function injectAccountControl() {
     const navList = document.querySelector('.site-nav .primary-nav__list');
-    if (!navList || navList.querySelector('[data-customer-account-button]')) return;
+    if (!navList) return;
+
+    const accountLinks = [...navList.querySelectorAll('a[href="account.html"]')];
+    accountLinks.slice(1).forEach((link) => {
+      link.closest('.primary-nav__item')?.remove();
+    });
+
+    if (navList.querySelector('[data-customer-account-button]')) return;
+
+    const existingAccountLink = accountLinks[0];
+    if (existingAccountLink) {
+      existingAccountLink.classList.add('customer-account-button');
+      existingAccountLink.setAttribute('data-customer-account-button', '');
+      return;
+    }
 
     const item = document.createElement('li');
     item.className = 'primary-nav__item customer-account-item';
@@ -491,3 +503,4 @@ window.DJ = window.DJ || {};
 
   document.addEventListener('DOMContentLoaded', init);
 })();
+

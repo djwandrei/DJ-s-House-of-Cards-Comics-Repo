@@ -4,8 +4,8 @@ Generate non-destructive product thumbnails under assets/thumbnails/.
 The script reads product image references from products.json, keeps the original
 asset tree intact, and writes WebP thumbnails into a mirrored folder structure:
 
-  assets/Personal collection/.../card.jpg
-  -> assets/thumbnails/Personal collection/.../card.webp
+  <asset-root>/<collection-folder>/<image-file>.jpg
+  -> assets/thumbnails/<collection-folder>/<image-file>.webp
 
 This is intentionally separate from the originals so the storefront can use
 smaller images for product cards and thumb rails while modal/detail views keep

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Remote catalog adapter used when backend mode is enabled.
  * -----------------------------------------------------------------------------
  * The storefront and admin both talk to this file instead of talking to Supabase
@@ -1005,3 +1005,4 @@ window.DJ = window.DJ || {};
     toRemoteProduct
   };
 })();
+

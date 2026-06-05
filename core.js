@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Core utilities shared by every page.
  * -----------------------------------------------------------------------------
  * This module creates the global window.DJ namespace and attaches the low-level
@@ -15,7 +15,7 @@ window.DJ = window.DJ || {};
   const preloadedBundlePromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260530a';
+  const PRODUCT_ASSET_VERSION = '20260605a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -32,6 +32,16 @@ window.DJ = window.DJ || {};
     'products-collectibles.json': 'products-data-collectibles.js',
     'products-sports.json': 'products-data-sports.js',
     'products-featured.json': 'products-data-featured.js'
+  };
+  const PRELOADED_PRODUCT_GLOBAL_BY_SOURCE = {
+    'products.json': 'DJ_PRODUCTS_FULL',
+    'products-baseball.json': 'DJ_PRODUCTS_BASEBALL',
+    'products-basketball.json': 'DJ_PRODUCTS_BASKETBALL',
+    'products-football.json': 'DJ_PRODUCTS_FOOTBALL',
+    'products-comics.json': 'DJ_PRODUCTS_COMICS',
+    'products-collectibles.json': 'DJ_PRODUCTS_COLLECTIBLES',
+    'products-sports.json': 'DJ_PRODUCTS_SPORTS',
+    'products-featured.json': 'DJ_PRODUCTS_FEATURED'
   };
 
   // Centralize localStorage keys so future refactors only need to update them in one place.
@@ -94,7 +104,7 @@ window.DJ = window.DJ || {};
     }
 
     if (typeof value === 'number' && Number.isFinite(value)) {
-      return `$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+      return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     const rawText = String(value).trim();
@@ -112,8 +122,47 @@ window.DJ = window.DJ || {};
 
     const numericValue = Number(match[0].replace(/,/g, ''));
     return Number.isFinite(numericValue)
-      ? `$${numericValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+      ? `$${numericValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : 'Contact for price';
+  }
+
+  function formatConditionLabel(value = '', options = {}) {
+    const parts = String(value || '')
+      .split('|')
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const uniqueParts = [];
+    const seen = new Set();
+
+    parts.forEach((part) => {
+      const key = part.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      uniqueParts.push(part);
+    });
+
+    if (!uniqueParts.length) {
+      return options.fallback || 'Condition not listed';
+    }
+
+    if (uniqueParts.some((part) => /^ungraded$/i.test(part))) {
+      return 'Ungraded';
+    }
+
+    const gradedPart = uniqueParts.find((part) => /\b(PSA\/DNA|PSA|BGS|BVG|BCCG|SGC|CGC|CSG|HGA|GMA|ISA|BECKETT)\b/i.test(part));
+    if (gradedPart) {
+      return gradedPart.replace(/\bbeckett\b/i, 'Beckett');
+    }
+
+    if (uniqueParts.some((part) => /^graded$/i.test(part))) {
+      return uniqueParts.find((part) => !/^graded$/i.test(part)) || 'Graded';
+    }
+
+    if (uniqueParts.some((part) => /^guide range listed$/i.test(part))) {
+      return 'Ungraded';
+    }
+
+    return uniqueParts[0] || options.fallback || 'Condition not listed';
   }
 
   function safeStorageGet(key) {
@@ -195,6 +244,16 @@ window.DJ = window.DJ || {};
         items: normalized,
         count: normalized.length,
         source
+      }
+    }));
+  }
+
+  function emitCatalogMutationChange(kind, source = 'local') {
+    window.dispatchEvent(new CustomEvent('dj:catalogmutation', {
+      detail: {
+        kind,
+        source,
+        timestamp: Date.now()
       }
     }));
   }
@@ -593,7 +652,12 @@ window.DJ = window.DJ || {};
    * breaking non-secure development snapshots.
    */
   function registerServiceWorker() {
-    if (!('serviceWorker' in navigator)) {
+    if (
+      !('serviceWorker' in navigator)
+      || !navigator.serviceWorker
+      || typeof navigator.serviceWorker.register !== 'function'
+      || typeof navigator.serviceWorker.addEventListener !== 'function'
+    ) {
       return;
     }
 
@@ -629,6 +693,10 @@ window.DJ = window.DJ || {};
 
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((registration) => {
         activateWaitingWorker(registration);
+
+        if (!registration || typeof registration.addEventListener !== 'function') {
+          return;
+        }
 
         registration.addEventListener('updatefound', () => {
           const installing = registration.installing;
@@ -933,12 +1001,6 @@ window.DJ = window.DJ || {};
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
         const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
         const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
-        if (!supportLinks.some((link) => link.getAttribute('href') === 'account.html')) {
-          const accountLink = document.createElement('a');
-          accountLink.href = 'account.html';
-          accountLink.textContent = 'Account';
-          supportLinks.splice(1, 0, accountLink);
-        }
         const groups = document.createElement('div');
         groups.className = 'footer-link-groups';
 
@@ -1085,12 +1147,14 @@ window.DJ = window.DJ || {};
       return url;
     }
 
-    return getBoundedCachedValue(safeAssetUrlCache, url, () => {
-      if (!/^assets\//i.test(url)) {
-        return url;
+    const normalizedUrl = url.trim().replace(/\\/g, '/');
+    return getBoundedCachedValue(safeAssetUrlCache, normalizedUrl, () => {
+      if (!/^assets\//i.test(normalizedUrl)) {
+        return normalizedUrl;
       }
 
-      return url
+      const [, assetPath = normalizedUrl, suffix = ''] = normalizedUrl.match(/^([^?]*)(\?.*)?$/) || [];
+      return assetPath
         .split('/')
         .map((segment, index) => {
           if (index === 0) {
@@ -1105,7 +1169,7 @@ window.DJ = window.DJ || {};
         })
         .join('/')
         .replace(/%28/g, '(')
-        .replace(/%29/g, ')');
+        .replace(/%29/g, ')') + suffix;
     });
   };
 
@@ -1119,13 +1183,14 @@ window.DJ = window.DJ || {};
     }
 
     return getBoundedCachedValue(assetUrlCandidatesCache, url, () => {
-      const safeUrl = DJ.safeAssetUrl(url);
-      if (!/^assets\//i.test(url)) {
+      const normalizedUrl = String(url).trim().replace(/\\/g, '/');
+      const safeUrl = DJ.safeAssetUrl(normalizedUrl);
+      if (!/^assets\//i.test(normalizedUrl)) {
         return safeUrl ? [safeUrl] : [];
       }
 
-      const lowerVariant = url.replace(/^Assets\//, 'assets/');
-      const upperVariant = url.replace(/^assets\//, 'Assets/');
+      const lowerVariant = normalizedUrl.replace(/^Assets\//, 'assets/');
+      const upperVariant = normalizedUrl.replace(/^assets\//, 'Assets/');
       return [...new Set([
         safeUrl,
         DJ.safeAssetUrl(lowerVariant),
@@ -1217,6 +1282,12 @@ window.DJ = window.DJ || {};
   DJ.getPreloadedProductsForSource = function getPreloadedProductsForSource(source) {
     if (preloadedProductsBySource.has(source)) {
       return preloadedProductsBySource.get(source);
+    }
+
+    const sourceGlobal = PRELOADED_PRODUCT_GLOBAL_BY_SOURCE[source];
+    if (sourceGlobal && Array.isArray(window[sourceGlobal])) {
+      preloadedProductsBySource.set(source, window[sourceGlobal]);
+      return window[sourceGlobal];
     }
 
     if (
@@ -1312,11 +1383,27 @@ window.DJ = window.DJ || {};
 
   DJ.currency = formatCurrency;
 
-  DJ.displayPrice = function displayPrice(item) {
-    return item?.priceLabel && String(item.priceLabel).trim() ? item.priceLabel : formatCurrency(item?.price);
-  };
+  function parsePriceRangeLabel(value = '') {
+    const label = String(value || '').trim();
+    const match = label.match(/\$?\s*([\d,]+(?:\.\d{1,2})?)\s*(?:-|[\u2013\u2014]|\bto\b)\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    if (!match) return null;
 
-  DJ.numericPrice = function numericPrice(item) {
+    const first = Number(match[1].replace(/,/g, ''));
+    const second = Number(match[2].replace(/,/g, ''));
+    if (!Number.isFinite(first) || !Number.isFinite(second)) return null;
+
+    return {
+      label,
+      low: Math.min(first, second),
+      high: Math.max(first, second)
+    };
+  }
+
+  function explicitPriceLabel(item) {
+    return String(item?.priceLabel || item?.displayPrice || '').trim();
+  }
+
+  function rawNumericPrice(item) {
     const price = item?.price;
     if (price == null || price === '') {
       return null;
@@ -1333,6 +1420,29 @@ window.DJ = window.DJ || {};
 
     const numericValue = Number(match[0].replace(/,/g, ''));
     return Number.isFinite(numericValue) ? numericValue : null;
+  }
+
+  DJ.priceRangeLabel = function priceRangeLabel(item) {
+    return parsePriceRangeLabel(explicitPriceLabel(item))?.label || '';
+  };
+
+  DJ.payablePrice = function payablePrice(item) {
+    const range = parsePriceRangeLabel(explicitPriceLabel(item));
+    if (range) return range.high;
+    return rawNumericPrice(item);
+  };
+
+  DJ.displayPrice = function displayPrice(item) {
+    const explicitLabel = explicitPriceLabel(item);
+    const range = parsePriceRangeLabel(explicitLabel);
+    if (range) return formatCurrency(range.high);
+    return explicitLabel || formatCurrency(item?.price);
+  };
+
+  DJ.formatConditionLabel = formatConditionLabel;
+
+  DJ.numericPrice = function numericPrice(item) {
+    return DJ.payablePrice(item);
   };
 
   DJ.productPageUrl = function productPageUrl(product = {}) {
@@ -1369,6 +1479,24 @@ window.DJ = window.DJ || {};
     URL.revokeObjectURL(url);
   };
 
+  DJ.copyText = async function copyText(text = '') {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(String(text));
+      return true;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = String(text);
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    return copied;
+  };
+
   DJ.getWishlist = getWishlist;
   DJ.getSiteMetrics = getSiteMetrics;
   DJ.recordSiteMetric = recordSiteMetric;
@@ -1392,6 +1520,7 @@ window.DJ = window.DJ || {};
       console.error('Failed to save custom products.');
       return false;
     }
+    emitCatalogMutationChange('customProducts');
     return true;
   };
 
@@ -1405,6 +1534,7 @@ window.DJ = window.DJ || {};
       console.error('Failed to save product overrides.');
       return false;
     }
+    emitCatalogMutationChange('productOverrides');
     return true;
   };
 
@@ -1426,6 +1556,7 @@ window.DJ = window.DJ || {};
       console.error('Failed to save deleted product IDs.');
       return false;
     }
+    emitCatalogMutationChange('deletedProductIds');
     return true;
   };
 
@@ -1568,6 +1699,15 @@ window.DJ = window.DJ || {};
 
     if (event.key === STORAGE_KEYS.siteMetrics) {
       siteMetricsCache = null;
+      return;
+    }
+
+    if (
+      event.key === STORAGE_KEYS.customProducts
+      || event.key === STORAGE_KEYS.productOverrides
+      || event.key === STORAGE_KEYS.deletedProductIds
+    ) {
+      emitCatalogMutationChange(event.key, 'storage');
     }
   });
 
@@ -1581,3 +1721,4 @@ window.DJ = window.DJ || {};
     emitWishlistChange(getWishlist(), 'pageshow');
   });
 })();
+

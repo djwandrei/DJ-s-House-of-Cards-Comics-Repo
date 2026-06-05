@@ -22,9 +22,17 @@ const FALLBACKS = {
   Other: 'assets/clubhouse-sign.png'
 };
 
+function isRemoteOrEmbeddedAsset(value = '') {
+  return /^(?:https?:|data:|blob:)/i.test(String(value || '').trim());
+}
+
 async function exists(relPath) {
+  if (isRemoteOrEmbeddedAsset(relPath)) return true;
+  const localPath = String(relPath || '').split('?')[0];
+  if (!localPath) return false;
+
   try {
-    await fs.access(path.join(root, relPath));
+    await fs.access(path.join(root, localPath));
     return true;
   } catch {
     return false;
@@ -46,10 +54,13 @@ for (const file of FILES) {
       for (const imagePath of item.imageGallery) {
         if (await exists(imagePath)) validGallery.push(imagePath);
       }
+      if (!validGallery.length && item.image && await exists(item.image)) {
+        validGallery.push(item.image);
+      }
       item.imageGallery = validGallery;
     }
   }
 
-  await fs.writeFile(fullPath, JSON.stringify(raw), 'utf8');
+  await fs.writeFile(fullPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
   console.log(`Normalized images in ${file}`);
 }

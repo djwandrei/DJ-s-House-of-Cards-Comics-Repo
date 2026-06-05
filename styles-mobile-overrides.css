@@ -1,4 +1,4 @@
-/* Shared mobile/storefront stabilization layer.
+﻿/* Shared mobile/storefront stabilization layer.
    This file stays loaded after styles.css so mobile fixes remain isolated,
    easier to review, and easier to revert than when they lived at the end of
    the main bundle. */
@@ -1902,3 +1902,4 @@ body.dark-mode .modal-listing-nav__button {
     text-align:left;
   }
 }
+

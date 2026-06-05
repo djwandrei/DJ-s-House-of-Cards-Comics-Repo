@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Storefront catalog controller.
  * -----------------------------------------------------------------------------
  * This module powers every product-facing experience on the site: loading product
@@ -271,6 +271,9 @@ window.DJ = window.DJ || {};
   function deriveProductAttributes(item = {}) {
     const metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
+    const conditionNotes = Array.isArray(metadata.conditionNotes)
+      ? metadata.conditionNotes.join(' ')
+      : (metadata.conditionNotes || '');
     const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
     const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
     const featureSet = new Set(featuresText.split('|').map((value) => value.trim()).filter(Boolean));
@@ -278,6 +281,7 @@ window.DJ = window.DJ || {};
       item.name || '',
       item.description || '',
       item.condition || '',
+      conditionNotes,
       item.priceLabel || '',
       item.playerAthlete || '',
       metadata.playerAthlete || '',
@@ -392,7 +396,13 @@ window.DJ = window.DJ || {};
   function getProductPriceLabel(product = {}) {
     const displayPrice = DJ.displayPrice(product);
     if (/contact/i.test(displayPrice)) return 'Availability';
-    return isPriceRangeDisplay(displayPrice) ? 'Price range' : 'Price';
+    return 'Price';
+  }
+
+  function getProductGuideRange(product = {}) {
+    return typeof DJ.priceRangeLabel === 'function'
+      ? DJ.priceRangeLabel(product)
+      : (isPriceRangeDisplay(product.priceLabel || product.displayPrice) ? String(product.priceLabel || product.displayPrice).trim() : '');
   }
 
   function isDirectCheckoutCandidate(product = {}) {
@@ -400,16 +410,16 @@ window.DJ = window.DJ || {};
       return DJ.payments.isDirectCheckoutEligible(product);
     }
 
-    const price = Number(product.price);
+    const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = DJ.displayPrice(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
-    return !isPriceRangeDisplay(displayPrice);
+    return true;
   }
 
   function getProductActionLabel(product = {}, context = 'card') {
     if (isDirectCheckoutCandidate(product)) return 'Buy Now';
-    return context === 'modal' ? 'Ask About This Item' : 'Ask';
+    return context === 'modal' ? 'Ask About This Item' : 'Ask DJ';
   }
 
   function getProductContextLabel(product = {}) {
@@ -484,11 +494,12 @@ window.DJ = window.DJ || {};
     const contextValue = getProductCardContextValue(product);
 
     if (yearLabel) {
-      pills.push(`<span class="product-meta-pill product-meta-pill--year">${DJ.escapeHtml(yearLabel)}</span>`);
+      pills.push(`<span class="product-meta-pill product-meta-pill--year" data-label="Year">${DJ.escapeHtml(yearLabel)}</span>`);
     }
 
     if (contextValue) {
-      pills.push(`<span class="product-meta-pill product-meta-pill--context" title="${DJ.escapeHtml(contextValue)}">${DJ.escapeHtml(contextValue)}</span>`);
+      const contextLabel = getProductContextLabel(product);
+      pills.push(`<span class="product-meta-pill product-meta-pill--context" data-label="${DJ.escapeHtml(contextLabel)}" title="${DJ.escapeHtml(contextValue)}">${DJ.escapeHtml(contextValue)}</span>`);
     }
 
     if (!pills.length) {
@@ -513,7 +524,7 @@ window.DJ = window.DJ || {};
     const league = String(product.league || '').trim();
 
     if (league && !String(product.category || '').toLowerCase().includes(league.toLowerCase())) {
-      details.push(`<span class="product-meta-inline product-meta-inline--league">${DJ.escapeHtml(league)}</span>`);
+      details.push(`<span class="product-meta-inline product-meta-inline--league" data-label="League">${DJ.escapeHtml(league)}</span>`);
     }
 
     return `
@@ -525,12 +536,17 @@ window.DJ = window.DJ || {};
     // Keep condition/grade as the single source of truth in the quick facts.
     // The meta grid below intentionally skips it so modals do not show
     // duplicated values such as "Ungraded | Ungraded | Guide range listed".
+    const guideRange = getProductGuideRange(product);
     const facts = [
       {
         label: getProductPriceLabel(product),
         value: displayPrice,
         tone: 'price'
       },
+      ...(guideRange ? [{
+        label: 'Guide range',
+        value: guideRange
+      }] : []),
       {
         label: product.conditionFacet === 'Graded' ? 'Grade' : 'Condition',
         value: product.conditionCompact || product.conditionFacet || 'Not listed'
@@ -786,7 +802,10 @@ window.DJ = window.DJ || {};
 
   function normalizeSearchString(value = '') {
     let normalized = String(value || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
+      .replace(/([a-z])['\u2019\u2018\u02bc]([a-z])/g, '$1$2')
       .replace(/&/g, ' and ')
       .replace(/#/g, ' number ')
       .replace(/([a-z])(\d)/gi, '$1 $2')
@@ -1100,6 +1119,68 @@ window.DJ = window.DJ || {};
     );
   }
 
+  function isPlaceholderCatalogImage(value = '') {
+    return /(?:placeholder-[^/]+\.svg|clubhouse-sign\.png)$/i.test(String(value || ''));
+  }
+
+  function hasPlaceholderCatalogImage(product = {}) {
+    const gallery = Array.isArray(product.imageGallery) ? product.imageGallery : [];
+    return isPlaceholderCatalogImage(product.image) || gallery.some(isPlaceholderCatalogImage);
+  }
+
+  function hasUsableStaticImage(product = {}) {
+    return Boolean(String(product.image || '').trim() && !isPlaceholderCatalogImage(product.image));
+  }
+
+  function parseCatalogPriceValue(value) {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : null;
+    }
+
+    const numericText = String(value || '').replace(/[$,]/g, '').trim();
+    if (!numericText) {
+      return null;
+    }
+
+    const numericValue = Number(numericText);
+    return Number.isFinite(numericValue) ? numericValue : null;
+  }
+
+  function hasMissingCatalogPrice(product = {}) {
+    return parseCatalogPriceValue(product.price) == null
+      || /contact/i.test(String(product.priceLabel || product.displayPrice || ''));
+  }
+
+  function hasUsableStaticPrice(product = {}) {
+    return parseCatalogPriceValue(product.price) != null;
+  }
+
+  function getCatalogPriceDisplay(product = {}) {
+    return String(product.priceLabel || product.displayPrice || '').trim();
+  }
+
+  function shouldOverlayStaticPrice(product = {}, staticProduct = {}) {
+    const staticPrice = parseCatalogPriceValue(staticProduct.price);
+    if (staticPrice == null) {
+      return false;
+    }
+
+    const remotePrice = parseCatalogPriceValue(product.price);
+    if (remotePrice == null || Math.abs(remotePrice - staticPrice) > 0.001) {
+      return true;
+    }
+
+    const staticDisplay = getCatalogPriceDisplay(staticProduct);
+    const remoteDisplay = getCatalogPriceDisplay(product);
+    if (!staticDisplay) {
+      return false;
+    }
+
+    return !remoteDisplay
+      || /contact/i.test(remoteDisplay)
+      || remoteDisplay !== staticDisplay;
+  }
+
   async function applyStaticLegacyListingOverlay(source, remoteProducts = []) {
     if (!Array.isArray(remoteProducts) || !remoteProducts.length) {
       return remoteProducts;
@@ -1115,7 +1196,6 @@ window.DJ = window.DJ || {};
 
     const staticProductsById = new Map(
       staticProducts
-        .filter(isLegacyStaticProduct)
         .map((product) => [Number(product.id), product])
         .filter(([productId]) => Number.isFinite(productId))
     );
@@ -1131,20 +1211,45 @@ window.DJ = window.DJ || {};
 
       const staticDescription = String(staticProduct.description || '').trim();
       const remoteDescription = String(product.description || '').trim();
-      if (
+      const shouldOverlayLegacyFields = !(
         remoteDescription === staticDescription
         && (product.sourcePage || !staticProduct.sourcePage)
         && (product.legacyImageLabel || !staticProduct.legacyImageLabel)
-      ) {
+      ) && isLegacyStaticProduct(staticProduct);
+      const shouldOverlayImage = hasPlaceholderCatalogImage(product) && hasUsableStaticImage(staticProduct);
+      const shouldOverlayPrice = hasMissingCatalogPrice(product)
+        ? hasUsableStaticPrice(staticProduct)
+        : shouldOverlayStaticPrice(product, staticProduct);
+
+      if (!shouldOverlayLegacyFields && !shouldOverlayImage && !shouldOverlayPrice) {
         return product;
       }
 
-      return {
-        ...product,
-        description: staticDescription,
-        sourcePage: product.sourcePage || staticProduct.sourcePage,
-        legacyImageLabel: product.legacyImageLabel || staticProduct.legacyImageLabel
-      };
+      const syncedProduct = { ...product };
+
+      if (shouldOverlayLegacyFields) {
+        syncedProduct.description = staticDescription;
+        syncedProduct.sourcePage = product.sourcePage || staticProduct.sourcePage;
+        syncedProduct.legacyImageLabel = product.legacyImageLabel || staticProduct.legacyImageLabel;
+      }
+
+      if (shouldOverlayImage) {
+        const staticGallery = Array.isArray(staticProduct.imageGallery) && staticProduct.imageGallery.length
+          ? staticProduct.imageGallery
+          : [staticProduct.image];
+        syncedProduct.image = staticProduct.image;
+        syncedProduct.imageGallery = staticGallery;
+      }
+
+      if (shouldOverlayPrice) {
+        syncedProduct.price = parseCatalogPriceValue(staticProduct.price);
+        const staticDisplay = getCatalogPriceDisplay(staticProduct)
+          || (typeof DJ.currency === 'function' ? DJ.currency(syncedProduct.price) : '');
+        syncedProduct.priceLabel = staticDisplay;
+        syncedProduct.displayPrice = staticDisplay;
+      }
+
+      return syncedProduct;
     });
   }
 
@@ -1276,6 +1381,38 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function clearCatalogRuntimeCaches() {
+    normalizedSourceCache.clear();
+    catalogPageCache.clear();
+    filteredCatalogResultsCache.clear();
+    linkedProductAutoOpenedId = null;
+  }
+
+  function bindCatalogMutationRefresh(config = {}) {
+    if (document.body.dataset.catalogMutationRefreshBound === 'true') return;
+    document.body.dataset.catalogMutationRefreshBound = 'true';
+
+    window.addEventListener('dj:catalogmutation', async () => {
+      clearCatalogRuntimeCaches();
+
+      if (document.body.dataset.page === 'wishlist') {
+        await renderWishlistPage();
+        return;
+      }
+
+      if (document.getElementById('featuredProducts')) {
+        await renderFeaturedProducts();
+      }
+
+      if (!document.getElementById('productContainer')) {
+        return;
+      }
+
+      setCatalogLoadingState('Refreshing local catalog edits...');
+      await setupCatalogPage(config);
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // Product card rendering and interaction helpers
   // ---------------------------------------------------------------------------
@@ -1316,9 +1453,12 @@ window.DJ = window.DJ || {};
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
+    const guideRange = getProductGuideRange(product);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
     const quickActionLabel = getProductActionLabel(product);
+    const titleId = `product-card-title-${product.id}`;
+    const gradeLabel = product.conditionFacet === 'Graded' ? 'Grade' : 'Condition';
     const cardImageSizes = [
       '(max-width: 640px) calc(100vw - 3rem)',
       '(max-width: 900px) 31vw',
@@ -1331,16 +1471,16 @@ window.DJ = window.DJ || {};
     const imageLoading = imagePriority === 'high' ? 'eager' : 'lazy';
 
     return `
-      <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}">
+      <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" aria-labelledby="${titleId}" aria-describedby="${summaryId}">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}" title="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}">${heart}</button>
         <div class="product-media">
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
         <div class="product-content">
-          <h4>${DJ.escapeHtml(product.name)}</h4>
+          <h4 id="${titleId}">${DJ.escapeHtml(product.name)}</h4>
           <div class="product-card-chip-rail">
             <div class="product-topline">
-              <span class="product-meta product-grade-meta">${DJ.escapeHtml(cardGradeLabel)}</span>
+              <span class="product-meta product-grade-meta" data-label="${DJ.escapeHtml(gradeLabel)}">${DJ.escapeHtml(cardGradeLabel)}</span>
             </div>
             ${renderProductCardSummary(product, summaryId, metaLine)}
             ${renderProductCardMetaExtras(product)}
@@ -1350,6 +1490,7 @@ window.DJ = window.DJ || {};
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
+              ${guideRange ? `<span class="product-price-note">Guide range ${DJ.escapeHtml(guideRange)}</span>` : ''}
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
@@ -1410,10 +1551,18 @@ window.DJ = window.DJ || {};
   }
 
   function getProductGridRenderSignature(products = [], wishlistIds = new Set()) {
-    // Filtering can fire repeatedly while typing. This compact signature lets us
-    // skip expensive DOM replacement when the visible card set has not changed.
+    // Filtering can fire repeatedly while typing. Include only buyer-visible
+    // fields so local admin edits and fresh catalog prices repaint without
+    // losing the cheap "same visible cards" short-circuit.
     return (Array.isArray(products) ? products : [])
-      .map((product) => `${Number(product.id)}:${wishlistIds.has(Number(product.id)) ? 1 : 0}`)
+      .map((product) => [
+        Number(product.id),
+        wishlistIds.has(Number(product.id)) ? 1 : 0,
+        product.name || '',
+        DJ.displayPrice(product) || '',
+        product.condition || '',
+        product.image || ''
+      ].join(':'))
       .join('|');
   }
 
@@ -1463,7 +1612,7 @@ Please let me know if it is still available.
 
 Thank you.`
     );
-    window.location.href = `mailto:contact@djshouseofcards-comics.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:djscardscomics13@gmail.com?subject=${subject}&body=${body}`;
   }
 
   function getProductDescriptionExcerpt(product = {}, maxLength = 420) {
@@ -1628,7 +1777,7 @@ Thank you.`
       refreshWishlistButtons(document, normalizedIds);
       refreshModalWishlistButton(normalizedIds);
 
-      if (document.body.dataset.page === 'wishlist' && event.detail?.source !== 'local') {
+      if (document.body.dataset.page === 'wishlist') {
         scheduleWishlistPageRefresh();
       }
     });
@@ -1875,6 +2024,33 @@ Thank you.`
     }
   }
 
+  function applyFilterStateToControls(filters = {}) {
+    const valueMap = {
+      searchInput: filters.filterText || '',
+      yearMin: filters.yearMin || '',
+      yearMax: filters.yearMax || '',
+      priceMin: filters.priceMin || '',
+      priceMax: filters.priceMax || '',
+      sortSelect: filters.sort || 'nameAsc',
+      toolbarSortSelect: filters.sort || 'nameAsc'
+    };
+
+    Object.entries(valueMap).forEach(([id, value]) => {
+      const field = document.getElementById(id);
+      if (field) field.value = value;
+    });
+
+    [
+      ['condition', new Set(filters.conditions || [])],
+      ['attribute', new Set(filters.attributes || [])],
+      ['team', new Set(filters.teams || [])]
+    ].forEach(([name, selectedValues]) => {
+      document.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
+        input.checked = selectedValues.has(input.value);
+      });
+    });
+  }
+
   function applyUrlFilters() {
     const params = new URLSearchParams(window.location.search);
     const initial = {
@@ -1897,20 +2073,7 @@ Thank you.`
       initial.sort = 'nameAsc';
     }
 
-    const valueMap = {
-      searchInput: initial.filterText,
-      yearMin: initial.yearMin,
-      yearMax: initial.yearMax,
-      priceMin: initial.priceMin,
-      priceMax: initial.priceMax,
-      sortSelect: initial.sort
-    };
-
-    Object.entries(valueMap).forEach(([id, value]) => {
-      if (value == null || value === '') return;
-      const field = document.getElementById(id);
-      if (field) field.value = value;
-    });
+    applyFilterStateToControls(initial);
 
     return initial;
   }
@@ -3116,6 +3279,14 @@ Thank you.`
       clearButton.addEventListener('click', () => resetCatalogFilters(config));
     }
 
+    if (document.body.dataset.catalogPopstateBound !== 'true') {
+      document.body.dataset.catalogPopstateBound = 'true';
+      window.addEventListener('popstate', () => {
+        applyUrlFilters();
+        renderCatalogPage(config, allowedProducts);
+      });
+    }
+
     await renderCatalogPage(config, allowedProducts);
   }
 
@@ -3159,7 +3330,7 @@ Please let me know what is available.
 
 Thank you.`);
 
-    return `mailto:contact@djshouseofcards-comics.com?subject=${subject}&body=${body}`;
+    return `mailto:djscardscomics13@gmail.com?subject=${subject}&body=${body}`;
   }
 
   function renderWishlistActionsPanel(products = []) {
@@ -3692,7 +3863,9 @@ Thank you.`);
   // Kick off only the features that are relevant to the current page template.
   document.addEventListener('DOMContentLoaded', async () => {
     const page = document.body.dataset.page;
+    const pageConfig = PAGE_CONFIG[page] || PAGE_CONFIG.shop;
     bindWishlistStateSync();
+    bindCatalogMutationRefresh(pageConfig);
 
     if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist'].includes(page)) {
       DJ.scheduleIdle?.(() => insertDepartmentSwitcher());
@@ -3722,3 +3895,5 @@ Thank you.`);
 
   window.closeModal = closeModal;
 })();
+
+
