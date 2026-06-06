@@ -327,6 +327,27 @@ async def inspect_filtered_catalog(client: CdpClient, base_url: str) -> dict:
     )
 
 
+async def inspect_ranged_price(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/basketball-cards.html?search=Damian%20Lillard")
+    await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
+    return await client.evaluate(
+        """(() => {
+          const cards = Array.from(document.querySelectorAll('.product-card[data-product-id]'));
+          const card = cards.find((candidate) =>
+            /2012-13 Panini Brilliance Team Tomorrow #9 Damian Lillard/i.test(
+              candidate.querySelector('h4')?.textContent || ''
+            )
+          );
+          return {
+            found: Boolean(card),
+            productId: card?.dataset.productId || '',
+            displayedPrice: card?.querySelector('.product-price')?.textContent?.trim() || '',
+            guideRange: card?.querySelector('.product-price-note')?.textContent?.trim() || ''
+          };
+        })()"""
+    )
+
+
 async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
     await navigate(client, f"{base_url.rstrip('/')}/account.html")
     return await client.evaluate(
@@ -538,6 +559,15 @@ async def main() -> int:
                 and filtered_catalog_report.get("firstCardWidth", 0) < filtered_catalog_report.get("gridWidth", 0) * 0.3
             ):
                 report["failures"].append({"page": "basketball-cards.html?search=Amare", "filteredCatalog": filtered_catalog_report})
+
+            ranged_price_report = await inspect_ranged_price(client, args.base_url)
+            report["rangedPriceCheck"] = ranged_price_report
+            if not (
+                ranged_price_report.get("found")
+                and ranged_price_report.get("displayedPrice") == "$30.00"
+                and "$12.00-$30.00" in ranged_price_report.get("guideRange", "")
+            ):
+                report["failures"].append({"page": "basketball-cards.html?search=Damian%20Lillard", "rangedPrice": ranged_price_report})
 
             modal_report = await inspect_product_modal(client, args.base_url)
             report["desktopModalCheck"] = modal_report

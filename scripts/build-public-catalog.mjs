@@ -25,6 +25,7 @@ const BUNDLE_FILES = {
   'products-sports.json': 'products-data-sports.js',
   'products-featured.json': 'products-data-featured.js'
 };
+const RANGE_PATTERN = /\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(?:-|–|—|\bto\b)\s*\$?\s*(\d[\d,]*(?:\.\d+)?)/i;
 
 const PUBLIC_FIELDS = [
   'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
@@ -46,6 +47,43 @@ const STOREFRONT_FIELDS = new Set([
 ]);
 const STOREFRONT_METADATA_FIELDS = new Set(['conditionNotes', 'playerAthlete']);
 const STOREFRONT_EXCEL_FIELDS = new Set(['Title', 'C:Features', 'C:Autographed']);
+const RETRYABLE_WRITE_CODES = new Set(['EACCES', 'EBUSY', 'EPERM', 'UNKNOWN']);
+
+async function writeTextFile(fullPath, content, attempts = 6) {
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      await fs.writeFile(fullPath, content, 'utf8');
+      return;
+    } catch (error) {
+      if (!RETRYABLE_WRITE_CODES.has(error?.code) || attempt === attempts) throw error;
+      // Windows can briefly lock a large bundle while a browser or sync client reads it.
+      await new Promise((resolve) => setTimeout(resolve, attempt * 150));
+    }
+  }
+}
+
+function rangeHigh(item = {}) {
+  for (const candidate of [item.priceLabel, item.displayPrice]) {
+    const match = String(candidate || '').match(RANGE_PATTERN);
+    if (!match) continue;
+    const high = Number(match[2].replaceAll(',', ''));
+    if (Number.isFinite(high) && high > 0) return Math.round(high * 100) / 100;
+  }
+  return null;
+}
+
+function assertRangeCheckoutPrices(items, file) {
+  const incorrect = items.filter((item) => {
+    const high = rangeHigh(item);
+    return high != null && Math.abs(Number(item.price) - high) >= 0.001;
+  });
+  if (incorrect.length) {
+    throw new Error(
+      `${file} has ${incorrect.length} ranged listings without the high checkout price. `
+      + 'Run scripts/normalize-range-checkout-prices.mjs before rebuilding.'
+    );
+  }
+}
 
 function pickStorefrontMetadata(metadata) {
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
@@ -96,12 +134,13 @@ function pickPublicFields(item, options = {}) {
 for (const file of FILES) {
   const fullPath = path.join(root, file);
   const raw = JSON.parse(await fs.readFile(fullPath, 'utf8'));
+  assertRangeCheckoutPrices(raw, file);
   const isFullCatalog = file === 'products.json';
   const cleaned = Array.isArray(raw)
     ? raw.map((item) => pickPublicFields(item, { storefront: !isFullCatalog }))
     : [];
   if (cleanJsonSources || (optimizeSegmentJson && !isFullCatalog)) {
-    await fs.writeFile(fullPath, `${JSON.stringify(cleaned, null, 2)}\n`, 'utf8');
+    await writeTextFile(fullPath, `${JSON.stringify(cleaned, null, 2)}\n`);
   }
   if (BUNDLE_FILES[file]) {
     const bundle = [
@@ -109,7 +148,7 @@ for (const file of FILES) {
       `window.DJ_PRELOADED_PRODUCTS = ${JSON.stringify(cleaned)};`,
       ''
     ].join('\n');
-    await fs.writeFile(path.join(root, BUNDLE_FILES[file]), bundle, 'utf8');
+    await writeTextFile(path.join(root, BUNDLE_FILES[file]), bundle);
   }
   const action = cleanJsonSources || (optimizeSegmentJson && !isFullCatalog)
     ? 'Optimized and bundled'

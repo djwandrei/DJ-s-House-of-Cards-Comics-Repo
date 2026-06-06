@@ -326,7 +326,8 @@ function Get-RemoteCount {
   param(
     [string]$ProjectUrl,
     [string]$Table,
-    [hashtable]$Headers
+    [hashtable]$Headers,
+    [bool]$ActiveOnly = $true
   )
 
   $requestHeaders = @{}
@@ -335,12 +336,14 @@ function Get-RemoteCount {
   }
   $requestHeaders['Prefer'] = 'count=exact'
 
+  $activeFilter = if ($ActiveOnly) { '&is_deleted=eq.false' } else { '' }
   $response = Invoke-WebRequest `
-    -Uri ($ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?select=id&limit=1") `
-    -Method Get `
-    -Headers $requestHeaders
+    -Uri ($ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?select=id&limit=1${activeFilter}") `
+    -Method Head `
+    -Headers $requestHeaders `
+    -UseBasicParsing
 
-  $contentRange = [string]$response.Headers['Content-Range']
+  $contentRange = if ($response.Headers) { [string]$response.Headers['Content-Range'] } else { '' }
   if ($contentRange -match '/(?<count>\d+)$') {
     return [int]$matches['count']
   }
@@ -447,7 +450,7 @@ for ($index = 0; $index -lt $remoteProducts.Count; $index += $ChunkSize) {
 
 if (-not $SkipVerify) {
   try {
-    $remoteCount = Get-RemoteCount -ProjectUrl $SupabaseUrl -Table $ProductsTable -Headers $headers
+    $remoteCount = Get-RemoteCount -ProjectUrl $SupabaseUrl -Table $ProductsTable -Headers $headers -ActiveOnly:(-not $LegacySchema)
     if ($null -ne $remoteCount) {
       Write-Output ("Remote table now reports {0} row(s)." -f $remoteCount)
     }
