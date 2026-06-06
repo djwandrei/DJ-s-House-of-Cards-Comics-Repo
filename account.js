@@ -2,8 +2,8 @@
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
  * Buyer details stay local to this browser. The page focuses on practical buyer
- * utilities: reusable contact/shipping notes, a wishlist preview, and quick
- * copy/export tools for messages to DJ.
+ * utilities: reusable contact/shipping notes, a wishlist preview, saved
+ * searches, and a simple email handoff to DJ.
  */
 
 window.DJ = window.DJ || {};

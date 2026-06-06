@@ -117,12 +117,19 @@ class CdpClient:
         await self.websocket_connection.send(
             json.dumps({"id": message_id, "method": method, "params": params or {}})
         )
-        return await future
+        try:
+            return await asyncio.wait_for(future, timeout=30)
+        finally:
+            self._pending.pop(message_id, None)
 
     async def once(self, method: str) -> dict:
         future = asyncio.get_running_loop().create_future()
         self._events[method] = future
-        return await future
+        try:
+            return await asyncio.wait_for(future, timeout=30)
+        finally:
+            if self._events.get(method) is future:
+                self._events.pop(method, None)
 
     async def evaluate(self, expression: str):
         result = await self.send(
@@ -169,14 +176,21 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 .slice(0, 10);
               const header = document.querySelector('.site-header');
               const footer = document.querySelector('.site-footer, .footer, footer');
+              const productGrid = document.querySelector('.catalog-results-column .products-grid');
+              const productGridColumns = productGrid
+                ? getComputedStyle(productGrid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length
+                : 0;
               const text = document.body ? document.body.innerText : '';
               return {
                 title: document.title,
                 productCards: document.querySelectorAll('.product-card[data-product-id]').length,
+                productGridColumns,
                 brokenImageCount: brokenImages.length,
                 brokenImageSample: brokenImages,
                 headerVisible: Boolean(header && header.getBoundingClientRect().height > 20),
                 footerPresent: Boolean(footer),
+                accountNavLinks: document.querySelectorAll('.site-nav a[href="account.html"]').length,
+                wrongPublicContactEmailPresent: text.includes('djwandrei@gmail.com') || text.includes('contact@djshouseofcards-comics.com'),
                 preloadedProductScriptCount: document.querySelectorAll('script[data-preloaded-product-source]').length,
                 containsSlash2022: text.includes('\\\\2022')
               };
@@ -221,6 +235,27 @@ async def inspect_product_modal(client: CdpClient, base_url: str) -> dict:
             closeVisible: Boolean(rect && rect.width > 20 && rect.height > 20),
             closeWithinViewport: Boolean(rect && rect.top >= 0 && rect.left >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight),
             modalClosed: !document.querySelector('#productModal.active')
+          };
+        })()"""
+    )
+
+
+async def inspect_filtered_catalog(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/basketball-cards.html?search=Amare")
+    await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
+    return await client.evaluate(
+        """(() => {
+          const grid = document.querySelector('.catalog-results-column .products-grid');
+          const card = grid?.querySelector('.product-card[data-product-id]');
+          const gridRect = grid?.getBoundingClientRect();
+          const cardRect = card?.getBoundingClientRect();
+          return {
+            productCards: grid?.querySelectorAll('.product-card[data-product-id]').length || 0,
+            productGridColumns: grid
+              ? getComputedStyle(grid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length
+              : 0,
+            gridWidth: gridRect?.width || 0,
+            firstCardWidth: cardRect?.width || 0
           };
         })()"""
     )
@@ -409,8 +444,24 @@ async def main() -> int:
                     report["failures"].append(page_report)
                 if any(marker in page for marker in PRODUCT_PAGE_MARKERS) and page_report["productCards"] <= 0:
                     report["failures"].append({**page_report, "reason": "No product cards rendered"})
+                if any(marker in page for marker in PRODUCT_PAGE_MARKERS) and page_report["productGridColumns"] != 5:
+                    report["failures"].append({**page_report, "reason": "Desktop product grid is not five columns"})
+                if page_report["accountNavLinks"] > 1:
+                    report["failures"].append({**page_report, "reason": "Duplicate Account navigation links"})
+                if page_report["wrongPublicContactEmailPresent"]:
+                    report["failures"].append({**page_report, "reason": "Incorrect public contact email is visible"})
                 if page_report["exceptions"]:
                     report["failures"].append({**page_report, "reason": "Runtime exception"})
+
+            filtered_catalog_report = await inspect_filtered_catalog(client, args.base_url)
+            report["filteredCatalogCheck"] = filtered_catalog_report
+            if not (
+                filtered_catalog_report.get("productCards", 0) > 0
+                and filtered_catalog_report.get("productGridColumns") == 5
+                and filtered_catalog_report.get("firstCardWidth", 0) > 0
+                and filtered_catalog_report.get("firstCardWidth", 0) < filtered_catalog_report.get("gridWidth", 0) * 0.3
+            ):
+                report["failures"].append({"page": "basketball-cards.html?search=Amare", "filteredCatalog": filtered_catalog_report})
 
             modal_report = await inspect_product_modal(client, args.base_url)
             report["desktopModalCheck"] = modal_report

@@ -82,12 +82,19 @@ class CdpClient:
         await self.websocket_connection.send(
             json.dumps({"id": message_id, "method": method, "params": params or {}})
         )
-        return await future
+        try:
+            return await asyncio.wait_for(future, timeout=30)
+        finally:
+            self._pending.pop(message_id, None)
 
     async def once(self, method: str) -> dict:
         future = asyncio.get_running_loop().create_future()
         self._events[method] = future
-        return await future
+        try:
+            return await asyncio.wait_for(future, timeout=30)
+        finally:
+            if self._events.get(method) is future:
+                self._events.pop(method, None)
 
     async def evaluate(self, expression: str):
         result = await self.send(

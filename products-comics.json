@@ -1,5 +1,6 @@
 [
   {
+    "id": 662,
     "name": "Hawkman #24",
     "category": "Comics",
     "team": "DC",
@@ -7,27 +8,25 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/comics/Hawkman #24.jpeg",
+    "imageGallery": [
+      "assets/comics/Hawkman #24.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCHawk24",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 662,
-    "imageGallery": [
-      "assets/comics/Hawkman #24.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 663,
     "name": "Superman's Pal Jimmy Olsen #117",
     "category": "Comics",
     "team": "DC",
@@ -35,27 +34,25 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/comics/Superman's Pal Jimmy Olsen #117.jpeg",
+    "imageGallery": [
+      "assets/comics/Superman's Pal Jimmy Olsen #117.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCSupPalJimmy117",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 663,
-    "imageGallery": [
-      "assets/comics/Superman's Pal Jimmy Olsen #117.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 664,
     "name": "Mighty Marvel Western featuring The Rawhide Kid #7",
     "category": "Comics",
     "team": "Marvel",
@@ -63,27 +60,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Mighty Marvel Western featuring The Rawhide Kid #7.jpeg",
+    "imageGallery": [
+      "assets/comics/Mighty Marvel Western featuring The Rawhide Kid #7.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvRawhideKid7",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 664,
-    "imageGallery": [
-      "assets/comics/Mighty Marvel Western featuring The Rawhide Kid #7.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 665,
     "name": "Rawhide Kid #82",
     "category": "Comics",
     "team": "Marvel",
@@ -91,27 +86,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Rawhide Kid #82.jpeg",
+    "imageGallery": [
+      "assets/comics/Rawhide Kid #82.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvRawhideKid82",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 665,
-    "imageGallery": [
-      "assets/comics/Rawhide Kid #82.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 666,
     "name": "Thor #188",
     "category": "Comics",
     "team": "Marvel",
@@ -119,27 +112,25 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/comics/Thor #188.jpeg",
+    "imageGallery": [
+      "assets/comics/Thor #188.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvThor188",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 666,
-    "imageGallery": [
-      "assets/comics/Thor #188.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 667,
     "name": "Kull The Conqueror #4",
     "category": "Comics",
     "team": "Marvel",
@@ -147,27 +138,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Kull The Conqueror #4.jpeg",
+    "imageGallery": [
+      "assets/comics/Kull The Conqueror #4.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvKull4",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 667,
-    "imageGallery": [
-      "assets/comics/Kull The Conqueror #4.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 668,
     "name": "Batman #259",
     "category": "Comics",
     "team": "DC",
@@ -175,27 +164,25 @@
     "condition": "Ungraded",
     "price": 10.5,
     "priceLabel": "$7.00-$14.00",
+    "displayPrice": "$7.00-$14.00",
     "image": "assets/comics/Batman #259.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman #259.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "Batman259",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 668,
-    "imageGallery": [
-      "assets/comics/Batman #259.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$7.00-$14.00"
+    }
   },
   {
+    "id": 669,
     "name": "Captain America and Falcon #181",
     "category": "Comics",
     "team": "Marvel",
@@ -203,26 +190,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 669,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 670,
     "name": "Jungle Action: The Black Panther #8",
     "category": "Comics",
     "team": "Marvel",
@@ -230,27 +215,25 @@
     "condition": "Ungraded",
     "price": 9,
     "priceLabel": "$6.00-$12.00",
+    "displayPrice": "$6.00-$12.00",
     "image": "assets/comics/Jungle Action - The Black Panther #8.jpeg",
+    "imageGallery": [
+      "assets/comics/Jungle Action - The Black Panther #8.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvBlackPanther8",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 670,
-    "imageGallery": [
-      "assets/comics/Jungle Action - The Black Panther #8.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$6.00-$12.00"
+    }
   },
   {
+    "id": 671,
     "name": "Justice League of America #115",
     "category": "Comics",
     "team": "DC",
@@ -258,27 +241,25 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/comics/Justice League of America #115.jpeg",
+    "imageGallery": [
+      "assets/comics/Justice League of America #115.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCJustice115",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 671,
-    "imageGallery": [
-      "assets/comics/Justice League of America #115.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 672,
     "name": "Marvel Double Feature #11",
     "category": "Comics",
     "team": "Marvel",
@@ -286,26 +267,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 672,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 673,
     "name": "Marvel Double Feature #8",
     "category": "Comics",
     "team": "Marvel",
@@ -313,26 +292,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 673,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 674,
     "name": "Marvel's Greatest Comics #59",
     "category": "Comics",
     "team": "Marvel",
@@ -340,21 +317,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 674,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 675,
     "name": "Superman Family #172",
     "category": "Comics",
     "team": "DC",
@@ -362,26 +337,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 675,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 676,
     "name": "The Brave and the Bold #115",
     "category": "Comics",
     "team": "DC",
@@ -389,27 +362,25 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/comics/The Brave and the Bold #115.jpeg",
+    "imageGallery": [
+      "assets/comics/The Brave and the Bold #115.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "Brave_bold115",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 676,
-    "imageGallery": [
-      "assets/comics/The Brave and the Bold #115.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 677,
     "name": "Action Comics #450",
     "category": "Comics",
     "team": "DC",
@@ -417,26 +388,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/comics/Action Comics #450.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 677,
     "imageGallery": [
       "assets/comics/Action Comics #450.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 678,
     "name": "Action Comics #455",
     "category": "Comics",
     "team": "DC",
@@ -444,26 +413,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 678,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 679,
     "name": "Aquaman #443",
     "category": "Comics",
     "team": "DC",
@@ -471,26 +438,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Aquaman #443.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 679,
     "imageGallery": [
       "assets/comics/Aquaman #443.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 680,
     "name": "Aquaman #445",
     "category": "Comics",
     "team": "DC",
@@ -498,26 +463,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 680,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 681,
     "name": "Aquaman #447",
     "category": "Comics",
     "team": "DC",
@@ -525,26 +488,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 681,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 682,
     "name": "Aquaman #449",
     "category": "Comics",
     "team": "DC",
@@ -552,26 +513,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 682,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 683,
     "name": "Aquaman #450",
     "category": "Comics",
     "team": "DC",
@@ -579,26 +538,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 683,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 684,
     "name": "Batman #262",
     "category": "Comics",
     "team": "DC",
@@ -606,27 +563,25 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/comics/Batman #262.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman #262.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "Batman262",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 684,
-    "imageGallery": [
-      "assets/comics/Batman #262.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 685,
     "name": "Batman #267",
     "category": "Comics",
     "team": "DC",
@@ -634,26 +589,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 685,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 686,
     "name": "Batman #269",
     "category": "Comics",
     "team": "DC",
@@ -661,26 +614,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 686,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 687,
     "name": "Batman #271",
     "category": "Comics",
     "team": "DC",
@@ -688,26 +639,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 687,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 688,
     "name": "Battle Classics #1",
     "category": "Comics",
     "team": "DC",
@@ -715,26 +664,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 688,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 689,
     "name": "Captain America and Falcon #191",
     "category": "Comics",
     "team": "Marvel",
@@ -742,26 +689,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 689,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 690,
     "name": "Detective Comics #446",
     "category": "Comics",
     "team": "DC",
@@ -769,27 +714,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Detective Comics #446.jpeg",
+    "imageGallery": [
+      "assets/comics/Detective Comics #446.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCDetective446",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 690,
-    "imageGallery": [
-      "assets/comics/Detective Comics #446.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 691,
     "name": "Detective Comics #448",
     "category": "Comics",
     "team": "DC",
@@ -797,27 +740,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Detective Comics #448.jpeg",
+    "imageGallery": [
+      "assets/comics/Detective Comics #448.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCDetec448",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 691,
-    "imageGallery": [
-      "assets/comics/Detective Comics #448.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 692,
     "name": "Detective Comics #451",
     "category": "Comics",
     "team": "DC",
@@ -825,27 +766,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Detective Comics #451.jpeg",
+    "imageGallery": [
+      "assets/comics/Detective Comics #451.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCDetec451",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 692,
-    "imageGallery": [
-      "assets/comics/Detective Comics #451.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 693,
     "name": "Fantastic Four #157",
     "category": "Comics",
     "team": "Marvel",
@@ -853,27 +792,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Fantastic Four #157.jpeg",
+    "imageGallery": [
+      "assets/comics/Fantastic Four #157.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvFan4157",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 693,
-    "imageGallery": [
-      "assets/comics/Fantastic Four #157.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 694,
     "name": "Giant-Size Doc Savage #1",
     "category": "Comics",
     "team": "Marvel",
@@ -881,27 +818,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Giant-Size Doc Savage #1.jpeg",
+    "imageGallery": [
+      "assets/comics/Giant-Size Doc Savage #1.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarDocSavage1",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 694,
-    "imageGallery": [
-      "assets/comics/Giant-Size Doc Savage #1.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 695,
     "name": "Giant-Size Super-Villain Team-Up #2",
     "category": "Comics",
     "team": "Marvel",
@@ -909,27 +844,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Giant-Size Super-Villain Team-Up #2.jpeg",
+    "imageGallery": [
+      "assets/comics/Giant-Size Super-Villain Team-Up #2.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvSuperVillain2",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 695,
-    "imageGallery": [
-      "assets/comics/Giant-Size Super-Villain Team-Up #2.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 696,
     "name": "Jungle Action: The Black Panther #15",
     "category": "Comics",
     "team": "Marvel",
@@ -937,26 +870,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 696,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 697,
     "name": "Justice League of America #121",
     "category": "Comics",
     "team": "DC",
@@ -964,26 +895,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 697,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 698,
     "name": "Marvel Chillers #1",
     "category": "Comics",
     "team": "Marvel",
@@ -991,26 +920,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 698,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 699,
     "name": "Marvel Double Feature #15",
     "category": "Comics",
     "team": "Marvel",
@@ -1018,26 +945,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 699,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 700,
     "name": "Marvel's Greatest Comics #73",
     "category": "Comics",
     "team": "Marvel",
@@ -1045,21 +970,19 @@
     "condition": "Near Mint or Better",
     "price": 5,
     "priceLabel": "$5.00",
+    "displayPrice": "$5.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 2,
-    "id": 700,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 2,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$5.00"
+    "sortRank": 0
   },
   {
+    "id": 701,
     "name": "Monster Hunters #1",
     "category": "Comics",
     "team": "Charlton",
@@ -1067,27 +990,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Monster Hunters #1.jpeg",
+    "imageGallery": [
+      "assets/comics/Monster Hunters #1.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "CharltonMonsteHunt1",
     "sourcePage": "Other Comics",
     "copyCount": 1,
-    "id": 701,
-    "imageGallery": [
-      "assets/comics/Monster Hunters #1.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 702,
     "name": "Superman Family #175",
     "category": "Comics",
     "team": "DC",
@@ -1095,26 +1016,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 702,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 703,
     "name": "Superman Family #178",
     "category": "Comics",
     "team": "DC",
@@ -1122,26 +1041,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 703,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 704,
     "name": "The Brave and the Bold #118",
     "category": "Comics",
     "team": "DC",
@@ -1149,27 +1066,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/The Brave and the Bold #118.jpeg",
+    "imageGallery": [
+      "assets/comics/The Brave and the Bold #118.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCBrave118",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 704,
-    "imageGallery": [
-      "assets/comics/The Brave and the Bold #118.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 705,
     "name": "The Brave and the Bold #123",
     "category": "Comics",
     "team": "DC",
@@ -1177,26 +1092,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 705,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 706,
     "name": "The Brave and the Bold #124",
     "category": "Comics",
     "team": "DC",
@@ -1204,26 +1117,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 706,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 707,
     "name": "The Flash #234",
     "category": "Comics",
     "team": "DC",
@@ -1231,26 +1142,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/comics/The Flash #234.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 707,
     "imageGallery": [
       "assets/comics/The Flash #234.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 708,
     "name": "The Flash #237",
     "category": "Comics",
     "team": "DC",
@@ -1258,26 +1167,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 708,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 709,
     "name": "The Human Torch #5",
     "category": "Comics",
     "team": "Marvel",
@@ -1285,26 +1192,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 709,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 710,
     "name": "The Incredible Hulk #188",
     "category": "Comics",
     "team": "Marvel",
@@ -1312,26 +1217,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 710,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 711,
     "name": "The Inhumans #2",
     "category": "Comics",
     "team": "Marvel",
@@ -1339,26 +1242,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 711,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 712,
     "name": "The Invaders #3",
     "category": "Comics",
     "team": "Marvel",
@@ -1366,27 +1267,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/The Invaders #3.jpeg",
+    "imageGallery": [
+      "assets/comics/The Invaders #3.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvInvaders3",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 712,
-    "imageGallery": [
-      "assets/comics/The Invaders #3.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 713,
     "name": "The Man-Thing #17",
     "category": "Comics",
     "team": "Marvel",
@@ -1394,26 +1293,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 713,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 714,
     "name": "The Man-Thing #19",
     "category": "Comics",
     "team": "Marvel",
@@ -1421,26 +1318,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 714,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 715,
     "name": "Thor #236",
     "category": "Comics",
     "team": "Marvel",
@@ -1448,26 +1343,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 715,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 716,
     "name": "World's Finest #232",
     "category": "Comics",
     "team": "DC",
@@ -1475,26 +1368,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 716,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 717,
     "name": "World's Finest #234",
     "category": "Comics",
     "team": "DC",
@@ -1502,26 +1393,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 717,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 718,
     "name": "All Star Comics #59",
     "category": "Comics",
     "team": "DC",
@@ -1529,27 +1418,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/All Star Comics #59.jpeg",
+    "imageGallery": [
+      "assets/comics/All Star Comics #59.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCAllStar59",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 718,
-    "imageGallery": [
-      "assets/comics/All Star Comics #59.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 719,
     "name": "Batman #282",
     "category": "Comics",
     "team": "DC",
@@ -1557,26 +1444,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 719,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 720,
     "name": "Batman Family #2",
     "category": "Comics",
     "team": "DC",
@@ -1584,27 +1469,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Batman Family #2.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman Family #2.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "dc_batman_2",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 720,
-    "imageGallery": [
-      "assets/comics/Batman Family #2.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 721,
     "name": "Batman Family #3",
     "category": "Comics",
     "team": "DC",
@@ -1612,27 +1495,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Batman Family #3.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman Family #3.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "dc_batman_family_3",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 721,
-    "imageGallery": [
-      "assets/comics/Batman Family #3.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 722,
     "name": "Batman Family #6",
     "category": "Comics",
     "team": "DC",
@@ -1640,27 +1521,25 @@
     "condition": "Ungraded",
     "price": 10.5,
     "priceLabel": "$7.00-$14.00",
+    "displayPrice": "$7.00-$14.00",
     "image": "assets/comics/Batman Family #6.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman Family #6.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCBatman6",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 722,
-    "imageGallery": [
-      "assets/comics/Batman Family #6.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$7.00-$14.00"
+    }
   },
   {
+    "id": 723,
     "name": "Captain America and Falcon #196",
     "category": "Comics",
     "team": "Marvel",
@@ -1668,26 +1547,24 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 723,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 724,
     "name": "Captain America and Falcon #197",
     "category": "Comics",
     "team": "Marvel",
@@ -1695,26 +1572,24 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 724,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 725,
     "name": "DC Super-Stars #3",
     "category": "Comics",
     "team": "DC",
@@ -1722,26 +1597,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 725,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 726,
     "name": "DC Super-Stars #5",
     "category": "Comics",
     "team": "DC",
@@ -1749,26 +1622,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 726,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 727,
     "name": "DC Super-Stars Presents Teen Titans #1",
     "category": "Comics",
     "team": "DC",
@@ -1776,26 +1647,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/DC Super-Stars Presents Teen Titans #1.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 727,
     "imageGallery": [
       "assets/comics/DC Super-Stars Presents Teen Titans #1.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 728,
     "name": "DC Super-Team Family #6",
     "category": "Comics",
     "team": "DC",
@@ -1803,27 +1672,25 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
+    "imageGallery": [
+      "assets/placeholder-comics.svg"
+    ],
     "description": "",
     "legacyImageLabel": "DCTeen1",
     "sourcePage": "DC Comics",
     "copyCount": 2,
-    "id": 728,
-    "imageGallery": [
-      "assets/placeholder-comics.svg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 729,
     "name": "Detective Comics #453",
     "category": "Comics",
     "team": "DC",
@@ -1831,27 +1698,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Detective Comics #453.jpeg",
+    "imageGallery": [
+      "assets/comics/Detective Comics #453.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCDetec453",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 729,
-    "imageGallery": [
-      "assets/comics/Detective Comics #453.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 730,
     "name": "Detective Comics #459",
     "category": "Comics",
     "team": "DC",
@@ -1859,26 +1724,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 730,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 731,
     "name": "Four Star Spectacular #2",
     "category": "Comics",
     "team": "DC",
@@ -1886,26 +1749,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 2,
-    "id": 731,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 2,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 732,
     "name": "Four Star Spectacular #3",
     "category": "Comics",
     "team": "DC",
@@ -1913,26 +1774,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 732,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 733,
     "name": "Jungle Action: The Black Panther #19",
     "category": "Comics",
     "team": "Marvel",
@@ -1940,26 +1799,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 733,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 734,
     "name": "Jungle Action: The Black Panther #20",
     "category": "Comics",
     "team": "Marvel",
@@ -1967,26 +1824,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 734,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 735,
     "name": "Justice League of America #125",
     "category": "Comics",
     "team": "DC",
@@ -1994,26 +1849,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 735,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 736,
     "name": "Justice League of America #133",
     "category": "Comics",
     "team": "DC",
@@ -2021,26 +1874,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 736,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 737,
     "name": "Marvel Super Action #3",
     "category": "Comics",
     "team": "Marvel",
@@ -2048,26 +1899,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 737,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 738,
     "name": "Secret Society of Super-Villains #1",
     "category": "Comics",
     "team": "DC",
@@ -2075,26 +1924,24 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 738,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 739,
     "name": "Superboy #218",
     "category": "Comics",
     "team": "DC",
@@ -2102,26 +1949,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 739,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 740,
     "name": "Superman #295",
     "category": "Comics",
     "team": "DC",
@@ -2129,26 +1974,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 740,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 741,
     "name": "Superman Family #181",
     "category": "Comics",
     "team": "DC",
@@ -2156,26 +1999,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 741,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 742,
     "name": "Teen Titans #44",
     "category": "Comics",
     "team": "DC",
@@ -2183,26 +2024,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 742,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 743,
     "name": "The Brave and the Bold #125",
     "category": "Comics",
     "team": "DC",
@@ -2210,26 +2049,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 743,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 744,
     "name": "The Brave and the Bold #128",
     "category": "Comics",
     "team": "DC",
@@ -2237,26 +2074,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 744,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 745,
     "name": "The Defenders #40",
     "category": "Comics",
     "team": "Marvel",
@@ -2264,21 +2099,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 745,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 746,
     "name": "The Defenders #44",
     "category": "Comics",
     "team": "Marvel",
@@ -2286,21 +2119,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 746,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 747,
     "name": "The Flash #243",
     "category": "Comics",
     "team": "DC",
@@ -2308,26 +2139,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 747,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 748,
     "name": "The Flash #244",
     "category": "Comics",
     "team": "DC",
@@ -2335,26 +2164,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 748,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 749,
     "name": "The Flash #245",
     "category": "Comics",
     "team": "DC",
@@ -2362,26 +2189,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/comics/The Flash #245.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 749,
     "imageGallery": [
       "assets/comics/The Flash #245.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 750,
     "name": "The Flash #246",
     "category": "Comics",
     "team": "DC",
@@ -2389,26 +2214,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 750,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 751,
     "name": "The Flash #247",
     "category": "Comics",
     "team": "DC",
@@ -2416,26 +2239,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 751,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 752,
     "name": "The Incredible Hulk Special #3",
     "category": "Comics",
     "team": "Marvel",
@@ -2443,27 +2264,25 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/comics/The Incredible Hulk Special #3.jpeg",
+    "imageGallery": [
+      "assets/comics/The Incredible Hulk Special #3.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvHulkAnnual3",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 752,
-    "imageGallery": [
-      "assets/comics/The Incredible Hulk Special #3.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 753,
     "name": "The Joker #6",
     "category": "Comics",
     "team": "DC",
@@ -2471,27 +2290,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/The Joker #6.jpeg",
+    "imageGallery": [
+      "assets/comics/The Joker #6.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCJoker6",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 753,
-    "imageGallery": [
-      "assets/comics/The Joker #6.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 754,
     "name": "The Joker #9",
     "category": "Comics",
     "team": "DC",
@@ -2499,27 +2316,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/The Joker #9.jpeg",
+    "imageGallery": [
+      "assets/comics/The Joker #9.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCJoker9",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 754,
-    "imageGallery": [
-      "assets/comics/The Joker #9.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 755,
     "name": "Thor #246",
     "category": "Comics",
     "team": "Marvel",
@@ -2527,26 +2342,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 755,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 756,
     "name": "World's Finest #235",
     "category": "Comics",
     "team": "DC",
@@ -2554,26 +2367,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 756,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 757,
     "name": "World's Finest #237",
     "category": "Comics",
     "team": "DC",
@@ -2581,26 +2392,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 757,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 758,
     "name": "World's Finest #239",
     "category": "Comics",
     "team": "DC",
@@ -2608,26 +2417,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 758,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 759,
     "name": "Batman #285",
     "category": "Comics",
     "team": "DC",
@@ -2635,26 +2442,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 759,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 760,
     "name": "Batman Family #10",
     "category": "Comics",
     "team": "DC",
@@ -2662,27 +2467,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Batman Family #10.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman Family #10.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "Batman10",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 760,
-    "imageGallery": [
-      "assets/comics/Batman Family #10.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 761,
     "name": "Batman Family #9",
     "category": "Comics",
     "team": "DC",
@@ -2690,27 +2493,25 @@
     "condition": "Ungraded",
     "price": 7.5,
     "priceLabel": "$5.00-$10.00",
+    "displayPrice": "$5.00-$10.00",
     "image": "assets/comics/Batman Family #9.jpeg",
+    "imageGallery": [
+      "assets/comics/Batman Family #9.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCBatman9",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 761,
-    "imageGallery": [
-      "assets/comics/Batman Family #9.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$5.00-$10.00"
+    }
   },
   {
+    "id": 762,
     "name": "Captain America and Falcon #205",
     "category": "Comics",
     "team": "Marvel",
@@ -2718,26 +2519,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 762,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 763,
     "name": "Captain America and Falcon #206",
     "category": "Comics",
     "team": "Marvel",
@@ -2745,26 +2544,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 763,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 764,
     "name": "Captain America and Falcon #207",
     "category": "Comics",
     "team": "Marvel",
@@ -2772,26 +2569,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 764,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 765,
     "name": "Captain America and Falcon #208",
     "category": "Comics",
     "team": "Marvel",
@@ -2799,26 +2594,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 765,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 766,
     "name": "Captain America and Falcon #210",
     "category": "Comics",
     "team": "Marvel",
@@ -2826,26 +2619,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 766,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 767,
     "name": "Captain America and Falcon #211",
     "category": "Comics",
     "team": "Marvel",
@@ -2853,26 +2644,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 767,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 768,
     "name": "Captain America vs. The Human Torch #216",
     "category": "Comics",
     "team": "Marvel",
@@ -2880,21 +2669,19 @@
     "condition": "Near Mint or Better",
     "price": 9,
     "priceLabel": "$9.00",
+    "displayPrice": "$9.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 768,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$9.00"
+    "sortRank": 0
   },
   {
+    "id": 769,
     "name": "Captain Marvel #47",
     "category": "Comics",
     "team": "Marvel",
@@ -2902,26 +2689,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 769,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 770,
     "name": "DC Super-Stars Strange Sports Stories #10",
     "category": "Comics",
     "team": "DC",
@@ -2929,26 +2714,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 770,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 771,
     "name": "DC Super-Team Family #9",
     "category": "Comics",
     "team": "DC",
@@ -2956,26 +2739,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 771,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 772,
     "name": "Detective Comics #468",
     "category": "Comics",
     "team": "DC",
@@ -2983,26 +2764,24 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 772,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 773,
     "name": "Four Star Spectacular #4",
     "category": "Comics",
     "team": "DC",
@@ -3010,26 +2789,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 773,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 774,
     "name": "Four Star Spectacular #5",
     "category": "Comics",
     "team": "DC",
@@ -3037,26 +2814,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 774,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 775,
     "name": "Iron Man #96",
     "category": "Comics",
     "team": "Marvel",
@@ -3064,26 +2839,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 775,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 776,
     "name": "Marvel Spotlight on Captain Marvel #8",
     "category": "Comics",
     "team": "Marvel",
@@ -3091,27 +2864,25 @@
     "condition": "Ungraded",
     "price": 12,
     "priceLabel": "$8.00-$16.00",
+    "displayPrice": "$8.00-$16.00",
     "image": "assets/comics/Marvel Spotlight on Captain Marvel #8.jpeg",
+    "imageGallery": [
+      "assets/comics/Marvel Spotlight on Captain Marvel #8.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvCaptainMarvel8",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 776,
-    "imageGallery": [
-      "assets/comics/Marvel Spotlight on Captain Marvel #8.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$8.00-$16.00"
+    }
   },
   {
+    "id": 777,
     "name": "Marvel Triple Action #35",
     "category": "Comics",
     "team": "Marvel",
@@ -3119,21 +2890,19 @@
     "condition": "Near Mint or Better",
     "price": 8,
     "priceLabel": "$8.00",
+    "displayPrice": "$8.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 777,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$8.00"
+    "sortRank": 0
   },
   {
+    "id": 778,
     "name": "Secret Society of Super-Villains #5",
     "category": "Comics",
     "team": "DC",
@@ -3141,49 +2910,45 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 778,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 779,
     "name": "Star Wars #1 Diamond Box .35 / No UPC Newsstand",
     "category": "Comics",
     "team": "Marvel",
     "year": 1977,
     "condition": "Contact for price",
     "price": 0,
-    "displayPrice": "Contact for price",
     "priceLabel": "Contact for price",
+    "displayPrice": "Contact for price",
     "image": "assets/comics/Star Wars #1 Diamond Box .35 - No UPC Newsstand.jpeg",
+    "imageGallery": [
+      "assets/comics/Star Wars #1 Diamond Box .35 - No UPC Newsstand.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvStarWars1",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 779,
-    "imageGallery": [
-      "assets/comics/Star Wars #1 Diamond Box .35 - No UPC Newsstand.jpeg"
-    ],
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": []
+    "sortRank": 0
   },
   {
+    "id": 780,
     "name": "Superboy #223",
     "category": "Comics",
     "team": "DC",
@@ -3191,26 +2956,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 780,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 781,
     "name": "Superman #297",
     "category": "Comics",
     "team": "DC",
@@ -3218,26 +2981,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 781,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 782,
     "name": "Superman #298",
     "category": "Comics",
     "team": "DC",
@@ -3245,26 +3006,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/comics/Superman #298.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 782,
     "imageGallery": [
       "assets/comics/Superman #298.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 783,
     "name": "Superman #299",
     "category": "Comics",
     "team": "DC",
@@ -3272,26 +3031,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 783,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 784,
     "name": "Tarzan Lord of the Jungle #6",
     "category": "Comics",
     "team": "Marvel",
@@ -3299,21 +3056,19 @@
     "condition": "Near Mint or Better",
     "price": 8,
     "priceLabel": "$8.00",
+    "displayPrice": "$8.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 784,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$8.00"
+    "sortRank": 0
   },
   {
+    "id": 785,
     "name": "Teen Titans #46",
     "category": "Comics",
     "team": "DC",
@@ -3321,27 +3076,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/Teen Titans #46.jpeg",
+    "imageGallery": [
+      "assets/comics/Teen Titans #46.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "DCTeenT46",
     "sourcePage": "DC Comics",
     "copyCount": 1,
-    "id": 785,
-    "imageGallery": [
-      "assets/comics/Teen Titans #46.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 786,
     "name": "The Amazing Spider-Man #168",
     "category": "Comics",
     "team": "Marvel",
@@ -3349,27 +3102,25 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/comics/The Amazing Spider-Man #168.jpeg",
+    "imageGallery": [
+      "assets/comics/The Amazing Spider-Man #168.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvSpid168",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 786,
-    "imageGallery": [
-      "assets/comics/The Amazing Spider-Man #168.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 787,
     "name": "The Amazing Spider-Man #171",
     "category": "Comics",
     "team": "Marvel",
@@ -3377,26 +3128,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 787,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 788,
     "name": "The Avengers #159",
     "category": "Comics",
     "team": "Marvel",
@@ -3404,27 +3153,25 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/comics/The Avengers #159.jpeg",
+    "imageGallery": [
+      "assets/comics/The Avengers #159.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvAveng159",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 788,
-    "imageGallery": [
-      "assets/comics/The Avengers #159.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 789,
     "name": "The Defenders #49",
     "category": "Comics",
     "team": "Marvel",
@@ -3432,21 +3179,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 789,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 790,
     "name": "The Defenders #52",
     "category": "Comics",
     "team": "Marvel",
@@ -3454,21 +3199,19 @@
     "condition": "Near Mint or Better",
     "price": 5,
     "priceLabel": "$5.00",
+    "displayPrice": "$5.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 790,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$5.00"
+    "sortRank": 0
   },
   {
+    "id": 791,
     "name": "The Incredible Hulk #216",
     "category": "Comics",
     "team": "Marvel",
@@ -3476,26 +3219,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 791,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 792,
     "name": "Thor #257",
     "category": "Comics",
     "team": "Marvel",
@@ -3503,26 +3244,24 @@
     "condition": "Ungraded",
     "price": 2,
     "priceLabel": "$1.00-$3.00",
+    "displayPrice": "$1.00-$3.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 792,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$3.00"
+    }
   },
   {
+    "id": 793,
     "name": "Thor #261",
     "category": "Comics",
     "team": "Marvel",
@@ -3530,26 +3269,24 @@
     "condition": "Ungraded",
     "price": 2,
     "priceLabel": "$1.00-$3.00",
+    "displayPrice": "$1.00-$3.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 793,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$3.00"
+    }
   },
   {
+    "id": 794,
     "name": "Thor #264",
     "category": "Comics",
     "team": "Marvel",
@@ -3557,26 +3294,24 @@
     "condition": "Ungraded",
     "price": 2,
     "priceLabel": "$1.00-$3.00",
+    "displayPrice": "$1.00-$3.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 2,
-    "id": 794,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 2,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$3.00"
+    }
   },
   {
+    "id": 795,
     "name": "Batman #292",
     "category": "Comics",
     "team": "DC",
@@ -3584,26 +3319,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 795,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 796,
     "name": "Batman #302",
     "category": "Comics",
     "team": "DC",
@@ -3611,26 +3344,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 796,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 797,
     "name": "Captain America #227",
     "category": "Comics",
     "team": "Marvel",
@@ -3638,27 +3369,25 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/comics/Captain America #227.jpeg",
+    "imageGallery": [
+      "assets/comics/Captain America #227.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvCaptAm227",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 797,
-    "imageGallery": [
-      "assets/comics/Captain America #227.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 798,
     "name": "Captain America #228",
     "category": "Comics",
     "team": "Marvel",
@@ -3666,26 +3395,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 798,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 799,
     "name": "Captain America #229",
     "category": "Comics",
     "team": "Marvel",
@@ -3693,26 +3420,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 799,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 800,
     "name": "Captain America Annual #5",
     "category": "Comics",
     "team": "Marvel",
@@ -3720,21 +3445,19 @@
     "condition": "Near Mint or Better",
     "price": 5,
     "priceLabel": "$5.00",
+    "displayPrice": "$5.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 800,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$5.00"
+    "sortRank": 0
   },
   {
+    "id": 801,
     "name": "Captain America and Falcon #213",
     "category": "Comics",
     "team": "Marvel",
@@ -3742,26 +3465,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 801,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 802,
     "name": "Captain America and Falcon #214",
     "category": "Comics",
     "team": "Marvel",
@@ -3769,26 +3490,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 2,
-    "id": 802,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 2,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 803,
     "name": "Detective Comics #475",
     "category": "Comics",
     "team": "DC",
@@ -3796,26 +3515,24 @@
     "condition": "Ungraded",
     "price": 10.5,
     "priceLabel": "$7.00-$14.00",
+    "displayPrice": "$7.00-$14.00",
     "image": "assets/comics/Detective Comics #475.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 803,
     "imageGallery": [
       "assets/comics/Detective Comics #475.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$7.00-$14.00"
+    }
   },
   {
+    "id": 804,
     "name": "Detective Comics #476",
     "category": "Comics",
     "team": "DC",
@@ -3823,26 +3540,24 @@
     "condition": "Ungraded",
     "price": 10.5,
     "priceLabel": "$7.00-$14.00",
+    "displayPrice": "$7.00-$14.00",
     "image": "assets/comics/Detective Comics #476.jpeg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 804,
     "imageGallery": [
       "assets/comics/Detective Comics #476.jpeg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$7.00-$14.00"
+    }
   },
   {
+    "id": 805,
     "name": "Fantastic Four #191",
     "category": "Comics",
     "team": "Marvel",
@@ -3850,26 +3565,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 805,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 806,
     "name": "Green Lantern #107",
     "category": "Comics",
     "team": "DC",
@@ -3877,26 +3590,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 806,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 807,
     "name": "Iron Man #100",
     "category": "Comics",
     "team": "Marvel",
@@ -3904,27 +3615,25 @@
     "condition": "Ungraded",
     "price": 6,
     "priceLabel": "$4.00-$8.00",
+    "displayPrice": "$4.00-$8.00",
     "image": "assets/comics/Iron Man #100.jpeg",
+    "imageGallery": [
+      "assets/comics/Iron Man #100.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "MarvelIronman100",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 807,
-    "imageGallery": [
-      "assets/comics/Iron Man #100.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$4.00-$8.00"
+    }
   },
   {
+    "id": 808,
     "name": "Iron Man #103",
     "category": "Comics",
     "team": "Marvel",
@@ -3932,26 +3641,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 808,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 809,
     "name": "Iron Man #111",
     "category": "Comics",
     "team": "Marvel",
@@ -3959,26 +3666,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 809,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 810,
     "name": "Marvel Team-Up #66",
     "category": "Comics",
     "team": "Marvel",
@@ -3986,26 +3691,24 @@
     "condition": "Ungraded",
     "price": 4.5,
     "priceLabel": "$3.00-$6.00",
+    "displayPrice": "$3.00-$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 810,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$3.00-$6.00"
+    }
   },
   {
+    "id": 811,
     "name": "The Brave and the Bold #141",
     "category": "Comics",
     "team": "DC",
@@ -4013,26 +3716,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 811,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 812,
     "name": "The Flash #264",
     "category": "Comics",
     "team": "DC",
@@ -4040,26 +3741,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 812,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 813,
     "name": "The Incredible Hulk #225",
     "category": "Comics",
     "team": "Marvel",
@@ -4067,26 +3766,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 813,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 814,
     "name": "Batman #303",
     "category": "Comics",
     "team": "DC",
@@ -4094,26 +3791,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 814,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 815,
     "name": "Captain America #231",
     "category": "Comics",
     "team": "Marvel",
@@ -4121,26 +3816,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 815,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 816,
     "name": "The Avengers #187",
     "category": "Comics",
     "team": "Marvel",
@@ -4148,26 +3841,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 816,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 817,
     "name": "The Avengers #188",
     "category": "Comics",
     "team": "Marvel",
@@ -4175,26 +3866,24 @@
     "condition": "Ungraded",
     "price": 3,
     "priceLabel": "$2.00-$4.00",
+    "displayPrice": "$2.00-$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 817,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$2.00-$4.00"
+    }
   },
   {
+    "id": 818,
     "name": "The Defenders #70",
     "category": "Comics",
     "team": "Marvel",
@@ -4202,21 +3891,19 @@
     "condition": "Near Mint or Better",
     "price": 4,
     "priceLabel": "$4.00",
+    "displayPrice": "$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 818,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$4.00"
+    "sortRank": 0
   },
   {
+    "id": 819,
     "name": "The Defenders #74",
     "category": "Comics",
     "team": "Marvel",
@@ -4224,21 +3911,19 @@
     "condition": "Near Mint or Better",
     "price": 4,
     "priceLabel": "$4.00",
+    "displayPrice": "$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 819,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$4.00"
+    "sortRank": 0
   },
   {
+    "id": 820,
     "name": "The Incredible Hulk #238",
     "category": "Comics",
     "team": "Marvel",
@@ -4246,26 +3931,24 @@
     "condition": "Ungraded",
     "price": 1.5,
     "priceLabel": "$1.00-$2.00",
+    "displayPrice": "$1.00-$2.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 820,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$2.00"
+    }
   },
   {
+    "id": 821,
     "name": "Action Comics #507",
     "category": "Comics",
     "team": "DC",
@@ -4273,21 +3956,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "DC Comics",
-    "copyCount": 1,
-    "id": 821,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "DC Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 822,
     "name": "Marvel Two-In-One #69",
     "category": "Comics",
     "team": "Marvel",
@@ -4295,27 +3976,25 @@
     "condition": "Ungraded",
     "price": 2,
     "priceLabel": "$1.00-$3.00",
+    "displayPrice": "$1.00-$3.00",
     "image": "assets/comics/Marvel Two-In-One #69.jpeg",
+    "imageGallery": [
+      "assets/comics/Marvel Two-In-One #69.jpeg"
+    ],
     "description": "",
     "legacyImageLabel": "Marv2in1Thing69",
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
-    "id": 822,
-    "imageGallery": [
-      "assets/comics/Marvel Two-In-One #69.jpeg"
-    ],
     "isFeatured": false,
     "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
     "metadata": {
       "conditionNotes": [
         "Price guide range shown"
       ]
-    },
-    "displayPrice": "$1.00-$3.00"
+    }
   },
   {
+    "id": 823,
     "name": "Marvel Super Action #27",
     "category": "Comics",
     "team": "Marvel",
@@ -4323,21 +4002,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 823,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 824,
     "name": "Marvel Two-In-One #72",
     "category": "Comics",
     "team": "Marvel",
@@ -4345,21 +4022,19 @@
     "condition": "Near Mint or Better",
     "price": 4,
     "priceLabel": "$4.00",
+    "displayPrice": "$4.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 824,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$4.00"
+    "sortRank": 0
   },
   {
+    "id": 825,
     "name": "Fantastic Four #249",
     "category": "Comics",
     "team": "Marvel",
@@ -4367,21 +4042,19 @@
     "condition": "Near Mint or Better",
     "price": 6,
     "priceLabel": "$6.00",
+    "displayPrice": "$6.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 825,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$6.00"
+    "sortRank": 0
   },
   {
+    "id": 826,
     "name": "Conan The Barbarian #216",
     "category": "Comics",
     "team": "Marvel",
@@ -4389,18 +4062,15 @@
     "condition": "Near Mint or Better",
     "price": 5,
     "priceLabel": "$5.00",
+    "displayPrice": "$5.00",
     "image": "assets/placeholder-comics.svg",
-    "description": "",
-    "sourcePage": "Marvel Comics",
-    "copyCount": 1,
-    "id": 826,
     "imageGallery": [
       "assets/placeholder-comics.svg"
     ],
+    "description": "",
+    "sourcePage": "Marvel Comics",
+    "copyCount": 1,
     "isFeatured": false,
-    "sortRank": 0,
-    "itemPhotoUrls": [],
-    "htmlImageUrls": [],
-    "displayPrice": "$5.00"
+    "sortRank": 0
   }
 ]
