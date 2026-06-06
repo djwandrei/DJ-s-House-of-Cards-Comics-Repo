@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-06-06-02';
+const CACHE_VERSION = 'dj-house-v2026-06-06-03';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;

@@ -27,6 +27,7 @@ DEFAULT_BASE_URL = "http://127.0.0.1:4173"
 DEFAULT_OUT = Path(r"H:\My Drive\djshouseofcards-next-fixes-applied\outputs\desktop-smoke.json")
 DEFAULT_PAGES = (
     "index.html",
+    "shop.html",
     "sports-cards.html",
     "baseball-cards.html",
     "basketball-cards.html",
@@ -40,6 +41,7 @@ DEFAULT_PAGES = (
     "admin.html",
 )
 PRODUCT_PAGE_MARKERS = ("baseball-cards", "basketball-cards", "football-cards", "comics", "collectibles")
+LIGHTWEIGHT_PAGE_MARKERS = ("about.html", "contact.html", "shop.html", "sports-cards.html")
 
 
 def parse_args() -> argparse.Namespace:
@@ -205,6 +207,7 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 wrongPublicContactEmailPresent: text.includes('djwandrei@gmail.com') || text.includes('contact@djshouseofcards-comics.com'),
                 duplicateVisibleProductCards: visibleProductSignatures.length - new Set(visibleProductSignatures).size,
                 preloadedProductScriptCount: document.querySelectorAll('script[data-preloaded-product-source]').length,
+                backendScriptCount: Array.from(document.scripts).filter((script) => /(?:backend-config|supabase-client|payments)\\.js(?:\\?|$)/.test(script.src)).length,
                 containsSlash2022: text.includes('\\\\2022')
               };
             })()"""
@@ -477,6 +480,8 @@ async def main() -> int:
                     report["failures"].append({**page_report, "reason": "Incorrect public contact email is visible"})
                 if page_report["exceptions"]:
                     report["failures"].append({**page_report, "reason": "Runtime exception"})
+                if page in LIGHTWEIGHT_PAGE_MARKERS and page_report.get("backendScriptCount", 0) > 0:
+                    report["failures"].append({**page_report, "reason": "Lightweight page loaded unused backend or payment scripts"})
 
             filtered_catalog_report = await inspect_filtered_catalog(client, args.base_url)
             report["filteredCatalogCheck"] = filtered_catalog_report
