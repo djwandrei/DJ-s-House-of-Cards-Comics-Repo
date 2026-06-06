@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-06-06-05';
+const CACHE_VERSION = 'dj-house-v2026-06-06-06';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -14,8 +14,8 @@ const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest'
 const SUPABASE_HOST_PATTERN = /supabase\.co$/i;
 const CACHE_BYPASS_PATHS = new Set(['/admin.html']);
 
-// Keep the offline shell limited to public storefront files, then let runtime
-// caching collect product data and thumbnails as shoppers browse.
+// Keep the offline shell limited to the app frame. Large decorative and product
+// images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -31,18 +31,18 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260606d',
-  '/styles-mobile-overrides.css?v=20260606d',
-  '/core.js?v=20260606d',
-  '/nav.js?v=20260606d',
-  '/catalog.js?v=20260606d',
-  '/contact.js?v=20260606d',
-  '/backend-config.js?v=20260606d',
-  '/supabase-client.js?v=20260606d',
-  '/payments.js?v=20260606d',
-  '/account.js?v=20260606d',
-  '/site.webmanifest?v=20260606d',
-  '/offline.js?v=20260606d',
+  '/styles.css?v=20260606e',
+  '/styles-mobile-overrides.css?v=20260606e',
+  '/core.js?v=20260606e',
+  '/nav.js?v=20260606e',
+  '/catalog.js?v=20260606e',
+  '/contact.js?v=20260606e',
+  '/backend-config.js?v=20260606e',
+  '/supabase-client.js?v=20260606e',
+  '/payments.js?v=20260606e',
+  '/account.js?v=20260606e',
+  '/site.webmanifest?v=20260606e',
+  '/offline.js?v=20260606e',
   '/vendor/supabase.min.js',
   '/assets/fonts/bebas-neue-400.woff2',
   '/assets/fonts/inter-400.woff2',
@@ -57,17 +57,7 @@ const APP_SHELL_ASSETS = [
   '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
-  '/assets/grass.webp',
-  '/assets/baseball-main.webp',
-  '/assets/basketball-main.webp',
-  '/assets/football-main.webp',
-  '/assets/comics-main.webp',
-  '/assets/Jordan.webp',
-  '/assets/clubhouse-sign.webp?v=20260530a',
-  '/assets/baseball-footer.webp',
-  '/assets/basketball-footer.webp',
-  '/assets/football-footer.webp',
-  '/assets/comics-footer.webp'
+  '/assets/dj-logo.png'
 ];
 
 self.addEventListener('install', (event) => {
