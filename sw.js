@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-06-06-06';
+const CACHE_VERSION = 'dj-house-v2026-06-06-07';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -17,47 +17,15 @@ const CACHE_BYPASS_PATHS = new Set(['/admin.html']);
 // Keep the offline shell limited to the app frame. Large decorative and product
 // images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
-  '/',
-  '/index.html',
-  '/shop.html',
-  '/sports-cards.html',
-  '/baseball-cards.html',
-  '/basketball-cards.html',
-  '/football-cards.html',
-  '/comics.html',
-  '/collectibles.html',
-  '/wishlist.html',
-  '/account.html',
-  '/about.html',
-  '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260606e',
-  '/styles-mobile-overrides.css?v=20260606e',
-  '/core.js?v=20260606e',
-  '/nav.js?v=20260606e',
-  '/catalog.js?v=20260606e',
-  '/contact.js?v=20260606e',
-  '/backend-config.js?v=20260606e',
-  '/supabase-client.js?v=20260606e',
-  '/payments.js?v=20260606e',
-  '/account.js?v=20260606e',
-  '/site.webmanifest?v=20260606e',
-  '/offline.js?v=20260606e',
-  '/vendor/supabase.min.js',
-  '/assets/fonts/bebas-neue-400.woff2',
-  '/assets/fonts/inter-400.woff2',
-  '/assets/fonts/inter-500.woff2',
-  '/assets/fonts/inter-600.woff2',
-  '/assets/fonts/inter-700.woff2',
-  '/assets/fonts/inter-800.woff2',
-  '/assets/fonts/lobster-two-400.woff2',
-  '/assets/fonts/lobster-two-700.woff2',
+  '/styles.css?v=20260606f',
+  '/styles-mobile-overrides.css?v=20260606f',
+  '/core.js?v=20260606f',
+  '/site.webmanifest?v=20260606f',
+  '/offline.js?v=20260606f',
   '/assets/dj-logo.png',
-  '/assets/icons/apple-touch-icon.png',
   '/assets/icons/favicon-32.png',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png',
-  '/assets/dj-logo.png'
+  '/assets/icons/icon-192.png'
 ];
 
 self.addEventListener('install', (event) => {

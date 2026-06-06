@@ -17,6 +17,7 @@ const MIRROR_FIELDS = [
   'name', 'category', 'team', 'year', 'condition', 'price',
   'priceLabel', 'displayPrice', 'image', 'imageGallery'
 ];
+const CANONICAL_OPERATIONAL_FIELDS = ['itemPhotoUrls', 'htmlImageUrls'];
 const WRONG_CONTACT_PATTERN = /djwandrei@gmail\.com|contact@djshouseofcards-comics\.com/i;
 const RANGE_PATTERN = /\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(?:-|\u2013|\u2014|\bto\b)\s*\$?\s*(\d[\d,]*(?:\.\d+)?)/i;
 const issues = [];
@@ -39,6 +40,8 @@ function tagAttributes(tag) {
 
 function localPathFromReference(reference, currentFile) {
   if (!reference || /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(reference)) return null;
+  const exactLocalPath = reference.replace(/^\//, '');
+  if (exists(exactLocalPath)) return exactLocalPath;
   const [withoutHash] = reference.split('#');
   const [withoutQuery] = withoutHash.split('?');
   if (!withoutQuery) return currentFile;
@@ -152,6 +155,31 @@ if (shellImageBytes > 1024 * 1024) {
 
 const catalogs = Object.fromEntries(CATALOG_FILES.map((file) => [file, JSON.parse(read(file))]));
 const fullCatalog = new Map(catalogs['products.json'].map((item) => [String(item.id), item]));
+for (const field of CANONICAL_OPERATIONAL_FIELDS) {
+  const missingCount = catalogs['products.json'].filter(
+    (item) => !Object.prototype.hasOwnProperty.call(item, field)
+  ).length;
+  if (missingCount) {
+    issues.push({
+      file: 'products.json',
+      type: `canonical catalog lost operational field: ${field}`,
+      count: missingCount
+    });
+  }
+}
+const richMetadataCount = catalogs['products.json'].filter((item) => {
+  const metadata = item.metadata;
+  return metadata
+    && typeof metadata === 'object'
+    && Object.keys(metadata).some((key) => !['conditionNotes', 'playerAthlete', 'excelFields'].includes(key));
+}).length;
+if (richMetadataCount < 1000) {
+  issues.push({
+    file: 'products.json',
+    type: 'canonical catalog appears to have lost admin/import metadata',
+    count: richMetadataCount
+  });
+}
 for (const [file, items] of Object.entries(catalogs)) {
   const ids = items.map((item) => String(item.id));
   const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
@@ -161,6 +189,17 @@ for (const [file, items] of Object.entries(catalogs)) {
     const high = rangeHigh(item);
     if (high != null && Math.abs(Number(item.price) - high) >= 0.001) {
       issues.push({ file, type: 'ranged listing does not use high checkout price', id: item.id });
+    }
+    for (const [field, references] of [
+      ['image', [item.image]],
+      ['imageGallery', Array.isArray(item.imageGallery) ? item.imageGallery : []]
+    ]) {
+      for (const reference of references) {
+        const localPath = localPathFromReference(reference, file);
+        if (localPath && !exists(localPath)) {
+          issues.push({ file, type: `missing catalog ${field} asset`, id: item.id, value: reference });
+        }
+      }
     }
     if (file === 'products.json') continue;
     const fullItem = fullCatalog.get(String(item.id));
@@ -182,6 +221,7 @@ const summary = {
   assetVersion,
   shellAssets: shellAssets.length,
   shellImageKB: Math.round(shellImageBytes / 1024),
+  richMetadataRows: richMetadataCount,
   issues: issues.length
 };
 console.log(JSON.stringify(summary, null, 2));

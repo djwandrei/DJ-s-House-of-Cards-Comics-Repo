@@ -726,6 +726,14 @@
   }
 }
 
+@media (max-width:700px) {
+  /* The footer sits well below the initial viewport on mobile. Avoid fetching a
+     decorative background image before a shopper has reached it. */
+  .footer {
+    background-image:none !important;
+  }
+}
+
 @media (max-width:480px) {
   :root {
     --header-h:78px;

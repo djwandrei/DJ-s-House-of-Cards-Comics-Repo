@@ -129,7 +129,7 @@ window.DJ = window.DJ || {};
     'basketball-cards': 24,
     'football-cards': 24
   };
-  const DEFAULT_CATALOG_ITEMS_PER_PAGE = 72;
+  const DEFAULT_CATALOG_ITEMS_PER_PAGE = 24;
   const CATALOG_ITEMS_PER_PAGE_OPTIONS = [24, 48, 72];
   const PRODUCT_LINK_PARAM = 'item';
   const MODAL_FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -1452,22 +1452,9 @@ window.DJ = window.DJ || {};
   // ---------------------------------------------------------------------------
 
   function getPriorityProductCardCount() {
-    // Only the immediately visible cards should compete for high-priority image
-    // loading. Narrow screens show fewer cards above the fold, so this trims
-    // bandwidth and decode work on mobile without changing the catalog layout.
-    if (typeof window.matchMedia !== 'function') {
-      return 6;
-    }
-
-    if (window.matchMedia('(max-width: 640px)').matches) {
-      return 2;
-    }
-
-    if (window.matchMedia('(max-width: 900px)').matches) {
-      return 4;
-    }
-
-    return 6;
+    // Product grids sit below their page hero and filter controls, so card
+    // thumbnails should not compete with the actual LCP image during startup.
+    return document.body.dataset.page === 'wishlist' ? 2 : 0;
   }
 
   function renderProductCard(product, wishlistIds, options = {}) {
@@ -1612,16 +1599,38 @@ window.DJ = window.DJ || {};
     if (activeFiltersWrap) activeFiltersWrap.innerHTML = '';
   }
 
-  function buyNow(product) {
+  async function ensurePaymentsBridge() {
+    if (DJ.payments?.startCheckout) {
+      return DJ.payments;
+    }
+
+    if (typeof DJ.loadScriptsInOrder !== 'function') {
+      return null;
+    }
+
+    await DJ.loadScriptsInOrder([
+      DJ.versionedProductAsset('backend-config.js'),
+      DJ.versionedProductAsset('supabase-client.js'),
+      DJ.versionedProductAsset('payments.js')
+    ]);
+    return DJ.payments || null;
+  }
+
+  async function buyNow(product) {
     recordProductMetric('checkout_start', product);
 
     const sendPurchaseInquiry = () => {
       openPurchaseInquiry(product);
     };
 
-    if (DJ.payments?.startCheckout) {
-      DJ.payments.startCheckout(product, { fallback: sendPurchaseInquiry });
-      return;
+    try {
+      const payments = await ensurePaymentsBridge();
+      if (payments?.startCheckout) {
+        payments.startCheckout(product, { fallback: sendPurchaseInquiry });
+        return;
+      }
+    } catch (error) {
+      console.warn('Secure checkout could not be loaded; opening the purchase inquiry instead.', error);
     }
 
     sendPurchaseInquiry();
@@ -1707,13 +1716,13 @@ Thank you.`
     const product = (Array.isArray(products) ? products : [])
       .find((item) => Number(item.id) === linkedProductId);
 
+    if (!product) return;
+
     linkedProductAutoOpenedId = linkedProductId;
-    if (product) {
-      openModal(product, {
-        preserveUrl: true,
-        contextProducts: products
-      });
-    }
+    openModal(product, {
+      preserveUrl: true,
+      contextProducts: products
+    });
   }
 
   function setModalStatus(message = '', tone = 'info') {
@@ -1861,7 +1870,6 @@ Thank you.`
       if (wishlistClear) {
         if (window.confirm('Clear all saved items from your wishlist?')) {
           DJ.setWishlist([]);
-          renderWishlistPage();
         }
         return;
       }
@@ -1876,7 +1884,6 @@ Thank you.`
 
       if (event.target.closest('.wishlist-button')) {
         toggleWishlist(productId, product);
-        if (document.body.dataset.page === 'wishlist') renderWishlistPage();
         return;
       }
 
@@ -2863,8 +2870,8 @@ Thank you.`
       if (selectedConditions.size && !selectedConditions.has(product._conditionLower)) continue;
       if (selectedAttributes.length && !selectedAttributes.every((attribute) => product.attributes.includes(attribute))) continue;
       if (selectedTeams.size && !selectedTeams.has(product._teamFacet)) continue;
-      if (filters.yearMin != null && product.year < filters.yearMin) continue;
-      if (filters.yearMax != null && product.year > filters.yearMax) continue;
+      if (filters.yearMin != null && (product.year == null || product.year < filters.yearMin)) continue;
+      if (filters.yearMax != null && (product.year == null || product.year > filters.yearMax)) continue;
       if (filters.priceMin != null && (product._price == null || product._price < filters.priceMin)) continue;
       if (filters.priceMax != null && (product._price == null || product._price > filters.priceMax)) continue;
 
@@ -3317,7 +3324,9 @@ Thank you.`
       document.body.dataset.catalogPopstateBound = 'true';
       window.addEventListener('popstate', () => {
         applyUrlFilters();
-        renderCatalogPage(config, allowedProducts);
+        // Reload through the current catalog cache so browser history cannot
+        // resurrect the product snapshot captured before an in-page mutation.
+        renderCatalogPage(config);
       });
     }
 
@@ -3422,28 +3431,13 @@ Thank you.`);
       count: Math.min(6, Math.max(2, storedWishlist.length))
     });
 
-    let wishlistProducts = [];
-    let loadedWishlistFromRemote = false;
-
-    if (DJ.remoteCatalog?.isConfigured()) {
-      try {
-        const remoteWishlistProducts = await DJ.remoteCatalog.listProducts({
-          source: DEFAULT_PRODUCT_SOURCE,
-          ids: storedWishlist
-        });
-        const syncedRemoteWishlistProducts = await applyStaticLegacyListingOverlay(DEFAULT_PRODUCT_SOURCE, remoteWishlistProducts);
-        wishlistProducts = normalizeProducts(syncedRemoteWishlistProducts);
-        loadedWishlistFromRemote = true;
-      } catch (error) {
-        console.error('Failed to load wishlist products from Supabase:', error);
-      }
-    }
-
-    if (!loadedWishlistFromRemote) {
-      const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
-      const wishlistIdSet = new Set(storedWishlist);
-      wishlistProducts = allProducts.filter((product) => wishlistIdSet.has(Number(product.id)));
-    }
+    // Use the same resilient source selection as every catalog page. This keeps
+    // local/custom listings available, honors static-first mode, and preserves
+    // the remote timeout plus static fallback instead of leaving the wishlist
+    // blocked on a direct backend request.
+    const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    const wishlistIdSet = new Set(storedWishlist);
+    let wishlistProducts = allProducts.filter((product) => wishlistIdSet.has(Number(product.id)));
 
     if (renderRequestId !== wishlistRenderRequestId) return;
 
@@ -3696,11 +3690,8 @@ Thank you.`);
         navigateModalListing(button.dataset.modalNav === 'prev' ? -1 : 1);
       });
     });
-    modalInner.querySelector('#modalWishlist')?.addEventListener('click', async () => {
+    modalInner.querySelector('#modalWishlist')?.addEventListener('click', () => {
       toggleWishlist(product.id, product);
-      if (document.body.dataset.page === 'wishlist') {
-        await renderWishlistPage();
-      }
       closeModal();
     });
 
@@ -3908,7 +3899,9 @@ Thank you.`);
   }
 
   // Kick off only the features that are relevant to the current page template.
-  document.addEventListener('DOMContentLoaded', async () => {
+  async function bootCatalog() {
+    if (document.body.dataset.catalogBooted === 'true') return;
+    document.body.dataset.catalogBooted = 'true';
     const page = document.body.dataset.page;
     const pageConfig = PAGE_CONFIG[page] || PAGE_CONFIG.shop;
     bindWishlistStateSync();
@@ -3938,7 +3931,13 @@ Thank you.`);
     document.addEventListener('keydown', (event) => {
       trapProductModalFocus(event);
     });
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootCatalog, { once: true });
+  } else {
+    bootCatalog();
+  }
 
   window.closeModal = closeModal;
 })();

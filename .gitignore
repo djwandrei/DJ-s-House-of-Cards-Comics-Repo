@@ -4,9 +4,32 @@
 .tmp/
 .codex/
 .codex-screenshots/
-supabase/.env
-supabase/functions/.env
-supabase/functions/*/.env
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+*.local
+*.local.*
+*.secret
+*.secrets
+*.credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+.netrc
+.npmrc
+auth.json
+credentials.json
+secrets/
+**/secrets/
 
 # Local history and scratch files
 .Rhistory

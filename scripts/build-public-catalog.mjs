@@ -27,18 +27,9 @@ const BUNDLE_FILES = {
 };
 const RANGE_PATTERN = /\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(?:-|–|—|\bto\b)\s*\$?\s*(\d[\d,]*(?:\.\d+)?)/i;
 
-const PUBLIC_FIELDS = [
-  'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
-  'displayPrice', 'image', 'imageGallery', 'description', 'photoHostPageUrl',
-  'legacyImageLabel', 'sourcePage', 'league', 'sport', 'playerAthlete', 'copyCount',
-  'itemPhotoUrl', 'itemPhotoUrls', 'htmlFullLink', 'htmlImageUrls', 'metadata',
-  'isFeatured', 'isDeleted', 'sortRank'
-];
-const PUBLIC_FIELD_SET = new Set(PUBLIC_FIELDS);
-
 // Category pages only need buyer-facing fields plus a small metadata subset
-// used to derive storefront badges. The full products.json source remains
-// untouched so admin tools and Supabase sync retain their import bookkeeping.
+// used to derive storefront badges. The canonical products.json source is never
+// rewritten here so admin tools and Supabase sync retain import bookkeeping.
 const STOREFRONT_FIELDS = new Set([
   'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
   'displayPrice', 'image', 'imageGallery', 'description', 'photoHostPageUrl',
@@ -112,20 +103,17 @@ function pickStorefrontMetadata(metadata) {
   return Object.keys(out).length ? out : undefined;
 }
 
-function pickPublicFields(item, options = {}) {
-  const fields = options.storefront ? STOREFRONT_FIELDS : PUBLIC_FIELD_SET;
+function pickStorefrontFields(item) {
   const out = {};
-  for (const key of fields) {
+  for (const key of STOREFRONT_FIELDS) {
     if (Object.prototype.hasOwnProperty.call(item, key)) {
       out[key] = item[key];
     }
   }
 
-  if (options.storefront) {
-    const metadata = pickStorefrontMetadata(item.metadata);
-    if (metadata) {
-      out.metadata = metadata;
-    }
+  const metadata = pickStorefrontMetadata(item.metadata);
+  if (metadata) {
+    out.metadata = metadata;
   }
 
   return out;
@@ -136,22 +124,22 @@ for (const file of FILES) {
   const raw = JSON.parse(await fs.readFile(fullPath, 'utf8'));
   assertRangeCheckoutPrices(raw, file);
   const isFullCatalog = file === 'products.json';
-  const cleaned = Array.isArray(raw)
-    ? raw.map((item) => pickPublicFields(item, { storefront: !isFullCatalog }))
+  const storefront = Array.isArray(raw)
+    ? raw.map((item) => pickStorefrontFields(item))
     : [];
-  if (cleanJsonSources || (optimizeSegmentJson && !isFullCatalog)) {
-    await writeTextFile(fullPath, `${JSON.stringify(cleaned, null, 2)}\n`);
+  if (!isFullCatalog && (cleanJsonSources || optimizeSegmentJson)) {
+    await writeTextFile(fullPath, `${JSON.stringify(storefront, null, 2)}\n`);
   }
   if (BUNDLE_FILES[file]) {
     const bundle = [
       `window.DJ_PRELOADED_SOURCE = ${JSON.stringify(file)};`,
-      `window.DJ_PRELOADED_PRODUCTS = ${JSON.stringify(cleaned)};`,
+      `window.DJ_PRELOADED_PRODUCTS = ${JSON.stringify(storefront)};`,
       ''
     ].join('\n');
     await writeTextFile(path.join(root, BUNDLE_FILES[file]), bundle);
   }
-  const action = cleanJsonSources || (optimizeSegmentJson && !isFullCatalog)
+  const action = !isFullCatalog && (cleanJsonSources || optimizeSegmentJson)
     ? 'Optimized and bundled'
     : 'Bundled';
-  console.log(`${action} ${file} (${cleaned.length} rows)`);
+  console.log(`${action} ${file} (${storefront.length} rows)`);
 }

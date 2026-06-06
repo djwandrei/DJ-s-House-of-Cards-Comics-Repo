@@ -38,31 +38,20 @@ do not hold inventory all day.
 
 ## Supabase function secrets
 
-Set these as Supabase Edge Function secrets:
+Use the Supabase Dashboard secret editor, or copy
+`supabase/functions/.env.example` to a secret file outside this repository and
+load it with the Supabase CLI. Do not put secret values directly in a command,
+where they can remain in shell history.
 
-```bash
-supabase secrets set STRIPE_SECRET_KEY=your_stripe_secret_key
-supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_from_stripe_webhook
-supabase secrets set SITE_URL=https://www.djshouseofcards-comics.com
-supabase secrets set STRIPE_SHIPPING_RATE_ID=shr_your_flat_shipping_rate
+```powershell
+supabase secrets set --env-file "$HOME/.config/djshouseofcards/supabase-functions.env"
 ```
 
 Supabase normally provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to
 Edge Functions. If your project does not, set those as secrets too.
 
-If shipping is already included in every product price, you may set this instead
-of `STRIPE_SHIPPING_RATE_ID`:
-
-```bash
-supabase secrets set STRIPE_ALLOW_FREE_SHIPPING=true
-```
-
-Optional checkout behavior:
-
-```bash
-supabase secrets set STRIPE_CHECKOUT_HOLD_MINUTES=45
-supabase secrets set STRIPE_ALLOW_PROMOTION_CODES=true
-```
+The example file documents the required and optional names, including the
+free-shipping and promotion-code switches.
 
 Promotion codes are off by default so an active Stripe coupon cannot
 accidentally discount one-of-one inventory.

@@ -6,7 +6,7 @@ param(
   [string]$SupabaseKey = '',
   [string]$ProductsTable = '',
   [string]$AdminEmail = '',
-  [string]$AdminPassword = '',
+  [SecureString]$AdminPassword,
   [int]$ChunkSize = 200,
   [switch]$LegacySchema,
   [switch]$SkipVerify
@@ -31,6 +31,48 @@ function Get-ConfigValue {
   }
 
   return ''
+}
+
+function Test-IsPrivilegedSupabaseKey {
+  param([string]$Key)
+
+  if ([string]::IsNullOrWhiteSpace($Key)) {
+    return $false
+  }
+
+  if ($Key.StartsWith('sb_secret_', [System.StringComparison]::OrdinalIgnoreCase)) {
+    return $true
+  }
+
+  $parts = $Key.Split('.')
+  if ($parts.Count -ne 3) {
+    return $false
+  }
+
+  try {
+    $payload = $parts[1].Replace('-', '+').Replace('_', '/')
+    $payload = $payload.PadRight($payload.Length + ((4 - ($payload.Length % 4)) % 4), '=')
+    $json = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($payload))
+    $claims = $json | ConvertFrom-Json
+    return ([string]$claims.role).Equals('service_role', [System.StringComparison]::OrdinalIgnoreCase)
+  } catch {
+    return $false
+  }
+}
+
+function ConvertFrom-SecurePassword {
+  param([SecureString]$Password)
+
+  if ($null -eq $Password) {
+    return ''
+  }
+
+  $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+  try {
+    return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
+  } finally {
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer)
+  }
 }
 
 function Get-PropertyValue {
@@ -277,24 +319,26 @@ function Get-AccessToken {
     [string]$ProjectUrl,
     [string]$ApiKey,
     [string]$Email,
-    [string]$Password
+    [SecureString]$Password
   )
 
-  if ([string]::IsNullOrWhiteSpace($Email) -and [string]::IsNullOrWhiteSpace($Password)) {
+  if ([string]::IsNullOrWhiteSpace($Email) -and $null -eq $Password) {
     return $ApiKey
   }
 
-  if ([string]::IsNullOrWhiteSpace($Email) -or [string]::IsNullOrWhiteSpace($Password)) {
-    throw 'Provide both -AdminEmail and -AdminPassword, or provide neither and use a service-role key as -SupabaseKey.'
+  if ([string]::IsNullOrWhiteSpace($Email) -or $null -eq $Password) {
+    throw 'Provide -AdminEmail and enter the admin password at the secure prompt, or inject SUPABASE_SERVICE_ROLE_KEY for this process.'
   }
 
+  $plainPassword = ConvertFrom-SecurePassword -Password $Password
   $headers = @{
     apikey = $ApiKey
   }
   $body = @{
     email = $Email
-    password = $Password
+    password = $plainPassword
   } | ConvertTo-Json -Compress
+  $plainPassword = $null
 
   $response = Invoke-RestMethod `
     -Uri ($ProjectUrl.TrimEnd('/') + '/auth/v1/token?grant_type=password') `
@@ -401,11 +445,30 @@ if ([string]::IsNullOrWhiteSpace($ProductsTable)) {
 if ([string]::IsNullOrWhiteSpace($SupabaseUrl)) {
   throw 'Supabase URL is required. Pass -SupabaseUrl or set it in backend-config.js.'
 }
-if ([string]::IsNullOrWhiteSpace($SupabaseKey)) {
-  throw 'Supabase key is required. Pass -SupabaseKey or set it in backend-config.js.'
+if (Test-IsPrivilegedSupabaseKey -Key $SupabaseKey) {
+  throw 'Do not pass a Supabase service-role key through -SupabaseKey or browser config. Inject SUPABASE_SERVICE_ROLE_KEY for this process instead.'
 }
 if ($SupabaseUrl -notmatch '^https://[a-z0-9-]+\.supabase\.co/?$') {
   throw "Supabase URL '$SupabaseUrl' is not in the expected project format."
+}
+
+$serviceRoleKey = [string]$env:SUPABASE_SERVICE_ROLE_KEY
+if ([string]::IsNullOrWhiteSpace($SupabaseKey) -and [string]::IsNullOrWhiteSpace($serviceRoleKey)) {
+  throw 'A Supabase publishable key or injected SUPABASE_SERVICE_ROLE_KEY is required.'
+}
+if (-not [string]::IsNullOrWhiteSpace($serviceRoleKey) -and
+    (-not [string]::IsNullOrWhiteSpace($AdminEmail) -or $null -ne $AdminPassword)) {
+  throw 'Choose one privileged authentication method: injected SUPABASE_SERVICE_ROLE_KEY or the admin secure-prompt flow.'
+}
+
+$apiKey = if ([string]::IsNullOrWhiteSpace($serviceRoleKey)) { $SupabaseKey } else { $serviceRoleKey }
+if ([string]::IsNullOrWhiteSpace($serviceRoleKey) -and
+    -not [string]::IsNullOrWhiteSpace($AdminEmail) -and
+    $null -eq $AdminPassword) {
+  $AdminPassword = Read-Host "Supabase admin password" -AsSecureString
+}
+if ([string]::IsNullOrWhiteSpace($serviceRoleKey) -and [string]::IsNullOrWhiteSpace($AdminEmail)) {
+  throw 'Provide -AdminEmail and use the secure password prompt, or inject SUPABASE_SERVICE_ROLE_KEY for this process.'
 }
 
 $productsPath = Join-Path $Root $ProductsFile
@@ -432,8 +495,8 @@ if ($remoteProducts.Count -eq 0) {
   throw "No valid products were found in $ProductsFile."
 }
 
-$accessToken = Get-AccessToken -ProjectUrl $SupabaseUrl -ApiKey $SupabaseKey -Email $AdminEmail -Password $AdminPassword
-$headers = Get-CommonHeaders -ApiKey $SupabaseKey -AccessToken $accessToken
+$accessToken = Get-AccessToken -ProjectUrl $SupabaseUrl -ApiKey $apiKey -Email $AdminEmail -Password $AdminPassword
+$headers = Get-CommonHeaders -ApiKey $apiKey -AccessToken $accessToken
 
 Write-Output ("Prepared {0} product rows for upsert." -f $remoteProducts.Count)
 Write-Output ("Featured listings preserved: {0}" -f $featuredRankMap.Count)

@@ -1,0 +1,11 @@
+title = "DJ's House of Cards secret audit"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Supabase publishable keys are intentionally public browser identifiers."
+regexTarget = "match"
+regexes = [
+  '''\bsb_publishable_[A-Za-z0-9_-]+\b'''
+]

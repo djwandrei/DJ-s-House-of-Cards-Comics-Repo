@@ -13,9 +13,10 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
+  const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260606e';
+  const PRODUCT_ASSET_VERSION = '20260606f';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -80,6 +81,50 @@ window.DJ = window.DJ || {};
 
   function versionedProductAsset(path) {
     return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
+  }
+
+  function loadScript(src) {
+    if (!src) {
+      return Promise.reject(new Error('Choose a script to load.'));
+    }
+
+    if (scriptLoadPromises.has(src)) {
+      return scriptLoadPromises.get(src);
+    }
+
+    const pending = new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing?.dataset.loaded === 'true') {
+        resolve(existing);
+        return;
+      }
+
+      const script = existing || document.createElement('script');
+      script.src = src;
+      script.defer = true;
+
+      script.addEventListener('load', () => {
+        script.dataset.loaded = 'true';
+        resolve(script);
+      }, { once: true });
+      script.addEventListener('error', () => {
+        scriptLoadPromises.delete(src);
+        reject(new Error(`Failed to load ${src}.`));
+      }, { once: true });
+
+      if (!existing) {
+        document.head.appendChild(script);
+      }
+    });
+
+    scriptLoadPromises.set(src, pending);
+    return pending;
+  }
+
+  async function loadScriptsInOrder(sources = []) {
+    for (const source of sources) {
+      await loadScript(source);
+    }
   }
 
   // Remember the last focused element so modal close handlers can restore focus
@@ -1413,6 +1458,58 @@ window.DJ = window.DJ || {};
     };
   }
 
+  function initDeferredServiceWorkerRegistration() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    let scheduled = false;
+    let fallbackTimer = 0;
+    const scheduleRegistration = () => {
+      if (scheduled) return;
+      scheduled = true;
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener('pointerdown', scheduleRegistration);
+      window.removeEventListener('keydown', scheduleRegistration);
+      scheduleIdle(registerServiceWorker, 3000);
+    };
+
+    window.addEventListener('pointerdown', scheduleRegistration, { once: true, passive: true });
+    window.addEventListener('keydown', scheduleRegistration, { once: true });
+    fallbackTimer = window.setTimeout(scheduleRegistration, 10000);
+  }
+
+  function initHomeCatalogLoader() {
+    if (document.body.dataset.page !== 'home') {
+      return;
+    }
+
+    const featuredProducts = document.getElementById('featuredProducts');
+    if (!featuredProducts) {
+      return;
+    }
+
+    let observer = null;
+    const loadHomeCatalog = () => {
+      observer?.disconnect();
+      loadScript(versionedProductAsset('catalog.js')).catch((error) => {
+        console.error('Failed to load the featured catalog.', error);
+      });
+    };
+
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          loadHomeCatalog();
+        }
+      }, { rootMargin: '600px 0px' });
+      observer.observe(featuredProducts);
+      return;
+    }
+
+    scheduleIdle(loadHomeCatalog, 2500);
+  }
+
   function explicitPriceLabel(item) {
     return String(item?.priceLabel || item?.displayPrice || '').trim();
   }
@@ -1631,6 +1728,8 @@ window.DJ = window.DJ || {};
   DJ.updateWishlistCount = updateWishlistCount;
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
+  DJ.loadScript = loadScript;
+  DJ.loadScriptsInOrder = loadScriptsInOrder;
   DJ.getScrollBehavior = getScrollBehavior;
   // Shared responsive helpers keep resize and media-query wiring consistent
   // across navigation, catalog, and future page modules.
@@ -1683,6 +1782,7 @@ window.DJ = window.DJ || {};
     initArchiveImageLightbox();
     initArchivePanels();
     updateWishlistCount();
+    initHomeCatalogLoader();
     // Local metrics power the admin dashboard, but they are not critical to
     // first paint. Defer the storage write so page rendering stays responsive.
     scheduleIdle(() => {
@@ -1692,7 +1792,7 @@ window.DJ = window.DJ || {};
       });
     }, 1800);
     initHeaderScrollState();
-    registerServiceWorker();
+    initDeferredServiceWorkerRegistration();
   });
 
   window.addEventListener('pagehide', flushSiteMetrics);

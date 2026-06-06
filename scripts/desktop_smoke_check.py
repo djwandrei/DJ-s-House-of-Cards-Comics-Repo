@@ -24,7 +24,7 @@ import websockets
 
 EDGE_PATH = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 DEFAULT_BASE_URL = "http://127.0.0.1:4173"
-DEFAULT_OUT = Path(r"H:\My Drive\djshouseofcards-next-fixes-applied\outputs\desktop-smoke.json")
+DEFAULT_OUT = Path(__file__).resolve().parents[1] / "outputs" / "desktop-smoke.json"
 DEFAULT_PAGES = (
     "index.html",
     "shop.html",
@@ -217,6 +217,7 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
               const text = document.body ? document.body.innerText : '';
               const unlabeledControls = Array.from(document.querySelectorAll('input, select, textarea'))
                 .filter((control) => !['hidden', 'submit', 'button', 'reset', 'image'].includes(control.type))
+                .filter((control) => control.getAttribute('aria-hidden') !== 'true')
                 .filter((control) => !(control.labels && control.labels.length))
                 .filter((control) => !control.getAttribute('aria-label') && !control.getAttribute('aria-labelledby'))
                 .map((control) => control.id || control.name || control.tagName.toLowerCase())
@@ -303,6 +304,27 @@ async def inspect_product_modal(client: CdpClient, base_url: str) -> dict:
             modalClosed: !document.querySelector('#productModal.active')
           };
         })()"""
+    )
+
+
+async def inspect_home_featured_flow(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/index.html")
+    await client.evaluate(
+        """(() => {
+          document.getElementById('featuredProducts')?.scrollIntoView({ block: 'center' });
+          return true;
+        })()"""
+    )
+    await wait_for(client, "document.querySelectorAll('#featuredProducts .product-card[data-product-id]').length > 0", timeout=20)
+    return await client.evaluate(
+        """(() => ({
+          featuredCards: document.querySelectorAll('#featuredProducts .product-card[data-product-id]').length,
+          catalogScripts: Array.from(document.scripts).filter((script) => /catalog\\.js(?:\\?|$)/.test(script.src)).length,
+          backendScripts: Array.from(document.scripts).filter((script) => /(?:backend-config|supabase-client|payments)\\.js(?:\\?|$)/.test(script.src)).length,
+          brokenFeaturedImages: Array.from(document.querySelectorAll('#featuredProducts img'))
+            .filter((image) => image.complete && image.naturalWidth === 0)
+            .length
+        }))()"""
     )
 
 
@@ -407,6 +429,165 @@ async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
           };
         })()"""
     )
+
+
+async def inspect_contact_form(client: CdpClient, base_url: str) -> dict:
+    await navigate(client, f"{base_url.rstrip('/')}/contact.html")
+    return await client.evaluate(
+        """(() => {
+          const form = document.getElementById('contactForm');
+          const status = document.getElementById('contactStatus');
+          const name = document.getElementById('contactName');
+          const email = document.getElementById('contactEmail');
+          const subject = document.getElementById('contactSubject');
+          const message = document.getElementById('contactMessage');
+          const buyingTopic = document.querySelector('[data-contact-topic="buying"]');
+          if (!form || !status || !name || !email || !subject || !message || !buyingTopic) {
+            return { ready: false, reason: 'missing contact form nodes' };
+          }
+
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          const requiredStatus = status.textContent.trim();
+          const requiredFocus = document.activeElement?.id || '';
+
+          buyingTopic.click();
+          const topicSubject = subject.value;
+          const topicPromptAdded = message.value.includes("I'm interested in this item or category:");
+
+          name.value = 'Smoke Test Buyer';
+          email.value = 'not-an-email';
+          message.value = 'Testing contact validation without opening an email client.';
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          const invalidEmailStatus = status.textContent.trim();
+          const invalidEmailFocus = document.activeElement?.id || '';
+
+          return {
+            ready: true,
+            requiredStatus,
+            requiredFocus,
+            topicSubject,
+            topicPromptAdded,
+            invalidEmailStatus,
+            invalidEmailFocus
+          };
+        })()"""
+    )
+
+
+async def inspect_local_wishlist_flow(client: CdpClient, base_url: str) -> dict:
+    custom_id = 99000001
+    await navigate(client, f"{base_url.rstrip('/')}/baseball-cards.html")
+    await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
+    await client.evaluate(
+        f"""(() => {{
+          const custom = {{
+            id: {custom_id},
+            name: 'AAA Smoke Test Local Wishlist Card',
+            category: 'Baseball',
+            team: 'Smoke Test Team',
+            year: 2026,
+            condition: 'Ungraded',
+            price: 12.34,
+            image: 'assets/dj-logo.png',
+            description: 'Temporary isolated-browser smoke listing.'
+          }};
+          window.DJ.saveCustomProducts([custom]);
+          window.DJ.setWishlist([{custom_id}]);
+          return true;
+        }})()"""
+    )
+
+    await navigate(client, f"{base_url.rstrip('/')}/wishlist.html")
+    await wait_for(
+        client,
+        f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+        timeout=20,
+    )
+    result = await client.evaluate(
+        f"""(() => {{
+          const card = document.querySelector('.product-card[data-product-id="{custom_id}"]');
+          const result = {{
+            cardFound: Boolean(card),
+            title: card?.querySelector('h4')?.textContent?.trim() || '',
+            pageCount: document.getElementById('wishlistPageCount')?.textContent?.trim() || '',
+            headerCount: document.querySelector('[data-wishlist-count]')?.textContent?.trim() || ''
+          }};
+          window.DJ.setWishlist([]);
+          window.DJ.saveCustomProducts([]);
+          return result;
+        }})()"""
+    )
+    return result
+
+
+async def inspect_catalog_mutation_history_flow(client: CdpClient, base_url: str) -> dict:
+    custom_id = 99000002
+    custom_name = "AAA Smoke Test History Card"
+    await navigate(client, f"{base_url.rstrip('/')}/baseball-cards.html")
+    await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
+    await client.evaluate(
+        f"""(() => {{
+          window.DJ.saveCustomProducts([{{
+            id: {custom_id},
+            name: '{custom_name}',
+            category: 'Baseball',
+            team: 'Smoke Test Team',
+            year: 2026,
+            condition: 'Ungraded',
+            price: 23.45,
+            image: 'assets/dj-logo.png',
+            description: 'Temporary isolated-browser history smoke listing.'
+          }}]);
+          return true;
+        }})()"""
+    )
+    await wait_for(client, "document.body.dataset.catalogMutationRefreshBound === 'true'", timeout=5)
+    await client.evaluate(
+        f"""(() => {{
+          const search = document.getElementById('searchInput');
+          if (!search) return false;
+          search.value = '{custom_name}';
+          search.dispatchEvent(new Event('input', {{ bubbles: true }}));
+          return true;
+        }})()"""
+    )
+    appeared_after_mutation = bool(
+        await wait_for(
+            client,
+            f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+            timeout=20,
+        )
+    )
+    await client.evaluate(
+        f"""(() => {{
+          const url = new URL(window.location.href);
+          url.searchParams.set('search', '{custom_name}');
+          window.history.pushState({{}}, '', `${{url.pathname}}${{url.search}}`);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+          return true;
+        }})()"""
+    )
+    survived_history_navigation = bool(
+        await wait_for(
+            client,
+            f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+            timeout=20,
+        )
+    )
+    result = await client.evaluate(
+        f"""(() => {{
+          const card = document.querySelector('.product-card[data-product-id="{custom_id}"]');
+          const result = {{
+            appearedAfterMutation: {str(appeared_after_mutation).lower()},
+            survivedHistoryNavigation: {str(survived_history_navigation).lower()},
+            title: card?.querySelector('h4')?.textContent?.trim() || '',
+            resultsCount: document.getElementById('resultsCount')?.textContent?.trim() || ''
+          }};
+          window.DJ.saveCustomProducts([]);
+          return result;
+        }})()"""
+    )
+    return result
 
 
 async def inspect_checkout_auth_flow(client: CdpClient, base_url: str) -> dict:
@@ -582,6 +763,16 @@ async def main() -> int:
             ):
                 report["failures"].append({"page": "baseball-cards.html", "modal": modal_report})
 
+            home_featured_report = await inspect_home_featured_flow(client, args.base_url)
+            report["homeFeaturedCheck"] = home_featured_report
+            if not (
+                home_featured_report.get("featuredCards") == 4
+                and home_featured_report.get("catalogScripts") == 1
+                and home_featured_report.get("backendScripts") == 0
+                and home_featured_report.get("brokenFeaturedImages") == 0
+            ):
+                report["failures"].append({"page": "index.html", "homeFeatured": home_featured_report})
+
             account_report = await inspect_account_page(client, args.base_url)
             report["accountPageCheck"] = account_report
             if not (
@@ -597,6 +788,37 @@ async def main() -> int:
                 and account_report.get("removedAccountToolsGone")
             ):
                 report["failures"].append({"page": "account.html", "account": account_report})
+
+            contact_report = await inspect_contact_form(client, args.base_url)
+            report["contactFormCheck"] = contact_report
+            if not (
+                contact_report.get("ready")
+                and "complete your name, email, and message" in contact_report.get("requiredStatus", "")
+                and contact_report.get("requiredFocus") == "contactName"
+                and contact_report.get("topicSubject") == "Buying Inquiry"
+                and contact_report.get("topicPromptAdded")
+                and "valid email address" in contact_report.get("invalidEmailStatus", "")
+                and contact_report.get("invalidEmailFocus") == "contactEmail"
+            ):
+                report["failures"].append({"page": "contact.html", "contactForm": contact_report})
+
+            local_wishlist_report = await inspect_local_wishlist_flow(client, args.base_url)
+            report["localWishlistCheck"] = local_wishlist_report
+            if not (
+                local_wishlist_report.get("cardFound")
+                and local_wishlist_report.get("title") == "AAA Smoke Test Local Wishlist Card"
+                and local_wishlist_report.get("pageCount") == "1 saved item"
+            ):
+                report["failures"].append({"page": "wishlist.html", "localWishlist": local_wishlist_report})
+
+            mutation_history_report = await inspect_catalog_mutation_history_flow(client, args.base_url)
+            report["catalogMutationHistoryCheck"] = mutation_history_report
+            if not (
+                mutation_history_report.get("appearedAfterMutation")
+                and mutation_history_report.get("survivedHistoryNavigation")
+                and mutation_history_report.get("title") == "AAA Smoke Test History Card"
+            ):
+                report["failures"].append({"page": "baseball-cards.html", "catalogMutationHistory": mutation_history_report})
 
             if args.skip_checkout:
                 report["checkoutAuthCheck"] = {"skipped": True}

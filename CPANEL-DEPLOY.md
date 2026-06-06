@@ -4,7 +4,7 @@ This project now includes a local FTPS deploy script:
 
 - `scripts/deploy-cpanel-ftps.ps1`
 
-It uploads only the files that changed since the last successful deploy, plus any current uncommitted changes in the working tree. It also attempts remote deletes for files that were removed locally.
+It uploads only the files that changed since the last successful deploy, plus any current uncommitted changes in the working tree. It also attempts remote deletes for files that were removed locally, but asset deletion is blocked unless it is explicitly authorized.
 
 ## Why FTPS
 
@@ -23,11 +23,11 @@ to:
 Then fill in:
 
 - `host`
-- `username`
-- `password`
 - `remoteRoot`
 
-`.deploy/` is already ignored by Git, so your credentials stay local.
+Do not add `username` or `password` fields. The script prompts for a dedicated
+FTPS credential when it connects, and never saves that credential in the
+project.
 
 ## 2. First dry run
 
@@ -64,23 +64,71 @@ After the first full upload, run:
 powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1
 ```
 
-That only uploads:
+That uploads:
 
 - committed changes since the last deploy
 - current local modified files
 - current local untracked files
 
-and deletes removed files remotely unless `-SkipDelete` is used.
+It deletes removed non-asset files unless `-SkipDelete` is used. Removed files
+under `assets/` stay on cPanel unless `-AllowAssetDelete` is explicitly used.
+Whenever deletions are skipped, the deploy checkpoint is not advanced, so the
+pending cleanup remains visible for a later audited deploy.
 
 The deploy allow-list intentionally skips local build/source folders and common
 workspace noise such as `desktop.ini`, `.pyc`, logs, spreadsheets, CSVs, zips,
 and local state files even if those files live under `assets/`.
+
+Removed files under `assets/` are preserved by default because the live
+Supabase catalog, cached pages, or older catalog snapshots may still reference
+them. Use `-AllowAssetDelete` only after a separate live-reference audit.
+
+The live Supabase media paths can be compared with the deploy-synced static
+catalog without making changes:
+
+```powershell
+node .\scripts\sync-supabase-image-paths.mjs
+```
+
+The script patches only `image` and `image_gallery`, refuses replacements whose
+local targets are missing, and requires both `--apply` and a process-scoped
+`SUPABASE_SERVICE_ROLE_KEY` before it writes:
+
+```powershell
+node .\scripts\sync-supabase-image-paths.mjs --apply
+```
+
+## Focused admin/account release
+
+To deploy only admin/account-owned files without uploading catalogs, shared
+storefront code, or images, use the reviewed path list:
+
+```powershell
+node .\scripts\audit-cpanel-release.mjs .\scripts\cpanel-admin-account-release.txt
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -DryRun -PathList .\scripts\cpanel-admin-account-release.txt
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -PathList .\scripts\cpanel-admin-account-release.txt
+```
+
+Shared files such as `core.js`, styles, service-worker code, backend config,
+and `.htaccess` are kept in a separate list because they can affect the public
+storefront. Deploy them only after a separate live diff and storefront review:
+
+```powershell
+node .\scripts\audit-cpanel-release.mjs .\scripts\cpanel-admin-account-shared-release.txt
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -DryRun -PathList .\scripts\cpanel-admin-account-shared-release.txt
+```
+
+Path-list deploys never perform deletes and do not advance the global
+`lastDeployedCommit` checkpoint. This keeps later full/incremental deploy
+comparisons honest.
 
 ## Optional flags
 
 - `-DryRun` : preview actions only
 - `-Full` : upload the full current project again
 - `-SkipDelete` : do not delete files from the server
+- `-AllowAssetDelete` : allow removed files under `assets/` to be deleted
+- `-PathList` : upload only reviewed paths; never delete or update global deploy state
 - `-ConfigPath` : use a different local config file
 
 ## Recommended cPanel setup
@@ -91,21 +139,11 @@ Create a dedicated FTP account in cPanel that points to:
 
 Then use that account in `.deploy/cpanel-deploy.local.json`.
 
-For this site's current cPanel account, the FTP login is already jailed to the
-live web root. That means `remoteRoot` should be:
+Keep `allowInsecureCertificate` set to `false`. If the FTPS certificate does
+not validate, fix the hostname or certificate with the hosting provider instead
+of disabling verification.
 
-```json
-"/"
-```
-
-The cPanel FTP server also presents a shared-host certificate that does not
-match `ftp.djshouseofcards-comics.com`. Because of that, this local config uses
-explicit FTPS encryption with `allowInsecureCertificate` set to `true`. This
-keeps the transfer encrypted, but skips hostname verification for the FTP
-certificate.
-
-## Typical local config path
-
-```text
-H:\My Drive\djshouseofcards-next-fixes-applied\.deploy\cpanel-deploy.local.json
-```
+For non-interactive automation, inject `CPANEL_FTPS_USERNAME` and
+`CPANEL_FTPS_PASSWORD` from a trusted secret store for that one process. Never
+put them in this repository, a PowerShell profile, a command line, or a Codex
+thread.

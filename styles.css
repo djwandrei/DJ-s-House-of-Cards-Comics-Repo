@@ -11,66 +11,30 @@
 
 @font-face {
   font-family:"Bebas Neue";
-  src:url("assets/fonts/bebas-neue-400.woff2") format("woff2"),
-      url("assets/fonts/bebas-neue-400.ttf") format("truetype");
+  src:url("assets/fonts/bebas-neue-400.woff2") format("woff2");
   font-style:normal;
   font-weight:400;
   font-display:swap
 }
 @font-face {
   font-family:Inter;
-  src:url("assets/fonts/inter-400.woff2") format("woff2"),
-      url("assets/fonts/inter-400.ttf") format("truetype");
+  src:url("assets/fonts/inter-400.woff2") format("woff2");
   font-style:normal;
   font-weight:400;
   font-display:swap
 }
 @font-face {
   font-family:Inter;
-  src:url("assets/fonts/inter-500.woff2") format("woff2"),
-      url("assets/fonts/inter-500.ttf") format("truetype");
-  font-style:normal;
-  font-weight:500;
-  font-display:swap
-}
-@font-face {
-  font-family:Inter;
-  src:url("assets/fonts/inter-600.woff2") format("woff2"),
-      url("assets/fonts/inter-600.ttf") format("truetype");
-  font-style:normal;
-  font-weight:600;
-  font-display:swap
-}
-@font-face {
-  font-family:Inter;
-  src:url("assets/fonts/inter-700.woff2") format("woff2"),
-      url("assets/fonts/inter-700.ttf") format("truetype");
+  src:url("assets/fonts/inter-700.woff2") format("woff2");
   font-style:normal;
   font-weight:700;
   font-display:swap
 }
 @font-face {
-  font-family:Inter;
-  src:url("assets/fonts/inter-800.woff2") format("woff2"),
-      url("assets/fonts/inter-800.ttf") format("truetype");
-  font-style:normal;
-  font-weight:800;
-  font-display:swap
-}
-@font-face {
   font-family:"Lobster Two";
-  src:url("assets/fonts/lobster-two-400.woff2") format("woff2"),
-      url("assets/fonts/lobster-two-400.ttf") format("truetype");
+  src:url("assets/fonts/lobster-two-700.woff2") format("woff2");
   font-style:normal;
-  font-weight:400;
-  font-display:swap
-}
-@font-face {
-  font-family:"Lobster Two";
-  src:url("assets/fonts/lobster-two-700.woff2") format("woff2"),
-      url("assets/fonts/lobster-two-700.ttf") format("truetype");
-  font-style:normal;
-  font-weight:700;
+  font-weight:400 700;
   font-display:swap
 }
 

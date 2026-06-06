@@ -33,6 +33,8 @@ class ThumbnailResult:
     skipped: int = 0
     missing: int = 0
     errors: int = 0
+    pruned: int = 0
+    pruned_bytes: int = 0
     original_bytes: int = 0
     thumbnail_bytes: int = 0
 
@@ -40,14 +42,14 @@ class ThumbnailResult:
 def iter_catalog_images(products: list[dict]) -> Iterable[str]:
     seen: set[str] = set()
     for product in products:
-      for value in [product.get("image"), *(product.get("imageGallery") or [])]:
-        image_path = str(value or "").strip()
-        if not image_path.lower().startswith("assets/"):
-            continue
-        if image_path in seen:
-            continue
-        seen.add(image_path)
-        yield image_path
+        for value in [product.get("image"), *(product.get("imageGallery") or [])]:
+            image_path = str(value or "").strip()
+            if not image_path.lower().startswith("assets/"):
+                continue
+            if image_path in seen:
+                continue
+            seen.add(image_path)
+            yield image_path
 
 
 def thumbnail_path_for(root: Path, asset_path: str) -> Path:
@@ -73,12 +75,34 @@ def generate_thumbnail(source_path: Path, target_path: Path, max_size: int, qual
         image.save(target_path, **save_kwargs)
 
 
+def prune_orphan_thumbnails(thumbnail_root: Path, expected_targets: set[Path], result: ThumbnailResult) -> None:
+    if not thumbnail_root.exists():
+        return
+
+    for candidate in thumbnail_root.rglob("*"):
+        if not candidate.is_file() or candidate in expected_targets:
+            continue
+        result.pruned_bytes += candidate.stat().st_size
+        candidate.unlink()
+        result.pruned += 1
+
+    # Remove only empty generated directories, deepest first.
+    for directory in sorted(
+        (path for path in thumbnail_root.rglob("*") if path.is_dir()),
+        key=lambda path: len(path.parts),
+        reverse=True,
+    ):
+        if not any(directory.iterdir()):
+            directory.rmdir()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate storefront thumbnails.")
     parser.add_argument("--root", default=str(Path(__file__).resolve().parents[1]), help="Project root")
     parser.add_argument("--max-size", type=int, default=640, help="Max width/height in pixels")
     parser.add_argument("--quality", type=int, default=78, help="WebP quality")
     parser.add_argument("--force", action="store_true", help="Regenerate even when the thumbnail is current")
+    parser.add_argument("--prune", action="store_true", help="Delete generated thumbnails not referenced by products.json")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
@@ -86,10 +110,13 @@ def main() -> int:
     products = json.loads(catalog_path.read_text(encoding="utf-8"))
 
     result = ThumbnailResult()
+    thumbnail_root = root / "assets" / "thumbnails"
+    expected_targets: set[Path] = set()
 
     for asset_path in iter_catalog_images(products):
         source_path = source_path_for(root, asset_path)
         target_path = thumbnail_path_for(root, asset_path)
+        expected_targets.add(target_path)
 
         if source_path.suffix.lower() not in SUPPORTED_RASTER_EXTENSIONS:
             result.skipped += 1
@@ -118,14 +145,19 @@ def main() -> int:
         except Exception:
             result.errors += 1
 
+    if args.prune:
+        prune_orphan_thumbnails(thumbnail_root, expected_targets, result)
+
     print(json.dumps({
         "generated": result.generated,
         "skipped": result.skipped,
         "missing": result.missing,
         "errors": result.errors,
+        "pruned": result.pruned,
+        "pruned_bytes": result.pruned_bytes,
         "original_bytes": result.original_bytes,
         "thumbnail_bytes": result.thumbnail_bytes,
-        "thumbnail_root": str(root / "assets" / "thumbnails")
+        "thumbnail_root": str(thumbnail_root)
     }, indent=2))
     return 0 if result.errors == 0 else 1
 

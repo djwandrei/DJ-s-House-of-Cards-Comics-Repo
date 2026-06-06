@@ -1,13 +1,16 @@
 [CmdletBinding()]
 param(
   [string]$ConfigPath = ".deploy/cpanel-deploy.local.json",
+  [PSCredential]$Credential,
   [string]$PathList,
   [switch]$Full,
   [switch]$DryRun,
-  [switch]$SkipDelete
+  [switch]$SkipDelete,
+  [switch]$AllowAssetDelete
 )
 
 $ErrorActionPreference = "Stop"
+$script:ResolvedDeployCredential = $null
 
 function Get-RepoRoot {
   return (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -48,9 +51,18 @@ function Get-GitExecutable {
     $gitFromPath = $null
   }
 
+  $githubDesktopGit = Get-ChildItem "$env:LOCALAPPDATA\GitHubDesktop" -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -like "app-*" } |
+    Sort-Object Name -Descending |
+    ForEach-Object { Join-Path $_.FullName "resources\app\git\cmd\git.exe" } |
+    Where-Object { Test-Path $_ } |
+    Select-Object -First 1
+
   $candidates = @((
     $gitFromPath,
-    "C:\Users\djwan\AppData\Local\GitHubDesktop\app-3.5.8\resources\app\git\cmd\git.exe",
+    "$env:LOCALAPPDATA\GitHubDesktop\bin\git.exe",
+    "$env:LOCALAPPDATA\GitHubDesktop\bin\git.cmd",
+    $githubDesktopGit,
     "C:\Program Files\Git\cmd\git.exe"
   ) | Where-Object { $_ -and (Test-Path $_) })
 
@@ -102,14 +114,20 @@ function Load-DeployConfig {
   )
 
   if (-not (Test-Path $Path)) {
-    throw "Deploy config not found at '$Path'. Copy scripts/cpanel-deploy.example.json to .deploy/cpanel-deploy.local.json and fill in your FTPS details."
+    throw "Deploy config not found at '$Path'. Copy scripts/cpanel-deploy.example.json to .deploy/cpanel-deploy.local.json and fill in the non-secret FTPS endpoint details."
   }
 
   $config = Get-Content -Raw -Path $Path | ConvertFrom-Json
-  $required = @("host", "username", "password", "remoteRoot")
+  $required = @("host", "remoteRoot")
   foreach ($name in $required) {
     if (-not $config.$name) {
       throw "Deploy config is missing required field '$name'."
+    }
+  }
+
+  foreach ($name in @("username", "password")) {
+    if ($config.PSObject.Properties.Name -contains $name) {
+      throw "Deploy config must not contain '$name'. Remove credential fields and use the secure prompt or injected CPANEL_FTPS_USERNAME/CPANEL_FTPS_PASSWORD environment variables."
     }
   }
 
@@ -133,7 +151,47 @@ function Load-DeployConfig {
     $config | Add-Member -NotePropertyName allowInsecureCertificate -NotePropertyValue $false
   }
 
+  if ($config.allowInsecureCertificate) {
+    throw "Insecure FTPS certificate bypass is disabled. Fix the configured hostname or hosting certificate."
+  }
+
   return $config
+}
+
+function Get-DeployCredential {
+  if ($script:ResolvedDeployCredential) {
+    return $script:ResolvedDeployCredential
+  }
+
+  if ($Credential) {
+    $script:ResolvedDeployCredential = $Credential
+    return $script:ResolvedDeployCredential
+  }
+
+  $environmentUsername = [string]$env:CPANEL_FTPS_USERNAME
+  $environmentPassword = [string]$env:CPANEL_FTPS_PASSWORD
+  if ($environmentPassword -and -not $environmentUsername) {
+    throw "CPANEL_FTPS_PASSWORD is set without CPANEL_FTPS_USERNAME."
+  }
+
+  if ($environmentUsername -and $environmentPassword) {
+    $securePassword = ConvertTo-SecureString $environmentPassword -AsPlainText -Force
+    $script:ResolvedDeployCredential = [PSCredential]::new($environmentUsername, $securePassword)
+    return $script:ResolvedDeployCredential
+  }
+
+  if ($environmentUsername) {
+    $securePassword = Read-Host "FTPS password for $environmentUsername" -AsSecureString
+    $script:ResolvedDeployCredential = [PSCredential]::new($environmentUsername, $securePassword)
+    return $script:ResolvedDeployCredential
+  }
+
+  $script:ResolvedDeployCredential = Get-Credential -Message "Enter the dedicated cPanel FTPS account credentials. They will not be saved in the project."
+  if (-not $script:ResolvedDeployCredential) {
+    throw "FTPS credentials are required."
+  }
+
+  return $script:ResolvedDeployCredential
 }
 
 function Test-DeployablePath {
@@ -374,19 +432,41 @@ function Get-CurlCommonArguments {
     "--fail",
     "--silent",
     "--show-error",
-    "--ssl-reqd",
-    "--user", "$($script:DeployConfig.username):$($script:DeployConfig.password)"
+    "--ssl-reqd"
   )
 
   if ($script:DeployConfig.passive) {
     $args += "--ftp-pasv"
   }
 
-  if ($script:DeployConfig.allowInsecureCertificate) {
-    $args += "--insecure"
+  return $args
+}
+
+function Convert-ToCurlConfigValue {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Value
+  )
+
+  if ($Value.Contains("`r") -or $Value.Contains("`n")) {
+    throw "FTPS credentials must not contain line breaks."
   }
 
-  return $args
+  return ($Value -replace "\\", "\\" -replace '"', '\"')
+}
+
+function Invoke-SecureCurl {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Arguments
+  )
+
+  $deployCredential = Get-DeployCredential
+  $networkCredential = $deployCredential.GetNetworkCredential()
+  $userPassword = Convert-ToCurlConfigValue -Value "$($networkCredential.UserName):$($networkCredential.Password)"
+
+  # Pass credentials over stdin so they are not exposed in curl's process args.
+  "user = `"$userPassword`"" | & curl.exe --config - @Arguments
 }
 
 function Invoke-Upload {
@@ -419,7 +499,7 @@ function Invoke-Upload {
     "-T", $localPath,
     $remoteUrl
   )
-  & curl.exe @args
+  Invoke-SecureCurl -Arguments $args
   if ($LASTEXITCODE -ne 0) {
     throw "Upload failed for '$RelativePath'."
   }
@@ -445,7 +525,7 @@ function Invoke-Delete {
     $remoteRootUrl
   )
 
-  & curl.exe @args
+  Invoke-SecureCurl -Arguments $args
   if ($LASTEXITCODE -ne 0) {
     Write-Warning "Remote delete failed for '$RelativePath'. You may need to remove it manually in cPanel."
   }
@@ -612,12 +692,39 @@ $script:DeployConfig = Load-DeployConfig -Path $resolvedConfigPath
 
 $changeSet = if ($PathList) { Get-PathListUploadSet -ListPath $PathList } else { Get-ChangedFiles }
 $uploadList = @($changeSet.uploads | Where-Object { $_ })
-$deleteList = if ($SkipDelete) { @() } else { @($changeSet.deletes | Where-Object { $_ }) }
+$pendingDeleteList = @($changeSet.deletes | Where-Object { $_ })
+$blockedAssetDeleteList = @($pendingDeleteList | Where-Object {
+  $_.StartsWith("assets/", [System.StringComparison]::OrdinalIgnoreCase)
+})
+$skippedDeleteList = if ($SkipDelete) {
+  $pendingDeleteList
+} elseif (-not $AllowAssetDelete) {
+  $blockedAssetDeleteList
+} else {
+  @()
+}
+$deleteList = if ($SkipDelete) {
+  @()
+} elseif ($AllowAssetDelete) {
+  $pendingDeleteList
+} else {
+  @($pendingDeleteList | Where-Object {
+    -not $_.StartsWith("assets/", [System.StringComparison]::OrdinalIgnoreCase)
+  })
+}
+
+if (-not $SkipDelete -and -not $AllowAssetDelete -and $blockedAssetDeleteList.Count) {
+  Write-Warning ("Blocked {0} asset deletion(s). Rerun with -AllowAssetDelete only after verifying the live catalog no longer needs them." -f $blockedAssetDeleteList.Count)
+}
 
 if (-not $uploadList.Count -and -not $deleteList.Count) {
-  if (-not $DryRun) {
+  if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
     $headCommit = Get-CurrentCommit
     Save-DeployState -Commit $headCommit
+  }
+
+  if ($skippedDeleteList.Count) {
+    Write-Warning ("Deploy state was not advanced because {0} deletion(s) were skipped." -f $skippedDeleteList.Count)
   }
 
   Write-Host "No cPanel deploy changes detected."
@@ -636,9 +743,13 @@ foreach ($relativePath in $deleteList) {
   Invoke-Delete -RelativePath $relativePath
 }
 
-if (-not $DryRun) {
+if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
   $headCommit = Get-CurrentCommit
   Save-DeployState -Commit $headCommit
+} elseif (-not $DryRun -and $PathList) {
+  Write-Host "Path-list deploy completed without changing the global deploy state."
+} elseif (-not $DryRun -and $skippedDeleteList.Count) {
+  Write-Warning ("Deploy state was not advanced because {0} deletion(s) were skipped." -f $skippedDeleteList.Count)
 }
 
 Write-Host "cPanel deploy completed."
