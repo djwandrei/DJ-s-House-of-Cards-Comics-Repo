@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Core utilities shared by every page.
  * -----------------------------------------------------------------------------
  * This module creates the global window.DJ namespace and attaches the low-level
@@ -15,7 +15,7 @@ window.DJ = window.DJ || {};
   const preloadedBundlePromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260605b';
+  const PRODUCT_ASSET_VERSION = '20260606b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -764,7 +764,7 @@ window.DJ = window.DJ || {};
     lightbox.innerHTML = `
       <button class="image-lightbox__close" type="button" aria-label="Close full size image">&times;</button>
       <figure class="image-lightbox__frame">
-        <img alt="" class="image-lightbox__image"/>
+        <img alt="" class="image-lightbox__image" loading="eager" decoding="async" fetchpriority="high"/>
         <figcaption class="image-lightbox__caption"></figcaption>
       </figure>
     `;
@@ -826,7 +826,9 @@ window.DJ = window.DJ || {};
       src = '',
       alt = '',
       caption = '',
-      trigger = null
+      trigger = null,
+      candidates = [],
+      fallbackSrc = ''
     } = options;
 
     if (!src) {
@@ -844,6 +846,18 @@ window.DJ = window.DJ || {};
     setReturnFocusElement(trigger || document.activeElement || null);
 
     const resolvedCaption = String(caption || alt || 'Full size image').trim();
+    const resolvedCandidates = Array.isArray(candidates)
+      ? candidates.filter(Boolean)
+      : String(candidates || '').split('\n').map((candidate) => candidate.trim()).filter(Boolean);
+    lightboxImage.dataset.originalSrc = src;
+    lightboxImage.dataset.assetRetrySources = '';
+    lightboxImage.dataset.assetCandidates = resolvedCandidates.join('\n');
+    if (fallbackSrc) {
+      lightboxImage.setAttribute('data-fallback-src', DJ.safeAssetUrl(fallbackSrc));
+    } else {
+      lightboxImage.removeAttribute('data-fallback-src');
+    }
+    applyLazyLoading(lightbox);
     lightboxImage.src = src;
     lightboxImage.alt = alt || resolvedCaption;
     lightboxCaption.textContent = resolvedCaption;

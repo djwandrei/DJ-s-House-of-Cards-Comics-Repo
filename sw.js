@@ -1,4 +1,4 @@
-﻿const CACHE_VERSION = 'dj-house-v2026-06-05-02';
+const CACHE_VERSION = 'dj-house-v2026-06-06-02';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -31,18 +31,18 @@ const APP_SHELL_ASSETS = [
   '/about.html',
   '/contact.html',
   '/offline.html',
-  '/styles.css?v=20260605b',
-  '/styles-mobile-overrides.css?v=20260605b',
-  '/core.js?v=20260605b',
-  '/nav.js?v=20260605b',
-  '/catalog.js?v=20260605b',
-  '/contact.js?v=20260605b',
-  '/backend-config.js?v=20260605b',
-  '/supabase-client.js?v=20260605b',
-  '/payments.js?v=20260605b',
-  '/account.js?v=20260605b',
-  '/site.webmanifest?v=20260605b',
-  '/offline.js?v=20260605b',
+  '/styles.css?v=20260606b',
+  '/styles-mobile-overrides.css?v=20260606b',
+  '/core.js?v=20260606b',
+  '/nav.js?v=20260606b',
+  '/catalog.js?v=20260606b',
+  '/contact.js?v=20260606b',
+  '/backend-config.js?v=20260606b',
+  '/supabase-client.js?v=20260606b',
+  '/payments.js?v=20260606b',
+  '/account.js?v=20260606b',
+  '/site.webmanifest?v=20260606b',
+  '/offline.js?v=20260606b',
   '/vendor/supabase.min.js',
   '/assets/fonts/bebas-neue-400.woff2',
   '/assets/fonts/inter-400.woff2',
@@ -58,17 +58,11 @@ const APP_SHELL_ASSETS = [
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
   '/assets/grass.webp',
-  '/assets/grass.jpg',
   '/assets/baseball-main.webp',
-  '/assets/baseball-main.jpg',
   '/assets/basketball-main.webp',
-  '/assets/basketball-main.jpg',
   '/assets/football-main.webp',
-  '/assets/football-main.jpg',
   '/assets/comics-main.webp',
-  '/assets/comics-main.jpeg',
   '/assets/Jordan.webp',
-  '/assets/Jordan.jpg',
   '/assets/clubhouse-sign.webp?v=20260530a',
   '/assets/baseball-footer.webp',
   '/assets/basketball-footer.webp',
@@ -139,9 +133,31 @@ async function putInCache(cacheName, request, response) {
   if (!response) return response;
   if (!(response.ok || response.type === 'opaque')) return response;
   const cache = await caches.open(cacheName);
-  await cache.put(request, response.clone());
+  await cache.put(request, response);
   await maybeTrimCache(cacheName);
   return response;
+}
+
+function scheduleCacheWrite(event, cacheName, request, response) {
+  if (!response || !(response.ok || response.type === 'opaque')) return;
+  let cacheableResponse;
+  try {
+    // Clone before returning the original response to the page. Waiting until
+    // after caches.open() can be too late because the browser may already have
+    // started consuming the original response body.
+    cacheableResponse = response.clone();
+  } catch (error) {
+    return;
+  }
+  const cacheWrite = putInCache(cacheName, request, cacheableResponse).catch(() => null);
+  if (event && typeof event.waitUntil === 'function') {
+    try {
+      event.waitUntil(cacheWrite);
+    } catch (error) {
+      // The response should still reach the page if the fetch event has already
+      // left the phase where it accepts additional background work.
+    }
+  }
 }
 
 async function fetchWithTimeout(request, timeoutMs = 6500) {
@@ -161,7 +177,10 @@ async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = nul
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   const networkPromise = fetchWithTimeout(request)
-    .then((response) => putInCache(cacheName, request, response))
+    .then((response) => {
+      scheduleCacheWrite(event, cacheName, request, response);
+      return response;
+    })
     .catch(() => null);
 
   if (cached) {
@@ -182,11 +201,11 @@ async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', e
   try {
     const preloadResponse = event?.preloadResponse ? await event.preloadResponse : null;
     if (preloadResponse) {
-      await putInCache(cacheName, request, preloadResponse);
+      scheduleCacheWrite(event, cacheName, request, preloadResponse);
       return preloadResponse;
     }
     const response = await fetchWithTimeout(request, timeoutMs);
-    await putInCache(cacheName, request, response);
+    scheduleCacheWrite(event, cacheName, request, response);
     return response;
   } catch (error) {
     const cached = await caches.match(request);

@@ -188,6 +188,11 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 ? getComputedStyle(productGrid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length
                 : 0;
               const text = document.body ? document.body.innerText : '';
+              const visibleProductSignatures = Array.from(document.querySelectorAll('.product-card[data-product-id]')).map((card) => [
+                card.querySelector('h4')?.textContent?.trim().toLowerCase() || '',
+                card.querySelector('.product-price')?.textContent?.trim().toLowerCase() || '',
+                card.querySelector('.product-media img')?.currentSrc || card.querySelector('.product-media img')?.src || ''
+              ].join('|'));
               return {
                 title: document.title,
                 productCards: document.querySelectorAll('.product-card[data-product-id]').length,
@@ -198,6 +203,7 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 footerPresent: Boolean(footer),
                 accountNavLinks: document.querySelectorAll('.site-nav a[href="account.html"]').length,
                 wrongPublicContactEmailPresent: text.includes('djwandrei@gmail.com') || text.includes('contact@djshouseofcards-comics.com'),
+                duplicateVisibleProductCards: visibleProductSignatures.length - new Set(visibleProductSignatures).size,
                 preloadedProductScriptCount: document.querySelectorAll('script[data-preloaded-product-source]').length,
                 containsSlash2022: text.includes('\\\\2022')
               };
@@ -234,13 +240,23 @@ async def inspect_product_modal(client: CdpClient, base_url: str) -> dict:
           await new Promise((resolve) => setTimeout(resolve, 450));
           const modal = document.querySelector('#productModal.active');
           const close = modal?.querySelector('.modal-close');
+          const mainImage = modal?.querySelector('#modalMainImage');
           const rect = close?.getBoundingClientRect();
+          const modalImageSource = mainImage?.currentSrc || mainImage?.src || '';
+          const fullSizeSource = mainImage?.dataset.fullSizeSrc || '';
+          const modalUsesThumbnailPreview = !modalImageSource.includes('/assets/')
+            || modalImageSource.includes('/assets/thumbnails/');
+          const fullSizeSourcePreserved = !fullSizeSource
+            || (!fullSizeSource.includes('/assets/thumbnails/') && fullSizeSource !== modalImageSource);
           close?.click();
           await new Promise((resolve) => setTimeout(resolve, 150));
           return {
             modalOpen: Boolean(modal),
             closeVisible: Boolean(rect && rect.width > 20 && rect.height > 20),
             closeWithinViewport: Boolean(rect && rect.top >= 0 && rect.left >= 0 && rect.right <= innerWidth && rect.bottom <= innerHeight),
+            modalImageLoaded: Boolean(mainImage?.complete && mainImage?.naturalWidth > 0),
+            modalUsesThumbnailPreview,
+            fullSizeSourcePreserved,
             modalClosed: !document.querySelector('#productModal.active')
           };
         })()"""
@@ -453,6 +469,8 @@ async def main() -> int:
                     report["failures"].append({**page_report, "reason": "No product cards rendered"})
                 if any(marker in page for marker in PRODUCT_PAGE_MARKERS) and page_report["productGridColumns"] != 5:
                     report["failures"].append({**page_report, "reason": "Desktop product grid is not five columns"})
+                if page_report.get("duplicateVisibleProductCards", 0) > 0:
+                    report["failures"].append({**page_report, "reason": "Duplicate product cards are visible"})
                 if page_report["accountNavLinks"] > 1:
                     report["failures"].append({**page_report, "reason": "Duplicate Account navigation links"})
                 if page_report["wrongPublicContactEmailPresent"]:
@@ -472,7 +490,15 @@ async def main() -> int:
 
             modal_report = await inspect_product_modal(client, args.base_url)
             report["desktopModalCheck"] = modal_report
-            if not (modal_report.get("modalOpen") and modal_report.get("closeVisible") and modal_report.get("closeWithinViewport") and modal_report.get("modalClosed")):
+            if not (
+                modal_report.get("modalOpen")
+                and modal_report.get("closeVisible")
+                and modal_report.get("closeWithinViewport")
+                and modal_report.get("modalImageLoaded")
+                and modal_report.get("modalUsesThumbnailPreview")
+                and modal_report.get("fullSizeSourcePreserved")
+                and modal_report.get("modalClosed")
+            ):
                 report["failures"].append({"page": "baseball-cards.html", "modal": modal_report})
 
             account_report = await inspect_account_page(client, args.base_url)

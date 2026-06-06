@@ -980,9 +980,32 @@ window.DJ = window.DJ || {};
   }
 
   function filterStorefrontProducts(items = []) {
-    return (Array.isArray(items) ? items : []).filter((item) => (
-      !REMOVED_VIDEO_GAME_LISTING_IDS.has(Number(item?.id))
-    ));
+    const seenListings = new Set();
+    return (Array.isArray(items) ? items : []).filter((item) => {
+      if (REMOVED_VIDEO_GAME_LISTING_IDS.has(Number(item?.id))) {
+        return false;
+      }
+
+      // Import history can contain the same physical listing under multiple
+      // IDs. Hide only exact buyer-visible duplicates; differently priced
+      // copies and distinct photos remain separate listings.
+      const duplicateKey = [
+        item?.name,
+        item?.category,
+        item?.team,
+        item?.year,
+        item?.condition,
+        item?.price,
+        item?.priceLabel || item?.displayPrice,
+        item?.image
+      ].map((value) => String(value ?? '').trim().toLowerCase()).join('\u001f');
+
+      if (seenListings.has(duplicateKey)) {
+        return false;
+      }
+      seenListings.add(duplicateKey);
+      return true;
+    });
   }
 
   function getProductSource(page = document.body.dataset.page || '') {
@@ -1261,6 +1284,17 @@ window.DJ = window.DJ || {};
 
     if (window.location.protocol === 'file:') {
       return getStaticSourceResult(source, 'preloaded');
+    }
+
+    if (window.DJ_BACKEND_CONFIG?.preferStaticCatalog === true) {
+      try {
+        // The category snapshots are generated from the same canonical catalog
+        // used for Supabase sync, are substantially smaller than remote rows,
+        // and avoid making product images compete with duplicate data requests.
+        return await getStaticSourceResult(source, 'static-primary');
+      } catch (error) {
+        console.warn(`Static catalog was not ready for ${source}; trying the remote catalog.`, error);
+      }
     }
 
     if (DJ.remoteCatalog?.isConfigured()) {
@@ -3549,7 +3583,10 @@ Thank you.`);
     const galleryCount = gallery.filter(Boolean).length || 1;
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
     const modalMainImageCandidates = DJ.getAssetUrlCandidates(gallery[0]);
-    const modalMainImageSource = modalMainImageCandidates[0] || DJ.safeAssetUrl(gallery[0]);
+    const modalMainPreviewCandidates = DJ.getThumbnailAssetCandidates(gallery[0]);
+    const modalMainImageSource = modalMainPreviewCandidates[0]
+      || modalMainImageCandidates[0]
+      || DJ.safeAssetUrl(gallery[0]);
     const displayPrice = DJ.displayPrice(product);
     const modalActionLabel = getProductActionLabel(product, 'modal');
     const isDirectCheckout = isDirectCheckoutCandidate(product);
@@ -3564,13 +3601,13 @@ Thank you.`);
       <div class="modal-layout">
         <div class="modal-media">
           <button type="button" class="modal-image-stage modal-image-zoom" id="modalImageStage" aria-label="${DJ.escapeHtml(`Open full size image${galleryCount > 1 ? ` 1 of ${galleryCount}` : ''} for ${product.name}`)}">
-            <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-asset-candidates="${DJ.escapeHtml(modalMainImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}" decoding="async" fetchpriority="high">
+            <img id="modalMainImage" src="${DJ.escapeHtml(modalMainImageSource)}" data-asset-candidates="${DJ.escapeHtml(modalMainPreviewCandidates.join('\n'))}" data-full-size-src="${DJ.escapeHtml(modalMainImageCandidates[0] || DJ.safeAssetUrl(gallery[0]))}" data-full-size-candidates="${DJ.escapeHtml(modalMainImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'modal', photoIndex: 1, photoCount: galleryCount }))}" decoding="async" fetchpriority="high">
             <span class="modal-image-zoom__hint" aria-hidden="true">View full size</span>
           </button>
           ${gallery.length > 1 ? `
             <div class="modal-thumbs" aria-label="Additional item photos">
               ${modalThumbs.map(({ image, index, thumbnailCandidates, fullSizeCandidates }) => `
-                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-index="${index}" data-gallery-src="${DJ.escapeHtml(fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-candidates="${DJ.escapeHtml(fullSizeCandidates.join('\n'))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
+                <button type="button" class="modal-thumb${index === 0 ? ' active' : ''}" data-gallery-index="${index}" data-gallery-preview-src="${DJ.escapeHtml(thumbnailCandidates[0] || fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-preview-candidates="${DJ.escapeHtml(thumbnailCandidates.join('\n'))}" data-gallery-src="${DJ.escapeHtml(fullSizeCandidates[0] || DJ.safeAssetUrl(image))}" data-gallery-candidates="${DJ.escapeHtml(fullSizeCandidates.join('\n'))}" aria-label="View photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
                   <img src="${DJ.escapeHtml((thumbnailCandidates[0] || DJ.safeAssetUrl(image)))}" data-asset-candidates="${DJ.escapeHtml(thumbnailCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(buildProductImageAlt(product, { context: 'thumb', photoIndex: index + 1, photoCount: galleryCount }))}" loading="lazy" decoding="async" fetchpriority="low">
                 </button>
               `).join('')}
@@ -3607,14 +3644,20 @@ Thank you.`);
     );
     const openModalImagePreview = () => {
       if (!modalMainImage || typeof DJ.openImageLightbox !== 'function') return;
-      const src = modalMainImage.currentSrc || modalMainImage.getAttribute('src') || modalMainImage.dataset.originalSrc || '';
+      const src = modalMainImage.dataset.fullSizeSrc
+        || modalMainImage.currentSrc
+        || modalMainImage.getAttribute('src')
+        || modalMainImage.dataset.originalSrc
+        || '';
       if (!src) return;
       const caption = `${product.name}${galleryCount > 1 ? ` - photo ${activeGalleryIndex + 1} of ${galleryCount}` : ''}`;
       DJ.openImageLightbox({
         src,
         alt: modalMainImage.alt || caption,
         caption,
-        trigger: modalImageStage || modalMainImage
+        trigger: modalImageStage || modalMainImage,
+        candidates: modalMainImage.dataset.fullSizeCandidates || src,
+        fallbackSrc: fallback
       });
     };
 
@@ -3622,12 +3665,16 @@ Thank you.`);
     modalInner.querySelectorAll('.modal-thumb').forEach((button) => {
       button.addEventListener('click', () => {
         activeGalleryIndex = Number(button.dataset.galleryIndex || 0);
-        const nextImage = button.dataset.gallerySrc;
+        const nextImage = button.dataset.galleryPreviewSrc || button.dataset.gallerySrc;
         if (modalMainImage && nextImage) {
-          const nextCandidates = button.dataset.galleryCandidates || nextImage;
+          const nextCandidates = button.dataset.galleryPreviewCandidates
+            || button.dataset.galleryCandidates
+            || nextImage;
           modalMainImage.dataset.originalSrc = nextImage;
           modalMainImage.dataset.assetRetrySources = '';
           modalMainImage.dataset.assetCandidates = nextCandidates;
+          modalMainImage.dataset.fullSizeSrc = button.dataset.gallerySrc || nextImage;
+          modalMainImage.dataset.fullSizeCandidates = button.dataset.galleryCandidates || modalMainImage.dataset.fullSizeSrc;
           modalMainImage.src = nextImage;
           const thumbImage = button.querySelector('img');
           if (thumbImage?.alt) {
