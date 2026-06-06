@@ -39,9 +39,11 @@ DEFAULT_PAGES = (
     "account.html",
     "wishlist.html",
     "admin.html",
+    "offline.html",
 )
 PRODUCT_PAGE_MARKERS = ("baseball-cards", "basketball-cards", "football-cards", "comics", "collectibles")
 LIGHTWEIGHT_PAGE_MARKERS = ("about.html", "contact.html", "shop.html", "sports-cards.html")
+HEADER_OPTIONAL_PAGES = ("offline.html",)
 
 
 def parse_args() -> argparse.Namespace:
@@ -73,6 +75,9 @@ class CdpClient:
         self._events: dict[str, asyncio.Future] = {}
         self.console_messages: list[dict[str, str]] = []
         self.exceptions: list[str] = []
+        self.request_urls: dict[str, str] = {}
+        self.http_errors: list[dict[str, str | int]] = []
+        self.network_failures: list[dict[str, str]] = []
 
     async def start(self) -> None:
         self._recv_task = asyncio.create_task(self._recv_loop())
@@ -108,6 +113,23 @@ class CdpClient:
                     frame = stack_call_frames[0]
                     location = f" at {frame.get('url', '')}:{frame.get('lineNumber', 0) + 1}:{frame.get('columnNumber', 0) + 1}"
                 self.exceptions.append(f"{description}{location}"[:700])
+            elif method == "Network.requestWillBeSent":
+                request_id = str(params.get("requestId", ""))
+                request_url = str((params.get("request") or {}).get("url", ""))
+                if request_id and request_url:
+                    self.request_urls[request_id] = request_url
+            elif method == "Network.responseReceived":
+                response = params.get("response") or {}
+                status = int(response.get("status") or 0)
+                response_url = str(response.get("url") or "")
+                if status >= 400 and not response_url.startswith("chrome-extension://"):
+                    self.http_errors.append({"status": status, "url": response_url[:500]})
+            elif method == "Network.loadingFailed":
+                request_id = str(params.get("requestId", ""))
+                error_text = str(params.get("errorText") or "")
+                request_url = self.request_urls.get(request_id, "")
+                if error_text != "net::ERR_ABORTED" and not request_url.startswith("chrome-extension://"):
+                    self.network_failures.append({"error": error_text[:200], "url": request_url[:500]})
 
             if method and method in self._events and not self._events[method].done():
                 self._events[method].set_result(params)
@@ -169,6 +191,9 @@ async def navigate(client: CdpClient, url: str) -> None:
 async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
     client.console_messages.clear()
     client.exceptions.clear()
+    client.request_urls.clear()
+    client.http_errors.clear()
+    client.network_failures.clear()
     target_url = f"{base_url.rstrip('/')}/{page}"
     await navigate(client, target_url)
 
@@ -190,6 +215,17 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 ? getComputedStyle(productGrid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length
                 : 0;
               const text = document.body ? document.body.innerText : '';
+              const unlabeledControls = Array.from(document.querySelectorAll('input, select, textarea'))
+                .filter((control) => !['hidden', 'submit', 'button', 'reset', 'image'].includes(control.type))
+                .filter((control) => !(control.labels && control.labels.length))
+                .filter((control) => !control.getAttribute('aria-label') && !control.getAttribute('aria-labelledby'))
+                .map((control) => control.id || control.name || control.tagName.toLowerCase())
+                .slice(0, 10);
+              const unnamedButtons = Array.from(document.querySelectorAll('button'))
+                .filter((button) => !button.textContent.trim())
+                .filter((button) => !button.getAttribute('aria-label') && !button.getAttribute('aria-labelledby') && !button.title)
+                .map((button) => button.id || button.className || 'button')
+                .slice(0, 10);
               const visibleProductSignatures = Array.from(document.querySelectorAll('.product-card[data-product-id]')).map((card) => [
                 card.querySelector('h4')?.textContent?.trim().toLowerCase() || '',
                 card.querySelector('.product-price')?.textContent?.trim().toLowerCase() || '',
@@ -208,6 +244,8 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 duplicateVisibleProductCards: visibleProductSignatures.length - new Set(visibleProductSignatures).size,
                 preloadedProductScriptCount: document.querySelectorAll('script[data-preloaded-product-source]').length,
                 backendScriptCount: Array.from(document.scripts).filter((script) => /(?:backend-config|supabase-client|payments)\\.js(?:\\?|$)/.test(script.src)).length,
+                unlabeledControls,
+                unnamedButtons,
                 containsSlash2022: text.includes('\\\\2022')
               };
             })()"""
@@ -229,6 +267,8 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
         **summary,
         "warnings": client.console_messages[:5],
         "exceptions": client.exceptions[:5],
+        "httpErrors": client.http_errors[:10],
+        "networkFailures": client.network_failures[:10],
     }
 
 
@@ -458,6 +498,7 @@ async def main() -> int:
             await client.start()
             await client.send("Page.enable")
             await client.send("Runtime.enable")
+            await client.send("Network.enable")
             await client.send(
                 "Emulation.setDeviceMetricsOverride",
                 {"width": 1440, "height": 1000, "deviceScaleFactor": 1, "mobile": False},
@@ -466,7 +507,8 @@ async def main() -> int:
             for page in DEFAULT_PAGES:
                 page_report = await inspect_page(client, args.base_url, page)
                 report["pages"].append(page_report)
-                if page_report["brokenImageCount"] or not page_report["headerVisible"] or page_report["containsSlash2022"]:
+                header_missing = page not in HEADER_OPTIONAL_PAGES and not page_report["headerVisible"]
+                if page_report["brokenImageCount"] or header_missing or page_report["containsSlash2022"]:
                     report["failures"].append(page_report)
                 if any(marker in page for marker in PRODUCT_PAGE_MARKERS) and page_report["productCards"] <= 0:
                     report["failures"].append({**page_report, "reason": "No product cards rendered"})
@@ -480,6 +522,10 @@ async def main() -> int:
                     report["failures"].append({**page_report, "reason": "Incorrect public contact email is visible"})
                 if page_report["exceptions"]:
                     report["failures"].append({**page_report, "reason": "Runtime exception"})
+                if page_report["httpErrors"] or page_report["networkFailures"]:
+                    report["failures"].append({**page_report, "reason": "Hidden HTTP or network failure"})
+                if page_report["unlabeledControls"] or page_report["unnamedButtons"]:
+                    report["failures"].append({**page_report, "reason": "Interactive control lacks an accessible name"})
                 if page in LIGHTWEIGHT_PAGE_MARKERS and page_report.get("backendScriptCount", 0) > 0:
                     report["failures"].append({**page_report, "reason": "Lightweight page loaded unused backend or payment scripts"})
 

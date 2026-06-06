@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-06-06-03';
+const CACHE_VERSION = 'dj-house-v2026-06-06-04';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -195,24 +195,41 @@ async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = nul
   return fallbackUrl ? caches.match(fallbackUrl) : Response.error();
 }
 
+function isTransientHttpFailure(response) {
+  if (!response) return true;
+  return response.status === 408
+    || response.status === 425
+    || response.status === 429
+    || response.status >= 500;
+}
+
+async function matchCachedFallback(request, fallbackUrl = null) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  return fallbackUrl ? caches.match(fallbackUrl) : null;
+}
+
 // Page navigations prefer the network so live catalog/page changes show quickly,
-// but cached pages still keep the site usable during spotty mobile connections.
+// but cached pages still keep the site usable during spotty mobile connections
+// and brief server-side failures.
 async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', event = null, timeoutMs = 6500) {
   try {
     const preloadResponse = event?.preloadResponse ? await event.preloadResponse : null;
     if (preloadResponse) {
+      if (isTransientHttpFailure(preloadResponse)) {
+        return await matchCachedFallback(request, fallbackUrl) || preloadResponse;
+      }
       scheduleCacheWrite(event, cacheName, request, preloadResponse);
       return preloadResponse;
     }
     const response = await fetchWithTimeout(request, timeoutMs);
+    if (isTransientHttpFailure(response)) {
+      return await matchCachedFallback(request, fallbackUrl) || response;
+    }
     scheduleCacheWrite(event, cacheName, request, response);
     return response;
   } catch (error) {
-    const cached = await caches.match(request);
-    if (cached) {
-      return cached;
-    }
-    return fallbackUrl ? caches.match(fallbackUrl) : Response.error();
+    return await matchCachedFallback(request, fallbackUrl) || Response.error();
   }
 }
 

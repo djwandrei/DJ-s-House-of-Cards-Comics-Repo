@@ -63,6 +63,10 @@ FileETag MTime Size
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Service-Worker-Allowed "/"
   </Files>
+
+  <Files "sitemap.xml">
+    Header set Cache-Control "public, max-age=3600, stale-while-revalidate=3600"
+  </Files>
 </IfModule>
 
 <IfModule mod_expires.c>

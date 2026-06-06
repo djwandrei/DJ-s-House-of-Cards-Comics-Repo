@@ -411,6 +411,7 @@ window.DJ = window.DJ || {};
                       </div>
                       <div class="admin-gallery-list" id="backendGalleryList"></div>
                       <div class="admin-gallery-add-row">
+                        <label class="sr-only" for="backendGalleryUrl">Gallery image URL</label>
                         <input autocomplete="off" id="backendGalleryUrl" placeholder="Paste a gallery image URL" type="text">
                         <button class="button-secondary" id="backendAddGalleryUrl" type="button">Add URL</button>
                         <button class="button-secondary" id="backendAddGalleryFile" type="button">Upload Photo</button>
