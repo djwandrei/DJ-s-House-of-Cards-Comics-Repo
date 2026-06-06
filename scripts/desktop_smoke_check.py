@@ -47,6 +47,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--out", default=str(DEFAULT_OUT))
     parser.add_argument("--port", type=int, default=9234)
+    parser.add_argument("--skip-checkout", action="store_true", help="Skip the checkout/auth interaction for production-safe checks.")
     return parser.parse_args()
 
 
@@ -153,8 +154,14 @@ async def wait_for(client: CdpClient, expression: str, timeout: float = 12):
 async def navigate(client: CdpClient, url: str) -> None:
     load_event = asyncio.create_task(client.once("Page.loadEventFired"))
     await client.send("Page.navigate", {"url": url})
-    await asyncio.wait_for(load_event, timeout=20)
-    await wait_for(client, "document.readyState === 'complete'", timeout=8)
+    try:
+        await asyncio.wait_for(load_event, timeout=20)
+    except TimeoutError:
+        # A slow image or third-party request can delay the final load event
+        # after the page is already usable. Only fail if the DOM is not ready.
+        if not await wait_for(client, "document.readyState === 'interactive' || document.readyState === 'complete'", timeout=10):
+            raise
+    await wait_for(client, "document.readyState === 'complete' || document.readyState === 'interactive'", timeout=8)
 
 
 async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
@@ -484,15 +491,18 @@ async def main() -> int:
             ):
                 report["failures"].append({"page": "account.html", "account": account_report})
 
-            checkout_report = await inspect_checkout_auth_flow(client, args.base_url)
-            report["checkoutAuthCheck"] = checkout_report
-            if not (
-                checkout_report.get("eligibleCardFound")
-                and checkout_report.get("authModalOpen")
-                and checkout_report.get("authModalClosed")
-                and checkout_report.get("productModalClosed")
-            ):
-                report["failures"].append({"page": "baseball-cards.html", "checkoutAuth": checkout_report})
+            if args.skip_checkout:
+                report["checkoutAuthCheck"] = {"skipped": True}
+            else:
+                checkout_report = await inspect_checkout_auth_flow(client, args.base_url)
+                report["checkoutAuthCheck"] = checkout_report
+                if not (
+                    checkout_report.get("eligibleCardFound")
+                    and checkout_report.get("authModalOpen")
+                    and checkout_report.get("authModalClosed")
+                    and checkout_report.get("productModalClosed")
+                ):
+                    report["failures"].append({"page": "baseball-cards.html", "checkoutAuth": checkout_report})
     finally:
         edge.terminate()
         try:
