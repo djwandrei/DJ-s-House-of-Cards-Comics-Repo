@@ -47,6 +47,9 @@ create index if not exists product_checkout_reservations_product_id_idx on publi
 create unique index if not exists product_checkout_reservations_one_active_per_product_idx
 on public.product_checkout_reservations(product_id)
 where status in ('creating', 'pending');
+create index if not exists product_checkout_reservations_buyer_active_idx
+on public.product_checkout_reservations(buyer_user_id, expires_at)
+where status in ('creating', 'pending');
 
 do $$
 begin

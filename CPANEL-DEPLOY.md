@@ -98,24 +98,15 @@ local targets are missing, and requires both `--apply` and a process-scoped
 node .\scripts\sync-supabase-image-paths.mjs --apply
 ```
 
-## Focused admin/account release
+## Reviewed static release
 
-To deploy only admin/account-owned files without uploading catalogs, shared
-storefront code, or images, use the reviewed path list:
-
-```powershell
-node .\scripts\audit-cpanel-release.mjs .\scripts\cpanel-admin-account-release.txt
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -DryRun -PathList .\scripts\cpanel-admin-account-release.txt
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -PathList .\scripts\cpanel-admin-account-release.txt
-```
-
-Shared files such as `core.js`, styles, service-worker code, backend config,
-and `.htaccess` are kept in a separate list because they can affect the public
-storefront. Deploy them only after a separate live diff and storefront review:
+To deploy the current reviewed static site files without uploading the large
+image tree, use the reviewed path list:
 
 ```powershell
-node .\scripts\audit-cpanel-release.mjs .\scripts\cpanel-admin-account-shared-release.txt
-powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -DryRun -PathList .\scripts\cpanel-admin-account-shared-release.txt
+node .\scripts\audit-cpanel-release.mjs .\scripts\cpanel-current-static-no-assets-release.txt
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -DryRun -PathList .\scripts\cpanel-current-static-no-assets-release.txt
+powershell -ExecutionPolicy Bypass -File .\scripts\deploy-cpanel-ftps.ps1 -PathList .\scripts\cpanel-current-static-no-assets-release.txt
 ```
 
 Path-list deploys never perform deletes and do not advance the global

@@ -13,6 +13,7 @@ window.DJ = window.DJ || {};
   const PROFILE_KEY = 'djCustomerProfileV1';
   const ORDER_HISTORY_KEY = 'djCustomerOrderHistoryV1';
   const PRODUCT_SOURCE = 'products.json';
+  const PROFILE_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
   const MAX_PROFILE_FIELD_LENGTH = 240;
   const MAX_PROFILE_NOTES_LENGTH = 1200;
   const WISHLIST_PREVIEW_LIMIT = 5;
@@ -99,7 +100,13 @@ window.DJ = window.DJ || {};
   function readLocalProfile() {
     try {
       const parsed = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
-      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+      const updatedAt = Date.parse(parsed.updatedAt || '');
+      if (Number.isFinite(updatedAt) && Date.now() - updatedAt > PROFILE_MAX_AGE_MS) {
+        localStorage.removeItem(PROFILE_KEY);
+        return {};
+      }
+      return parsed;
     } catch {
       return {};
     }

@@ -27,6 +27,15 @@ const BUNDLE_FILES = {
 };
 const RANGE_PATTERN = /\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(?:-|–|—|\bto\b)\s*\$?\s*(\d[\d,]*(?:\.\d+)?)/i;
 
+const BOOTSTRAP_FILES = {
+  'products-baseball.json': 'products-bootstrap-baseball.json',
+  'products-basketball.json': 'products-bootstrap-basketball.json',
+  'products-football.json': 'products-bootstrap-football.json',
+  'products-comics.json': 'products-bootstrap-comics.json',
+  'products-collectibles.json': 'products-bootstrap-collectibles.json'
+};
+const BOOTSTRAP_PRODUCT_LIMIT = 48;
+
 // Category pages only need buyer-facing fields plus a small metadata subset
 // used to derive storefront badges. The canonical products.json source is never
 // rewritten here so admin tools and Supabase sync retain import bookkeeping.
@@ -128,7 +137,15 @@ for (const file of FILES) {
     ? raw.map((item) => pickStorefrontFields(item))
     : [];
   if (!isFullCatalog && (cleanJsonSources || optimizeSegmentJson)) {
-    await writeTextFile(fullPath, `${JSON.stringify(storefront, null, 2)}\n`);
+    await writeTextFile(fullPath, `${JSON.stringify(storefront)}\n`);
+  }
+  if (BOOTSTRAP_FILES[file]) {
+    const bootstrap = {
+      source: file,
+      total: storefront.length,
+      products: storefront.slice(0, BOOTSTRAP_PRODUCT_LIMIT)
+    };
+    await writeTextFile(path.join(root, BOOTSTRAP_FILES[file]), `${JSON.stringify(bootstrap)}\n`);
   }
   if (BUNDLE_FILES[file]) {
     const bundle = [

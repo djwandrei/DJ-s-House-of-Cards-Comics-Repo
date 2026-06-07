@@ -13,6 +13,13 @@ const CATALOG_FILES = [
   'products-sports.json',
   'products-featured.json'
 ];
+const BOOTSTRAP_FILES = {
+  'products-baseball.json': 'products-bootstrap-baseball.json',
+  'products-basketball.json': 'products-bootstrap-basketball.json',
+  'products-football.json': 'products-bootstrap-football.json',
+  'products-comics.json': 'products-bootstrap-comics.json',
+  'products-collectibles.json': 'products-bootstrap-collectibles.json'
+};
 const MIRROR_FIELDS = [
   'name', 'category', 'team', 'year', 'condition', 'price',
   'priceLabel', 'displayPrice', 'image', 'imageGallery'
@@ -155,6 +162,46 @@ if (shellImageBytes > 1024 * 1024) {
 
 const catalogs = Object.fromEntries(CATALOG_FILES.map((file) => [file, JSON.parse(read(file))]));
 const fullCatalog = new Map(catalogs['products.json'].map((item) => [String(item.id), item]));
+for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
+  if (!exists(bootstrapFile)) {
+    issues.push({ file: bootstrapFile, type: 'missing catalog bootstrap file' });
+    continue;
+  }
+
+  let bootstrap;
+  try {
+    bootstrap = JSON.parse(read(bootstrapFile));
+  } catch (error) {
+    issues.push({ file: bootstrapFile, type: 'invalid catalog bootstrap JSON', value: error.message });
+    continue;
+  }
+
+  const sourceItems = catalogs[sourceFile] || [];
+  if (bootstrap.source !== sourceFile) {
+    issues.push({ file: bootstrapFile, type: 'bootstrap source mismatch', value: bootstrap.source });
+  }
+  if (Number(bootstrap.total) !== sourceItems.length) {
+    issues.push({ file: bootstrapFile, type: 'bootstrap total mismatch', value: bootstrap.total, expected: sourceItems.length });
+  }
+  if (!Array.isArray(bootstrap.products) || !bootstrap.products.length || bootstrap.products.length > 48) {
+    issues.push({ file: bootstrapFile, type: 'bootstrap product window should contain 1-48 products' });
+    continue;
+  }
+
+  bootstrap.products.forEach((item, index) => {
+    const sourceItem = sourceItems[index];
+    if (String(item?.id) !== String(sourceItem?.id)) {
+      issues.push({ file: bootstrapFile, type: 'bootstrap product does not mirror source order', index, id: item?.id, expected: sourceItem?.id });
+      return;
+    }
+
+    for (const field of MIRROR_FIELDS) {
+      if (JSON.stringify(item?.[field]) !== JSON.stringify(sourceItem?.[field])) {
+        issues.push({ file: bootstrapFile, type: 'bootstrap product field mismatch', index, id: item?.id, field });
+      }
+    }
+  });
+}
 for (const field of CANONICAL_OPERATIONAL_FIELDS) {
   const missingCount = catalogs['products.json'].filter(
     (item) => !Object.prototype.hasOwnProperty.call(item, field)

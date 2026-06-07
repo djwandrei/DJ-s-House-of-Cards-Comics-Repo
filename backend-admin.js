@@ -767,6 +767,9 @@ window.DJ = window.DJ || {};
     if (state.remoteCategory !== 'All') {
       summaryBits.push(`Category: ${state.remoteCategory}`);
     }
+    const filterNote = summaryBits.length
+      ? `${formatCountLabel(state.filteredProducts.length, 'match')} in the current browse view. ${summaryBits.map(escapeHtml).join(' - ')}.`
+      : `${formatCountLabel(state.filteredProducts.length, 'remote listing')} ready to edit.`;
 
     summary.innerHTML = `
       <div class="backend-filter-bar">
@@ -783,9 +786,7 @@ window.DJ = window.DJ || {};
           `).join('')}
       </div>
       <p class="helper-text backend-filter-note">
-        ${summaryBits.length
-          ? `${formatCountLabel(state.filteredProducts.length, 'match')} in the current browse view. ${summaryBits.join(' - ')}.`
-          : `${formatCountLabel(state.filteredProducts.length, 'remote listing')} ready to edit.`}
+        ${filterNote}
       </p>
     `;
   }

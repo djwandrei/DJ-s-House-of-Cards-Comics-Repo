@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const manifestPath = process.argv[2] || 'scripts/cpanel-admin-account-release.txt';
+const manifestPath = process.argv[2] || 'scripts/cpanel-current-static-no-assets-release.txt';
 const siteUrl = String(process.argv[3] || 'https://www.djshouseofcards-comics.com/').replace(/\/?$/, '/');
 const resolvedManifest = path.resolve(root, manifestPath);
 
@@ -30,6 +30,16 @@ for (const relativePath of paths) {
 
   try {
     const response = await fetch(new URL(relativePath, siteUrl), { cache: 'no-store' });
+    if (response.status === 404) {
+      const local = fs.readFileSync(localPath);
+      results.push({
+        path: relativePath,
+        status: 'missing-remote',
+        localBytes: local.length,
+        remoteBytes: 0
+      });
+      continue;
+    }
     if (!response.ok) {
       results.push({ path: relativePath, status: 'fetch-error', httpStatus: response.status });
       continue;
@@ -54,6 +64,7 @@ console.log(JSON.stringify({
   files: results.length,
   same: count('same'),
   different: count('different'),
+  missingRemote: count('missing-remote'),
   unverified: count('unverified-hidden-file'),
   errors: count('missing-local') + count('fetch-error'),
   results

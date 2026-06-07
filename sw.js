@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'dj-house-v2026-06-06-07';
+const CACHE_VERSION = 'dj-house-v2026-06-07-04';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -18,11 +18,12 @@ const CACHE_BYPASS_PATHS = new Set(['/admin.html']);
 // images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
   '/offline.html',
-  '/styles.css?v=20260606f',
-  '/styles-mobile-overrides.css?v=20260606f',
-  '/core.js?v=20260606f',
-  '/site.webmanifest?v=20260606f',
-  '/offline.js?v=20260606f',
+  '/styles.css?v=20260607d',
+  '/styles-mobile-overrides.css?v=20260607d',
+  '/core.js?v=20260607d',
+  '/seo.js?v=20260607d',
+  '/site.webmanifest?v=20260607d',
+  '/offline.js?v=20260607d',
   '/assets/dj-logo.png',
   '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png'

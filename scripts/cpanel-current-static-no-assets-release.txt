@@ -1,0 +1,38 @@
+# Current static cPanel release, excluding images and product catalogs.
+# Use with deploy-cpanel-ftps.ps1 -PathList so deployment uploads only these files.
+# Supabase Edge Functions are deployed separately and are not cPanel files.
+.htaccess
+about.html
+account.html
+account.js
+admin.html
+admin.js
+backend-admin.js
+backend-config.js
+baseball-cards.html
+basketball-cards.html
+catalog.js
+collectibles.html
+comics.html
+contact.html
+contact.js
+core.js
+football-cards.html
+index.html
+nav.js
+offline.html
+offline.js
+products-bootstrap-baseball.json
+products-bootstrap-basketball.json
+products-bootstrap-collectibles.json
+products-bootstrap-comics.json
+products-bootstrap-football.json
+seo.js
+shop.html
+site.webmanifest
+sports-cards.html
+styles.css
+styles-mobile-overrides.css
+supabase-client.js
+sw.js
+wishlist.html

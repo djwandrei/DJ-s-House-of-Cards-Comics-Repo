@@ -1,8 +1,0 @@
-# Admin/account-owned files only.
-# Shared dependencies live in cpanel-admin-account-shared-release.txt and must
-# be reviewed separately before they are deployed.
-account.html
-account.js
-admin.html
-admin.js
-backend-admin.js

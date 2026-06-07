@@ -14,6 +14,11 @@ const allowPromotionCodes = Deno.env.get('STRIPE_ALLOW_PROMOTION_CODES') === 'tr
 const requestedHoldMinutes = Number(Deno.env.get('STRIPE_CHECKOUT_HOLD_MINUTES'));
 const normalizedHoldMinutes = Number.isFinite(requestedHoldMinutes) ? requestedHoldMinutes : 31;
 const checkoutHoldMinutes = Math.min(1440, Math.max(31, Math.round(normalizedHoldMinutes)));
+const requestedMaxActiveReservations = Number(Deno.env.get('STRIPE_MAX_ACTIVE_RESERVATIONS_PER_USER'));
+const maxActiveReservationsPerUser = Math.min(
+  10,
+  Math.max(1, Math.round(Number.isFinite(requestedMaxActiveReservations) ? requestedMaxActiveReservations : 3))
+);
 const admin = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false }
 });
@@ -141,6 +146,31 @@ async function expireStaleReservations(productId: number) {
   if (error) throw error;
 }
 
+async function expireStaleReservationsForBuyer(buyerUserId: string) {
+  const nowIso = new Date().toISOString();
+  const { error } = await admin
+    .from('product_checkout_reservations')
+    .update({ status: 'expired' })
+    .eq('buyer_user_id', buyerUserId)
+    .in('status', ['creating', 'pending'])
+    .lt('expires_at', nowIso);
+
+  if (error) throw error;
+}
+
+async function countActiveReservationsForBuyer(buyerUserId: string) {
+  const nowIso = new Date().toISOString();
+  const { count, error } = await admin
+    .from('product_checkout_reservations')
+    .select('id', { count: 'exact', head: true })
+    .eq('buyer_user_id', buyerUserId)
+    .in('status', ['creating', 'pending'])
+    .gt('expires_at', nowIso);
+
+  if (error) throw error;
+  return count || 0;
+}
+
 async function releaseReservation(reservationId: string, status = 'released') {
   const { error } = await admin
     .from('product_checkout_reservations')
@@ -223,6 +253,7 @@ Deno.serve(async (request) => {
 
   try {
     await expireStaleReservations(productId);
+    await expireStaleReservationsForBuyer(userResult.user.id);
   } catch (error) {
     return friendlyServerError(error, 'Checkout inventory could not be checked. Please contact DJ.');
   }
@@ -270,6 +301,17 @@ Deno.serve(async (request) => {
         error: 'This listing is already in another customer checkout. Please try again in a few minutes or contact DJ.'
       }, 409);
     }
+  }
+
+  try {
+    const activeBuyerReservations = await countActiveReservationsForBuyer(userResult.user.id);
+    if (activeBuyerReservations >= maxActiveReservationsPerUser) {
+      return jsonResponse({
+        error: 'You already have several checkout holds open. Complete or wait for one to expire before reserving another listing.'
+      }, 429);
+    }
+  } catch (error) {
+    return friendlyServerError(error, 'Checkout reservation limits could not be verified. Please contact DJ.');
   }
 
   const email = userResult.user.email || undefined;

@@ -15,6 +15,7 @@ window.DJ = window.DJ || {};
   let mailtoHandoffPending = false;
   const CONTACT_EMAIL = 'djscardscomics13@gmail.com';
   const CONTACT_DRAFT_KEY = 'djContactDraftV1';
+  const CONTACT_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
   const CONTACT_DRAFT_FIELDS = ['name', 'email', 'subject', 'message'];
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const CONTACT_TOPICS = {
@@ -51,7 +52,13 @@ window.DJ = window.DJ || {};
   function readContactDraft() {
     try {
       const parsed = JSON.parse(localStorage.getItem(CONTACT_DRAFT_KEY) || '{}');
-      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+      const updatedAt = Date.parse(parsed.updatedAt || '');
+      if (Number.isFinite(updatedAt) && Date.now() - updatedAt > CONTACT_DRAFT_MAX_AGE_MS) {
+        localStorage.removeItem(CONTACT_DRAFT_KEY);
+        return {};
+      }
+      return parsed;
     } catch {
       return {};
     }

@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260606f';
+  const PRODUCT_ASSET_VERSION = '20260607d';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -1574,9 +1574,104 @@ window.DJ = window.DJ || {};
   };
 
   DJ.csvEscape = function csvEscape(value = '') {
-    const text = String(value ?? '');
+    const text = String(value ?? '').replace(/^[=+\-@\t\r]/, (character) => `'${character}`);
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   };
+
+  function boundedString(value, maxLength = 1000) {
+    return String(value ?? '').trim().slice(0, maxLength);
+  }
+
+  function normalizeOptionalNumber(value) {
+    if (value === '' || value === null || value === undefined) return null;
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  function normalizeImageReference(value) {
+    const image = String(value ?? '').trim();
+    if (!image) return '';
+    return typeof DJ.isLikelyImageReference === 'function' && DJ.isLikelyImageReference(image) ? image : '';
+  }
+
+  function normalizeImageGallery(value) {
+    return (Array.isArray(value) ? value : [])
+      .map(normalizeImageReference)
+      .filter(Boolean)
+      .slice(0, 20);
+  }
+
+  function normalizeProductOverride(override) {
+    if (!override || typeof override !== 'object' || Array.isArray(override)) {
+      return null;
+    }
+
+    const normalized = {};
+    const optionalTextFields = {
+      name: 240,
+      category: 80,
+      team: 240,
+      condition: 240,
+      priceLabel: 120,
+      description: 2000
+    };
+
+    Object.entries(optionalTextFields).forEach(([field, maxLength]) => {
+      if (Object.prototype.hasOwnProperty.call(override, field)) {
+        normalized[field] = boundedString(override[field], maxLength);
+      }
+    });
+
+    if (Object.prototype.hasOwnProperty.call(override, 'year')) {
+      const year = normalizeOptionalNumber(override.year);
+      normalized.year = year === null ? null : Math.round(year);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(override, 'price')) {
+      const price = normalizeOptionalNumber(override.price);
+      normalized.price = price === null ? null : Math.max(0, price);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(override, 'isFeatured')) {
+      normalized.isFeatured = Boolean(override.isFeatured);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(override, 'image')) {
+      normalized.image = normalizeImageReference(override.image);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(override, 'imageGallery')) {
+      normalized.imageGallery = normalizeImageGallery(override.imageGallery);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(override, 'photoHostPageUrl')) {
+      const safeUrl = typeof DJ.safeExternalUrl === 'function'
+        ? DJ.safeExternalUrl(override.photoHostPageUrl)
+        : '';
+      normalized.photoHostPageUrl = safeUrl;
+    }
+
+    return Object.keys(normalized).length ? normalized : null;
+  }
+
+  function normalizeProductOverrides(overrides) {
+    if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+      return {};
+    }
+
+    return Object.entries(overrides).reduce((normalized, [rawProductId, override]) => {
+      const productId = Number(rawProductId);
+      if (!Number.isSafeInteger(productId) || productId <= 0) {
+        return normalized;
+      }
+
+      const safeOverride = normalizeProductOverride(override);
+      if (safeOverride) {
+        normalized[String(productId)] = safeOverride;
+      }
+      return normalized;
+    }, {});
+  }
 
   DJ.downloadTextFile = function downloadTextFile(content, filenamePrefix, extension, type = 'text/plain') {
     const blob = new Blob([content], { type });
@@ -1636,18 +1731,19 @@ window.DJ = window.DJ || {};
   };
 
   DJ.getProductOverrides = function getProductOverrides() {
-    const overrides = readJSONFromStorage(STORAGE_KEYS.productOverrides, (value) => (value && typeof value === 'object' && !Array.isArray(value) ? value : {}));
-    return overrides && typeof overrides === 'object' && !Array.isArray(overrides) ? overrides : {};
+    const overrides = readJSONFromStorage(STORAGE_KEYS.productOverrides, normalizeProductOverrides);
+    return normalizeProductOverrides(overrides);
   };
 
   DJ.saveProductOverrides = function saveProductOverrides(overrides) {
-    if (!safeStorageSet(STORAGE_KEYS.productOverrides, JSON.stringify(overrides && typeof overrides === 'object' && !Array.isArray(overrides) ? overrides : {}))) {
+    if (!safeStorageSet(STORAGE_KEYS.productOverrides, JSON.stringify(normalizeProductOverrides(overrides)))) {
       console.error('Failed to save product overrides.');
       return false;
     }
     emitCatalogMutationChange('productOverrides');
     return true;
   };
+  DJ.normalizeProductOverrides = normalizeProductOverrides;
 
   DJ.getDeletedProductIds = function getDeletedProductIds() {
     const ids = readJSONFromStorage(STORAGE_KEYS.deletedProductIds, (value) => {

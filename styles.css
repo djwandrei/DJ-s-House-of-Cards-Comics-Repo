@@ -4523,6 +4523,85 @@ body.dark-mode .contact-quick-actions .button-secondary.is-selected {
   color:#fff;
 }
 
+.contact-faq-section {
+  padding-top:0;
+}
+
+.faq-list {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.85rem;
+}
+
+.faq-item {
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:8px;
+  background:rgba(255,255,255,.82);
+  box-shadow:0 12px 28px rgba(16,27,57,.08);
+  overflow:hidden;
+}
+
+.faq-item summary {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  min-height:58px;
+  padding:1rem 1.1rem;
+  color:var(--text);
+  cursor:pointer;
+  font-weight:800;
+  line-height:1.25;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display:none;
+}
+
+.faq-item summary::after {
+  content:"+";
+  flex:0 0 auto;
+  width:1.45rem;
+  height:1.45rem;
+  display:inline-grid;
+  place-items:center;
+  border-radius:999px;
+  background:rgba(31,47,163,.1);
+  color:var(--brand-blue);
+  font-weight:900;
+}
+
+.faq-item[open] summary::after {
+  content:"-";
+  background:rgba(239,24,35,.1);
+  color:var(--brand-red);
+}
+
+.faq-item p {
+  margin:0;
+  padding:0 1.1rem 1.1rem;
+  color:var(--muted);
+}
+
+body.dark-mode .faq-item {
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.065);
+  box-shadow:0 16px 34px rgba(0,0,0,.24);
+}
+
+body.dark-mode .faq-item summary {
+  color:#fff;
+}
+
+body.dark-mode .faq-item p {
+  color:rgba(244,247,255,.78);
+}
+
+body.dark-mode .faq-item summary::after {
+  background:rgba(255,255,255,.1);
+  color:#fff;
+}
+
 .wishlist-actions-panel {
   grid-column:1 / -1;
   display:grid;
@@ -4868,6 +4947,9 @@ body.dark-mode .catalog-support-kicker {
   .hero-signal,
   .footer-contact-link {
     width:100%;
+  }
+  .faq-list {
+    grid-template-columns:1fr;
   }
   .products-grid {
     grid-template-columns:repeat(2,minmax(0,1fr));

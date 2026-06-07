@@ -1188,7 +1188,9 @@ window.DJ = window.DJ || {};
       throw new Error('Deleted listing ids in that backup are not valid.');
     }
 
-    const nextOverrides = hasOverridesSection ? parsed.productOverrides : DJ.getProductOverrides();
+    const nextOverrides = hasOverridesSection && typeof DJ.normalizeProductOverrides === 'function'
+      ? DJ.normalizeProductOverrides(parsed.productOverrides)
+      : (hasOverridesSection ? parsed.productOverrides : DJ.getProductOverrides());
     const nextDeletedIds = hasDeletedIdsSection ? parsed.deletedProductIds : DJ.getDeletedProductIds();
 
     if (!DJ.saveProductOverrides(nextOverrides) || !DJ.saveDeletedProductIds(nextDeletedIds)) {
@@ -1764,7 +1766,7 @@ window.DJ = window.DJ || {};
 
   function csvEscape(value = '') {
     if (typeof DJ.csvEscape === 'function') return DJ.csvEscape(value);
-    const text = String(value ?? '');
+    const text = String(value ?? '').replace(/^[=+\-@\t\r]/, (character) => `'${character}`);
     return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
   }
 
