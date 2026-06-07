@@ -686,14 +686,14 @@ window.DJ = window.DJ || {};
     return `
       <article class="admin-listing-row admin-listing-card${isEditing ? ' is-selected' : ''}" data-remote-id="${product.id}" aria-current="${isEditing ? 'true' : 'false'}">
         <div class="admin-listing-cell admin-listing-cell--select">
-          <span class="admin-live-dot" aria-label="Live Supabase listing"></span>
+          <span class="admin-live-dot" aria-label="Live Supabase listing" role="img"></span>
         </div>
         <div class="admin-listing-cell admin-listing-cell--photo">
           <img src="${DJ.escapeHtml(DJ.safeAssetUrl(product.image || fallback))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(product.name)}" loading="lazy" decoding="async">
         </div>
         <div class="admin-listing-cell admin-listing-cell--item">
           <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))}</span>
-          <h4>${DJ.escapeHtml(product.name)}</h4>
+          <h3>${DJ.escapeHtml(product.name)}</h3>
           <p>${DJ.escapeHtml(listingContext)}</p>
           <p class="helper-text">${galleryCount} gallery photo${galleryCount === 1 ? '' : 's'}</p>
         </div>

@@ -16,6 +16,7 @@ window.DJ = window.DJ || {};
   const PROFILE_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
   const MAX_PROFILE_FIELD_LENGTH = 240;
   const MAX_PROFILE_NOTES_LENGTH = 1200;
+  const MAX_COLLECTOR_BIO_LENGTH = 520;
   const WISHLIST_PREVIEW_LIMIT = 5;
   const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
@@ -30,6 +31,13 @@ window.DJ = window.DJ || {};
     'favoriteTeams',
     'budgetRange',
     'preferredCondition',
+    'collectorDisplayName',
+    'profileVisibility',
+    'collectorFocus',
+    'favoriteEra',
+    'tradeStatus',
+    'wishlistSharing',
+    'collectorBio',
     'shippingName',
     'addressLine1',
     'addressLine2',
@@ -61,6 +69,13 @@ window.DJ = window.DJ || {};
     favoriteTeams: 'Favorite teams / titles',
     budgetRange: 'Budget range',
     preferredCondition: 'Preferred condition',
+    collectorDisplayName: 'Collector display name',
+    profileVisibility: 'Profile visibility',
+    collectorFocus: 'Collecting focus',
+    favoriteEra: 'Favorite era',
+    tradeStatus: 'Trade status',
+    wishlistSharing: 'Wishlist sharing',
+    collectorBio: 'Collector bio',
     shippingName: 'Shipping name',
     addressLine1: 'Address line 1',
     addressLine2: 'Address line 2',
@@ -73,7 +88,11 @@ window.DJ = window.DJ || {};
   const $ = (id) => document.getElementById(id);
 
   function normalizeProfileValue(field, value) {
-    const maxLength = field === 'notes' ? MAX_PROFILE_NOTES_LENGTH : MAX_PROFILE_FIELD_LENGTH;
+    const maxLength = field === 'notes'
+      ? MAX_PROFILE_NOTES_LENGTH
+      : field === 'collectorBio'
+        ? MAX_COLLECTOR_BIO_LENGTH
+        : MAX_PROFILE_FIELD_LENGTH;
     return String(value || '').trim().slice(0, maxLength);
   }
 
@@ -322,6 +341,129 @@ window.DJ = window.DJ || {};
     );
   }
 
+  function getCollectorDisplayName(profile = {}) {
+    return normalizeProfileValue('collectorDisplayName', profile.collectorDisplayName)
+      || normalizeProfileValue('fullName', profile.fullName);
+  }
+
+  function hasCollectorProfileDetails(profile = {}) {
+    return Boolean(
+      getCollectorDisplayName(profile)
+      || normalizeProfileValue('collectorFocus', profile.collectorFocus)
+      || normalizeProfileValue('favoriteEra', profile.favoriteEra)
+      || normalizeProfileValue('tradeStatus', profile.tradeStatus)
+      || normalizeProfileValue('collectorBio', profile.collectorBio)
+      || normalizeProfileValue('favoritePlayers', profile.favoritePlayers)
+      || normalizeProfileValue('favoriteTeams', profile.favoriteTeams)
+      || normalizeProfileValue('preferredCondition', profile.preferredCondition)
+    );
+  }
+
+  function getCollectorProfileCompletion(profile = {}) {
+    const checks = [
+      getCollectorDisplayName(profile),
+      normalizeProfileValue('collectorFocus', profile.collectorFocus),
+      normalizeProfileValue('favoriteEra', profile.favoriteEra)
+        || normalizeProfileValue('favoritePlayers', profile.favoritePlayers)
+        || normalizeProfileValue('favoriteTeams', profile.favoriteTeams),
+      normalizeProfileValue('tradeStatus', profile.tradeStatus),
+      normalizeProfileValue('collectorBio', profile.collectorBio)
+    ];
+    const completed = checks.filter(Boolean).length;
+    return {
+      completed,
+      total: checks.length,
+      percent: Math.round((completed / checks.length) * 100)
+    };
+  }
+
+  function getCollectorProfileStatus(profile = {}) {
+    if (!hasCollectorProfileDetails(profile)) return 'Not started';
+    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility);
+    if (/public/i.test(visibility)) return 'Public-ready';
+    if (/shareable/i.test(visibility)) return 'Shareable';
+    return 'Private draft';
+  }
+
+  function getCollectorInitials(displayName = '') {
+    const parts = String(displayName || '')
+      .split(/\s+/)
+      .map((part) => part.replace(/[^a-z0-9]/gi, ''))
+      .filter(Boolean);
+    return (parts.length ? parts.slice(0, 2).map((part) => part[0]).join('') : 'DJ').toUpperCase();
+  }
+
+  function renderCollectorTags(container, tags = []) {
+    container.replaceChildren();
+    tags.filter(Boolean).slice(0, 6).forEach((tag) => {
+      container.appendChild(createElement('span', { text: tag }));
+    });
+  }
+
+  function renderCollectorProfile(profile = readProfileForm(), wishlistIds = getWishlistIds()) {
+    const heroStatus = $('accountHeroCollectorStatus');
+    const completionLabel = $('collectorProfileCompletionLabel');
+    const completionBar = $('collectorProfileCompletionBar');
+    const preview = $('collectorProfilePreview');
+    const completion = getCollectorProfileCompletion(profile);
+    const displayName = getCollectorDisplayName(profile);
+    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility) || 'Private on this device';
+    const focus = normalizeProfileValue('collectorFocus', profile.collectorFocus);
+    const era = normalizeProfileValue('favoriteEra', profile.favoriteEra);
+    const tradeStatus = normalizeProfileValue('tradeStatus', profile.tradeStatus);
+    const preferredCondition = normalizeProfileValue('preferredCondition', profile.preferredCondition);
+    const collectorBio = normalizeProfileValue('collectorBio', profile.collectorBio)
+      || normalizeProfileValue('notes', profile.notes);
+    const favorites = [
+      normalizeProfileValue('favoritePlayers', profile.favoritePlayers),
+      normalizeProfileValue('favoriteTeams', profile.favoriteTeams)
+    ].filter(Boolean).join(' | ');
+    const wishlistSharing = normalizeProfileValue('wishlistSharing', profile.wishlistSharing);
+    const wishlistLabel = wishlistIds.length
+      ? `${wishlistIds.length} saved item${wishlistIds.length === 1 ? '' : 's'}`
+      : '';
+
+    if (heroStatus) heroStatus.textContent = getCollectorProfileStatus(profile);
+    if (completionLabel) {
+      completionLabel.textContent = `${completion.percent}%`;
+      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} collector profile fields filled`);
+    }
+    if (completionBar) completionBar.style.width = `${completion.percent}%`;
+    if (!preview) return;
+
+    const card = createElement('article', {
+      className: `collector-profile-preview-card${hasCollectorProfileDetails(profile) ? '' : ' is-empty'}`
+    });
+    const header = createElement('div', { className: 'collector-profile-preview-head' });
+    const avatar = createElement('span', {
+      className: 'collector-profile-avatar',
+      text: getCollectorInitials(displayName || focus || profile.fullName)
+    });
+    const titleWrap = createElement('div');
+    titleWrap.append(
+      createElement('strong', { text: displayName || 'Collector profile' }),
+      createElement('small', { text: [visibility, focus].filter(Boolean).join(' | ') || 'Private collector notes' })
+    );
+    header.append(avatar, titleWrap);
+
+    const copy = createElement('p', {
+      text: collectorBio || 'Add a short collector bio to make offers, trade ideas, and wishlist conversations easier to qualify.'
+    });
+    const tags = createElement('div', { className: 'collector-profile-tags' });
+    renderCollectorTags(tags, [
+      focus,
+      era,
+      favorites,
+      preferredCondition,
+      tradeStatus,
+      wishlistSharing,
+      wishlistLabel
+    ]);
+
+    card.append(header, copy, tags);
+    preview.replaceChildren(card);
+  }
+
   function renderWishlistInsights(products = [], wishlistIds = getWishlistIds()) {
     const container = $('accountWishlistInsights');
     if (!container) return;
@@ -375,6 +517,7 @@ window.DJ = window.DJ || {};
 
   function saveProfileForm(event) {
     event?.preventDefault();
+    const isCollectorForm = event?.target?.id === 'collectorProfileForm';
     const profile = readLocalProfile();
     fields.forEach((field) => {
       const input = $(`account_${field}`);
@@ -383,7 +526,9 @@ window.DJ = window.DJ || {};
     profile.updatedAt = new Date().toISOString();
     const saved = writeLocalProfile(profile);
     setStatus(
-      saved ? 'Buyer details saved on this device.' : 'This browser blocked local buyer detail storage.',
+      saved
+        ? (isCollectorForm ? 'Collector profile saved on this device.' : 'Buyer details saved on this device.')
+        : 'This browser blocked local profile storage.',
       saved ? 'success' : 'error'
     );
     renderAccountSummary();
@@ -417,7 +562,8 @@ window.DJ = window.DJ || {};
 
     container.replaceChildren(...items.map((item) => {
       const row = createElement('div', {
-        className: `account-checklist-item${item.complete ? ' is-complete' : ''}`
+        className: `account-checklist-item${item.complete ? ' is-complete' : ''}`,
+        attributes: { role: 'listitem' }
       });
       row.append(
         createElement('span', { text: item.complete ? 'OK' : '--', attributes: { 'aria-hidden': 'true' } }),
@@ -480,6 +626,7 @@ window.DJ = window.DJ || {};
     if (clearButton) clearButton.disabled = !hasSavedDetails;
     renderReadinessChecklist(currentProfile, wishlistIds);
     renderSavedSearches(currentProfile);
+    renderCollectorProfile(currentProfile, wishlistIds);
   }
 
   async function renderWishlistPreview() {
@@ -659,6 +806,10 @@ window.DJ = window.DJ || {};
     profileForm?.addEventListener('submit', saveProfileForm);
     profileForm?.addEventListener('input', renderAccountSummary);
     profileForm?.addEventListener('change', renderAccountSummary);
+    const collectorForm = $('collectorProfileForm');
+    collectorForm?.addEventListener('submit', saveProfileForm);
+    collectorForm?.addEventListener('input', renderAccountSummary);
+    collectorForm?.addEventListener('change', renderAccountSummary);
     window.addEventListener('beforeunload', (event) => {
       if (!hasUnsavedProfileFormChanges()) return;
       event.preventDefault();

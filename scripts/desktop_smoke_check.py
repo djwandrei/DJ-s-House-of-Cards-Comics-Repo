@@ -228,7 +228,7 @@ async def inspect_page(client: CdpClient, base_url: str, page: str) -> dict:
                 .map((button) => button.id || button.className || 'button')
                 .slice(0, 10);
               const visibleProductSignatures = Array.from(document.querySelectorAll('.product-card[data-product-id]')).map((card) => [
-                card.querySelector('h4')?.textContent?.trim().toLowerCase() || '',
+                card.querySelector('h3, h4')?.textContent?.trim().toLowerCase() || '',
                 card.querySelector('.product-price')?.textContent?.trim().toLowerCase() || '',
                 card.querySelector('.product-media img')?.currentSrc || card.querySelector('.product-media img')?.src || ''
               ].join('|'));
@@ -357,7 +357,7 @@ async def inspect_ranged_price(client: CdpClient, base_url: str) -> dict:
           const cards = Array.from(document.querySelectorAll('.product-card[data-product-id]'));
           const card = cards.find((candidate) =>
             /2012-13 Panini Brilliance Team Tomorrow #9 Damian Lillard/i.test(
-              candidate.querySelector('h4')?.textContent || ''
+              candidate.querySelector('h3, h4')?.textContent || ''
             )
           );
           return {
@@ -508,7 +508,7 @@ async def inspect_local_wishlist_flow(client: CdpClient, base_url: str) -> dict:
           const card = document.querySelector('.product-card[data-product-id="{custom_id}"]');
           const result = {{
             cardFound: Boolean(card),
-            title: card?.querySelector('h4')?.textContent?.trim() || '',
+            title: card?.querySelector('h3, h4')?.textContent?.trim() || '',
             pageCount: document.getElementById('wishlistPageCount')?.textContent?.trim() || '',
             headerCount: document.querySelector('[data-wishlist-count]')?.textContent?.trim() || ''
           }};
@@ -580,7 +580,7 @@ async def inspect_catalog_mutation_history_flow(client: CdpClient, base_url: str
           const result = {{
             appearedAfterMutation: {str(appeared_after_mutation).lower()},
             survivedHistoryNavigation: {str(survived_history_navigation).lower()},
-            title: card?.querySelector('h4')?.textContent?.trim() || '',
+            title: card?.querySelector('h3, h4')?.textContent?.trim() || '',
             resultsCount: document.getElementById('resultsCount')?.textContent?.trim() || ''
           }};
           window.DJ.saveCustomProducts([]);

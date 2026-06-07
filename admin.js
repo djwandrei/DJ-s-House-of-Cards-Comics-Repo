@@ -17,6 +17,8 @@ window.DJ = window.DJ || {};
   let baseProductsPromise = null;
   const customState = { search: '', category: 'All' };
   const ADMIN_VIEW_PREFS_KEY = 'djAdminViewPrefsV1';
+  const ADMIN_REQUIRED_FIELDS = ['name', 'category', 'year', 'price'];
+  const ADMIN_STATUS_ID = 'adminStatus';
   const MAX_ADMIN_JSON_IMPORT_BYTES = 15 * 1024 * 1024;
   // Existing listings are managed like a compact Seller Hub table: filters and
   // selected ids stay separate so bulk actions only touch the rows the user chose.
@@ -228,6 +230,41 @@ window.DJ = window.DJ || {};
     return element.getAttribute('role') === 'button' || (Number.isFinite(tabIndex) && tabIndex >= 0);
   }
 
+  function getAdminFormControl(form, fieldName) {
+    const field = form?.elements?.namedItem(fieldName);
+    return field && typeof field.setAttribute === 'function' ? field : null;
+  }
+
+  function updateFieldDescription(field, id, shouldInclude) {
+    if (!field || !id) return;
+    const ids = new Set((field.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
+    if (shouldInclude) ids.add(id);
+    else ids.delete(id);
+
+    if (ids.size) {
+      field.setAttribute('aria-describedby', [...ids].join(' '));
+    } else {
+      field.removeAttribute('aria-describedby');
+    }
+  }
+
+  function setAdminFieldInvalid(form, fieldName, isInvalid) {
+    const field = getAdminFormControl(form, fieldName);
+    if (!field) return;
+
+    if (isInvalid) {
+      field.setAttribute('aria-invalid', 'true');
+      updateFieldDescription(field, ADMIN_STATUS_ID, true);
+    } else {
+      field.removeAttribute('aria-invalid');
+      updateFieldDescription(field, ADMIN_STATUS_ID, false);
+    }
+  }
+
+  function clearAdminFieldErrors(form) {
+    ADMIN_REQUIRED_FIELDS.forEach((fieldName) => setAdminFieldInvalid(form, fieldName, false));
+  }
+
   function wireDropzone(element, handlers = {}) {
     if (!element) return;
     const { onFiles, onClick } = handlers;
@@ -345,7 +382,7 @@ window.DJ = window.DJ || {};
           <input accept="image/*" class="sr-only replace-image-input" data-replace-id="${item.id}" id="replaceImage-${item.id}" type="file">
         </div>
         <div>
-          <h4>${DJ.escapeHtml(item.name)}</h4>
+          <h3>${DJ.escapeHtml(item.name)}</h3>
           <p>${DJ.escapeHtml(item.year)} | ${DJ.escapeHtml(item.category)}</p>
           <p>${DJ.escapeHtml(item.team || 'No team / publisher listed')}</p>
           <p>${DJ.escapeHtml(DJ.displayPrice(item))} | ${DJ.escapeHtml(item.condition || 'Condition not listed')}</p>
@@ -569,20 +606,47 @@ window.DJ = window.DJ || {};
   }
 
   function initAdminInsights() {
-    const tabs = document.querySelectorAll('[data-admin-insight-tab]');
-    const panels = document.querySelectorAll('[data-admin-insight-panel]');
+    const tabs = [...document.querySelectorAll('[data-admin-insight-tab]')];
+    const panels = [...document.querySelectorAll('[data-admin-insight-panel]')];
+
+    const selectInsightTab = (selectedTab, { moveFocus = false } = {}) => {
+      const target = selectedTab.dataset.adminInsightTab;
+      tabs.forEach((node) => {
+        const isActive = node === selectedTab;
+        node.classList.toggle('is-active', isActive);
+        node.setAttribute('aria-selected', String(isActive));
+        node.tabIndex = isActive ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.adminInsightPanel !== target;
+      });
+      if (moveFocus && typeof selectedTab.focus === 'function') {
+        selectedTab.focus();
+      }
+    };
 
     tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const target = tab.dataset.adminInsightTab;
-        tabs.forEach((node) => {
-          const isActive = node === tab;
-          node.classList.toggle('is-active', isActive);
-          node.setAttribute('aria-selected', String(isActive));
-        });
-        panels.forEach((panel) => {
-          panel.hidden = panel.dataset.adminInsightPanel !== target;
-        });
+      tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+      tab.addEventListener('click', () => selectInsightTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        const currentIndex = tabs.indexOf(tab);
+        if (currentIndex < 0) return;
+
+        let nextIndex = -1;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+          nextIndex = (currentIndex + 1) % tabs.length;
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        } else if (event.key === 'Home') {
+          nextIndex = 0;
+        } else if (event.key === 'End') {
+          nextIndex = tabs.length - 1;
+        }
+
+        if (nextIndex >= 0) {
+          event.preventDefault();
+          selectInsightTab(tabs[nextIndex], { moveFocus: true });
+        }
       });
     });
 
@@ -845,7 +909,6 @@ window.DJ = window.DJ || {};
       const openPicker = () => imageFileInput.click();
 
       wireDropzone(dropzone, {
-        onClick: openPicker,
         onFiles: async (files) => {
           const file = files[0];
           if (!file) return;
@@ -886,27 +949,51 @@ window.DJ = window.DJ || {};
       });
     }
 
+    form.addEventListener('input', (event) => {
+      const fieldName = event.target?.name || event.target?.id;
+      if (fieldName && ADMIN_REQUIRED_FIELDS.includes(fieldName)) {
+        setAdminFieldInvalid(form, fieldName, false);
+      }
+    });
+
+    form.addEventListener('change', (event) => {
+      const fieldName = event.target?.name || event.target?.id;
+      if (fieldName && ADMIN_REQUIRED_FIELDS.includes(fieldName)) {
+        setAdminFieldInvalid(form, fieldName, false);
+      }
+    });
+
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       DJ.setStatus('adminStatus');
+      clearAdminFieldErrors(form);
 
       const image = form.image.value.trim();
-      const category = form.category.value.trim() || 'Other';
+      const category = form.category.value.trim();
+      const yearValue = form.year.value.trim();
+      const priceValue = form.price.value.trim();
       const item = {
         id: Date.now(),
         name: form.name.value.trim(),
         category,
         team: form.team.value.trim(),
-        year: Number(form.year.value),
+        year: Number(yearValue),
         condition: form.condition.value.trim(),
-        price: Number(form.price.value),
+        price: Number(priceValue),
         image: image || DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other,
         description: form.description.value.trim()
       };
 
-      if (!(item.name && item.category && Number.isFinite(item.year) && Number.isFinite(item.price))) {
+      const invalidFields = [];
+      if (!item.name) invalidFields.push('name');
+      if (!item.category) invalidFields.push('category');
+      if (!yearValue || !Number.isFinite(item.year)) invalidFields.push('year');
+      if (!priceValue || !Number.isFinite(item.price)) invalidFields.push('price');
+
+      if (invalidFields.length) {
+        invalidFields.forEach((fieldName) => setAdminFieldInvalid(form, fieldName, true));
         DJ.setStatus('adminStatus', 'Please complete the required fields: name, category, year, and price.', 'error');
-        form.querySelector('[required]')?.focus();
+        getAdminFormControl(form, invalidFields[0])?.focus();
         return;
       }
 
@@ -914,6 +1001,7 @@ window.DJ = window.DJ || {};
       customProducts.unshift(item);
       if (DJ.saveCustomProducts(customProducts)) {
         form.reset();
+        clearAdminFieldErrors(form);
         clearDraftImage();
         renderCustomItems();
         DJ.setStatus('adminStatus', 'Item added successfully. It now appears in the shop views on this browser.', 'success');
@@ -1336,7 +1424,7 @@ window.DJ = window.DJ || {};
     const badges = getExistingListingBadges(product);
     if (!badges.length) return '';
     return `
-      <div class="admin-listing-badges" aria-label="Listing review flags">
+      <div class="admin-listing-badges" aria-label="Listing review flags" role="group">
         ${badges.map((badge) => `
           <span class="admin-listing-badge admin-listing-badge--${DJ.escapeHtml(badge.tone)}">${DJ.escapeHtml(badge.label)}</span>
         `).join('')}
@@ -1426,7 +1514,7 @@ window.DJ = window.DJ || {};
         </div>
         <div class="admin-listing-cell admin-listing-cell--item">
           <span class="admin-listing-kicker">${DJ.escapeHtml(product.category || 'Other')} #${DJ.escapeHtml(String(product.id || ''))} | SKU ${DJ.escapeHtml(sku)}</span>
-          <h4>${DJ.escapeHtml(product.name)}</h4>
+          <h3>${DJ.escapeHtml(product.name)}</h3>
           <p>${DJ.escapeHtml(listingContext)}</p>
           <p class="helper-text">${galleryCount} gallery photo${galleryCount === 1 ? '' : 's'}</p>
           ${renderExistingListingBadges(product)}
@@ -1496,7 +1584,7 @@ window.DJ = window.DJ || {};
     container.innerHTML = hiddenProducts.map((product) => `
       <div class="custom-item-card custom-item-card--compact">
         <div>
-          <h4>${DJ.escapeHtml(product.name)}</h4>
+          <h3>${DJ.escapeHtml(product.name)}</h3>
           <p>${DJ.escapeHtml(String(product.year || 'Year not listed'))} | ${DJ.escapeHtml(product.category || 'Other')}</p>
         </div>
         <button type="button" class="button-secondary" data-restore-id="${product.id}">Restore</button>

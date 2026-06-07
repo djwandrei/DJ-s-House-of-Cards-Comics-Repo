@@ -176,8 +176,53 @@ window.DJ = window.DJ || {};
     });
   }
 
-  const FILTER_ATTRIBUTE_OPTIONS = ['Autograph', 'Serial Numbered', 'Memorabilia', 'Rookie'];
+  const PRODUCT_ATTRIBUTE_ORDER = [
+    'Autograph',
+    'Rookie',
+    'Serial Numbered',
+    'One of One',
+    'Short Print',
+    'Memorabilia',
+    'Parallel/Variety',
+    'Insert',
+    'Error'
+  ];
+  const FILTER_ATTRIBUTE_OPTIONS = [...PRODUCT_ATTRIBUTE_ORDER];
+  const KNOWN_PRODUCT_ATTRIBUTES = new Set(PRODUCT_ATTRIBUTE_ORDER);
   const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
+  const PRODUCT_ATTRIBUTE_ALIASES = new Map([
+    ['auto', 'Autograph'],
+    ['autographed', 'Autograph'],
+    ['autograph', 'Autograph'],
+    ['signed', 'Autograph'],
+    ['rookie', 'Rookie'],
+    ['rc', 'Rookie'],
+    ['serial numbered', 'Serial Numbered'],
+    ['numbered', 'Serial Numbered'],
+    ['one of one', 'One of One'],
+    ['1 of 1', 'One of One'],
+    ['1/1', 'One of One'],
+    ['short print', 'Short Print'],
+    ['ssp', 'Short Print'],
+    ['memorabilia', 'Memorabilia'],
+    ['relic', 'Memorabilia'],
+    ['jersey', 'Memorabilia'],
+    ['patch', 'Memorabilia'],
+    ['parallel', 'Parallel/Variety'],
+    ['parallel/variety', 'Parallel/Variety'],
+    ['parallel / variety', 'Parallel/Variety'],
+    ['parallel/variation', 'Parallel/Variety'],
+    ['variation', 'Parallel/Variety'],
+    ['variety', 'Parallel/Variety'],
+    ['insert', 'Insert'],
+    ['error', 'Error'],
+    ['err', 'Error']
+  ]);
+  const COMMON_SERIAL_DENOMINATORS = new Set([
+    1, 4, 5, 10, 15, 18, 20, 24, 25, 30, 35, 40, 49, 50, 75, 88, 99,
+    100, 125, 149, 150, 175, 199, 200, 249, 250, 275, 299, 300, 350,
+    399, 400, 425, 450, 499, 500, 550, 600, 820, 999
+  ]);
   const REMOVED_VIDEO_GAME_LISTING_IDS = new Set([
     2700, 2701, 2702, 2703, 2704, 2705, 2706, 2707, 2708, 2709,
     2710, 2711, 2713, 2714, 2715, 2716, 2717, 2718, 2719
@@ -241,7 +286,7 @@ window.DJ = window.DJ || {};
   }
 
   function hasSerialNumberingContext(value = '') {
-    return /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp|ssp|auto|autograph|signature|patch|relic|memorabilia|jersey|materials?|swatch|prospect)\b/.test(value);
+    return /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|emerald|sepia|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|die[- ]cut|press proof|aspirations|status|mirror|prime|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp|ssp|auto|autographs?|au|signatures?|sigs?|patch|relic|memorabilia|jersey|materials?|swatch|prospect)\b/.test(value);
   }
 
   function hasSerialNumberedSignal(item = {}, excelFields = {}, includesFeature = () => false) {
@@ -266,6 +311,7 @@ window.DJ = window.DJ || {};
         const after = segment.slice((match.index || 0) + match[0].length, (match.index || 0) + match[0].length + 30);
         if (/^\s*(?:cards?|pcs?|boxes?|packs?)\b/.test(after)) continue;
         const before = segment.slice(Math.max(0, (match.index || 0) - 90), match.index || 0);
+        if (COMMON_SERIAL_DENOMINATORS.has(denominator)) return true;
         if (denominator >= 1900 && denominator <= 2035 && !hasSerialNumberingContext(before)) continue;
         if (!hasSerialNumberingContext(before)) continue;
         return true;
@@ -277,6 +323,43 @@ window.DJ = window.DJ || {};
     return false;
   }
 
+  function normalizeProductAttribute(value = '') {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (KNOWN_PRODUCT_ATTRIBUTES.has(raw)) return raw;
+
+    const key = raw
+      .toLowerCase()
+      .replace(/\s*\/\s*/g, '/')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return PRODUCT_ATTRIBUTE_ALIASES.get(key) || '';
+  }
+
+  function splitProductAttributeValue(value = '') {
+    if (Array.isArray(value)) return value.flatMap((entry) => splitProductAttributeValue(entry));
+    return String(value || '')
+      .split('|')
+      .map((part) => part.trim())
+      .filter(Boolean);
+  }
+
+  function pushProductAttribute(attributes, value) {
+    const attribute = normalizeProductAttribute(value);
+    if (!attribute || attributes.includes(attribute)) return;
+    attributes.push(attribute);
+  }
+
+  function sortProductAttributes(attributes = []) {
+    const order = new Map(PRODUCT_ATTRIBUTE_ORDER.map((attribute, index) => [attribute, index]));
+    return [...attributes].sort((a, b) => {
+      const aOrder = order.has(a) ? order.get(a) : Number.MAX_SAFE_INTEGER;
+      const bOrder = order.has(b) ? order.get(b) : Number.MAX_SAFE_INTEGER;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return a.localeCompare(b);
+    });
+  }
+
   function deriveProductAttributes(item = {}) {
     const metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
@@ -286,6 +369,12 @@ window.DJ = window.DJ || {};
     const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
     const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
     const featureSet = new Set(featuresText.split('|').map((value) => value.trim()).filter(Boolean));
+    const titleText = [
+      item.name || '',
+      item.condition || '',
+      item.legacyImageLabel || '',
+      excelFields['Title'] || ''
+    ].join(' ').toLowerCase();
     const text = [
       item.name || '',
       item.description || '',
@@ -307,20 +396,38 @@ window.DJ = window.DJ || {};
     ].join(' ').toLowerCase();
     const attributes = [];
     const includesFeature = (feature) => featureSet.has(String(feature || '').trim());
+    if (!featureSet.size && Array.isArray(item.attributes)) {
+      item.attributes.forEach((attribute) => pushProductAttribute(attributes, attribute));
+    }
+    splitProductAttributeValue(excelFields['C:Features']).forEach((feature) => pushProductAttribute(attributes, feature));
     const hasAutographLanguage = (
-      /\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
+      /\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bsigs?\b|\bink\b|\bscript(?:s)?\b|\binscriptions?\b|\bpenmanship\b|\bsignature(?!\s+rookies)\b|\bpsa\/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b/.test(text)
       || /\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b/.test(text)
     );
+    const hasOneOfOneLanguage = /\bone\s+of\s+one\b|\b1\s*of\s*1\b|\b1\/1\b|\bprinting plate\b|\bpre[- ]production proof\b/.test(text);
+    const hasShortPrintLanguage = /\bshort[- ]print\b|\bssp\b/.test(text);
     const hasMemorabiliaLanguage = (
-      /\bmemorabilia\b|\brelics?\b|\bjerseys?\b|\bjsy\b|\bpatch(?:es)?\b|\bswatches?\b|\bfabric\b|\bmaterials?\b|\bgame[- ](?:used|worn)\b|\bplayer[- ]worn\b|\bclubhouse collection\b/.test(text)
-      || /\b(?:black gold|throwback|rookie team|team)\s+threads\b|\bhot numbers game used\b|\bauthentic fabric\b|\bfabric of the future\b/.test(text)
+      /\bmemorabilia\b|\brelics?\b|\bjerseys?\b|\bjsy\b|\bpatch(?:es)?\b|\bswatches?\b|\bfabric\b|\bmaterials?\b|\bgame[- ](?:used|worn|bat)\b|\bpiece\s+of\s+the\s+game\b|\bplayer[- ]worn\b|\bclubhouse collection\b|\bby the letter\b/.test(text)
+      || /\b(?:black gold|throwback|rookie team|team|throwback)\s+threads\b|\bhot numbers game used\b|\bauthentic fabric\b|\bfabric of the future\b|\bsp game bat edition\b|\bbat kings\b|\bautograph-bat\b/.test(text)
     );
+    const hasParallelLanguage = (
+      /\bparallel\b|\bvariation\b|\bvariety\b|\brefractors?\b|\bprizms?\b|\bfoils?\b|\bholo(?:foil)?\b|\bshimmer\b|\bwave\b|\blava\b|\bpulsar\b|\bspeckle\b|\bmojo\b|\bice\b|\bglitter\b|\bsapphire\b|\bx-?fractor\b|\bdie[- ]cut\b|\bpress proof\b/.test(text)
+      || /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|emerald|sepia)\s+(?:border|foil|parallel|refractor|prizm|holo|wave|shimmer|glitter|proof)\b/.test(text)
+    );
+    const hasInsertLanguage = /\binserts?\b|\bcase hit\b|\bvariation insert\b/.test(text);
+    const hasErrorLanguage = /\berrors?\b|\berr\b|\bwrong back\b|\bmisspell(?:ed|ing)\b|\bmisprint\b/.test(text);
 
-    if (/\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b/.test(text)) attributes.push('Rookie');
-    if (hasAutographLanguage || autographedValue === 'yes') attributes.push('Autograph');
-    if (hasSerialNumberedSignal(item, excelFields, includesFeature)) attributes.push('Serial Numbered');
-    if (hasMemorabiliaLanguage) attributes.push('Memorabilia');
-    return attributes;
+    if (/\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b/.test(text)) pushProductAttribute(attributes, 'Rookie');
+    if (hasAutographLanguage || autographedValue === 'yes') pushProductAttribute(attributes, 'Autograph');
+    if (hasSerialNumberedSignal(item, excelFields, includesFeature)) pushProductAttribute(attributes, 'Serial Numbered');
+    if (hasOneOfOneLanguage) pushProductAttribute(attributes, 'One of One');
+    if (hasShortPrintLanguage) pushProductAttribute(attributes, 'Short Print');
+    if (hasMemorabiliaLanguage) pushProductAttribute(attributes, 'Memorabilia');
+    if (hasParallelLanguage) pushProductAttribute(attributes, 'Parallel/Variety');
+    if (hasInsertLanguage) pushProductAttribute(attributes, 'Insert');
+    if (hasErrorLanguage) pushProductAttribute(attributes, 'Error');
+
+    return sortProductAttributes(attributes);
   }
 
   function renderAttributeTags(attributes = [], options = {}) {
@@ -332,9 +439,8 @@ window.DJ = window.DJ || {};
   function getProductCardAttributes(attributes = []) {
     if (!Array.isArray(attributes) || !attributes.length) return [];
 
-    // Product cards are intentionally slimmer than filters/modals. Keep only
-    // buyer-facing card flags so source-page, rookie, and import-helper tags do
-    // not compete with the title and price on dense catalog grids.
+    // Keep grid cards slim; the full details view still shows the complete
+    // normalized attribute list.
     return attributes.filter((attribute) => PRODUCT_CARD_ATTRIBUTE_ALLOWLIST.has(String(attribute || '').trim()));
   }
 
@@ -1548,7 +1654,7 @@ window.DJ = window.DJ || {};
           <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
         </div>
         <div class="product-content">
-          <h4 id="${titleId}">${DJ.escapeHtml(product.name)}</h4>
+          <h3 id="${titleId}">${DJ.escapeHtml(product.name)}</h3>
           <div class="product-card-chip-rail">
             <div class="product-topline">
               <span class="product-meta product-grade-meta" data-label="${DJ.escapeHtml(gradeLabel)}">${DJ.escapeHtml(cardGradeLabel)}</span>
@@ -1563,7 +1669,7 @@ window.DJ = window.DJ || {};
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
               ${guideRange ? `<span class="product-price-note">Guide range ${DJ.escapeHtml(guideRange)}</span>` : ''}
             </div>
-            <div class="product-actions product-card-actions" aria-label="Listing actions">
+            <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
               <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}" aria-describedby="${summaryId}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
@@ -1949,6 +2055,36 @@ Thank you.`
 
       openModal(product, { contextProducts });
     };
+
+    const bindCardAction = (selector, actionName, callback) => {
+      container.querySelectorAll(selector).forEach((button) => {
+        const boundKey = `bound${actionName}`;
+        if (button.dataset[boundKey] === 'true') return;
+        button.dataset[boundKey] = 'true';
+        button.addEventListener('click', (event) => {
+          const productCard = button.closest('.product-card');
+          if (!productCard) return;
+          const productId = Number(productCard.dataset.productId);
+          const product = gridProductLookups.get(container)?.get(productId);
+          if (!product) return;
+          event.preventDefault();
+          event.stopPropagation();
+          callback(productId, product);
+        });
+      });
+    };
+
+    bindCardAction('.wishlist-button', 'Wishlist', (productId, product) => {
+      toggleWishlist(productId, product);
+    });
+    bindCardAction('[data-product-buy]', 'Buy', (_productId, product) => {
+      buyNow(product);
+    });
+    bindCardAction('[data-product-details]', 'Details', (_productId, product) => {
+      openModal(product, {
+        contextProducts: gridProductSequences.get(container) || productSequence
+      });
+    });
 
     if (container.dataset.cardKeyboardBound === 'true') return;
     container.dataset.cardKeyboardBound = 'true';
@@ -2480,7 +2616,7 @@ Thank you.`
           title="Previous page"
           ${state.page <= 1 ? 'disabled' : ''}
         >&lsaquo;</button>
-        <div class="catalog-pagination__pages" aria-label="Pages">
+        <div class="catalog-pagination__pages" aria-label="Pages" role="group">
           ${pageNumbers.map((pageItem) => renderPaginationItem(pageItem, state)).join('')}
         </div>
         <button
@@ -3517,7 +3653,7 @@ Thank you.`
     return `
       <div class="empty-state wishlist-empty-state">
         <span class="empty-state-kicker">Nothing saved yet</span>
-        <h3>Your wishlist is empty</h3>
+        <h2>Your wishlist is empty</h2>
         <p>Tap the heart icon on any listing to save it here for comparing, revisiting, or sending DJ a focused inquiry.</p>
         <div class="empty-state-actions">
           <a class="button" href="sports-cards.html">Browse Sports Cards</a>
@@ -3879,6 +4015,7 @@ Thank you.`);
     DJ.applyLazyLoading(modalInner);
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
+    modal.removeAttribute('inert');
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => {
       const preferredFocus = options.focusSelector ? modal.querySelector(options.focusSelector) : null;
@@ -3897,6 +4034,7 @@ Thank you.`);
 
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('inert', '');
     modal.removeAttribute('aria-labelledby');
     modal.setAttribute('aria-label', 'Product details');
     document.body.style.overflow = '';

@@ -43,7 +43,7 @@ const STOREFRONT_FIELDS = new Set([
   'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
   'displayPrice', 'image', 'imageGallery', 'description', 'photoHostPageUrl',
   'legacyImageLabel', 'sourcePage', 'league', 'sport', 'playerAthlete', 'copyCount',
-  'isFeatured', 'isDeleted', 'sortRank'
+  'attributes', 'isFeatured', 'isDeleted', 'sortRank'
 ]);
 const STOREFRONT_METADATA_FIELDS = new Set(['conditionNotes', 'playerAthlete']);
 const STOREFRONT_EXCEL_FIELDS = new Set(['Title', 'C:Features', 'C:Autographed']);

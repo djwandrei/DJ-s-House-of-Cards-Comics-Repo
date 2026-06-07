@@ -17,6 +17,8 @@ window.DJ = window.DJ || {};
   const CONTACT_DRAFT_KEY = 'djContactDraftV1';
   const CONTACT_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
   const CONTACT_DRAFT_FIELDS = ['name', 'email', 'subject', 'message'];
+  const CONTACT_REQUIRED_FIELDS = ['name', 'email', 'message'];
+  const CONTACT_STATUS_ID = 'contactStatus';
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const CONTACT_TOPICS = {
     buying: {
@@ -47,6 +49,41 @@ window.DJ = window.DJ || {};
     if (field && typeof field.focus === 'function') {
       field.focus();
     }
+  }
+
+  function getFormControl(form, fieldName) {
+    const field = form?.elements?.namedItem(fieldName);
+    return field && typeof field.setAttribute === 'function' ? field : null;
+  }
+
+  function updateDescribedBy(field, id, shouldInclude) {
+    if (!field || !id) return;
+    const ids = new Set((field.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
+    if (shouldInclude) ids.add(id);
+    else ids.delete(id);
+
+    if (ids.size) {
+      field.setAttribute('aria-describedby', [...ids].join(' '));
+    } else {
+      field.removeAttribute('aria-describedby');
+    }
+  }
+
+  function setFieldInvalid(form, fieldName, isInvalid) {
+    const field = getFormControl(form, fieldName);
+    if (!field) return;
+
+    if (isInvalid) {
+      field.setAttribute('aria-invalid', 'true');
+      updateDescribedBy(field, CONTACT_STATUS_ID, true);
+    } else {
+      field.removeAttribute('aria-invalid');
+      updateDescribedBy(field, CONTACT_STATUS_ID, false);
+    }
+  }
+
+  function clearFieldErrors(form) {
+    CONTACT_DRAFT_FIELDS.forEach((fieldName) => setFieldInvalid(form, fieldName, false));
   }
 
   function readContactDraft() {
@@ -178,7 +215,13 @@ window.DJ = window.DJ || {};
       setSubmittingState(false);
     };
 
-    form.addEventListener('input', () => scheduleContactDraftSave(form));
+    form.addEventListener('input', (event) => {
+      scheduleContactDraftSave(form);
+      const fieldName = event.target?.name;
+      if (fieldName && CONTACT_DRAFT_FIELDS.includes(fieldName)) {
+        setFieldInvalid(form, fieldName, false);
+      }
+    });
     form.addEventListener('change', () => writeContactDraft(form));
 
     form.addEventListener('submit', (event) => {
@@ -186,6 +229,7 @@ window.DJ = window.DJ || {};
       window.clearTimeout(mailtoFallbackTimer);
       DJ.setStatus('contactStatus');
       setSubmittingState(true);
+      clearFieldErrors(form);
 
       const name = getFieldValue(form, 'name');
       const email = getFieldValue(form, 'email');
@@ -193,6 +237,9 @@ window.DJ = window.DJ || {};
       const message = getFieldValue(form, 'message');
 
       if (!name || !email || !message) {
+        CONTACT_REQUIRED_FIELDS.forEach((fieldName) => {
+          setFieldInvalid(form, fieldName, !getFieldValue(form, fieldName));
+        });
         DJ.setStatus(
           'contactStatus',
           'Please complete your name, email, and message before creating the email draft.',
@@ -204,6 +251,7 @@ window.DJ = window.DJ || {};
       }
 
       if (!EMAIL_PATTERN.test(email)) {
+        setFieldInvalid(form, 'email', true);
         DJ.setStatus(
           'contactStatus',
           'Enter a valid email address before creating the email draft.',
@@ -214,6 +262,7 @@ window.DJ = window.DJ || {};
         return;
       }
 
+      clearFieldErrors(form);
       DJ.setStatus('contactStatus', 'Opening your email app with a prefilled draft...', 'success');
 
       const encodedSubject = encodeURIComponent(`Website Inquiry: ${subject}`);

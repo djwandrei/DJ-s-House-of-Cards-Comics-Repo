@@ -78,10 +78,11 @@
 <span class="page-kicker">Buyer tools</span>
 <h1>Account</h1>
 <p>Keep wishlist tools, buyer details, and ready-to-send inquiry notes in one simple buyer workspace.</p>
-<div class="account-hero-stats" aria-label="Account snapshot">
-<span class="account-hero-stat"><small>Wishlist</small><strong id="accountHeroWishlistCount">0 items</strong></span>
-<span class="account-hero-stat"><small>Buyer details</small><strong id="accountHeroSavedStatus">Not saved yet</strong></span>
-<span class="account-hero-stat"><small>Checkout ready</small><strong id="accountHeroReadiness">0%</strong></span>
+<div class="account-hero-stats" aria-label="Account snapshot" role="list">
+<span class="account-hero-stat" role="listitem"><small>Wishlist</small><strong id="accountHeroWishlistCount">0 items</strong></span>
+<span class="account-hero-stat" role="listitem"><small>Buyer details</small><strong id="accountHeroSavedStatus">Not saved yet</strong></span>
+<span class="account-hero-stat" role="listitem"><small>Collector profile</small><strong id="accountHeroCollectorStatus">Not started</strong></span>
+<span class="account-hero-stat" role="listitem"><small>Checkout ready</small><strong id="accountHeroReadiness">0%</strong></span>
 </div>
 <div class="page-hero-actions">
 <a class="button" href="wishlist.html">Open Wishlist</a>
@@ -121,6 +122,40 @@
 <p aria-live="polite" class="account-status" id="accountStatus"></p>
 </form>
 </article>
+<article class="account-panel account-collector-card">
+<div class="account-collector-layout">
+<div>
+<span class="account-eyebrow">Collector profile</span>
+<h2>Shape how DJ understands your collection.</h2>
+<p class="account-muted">Keep a focused collector profile with your collecting lane, trade openness, and share-ready summary.</p>
+<form class="account-form account-collector-form" id="collectorProfileForm">
+<div class="account-form-grid">
+<label>Display name<input autocomplete="nickname" id="account_collectorDisplayName" placeholder="DJ, Twins collector, Bronze Age fan" type="text"/></label>
+<label>Profile visibility<select id="account_profileVisibility"><option value="">Private on this device</option><option>Shareable with DJ</option><option>Public-ready profile</option></select></label>
+<label>Collecting focus<select id="account_collectorFocus"><option value="">Choose focus</option><option>Vintage sports cards</option><option>Modern rookies and parallels</option><option>Graded cards</option><option>Autographs and relics</option><option>Comics and key issues</option><option>Memorabilia and display pieces</option><option>Mixed collector</option></select></label>
+<label>Favorite era<input autocomplete="off" id="account_favoriteEra" placeholder="1950s baseball, Bronze Age comics, 2020s prospects" type="text"/></label>
+<label>Trade status<select id="account_tradeStatus"><option value="">Choose trade status</option><option>Open to trades</option><option>Buying only</option><option>Selling or consigning</option><option>Open to offers</option><option>Not trading now</option></select></label>
+<label>Wishlist sharing<select id="account_wishlistSharing"><option value="">Keep wishlist private</option><option>Share count only</option><option>Share with DJ by email</option></select></label>
+</div>
+<label>Collector bio<textarea id="account_collectorBio" maxlength="520" placeholder="A short collecting summary, favorite players or titles, condition preferences, and what makes a strong fit." rows="4"></textarea></label>
+<div class="account-button-row">
+<button class="button" type="submit">Save Collector Profile</button>
+<a class="button-secondary" href="contact.html">Discuss Collection</a>
+</div>
+</form>
+</div>
+<aside class="collector-profile-side" aria-label="Collector profile preview">
+<div class="collector-profile-meter">
+<div class="account-readiness-head">
+<span>Profile strength</span>
+<strong id="collectorProfileCompletionLabel" role="status">0%</strong>
+</div>
+<div class="account-progress-track" aria-hidden="true"><span id="collectorProfileCompletionBar"></span></div>
+</div>
+<div class="collector-profile-preview" id="collectorProfilePreview" aria-live="polite"></div>
+</aside>
+</div>
+</article>
 <aside class="account-panel account-summary-card">
 <span class="account-eyebrow">Saved items</span>
 <h2>Your wishlist</h2>
@@ -137,11 +172,11 @@
 <div class="account-readiness">
 <div class="account-readiness-head">
 <span>Checkout readiness</span>
-<strong id="accountProfileCompletionLabel">0%</strong>
+<strong id="accountProfileCompletionLabel" role="status">0%</strong>
 </div>
 <div class="account-progress-track" aria-hidden="true"><span id="accountProfileCompletionBar"></span></div>
 </div>
-<div class="account-checklist" id="accountReadinessChecklist" aria-label="Buyer detail checklist"></div>
+<div class="account-checklist" id="accountReadinessChecklist" aria-label="Buyer detail checklist" role="list"></div>
 <p class="account-muted" id="accountProfileSavedAt">No saved buyer details yet.</p>
 <p class="account-muted" id="accountProfileStatus">Add buyer details once, then reuse them when asking about cards, comics, or collectibles.</p>
 <div class="account-summary-tools">
