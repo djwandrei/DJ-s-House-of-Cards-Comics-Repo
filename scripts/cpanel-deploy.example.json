@@ -1,6 +1,7 @@
 {
   "protocol": "ftps",
   "host": "ftp.your-hostname.com",
+  "resolveHost": "",
   "port": 21,
   "remoteRoot": "/public_html",
   "passive": true,

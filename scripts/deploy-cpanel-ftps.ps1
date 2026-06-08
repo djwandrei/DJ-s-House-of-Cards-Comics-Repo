@@ -445,6 +445,13 @@ function Get-CurlCommonArguments {
     $args += "--ftp-pasv"
   }
 
+  if ($script:DeployConfig.resolveHost) {
+    $args += @(
+      "--resolve",
+      ("{0}:{1}:{2}" -f $script:DeployConfig.host, $script:DeployConfig.port, $script:DeployConfig.resolveHost)
+    )
+  }
+
   return $args
 }
 
@@ -471,8 +478,18 @@ function Invoke-SecureCurl {
   $networkCredential = $deployCredential.GetNetworkCredential()
   $userPassword = Convert-ToCurlConfigValue -Value "$($networkCredential.UserName):$($networkCredential.Password)"
 
-  # Pass credentials over stdin so they are not exposed in curl's process args.
-  "user = `"$userPassword`"" | & curl.exe --config - @Arguments
+  # Pass credentials through a short-lived config file so they are not exposed
+  # in curl's process args. Windows PowerShell can prepend a BOM when piping to
+  # native stdin, and older .NET versions lack ProcessStartInfo.ArgumentList.
+  $configPath = Join-Path ([System.IO.Path]::GetTempPath()) ("cpanel-curl-{0}.cfg" -f ([guid]::NewGuid().ToString("N")))
+  try {
+    Set-Content -LiteralPath $configPath -Value "user = `"$userPassword`"" -Encoding Ascii
+    & curl.exe --config $configPath @Arguments
+  } finally {
+    if (Test-Path -LiteralPath $configPath) {
+      Remove-Item -LiteralPath $configPath -Force
+    }
+  }
 }
 
 function Invoke-Upload {

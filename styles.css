@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Production stylesheet bundle
  * --------------------------------------------------------------------------
  * This file is the browser-facing CSS entry point. It is kept as a single
@@ -7170,7 +7170,7 @@ body.dark-mode .filter-panel--drawer .facet-toggle {
   }
 
   body.filters-sidebar-open .catalog-sidebar-dock-toggle {
-    left:clamp(280px,24vw,340px);
+    left:calc(clamp(280px,24vw,340px) - 36px);
   }
 }
 

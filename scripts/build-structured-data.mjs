@@ -7,7 +7,7 @@ const SITE_EMAIL = 'djscardscomics13@gmail.com';
 const SITE_LOGO = `${SITE_URL}assets/dj-logo.png`;
 const FACEBOOK_URL = 'https://www.facebook.com/DJCardsComics/';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260607d';
+const SCRIPT_VERSION = '20260608a';
 const pages = {
   'index.html': {
     type: 'WebPage',
