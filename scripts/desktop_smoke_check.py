@@ -352,7 +352,7 @@ async def inspect_filtered_catalog(client: CdpClient, base_url: str) -> dict:
 async def inspect_ranged_price(client: CdpClient, base_url: str) -> dict:
     await navigate(client, f"{base_url.rstrip('/')}/basketball-cards.html?search=Damian%20Lillard")
     await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
-    return await client.evaluate(
+    report = await client.evaluate(
         """(() => {
           const cards = Array.from(document.querySelectorAll('.product-card[data-product-id]'));
           const card = cards.find((candidate) =>
@@ -360,6 +360,7 @@ async def inspect_ranged_price(client: CdpClient, base_url: str) -> dict:
               candidate.querySelector('h3, h4')?.textContent || ''
             )
           );
+          card?.querySelector('[data-product-details]')?.click();
           return {
             found: Boolean(card),
             productId: card?.dataset.productId || '',
@@ -368,6 +369,22 @@ async def inspect_ranged_price(client: CdpClient, base_url: str) -> dict:
           };
         })()"""
     )
+    if report.get("found"):
+        await wait_for(client, "document.querySelector('#productModal.active')", timeout=10)
+        report["modalGuideRange"] = await client.evaluate(
+            """(() => {
+              const facts = Array.from(document.querySelectorAll('#productModal.active .modal-fact'));
+              const guideFact = facts.find((fact) =>
+                /guide range/i.test(fact.querySelector('span')?.textContent || '')
+              );
+              const value = guideFact?.querySelector('strong')?.textContent?.trim() || '';
+              document.querySelector('#productModal.active .modal-close')?.click();
+              return value;
+            })()"""
+        )
+    else:
+        report["modalGuideRange"] = ""
+    return report
 
 
 async def inspect_account_page(client: CdpClient, base_url: str) -> dict:
@@ -746,7 +763,8 @@ async def main() -> int:
             if not (
                 ranged_price_report.get("found")
                 and ranged_price_report.get("displayedPrice") == "$30.00"
-                and "$12.00-$30.00" in ranged_price_report.get("guideRange", "")
+                and not ranged_price_report.get("guideRange", "")
+                and "$12.00-$30.00" in ranged_price_report.get("modalGuideRange", "")
             ):
                 report["failures"].append({"page": "basketball-cards.html?search=Damian%20Lillard", "rangedPrice": ranged_price_report})
 

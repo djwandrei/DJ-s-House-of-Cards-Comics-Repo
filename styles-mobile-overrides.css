@@ -738,33 +738,33 @@
 
 @media (max-width:480px) {
   :root {
-    --header-h:78px;
+    --header-h:84px;
   }
 
   .site-header {
-    --header-h:78px;
+    --header-h:84px;
   }
 
   .brand-logo {
-    width:58px !important;
-    height:58px !important;
+    width:66px !important;
+    height:66px !important;
   }
 
   .brand-copy {
-    max-width:min(18.5ch, calc(100vw - 170px));
+    max-width:min(20ch, calc(100vw - 184px));
   }
 
   .brand-script {
-    font-size:1.06rem !important;
+    font-size:1.16rem !important;
   }
 
   .brand-kicker {
-    font-size:.42rem !important;
-    letter-spacing:.01em !important;
+    font-size:.46rem !important;
+    letter-spacing:.025em !important;
   }
 
   .nav-toggle {
-    min-width:88px;
+    min-width:92px;
     padding-inline:.72rem;
   }
 
@@ -1685,9 +1685,12 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
    into the image border on narrow screens. */
 @media (max-width:700px) {
   .footer::before {
+    content:"" !important;
+    display:block !important;
     inset:0 0 auto 0 !important;
     min-height:0 !important;
     height:clamp(9.5rem,42vw,12.25rem) !important;
+    background:linear-gradient(180deg,rgba(7,11,24,.08),rgba(7,11,24,.52)),var(--footer-image) center 42%/cover no-repeat !important;
     background-position:center 42% !important;
     background-size:cover !important;
   }

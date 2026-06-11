@@ -177,11 +177,12 @@ for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
   }
 
   const sourceItems = catalogs[sourceFile] || [];
+  const activeSourceItems = sourceItems.filter((item) => item?.isDeleted !== true);
   if (bootstrap.source !== sourceFile) {
     issues.push({ file: bootstrapFile, type: 'bootstrap source mismatch', value: bootstrap.source });
   }
-  if (Number(bootstrap.total) !== sourceItems.length) {
-    issues.push({ file: bootstrapFile, type: 'bootstrap total mismatch', value: bootstrap.total, expected: sourceItems.length });
+  if (Number(bootstrap.total) !== activeSourceItems.length) {
+    issues.push({ file: bootstrapFile, type: 'bootstrap total mismatch', value: bootstrap.total, expected: activeSourceItems.length });
   }
   if (!Array.isArray(bootstrap.products) || !bootstrap.products.length || bootstrap.products.length > 48) {
     issues.push({ file: bootstrapFile, type: 'bootstrap product window should contain 1-48 products' });
@@ -189,7 +190,7 @@ for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
   }
 
   bootstrap.products.forEach((item, index) => {
-    const sourceItem = sourceItems[index];
+    const sourceItem = activeSourceItems[index];
     if (String(item?.id) !== String(sourceItem?.id)) {
       issues.push({ file: bootstrapFile, type: 'bootstrap product does not mirror source order', index, id: item?.id, expected: sourceItem?.id });
       return;

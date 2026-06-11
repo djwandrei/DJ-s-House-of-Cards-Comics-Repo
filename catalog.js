@@ -189,7 +189,7 @@ window.DJ = window.DJ || {};
   ];
   const FILTER_ATTRIBUTE_OPTIONS = [...PRODUCT_ATTRIBUTE_ORDER];
   const KNOWN_PRODUCT_ATTRIBUTES = new Set(PRODUCT_ATTRIBUTE_ORDER);
-  const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(['Autograph', 'Serial Numbered', 'Memorabilia']);
+  const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(PRODUCT_ATTRIBUTE_ORDER);
   const PRODUCT_ATTRIBUTE_ALIASES = new Map([
     ['auto', 'Autograph'],
     ['autographed', 'Autograph'],
@@ -217,11 +217,6 @@ window.DJ = window.DJ || {};
     ['insert', 'Insert'],
     ['error', 'Error'],
     ['err', 'Error']
-  ]);
-  const COMMON_SERIAL_DENOMINATORS = new Set([
-    1, 4, 5, 10, 15, 18, 20, 24, 25, 30, 35, 40, 49, 50, 75, 88, 99,
-    100, 125, 149, 150, 175, 199, 200, 249, 250, 275, 299, 300, 350,
-    399, 400, 425, 450, 499, 500, 550, 600, 820, 999
   ]);
   const REMOVED_VIDEO_GAME_LISTING_IDS = new Set([
     2700, 2701, 2702, 2703, 2704, 2705, 2706, 2707, 2708, 2709,
@@ -311,7 +306,9 @@ window.DJ = window.DJ || {};
         const after = segment.slice((match.index || 0) + match[0].length, (match.index || 0) + match[0].length + 30);
         if (/^\s*(?:cards?|pcs?|boxes?|packs?)\b/.test(after)) continue;
         const before = segment.slice(Math.max(0, (match.index || 0) - 90), match.index || 0);
-        if (COMMON_SERIAL_DENOMINATORS.has(denominator)) return true;
+        // A common denominator alone is not enough. Vintage multi-player card
+        // numbers such as "Long/18 Magic Johnson AS/237" otherwise look like
+        // serial numbering even though there is no parallel or limited context.
         if (denominator >= 1900 && denominator <= 2035 && !hasSerialNumberingContext(before)) continue;
         if (!hasSerialNumberingContext(before)) continue;
         return true;
@@ -397,7 +394,12 @@ window.DJ = window.DJ || {};
     const attributes = [];
     const includesFeature = (feature) => featureSet.has(String(feature || '').trim());
     if (!featureSet.size && Array.isArray(item.attributes)) {
-      item.attributes.forEach((attribute) => pushProductAttribute(attributes, attribute));
+      item.attributes.forEach((attribute) => {
+        // Re-evaluate serial numbering from the current title/features instead
+        // of trusting stale derived attributes from earlier imports.
+        if (normalizeProductAttribute(attribute) === 'Serial Numbered') return;
+        pushProductAttribute(attributes, attribute);
+      });
     }
     splitProductAttributeValue(excelFields['C:Features']).forEach((feature) => pushProductAttribute(attributes, feature));
     const hasAutographLanguage = (
@@ -439,8 +441,8 @@ window.DJ = window.DJ || {};
   function getProductCardAttributes(attributes = []) {
     if (!Array.isArray(attributes) || !attributes.length) return [];
 
-    // Keep grid cards slim; the full details view still shows the complete
-    // normalized attribute list.
+    // Keep grid cards aligned with the normalized product attributes so buyer
+    // signals such as Rookie, Insert, and Short Print are not hidden.
     return attributes.filter((attribute) => PRODUCT_CARD_ATTRIBUTE_ALLOWLIST.has(String(attribute || '').trim()));
   }
 
@@ -1097,6 +1099,10 @@ window.DJ = window.DJ || {};
   function filterStorefrontProducts(items = []) {
     const seenListings = new Set();
     return (Array.isArray(items) ? items : []).filter((item) => {
+      if (item?.isDeleted === true) {
+        return false;
+      }
+
       if (REMOVED_VIDEO_GAME_LISTING_IDS.has(Number(item?.id))) {
         return false;
       }
@@ -1630,7 +1636,6 @@ window.DJ = window.DJ || {};
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
     const cardGradeLabel = getProductCardGradeLabel(product);
     const cardAttributes = getProductCardAttributes(product.attributes);
-    const guideRange = getProductGuideRange(product);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
     const quickActionLabel = getProductActionLabel(product);
@@ -1667,7 +1672,6 @@ window.DJ = window.DJ || {};
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
-              ${guideRange ? `<span class="product-price-note">Guide range ${DJ.escapeHtml(guideRange)}</span>` : ''}
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>

@@ -34956,7 +34956,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -35444,7 +35444,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37079,7 +37079,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37226,7 +37226,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37376,7 +37376,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37426,7 +37426,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37476,7 +37476,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -37826,7 +37826,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0
   },
   {
@@ -41889,7 +41889,7 @@
       ]
     },
     "isFeatured": false,
-    "isDeleted": false,
+    "isDeleted": true,
     "sortRank": 0,
     "attributes": [
       "Autograph",
@@ -52659,7 +52659,8 @@
     "displayPrice": "$1.95",
     "attributes": [
       "Rookie"
-    ]
+    ],
+    "isDeleted": true
   },
   {
     "id": 880,
@@ -52892,7 +52893,8 @@
     "attributes": [
       "Rookie",
       "Parallel/Variety"
-    ]
+    ],
+    "isDeleted": true
   },
   {
     "id": 887,

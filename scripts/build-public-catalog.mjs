@@ -133,8 +133,11 @@ for (const file of FILES) {
   const raw = JSON.parse(await fs.readFile(fullPath, 'utf8'));
   assertRangeCheckoutPrices(raw, file);
   const isFullCatalog = file === 'products.json';
+  const activeRaw = Array.isArray(raw)
+    ? raw.filter((item) => item?.isDeleted !== true)
+    : [];
   const storefront = Array.isArray(raw)
-    ? raw.map((item) => pickStorefrontFields(item))
+    ? activeRaw.map((item) => pickStorefrontFields(item))
     : [];
   if (!isFullCatalog && (cleanJsonSources || optimizeSegmentJson)) {
     await writeTextFile(fullPath, `${JSON.stringify(storefront)}\n`);
