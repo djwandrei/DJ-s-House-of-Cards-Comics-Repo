@@ -73,6 +73,9 @@ function isDirectCheckoutEligible(product: Record<string, unknown>) {
   const price = checkoutPriceDollars(product);
   const display = String(product.display_price || product.price_label || '').toLowerCase();
   if (!Number.isFinite(price) || price <= 0) return false;
+  // This launch flow reserves and sells one database row per checkout. Keep
+  // multi-copy listings on the inquiry path until quantity inventory exists.
+  if (Number(product.copy_count) > 1) return false;
   if (/contact|ask|inquir|availability/.test(display)) return false;
   return true;
 }
@@ -238,7 +241,7 @@ Deno.serve(async (request) => {
 
   const { data: product, error: productError } = await admin
     .from('products')
-    .select('id,name,category,team,year,condition,price,price_label,display_price,image,image_gallery,description,is_deleted')
+    .select('id,name,category,team,year,condition,price,price_label,display_price,image,image_gallery,description,is_deleted,copy_count')
     .eq('id', productId)
     .eq('is_deleted', false)
     .single();

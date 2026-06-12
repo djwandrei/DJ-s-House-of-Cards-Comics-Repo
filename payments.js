@@ -38,6 +38,9 @@ window.DJ = window.DJ || {};
     const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = getPriceLabel(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
+    // Quantity-aware inventory is not live yet, so multi-copy listings stay on
+    // the inquiry flow instead of being incorrectly marked sold after one sale.
+    if (Number(product.copyCount) > 1) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
     return true;
   }

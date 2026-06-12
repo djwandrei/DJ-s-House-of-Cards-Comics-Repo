@@ -1872,12 +1872,6 @@ body.dark-mode .admin-stat-card {
   text-transform:uppercase;
   color:var(--muted)
 }
-.admin-stat-value {
-  display:block;
-  margin-top:.45rem;
-  font-size:2.2rem;
-  line-height:1
-}
 .admin-stat-card p {
   margin:.45rem 0 0;
   color:var(--muted)
@@ -2135,9 +2129,6 @@ body[data-page=comics] .footer::before {
     font-size:.68rem
   }
 }
-.product-grid {
-  gap:1rem
-}
 .product-card {
   border-radius:20px
 }
@@ -2196,9 +2187,6 @@ body.dark-mode .product-card img {
   height:40px;
   font-size:1.05rem
 }
-.modal-product-copy p {
-  margin:.45rem 0
-}
 @media (min-width:1281px) {
   .product-content {
     padding:.78rem .82rem .84rem
@@ -2219,9 +2207,6 @@ body.dark-mode .product-card img {
   }
 }
 @media (max-width:900px) {
-  .product-grid {
-    gap:.85rem
-  }
   .product-content {
     padding:.8rem .8rem .85rem
   }
@@ -3683,7 +3668,6 @@ body.dark-mode .product-card {
 .backend-auth-form{margin-bottom:1rem}
 .backend-admin-layout{grid-template-columns:minmax(0,1fr)}
 .backend-editor-panel{position:static;max-height:none;overflow:visible;background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(245,248,255,.9))}
-.backend-admin-panel{overflow:hidden}
 .backend-editor-panel .image-preview{margin-top:1rem}
 #backendListingsList .admin-listing-card{content-visibility:auto;contain-intrinsic-size:180px}
 #backendListingsList .admin-listing-card{transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
@@ -6109,27 +6093,6 @@ body.dark-mode .footer-action-count {
     border-top:1px solid rgba(255,255,255,.1);
   }
 
-  .site-nav__mobile-link {
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:.5rem;
-    min-height:46px;
-    padding:.85rem 1rem;
-    border-radius:18px;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.1);
-    color:#fff;
-    font-weight:800;
-    text-align:center;
-  }
-
-  .site-nav__mobile-link--primary {
-    background:linear-gradient(135deg,#2448da 0%,#ef1823 100%);
-    border-color:transparent;
-    box-shadow:0 14px 24px rgba(31,47,163,.26);
-  }
-
   .footer-link-groups {
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
@@ -7383,11 +7346,6 @@ body.dark-mode .filter-panel--drawer .facet-toggle {
     gap:.7rem;
   }
 
-  .admin-editor-panel {
-    top:calc(var(--header-h) + .85rem);
-    max-height:calc(100vh - var(--header-h) - 1.35rem);
-    overflow:auto;
-  }
 }
 
 .product-meta-inline--league {
@@ -9232,17 +9190,6 @@ body.dark-mode .account-form textarea {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:.7rem;
-}
-
-.account-link-button {
-  justify-self:start;
-  border:0;
-  background:transparent;
-  color:var(--accent-blue);
-  cursor:pointer;
-  font:inherit;
-  font-weight:900;
-  padding:.2rem 0;
 }
 
 .account-status {

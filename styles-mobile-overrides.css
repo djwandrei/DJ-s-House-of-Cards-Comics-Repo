@@ -1137,7 +1137,6 @@ input.sr-only[type="file"] {
 }
 
 @media (min-width:901px) {
-  .admin-editor-panel .image-preview--inline,
   .backend-editor-panel .image-preview {
     grid-template-columns:minmax(150px,220px) minmax(0,1fr);
   }

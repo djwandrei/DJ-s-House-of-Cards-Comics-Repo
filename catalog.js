@@ -530,6 +530,7 @@ window.DJ = window.DJ || {};
     const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = DJ.displayPrice(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
+    if (Number(product.copyCount) > 1) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
     return true;
   }

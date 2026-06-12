@@ -21,6 +21,7 @@ index.html
 nav.js
 offline.html
 offline.js
+payments.js
 products-bootstrap-baseball.json
 products-bootstrap-basketball.json
 products-bootstrap-collectibles.json

@@ -82,7 +82,8 @@ The storefront calls `create-checkout-session` when a signed-in customer clicks
 Buy Now on a fixed-price listing. Listings with price ranges charge the high
 end of the range in Stripe while keeping the original range visible as guide
 information in the item details. Listings marked "contact for price" still
-open the inquiry email instead of taking payment.
+open the inquiry email instead of taking payment. Multi-copy listings also use
+the inquiry flow until quantity-aware checkout inventory is implemented.
 
 ## Stripe webhook
 
@@ -97,10 +98,16 @@ Listen for:
 ```text
 checkout.session.completed
 checkout.session.expired
+checkout.session.async_payment_succeeded
+checkout.session.async_payment_failed
 ```
 
 After payment, the webhook writes an order row and hides the purchased listing
 from the public catalog by setting `products.is_deleted = true`.
+
+Delayed payment methods remain reserved after `checkout.session.completed`
+until Stripe sends either `checkout.session.async_payment_succeeded` or
+`checkout.session.async_payment_failed`.
 
 Do not fulfill from the browser redirect alone. The success page only confirms
 that Stripe returned the shopper to the site; the webhook is the source of truth

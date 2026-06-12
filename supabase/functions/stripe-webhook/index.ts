@@ -52,21 +52,42 @@ function assertNoSupabaseError(error: unknown, step: string) {
   throw new Error(`Supabase ${step} failed: ${message}`);
 }
 
-async function updateReservation(session: Stripe.Checkout.Session, status: 'paid' | 'expired') {
+type ReservationStatus = 'pending' | 'paid' | 'expired' | 'released';
+
+async function updateReservation(
+  session: Stripe.Checkout.Session,
+  status: ReservationStatus,
+  expiresAt?: string
+) {
   const reservationId = String(session.metadata?.reservation_id || '').trim();
   if (!reservationId) return;
 
+  const update: Record<string, unknown> = { status };
+  if (expiresAt) update.expires_at = expiresAt;
+
   const { error } = await admin
     .from('product_checkout_reservations')
-    .update({ status })
+    .update(update)
     .eq('id', reservationId);
   assertNoSupabaseError(error, 'reservation update');
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function upsertOrder(session: Stripe.Checkout.Session, status: string) {
   const productId = Number(session.metadata?.product_id || session.client_reference_id);
   const buyerUserId = String(session.metadata?.buyer_user_id || '') || null;
-  if (!Number.isFinite(productId)) return;
+  if (!Number.isFinite(productId)) return null;
+
+  // Stripe retries events and does not guarantee delivery order. Never let a
+  // late unpaid/expired event downgrade an order that is already paid.
+  const { data: existingOrder, error: existingOrderError } = await admin
+    .from('checkout_orders')
+    .select('status')
+    .eq('stripe_session_id', session.id)
+    .maybeSingle();
+  assertNoSupabaseError(existingOrderError, 'existing order lookup');
+  if (existingOrder?.status === 'paid' && status !== 'paid') {
+    return { productId, buyerUserId, status: 'paid' };
+  }
 
   const { error: orderError } = await admin.from('checkout_orders').upsert({
     product_id: productId,
@@ -77,15 +98,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : '',
     amount_total: session.amount_total,
     currency: session.currency || 'usd',
-    status: session.payment_status || session.status || 'complete',
+    status,
     metadata: compactSessionMetadata(session)
   }, {
     onConflict: 'stripe_session_id'
   });
   assertNoSupabaseError(orderError, 'order upsert');
+  return { productId, buyerUserId, status };
+}
 
-  await updateReservation(session, session.payment_status === 'paid' ? 'paid' : 'expired');
-
+async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUserId: string | null) {
   if (buyerUserId && typeof session.customer === 'string') {
     const { error: profileError } = await admin.from('customer_profiles').upsert({
       id: buyerUserId,
@@ -96,35 +118,66 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     });
     assertNoSupabaseError(profileError, 'customer profile upsert');
   }
+}
 
+async function markProductSold(session: Stripe.Checkout.Session, productId: number) {
   // Hide paid one-of-one listings from public catalog views. The original row is
   // preserved for admin/order review, but shoppers will not be able to buy it.
-  if (session.payment_status === 'paid') {
-    const { data: product, error: productError } = await admin
-      .from('products')
-      .select('metadata')
-      .eq('id', productId)
-      .single();
-    assertNoSupabaseError(productError, 'product lookup');
-    const existingMetadata = product?.metadata && typeof product.metadata === 'object' ? product.metadata : {};
+  const { data: product, error: productError } = await admin
+    .from('products')
+    .select('metadata')
+    .eq('id', productId)
+    .single();
+  assertNoSupabaseError(productError, 'product lookup');
+  const existingMetadata = product?.metadata && typeof product.metadata === 'object' ? product.metadata : {};
 
-    const { error: productUpdateError } = await admin
-      .from('products')
-      .update({
-        is_deleted: true,
-        metadata: {
-          ...existingMetadata,
-          sold_via: 'stripe_checkout',
-          stripe_session_id: session.id,
-          sold_at: new Date().toISOString()
-        }
-      })
-      .eq('id', productId);
-    assertNoSupabaseError(productUpdateError, 'product sold marker update');
+  const { error: productUpdateError } = await admin
+    .from('products')
+    .update({
+      is_deleted: true,
+      metadata: {
+        ...existingMetadata,
+        sold_via: 'stripe_checkout',
+        stripe_session_id: session.id,
+        sold_at: new Date().toISOString()
+      }
+    })
+    .eq('id', productId);
+  assertNoSupabaseError(productUpdateError, 'product sold marker update');
+}
+
+async function finalizePaidCheckout(session: Stripe.Checkout.Session) {
+  const order = await upsertOrder(session, 'paid');
+  if (!order) return;
+
+  await updateReservation(session, 'paid');
+  await upsertCustomerProfile(session, order.buyerUserId);
+  await markProductSold(session, order.productId);
+}
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  if (session.payment_status === 'paid') {
+    await finalizePaidCheckout(session);
+    return;
   }
+
+  // Some payment methods finish after Checkout completes. Keep the listing
+  // reserved until Stripe sends an explicit async success or failure event.
+  const order = await upsertOrder(session, 'unpaid');
+  if (order?.status === 'paid') return;
+  const delayedPaymentExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  await updateReservation(session, 'pending', delayedPaymentExpiry);
+}
+
+async function handleAsyncPaymentFailed(session: Stripe.Checkout.Session) {
+  const order = await upsertOrder(session, 'unpaid');
+  if (order?.status === 'paid') return;
+  await updateReservation(session, 'released');
 }
 
 async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
+  const order = await upsertOrder(session, 'expired');
+  if (order?.status === 'paid') return;
   await updateReservation(session, 'expired');
 }
 
@@ -152,12 +205,20 @@ Deno.serve(async (request) => {
   }
 
   try {
-    if (event.type === 'checkout.session.completed') {
-      await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
-    }
-
-    if (event.type === 'checkout.session.expired') {
-      await handleCheckoutExpired(event.data.object as Stripe.Checkout.Session);
+    const session = event.data.object as Stripe.Checkout.Session;
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(session);
+        break;
+      case 'checkout.session.async_payment_succeeded':
+        await finalizePaidCheckout(session);
+        break;
+      case 'checkout.session.async_payment_failed':
+        await handleAsyncPaymentFailed(session);
+        break;
+      case 'checkout.session.expired':
+        await handleCheckoutExpired(session);
+        break;
     }
   } catch (error) {
     console.error('[stripe-webhook]', error);

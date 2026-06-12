@@ -28,6 +28,7 @@
 .npmrc
 auth.json
 credentials.json
+codex_account_keys.env
 secrets/
 **/secrets/
 

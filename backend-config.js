@@ -17,7 +17,6 @@
     provider: 'supabase',
     supabaseUrl: 'https://gkqdymnmczabcggvigce.supabase.co',
     supabasePublishableKey: 'sb_publishable_BHrJWQtop2ovkpOMOd9w3A_-9MTaeGG',
-    supabaseAnonKey: 'sb_publishable_BHrJWQtop2ovkpOMOd9w3A_-9MTaeGG',
     productsTable: 'products',
     storageBucket: 'product-images',
     imageFolder: 'products',

@@ -217,15 +217,6 @@ window.DJ = window.DJ || {};
     })}.`;
   }
 
-  function formatShippingAddress(profile = {}) {
-    return [
-      profile.shippingName || profile.fullName,
-      profile.addressLine1,
-      profile.addressLine2,
-      [profile.city, profile.state, profile.postalCode].filter(Boolean).join(', ')
-    ].map((line) => normalizeProfileValue('addressLine1', line)).filter(Boolean).join('\n');
-  }
-
   function loadAccountProducts() {
     if (accountProductsPromise) return accountProductsPromise;
     const productSource = typeof DJ.versionedProductAsset === 'function'
