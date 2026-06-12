@@ -1720,7 +1720,7 @@ window.DJ = window.DJ || {};
     if (activeFiltersWrap) activeFiltersWrap.innerHTML = '';
   }
 
-  async function ensurePaymentsBridge() {
+  async function ensureCustomerAccountBridge() {
     if (DJ.payments?.startCheckout) {
       return DJ.payments;
     }
@@ -1737,6 +1737,19 @@ window.DJ = window.DJ || {};
     return DJ.payments || null;
   }
 
+  function hydrateCustomerAccountAfterPaint() {
+    const hydrate = () => {
+      ensureCustomerAccountBridge()
+        .then((payments) => payments?.hydrateAccount?.())
+        .catch((error) => console.warn('Customer account could not be synced.', error));
+    };
+    if (typeof DJ.scheduleIdle === 'function') {
+      DJ.scheduleIdle(hydrate, 1200);
+    } else {
+      window.setTimeout(hydrate, 800);
+    }
+  }
+
   async function buyNow(product) {
 
     const sendPurchaseInquiry = () => {
@@ -1744,7 +1757,7 @@ window.DJ = window.DJ || {};
     };
 
     try {
-      const payments = await ensurePaymentsBridge();
+      const payments = await ensureCustomerAccountBridge();
       if (payments?.startCheckout) {
         payments.startCheckout(product, { fallback: sendPurchaseInquiry });
         return;
@@ -4176,6 +4189,7 @@ Thank you.`);
     const page = document.body.dataset.page;
     const pageConfig = PAGE_CONFIG[page] || PAGE_CONFIG.shop;
     bindWishlistStateSync();
+    hydrateCustomerAccountAfterPaint();
 
     if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist'].includes(page)) {
       DJ.scheduleIdle?.(() => insertDepartmentSwitcher());
@@ -4210,6 +4224,7 @@ Thank you.`);
   }
 
   window.closeModal = closeModal;
+  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;
 })();
 
 

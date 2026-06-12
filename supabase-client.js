@@ -19,7 +19,6 @@ window.DJ = window.DJ || {};
     provider: 'supabase',
     supabaseUrl: '',
     supabasePublishableKey: '',
-    supabaseAnonKey: '',
     productsTable: 'products',
     storageBucket: 'product-images',
     imageFolder: 'products',
@@ -42,7 +41,6 @@ window.DJ = window.DJ || {};
 
   config.supabaseUrl = String(config.supabaseUrl || '').trim();
   config.supabasePublishableKey = String(config.supabasePublishableKey || '').trim();
-  config.supabaseAnonKey = String(config.supabaseAnonKey || config.supabasePublishableKey || '').trim();
   config.productsTable = String(config.productsTable || 'products').trim() || 'products';
   config.storageBucket = String(config.storageBucket || 'product-images').trim() || 'product-images';
   config.imageFolder = String(config.imageFolder || 'products').trim().replace(/^\/+|\/+$/g, '') || 'products';
@@ -55,7 +53,7 @@ window.DJ = window.DJ || {};
     requestedEnabled &&
     hasSupabaseProvider &&
     hasValidProjectUrl &&
-    !hasPlaceholderApiKey(config.supabaseAnonKey)
+    !hasPlaceholderApiKey(config.supabasePublishableKey)
   );
 
   let supabaseClient = null;
@@ -129,8 +127,8 @@ window.DJ = window.DJ || {};
       issues.push('Use the full project URL, for example https://your-project.supabase.co.');
     }
 
-    if (hasPlaceholderApiKey(config.supabaseAnonKey)) {
-      issues.push('Replace the placeholder Supabase browser key with the current anon or publishable key from Project Settings > API.');
+    if (hasPlaceholderApiKey(config.supabasePublishableKey)) {
+      issues.push('Replace the placeholder Supabase browser key with the current publishable key from Project Settings > API.');
     }
 
     return {
@@ -138,7 +136,7 @@ window.DJ = window.DJ || {};
       provider: config.provider,
       requestedEnabled,
       projectUrl: config.supabaseUrl,
-      hasBrowserKey: !hasPlaceholderApiKey(config.supabaseAnonKey),
+      hasBrowserKey: !hasPlaceholderApiKey(config.supabasePublishableKey),
       productsTable: config.productsTable,
       storageBucket: config.storageBucket,
       imageFolder: config.imageFolder,
@@ -171,7 +169,7 @@ window.DJ = window.DJ || {};
     }
 
     if (lower.includes('invalid api key') || lower.includes('apikey') || lower.includes('invalid jwt')) {
-      return 'Supabase rejected the API key. Make sure backend-config.js contains the current publishable browser key for this project under supabasePublishableKey or supabaseAnonKey.';
+      return 'Supabase rejected the API key. Make sure backend-config.js contains the current publishable browser key for this project under supabasePublishableKey.';
     }
 
     if (lower.includes('invalid login credentials')) {
@@ -380,7 +378,7 @@ window.DJ = window.DJ || {};
       throw new Error('Supabase client library is not loaded.');
     }
 
-    supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+    supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabasePublishableKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -743,11 +741,12 @@ window.DJ = window.DJ || {};
     await ensureSupabaseLibrary();
     const client = getClient();
     if (!client) throw new Error('Backend is not configured.');
+    const siteOrigin = String(config.siteUrl || window.location.origin).replace(/\/+$/, '');
     const { data, error } = await client.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${config.siteUrl || window.location.origin}/`
+        emailRedirectTo: `${siteOrigin}/account.html`
       }
     });
     if (error) throw createFriendlyError(error, 'signUp');
@@ -781,11 +780,87 @@ window.DJ = window.DJ || {};
     if (!client) return [];
     const { data, error } = await client
       .from('checkout_orders')
-      .select('id,product_id,amount_total,currency,status,created_at,updated_at')
+      .select('id,product_id,amount_total,currency,status,created_at,updated_at,products(name)')
       .order('created_at', { ascending: false })
       .limit(12);
     if (error) throw createFriendlyError(error, 'listOrders');
     return Array.isArray(data) ? data : [];
+  }
+
+  async function requireAuthenticatedUser(client) {
+    const { data, error } = await client.auth.getUser();
+    if (error) throw createFriendlyError(error, 'account');
+    if (!data?.user) throw new Error('Sign in to use your customer account.');
+    return data.user;
+  }
+
+  async function getAccountProfile() {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) return { profile: {}, updatedAt: '' };
+    await requireAuthenticatedUser(client);
+    const { data, error } = await client
+      .from('customer_account_profiles')
+      .select('profile,updated_at')
+      .maybeSingle();
+    if (error) throw createFriendlyError(error, 'getAccountProfile');
+    return {
+      profile: normalizeObject(data?.profile),
+      updatedAt: data?.updated_at || ''
+    };
+  }
+
+  async function saveAccountProfile(profile = {}) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    const user = await requireAuthenticatedUser(client);
+    const { data, error } = await client
+      .from('customer_account_profiles')
+      .upsert({ id: user.id, profile: normalizeObject(profile) }, { onConflict: 'id' })
+      .select('profile,updated_at')
+      .single();
+    if (error) throw createFriendlyError(error, 'saveAccountProfile');
+    return {
+      profile: normalizeObject(data?.profile),
+      updatedAt: data?.updated_at || ''
+    };
+  }
+
+  async function clearAccountProfile() {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    const user = await requireAuthenticatedUser(client);
+    const { error } = await client
+      .from('customer_account_profiles')
+      .delete()
+      .eq('id', user.id);
+    if (error) throw createFriendlyError(error, 'clearAccountProfile');
+  }
+
+  async function listWishlist() {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) return [];
+    await requireAuthenticatedUser(client);
+    const { data, error } = await client
+      .from('customer_wishlist_items')
+      .select('product_id')
+      .order('created_at', { ascending: true });
+    if (error) throw createFriendlyError(error, 'listWishlist');
+    return [...new Set((data || []).map((row) => Number(row.product_id)).filter(Number.isFinite))];
+  }
+
+  async function replaceWishlist(productIds = []) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    await requireAuthenticatedUser(client);
+    const normalized = [...new Set(productIds.map(Number).filter(Number.isFinite))];
+    const { error } = await client.rpc('replace_customer_wishlist', { product_ids: normalized });
+    if (error) throw createFriendlyError(error, 'replaceWishlist');
+    return normalized;
   }
 
   async function signOut() {
@@ -1025,6 +1100,11 @@ window.DJ = window.DJ || {};
     invokeFunction,
     listProducts,
     listOrders,
+    getAccountProfile,
+    saveAccountProfile,
+    clearAccountProfile,
+    listWishlist,
+    replaceWishlist,
     upsertProduct,
     deleteProduct,
     uploadImage,

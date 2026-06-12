@@ -1,18 +1,15 @@
 ﻿/**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
- * Buyer details stay local to this browser. The page focuses on practical buyer
- * utilities: reusable contact/shipping notes, a wishlist preview, saved
- * searches, and a simple email handoff to DJ.
+ * Authenticated buyer details, collector preferences, wishlists, and checkout
+ * history are stored in Supabase.
  */
 
 window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
-  const PROFILE_KEY = 'djCustomerProfileV1';
   const PRODUCT_SOURCE = 'products.json';
-  const PROFILE_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
   const MAX_PROFILE_FIELD_LENGTH = 240;
   const MAX_PROFILE_NOTES_LENGTH = 1200;
   const MAX_COLLECTOR_BIO_LENGTH = 520;
@@ -20,7 +17,10 @@ window.DJ = window.DJ || {};
   const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
   let wishlistRenderTimer = 0;
-  let accountAuthSubscription = null;
+  let accountSession = null;
+  let savedProfile = {};
+  let hydratedUserId = '';
+  let accountRefreshPromise = null;
 
   const fields = [
     'fullName',
@@ -123,61 +123,30 @@ window.DJ = window.DJ || {};
     status.dataset.tone = tone;
   }
 
-  function readLocalProfile() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-      const updatedAt = Date.parse(parsed.updatedAt || '');
-      if (Number.isFinite(updatedAt) && Date.now() - updatedAt > PROFILE_MAX_AGE_MS) {
-        localStorage.removeItem(PROFILE_KEY);
-        return {};
-      }
-      return parsed;
-    } catch {
-      return {};
-    }
-  }
-
-  function writeLocalProfile(profile) {
-    try {
-      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  function removeLocalProfile() {
-    try {
-      localStorage.removeItem(PROFILE_KEY);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   function getWishlistIds() {
     return typeof DJ.getWishlist === 'function' ? DJ.getWishlist().map(Number).filter(Number.isFinite) : [];
   }
 
-  function loadProfileForm() {
-    const profile = readLocalProfile();
+  function loadProfileForm(profile = savedProfile) {
     fields.forEach((field) => {
       const input = $(`account_${field}`);
-      if (input) input.value = profile[field] || '';
+      if (input) {
+        input.value = profile[field]
+          || (field === 'email' ? accountSession?.user?.email : '')
+          || '';
+      }
     });
   }
 
   function readProfileForm() {
-    const storedProfile = readLocalProfile();
     const profile = {};
     fields.forEach((field) => {
       const input = $(`account_${field}`);
       profile[field] = input
         ? normalizeProfileValue(field, input.value)
-        : normalizeProfileValue(field, storedProfile[field]);
+        : normalizeProfileValue(field, savedProfile[field]);
     });
-    profile.updatedAt = storedProfile.updatedAt || '';
+    profile.updatedAt = savedProfile.updatedAt || '';
     return profile;
   }
 
@@ -201,14 +170,14 @@ window.DJ = window.DJ || {};
   }
 
   function hasUnsavedProfileFormChanges() {
-    return Boolean($('accountProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), readLocalProfile());
+    return Boolean($('accountProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), savedProfile);
   }
 
   function formatSavedAt(value) {
     if (!value) return 'No saved buyer details yet.';
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Buyer details are saved on this device.';
-    return `Last saved ${date.toLocaleString([], {
+    if (Number.isNaN(date.getTime())) return 'Buyer details are synced to your account.';
+    return `Last synced ${date.toLocaleString([], {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -246,6 +215,10 @@ window.DJ = window.DJ || {};
     const wishlistIds = getWishlistIds();
     if (!wishlistIds.length) return [];
     const order = new Map(wishlistIds.map((id, index) => [Number(id), index]));
+    if (DJ.remoteCatalog?.isConfigured?.()) {
+      const remoteProducts = await DJ.remoteCatalog.listProducts({ ids: wishlistIds }).catch(() => null);
+      if (Array.isArray(remoteProducts)) return remoteProducts;
+    }
     const products = await loadAccountProducts();
     return products
       .filter((product) => order.has(Number(product.id)))
@@ -391,7 +364,7 @@ window.DJ = window.DJ || {};
     const preview = $('collectorProfilePreview');
     const completion = getCollectorProfileCompletion(profile);
     const displayName = getCollectorDisplayName(profile);
-    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility) || 'Private on this device';
+    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility) || 'Private account profile';
     const focus = normalizeProfileValue('collectorFocus', profile.collectorFocus);
     const era = normalizeProfileValue('favoriteEra', profile.favoriteEra);
     const tradeStatus = normalizeProfileValue('tradeStatus', profile.tradeStatus);
@@ -499,23 +472,33 @@ window.DJ = window.DJ || {};
     }));
   }
 
-  function saveProfileForm(event) {
+  async function saveProfileForm(event) {
     event?.preventDefault();
     const isCollectorForm = event?.target?.id === 'collectorProfileForm';
-    const profile = readLocalProfile();
-    fields.forEach((field) => {
-      const input = $(`account_${field}`);
-      if (input) profile[field] = normalizeProfileValue(field, input.value);
-    });
+    const profile = readProfileForm();
     profile.updatedAt = new Date().toISOString();
-    const saved = writeLocalProfile(profile);
-    setStatus(
-      saved
-        ? (isCollectorForm ? 'Collector profile saved on this device.' : 'Buyer details saved on this device.')
-        : 'This browser blocked local profile storage.',
-      saved ? 'success' : 'error'
-    );
-    renderAccountSummary();
+
+    if (!accountSession?.user) {
+      setStatus('Sign in to save these details to your customer account.', 'info');
+      DJ.payments?.openAuthModal?.({ message: 'Sign in or create an account to save your buyer details.' });
+      return;
+    }
+
+    try {
+      const result = await DJ.remoteCatalog.saveAccountProfile(profile);
+      savedProfile = {
+        ...result.profile,
+        updatedAt: result.updatedAt || profile.updatedAt
+      };
+      loadProfileForm(savedProfile);
+      setStatus(
+        isCollectorForm ? 'Collector profile synced to your account.' : 'Buyer details synced to your account.',
+        'success'
+      );
+      renderAccountSummary();
+    } catch (error) {
+      setStatus(error.message || 'Buyer details could not be synced.', 'error');
+    }
   }
 
   function renderReadinessChecklist(profile, wishlistIds) {
@@ -570,7 +553,7 @@ window.DJ = window.DJ || {};
     const profileStatus = $('accountProfileStatus');
     const wishlistIds = getWishlistIds();
     const currentProfile = readProfileForm();
-    const storedProfile = readLocalProfile();
+    const storedProfile = savedProfile;
     const completion = getProfileCompletion(currentProfile);
     const hasDetails = hasProfileDetails(currentProfile);
     const hasSavedDetails = hasProfileDetails(storedProfile);
@@ -582,7 +565,7 @@ window.DJ = window.DJ || {};
     }
     if (heroSavedStatus) {
       heroSavedStatus.textContent = hasSavedDetails
-        ? 'Saved on this device'
+        ? 'Synced to account'
         : hasDetails
           ? 'Draft in progress'
           : 'Not saved yet';
@@ -713,23 +696,31 @@ window.DJ = window.DJ || {};
     }, 80);
   }
 
-  function clearLocalProfile() {
-    const storedProfile = readLocalProfile();
+  async function clearSavedProfile() {
+    if (!accountSession?.user) {
+      setStatus('Sign in to clear buyer details from your customer account.', 'info');
+      DJ.payments?.openAuthModal?.({ message: 'Sign in to manage your saved buyer details.' });
+      return;
+    }
+
+    const storedProfile = savedProfile;
     if (!hasProfileDetails(storedProfile)) {
       setStatus('There are no saved buyer details to clear.', 'info');
       return;
     }
 
-    const confirmed = window.confirm('Clear the buyer details saved on this device? Your wishlist will stay intact.');
+    const confirmed = window.confirm('Clear the buyer details saved in your account? Your wishlist will stay intact.');
     if (!confirmed) return;
 
-    const removed = removeLocalProfile();
-    loadProfileForm();
-    renderAccountSummary();
-    setStatus(
-      removed ? 'Saved buyer details cleared from this device.' : 'This browser blocked clearing local buyer details.',
-      removed ? 'success' : 'error'
-    );
+    try {
+      await DJ.remoteCatalog.clearAccountProfile();
+      savedProfile = {};
+      loadProfileForm(savedProfile);
+      renderAccountSummary();
+      setStatus('Buyer details cleared from your account.', 'success');
+    } catch (error) {
+      setStatus(error.message || 'Buyer details could not be cleared.', 'error');
+    }
   }
 
   function formatOrderAmount(order = {}) {
@@ -790,11 +781,6 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    const productIds = [...new Set(orders.map((order) => Number(order.product_id)).filter(Number.isFinite))];
-    const products = productIds.length
-      ? await DJ.remoteCatalog.listProducts({ ids: productIds }).catch(() => [])
-      : [];
-    const productNames = new Map(products.map((product) => [Number(product.id), product.name]));
     const fragment = document.createDocumentFragment();
     orders.slice(0, 12).forEach((order) => {
       const card = createElement('article', { className: 'account-order-card' });
@@ -802,7 +788,7 @@ window.DJ = window.DJ || {};
       const status = String(order.status || 'pending').replaceAll('_', ' ');
       const createdAt = order.created_at ? new Date(order.created_at) : null;
       card.append(
-        createElement('strong', { text: productNames.get(Number(order.product_id)) || `Listing #${order.product_id}` }),
+        createElement('strong', { text: order.products?.name || `Listing #${order.product_id}` }),
         createElement('span', { text: [status, amount].filter(Boolean).join(' - ') }),
         createElement('small', { text: createdAt && !Number.isNaN(createdAt.getTime()) ? createdAt.toLocaleString() : '' })
       );
@@ -811,7 +797,44 @@ window.DJ = window.DJ || {};
     container.appendChild(fragment);
   }
 
-  async function refreshAccountAuth() {
+  async function hydrateAccountData(session) {
+    accountSession = session || null;
+    const userId = session?.user?.id || '';
+
+    if (!userId) {
+      hydratedUserId = '';
+      savedProfile = {};
+      loadProfileForm(savedProfile);
+      renderAccountSummary();
+      scheduleWishlistPreviewRender();
+      return;
+    }
+
+    if (hydratedUserId === userId) return;
+
+    const remoteResult = await DJ.remoteCatalog.getAccountProfile();
+    let profile = {
+      ...remoteResult.profile,
+      updatedAt: remoteResult.updatedAt || remoteResult.profile?.updatedAt || ''
+    };
+
+    if (!hasProfileDetails(profile) && session.user.email) {
+      const created = await DJ.remoteCatalog.saveAccountProfile({ email: session.user.email });
+      profile = {
+        ...created.profile,
+        updatedAt: created.updatedAt || ''
+      };
+    }
+
+    savedProfile = profile;
+    hydratedUserId = userId;
+    await DJ.syncWishlistWithAccount?.(session);
+    loadProfileForm(savedProfile);
+    renderAccountSummary();
+    scheduleWishlistPreviewRender();
+  }
+
+  async function runAccountAuthRefresh() {
     const summary = $('accountAuthSummary');
     const signIn = $('accountSignIn');
     const signOut = $('accountSignOut');
@@ -828,6 +851,12 @@ window.DJ = window.DJ || {};
     }
 
     const session = await DJ.remoteCatalog.getSession().catch(() => null);
+    try {
+      await hydrateAccountData(session);
+    } catch (error) {
+      console.error(error);
+      setStatus('Your account data could not be loaded. Please refresh and try again.', 'error');
+    }
     if (summary) {
       summary.textContent = session?.user?.email
         ? `Signed in as ${session.user.email}.`
@@ -840,6 +869,15 @@ window.DJ = window.DJ || {};
       setAuthStatus('Payment submitted. Your secure order status will appear below as soon as Stripe confirms it.', 'success');
     }
     await renderOrderHistory(session);
+  }
+
+  function refreshAccountAuth() {
+    if (!accountRefreshPromise) {
+      accountRefreshPromise = runAccountAuthRefresh().finally(() => {
+        accountRefreshPromise = null;
+      });
+    }
+    return accountRefreshPromise;
   }
 
   function bindAccountAuth() {
@@ -874,10 +912,12 @@ window.DJ = window.DJ || {};
         setAuthStatus(error.message || 'Password could not be updated.', 'error');
       }
     });
-    accountAuthSubscription = DJ.remoteCatalog?.onAuthStateChange?.(() => {
+    window.addEventListener('dj:authchange', (event) => {
+      if (event.detail?.session?.user) {
+        setAuthStatus('');
+      }
       window.setTimeout(() => refreshAccountAuth().catch(console.error), 0);
-    }) || null;
-    window.addEventListener('pagehide', () => accountAuthSubscription?.unsubscribe?.(), { once: true });
+    });
   }
 
   function useNameForShipping() {
@@ -900,7 +940,7 @@ window.DJ = window.DJ || {};
   }
 
   function bindEvents() {
-    $('accountClearProfile')?.addEventListener('click', clearLocalProfile);
+    $('accountClearProfile')?.addEventListener('click', clearSavedProfile);
     $('accountUseNameForShipping')?.addEventListener('click', useNameForShipping);
     $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
     $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);
@@ -931,7 +971,7 @@ window.DJ = window.DJ || {};
   function init() {
     bindEvents();
     bindAccountAuth();
-    loadProfileForm();
+    loadProfileForm(savedProfile);
     renderAccountSummary();
     refreshAccountAuth().catch(console.error);
     if (new URLSearchParams(window.location.search).get('checkout') === 'success') {

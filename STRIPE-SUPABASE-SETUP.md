@@ -30,6 +30,9 @@ It also drops the browser-side customer profile update policy. Customer profile
 writes, including Stripe customer IDs, should only happen from the service-role
 Edge Functions.
 
+Finally, run `supabase/account-schema.sql`. It adds owner-only buyer profiles
+and wishlists that sync across signed-in devices.
+
 The reservations table prevents two customers from checking out with the same
 one-of-one listing at the same time. Expired sessions are released by the
 checkout function and the Stripe webhook. The checkout function sets Stripe

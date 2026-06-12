@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260612d';
+  const PRODUCT_ASSET_VERSION = '20260612h';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -48,7 +48,8 @@ window.DJ = window.DJ || {};
   // Centralize localStorage keys so future refactors only need to update them in one place.
   const STORAGE_KEYS = {
     theme: 'theme',
-    wishlist: 'wishlist'
+    wishlist: 'wishlist',
+    wishlistBackendMigration: 'wishlistBackendMigration'
   };
   const safeAssetUrlCache = new Map();
   const assetUrlCandidatesCache = new Map();
@@ -128,6 +129,9 @@ window.DJ = window.DJ || {};
   let lastFocusedElement = null;
   let sharedImageLightbox = null;
   let serviceWorkerRefreshPending = false;
+  let wishlistBackendSaveTimer = 0;
+  let wishlistBackendSyncPromise = null;
+  let wishlistLocalRevision = 0;
 
   // ---------------------------------------------------------------------------
   // Formatting and storage helpers
@@ -182,44 +186,22 @@ window.DJ = window.DJ || {};
     }
   }
 
-  function safeStorageRemove(key) {
-    try {
-      localStorage.removeItem(key);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }
-
-  /**
-   * Read JSON from localStorage and normalize it through a transform function.
-   * Returning normalized data here prevents scattered validation throughout the app.
-   */
-  function readJSONFromStorage(key, transform) {
-    try {
-      const parsed = JSON.parse(safeStorageGet(key) || 'null');
-      return transform(parsed);
-    } catch (error) {
-      console.warn(`Invalid localStorage payload for ${key}; resetting.`);
-      safeStorageRemove(key);
-      return null;
-    }
-  }
-
   /**
    * Wishlist IDs are stored separately from product data so the same saved list
    * can work whether products come from static JSON, local overrides, or Supabase.
    */
+  function normalizeWishlist(items) {
+    return [...new Set((Array.isArray(items) ? items : []).map(Number).filter(Number.isFinite))];
+  }
+
   function getWishlist() {
-    const wishlist = readJSONFromStorage(STORAGE_KEYS.wishlist, (value) => {
-      if (!Array.isArray(value)) {
-        return [];
-      }
-
-      return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
-    });
-
-    return Array.isArray(wishlist) ? wishlist : [];
+    try {
+      return normalizeWishlist(JSON.parse(safeStorageGet(STORAGE_KEYS.wishlist) || '[]'));
+    } catch {
+      console.warn('Invalid wishlist storage payload; resetting.');
+      safeStorageSet(STORAGE_KEYS.wishlist, '[]');
+      return [];
+    }
   }
 
   /**
@@ -238,7 +220,7 @@ window.DJ = window.DJ || {};
    * modal actions, and dedicated wishlist screens synchronized without polling.
    */
   function emitWishlistChange(items = getWishlist(), source = 'local') {
-    const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
+    const normalized = normalizeWishlist(items);
     window.dispatchEvent(new CustomEvent('dj:wishlistchange', {
       detail: {
         items: normalized,
@@ -246,6 +228,88 @@ window.DJ = window.DJ || {};
         source
       }
     }));
+  }
+
+  function persistWishlist(items, source = 'local') {
+    const normalized = normalizeWishlist(items);
+    if (source === 'local' || source === 'signout') {
+      wishlistLocalRevision += 1;
+    }
+    if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
+      console.error('Failed to save wishlist.');
+    }
+    updateWishlistCount();
+    emitWishlistChange(normalized, source);
+    return normalized;
+  }
+
+  function wishlistMigrationKey(userId = '') {
+    return `${STORAGE_KEYS.wishlistBackendMigration}:${userId}`;
+  }
+
+  function queueWishlistBackendSave(items) {
+    const localRevision = wishlistLocalRevision;
+    window.clearTimeout(wishlistBackendSaveTimer);
+    wishlistBackendSaveTimer = window.setTimeout(async () => {
+      try {
+        let remote = DJ.remoteCatalog;
+        if (
+          (!remote?.getSession || !remote?.replaceWishlist) &&
+          typeof DJ.ensureCustomerAccountBridge === 'function'
+        ) {
+          await DJ.ensureCustomerAccountBridge();
+          remote = DJ.remoteCatalog;
+        }
+        if (!remote?.getSession || !remote?.replaceWishlist) return;
+        const session = await remote.getSession();
+        if (!session?.user?.id) return;
+        await remote.replaceWishlist(normalizeWishlist(items));
+        safeStorageSet(wishlistMigrationKey(session.user.id), 'true');
+        if (localRevision === wishlistLocalRevision) {
+          persistWishlist(items, 'backend');
+        }
+      } catch (error) {
+        console.warn('Wishlist could not be synced to the customer account.', error);
+      }
+    }, 250);
+  }
+
+  async function syncWishlistWithAccount(session) {
+    const remote = DJ.remoteCatalog;
+    const userId = session?.user?.id;
+    if (!userId || !remote?.listWishlist || !remote?.replaceWishlist) return getWishlist();
+    if (wishlistBackendSyncPromise) return wishlistBackendSyncPromise;
+
+    wishlistBackendSyncPromise = (async () => {
+      const localRevision = wishlistLocalRevision;
+      const localWishlist = getWishlist();
+      const remoteWishlist = normalizeWishlist(await remote.listWishlist());
+      const migrationKey = wishlistMigrationKey(userId);
+      const hasMigrated = safeStorageGet(migrationKey) === 'true';
+      const nextWishlist = hasMigrated
+        ? remoteWishlist
+        : normalizeWishlist([...remoteWishlist, ...localWishlist]);
+
+      if (!hasMigrated && nextWishlist.length !== remoteWishlist.length) {
+        await remote.replaceWishlist(nextWishlist);
+      }
+
+      if (localRevision !== wishlistLocalRevision) {
+        nextWishlist = getWishlist();
+        await remote.replaceWishlist(nextWishlist);
+      }
+
+      safeStorageSet(migrationKey, 'true');
+      return persistWishlist(nextWishlist, 'backend');
+    })().finally(() => {
+      wishlistBackendSyncPromise = null;
+    });
+
+    return wishlistBackendSyncPromise;
+  }
+
+  function clearAccountWishlistCache() {
+    return persistWishlist([], 'signout');
   }
 
   // ---------------------------------------------------------------------------
@@ -1415,14 +1479,11 @@ window.DJ = window.DJ || {};
 
   DJ.getWishlist = getWishlist;
   DJ.setWishlist = function setWishlist(items) {
-    const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
-    if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
-      console.error('Failed to save wishlist.');
-    }
-    const persistedWishlist = getWishlist();
-    updateWishlistCount();
-    emitWishlistChange(persistedWishlist, 'local');
+    const persistedWishlist = persistWishlist(items, 'local');
+    queueWishlistBackendSave(persistedWishlist);
   };
+  DJ.syncWishlistWithAccount = syncWishlistWithAccount;
+  DJ.clearAccountWishlistCache = clearAccountWishlistCache;
 
   DJ.updateWishlistCount = updateWishlistCount;
   DJ.applyLazyLoading = applyLazyLoading;

@@ -51,14 +51,15 @@ window.DJ = window.DJ || {};
     });
   }
 
-  /**
-   * Auth now hydrates on demand. Checkout calls ensureAuthSession() before it
-   * creates a Stripe session, and the dedicated account page manages its own
-   * status. That keeps product-heavy catalog pages from doing background auth
-   * network work when shoppers are only browsing.
-   */
-  function shouldHydrateAuthAtStartup() {
-    return Boolean(document.querySelector('[data-customer-auth-autoload]'));
+  async function syncCustomerAccount(session) {
+    if (!session?.user || typeof DJ.syncWishlistWithAccount !== 'function') return;
+    await DJ.syncWishlistWithAccount(session);
+  }
+
+  function emitAuthChange(event, session) {
+    window.dispatchEvent(new CustomEvent('dj:authchange', {
+      detail: { event, session: session || null }
+    }));
   }
 
   function setAuthModalOpenState(modal, isOpen) {
@@ -229,6 +230,7 @@ window.DJ = window.DJ || {};
       state.session = await DJ.remoteCatalog.getSession();
       state.authReady = true;
       bindAuthStateSync();
+      emitAuthChange('SIGNED_IN', state.session);
       setAuthStatus('Signed in. Opening checkout...', 'success');
       updateAccountControls();
       const product = state.pendingCheckoutProduct;
@@ -251,6 +253,7 @@ window.DJ = window.DJ || {};
       state.session = await DJ.remoteCatalog.getSession();
       state.authReady = true;
       bindAuthStateSync();
+      emitAuthChange('SIGNED_IN', state.session);
       updateAccountControls();
       setAuthStatus('Account created. If Supabase requires confirmation, check your email before checkout.', 'success');
       if (state.session && state.pendingCheckoutProduct) {
@@ -312,10 +315,16 @@ window.DJ = window.DJ || {};
   function bindAuthStateSync() {
     if (state.authListenerBound || !DJ.remoteCatalog?.onAuthStateChange) return;
     state.authListenerBound = true;
-    DJ.remoteCatalog.onAuthStateChange((_event, session) => {
+    DJ.remoteCatalog.onAuthStateChange((event, session) => {
       state.session = session || null;
       state.authReady = true;
       updateAccountControls();
+      emitAuthChange(event, state.session);
+      if (event === 'SIGNED_OUT') {
+        DJ.clearAccountWishlistCache?.();
+        return;
+      }
+      syncCustomerAccount(state.session).catch(console.error);
     });
   }
 
@@ -341,6 +350,8 @@ window.DJ = window.DJ || {};
         state.session = await DJ.remoteCatalog.getSession();
         state.authReady = true;
         bindAuthStateSync();
+        await syncCustomerAccount(state.session);
+        emitAuthChange('INITIAL_SESSION', state.session);
       } catch (error) {
         state.session = null;
         state.authReady = false;
@@ -481,7 +492,7 @@ window.DJ = window.DJ || {};
     injectAccountControl();
     updateAccountControls();
 
-    if (isBackendReady() && shouldHydrateAuthAtStartup()) {
+    if (isBackendReady() && document.querySelector('[data-customer-auth-autoload]')) {
       const hydrateAfterPaint = () => ensureAuthSession().catch(() => {});
       if (typeof DJ.scheduleIdle === 'function') {
         DJ.scheduleIdle(hydrateAfterPaint, 2400);
@@ -501,7 +512,8 @@ window.DJ = window.DJ || {};
     openAuthModal,
     closeAuthModal,
     startCheckout,
-    isDirectCheckoutEligible
+    isDirectCheckoutEligible,
+    hydrateAccount: ensureAuthSession
   };
 
   if (document.readyState === 'loading') {
