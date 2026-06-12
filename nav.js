@@ -84,16 +84,16 @@
   // ---------------------------------------------------------------------------
 
   /**
-   * Apply the correct active/aria-current state to both top-level links and the
-   * admin footer shortcut. The submenu special case avoids marking both the top
-   * link and the current submenu link as aria-current at the same time.
+   * Apply the correct active/aria-current state to top-level links. The submenu
+   * special case avoids marking both the top link and the current submenu link
+   * as aria-current at the same time.
    */
   function applyActiveNavState() {
     dedupePrimaryNavLinks();
     const pageKey = document.body.dataset.page || '';
     const currentFile = window.location.pathname.split('/').pop() || 'index.html';
     const targetFile = PAGE_TO_NAV_TARGET[pageKey] || currentFile;
-    const links = [...document.querySelectorAll('.site-nav a, .admin-footer-link')];
+    const links = [...document.querySelectorAll('.site-nav a')];
     const navItems = [...document.querySelectorAll('.site-nav .primary-nav__item')];
 
     navItems.forEach((item) => item.classList.remove('is-current-section'));

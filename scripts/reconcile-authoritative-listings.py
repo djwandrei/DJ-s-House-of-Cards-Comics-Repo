@@ -21,6 +21,7 @@ from openpyxl import load_workbook
 
 
 SOURCE_WORKBOOK = "Ebay Bulk Upload (Final).xlsx"
+SOURCE_PAGE = "Ebay Bulk Upload (Final)"
 SOURCE_SHEET = "Listings"
 URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
 HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
@@ -368,7 +369,7 @@ def build_product(
         "itemPhotoUrl": photos[0] if photos else "",
         "htmlImageUrls": photos,
         "photoHostPageUrl": first_href(fields.get("HTML Full Link")),
-        "sourcePage": "Ebay Bulk Upload (Final)",
+        "sourcePage": SOURCE_PAGE,
         "metadata": {
             "sport": text(fields.get("C:Sport")),
             "league": text(fields.get("C:League")),
@@ -442,8 +443,11 @@ def write_json(path: Path, value: Any, compact: bool = False) -> None:
 
 
 def main() -> int:
+    global SOURCE_WORKBOOK, SOURCE_PAGE
     args = parse_args()
     workbook_path = Path(args.workbook).resolve()
+    SOURCE_WORKBOOK = workbook_path.name
+    SOURCE_PAGE = workbook_path.stem
     products_path = Path(args.products).resolve()
     output_dir = Path(args.output_dir).resolve()
     headers, listings = read_listings(workbook_path)

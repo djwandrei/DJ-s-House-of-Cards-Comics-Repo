@@ -82,6 +82,9 @@ for (const file of HTML_FILES) {
   if ((html.match(/<h1\b/gi) || []).length !== 1) issues.push({ file, type: 'expected exactly one h1' });
   if (imagePreloads.length > 2) issues.push({ file, type: 'too many image preloads', count: imagePreloads.length });
   if (WRONG_CONTACT_PATTERN.test(html)) issues.push({ file, type: 'wrong public contact email' });
+  if (file !== 'admin.html' && /admin-footer-link/i.test(html)) {
+    issues.push({ file, type: 'public page exposes admin footer link' });
+  }
 
   const meta = tags.map(tagAttributes);
   const description = meta.find((attributes) => attributes.name?.toLowerCase() === 'description')?.content;
@@ -158,6 +161,14 @@ for (const asset of shellAssets) {
 }
 if (shellImageBytes > 1024 * 1024) {
   issues.push({ file: 'sw.js', type: 'offline shell image payload exceeds 1 MB', bytes: shellImageBytes });
+}
+
+const supabaseClient = read('supabase-client.js');
+const remoteSelectColumns = supabaseClient.match(/const REMOTE_LIST_SELECT_COLUMNS = \[([\s\S]*?)\]\.join/)?.[1] || '';
+for (const field of ['metadata', 'item_photo_url', 'item_photo_urls', 'html_full_link', 'html_image_urls']) {
+  if (!new RegExp(`['"]${field}['"]`).test(remoteSelectColumns)) {
+    issues.push({ file: 'supabase-client.js', type: 'remote product select omits storefront field', value: field });
+  }
 }
 
 const catalogs = Object.fromEntries(CATALOG_FILES.map((file) => [file, JSON.parse(read(file))]));

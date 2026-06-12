@@ -97,9 +97,16 @@ window.DJ = window.DJ || {};
     'sport',
     'player_athlete',
     'copy_count',
+    'item_photo_url',
+    'item_photo_urls',
+    'html_full_link',
+    'html_image_urls',
+    'metadata',
     'is_featured',
     'is_deleted',
-    'sort_rank'
+    'sort_rank',
+    'created_at',
+    'updated_at'
   ].join(',');
 
   function projectRefFromUrl(url = '') {
@@ -753,11 +760,34 @@ window.DJ = window.DJ || {};
     await ensureSupabaseLibrary();
     const client = getClient();
     if (!client) throw new Error('Backend is not configured.');
+    const siteOrigin = String(config.siteUrl || window.location.origin).replace(/\/+$/, '');
     const { data, error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: `${config.siteUrl || window.location.origin}/`
+      redirectTo: `${siteOrigin}/account.html?mode=reset-password`
     });
     if (error) throw createFriendlyError(error, 'resetPassword');
     return data;
+  }
+
+  async function updatePassword(password) {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) throw new Error('Backend is not configured.');
+    const { data, error } = await client.auth.updateUser({ password });
+    if (error) throw createFriendlyError(error, 'updatePassword');
+    return data;
+  }
+
+  async function listOrders() {
+    await ensureSupabaseLibrary();
+    const client = getClient();
+    if (!client) return [];
+    const { data, error } = await client
+      .from('checkout_orders')
+      .select('id,product_id,amount_total,currency,status,created_at,updated_at')
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (error) throw createFriendlyError(error, 'listOrders');
+    return Array.isArray(data) ? data : [];
   }
 
   async function signOut() {
@@ -991,10 +1021,12 @@ window.DJ = window.DJ || {};
     signIn,
     signUp,
     resetPassword,
+    updatePassword,
     signOut,
     onAuthStateChange,
     invokeFunction,
     listProducts,
+    listOrders,
     upsertProduct,
     deleteProduct,
     uploadImage,

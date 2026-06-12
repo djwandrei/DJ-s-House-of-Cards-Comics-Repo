@@ -1307,7 +1307,7 @@ window.DJ = window.DJ || {};
         ? DJ.versionedProductAsset(source)
         : source;
       try {
-        const response = await fetch(versionedSource, { cache: 'default' });
+        const response = await fetch(versionedSource, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Failed to fetch ${source} (${response.status})`);
         products = await response.json();
       } catch (error) {

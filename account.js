@@ -11,7 +11,6 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   const PROFILE_KEY = 'djCustomerProfileV1';
-  const ORDER_HISTORY_KEY = 'djCustomerOrderHistoryV1';
   const PRODUCT_SOURCE = 'products.json';
   const PROFILE_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
   const MAX_PROFILE_FIELD_LENGTH = 240;
@@ -21,6 +20,7 @@ window.DJ = window.DJ || {};
   const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
   let wishlistRenderTimer = 0;
+  let accountAuthSubscription = null;
 
   const fields = [
     'fullName',
@@ -116,6 +116,13 @@ window.DJ = window.DJ || {};
     status.dataset.tone = tone;
   }
 
+  function setAuthStatus(message = '', tone = 'info') {
+    const status = $('accountAuthStatus');
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.tone = tone;
+  }
+
   function readLocalProfile() {
     try {
       const parsed = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
@@ -146,15 +153,6 @@ window.DJ = window.DJ || {};
       return true;
     } catch {
       return false;
-    }
-  }
-
-  function readLocalOrders() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(ORDER_HISTORY_KEY) || '[]');
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
     }
   }
 
@@ -748,33 +746,152 @@ window.DJ = window.DJ || {};
     );
   }
 
-  function renderOrderHistory() {
+  function formatOrderAmount(order = {}) {
+    const cents = Number(order.amount_total);
+    if (!Number.isFinite(cents)) return '';
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: String(order.currency || 'usd').toUpperCase()
+      }).format(cents / 100);
+    } catch {
+      return `$${(cents / 100).toFixed(2)}`;
+    }
+  }
+
+  function renderOrderHistoryMessage(container, title, message) {
+    const emptyState = createElement('div', { className: 'account-empty-state' });
+    emptyState.append(
+      createElement('strong', { text: title }),
+      createElement('p', { text: message })
+    );
+    container.appendChild(emptyState);
+  }
+
+  async function renderOrderHistory(session = null) {
     const container = $('accountOrders');
     if (!container) return;
-    const orders = readLocalOrders();
     container.replaceChildren();
 
-    if (!orders.length) {
-      const emptyState = createElement('div', { className: 'account-empty-state' });
-      emptyState.append(
-        createElement('strong', { text: 'No saved checkout activity yet.' }),
-        createElement('p', { text: 'Wishlist saves and buyer details are ready here when you want to ask about an item.' })
-      );
-      container.appendChild(emptyState);
+    if (!DJ.remoteCatalog?.isConfigured?.()) {
+      renderOrderHistoryMessage(container, 'Checkout history is unavailable.', 'Secure customer accounts are not configured for this site.');
       return;
     }
 
+    if (!session?.user) {
+      renderOrderHistoryMessage(container, 'Sign in to review checkout activity.', 'Completed and pending checkout orders tied to your customer account will appear here.');
+      return;
+    }
+
+    let orders = [];
+    try {
+      orders = await DJ.remoteCatalog.listOrders();
+    } catch (error) {
+      console.error(error);
+      renderOrderHistoryMessage(container, 'Checkout history could not be loaded.', 'Please refresh the page or try again shortly.');
+      return;
+    }
+
+    if (!orders.length) {
+      const checkoutSucceeded = new URLSearchParams(window.location.search).get('checkout') === 'success';
+      renderOrderHistoryMessage(
+        container,
+        checkoutSucceeded ? 'Payment received.' : 'No checkout orders yet.',
+        checkoutSucceeded
+          ? 'Your order is being confirmed and will appear here shortly.'
+          : 'Orders completed through secure checkout will appear here.'
+      );
+      return;
+    }
+
+    const productIds = [...new Set(orders.map((order) => Number(order.product_id)).filter(Number.isFinite))];
+    const products = productIds.length
+      ? await DJ.remoteCatalog.listProducts({ ids: productIds }).catch(() => [])
+      : [];
+    const productNames = new Map(products.map((product) => [Number(product.id), product.name]));
     const fragment = document.createDocumentFragment();
-    orders.slice(0, 6).forEach((order) => {
+    orders.slice(0, 12).forEach((order) => {
       const card = createElement('article', { className: 'account-order-card' });
+      const amount = formatOrderAmount(order);
+      const status = String(order.status || 'pending').replaceAll('_', ' ');
+      const createdAt = order.created_at ? new Date(order.created_at) : null;
       card.append(
-        createElement('strong', { text: order.title || 'Checkout activity' }),
-        createElement('span', { text: order.status || 'Pending' }),
-        createElement('small', { text: order.date || '' })
+        createElement('strong', { text: productNames.get(Number(order.product_id)) || `Listing #${order.product_id}` }),
+        createElement('span', { text: [status, amount].filter(Boolean).join(' - ') }),
+        createElement('small', { text: createdAt && !Number.isNaN(createdAt.getTime()) ? createdAt.toLocaleString() : '' })
       );
       fragment.appendChild(card);
     });
     container.appendChild(fragment);
+  }
+
+  async function refreshAccountAuth() {
+    const summary = $('accountAuthSummary');
+    const signIn = $('accountSignIn');
+    const signOut = $('accountSignOut');
+    const passwordForm = $('accountPasswordForm');
+    const recoveryMode = new URLSearchParams(window.location.search).get('mode') === 'reset-password';
+
+    if (!DJ.remoteCatalog?.isConfigured?.()) {
+      if (summary) summary.textContent = 'Secure customer accounts are not configured for this site.';
+      if (signIn) signIn.hidden = true;
+      if (signOut) signOut.hidden = true;
+      if (passwordForm) passwordForm.hidden = true;
+      await renderOrderHistory();
+      return;
+    }
+
+    const session = await DJ.remoteCatalog.getSession().catch(() => null);
+    if (summary) {
+      summary.textContent = session?.user?.email
+        ? `Signed in as ${session.user.email}.`
+        : 'Sign in to review checkout orders tied to your email.';
+    }
+    if (signIn) signIn.hidden = Boolean(session?.user);
+    if (signOut) signOut.hidden = !session?.user;
+    if (passwordForm) passwordForm.hidden = !(recoveryMode && session?.user);
+    if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+      setAuthStatus('Payment submitted. Your secure order status will appear below as soon as Stripe confirms it.', 'success');
+    }
+    await renderOrderHistory(session);
+  }
+
+  function bindAccountAuth() {
+    $('accountSignIn')?.addEventListener('click', () => {
+      DJ.payments?.openAuthModal?.({ message: 'Sign in to review your secure checkout orders.' });
+    });
+    $('accountSignOut')?.addEventListener('click', async () => {
+      try {
+        await DJ.remoteCatalog?.signOut?.();
+        setAuthStatus('Signed out of the secure customer account.', 'success');
+        await refreshAccountAuth();
+      } catch (error) {
+        setAuthStatus(error.message || 'Sign-out failed.', 'error');
+      }
+    });
+    $('accountPasswordForm')?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const password = String($('accountNewPassword')?.value || '');
+      if (password.length < 8) {
+        setAuthStatus('Use at least 8 characters for the new password.', 'error');
+        return;
+      }
+      try {
+        await DJ.remoteCatalog?.updatePassword?.(password);
+        if ($('accountNewPassword')) $('accountNewPassword').value = '';
+        const url = new URL(window.location.href);
+        url.searchParams.delete('mode');
+        window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+        setAuthStatus('Password updated successfully.', 'success');
+        await refreshAccountAuth();
+      } catch (error) {
+        setAuthStatus(error.message || 'Password could not be updated.', 'error');
+      }
+    });
+    accountAuthSubscription = DJ.remoteCatalog?.onAuthStateChange?.(() => {
+      window.setTimeout(() => refreshAccountAuth().catch(console.error), 0);
+    }) || null;
+    window.addEventListener('pagehide', () => accountAuthSubscription?.unsubscribe?.(), { once: true });
   }
 
   function useNameForShipping() {
@@ -832,9 +949,13 @@ window.DJ = window.DJ || {};
 
   function init() {
     bindEvents();
+    bindAccountAuth();
     loadProfileForm();
     renderAccountSummary();
-    renderOrderHistory();
+    refreshAccountAuth().catch(console.error);
+    if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+      window.setTimeout(() => refreshAccountAuth().catch(console.error), 4000);
+    }
     renderWishlistPreview();
     refreshEmailPreferencesLink();
   }

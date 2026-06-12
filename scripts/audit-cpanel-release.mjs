@@ -29,7 +29,11 @@ for (const relativePath of paths) {
   }
 
   try {
-    const response = await fetch(new URL(relativePath, siteUrl), { cache: 'no-store' });
+    const encodedPath = relativePath
+      .split('/')
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+    const response = await fetch(new URL(encodedPath, siteUrl), { cache: 'no-store' });
     if (response.status === 404) {
       const local = fs.readFileSync(localPath);
       results.push({
