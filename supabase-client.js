@@ -911,7 +911,7 @@ window.DJ = window.DJ || {};
 
     const { error } = await client
       .from(config.productsTable)
-      .update({ is_deleted: true })
+      .delete()
       .eq('id', Number(productId));
 
     if (error) throw createFriendlyError(error, 'deleteProduct');

@@ -266,7 +266,7 @@ window.DJ = window.DJ || {};
               <article class="admin-stat-card backend-summary-card">
                 <span class="admin-stat-label">Mode</span>
                 <strong class="backend-summary-value" id="backendSummaryMode">Checking</strong>
-                <p id="backendSummaryModeCopy">Loading backend state and local fallback availability.</p>
+                <p id="backendSummaryModeCopy">Checking the live Supabase catalog connection.</p>
               </article>
               <article class="admin-stat-card backend-summary-card">
                 <span class="admin-stat-label">Admin session</span>
@@ -278,15 +278,6 @@ window.DJ = window.DJ || {};
                 <strong class="backend-summary-value" id="backendSummaryCatalog">--</strong>
                 <p id="backendSummaryCatalogCopy">Remote listings will appear here after a successful sign-in.</p>
               </article>
-            </div>
-
-            <div class="backend-local-tools-banner" hidden id="backendLocalToolsBanner">
-              <div>
-                <span class="admin-mode-pill admin-mode-pill--local">Browser-only fallback</span>
-                <strong>Local recovery tools stay available below.</strong>
-                <p class="helper-text">Use the browser-only forms below for on-device testing, offline recovery, or temporary overrides that should not touch Supabase.</p>
-              </div>
-              <button class="button-secondary" id="backendToggleLocalTools" type="button">Jump to Browser-only Tools</button>
             </div>
 
             <form class="admin-form backend-auth-form" id="backendLoginForm" novalidate>
@@ -522,13 +513,11 @@ window.DJ = window.DJ || {};
     const catalogValue = document.getElementById('backendSummaryCatalog');
     const catalogCopy = document.getElementById('backendSummaryCatalogCopy');
 
-    if (modeValue) {
-      modeValue.textContent = configured ? 'Backend-first' : 'Local fallback';
-    }
+    if (modeValue) modeValue.textContent = configured ? 'Supabase live' : 'Setup required';
     if (modeCopy) {
       modeCopy.textContent = configured
-        ? 'Remote saves update Supabase, while browser-only tools below stay isolated to this device.'
-        : 'Supabase is not configured yet, so the browser-only tools are the active recovery path.';
+        ? 'Every save and delete updates the live Supabase catalog directly.'
+        : 'Configure Supabase before using the admin catalog editor.';
     }
 
     if (sessionValue) {
@@ -558,55 +547,19 @@ window.DJ = window.DJ || {};
     }
   }
 
-  function dispatchLocalAdminVisibility(visible) {
-    // Let the browser-only admin module react without hard-coding a dependency
-    // in either direction. The two admin experiences coordinate through this
-    // small custom event instead of directly calling each other.
-    document.dispatchEvent(new CustomEvent('dj:local-admin-visibility', {
-      detail: {
-        visible: Boolean(visible),
-        backendConfigured: Boolean(backend()?.isConfigured()),
-        signedIn: Boolean(state.session)
-      }
-    }));
-  }
-
   function syncLocalAdminVisibility() {
     const localSection = getLocalAdminSection();
     const banner = document.getElementById('backendLocalToolsBanner');
     const button = getLocalToolsButton();
     const enabled = Boolean(backend()?.isConfigured());
 
-    // Backend mode changes the copy and framing around the browser-only tools,
-    // but it intentionally does not destroy them. Keeping that fallback visible
-    // makes offline recovery and one-device overrides much safer.
     document.body.classList.toggle('backend-admin-mode', enabled);
-
-    if (!localSection) {
-      dispatchLocalAdminVisibility(false);
-      return;
+    if (localSection) {
+      localSection.hidden = true;
+      localSection.setAttribute('aria-hidden', 'true');
     }
-
-    if (!enabled) {
-      localSection.hidden = false;
-      localSection.removeAttribute('aria-hidden');
-      if (banner) banner.hidden = true;
-      if (button) {
-        button.textContent = 'Jump to Browser-only Tools';
-        button.setAttribute('aria-expanded', 'true');
-      }
-      dispatchLocalAdminVisibility(true);
-      return;
-    }
-
-    localSection.hidden = false;
-    localSection.setAttribute('aria-hidden', 'false');
-    if (banner) banner.hidden = false;
-    if (button) {
-      button.textContent = 'Jump to Browser-only Tools';
-      button.setAttribute('aria-expanded', 'true');
-    }
-    dispatchLocalAdminVisibility(true);
+    if (banner) banner.hidden = true;
+    if (button) button.hidden = true;
   }
 
   function syncHeroCopy() {
@@ -667,7 +620,7 @@ window.DJ = window.DJ || {};
       badge.setAttribute('data-state', isSignedIn ? 'success' : 'info');
     }
     message.textContent = isSignedIn
-      ? `Connected to Supabase as ${state.session.user?.email || 'signed-in user'}. Remote saves update Supabase immediately, while the browser-only tools below stay isolated to this device.`
+      ? `Connected to Supabase as ${state.session.user?.email || 'signed-in user'}. Saves and deletes update the live Supabase catalog immediately.`
       : 'Project URL and browser key look valid. Sign in below to load live listings, upload photos, import products.json, or run a connection test.';
     updateBackendOverview();
     syncLocalAdminVisibility();
@@ -1444,7 +1397,7 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (!window.confirm('Delete this remote listing from Supabase?')) return;
+    if (!window.confirm('Permanently delete this listing from Supabase? This cannot be undone.')) return;
 
     setBusy(true);
     setBackendStatus('Deleting remote listing...', 'info');

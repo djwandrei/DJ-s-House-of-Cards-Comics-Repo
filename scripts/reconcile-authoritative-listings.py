@@ -143,6 +143,28 @@ def product_photos(product: dict[str, Any]) -> list[str]:
     return output
 
 
+def existing_local_media(product: dict[str, Any] | None) -> list[str]:
+    """Preserve verified local display media while workbook URLs stay authoritative metadata."""
+    if not product:
+        return []
+    gallery = product.get("imageGallery")
+    values = gallery if isinstance(gallery, list) else []
+    output: list[str] = []
+    seen: set[str] = set()
+    for value in [product.get("image"), *values]:
+        reference = text(value).replace("\\", "/")
+        if (
+            not reference.lower().startswith("assets/")
+            or "placeholder" in reference.lower()
+            or reference in seen
+            or not Path(reference).is_file()
+        ):
+            continue
+        seen.add(reference)
+        output.append(reference)
+    return output
+
+
 def product_identity(product: dict[str, Any]) -> dict[str, str]:
     fields = (product.get("metadata") or {}).get("excelFields") or {}
     return {
@@ -347,6 +369,8 @@ def build_product(
 ) -> dict[str, Any]:
     fields = copy.deepcopy(listing["fields"])
     photos = listing["photos"]
+    local_media = existing_local_media(old_product)
+    display_media = local_media or photos
     price = price_value(fields.get("Start price"))
     price_label = f"${price:,.2f}"
     product = {
@@ -358,8 +382,8 @@ def build_product(
         "condition": clean_condition(fields),
         "price": price,
         "description": text(fields.get("Description")),
-        "image": photos[0] if photos else "",
-        "imageGallery": photos,
+        "image": display_media[0] if display_media else "",
+        "imageGallery": display_media,
         "sport": text(fields.get("C:Sport")),
         "league": text(fields.get("C:League")),
         "playerAthlete": text(fields.get("C:Player/Athlete")),

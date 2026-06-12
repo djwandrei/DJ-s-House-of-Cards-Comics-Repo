@@ -10630,6 +10630,76 @@ body.dark-mode .admin-listing-row.is-bulk-selected {
   background:linear-gradient(90deg,rgba(239,24,35,.14),rgba(255,255,255,.045) 38%);
 }
 
+/* Final regression repairs: keep the desktop filter rail inside catalog flow,
+   prevent it from covering the footer, and preserve the About logo ratio. */
+.brand-card .brand-photo {
+  width:min(100%,240px);
+  max-width:240px;
+  height:auto;
+  aspect-ratio:auto;
+  object-fit:contain;
+  align-self:start;
+}
+
+.backend-admin-layout {
+  grid-template-columns:minmax(0,1fr);
+}
+
+.backend-editor-panel {
+  position:static;
+  max-height:none;
+  overflow:visible;
+}
+
+.backend-admin-panel {
+  overflow:hidden;
+}
+
+@media (min-width:901px) {
+  .catalog-browse-shell {
+    display:grid;
+    grid-template-columns:minmax(270px,320px) minmax(0,1fr);
+    gap:1rem;
+    align-items:start;
+  }
+
+  .catalog-browse-shell > .filter-panel {
+    position:sticky !important;
+    top:calc(var(--header-h) + 1rem);
+    left:auto;
+    right:auto;
+    bottom:auto;
+    width:auto;
+    max-width:none;
+    height:auto;
+    max-height:calc(100vh - var(--header-h) - 1.5rem);
+    border-radius:24px;
+  }
+
+  .catalog-results-column,
+  .catalog-browse-shell.filters-collapsed > .catalog-results-column {
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding-left:0;
+    padding-right:0;
+  }
+
+  .catalog-browse-shell.filters-collapsed {
+    grid-template-columns:0 minmax(0,1fr);
+  }
+
+  .catalog-browse-shell.filters-collapsed > .catalog-results-column {
+    grid-column:1 / -1;
+  }
+
+  body.catalog-sidebar-ready .footer,
+  body.catalog-sidebar-ready.filters-sidebar-open .footer {
+    width:100%;
+    margin-left:0;
+  }
+}
+
 @media (max-width:920px) {
   .admin-listing-controls,
   .admin-bulk-actions {

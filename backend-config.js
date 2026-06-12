@@ -25,7 +25,7 @@
     stripeCheckoutFunction: 'create-checkout-session',
     // Public catalog pages use the deploy-synced, compressed JSON snapshots
     // first. Supabase remains the admin source and a storefront fallback.
-    preferStaticCatalog: true,
+    preferStaticCatalog: false,
     remoteCatalogTimeoutMs: 3200,
     staticCatalogFallbackDelayMs: 700,
     siteUrl: isUsableOrigin ? origin : 'https://www.djshouseofcards-comics.com'

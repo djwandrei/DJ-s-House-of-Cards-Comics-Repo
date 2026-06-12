@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260611c';
+  const PRODUCT_ASSET_VERSION = '20260612a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -1768,58 +1768,16 @@ window.DJ = window.DJ || {};
   };
 
   DJ.applyStoredCatalogMutations = function applyStoredCatalogMutations(baseProducts, options = {}) {
-    const products = Array.isArray(baseProducts) ? [...baseProducts] : [];
-    const includeCustomProducts = options.includeCustomProducts !== false;
-    const overrides = DJ.getProductOverrides();
-    const deletedIds = new Set(DJ.getDeletedProductIds().map((item) => Number(item)));
-    const seenIds = new Set();
-
-    const mergedProducts = products
-      .filter((product) => product && !deletedIds.has(Number(product.id)))
-      .map((product) => {
-        const productId = Number(product.id);
-        if (Number.isFinite(productId)) {
-          seenIds.add(productId);
-        }
-
-        const override = overrides[String(product.id)] || overrides[productId] || null;
-        if (!override || typeof override !== 'object' || Array.isArray(override)) {
-          return product;
-        }
-
-        const merged = { ...product, ...override };
-
-        if (Object.prototype.hasOwnProperty.call(override, 'image')) {
-          merged.image = override.image;
-        }
-
-        if (Object.prototype.hasOwnProperty.call(override, 'imageGallery')) {
-          merged.imageGallery = Array.isArray(override.imageGallery) ? override.imageGallery : [];
-        }
-
-        return merged;
-      });
-
-    if (!includeCustomProducts) {
-      return mergedProducts;
-    }
-
-    const uniqueCustomProducts = DJ.getCustomProducts().filter((product) => {
-      const productId = Number(product?.id);
-      if (!Number.isFinite(productId)) {
-        return false;
-      }
-
-      if (deletedIds.has(productId) || seenIds.has(productId)) {
-        return false;
-      }
-
-      seenIds.add(productId);
-      return true;
-    });
-
-    return mergedProducts.concat(uniqueCustomProducts);
+    return Array.isArray(baseProducts) ? [...baseProducts] : [];
   };
+
+  function clearLegacyLocalCatalogMutations() {
+    [
+      STORAGE_KEYS.customProducts,
+      STORAGE_KEYS.productOverrides,
+      STORAGE_KEYS.deletedProductIds
+    ].forEach(safeStorageRemove);
+  }
 
   DJ.updateWishlistCount = updateWishlistCount;
   DJ.applyLazyLoading = applyLazyLoading;
@@ -1878,6 +1836,7 @@ window.DJ = window.DJ || {};
   // modules layer their own features on top of these helpers later.
   document.addEventListener('DOMContentLoaded', () => {
     if (redirectLegacyCheckoutSuccess()) return;
+    clearLegacyLocalCatalogMutations();
     applyLazyLoading(document);
     enhanceHeaderLayout();
     initThemeToggle();

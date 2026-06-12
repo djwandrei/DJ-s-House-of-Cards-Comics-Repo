@@ -117,6 +117,11 @@ def write_json(path: Path, value: Any) -> None:
 
 def main() -> int:
     args = parse_args()
+    if args.apply:
+        raise RuntimeError(
+            "Asset quarantine is disabled. Product removals do not prove that an asset is unused; "
+            "run this script without --apply for an audit-only report."
+        )
     root = Path(args.root).resolve()
     products_path = (root / args.products).resolve()
     output_dir = (root / args.output_dir).resolve()
