@@ -3,7 +3,7 @@
  * -----------------------------------------------------------------------------
  * This module creates the global window.DJ namespace and attaches the low-level
  * helpers that the rest of the site depends on: HTML escaping, image fallback
- * handling, theme persistence, wishlist storage, local admin storage, and a few
+ * handling, theme persistence, wishlist storage, and a few
  * accessibility helpers such as focus restoration and status messaging.
  */
 
@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260612a';
+  const PRODUCT_ASSET_VERSION = '20260612b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -48,11 +48,7 @@ window.DJ = window.DJ || {};
   // Centralize localStorage keys so future refactors only need to update them in one place.
   const STORAGE_KEYS = {
     theme: 'theme',
-    wishlist: 'wishlist',
-    customProducts: 'customProducts',
-    productOverrides: 'productOverrides',
-    deletedProductIds: 'deletedProductIds',
-    siteMetrics: 'djSiteMetricsV1'
+    wishlist: 'wishlist'
   };
   const safeAssetUrlCache = new Map();
   const assetUrlCandidatesCache = new Map();
@@ -132,8 +128,6 @@ window.DJ = window.DJ || {};
   let lastFocusedElement = null;
   let sharedImageLightbox = null;
   let serviceWorkerRefreshPending = false;
-  let siteMetricsCache = null;
-  let siteMetricsFlushHandle = 0;
 
   // ---------------------------------------------------------------------------
   // Formatting and storage helpers
@@ -169,45 +163,6 @@ window.DJ = window.DJ || {};
     return Number.isFinite(numericValue)
       ? `$${numericValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : 'Contact for price';
-  }
-
-  function formatConditionLabel(value = '', options = {}) {
-    const parts = String(value || '')
-      .split('|')
-      .map((part) => part.trim())
-      .filter(Boolean);
-    const uniqueParts = [];
-    const seen = new Set();
-
-    parts.forEach((part) => {
-      const key = part.toLowerCase();
-      if (seen.has(key)) return;
-      seen.add(key);
-      uniqueParts.push(part);
-    });
-
-    if (!uniqueParts.length) {
-      return options.fallback || 'Condition not listed';
-    }
-
-    if (uniqueParts.some((part) => /^ungraded$/i.test(part))) {
-      return 'Ungraded';
-    }
-
-    const gradedPart = uniqueParts.find((part) => /\b(PSA\/DNA|PSA|BGS|BVG|BCCG|SGC|CGC|CSG|HGA|GMA|ISA|BECKETT)\b/i.test(part));
-    if (gradedPart) {
-      return gradedPart.replace(/\bbeckett\b/i, 'Beckett');
-    }
-
-    if (uniqueParts.some((part) => /^graded$/i.test(part))) {
-      return uniqueParts.find((part) => !/^graded$/i.test(part)) || 'Graded';
-    }
-
-    if (uniqueParts.some((part) => /^guide range listed$/i.test(part))) {
-      return 'Ungraded';
-    }
-
-    return uniqueParts[0] || options.fallback || 'Condition not listed';
   }
 
   function safeStorageGet(key) {
@@ -291,115 +246,6 @@ window.DJ = window.DJ || {};
         source
       }
     }));
-  }
-
-  function emitCatalogMutationChange(kind, source = 'local') {
-    window.dispatchEvent(new CustomEvent('dj:catalogmutation', {
-      detail: {
-        kind,
-        source,
-        timestamp: Date.now()
-      }
-    }));
-  }
-
-  function createEmptySiteMetrics() {
-    const now = new Date().toISOString();
-    return {
-      version: 1,
-      createdAt: now,
-      updatedAt: now,
-      totals: {},
-      pageViews: {},
-      productEvents: {}
-    };
-  }
-
-  function normalizeSiteMetrics(value) {
-    const base = createEmptySiteMetrics();
-    if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      return base;
-    }
-
-    return {
-      ...base,
-      ...value,
-      totals: value.totals && typeof value.totals === 'object' && !Array.isArray(value.totals) ? value.totals : {},
-      pageViews: value.pageViews && typeof value.pageViews === 'object' && !Array.isArray(value.pageViews) ? value.pageViews : {},
-      productEvents: value.productEvents && typeof value.productEvents === 'object' && !Array.isArray(value.productEvents) ? value.productEvents : {}
-    };
-  }
-
-  function getSiteMetrics() {
-    if (!siteMetricsCache) {
-      siteMetricsCache = readJSONFromStorage(STORAGE_KEYS.siteMetrics, normalizeSiteMetrics) || createEmptySiteMetrics();
-    }
-
-    return siteMetricsCache;
-  }
-
-  function flushSiteMetrics() {
-    if (!siteMetricsCache) return;
-    if (siteMetricsFlushHandle) {
-      window.clearTimeout(siteMetricsFlushHandle);
-      siteMetricsFlushHandle = 0;
-    }
-    safeStorageSet(STORAGE_KEYS.siteMetrics, JSON.stringify(siteMetricsCache));
-  }
-
-  function scheduleSiteMetricsFlush() {
-    if (siteMetricsFlushHandle) return;
-
-    // Metrics are useful for the admin dashboard, but they should never compete
-    // with browsing. Batch rapid wishlist/modal events into one storage write.
-    siteMetricsFlushHandle = window.setTimeout(() => {
-      siteMetricsFlushHandle = 0;
-      scheduleIdle(flushSiteMetrics, 1600);
-    }, 250);
-  }
-
-  function pruneProductMetrics(productEvents = {}, limit = 500) {
-    const entries = Object.entries(productEvents);
-    if (entries.length <= limit) return productEvents;
-
-    return Object.fromEntries(
-      entries
-        .sort(([, left], [, right]) => String(right?.lastEventAt || '').localeCompare(String(left?.lastEventAt || '')))
-        .slice(0, limit)
-    );
-  }
-
-  function recordSiteMetric(eventName, detail = {}) {
-    const eventType = String(eventName || '').trim();
-    if (!eventType) return null;
-
-    const now = new Date().toISOString();
-    const metrics = getSiteMetrics();
-    metrics.updatedAt = now;
-    metrics.totals[eventType] = (Number(metrics.totals[eventType]) || 0) + 1;
-
-    if (eventType === 'page_view') {
-      const pageKey = String(detail.page || document.body.dataset.page || window.location.pathname || 'unknown');
-      metrics.pageViews[pageKey] = (Number(metrics.pageViews[pageKey]) || 0) + 1;
-    }
-
-    const productId = Number(detail.productId ?? detail.id);
-    if (Number.isFinite(productId)) {
-      const key = String(productId);
-      const current = metrics.productEvents[key] || {};
-      metrics.productEvents[key] = {
-        ...current,
-        productId,
-        name: detail.name || current.name || '',
-        category: detail.category || current.category || '',
-        lastEventAt: now,
-        [eventType]: (Number(current[eventType]) || 0) + 1
-      };
-      metrics.productEvents = pruneProductMetrics(metrics.productEvents);
-    }
-
-    scheduleSiteMetricsFlush();
-    return metrics;
   }
 
   // ---------------------------------------------------------------------------
@@ -911,10 +757,6 @@ window.DJ = window.DJ || {};
     lightbox.setAttribute('aria-hidden', 'false');
     document.body.classList.add('image-lightbox-open');
     closeButton.focus();
-  };
-
-  DJ.closeImageLightbox = function closeImageLightbox() {
-    ensureImageLightbox().closeLightbox();
   };
 
   function initArchiveImageLightbox() {
@@ -1550,8 +1392,6 @@ window.DJ = window.DJ || {};
     return explicitLabel || formatCurrency(item?.price);
   };
 
-  DJ.formatConditionLabel = formatConditionLabel;
-
   DJ.numericPrice = function numericPrice(item) {
     return DJ.payablePrice(item);
   };
@@ -1573,139 +1413,7 @@ window.DJ = window.DJ || {};
     return id ? `${page}?item=${encodeURIComponent(id)}` : page;
   };
 
-  DJ.csvEscape = function csvEscape(value = '') {
-    const text = String(value ?? '').replace(/^[=+\-@\t\r]/, (character) => `'${character}`);
-    return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-  };
-
-  function boundedString(value, maxLength = 1000) {
-    return String(value ?? '').trim().slice(0, maxLength);
-  }
-
-  function normalizeOptionalNumber(value) {
-    if (value === '' || value === null || value === undefined) return null;
-    const numeric = Number(value);
-    return Number.isFinite(numeric) ? numeric : null;
-  }
-
-  function normalizeImageReference(value) {
-    const image = String(value ?? '').trim();
-    if (!image) return '';
-    return typeof DJ.isLikelyImageReference === 'function' && DJ.isLikelyImageReference(image) ? image : '';
-  }
-
-  function normalizeImageGallery(value) {
-    return (Array.isArray(value) ? value : [])
-      .map(normalizeImageReference)
-      .filter(Boolean)
-      .slice(0, 20);
-  }
-
-  function normalizeProductOverride(override) {
-    if (!override || typeof override !== 'object' || Array.isArray(override)) {
-      return null;
-    }
-
-    const normalized = {};
-    const optionalTextFields = {
-      name: 240,
-      category: 80,
-      team: 240,
-      condition: 240,
-      priceLabel: 120,
-      description: 2000
-    };
-
-    Object.entries(optionalTextFields).forEach(([field, maxLength]) => {
-      if (Object.prototype.hasOwnProperty.call(override, field)) {
-        normalized[field] = boundedString(override[field], maxLength);
-      }
-    });
-
-    if (Object.prototype.hasOwnProperty.call(override, 'year')) {
-      const year = normalizeOptionalNumber(override.year);
-      normalized.year = year === null ? null : Math.round(year);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'price')) {
-      const price = normalizeOptionalNumber(override.price);
-      normalized.price = price === null ? null : Math.max(0, price);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'isFeatured')) {
-      normalized.isFeatured = Boolean(override.isFeatured);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'image')) {
-      normalized.image = normalizeImageReference(override.image);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'imageGallery')) {
-      normalized.imageGallery = normalizeImageGallery(override.imageGallery);
-    }
-
-    if (Object.prototype.hasOwnProperty.call(override, 'photoHostPageUrl')) {
-      const safeUrl = typeof DJ.safeExternalUrl === 'function'
-        ? DJ.safeExternalUrl(override.photoHostPageUrl)
-        : '';
-      normalized.photoHostPageUrl = safeUrl;
-    }
-
-    return Object.keys(normalized).length ? normalized : null;
-  }
-
-  function normalizeProductOverrides(overrides) {
-    if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
-      return {};
-    }
-
-    return Object.entries(overrides).reduce((normalized, [rawProductId, override]) => {
-      const productId = Number(rawProductId);
-      if (!Number.isSafeInteger(productId) || productId <= 0) {
-        return normalized;
-      }
-
-      const safeOverride = normalizeProductOverride(override);
-      if (safeOverride) {
-        normalized[String(productId)] = safeOverride;
-      }
-      return normalized;
-    }, {});
-  }
-
-  DJ.downloadTextFile = function downloadTextFile(content, filenamePrefix, extension, type = 'text/plain') {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filenamePrefix}-${new Date().toISOString().slice(0, 10)}.${extension}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  DJ.copyText = async function copyText(text = '') {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(String(text));
-      return true;
-    }
-
-    const textarea = document.createElement('textarea');
-    textarea.value = String(text);
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand('copy');
-    textarea.remove();
-    return copied;
-  };
-
   DJ.getWishlist = getWishlist;
-  DJ.getSiteMetrics = getSiteMetrics;
-  DJ.recordSiteMetric = recordSiteMetric;
   DJ.setWishlist = function setWishlist(items) {
     const normalized = [...new Set((Array.isArray(items) ? items : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
     if (!safeStorageSet(STORAGE_KEYS.wishlist, JSON.stringify(normalized))) {
@@ -1716,79 +1424,14 @@ window.DJ = window.DJ || {};
     emitWishlistChange(persistedWishlist, 'local');
   };
 
-  DJ.getCustomProducts = function getCustomProducts() {
-    const customProducts = readJSONFromStorage(STORAGE_KEYS.customProducts, (value) => (Array.isArray(value) ? value : []));
-    return Array.isArray(customProducts) ? customProducts : [];
-  };
-
-  DJ.saveCustomProducts = function saveCustomProducts(items) {
-    if (!safeStorageSet(STORAGE_KEYS.customProducts, JSON.stringify(Array.isArray(items) ? items : []))) {
-      console.error('Failed to save custom products.');
-      return false;
-    }
-    emitCatalogMutationChange('customProducts');
-    return true;
-  };
-
-  DJ.getProductOverrides = function getProductOverrides() {
-    const overrides = readJSONFromStorage(STORAGE_KEYS.productOverrides, normalizeProductOverrides);
-    return normalizeProductOverrides(overrides);
-  };
-
-  DJ.saveProductOverrides = function saveProductOverrides(overrides) {
-    if (!safeStorageSet(STORAGE_KEYS.productOverrides, JSON.stringify(normalizeProductOverrides(overrides)))) {
-      console.error('Failed to save product overrides.');
-      return false;
-    }
-    emitCatalogMutationChange('productOverrides');
-    return true;
-  };
-  DJ.normalizeProductOverrides = normalizeProductOverrides;
-
-  DJ.getDeletedProductIds = function getDeletedProductIds() {
-    const ids = readJSONFromStorage(STORAGE_KEYS.deletedProductIds, (value) => {
-      if (!Array.isArray(value)) {
-        return [];
-      }
-
-      return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
-    });
-
-    return Array.isArray(ids) ? ids : [];
-  };
-
-  DJ.saveDeletedProductIds = function saveDeletedProductIds(ids) {
-    const normalized = [...new Set((Array.isArray(ids) ? ids : []).map((item) => Number(item)).filter((item) => Number.isFinite(item)))];
-    if (!safeStorageSet(STORAGE_KEYS.deletedProductIds, JSON.stringify(normalized))) {
-      console.error('Failed to save deleted product IDs.');
-      return false;
-    }
-    emitCatalogMutationChange('deletedProductIds');
-    return true;
-  };
-
-  DJ.applyStoredCatalogMutations = function applyStoredCatalogMutations(baseProducts, options = {}) {
-    return Array.isArray(baseProducts) ? [...baseProducts] : [];
-  };
-
-  function clearLegacyLocalCatalogMutations() {
-    [
-      STORAGE_KEYS.customProducts,
-      STORAGE_KEYS.productOverrides,
-      STORAGE_KEYS.deletedProductIds
-    ].forEach(safeStorageRemove);
-  }
-
   DJ.updateWishlistCount = updateWishlistCount;
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
-  DJ.loadScript = loadScript;
   DJ.loadScriptsInOrder = loadScriptsInOrder;
   DJ.getScrollBehavior = getScrollBehavior;
   // Shared responsive helpers keep resize and media-query wiring consistent
   // across navigation, catalog, and future page modules.
   DJ.bindMediaQueryChange = bindMediaQueryChange;
-  DJ.addRafResizeListener = addRafResizeListener;
   DJ.addSharedResizeListener = addRafResizeListener;
   DJ.setStatus = function setStatus(elementId, message = '', state = 'info') {
     const element = document.getElementById(elementId);
@@ -1836,7 +1479,6 @@ window.DJ = window.DJ || {};
   // modules layer their own features on top of these helpers later.
   document.addEventListener('DOMContentLoaded', () => {
     if (redirectLegacyCheckoutSuccess()) return;
-    clearLegacyLocalCatalogMutations();
     applyLazyLoading(document);
     enhanceHeaderLayout();
     initThemeToggle();
@@ -1848,19 +1490,9 @@ window.DJ = window.DJ || {};
     initArchivePanels();
     updateWishlistCount();
     initHomeCatalogLoader();
-    // Local metrics power the admin dashboard, but they are not critical to
-    // first paint. Defer the storage write so page rendering stays responsive.
-    scheduleIdle(() => {
-      recordSiteMetric('page_view', {
-        page: document.body.dataset.page || window.location.pathname,
-        title: document.title
-      });
-    }, 1800);
     initHeaderScrollState();
     initDeferredServiceWorkerRegistration();
   });
-
-  window.addEventListener('pagehide', flushSiteMetrics);
 
   window.addEventListener('storage', (event) => {
     if (!event.key) return;
@@ -1876,18 +1508,6 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (event.key === STORAGE_KEYS.siteMetrics) {
-      siteMetricsCache = null;
-      return;
-    }
-
-    if (
-      event.key === STORAGE_KEYS.customProducts
-      || event.key === STORAGE_KEYS.productOverrides
-      || event.key === STORAGE_KEYS.deletedProductIds
-    ) {
-      emitCatalogMutationChange(event.key, 'storage');
-    }
   });
 
   window.addEventListener('pageshow', (event) => {

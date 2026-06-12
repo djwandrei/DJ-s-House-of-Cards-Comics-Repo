@@ -3,8 +3,8 @@
  * -----------------------------------------------------------------------------
  * This file powers the Supabase-facing admin experience: sign in, browse remote
  * listings, upload images, seed the database, and edit/delete remote products.
- * Local-only admin tools are still available as a fallback, but this module is
- * intentionally written as the primary editor when backend mode is enabled.
+ * It is the only listing editor: saves and permanent deletes go directly to the
+ * live Supabase catalog.
  */
 
 window.DJ = window.DJ || {};
@@ -60,8 +60,6 @@ window.DJ = window.DJ || {};
     // A single busy toggle freezes the remote admin controls while requests are
     // running so sign-in, import, upload, and save actions cannot overlap.
     getBusyControlledElements().forEach((element) => {
-      const allowWhenBusy = element.id === 'backendToggleLocalTools';
-      if (allowWhenBusy) return;
       if ('disabled' in element) {
         element.disabled = state.isBusy;
       }
@@ -496,14 +494,6 @@ window.DJ = window.DJ || {};
     element.textContent = message;
   }
 
-  function getLocalAdminSection() {
-    return document.getElementById('localAdminSection');
-  }
-
-  function getLocalToolsButton() {
-    return document.getElementById('backendToggleLocalTools');
-  }
-
   function updateBackendOverview() {
     const configured = Boolean(backend()?.isConfigured());
     const modeValue = document.getElementById('backendSummaryMode');
@@ -548,18 +538,9 @@ window.DJ = window.DJ || {};
   }
 
   function syncLocalAdminVisibility() {
-    const localSection = getLocalAdminSection();
-    const banner = document.getElementById('backendLocalToolsBanner');
-    const button = getLocalToolsButton();
     const enabled = Boolean(backend()?.isConfigured());
 
     document.body.classList.toggle('backend-admin-mode', enabled);
-    if (localSection) {
-      localSection.hidden = true;
-      localSection.setAttribute('aria-hidden', 'true');
-    }
-    if (banner) banner.hidden = true;
-    if (button) button.hidden = true;
   }
 
   function syncHeroCopy() {
@@ -1524,11 +1505,6 @@ window.DJ = window.DJ || {};
       });
     }
 
-    document.getElementById('backendToggleLocalTools')?.addEventListener('click', () => {
-      const localSection = getLocalAdminSection();
-      if (!localSection) return;
-      localSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
     document.getElementById('backendLoginForm')?.addEventListener('submit', handleBackendSignIn);
     document.getElementById('backendRefreshProducts')?.addEventListener('click', () => {
       if (!confirmDiscardRemoteChanges()) return;

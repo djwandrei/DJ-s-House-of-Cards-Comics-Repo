@@ -243,12 +243,7 @@ window.DJ = window.DJ || {};
         if (Array.isArray(bundledProducts)) return bundledProducts;
         throw error;
       })
-      .then((products) => {
-        const safeProducts = Array.isArray(products) ? products : [];
-        return typeof DJ.applyStoredCatalogMutations === 'function'
-          ? DJ.applyStoredCatalogMutations(safeProducts, { includeCustomProducts: true })
-          : safeProducts;
-      })
+      .then((products) => (Array.isArray(products) ? products : []))
       .catch((error) => {
         console.error(error);
         return [];
@@ -933,11 +928,6 @@ window.DJ = window.DJ || {};
       event.returnValue = '';
     });
     window.addEventListener('dj:wishlistchange', () => {
-      renderAccountSummary();
-      scheduleWishlistPreviewRender();
-    });
-    window.addEventListener('dj:catalogmutation', () => {
-      accountProductsPromise = null;
       renderAccountSummary();
       scheduleWishlistPreviewRender();
     });

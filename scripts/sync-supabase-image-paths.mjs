@@ -1,6 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+/**
+ * Audit or repair Supabase media paths without changing catalog membership.
+ *
+ * Listing additions and permanent removals belong to
+ * hard-delete-supabase-products-not-in-catalog.mjs. Keeping this script focused
+ * on media prevents an image repair from accidentally hiding or deleting rows.
+ */
+
 const root = process.cwd();
 const applyChanges = process.argv.includes('--apply');
 const configText = fs.readFileSync(path.join(root, 'backend-config.js'), 'utf8');
@@ -52,21 +60,13 @@ if (!projectUrl || !publicApiKey) {
   throw new Error('backend-config.js is missing the public Supabase URL or publishable key.');
 }
 
-const activeLocalProducts = products.filter((product) => product?.isDeleted !== true);
 const localById = new Map(products.map((product) => [Number(product.id), product]));
 const remoteRows = await fetchActiveRows(projectUrl, publicApiKey);
 const mismatches = [];
-const deletionMismatches = remoteRows
-  .filter((remote) => localById.get(Number(remote.id))?.isDeleted === true)
-  .map((remote) => ({
-    id: Number(remote.id),
-    name: remote.name
-  }));
 
 for (const remote of remoteRows) {
   const local = localById.get(Number(remote.id));
   if (!local) continue;
-  if (local.isDeleted === true) continue;
 
   const localGallery = Array.isArray(local.imageGallery) ? local.imageGallery : [];
   const remoteGallery = Array.isArray(remote.image_gallery) ? remote.image_gallery : [];
@@ -98,17 +98,14 @@ const summary = {
   mode: applyChanges ? 'apply' : 'audit',
   activeRemoteRows: remoteRows.length,
   localRows: products.length,
-  activeLocalRows: activeLocalProducts.length,
-  locallyDeletedRemoteActiveRows: deletionMismatches.length,
-  locallyDeletedRemoteActiveIds: deletionMismatches.map((item) => item.id),
   mediaPathMismatchRows: mismatches.length,
   unsafeMismatchRows: unsafe.length,
   mismatchIds: mismatches.map((item) => item.id)
 };
 
 if (!applyChanges) {
-  console.log(JSON.stringify({ ...summary, deletionMismatches, mismatches }, null, 2));
-  process.exit(unsafe.length || deletionMismatches.length ? 1 : 0);
+  console.log(JSON.stringify({ ...summary, mismatches }, null, 2));
+  process.exit(unsafe.length ? 1 : 0);
 }
 
 if (unsafe.length) {
@@ -134,25 +131,10 @@ for (const mismatch of mismatches) {
   });
 }
 
-for (const mismatch of deletionMismatches) {
-  const query = new URLSearchParams({ id: `eq.${mismatch.id}` });
-  await requestJson(`${projectUrl}/rest/v1/products?${query}`, {
-    method: 'PATCH',
-    headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal'
-    },
-    body: JSON.stringify({ is_deleted: true })
-  });
-}
-
 const verifiedRows = await fetchActiveRows(projectUrl, publicApiKey);
-const remainingDeletionMismatches = verifiedRows.filter((remote) => localById.get(Number(remote.id))?.isDeleted === true);
 const remaining = verifiedRows.filter((remote) => {
   const local = localById.get(Number(remote.id));
-  if (!local || local.isDeleted === true) return false;
+  if (!local) return false;
   const localGallery = Array.isArray(local.imageGallery) ? local.imageGallery : [];
   const remoteGallery = Array.isArray(remote.image_gallery) ? remote.image_gallery : [];
   return String(remote.image || '') !== String(local.image || '')
@@ -162,11 +144,8 @@ const remaining = verifiedRows.filter((remote) => {
 console.log(JSON.stringify({
   ...summary,
   patchedRows: mismatches.length,
-  softDeletedRows: deletionMismatches.length,
   remainingMismatches: remaining.length,
-  remainingIds: remaining.map((item) => Number(item.id)),
-  remainingDeletionMismatches: remainingDeletionMismatches.length,
-  remainingDeletionIds: remainingDeletionMismatches.map((item) => Number(item.id))
+  remainingIds: remaining.map((item) => Number(item.id))
 }, null, 2));
 
-if (remaining.length || remainingDeletionMismatches.length) process.exit(1);
+if (remaining.length) process.exit(1);

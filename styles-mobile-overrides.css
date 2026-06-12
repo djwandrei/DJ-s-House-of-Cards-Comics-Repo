@@ -1113,9 +1113,7 @@ input.sr-only[type="file"] {
   overflow:hidden !important;
 }
 
-.image-preview[hidden],
-.admin-local-section[hidden],
-.backend-local-tools-banner[hidden] {
+.image-preview[hidden] {
   display:none !important;
 }
 

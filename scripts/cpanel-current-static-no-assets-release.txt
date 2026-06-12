@@ -6,7 +6,6 @@ about.html
 account.html
 account.js
 admin.html
-admin.js
 backend-admin.js
 backend-config.js
 baseball-cards.html

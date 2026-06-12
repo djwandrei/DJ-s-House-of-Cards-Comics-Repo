@@ -1492,10 +1492,6 @@ window.DJ = window.DJ || {};
     return getStaticSourceResult(source);
   }
 
-  function shouldApplyBrowserCatalogMutations(origin) {
-    return origin !== 'remote';
-  }
-
   /**
    * Keep the stored wishlist aligned with the currently available catalog.
    * This prevents deleted or backend-removed listings from inflating badge counts
@@ -1531,10 +1527,7 @@ window.DJ = window.DJ || {};
         const syncedSourceProducts = origin === 'remote'
           ? await applyStaticLegacyListingOverlay(source, sourceProducts)
           : sourceProducts;
-        const mergedProducts = shouldApplyBrowserCatalogMutations(origin)
-          ? DJ.applyStoredCatalogMutations(syncedSourceProducts, { includeCustomProducts: true })
-          : syncedSourceProducts;
-        const normalizedProducts = normalizeProducts(filterStorefrontProducts(mergedProducts));
+        const normalizedProducts = normalizeProducts(filterStorefrontProducts(syncedSourceProducts));
         catalogPageCache.clear();
         filteredCatalogResultsCache.clear();
 
@@ -1554,8 +1547,7 @@ window.DJ = window.DJ || {};
           console.error(`Failed to load products from ${source}:`, error);
         }
 
-        const mergedFallback = DJ.applyStoredCatalogMutations(fallbackProducts, { includeCustomProducts: true });
-        const normalizedFallback = normalizeProducts(filterStorefrontProducts(mergedFallback));
+        const normalizedFallback = normalizeProducts(filterStorefrontProducts(fallbackProducts));
         catalogPageCache.clear();
         filteredCatalogResultsCache.clear();
 
@@ -1575,38 +1567,6 @@ window.DJ = window.DJ || {};
       normalizedSourceCache.delete(source);
       throw error;
     }
-  }
-
-  function clearCatalogRuntimeCaches() {
-    normalizedSourceCache.clear();
-    catalogPageCache.clear();
-    filteredCatalogResultsCache.clear();
-    linkedProductAutoOpenedId = null;
-  }
-
-  function bindCatalogMutationRefresh(config = {}) {
-    if (document.body.dataset.catalogMutationRefreshBound === 'true') return;
-    document.body.dataset.catalogMutationRefreshBound = 'true';
-
-    window.addEventListener('dj:catalogmutation', async () => {
-      clearCatalogRuntimeCaches();
-
-      if (document.body.dataset.page === 'wishlist') {
-        await renderWishlistPage();
-        return;
-      }
-
-      if (document.getElementById('featuredProducts')) {
-        await renderFeaturedProducts();
-      }
-
-      if (!document.getElementById('productContainer')) {
-        return;
-      }
-
-      setCatalogLoadingState('Refreshing local catalog edits...');
-      await setupCatalogPage(config);
-    });
   }
 
   // ---------------------------------------------------------------------------
@@ -1777,7 +1737,6 @@ window.DJ = window.DJ || {};
   }
 
   async function buyNow(product) {
-    recordProductMetric('checkout_start', product);
 
     const sendPurchaseInquiry = () => {
       openPurchaseInquiry(product);
@@ -1823,16 +1782,6 @@ Thank you.`
     if (!description) return '';
     if (description.length <= maxLength) return description;
     return `${description.slice(0, maxLength - 3).trim().replace(/[.,;:]*$/, '')}...`;
-  }
-
-  function recordProductMetric(eventType, product = {}) {
-    if (typeof DJ.recordSiteMetric !== 'function') return;
-
-    DJ.recordSiteMetric(eventType, {
-      productId: product.id,
-      name: product.name,
-      category: product.category
-    });
   }
 
   function getLinkedProductId() {
@@ -1916,7 +1865,6 @@ Thank you.`
     else wishlist.push(productId);
 
     DJ.setWishlist(wishlist);
-    recordProductMetric(wasWishlisted ? 'wishlist_remove' : 'wishlist_add', product || { id: productId });
     refreshWishlistButtons();
   }
 
@@ -3282,8 +3230,7 @@ Thank you.`
       return false;
     }
 
-    const mergedProducts = DJ.applyStoredCatalogMutations(payload.products, { includeCustomProducts: false });
-    const allowedProducts = normalizeProducts(filterStorefrontProducts(mergedProducts))
+    const allowedProducts = normalizeProducts(filterStorefrontProducts(payload.products))
       .filter((product) => (
         !config.allowedCategories
         || !config.allowedCategories.length
@@ -3873,7 +3820,6 @@ Thank you.`);
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
     if (!modal || !modalInner) return;
-    recordProductMetric('product_view', product);
     if (!options.preserveUrl) {
       replaceProductUrl(product);
     }
@@ -4229,7 +4175,6 @@ Thank you.`);
     const page = document.body.dataset.page;
     const pageConfig = PAGE_CONFIG[page] || PAGE_CONFIG.shop;
     bindWishlistStateSync();
-    bindCatalogMutationRefresh(pageConfig);
 
     if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist'].includes(page)) {
       DJ.scheduleIdle?.(() => insertDepartmentSwitcher());

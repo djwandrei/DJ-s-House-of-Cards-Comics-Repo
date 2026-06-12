@@ -58,8 +58,6 @@ window.DJ = window.DJ || {};
     !hasPlaceholderApiKey(config.supabaseAnonKey)
   );
 
-  DJ.backendConfig = config;
-
   let supabaseClient = null;
   let preparePromise = null;
   let remoteCacheLifecycleBound = false;

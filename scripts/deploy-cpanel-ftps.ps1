@@ -273,7 +273,6 @@ function Test-DeployablePath {
     "account.js",
     "about.html",
     "admin.html",
-    "admin.js",
     "backend-admin.js",
     "backend-config.js",
     "baseball-cards.html",

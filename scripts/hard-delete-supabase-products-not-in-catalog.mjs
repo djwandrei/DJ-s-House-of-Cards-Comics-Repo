@@ -1,6 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+/**
+ * Make Supabase catalog membership exactly match products.json.
+ *
+ * The audit mode reports remote-only rows. --apply first upserts the complete
+ * local catalog, writes a backup of remote-only rows, then permanently deletes
+ * those rows. This is intentionally the only catalog reconciliation script
+ * allowed to remove listings.
+ */
+
 const root = process.cwd();
 const applyChanges = process.argv.includes('--apply');
 const configText = await fs.readFile(path.join(root, 'backend-config.js'), 'utf8');

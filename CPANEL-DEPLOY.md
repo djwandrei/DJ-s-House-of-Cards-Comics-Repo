@@ -102,6 +102,17 @@ local targets are missing, and requires both `--apply` and a process-scoped
 node .\scripts\sync-supabase-image-paths.mjs --apply
 ```
 
+To audit whether Supabase contains rows that are absent from `products.json`,
+run:
+
+```powershell
+node .\scripts\hard-delete-supabase-products-not-in-catalog.mjs
+```
+
+After reviewing the generated report, add `--apply` to upsert the complete
+local catalog and permanently delete remote-only rows. The script writes a
+backup before deleting anything.
+
 ## Reviewed static release
 
 To deploy the current reviewed static site files without uploading the large
