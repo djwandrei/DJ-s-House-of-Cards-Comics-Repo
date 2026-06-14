@@ -27,9 +27,10 @@ window.DJ = window.DJ || {};
     const normalized = new Map();
     (Array.isArray(items) ? items : []).forEach((item) => {
       const product = item?.product || item;
-      const productId = Number(item?.productId ?? product?.id);
-      const quantity = Math.max(1, Math.floor(Number(item?.quantity) || 1));
-      if (!Number.isSafeInteger(productId) || productId <= 0) return;
+      const productId = DJ.normalizeProductId?.(item?.productId ?? product?.id);
+      if (!productId) return;
+
+      const quantity = DJ.normalizeCartQuantity?.(item?.quantity) || 1;
       normalized.set(productId, {
         productId,
         quantity: (normalized.get(productId)?.quantity || 0) + quantity,
@@ -85,17 +86,10 @@ window.DJ = window.DJ || {};
     return Boolean(config.stripeCheckoutEnabled && config.stripeCheckoutFunction);
   }
 
-  function getPriceLabel(product = {}) {
-    return String(product.displayPrice || product.priceLabel || DJ.displayPrice?.(product) || '').trim();
-  }
-
   function isDirectCheckoutEligible(product = {}) {
-    const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
-    const displayPrice = getPriceLabel(product).toLowerCase();
-    if (!Number.isFinite(price) || price <= 0) return false;
-    if (typeof DJ.isProductCheckoutAvailable === 'function' && !DJ.isProductCheckoutAvailable(product)) return false;
-    if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
-    return true;
+    return typeof DJ.isDirectCheckoutEligible === 'function'
+      ? DJ.isDirectCheckoutEligible(product)
+      : false;
   }
 
   function timeoutAfter(milliseconds, message) {

@@ -11,8 +11,6 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const SITE_URL = 'https://www.djshouseofcards-comics.com/';
   const PRODUCT_SCHEMA_SCRIPT_ID = 'seo-product-structured-data';
-  const PRODUCT_LINK_PARAM = 'item';
-
   function absoluteUrl(path = '') {
     try {
       return new URL(path, SITE_URL).toString();
@@ -49,26 +47,11 @@ window.DJ = window.DJ || {};
   }
 
   function productPagePath(product = {}) {
-    if (typeof DJ.productPageUrl === 'function') {
-      return DJ.productPageUrl(product);
-    }
-
-    const category = String(product.category || '').toLowerCase();
-    const page = category.includes('baseball')
-      ? 'baseball-cards.html'
-      : category.includes('basketball')
-        ? 'basketball-cards.html'
-        : category.includes('football')
-          ? 'football-cards.html'
-          : category.includes('comic')
-            ? 'comics.html'
-            : category.includes('collect')
-              ? 'collectibles.html'
-              : 'shop.html';
-    const productId = Number(product.id);
-    return Number.isFinite(productId) && productId > 0
-      ? `${page}?${PRODUCT_LINK_PARAM}=${encodeURIComponent(String(productId))}`
-      : page;
+    // core.js owns category-to-page routing; SEO reuses it so item URLs do not
+    // drift between visible links and Product JSON-LD.
+    return typeof DJ.productPageUrl === 'function'
+      ? DJ.productPageUrl(product)
+      : 'shop.html';
   }
 
   function productUrl(product = {}) {

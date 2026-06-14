@@ -1523,14 +1523,18 @@ window.DJ = window.DJ || {};
       });
     }
 
+    const onClick = (id, handler) => {
+      document.getElementById(id)?.addEventListener('click', handler);
+    };
+
     document.getElementById('backendLoginForm')?.addEventListener('submit', handleBackendSignIn);
-    document.getElementById('backendRefreshProducts')?.addEventListener('click', () => {
+    onClick('backendRefreshProducts', () => {
       if (!confirmDiscardRemoteChanges()) return;
       refreshRemoteProducts(true);
     });
-    document.getElementById('backendSeedProducts')?.addEventListener('click', handleSeedProducts);
-    document.getElementById('backendConnectionTest')?.addEventListener('click', handleConnectionTest);
-    document.getElementById('backendSignOut')?.addEventListener('click', async () => {
+    onClick('backendSeedProducts', handleSeedProducts);
+    onClick('backendConnectionTest', handleConnectionTest);
+    onClick('backendSignOut', async () => {
       if (state.isBusy) return;
       if (!confirmDiscardRemoteChanges()) return;
       try {
@@ -1559,7 +1563,7 @@ window.DJ = window.DJ || {};
     document.getElementById('backendListingSearch')?.addEventListener('input', (event) => {
       handleRemoteSearch(event.target?.value || '');
     });
-    document.getElementById('backendClearSearch')?.addEventListener('click', () => {
+    onClick('backendClearSearch', () => {
       const input = document.getElementById('backendListingSearch');
       if (!input || !input.value) return;
       resetRemoteBrowseState();
@@ -1573,7 +1577,7 @@ window.DJ = window.DJ || {};
       resetRemoteBrowseState();
       setBackendStatus('Remote listing search cleared.', 'info');
     });
-    document.getElementById('backendNewListing')?.addEventListener('click', () => {
+    onClick('backendNewListing', () => {
       if (!confirmDiscardRemoteChanges()) return;
       createNewRemoteListing();
     });
@@ -1587,18 +1591,18 @@ window.DJ = window.DJ || {};
       if (event.target?.id === 'backendProductId') return;
       markRemoteEditorDirty();
     });
-    document.getElementById('backendDeleteListing')?.addEventListener('click', handleDeleteRemoteListing);
-    document.getElementById('backendClearEditor')?.addEventListener('click', () => {
+    onClick('backendDeleteListing', handleDeleteRemoteListing);
+    onClick('backendClearEditor', () => {
       if (!confirmDiscardRemoteChanges()) return;
       clearRemoteForm();
     });
-    document.getElementById('backendUploadMainImage')?.addEventListener('click', () => document.getElementById('backendMainImageFile')?.click());
+    onClick('backendUploadMainImage', () => document.getElementById('backendMainImageFile')?.click());
     document.getElementById('backendMainImageFile')?.addEventListener('change', async (event) => {
       const file = event.target.files?.[0];
       if (file) await uploadMainImage(file);
       event.target.value = '';
     });
-    document.getElementById('backendRemoveMainImage')?.addEventListener('click', () => {
+    onClick('backendRemoveMainImage', () => {
       document.getElementById('backendImage').value = '';
       showRemoteMainPreview('', getRemoteDraftCategory(), getRemoteDraftName());
       renderRemoteGallery();
@@ -1614,7 +1618,7 @@ window.DJ = window.DJ || {};
     document.getElementById('backendCategory')?.addEventListener('change', () => {
       debouncedRemoteDraftPreview();
     });
-    document.getElementById('backendAddGalleryUrl')?.addEventListener('click', () => {
+    onClick('backendAddGalleryUrl', () => {
       addGalleryUrlFromInput();
     });
 
@@ -1623,7 +1627,7 @@ window.DJ = window.DJ || {};
       event.preventDefault();
       addGalleryUrlFromInput();
     });
-    document.getElementById('backendAddGalleryFile')?.addEventListener('click', () => document.getElementById('backendGalleryFile')?.click());
+    onClick('backendAddGalleryFile', () => document.getElementById('backendGalleryFile')?.click());
     document.getElementById('backendGalleryFile')?.addEventListener('change', async (event) => {
       const file = event.target.files?.[0];
       if (file) await uploadGalleryImage(file);

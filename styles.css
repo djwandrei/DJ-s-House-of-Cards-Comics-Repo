@@ -3868,9 +3868,6 @@ body.dark-mode .page-hero-card {
   object-fit:contain;
   background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(242,246,255,.88));
 }
-.product-content {
-  padding:1rem 1rem 1.05rem;
-}
 .product-grade-meta {
   text-align:right;
   max-width:45%;

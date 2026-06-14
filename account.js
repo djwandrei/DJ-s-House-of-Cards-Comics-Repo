@@ -960,14 +960,15 @@ window.DJ = window.DJ || {};
     $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
     $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);
 
-    const profileForm = $('accountProfileForm');
-    profileForm?.addEventListener('submit', saveProfileForm);
-    profileForm?.addEventListener('input', renderAccountSummary);
-    profileForm?.addEventListener('change', renderAccountSummary);
-    const collectorForm = $('collectorProfileForm');
-    collectorForm?.addEventListener('submit', saveProfileForm);
-    collectorForm?.addEventListener('input', renderAccountSummary);
-    collectorForm?.addEventListener('change', renderAccountSummary);
+    const bindProfileForm = (formId) => {
+      const form = $(formId);
+      form?.addEventListener('submit', saveProfileForm);
+      form?.addEventListener('input', renderAccountSummary);
+      form?.addEventListener('change', renderAccountSummary);
+    };
+    bindProfileForm('accountProfileForm');
+    bindProfileForm('collectorProfileForm');
+
     window.addEventListener('beforeunload', (event) => {
       if (!hasUnsavedProfileFormChanges()) return;
       event.preventDefault();

@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260613c';
+  const PRODUCT_ASSET_VERSION = '20260614a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -44,6 +44,13 @@ window.DJ = window.DJ || {};
     'products-sports.json': 'DJ_PRODUCTS_SPORTS',
     'products-featured.json': 'DJ_PRODUCTS_FEATURED'
   };
+  const CATEGORY_PAGE_ROUTES = [
+    [/baseball/, 'baseball-cards.html'],
+    [/basketball/, 'basketball-cards.html'],
+    [/football/, 'football-cards.html'],
+    [/comic/, 'comics.html'],
+    [/collect/, 'collectibles.html']
+  ];
 
   // Centralize localStorage keys so future refactors only need to update them in one place.
   const STORAGE_KEYS = {
@@ -195,6 +202,18 @@ window.DJ = window.DJ || {};
     return [...new Set((Array.isArray(items) ? items : []).map(Number).filter(Number.isFinite))];
   }
 
+  function normalizeProductId(value) {
+    const productId = Number(value);
+    return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
+  }
+
+  function normalizeCartQuantity(value, { allowZero = false } = {}) {
+    const fallback = allowZero ? 0 : 1;
+    const quantity = Math.floor(Number(value) || fallback);
+    const minimum = allowZero ? 0 : 1;
+    return Math.max(minimum, Math.min(99, quantity));
+  }
+
   function getWishlist() {
     try {
       return normalizeWishlist(JSON.parse(safeStorageGet(STORAGE_KEYS.wishlist) || '[]'));
@@ -249,9 +268,10 @@ window.DJ = window.DJ || {};
   function normalizeCart(items) {
     const normalized = new Map();
     (Array.isArray(items) ? items : []).forEach((item) => {
-      const productId = Number(item?.productId ?? item?.id);
-      const quantity = Math.max(1, Math.min(99, Math.floor(Number(item?.quantity) || 1)));
-      if (!Number.isSafeInteger(productId) || productId <= 0) return;
+      const productId = normalizeProductId(item?.productId ?? item?.id);
+      if (!productId) return;
+
+      const quantity = normalizeCartQuantity(item?.quantity);
       normalized.set(productId, {
         productId,
         quantity: Math.min(99, (normalized.get(productId)?.quantity || 0) + quantity)
@@ -359,7 +379,7 @@ window.DJ = window.DJ || {};
       const remoteWishlist = normalizeWishlist(await remote.listWishlist());
       const migrationKey = wishlistMigrationKey(userId);
       const hasMigrated = safeStorageGet(migrationKey) === 'true';
-      const nextWishlist = hasMigrated
+      let nextWishlist = hasMigrated
         ? remoteWishlist
         : normalizeWishlist([...remoteWishlist, ...localWishlist]);
 
@@ -1561,19 +1581,18 @@ window.DJ = window.DJ || {};
     return DJ.payablePrice(item);
   };
 
+  DJ.isDirectCheckoutEligible = function isDirectCheckoutEligible(item = {}) {
+    const price = DJ.payablePrice(item);
+    const priceLabel = String(item?.displayPrice || item?.priceLabel || DJ.displayPrice(item) || '').toLowerCase();
+    return Number.isFinite(price)
+      && price > 0
+      && isProductCheckoutAvailable(item)
+      && !/contact|ask|inquir|availability/.test(priceLabel);
+  };
+
   DJ.productPageUrl = function productPageUrl(product = {}) {
     const category = String(product.category || '').toLowerCase();
-    const page = category.includes('baseball')
-      ? 'baseball-cards.html'
-      : category.includes('basketball')
-        ? 'basketball-cards.html'
-        : category.includes('football')
-          ? 'football-cards.html'
-          : category.includes('comic')
-            ? 'comics.html'
-            : category.includes('collect')
-              ? 'collectibles.html'
-              : 'shop.html';
+    const page = CATEGORY_PAGE_ROUTES.find(([pattern]) => pattern.test(category))?.[1] || 'shop.html';
     const id = product.id == null ? '' : String(product.id).trim();
     return id ? `${page}?item=${encodeURIComponent(id)}` : page;
   };
@@ -1587,32 +1606,37 @@ window.DJ = window.DJ || {};
   DJ.clearAccountWishlistCache = clearAccountWishlistCache;
 
   DJ.updateWishlistCount = updateWishlistCount;
+  DJ.normalizeProductId = normalizeProductId;
+  DJ.normalizeCartQuantity = normalizeCartQuantity;
   DJ.getCart = getCart;
   DJ.setCart = function setCart(items) {
     return persistCart(items, 'local');
   };
   DJ.addToCart = function addToCart(productId, quantity = 1) {
     const cart = getCart();
-    const normalizedId = Number(productId);
+    const normalizedId = normalizeProductId(productId);
+    if (!normalizedId) return persistCart(cart, 'local');
+
     const existing = cart.find((item) => item.productId === normalizedId);
+    const normalizedQuantity = normalizeCartQuantity(quantity);
     if (existing) {
-      existing.quantity += Math.max(1, Math.floor(Number(quantity) || 1));
+      existing.quantity += normalizedQuantity;
     } else {
-      cart.push({ productId: normalizedId, quantity });
+      cart.push({ productId: normalizedId, quantity: normalizedQuantity });
     }
     return persistCart(cart, 'local');
   };
   DJ.updateCartQuantity = function updateCartQuantity(productId, quantity) {
-    const normalizedId = Number(productId);
-    const normalizedQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
     const currentCart = getCart();
+    const normalizedId = normalizeProductId(productId);
+    if (!normalizedId) return persistCart(currentCart, 'local');
+
+    const normalizedQuantity = normalizeCartQuantity(quantity, { allowZero: true });
     const cart = currentCart
       .filter((item) => item.productId !== normalizedId || normalizedQuantity > 0)
       .map((item) => item.productId === normalizedId ? { ...item, quantity: normalizedQuantity } : item);
     if (
-      Number.isSafeInteger(normalizedId)
-      && normalizedId > 0
-      && normalizedQuantity > 0
+      normalizedQuantity > 0
       && !currentCart.some((item) => item.productId === normalizedId)
     ) {
       cart.push({ productId: normalizedId, quantity: normalizedQuantity });
@@ -1620,7 +1644,11 @@ window.DJ = window.DJ || {};
     return persistCart(cart, 'local');
   };
   DJ.removeFromCart = function removeFromCart(productId) {
-    return persistCart(getCart().filter((item) => item.productId !== Number(productId)), 'local');
+    const normalizedId = normalizeProductId(productId);
+    const cart = getCart();
+    if (!normalizedId) return persistCart(cart, 'local');
+
+    return persistCart(cart.filter((item) => item.productId !== normalizedId), 'local');
   };
   DJ.clearCart = function clearCart(source = 'local') {
     return persistCart([], source);

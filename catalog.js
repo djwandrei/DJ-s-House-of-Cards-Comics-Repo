@@ -507,10 +507,6 @@ window.DJ = window.DJ || {};
     return labels[category] || category;
   }
 
-  function isPriceRangeDisplay(displayPrice = '') {
-    return /\$\s*[\d,.]+(?:\s*(?:-|[\u2013\u2014]|to)\s*\$?\s*[\d,.]+)/i.test(String(displayPrice || ''));
-  }
-
   function getProductPriceLabel(product = {}) {
     const displayPrice = DJ.displayPrice(product);
     if (/contact/i.test(displayPrice)) return 'Availability';
@@ -518,22 +514,13 @@ window.DJ = window.DJ || {};
   }
 
   function getProductGuideRange(product = {}) {
-    return typeof DJ.priceRangeLabel === 'function'
-      ? DJ.priceRangeLabel(product)
-      : (isPriceRangeDisplay(product.priceLabel || product.displayPrice) ? String(product.priceLabel || product.displayPrice).trim() : '');
+    return typeof DJ.priceRangeLabel === 'function' ? DJ.priceRangeLabel(product) : '';
   }
 
   function isDirectCheckoutCandidate(product = {}) {
-    if (typeof DJ.payments?.isDirectCheckoutEligible === 'function') {
-      return DJ.payments.isDirectCheckoutEligible(product);
-    }
-
-    const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
-    const displayPrice = DJ.displayPrice(product).toLowerCase();
-    if (!Number.isFinite(price) || price <= 0) return false;
-    if (typeof DJ.isProductCheckoutAvailable === 'function' && !DJ.isProductCheckoutAvailable(product)) return false;
-    if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
-    return true;
+    return typeof DJ.isDirectCheckoutEligible === 'function'
+      ? DJ.isDirectCheckoutEligible(product)
+      : false;
   }
 
   function getProductActionLabel(product = {}, context = 'card') {
@@ -1792,15 +1779,18 @@ window.DJ = window.DJ || {};
     }
 
     const available = DJ.availableQuantity?.(product) || 0;
-    const existing = DJ.getCart?.().find((item) => item.productId === Number(product.id));
-    const requested = Math.max(1, Math.floor(Number(quantity) || 1));
+    const productId = DJ.normalizeProductId?.(product.id);
+    if (!productId) return false;
+
+    const existing = DJ.getCart?.().find((item) => item.productId === productId);
+    const requested = DJ.normalizeCartQuantity?.(quantity) || 1;
     const nextQuantity = Math.min(available, (existing?.quantity || 0) + requested);
     if (nextQuantity <= (existing?.quantity || 0)) {
       setModalStatus(`Only ${available} available for this listing.`, 'error');
       return false;
     }
 
-    DJ.updateCartQuantity?.(product.id, nextQuantity);
+    DJ.updateCartQuantity?.(productId, nextQuantity);
     setModalStatus(`${product.name} added to cart.`, 'success');
     return true;
   }
@@ -2079,60 +2069,31 @@ Thank you.`
       const contextProducts = gridProductSequences.get(container) || productSequence;
 
       if (event.target.closest('.wishlist-button')) {
+        event.preventDefault();
         toggleWishlist(productId, product);
         return;
       }
 
       if (event.target.closest('[data-product-buy]')) {
+        event.preventDefault();
         buyNow(product);
         return;
       }
 
       if (event.target.closest('[data-product-cart]')) {
+        event.preventDefault();
         addToCart(product);
         return;
       }
 
       if (event.target.closest('[data-product-details]')) {
+        event.preventDefault();
         openModal(product, { contextProducts });
         return;
       }
 
       openModal(product, { contextProducts });
     };
-
-    const bindCardAction = (selector, actionName, callback) => {
-      container.querySelectorAll(selector).forEach((button) => {
-        const boundKey = `bound${actionName}`;
-        if (button.dataset[boundKey] === 'true') return;
-        button.dataset[boundKey] = 'true';
-        button.addEventListener('click', (event) => {
-          const productCard = button.closest('.product-card');
-          if (!productCard) return;
-          const productId = Number(productCard.dataset.productId);
-          const product = gridProductLookups.get(container)?.get(productId);
-          if (!product) return;
-          event.preventDefault();
-          event.stopPropagation();
-          callback(productId, product);
-        });
-      });
-    };
-
-    bindCardAction('.wishlist-button', 'Wishlist', (productId, product) => {
-      toggleWishlist(productId, product);
-    });
-    bindCardAction('[data-product-buy]', 'Buy', (_productId, product) => {
-      buyNow(product);
-    });
-    bindCardAction('[data-product-cart]', 'Cart', (_productId, product) => {
-      addToCart(product);
-    });
-    bindCardAction('[data-product-details]', 'Details', (_productId, product) => {
-      openModal(product, {
-        contextProducts: gridProductSequences.get(container) || productSequence
-      });
-    });
 
     if (container.dataset.cardKeyboardBound === 'true') return;
     container.dataset.cardKeyboardBound = 'true';
@@ -3904,7 +3865,7 @@ Thank you.`);
                 <div class="cart-item__copy">
                   <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
                   <h2><a href="${DJ.escapeHtml(DJ.productPageUrl(product))}">${DJ.escapeHtml(product.name)}</a></h2>
-                  <p>${DJ.escapeHtml(DJ.displayPrice(product))} each · ${available} available</p>
+                  <p>${DJ.escapeHtml(DJ.displayPrice(product))} each &middot; ${available} available</p>
                   <div class="cart-item__actions">
                     <label>Quantity
                       <input data-cart-quantity type="number" min="1" max="${available}" value="${quantity}" inputmode="numeric">
@@ -3931,29 +3892,40 @@ Thank you.`);
       </div>
     `;
 
-    container.querySelectorAll('[data-cart-quantity]').forEach((input) => {
-      input.addEventListener('change', () => {
-        const productId = Number(input.closest('[data-cart-product-id]')?.dataset.cartProductId);
-        DJ.updateCartQuantity?.(productId, input.value);
-      });
-    });
-    container.querySelectorAll('[data-cart-remove]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const productId = Number(button.closest('[data-cart-product-id]')?.dataset.cartProductId);
+    // The cart rerenders whenever quantities change, so keep one delegated
+    // handler pair on the container instead of rebinding every rendered control.
+    const getCartProductId = (target) => Number(target.closest('[data-cart-product-id]')?.dataset.cartProductId);
+    container.onchange = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target?.matches('[data-cart-quantity]')) return;
+      DJ.updateCartQuantity?.(getCartProductId(target), target.value);
+    };
+    container.onclick = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+
+      const removeButton = target.closest('[data-cart-remove]');
+      if (removeButton) {
+        DJ.removeFromCart?.(getCartProductId(removeButton));
+        return;
+      }
+
+      const wishlistButton = target.closest('[data-cart-move-wishlist]');
+      if (wishlistButton) {
+        const productId = getCartProductId(wishlistButton);
+        const wishlist = DJ.getWishlist();
+        if (!wishlist.includes(productId)) DJ.setWishlist([...wishlist, productId]);
         DJ.removeFromCart?.(productId);
-      });
-    });
-    container.querySelectorAll('[data-cart-move-wishlist]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const productId = Number(button.closest('[data-cart-product-id]')?.dataset.cartProductId);
-        if (!DJ.getWishlist().includes(productId)) DJ.setWishlist([...DJ.getWishlist(), productId]);
-        DJ.removeFromCart?.(productId);
-      });
-    });
-    container.querySelector('[data-cart-clear]')?.addEventListener('click', () => {
-      if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart?.();
-    });
-    container.querySelector('[data-cart-checkout]')?.addEventListener('click', () => checkoutCart(allProducts));
+        return;
+      }
+
+      if (target.closest('[data-cart-clear]')) {
+        if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart?.();
+        return;
+      }
+
+      if (target.closest('[data-cart-checkout]')) checkoutCart(allProducts);
+    };
     DJ.applyLazyLoading(container);
   }
 
@@ -4287,56 +4259,28 @@ Thank you.`);
     const heroCard = document.querySelector('.page-hero-card');
     if (!heroCard || heroCard.querySelector('.catalog-switcher')) return;
 
+    const shopLinks = [
+      ['sports-cards.html', 'Sports Cards'],
+      ['comics.html', 'Comics'],
+      ['collectibles.html', 'Collectibles']
+    ];
+    const sportsLinks = [
+      ['sports-cards.html', 'All Sports'],
+      ['baseball-cards.html', 'Baseball'],
+      ['basketball-cards.html', 'Basketball'],
+      ['football-cards.html', 'Football']
+    ];
     const switchers = {
-      'shop-hub': [
-        ['sports-cards.html', 'Sports Cards'],
-        ['comics.html', 'Comics'],
-        ['collectibles.html', 'Collectibles']
-      ],
-      'sports-hub': [
-        ['sports-cards.html', 'All Sports'],
-        ['baseball-cards.html', 'Baseball'],
-        ['basketball-cards.html', 'Basketball'],
-        ['football-cards.html', 'Football']
-      ],
-      'sports-cards': [
-        ['sports-cards.html', 'All Sports'],
-        ['baseball-cards.html', 'Baseball'],
-        ['basketball-cards.html', 'Basketball'],
-        ['football-cards.html', 'Football']
-      ],
-      'baseball-cards': [
-        ['sports-cards.html', 'All Sports'],
-        ['baseball-cards.html', 'Baseball'],
-        ['basketball-cards.html', 'Basketball'],
-        ['football-cards.html', 'Football']
-      ],
-      'basketball-cards': [
-        ['sports-cards.html', 'All Sports'],
-        ['baseball-cards.html', 'Baseball'],
-        ['basketball-cards.html', 'Basketball'],
-        ['football-cards.html', 'Football']
-      ],
-      'football-cards': [
-        ['sports-cards.html', 'All Sports'],
-        ['baseball-cards.html', 'Baseball'],
-        ['basketball-cards.html', 'Basketball'],
-        ['football-cards.html', 'Football']
-      ],
-      comics: [
-        ['sports-cards.html', 'Sports Cards'],
-        ['comics.html', 'Comics'],
-        ['collectibles.html', 'Collectibles']
-      ],
-      collectibles: [
-        ['sports-cards.html', 'Sports Cards'],
-        ['comics.html', 'Comics'],
-        ['collectibles.html', 'Collectibles']
-      ],
+      'shop-hub': shopLinks,
+      'sports-hub': sportsLinks,
+      'sports-cards': sportsLinks,
+      'baseball-cards': sportsLinks,
+      'basketball-cards': sportsLinks,
+      'football-cards': sportsLinks,
+      comics: shopLinks,
+      collectibles: shopLinks,
       wishlist: [
-        ['sports-cards.html', 'Sports Cards'],
-        ['comics.html', 'Comics'],
-        ['collectibles.html', 'Collectibles'],
+        ...shopLinks,
         ['wishlist.html', 'Wishlist']
       ]
     };
@@ -4344,19 +4288,11 @@ Thank you.`);
     const links = switchers[page];
     if (!links || !links.length) return;
 
-    const currentHrefMap = {
+    const currentHref = {
       'shop-hub': 'shop.html',
       'sports-hub': 'sports-cards.html',
-      'sports-cards': 'sports-cards.html',
-      'baseball-cards': 'baseball-cards.html',
-      'basketball-cards': 'basketball-cards.html',
-      'football-cards': 'football-cards.html',
-      comics: 'comics.html',
-      collectibles: 'collectibles.html',
       wishlist: 'wishlist.html'
-    };
-
-    const currentHref = currentHrefMap[page];
+    }[page] || `${page}.html`;
     const nav = document.createElement('nav');
     nav.className = 'catalog-switcher';
     nav.setAttribute('aria-label', 'Browse departments');
