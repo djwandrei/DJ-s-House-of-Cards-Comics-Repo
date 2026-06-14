@@ -11,16 +11,71 @@ window.DJ = window.DJ || {};
   const DJ = window.DJ;
   const config = window.DJ_BACKEND_CONFIG || {};
   const AUTH_SESSION_CHECK_TIMEOUT_MS = 6500;
+  const PENDING_CHECKOUT_KEY = 'djPendingCheckout';
+  const PENDING_CHECKOUT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
   const state = {
     session: null,
-    pendingCheckoutProduct: null,
-    pendingCheckoutOptions: null,
+    pendingCheckoutRequest: null,
     authReady: false,
     checkoutInFlight: false,
     authHydrationPromise: null,
     authListenerBound: false,
     lastAuthFocusedElement: null
   };
+
+  function normalizeCheckoutItems(items = []) {
+    const normalized = new Map();
+    (Array.isArray(items) ? items : []).forEach((item) => {
+      const product = item?.product || item;
+      const productId = Number(item?.productId ?? product?.id);
+      const quantity = Math.max(1, Math.floor(Number(item?.quantity) || 1));
+      if (!Number.isSafeInteger(productId) || productId <= 0) return;
+      normalized.set(productId, {
+        productId,
+        quantity: (normalized.get(productId)?.quantity || 0) + quantity,
+        product: product?.id ? product : null
+      });
+    });
+    return [...normalized.values()];
+  }
+
+  function persistPendingCheckout(request = null) {
+    state.pendingCheckoutRequest = request;
+    try {
+      if (!request) {
+        sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
+        return;
+      }
+      sessionStorage.setItem(PENDING_CHECKOUT_KEY, JSON.stringify({
+        items: request.items.map(({ productId, quantity }) => ({ productId, quantity })),
+        returnPath: request.returnPath,
+        createdAt: Date.now()
+      }));
+    } catch {
+      // Checkout can still continue in memory when sessionStorage is unavailable.
+    }
+  }
+
+  function restorePendingCheckout() {
+    if (state.pendingCheckoutRequest) return state.pendingCheckoutRequest;
+    try {
+      const stored = JSON.parse(sessionStorage.getItem(PENDING_CHECKOUT_KEY) || 'null');
+      if (!stored || Date.now() - Number(stored.createdAt || 0) > PENDING_CHECKOUT_MAX_AGE_MS) {
+        sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
+        return null;
+      }
+      const items = normalizeCheckoutItems(stored.items);
+      if (!items.length) return null;
+      state.pendingCheckoutRequest = {
+        items,
+        returnPath: stored.returnPath || '/account.html',
+        options: {}
+      };
+      return state.pendingCheckoutRequest;
+    } catch {
+      return null;
+    }
+  }
 
   function isBackendReady() {
     return Boolean(DJ.remoteCatalog?.isConfigured?.());
@@ -38,9 +93,7 @@ window.DJ = window.DJ || {};
     const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = getPriceLabel(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
-    // Quantity-aware inventory is not live yet, so multi-copy listings stay on
-    // the inquiry flow instead of being incorrectly marked sold after one sale.
-    if (Number(product.copyCount) > 1) return false;
+    if (typeof DJ.isProductCheckoutAvailable === 'function' && !DJ.isProductCheckoutAvailable(product)) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
     return true;
   }
@@ -113,10 +166,14 @@ window.DJ = window.DJ || {};
 
     modal.querySelector('#customerAuthForm')?.addEventListener('submit', async (event) => {
       event.preventDefault();
+      modal.querySelector('#customerAuthPassword')?.setAttribute('autocomplete', 'current-password');
       await signInFromModal();
     });
 
-    modal.querySelector('[data-auth-action="signup"]')?.addEventListener('click', signUpFromModal);
+    modal.querySelector('[data-auth-action="signup"]')?.addEventListener('click', () => {
+      modal.querySelector('#customerAuthPassword')?.setAttribute('autocomplete', 'new-password');
+      signUpFromModal();
+    });
     modal.querySelector('[data-auth-action="reset"]')?.addEventListener('click', resetPasswordFromModal);
     document.addEventListener('keydown', (event) => {
       if (!modal.classList.contains('active')) {
@@ -185,9 +242,12 @@ window.DJ = window.DJ || {};
 
   function openAuthModal(options = {}) {
     const modal = ensureAuthModal();
-    if (options.product) {
-      state.pendingCheckoutProduct = options.product;
-      state.pendingCheckoutOptions = options.checkoutOptions || null;
+    if (options.items?.length) {
+      persistPendingCheckout({
+        items: normalizeCheckoutItems(options.items),
+        returnPath: options.returnPath || `${window.location.pathname}${window.location.search}`,
+        options: options.checkoutOptions || {}
+      });
     }
     state.lastAuthFocusedElement = document.activeElement instanceof HTMLElement
       ? document.activeElement
@@ -203,8 +263,6 @@ window.DJ = window.DJ || {};
     if (!modal) return;
     setAuthModalOpenState(modal, false);
     document.body.classList.remove('customer-auth-open');
-    state.pendingCheckoutProduct = null;
-    state.pendingCheckoutOptions = null;
     if (
       state.lastAuthFocusedElement
       && state.lastAuthFocusedElement.isConnected !== false
@@ -233,12 +291,9 @@ window.DJ = window.DJ || {};
       emitAuthChange('SIGNED_IN', state.session);
       setAuthStatus('Signed in. Opening checkout...', 'success');
       updateAccountControls();
-      const product = state.pendingCheckoutProduct;
-      const checkoutOptions = state.pendingCheckoutOptions || {};
-      state.pendingCheckoutProduct = null;
-      state.pendingCheckoutOptions = null;
+      const pending = state.pendingCheckoutRequest || restorePendingCheckout();
       closeAuthModal();
-      if (product) await startCheckout(product, checkoutOptions);
+      if (pending?.items?.length) await startCheckoutItems(pending.items, pending.options || {}, pending.returnPath);
     } catch (error) {
       setAuthStatus(error.message || 'Sign-in failed.', 'error');
     }
@@ -249,20 +304,17 @@ window.DJ = window.DJ || {};
     if (!email || !password) return;
     setAuthStatus('Creating your account...', 'info');
     try {
-      await DJ.remoteCatalog.signUp(email, password);
+      await DJ.remoteCatalog.signUp(email, password, { resumeCheckout: Boolean(state.pendingCheckoutRequest) });
       state.session = await DJ.remoteCatalog.getSession();
       state.authReady = true;
       bindAuthStateSync();
       emitAuthChange('SIGNED_IN', state.session);
       updateAccountControls();
       setAuthStatus('Account created. If Supabase requires confirmation, check your email before checkout.', 'success');
-      if (state.session && state.pendingCheckoutProduct) {
-        const product = state.pendingCheckoutProduct;
-        const checkoutOptions = state.pendingCheckoutOptions || {};
-        state.pendingCheckoutProduct = null;
-        state.pendingCheckoutOptions = null;
+      if (state.session && state.pendingCheckoutRequest?.items?.length) {
+        const pending = state.pendingCheckoutRequest;
         closeAuthModal();
-        await startCheckout(product, checkoutOptions);
+        await startCheckoutItems(pending.items, pending.options || {}, pending.returnPath);
       }
     } catch (error) {
       setAuthStatus(error.message || 'Account creation failed.', 'error');
@@ -365,19 +417,16 @@ window.DJ = window.DJ || {};
     return state.authHydrationPromise;
   }
 
-  function continueCheckoutIfExistingSession(product, options = {}) {
+  function continueCheckoutIfExistingSession(options = {}, returnPath = '') {
     Promise.race([
       ensureAuthSession(),
       timeoutAfter(AUTH_SESSION_CHECK_TIMEOUT_MS, 'Customer account check timed out.')
     ])
       .then((session) => {
-        const pendingProductId = Number(state.pendingCheckoutProduct?.id);
-        if (!session?.user || pendingProductId !== Number(product.id)) return;
-        const checkoutOptions = state.pendingCheckoutOptions || options;
-        state.pendingCheckoutProduct = null;
-        state.pendingCheckoutOptions = null;
+        const pending = state.pendingCheckoutRequest || restorePendingCheckout();
+        if (!session?.user || !pending?.items?.length) return;
         closeAuthModal();
-        startCheckout(product, checkoutOptions);
+        startCheckoutItems(pending.items, pending.options || options, pending.returnPath || returnPath);
       })
       .catch(() => {
         setAuthStatus('Sign in or create an account to continue checkout.', 'info');
@@ -394,7 +443,9 @@ window.DJ = window.DJ || {};
   }
 
   function showCheckoutMessage(message, tone = 'info') {
-    const target = document.getElementById('modalCheckoutStatus') || document.getElementById('customerAuthStatus');
+    const target = document.getElementById('cartStatus')
+      || document.getElementById('modalCheckoutStatus')
+      || document.getElementById('customerAuthStatus');
     if (!target) return;
     target.textContent = message;
     target.dataset.tone = tone;
@@ -417,8 +468,12 @@ window.DJ = window.DJ || {};
   }
 
   function openInquiryFallback(options = {}, message = 'Secure checkout is unavailable right now, so the inquiry email is opening instead.') {
-    if (typeof options.fallback !== 'function') return false;
-    showCheckoutMessage(message, 'info');
+    const hasFallback = typeof options.fallback === 'function';
+    showCheckoutMessage(
+      hasFallback ? message : message.replace(/,\s*so the inquiry email is opening instead\.?/i, '.'),
+      'info'
+    );
+    if (!hasFallback) return false;
     options.fallback();
     return true;
   }
@@ -431,32 +486,45 @@ window.DJ = window.DJ || {};
     });
   }
 
-  async function startCheckout(product = {}, options = {}) {
+  async function startCheckoutItems(items = [], options = {}, returnPath = '') {
     if (state.checkoutInFlight) return;
+    const normalizedItems = normalizeCheckoutItems(items);
+    if (!normalizedItems.length) {
+      showCheckoutMessage('Add at least one available item before checkout.', 'error');
+      return;
+    }
 
     if (!isCheckoutEnabled() || !isBackendReady() || !DJ.remoteCatalog?.invokeFunction) {
       openInquiryFallback(options);
       return;
     }
 
-    if (!isDirectCheckoutEligible(product)) {
+    const unavailableItem = normalizedItems.find((item) => (
+      item.product && (
+        !isDirectCheckoutEligible(item.product)
+        || item.quantity > (DJ.availableQuantity?.(item.product) || 0)
+      )
+    ));
+    if (unavailableItem) {
       openInquiryFallback(options, 'This item needs confirmation before checkout, so the inquiry email is opening instead.');
       return;
     }
 
     if (!state.authReady) {
       openAuthModal({
-        product,
+        items: normalizedItems,
+        returnPath,
         checkoutOptions: options,
         message: 'Checking for an existing customer session. You can sign in or create an account to continue checkout.'
       });
-      continueCheckoutIfExistingSession(product, options);
+      continueCheckoutIfExistingSession(options, returnPath);
       return;
     }
 
     if (!state.session?.user) {
       openAuthModal({
-        product,
+        items: normalizedItems,
+        returnPath,
         checkoutOptions: options,
         message: 'Sign in or create a customer account before checkout.'
       });
@@ -469,13 +537,14 @@ window.DJ = window.DJ || {};
 
     try {
       const payload = {
-        productId: Number(product.id),
-        returnPath: `${window.location.pathname}${window.location.search}`
+        items: normalizedItems.map(({ productId, quantity }) => ({ productId, quantity })),
+        returnPath: returnPath || `${window.location.pathname}${window.location.search}`
       };
       const data = await DJ.remoteCatalog.invokeFunction(config.stripeCheckoutFunction, payload);
       if (!data?.url) {
         throw new Error('Stripe checkout did not return a checkout URL.');
       }
+      persistPendingCheckout(null);
       window.location.assign(data.url);
     } catch (error) {
       state.checkoutInFlight = false;
@@ -488,12 +557,32 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function startCheckout(product = {}, options = {}) {
+    return startCheckoutItems(
+      [{ product, productId: Number(product.id), quantity: Math.max(1, Number(options.quantity) || 1) }],
+      options,
+      `${window.location.pathname}${window.location.search}`
+    );
+  }
+
+  function startCartCheckout(items = [], options = {}) {
+    return startCheckoutItems(items, options, options.returnPath || '/cart.html');
+  }
+
   async function init() {
     injectAccountControl();
     updateAccountControls();
 
     if (isBackendReady() && document.querySelector('[data-customer-auth-autoload]')) {
-      const hydrateAfterPaint = () => ensureAuthSession().catch(() => {});
+      const hydrateAfterPaint = () => ensureAuthSession()
+        .then((session) => {
+          const params = new URLSearchParams(window.location.search);
+          const pending = restorePendingCheckout();
+          if (session?.user && pending?.items?.length && params.get('checkout') === 'resume') {
+            startCheckoutItems(pending.items, pending.options || {}, pending.returnPath);
+          }
+        })
+        .catch(() => {});
       if (typeof DJ.scheduleIdle === 'function') {
         DJ.scheduleIdle(hydrateAfterPaint, 2400);
       } else {
@@ -512,6 +601,7 @@ window.DJ = window.DJ || {};
     openAuthModal,
     closeAuthModal,
     startCheckout,
+    startCartCheckout,
     isDirectCheckoutEligible,
     hydrateAccount: ensureAuthSession
   };

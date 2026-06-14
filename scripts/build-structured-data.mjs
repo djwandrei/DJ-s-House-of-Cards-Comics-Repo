@@ -7,7 +7,7 @@ const SITE_EMAIL = 'djscardscomics13@gmail.com';
 const SITE_LOGO = `${SITE_URL}assets/dj-logo.png`;
 const FACEBOOK_URL = 'https://www.facebook.com/DJCardsComics/';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260608b';
+const SCRIPT_VERSION = '20260613c';
 const pages = {
   'index.html': {
     type: 'WebPage',
@@ -147,6 +147,28 @@ const pages = {
       ['Wishlist', '/wishlist.html']
     ]
   },
+  'cart.html': {
+    type: 'WebPage',
+    path: '/cart.html',
+    name: "Shopping Cart | DJ's House of Cards & Comics",
+    description: "Review quantities and securely check out multiple cards, comics, and collectibles.",
+    image: 'assets/dj-logo.png',
+    breadcrumb: [
+      ['Home', '/'],
+      ['Shopping Cart', '/cart.html']
+    ]
+  },
+  'checkout-success.html': {
+    type: 'WebPage',
+    path: '/checkout-success.html',
+    name: "Checkout Submitted | DJ's House of Cards & Comics",
+    description: 'Your secure checkout was submitted and is being confirmed.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [
+      ['Home', '/'],
+      ['Checkout Submitted', '/checkout-success.html']
+    ]
+  },
   'account.html': {
     type: 'WebPage',
     path: '/account.html',
@@ -168,6 +190,38 @@ const pages = {
       ['Home', '/'],
       ['Admin', '/admin.html']
     ]
+  },
+  'privacy.html': {
+    type: 'WebPage',
+    path: '/privacy.html',
+    name: "Privacy Policy | DJ's House of Cards & Comics",
+    description: "Learn how DJ's House of Cards & Comics handles account, checkout, contact, wishlist, and cart information.",
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Privacy Policy', '/privacy.html']]
+  },
+  'terms.html': {
+    type: 'WebPage',
+    path: '/terms.html',
+    name: "Terms of Sale | DJ's House of Cards & Comics",
+    description: 'Review the storefront terms for listings, pricing, checkout, availability, and customer communication.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Terms of Sale', '/terms.html']]
+  },
+  'shipping.html': {
+    type: 'WebPage',
+    path: '/shipping.html',
+    name: "Shipping Policy | DJ's House of Cards & Comics",
+    description: 'Review shipping, packaging, tracking, address, and delivery information for store orders.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Shipping Policy', '/shipping.html']]
+  },
+  'returns.html': {
+    type: 'WebPage',
+    path: '/returns.html',
+    name: "Returns Policy | DJ's House of Cards & Comics",
+    description: 'Review the process for reporting order problems and requesting a return.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Returns Policy', '/returns.html']]
   }
 };
 
@@ -348,7 +402,12 @@ function replaceStructuredData(html, graph) {
 }
 
 function ensureSeoRuntime(html) {
-  if (html.includes('src="seo.js')) return html;
+  if (html.includes('src="seo.js')) {
+    return html.replace(
+      /src=["']seo\.js(?:\?v=[^"']+)?["']/,
+      `src="seo.js?v=${SCRIPT_VERSION}"`
+    );
+  }
 
   return html.replace(
     /(<script\b[^>]*\bsrc=["']core\.js(?:\?v=[^"']+)?["'][^>]*>\s*<\/script>)/,

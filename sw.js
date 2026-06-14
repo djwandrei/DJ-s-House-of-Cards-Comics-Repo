@@ -6,7 +6,7 @@
  * bypass caches so signed-in edits are immediately visible.
  */
 
-const CACHE_VERSION = 'dj-house-v2026-06-12-08';
+const CACHE_VERSION = 'dj-house-v2026-06-13-03';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -20,18 +20,18 @@ const CACHE_ENTRY_LIMITS = {
 };
 const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);
 const SUPABASE_HOST_PATTERN = /supabase\.co$/i;
-const CACHE_BYPASS_PATHS = new Set(['/admin.html']);
+const CACHE_BYPASS_PATHS = new Set(['/admin.html', '/account.html', '/cart.html', '/checkout-success.html']);
 
 // Keep the offline shell limited to the app frame. Large decorative and product
 // images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
   '/offline.html',
-  '/styles.css?v=20260612h',
-  '/styles-mobile-overrides.css?v=20260612h',
-  '/core.js?v=20260612h',
-  '/seo.js?v=20260612h',
-  '/site.webmanifest?v=20260612h',
-  '/offline.js?v=20260612h',
+  '/styles.css?v=20260613c',
+  '/styles-mobile-overrides.css?v=20260613c',
+  '/core.js?v=20260613c',
+  '/seo.js?v=20260613c',
+  '/site.webmanifest?v=20260613c',
+  '/offline.js?v=20260613c',
   '/assets/dj-logo.png',
   '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png'
@@ -54,12 +54,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((key) => {
-      if (![SHELL_CACHE, RUNTIME_CACHE, CATALOG_CACHE, IMAGE_CACHE].includes(key)) {
-        return caches.delete(key);
-      }
-      return Promise.resolve();
-    }));
+    const activeCaches = new Set([SHELL_CACHE, RUNTIME_CACHE, CATALOG_CACHE, IMAGE_CACHE]);
+    await Promise.all(keys.filter((key) => !activeCaches.has(key)).map((key) => caches.delete(key)));
     if (self.registration.navigationPreload) {
       await self.registration.navigationPreload.enable();
     }

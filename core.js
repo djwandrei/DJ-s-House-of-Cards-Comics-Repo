@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260612h';
+  const PRODUCT_ASSET_VERSION = '20260613c';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -49,7 +49,8 @@ window.DJ = window.DJ || {};
   const STORAGE_KEYS = {
     theme: 'theme',
     wishlist: 'wishlist',
-    wishlistBackendMigration: 'wishlistBackendMigration'
+    wishlistBackendMigration: 'wishlistBackendMigration',
+    cart: 'cart'
   };
   const safeAssetUrlCache = new Map();
   const assetUrlCandidatesCache = new Map();
@@ -205,14 +206,16 @@ window.DJ = window.DJ || {};
   }
 
   /**
-   * Update every visible wishlist counter in the header/footer/UI chips.
-   * Keeping this in one place avoids desynchronized badge counts.
+   * Keep repeated header, footer, and page-level count badges synchronized.
    */
-  function updateWishlistCount() {
-    const count = getWishlist().length;
-    document.querySelectorAll('[data-wishlist-count]').forEach((element) => {
+  function updateCountElements(selector, count) {
+    document.querySelectorAll(selector).forEach((element) => {
       element.textContent = `(${count})`;
     });
+  }
+
+  function updateWishlistCount() {
+    updateCountElements('[data-wishlist-count]', getWishlist().length);
   }
 
   /**
@@ -241,6 +244,76 @@ window.DJ = window.DJ || {};
     updateWishlistCount();
     emitWishlistChange(normalized, source);
     return normalized;
+  }
+
+  function normalizeCart(items) {
+    const normalized = new Map();
+    (Array.isArray(items) ? items : []).forEach((item) => {
+      const productId = Number(item?.productId ?? item?.id);
+      const quantity = Math.max(1, Math.min(99, Math.floor(Number(item?.quantity) || 1)));
+      if (!Number.isSafeInteger(productId) || productId <= 0) return;
+      normalized.set(productId, {
+        productId,
+        quantity: Math.min(99, (normalized.get(productId)?.quantity || 0) + quantity)
+      });
+    });
+    return [...normalized.values()];
+  }
+
+  function getCart() {
+    try {
+      return normalizeCart(JSON.parse(safeStorageGet(STORAGE_KEYS.cart) || '[]'));
+    } catch {
+      console.warn('Invalid cart storage payload; resetting.');
+      safeStorageSet(STORAGE_KEYS.cart, '[]');
+      return [];
+    }
+  }
+
+  function updateCartCount() {
+    const count = getCart().reduce((total, item) => total + item.quantity, 0);
+    updateCountElements('[data-cart-count]', count);
+  }
+
+  function emitCartChange(items = getCart(), source = 'local') {
+    const normalized = normalizeCart(items);
+    window.dispatchEvent(new CustomEvent('dj:cartchange', {
+      detail: {
+        items: normalized,
+        count: normalized.reduce((total, item) => total + item.quantity, 0),
+        source
+      }
+    }));
+  }
+
+  function persistCart(items, source = 'local') {
+    const normalized = normalizeCart(items);
+    if (!safeStorageSet(STORAGE_KEYS.cart, JSON.stringify(normalized))) {
+      console.error('Failed to save cart.');
+    }
+    updateCartCount();
+    emitCartChange(normalized, source);
+    return normalized;
+  }
+
+  function availableQuantity(product = {}) {
+    const explicitQuantity = Number(product.quantityAvailable);
+    if (Number.isFinite(explicitQuantity)) {
+      return Math.max(0, Math.floor(explicitQuantity));
+    }
+    const copyCount = Number(product.copyCount);
+    if (Number.isFinite(copyCount)) {
+      return Math.max(0, Math.floor(copyCount));
+    }
+    return 1;
+  }
+
+  function isProductCheckoutAvailable(product = {}) {
+    const saleStatus = String(product.saleStatus || 'available').trim().toLowerCase();
+    return product.isDeleted !== true
+      && product.checkoutEnabled !== false
+      && saleStatus === 'available'
+      && availableQuantity(product) > 0;
   }
 
   function wishlistMigrationKey(userId = '') {
@@ -521,6 +594,21 @@ window.DJ = window.DJ || {};
       navToggle.setAttribute('aria-label', 'Open menu');
       navToggle.setAttribute('data-state', 'closed');
     }
+  }
+
+  function enhanceCartNavigation() {
+    const navList = document.querySelector('.site-nav .primary-nav__list');
+    if (!navList || navList.querySelector('[data-cart-link]')) return;
+
+    const item = document.createElement('li');
+    item.className = 'primary-nav__item header-cart-item';
+    item.innerHTML = `
+      <a class="header-cart-link primary-nav__link" href="cart.html" data-cart-link>
+        Cart <span data-cart-count="0">(0)</span>
+      </a>
+    `;
+    const accountItem = navList.querySelector('a[href="account.html"]')?.closest('.primary-nav__item');
+    navList.insertBefore(item, accountItem || null);
   }
 
   function renderThemeToggleState(isDarkMode) {
@@ -951,6 +1039,7 @@ window.DJ = window.DJ || {};
         footerActions.className = 'footer-actions';
         footerActions.innerHTML = `
           <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">(0)</span></a>
+          <a class="footer-action-link footer-action-link--secondary" href="cart.html">Cart <span class="footer-action-count" data-cart-count="0">(0)</span></a>
           <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
             <svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="12" fill="#1877F2"></circle>
@@ -963,6 +1052,18 @@ window.DJ = window.DJ || {};
       }
 
       if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
+        [
+          ['Privacy', 'privacy.html'],
+          ['Terms', 'terms.html'],
+          ['Shipping', 'shipping.html'],
+          ['Returns', 'returns.html']
+        ].forEach(([label, href]) => {
+          if (footerLinks.querySelector(`a[href="${href}"]`)) return;
+          const link = document.createElement('a');
+          link.href = href;
+          link.textContent = label;
+          footerLinks.appendChild(link);
+        });
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
         const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
         const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
@@ -1486,6 +1587,47 @@ window.DJ = window.DJ || {};
   DJ.clearAccountWishlistCache = clearAccountWishlistCache;
 
   DJ.updateWishlistCount = updateWishlistCount;
+  DJ.getCart = getCart;
+  DJ.setCart = function setCart(items) {
+    return persistCart(items, 'local');
+  };
+  DJ.addToCart = function addToCart(productId, quantity = 1) {
+    const cart = getCart();
+    const normalizedId = Number(productId);
+    const existing = cart.find((item) => item.productId === normalizedId);
+    if (existing) {
+      existing.quantity += Math.max(1, Math.floor(Number(quantity) || 1));
+    } else {
+      cart.push({ productId: normalizedId, quantity });
+    }
+    return persistCart(cart, 'local');
+  };
+  DJ.updateCartQuantity = function updateCartQuantity(productId, quantity) {
+    const normalizedId = Number(productId);
+    const normalizedQuantity = Math.max(0, Math.floor(Number(quantity) || 0));
+    const currentCart = getCart();
+    const cart = currentCart
+      .filter((item) => item.productId !== normalizedId || normalizedQuantity > 0)
+      .map((item) => item.productId === normalizedId ? { ...item, quantity: normalizedQuantity } : item);
+    if (
+      Number.isSafeInteger(normalizedId)
+      && normalizedId > 0
+      && normalizedQuantity > 0
+      && !currentCart.some((item) => item.productId === normalizedId)
+    ) {
+      cart.push({ productId: normalizedId, quantity: normalizedQuantity });
+    }
+    return persistCart(cart, 'local');
+  };
+  DJ.removeFromCart = function removeFromCart(productId) {
+    return persistCart(getCart().filter((item) => item.productId !== Number(productId)), 'local');
+  };
+  DJ.clearCart = function clearCart(source = 'local') {
+    return persistCart([], source);
+  };
+  DJ.updateCartCount = updateCartCount;
+  DJ.availableQuantity = availableQuantity;
+  DJ.isProductCheckoutAvailable = isProductCheckoutAvailable;
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
   DJ.loadScriptsInOrder = loadScriptsInOrder;
@@ -1542,6 +1684,7 @@ window.DJ = window.DJ || {};
     if (redirectLegacyCheckoutSuccess()) return;
     applyLazyLoading(document);
     enhanceHeaderLayout();
+    enhanceCartNavigation();
     initThemeToggle();
     initBackToTop();
     enhanceFooterContactLinks();
@@ -1550,6 +1693,13 @@ window.DJ = window.DJ || {};
     initArchiveImageLightbox();
     initArchivePanels();
     updateWishlistCount();
+    updateCartCount();
+    if (
+      document.body.dataset.page === 'checkout-success'
+      && new URLSearchParams(window.location.search).has('session_id')
+    ) {
+      DJ.clearCart('checkout-success');
+    }
     initHomeCatalogLoader();
     initHeaderScrollState();
     initDeferredServiceWorkerRegistration();
@@ -1569,6 +1719,10 @@ window.DJ = window.DJ || {};
       return;
     }
 
+    if (event.key === STORAGE_KEYS.cart) {
+      updateCartCount();
+      emitCartChange(getCart(), 'storage');
+    }
   });
 
   window.addEventListener('pageshow', (event) => {
@@ -1578,7 +1732,9 @@ window.DJ = window.DJ || {};
 
     applySavedTheme();
     updateWishlistCount();
+    updateCartCount();
     emitWishlistChange(getWishlist(), 'pageshow');
+    emitCartChange(getCart(), 'pageshow');
   });
 })();
 

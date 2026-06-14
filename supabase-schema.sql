@@ -21,6 +21,13 @@ create table if not exists public.products (
   sport text not null default '',
   player_athlete text not null default '',
   copy_count integer,
+  quantity_available integer not null default 1,
+  checkout_enabled boolean not null default true,
+  checkout_price numeric(12, 2),
+  sale_status text not null default 'available',
+  sold_at timestamptz,
+  hidden_reason text not null default '',
+  archived_at timestamptz,
   item_photo_url text not null default '',
   item_photo_urls text[] not null default array[]::text[],
   html_full_link text not null default '',
@@ -32,6 +39,30 @@ create table if not exists public.products (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.products add column if not exists quantity_available integer;
+alter table public.products add column if not exists checkout_enabled boolean;
+alter table public.products add column if not exists checkout_price numeric(12, 2);
+alter table public.products add column if not exists sale_status text;
+alter table public.products add column if not exists sold_at timestamptz;
+alter table public.products add column if not exists hidden_reason text;
+alter table public.products add column if not exists archived_at timestamptz;
+
+update public.products
+set
+  quantity_available = greatest(0, coalesce(quantity_available, copy_count, 1)),
+  checkout_enabled = coalesce(checkout_enabled, not is_deleted),
+  sale_status = coalesce(nullif(sale_status, ''), case when is_deleted then 'hidden' else 'available' end),
+  hidden_reason = coalesce(hidden_reason, '');
+
+alter table public.products alter column quantity_available set default 1;
+alter table public.products alter column quantity_available set not null;
+alter table public.products alter column checkout_enabled set default true;
+alter table public.products alter column checkout_enabled set not null;
+alter table public.products alter column sale_status set default 'available';
+alter table public.products alter column sale_status set not null;
+alter table public.products alter column hidden_reason set default '';
+alter table public.products alter column hidden_reason set not null;
 
 do $$
 begin
@@ -61,6 +92,33 @@ begin
     add constraint products_copy_count_nonnegative
     check (copy_count is null or copy_count >= 0);
   end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'products_quantity_available_nonnegative'
+  ) then
+    alter table public.products
+    add constraint products_quantity_available_nonnegative
+    check (quantity_available >= 0);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'products_checkout_price_nonnegative'
+  ) then
+    alter table public.products
+    add constraint products_checkout_price_nonnegative
+    check (checkout_price is null or checkout_price >= 0);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'products_sale_status_valid'
+  ) then
+    alter table public.products
+    add constraint products_sale_status_valid
+    check (sale_status in ('available', 'inquiry_only', 'reserved', 'sold', 'hidden', 'archived'));
+  end if;
 end;
 $$;
 
@@ -79,6 +137,10 @@ where is_deleted = false and year is not null;
 create index if not exists products_visible_price_idx
 on public.products (price)
 where is_deleted = false and price is not null;
+
+create index if not exists products_checkout_inventory_idx
+on public.products (sale_status, checkout_enabled, quantity_available)
+where is_deleted = false;
 
 create index if not exists products_metadata_gin_idx
 on public.products using gin (metadata);
@@ -105,7 +167,7 @@ drop policy if exists "Public can read visible products" on public.products;
 create policy "Public can read visible products"
 on public.products
 for select
-using (is_deleted = false);
+using (is_deleted = false and sale_status not in ('hidden', 'archived', 'sold'));
 
 drop policy if exists "Admin can manage products" on public.products;
 create policy "Admin can manage products"

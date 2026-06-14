@@ -11,6 +11,8 @@ backend-config.js
 baseball-cards.html
 basketball-cards.html
 catalog.js
+cart.html
+checkout-success.html
 collectibles.html
 comics.html
 contact.html
@@ -22,12 +24,14 @@ nav.js
 offline.html
 offline.js
 payments.js
+privacy.html
 products-bootstrap-baseball.json
 products-bootstrap-basketball.json
 products-bootstrap-collectibles.json
 products-bootstrap-comics.json
 products-bootstrap-football.json
 seo.js
+shipping.html
 shop.html
 site.webmanifest
 sports-cards.html
@@ -35,4 +39,6 @@ styles.css
 styles-mobile-overrides.css
 supabase-client.js
 sw.js
+terms.html
+returns.html
 wishlist.html

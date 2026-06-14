@@ -50,7 +50,6 @@ DATA_BUNDLE_FILES = {
 }
 
 FEATURE_ORDER = ["Rookie", "Short Print", "One of One", "Serial Numbered", "Memorabilia", "Parallel/Variety"]
-FALSE_SERIAL_IDS = {854, 857, 1042}
 
 SERIAL_SLASH_RE = re.compile(r"/\s*(\d{1,4})\b", re.I)
 EXPLICIT_SERIAL_RE = re.compile(

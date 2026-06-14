@@ -95,6 +95,11 @@
     const targetFile = PAGE_TO_NAV_TARGET[pageKey] || currentFile;
     const links = [...document.querySelectorAll('.site-nav a')];
     const navItems = [...document.querySelectorAll('.site-nav .primary-nav__item')];
+    const submenuHrefs = new Set(
+      links
+        .filter((link) => link.closest('.primary-nav__submenu'))
+        .map((link) => link.getAttribute('href'))
+    );
 
     navItems.forEach((item) => item.classList.remove('is-current-section'));
 
@@ -112,16 +117,8 @@
         return;
       }
 
-      if (isSectionMatch && !isSubmenuLink) {
-        const matchingSubmenuLink = links.find((candidate) => {
-          if (candidate === link) return false;
-          if (candidate.getAttribute('href') !== href) return false;
-          return Boolean(candidate.closest('.primary-nav__submenu'));
-        });
-
-        if (matchingSubmenuLink) {
-          return;
-        }
+      if (isSectionMatch && !isSubmenuLink && submenuHrefs.has(href)) {
+        return;
       }
 
       link.setAttribute('aria-current', 'page');
@@ -145,15 +142,12 @@
     const nav = document.getElementById('siteNav');
     const navToggle = document.getElementById('navToggle');
 
-    dedupePrimaryNavLinks();
-
     if (!nav || !navToggle || document.body.dataset.primaryNavBound === 'true') {
       return;
     }
     document.body.dataset.primaryNavBound = 'true';
 
     let lastFocusedBeforeOpen = null;
-    const isCompactNav = isCompactNavViewport;
     const submenuItems = [...nav.querySelectorAll('.primary-nav__item--has-submenu')];
     const submenuToggleButtons = [...nav.querySelectorAll('.submenu-toggle')];
 
@@ -176,10 +170,7 @@
       nav.insertBefore(mobileHeader, nav.firstChild);
     }
 
-    const mobileActions = nav.querySelector('.site-nav__mobile-actions');
-    if (mobileActions) {
-      mobileActions.remove();
-    }
+    nav.querySelector('.site-nav__mobile-actions')?.remove();
 
     let navBackdrop = document.querySelector('.site-nav-backdrop');
     if (!navBackdrop) {
@@ -201,7 +192,7 @@
      */
     const syncMenuAccessibility = () => {
       const isOpen = nav.classList.contains('open');
-      const compactNav = isCompactNav();
+      const compactNav = isCompactNavViewport();
       const shouldHide = compactNav && !isOpen;
       nav.setAttribute('aria-hidden', String(shouldHide));
 
@@ -253,7 +244,7 @@
       document.body.classList.add('menu-open');
       syncMenuAccessibility();
 
-      if (isCompactNav()) {
+      if (isCompactNavViewport()) {
         const firstFocusable = nav.querySelector(FOCUSABLE_SELECTOR);
         if (firstFocusable instanceof HTMLElement) {
           window.setTimeout(() => {
@@ -278,7 +269,7 @@
         return;
       }
 
-      if (isCompactNav()) {
+      if (isCompactNavViewport()) {
         closeMenu();
       }
     });
@@ -288,9 +279,8 @@
     });
 
     const handleViewportChange = () => {
-      if (!isCompactNav()) {
+      if (!isCompactNavViewport()) {
         closeMenu();
-        syncMenuAccessibility();
         return;
       }
 
@@ -309,7 +299,7 @@
         return;
       }
 
-      if (event.key !== 'Tab' || !nav.classList.contains('open') || !isCompactNav()) {
+      if (event.key !== 'Tab' || !nav.classList.contains('open') || !isCompactNavViewport()) {
         return;
       }
 
@@ -377,7 +367,6 @@
     document.body.dataset.submenuNavBound = 'true';
 
     const submenuItems = nav.querySelectorAll('.primary-nav__item--has-submenu');
-    const isCompactNav = isCompactNavViewport;
     const closeTimers = new WeakMap();
 
     const getSubmenuLinks = (item) => [...item.querySelectorAll('.primary-nav__submenu a')]
@@ -431,7 +420,7 @@
     };
 
     const scheduleDesktopClose = (item) => {
-      if (isCompactNav()) return;
+      if (isCompactNavViewport()) return;
       clearCloseTimer(item);
       const timer = window.setTimeout(() => {
         item.classList.remove('is-hovered');
@@ -461,7 +450,7 @@
         item.classList.remove('is-hovered');
         const willOpen = !item.classList.contains('is-open');
         closeAllSubmenus(item);
-        setSubmenuState(item, willOpen, { focus: isCompactNav() ? 'first' : 'none' });
+        setSubmenuState(item, willOpen, { focus: isCompactNavViewport() ? 'first' : 'none' });
       });
 
       button.addEventListener('keydown', (event) => {
@@ -502,7 +491,7 @@
       });
 
       item.addEventListener('pointerenter', () => {
-        if (isCompactNav()) return;
+        if (isCompactNavViewport()) return;
         clearCloseTimer(item);
         closeAllSubmenus(item);
         item.classList.add('is-hovered');
@@ -510,17 +499,17 @@
       });
 
       item.addEventListener('pointerleave', () => {
-        if (isCompactNav()) return;
+        if (isCompactNavViewport()) return;
         scheduleDesktopClose(item);
       });
 
       submenu?.addEventListener('pointerenter', () => {
-        if (isCompactNav()) return;
+        if (isCompactNavViewport()) return;
         clearCloseTimer(item);
       });
 
       submenu?.addEventListener('pointerleave', () => {
-        if (isCompactNav()) return;
+        if (isCompactNavViewport()) return;
         scheduleDesktopClose(item);
       });
     });
@@ -544,7 +533,7 @@
     });
 
     DJ.addSharedResizeListener(() => {
-      if (!isCompactNav()) {
+      if (!isCompactNavViewport()) {
         closeAllSubmenus();
       }
     }, { runImmediately: false });

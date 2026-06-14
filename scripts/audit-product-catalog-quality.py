@@ -167,20 +167,9 @@ GRADE_OR_SERIAL_FRAGMENT_RE = re.compile(
     r"\d+(?:\.\d+)?|-\s*)$",
     re.I,
 )
-CARD_DESCRIPTOR_PLAYER_PREFIX_RE = re.compile(
-    r"^(?:"
-    r"bowman(?: chrome| draft| sterling)?|chrome|draft|prospects?|blue|gold|orange|red|purple|green|"
-    r"refractors?|autographs?|autos?|elite|extra|edition|franchise|futures|signatures?|"
-    r"leaf|ultimate|metal|topps|tribute|triple|threads|museum|collection|marquee|"
-    r"acclaimed|impressions|monumental|markings|relics?|unity|legend|proven|mettle|coins?|"
-    r"copper|silver|aspirations|status|rookie|rc|prospect|pride"
-    r")[\s-]+",
-    re.I,
-)
-
 FIELD_FIXES: dict[int, dict[str, Any]] = {
     443: {
-        "playerAthlete": "Dirk Nowitzki | Rodrigue Beaubois | Tyson Chandler | Jason Kidd | Caron Butler | Shawn Marion",
+        "playerAthlete": "Dirk Nowitzki|Rodrigue Beaubois|Tyson Chandler|Jason Kidd|Caron Butler|Shawn Marion",
     },
     868: {
         "playerAthlete": "Ivan Rodriguez",
@@ -201,19 +190,19 @@ FIELD_FIXES: dict[int, dict[str, Any]] = {
     },
     1108: {
         "team": "",
-        "playerAthlete": "Obi-Wan Kenobi | Chewbacca",
+        "playerAthlete": "Obi-Wan Kenobi|Chewbacca",
     },
     1159: {
-        "playerAthlete": "Zach LaVine | DeMar DeRozan | Lonzo Ball",
+        "playerAthlete": "Zach LaVine|DeMar DeRozan|Lonzo Ball",
     },
     1160: {
-        "playerAthlete": "Darius Garland | Donovan Mitchell",
+        "playerAthlete": "Darius Garland|Donovan Mitchell",
     },
     1161: {
-        "playerAthlete": "Luka Doncic | Kyrie Irving | Dirk Nowitzki",
+        "playerAthlete": "Luka Doncic|Kyrie Irving|Dirk Nowitzki",
     },
     1165: {
-        "playerAthlete": "Kevin Durant | Amen Thompson | Alperen Sengun",
+        "playerAthlete": "Kevin Durant|Amen Thompson|Alperen Sengun",
     },
     1166: {
         "playerAthlete": "Tyrese Haliburton",
@@ -478,15 +467,6 @@ def is_grade_or_serial_fragment(value: str) -> bool:
     return bool(re.search(r"\d", without_grade_words) and not re.search(r"[A-Za-z]", without_grade_words))
 
 
-def clean_player_descriptor(value: str) -> str:
-    cleaned = text(value)
-    previous = None
-    while cleaned and cleaned != previous:
-        previous = cleaned
-        cleaned = CARD_DESCRIPTOR_PLAYER_PREFIX_RE.sub("", cleaned).strip(" -")
-    return cleaned
-
-
 def clean_player_athlete_value(value: Any) -> str:
     parts: list[str] = []
     for part in player_parts(value):
@@ -495,7 +475,7 @@ def clean_player_athlete_value(value: Any) -> str:
         cleaned = part.strip(" -")
         if cleaned and not is_grade_or_serial_fragment(cleaned):
             parts.append(cleaned)
-    return " | ".join(parts)
+    return "|".join(parts)
 
 
 def clean_title_person_fragment(value: str) -> str:
@@ -510,7 +490,7 @@ def extract_slash_title_players(title: str) -> str:
         return ""
     parts = [clean_title_person_fragment(part) for part in title.split("/")[1:]]
     players = [part for part in parts if part and not re.search(r"\bleaders?\b|\bTC\b", part, re.I)]
-    return " | ".join(players)
+    return "|".join(players)
 
 
 def clean_inferred_player_name(value: str) -> str:
@@ -658,7 +638,7 @@ def audit_product(product: dict[str, Any], image_owners: dict[str, list[Any]]) -
         unknown_features = [value for value in feature_values if value not in ATTRIBUTE_INDEX]
         if unknown_features:
             add("review", "unknown_feature_value", "|".join(unknown_features), "", "metadata.excelFields.C:Features")
-    if existing != expected:
+    if set(existing) != set(expected):
         add("fixable", "attribute_mismatch", existing, expected, "title/condition/workbook metadata")
         fixes["attributes"] = expected
 
@@ -740,8 +720,9 @@ def audit_product(product: dict[str, Any], image_owners: dict[str, list[Any]]) -
         fixes["image"] = ordered[0]
 
     if image and "placeholder" in image.lower():
-        issue_type = "pre_2000_placeholder_primary_image" if (product.get("year") or 9999) < 2000 else "placeholder_primary_image"
-        add("review", issue_type, image, "", "catalog image path is a placeholder")
+        if product.get("category") != "Comics":
+            issue_type = "pre_2000_placeholder_primary_image" if (product.get("year") or 9999) < 2000 else "placeholder_primary_image"
+            add("review", issue_type, image, "", "catalog image path is a placeholder")
     elif image and not path_is_external(image):
         score = title_photo_score(title, image)
         if score < 0.34:
@@ -821,9 +802,32 @@ def write_reports(issues: list[Issue], summary: dict[str, Any], touched: list[di
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fix", action="store_true", help="Apply conservative fixes and rebuild product files.")
+    parser.add_argument(
+        "--normalize-attribute-order",
+        action="store_true",
+        help="Reorder existing known attributes consistently without changing attribute membership.",
+    )
+    parser.add_argument(
+        "--rebuild-catalog",
+        action="store_true",
+        help="Regenerate category JSON, data bundles, and bootstrap files from products.json without applying fixes.",
+    )
     args = parser.parse_args()
 
     products = json.loads(PRODUCTS_PATH.read_text(encoding="utf-8"))
+    normalized_attribute_products = 0
+    if args.normalize_attribute_order:
+        for product in products:
+            existing = product.get("attributes")
+            if not isinstance(existing, list):
+                continue
+            normalized = ordered_unique(existing)
+            if existing != normalized:
+                product["attributes"] = normalized
+                normalized_attribute_products += 1
+    if args.rebuild_catalog or (args.normalize_attribute_order and normalized_attribute_products):
+        rebuild_catalog_files(products)
+
     all_issues: list[Issue] = []
     pending_fixes: dict[Any, dict[str, Any]] = {}
     image_owners: dict[str, list[Any]] = defaultdict(list)
@@ -898,13 +902,18 @@ def main() -> int:
     counts = Counter(issue.issue_type for issue in all_issues)
     severities = Counter(issue.severity for issue in all_issues)
     summary = {
-        "mode": "fix" if args.fix else "audit",
+        "mode": (
+            "fix"
+            if args.fix
+            else ("normalize-attribute-order" if args.normalize_attribute_order else ("rebuild-catalog" if args.rebuild_catalog else "audit"))
+        ),
         "productCount": len(products),
         "issueCount": len(all_issues),
         "severityCounts": dict(severities),
         "issueTypeCounts": dict(counts),
         "fixableProductCount": len(pending_fixes),
         "appliedFixProductCount": len(touched),
+        "normalizedAttributeProductCount": normalized_attribute_products,
         "reportDirectory": str(OUTPUT_DIR),
     }
     write_reports(all_issues, summary, touched)

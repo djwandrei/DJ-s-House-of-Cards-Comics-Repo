@@ -22,8 +22,8 @@
     imageFolder: 'products',
     stripeCheckoutEnabled: true,
     stripeCheckoutFunction: 'create-checkout-session',
-    // Public catalog pages use the deploy-synced, compressed JSON snapshots
-    // first. Supabase remains the admin source and a storefront fallback.
+    // Supabase is preferred for fresh storefront data; deploy-synced JSON
+    // snapshots remain the fast fallback when the backend is unavailable.
     preferStaticCatalog: false,
     remoteCatalogTimeoutMs: 3200,
     staticCatalogFallbackDelayMs: 700,

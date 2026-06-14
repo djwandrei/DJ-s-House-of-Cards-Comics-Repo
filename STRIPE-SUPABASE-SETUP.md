@@ -24,6 +24,9 @@ Then run `supabase/stripe-schema.sql` in the Supabase SQL Editor. It creates:
 - `customer_profiles`
 - `checkout_orders`
 - `product_checkout_reservations`
+- `checkout_order_items`
+- `webhook_events`
+- transaction-safe inventory reservation and finalization functions
 - RLS policies for customers and the admin email
 
 It also drops the browser-side customer profile update policy. Customer profile
@@ -33,11 +36,16 @@ Edge Functions.
 Finally, run `supabase/account-schema.sql`. It adds owner-only buyer profiles
 and wishlists that sync across signed-in devices.
 
-The reservations table prevents two customers from checking out with the same
-one-of-one listing at the same time. Expired sessions are released by the
-checkout function and the Stripe webhook. The checkout function sets Stripe
-Checkout Sessions to expire after about 31 minutes by default so abandoned carts
-do not hold inventory all day.
+Apply the files in that order before deploying the new browser and Edge
+Function code. The checkout functions require the sale-state and quantity
+columns from `supabase-schema.sql`, while `supabase/account-schema.sql` requires
+the order-item table from `supabase/stripe-schema.sql`.
+
+The reservations table prevents overlapping carts from reserving more units
+than a listing has available. Expired sessions are released by the checkout
+function and the Stripe webhook. The checkout function sets Stripe Checkout
+Sessions to expire after about 31 minutes by default so abandoned carts do not
+hold inventory all day.
 
 ## Supabase function secrets
 
@@ -82,11 +90,11 @@ sessions and disables it only for the Stripe webhook, because Stripe signs the
 webhook with `STRIPE_WEBHOOK_SECRET` instead of a Supabase user token.
 
 The storefront calls `create-checkout-session` when a signed-in customer clicks
-Buy Now on a fixed-price listing. Listings with price ranges charge the high
-end of the range in Stripe while keeping the original range visible as guide
-information in the item details. Listings marked "contact for price" still
-open the inquiry email instead of taking payment. Multi-copy listings also use
-the inquiry flow until quantity-aware checkout inventory is implemented.
+Buy Now or checks out the cart. A checkout can contain multiple listings and
+multiple units of a listing, subject to current inventory. Listings with price
+ranges charge the high end of the range in Stripe while keeping the original
+range visible as guide information in the item details. Listings marked
+"contact for price" still open the inquiry email instead of taking payment.
 
 ## Stripe webhook
 
@@ -105,8 +113,11 @@ checkout.session.async_payment_succeeded
 checkout.session.async_payment_failed
 ```
 
-After payment, the webhook writes an order row and hides the purchased listing
-from the public catalog by setting `products.is_deleted = true`.
+After payment, the webhook writes an order and immutable order-item snapshots,
+then atomically decrements inventory. A listing remains available while units
+remain and is marked sold only when its quantity reaches zero. Every Stripe
+event is recorded in `webhook_events` with its processing result so retries and
+failures can be audited.
 
 Delayed payment methods remain reserved after `checkout.session.completed`
 until Stripe sends either `checkout.session.async_payment_succeeded` or

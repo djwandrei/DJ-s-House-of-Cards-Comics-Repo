@@ -5,11 +5,11 @@ This site is a static storefront with Supabase-backed catalog administration and
 ## Runtime Flow
 
 1. Each HTML page loads shared styles and the small page modules it needs.
-2. `core.js` provides shared browser helpers such as safe asset URLs, theme state, wishlist state, image fallbacks, and accessibility utilities.
+2. `core.js` provides shared browser helpers such as safe asset URLs, theme state, wishlist/cart state, image fallbacks, and accessibility utilities.
 3. `supabase-client.js` is the only module that talks directly to Supabase. It maps database rows to storefront products and centralizes authentication, caching, uploads, saves, and permanent deletes.
 4. `catalog.js` loads Supabase first, falls back to static catalog files, normalizes products, and renders all storefront product views.
 5. `backend-admin.js` powers the only listing editor. Signed-in changes update Supabase immediately.
-6. `payments.js` bridges buyer authentication and Stripe Checkout through Supabase Edge Functions.
+6. `payments.js` bridges buyer authentication and quantity-aware, multi-item Stripe Checkout through Supabase Edge Functions.
 
 ## Sources Of Truth
 
@@ -28,11 +28,11 @@ permanently remove Supabase rows that are absent from `products.json`.
 
 - `core.js`: shared utilities and page initialization.
 - `nav.js`: desktop/mobile navigation behavior.
-- `catalog.js`: catalog loading, filtering, product cards, wishlist actions, and product modal.
+- `catalog.js`: catalog loading, filtering, product cards, wishlist/cart actions, cart page, and product modal.
 - `supabase-client.js`: Supabase adapter and row mapping.
 - `backend-admin.js`: live catalog administration.
-- `payments.js`: buyer auth and checkout.
-- `account.js`: local buyer profile and remote order display.
+- `payments.js`: buyer auth and single-item/cart checkout.
+- `account.js`: buyer account workspace and remote multi-item order display.
 - `contact.js`: validated email handoff.
 - `seo.js`: structured data and product metadata.
 - `styles.css`: shared and desktop styling.

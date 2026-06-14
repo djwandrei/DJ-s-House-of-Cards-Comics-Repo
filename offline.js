@@ -71,7 +71,7 @@
         button.disabled = true;
         button.setAttribute('aria-busy', 'true');
         button.textContent = 'Retrying...';
-        if (requestedUrl && requestedUrl !== '/' && !requestedUrl.includes('/offline.html')) {
+        if (requestedUrl !== '/' && !requestedUrl.includes('/offline.html')) {
           window.location.assign(requestedUrl);
           return;
         }

@@ -43,6 +43,13 @@ using (
     where checkout_orders.product_id = products.id
       and checkout_orders.buyer_user_id = auth.uid()
   )
+  or exists (
+    select 1
+    from public.checkout_order_items
+    join public.checkout_orders on checkout_orders.id = checkout_order_items.order_id
+    where checkout_order_items.product_id = products.id
+      and checkout_orders.buyer_user_id = auth.uid()
+  )
 );
 
 drop policy if exists "Customers can manage own account profile" on public.customer_account_profiles;

@@ -364,7 +364,11 @@ window.DJ = window.DJ || {};
                     </div>
                     <div class="admin-form-grid">
                       <div><label for="backendPrice">Price</label><input id="backendPrice" min="0" step="0.01" type="number"></div>
+                      <div><label for="backendCheckoutPrice">Checkout Price</label><input id="backendCheckoutPrice" min="0" step="0.01" type="number"></div>
                       <div><label for="backendPriceLabel">Price Label</label><input id="backendPriceLabel" type="text"></div>
+                      <div><label for="backendQuantityAvailable">Quantity Available</label><input id="backendQuantityAvailable" min="0" step="1" type="number"></div>
+                      <div><label for="backendCheckoutEnabled">Checkout Enabled</label><select id="backendCheckoutEnabled"><option value="true">Yes</option><option value="false">No</option></select></div>
+                      <div><label for="backendSaleStatus">Sale Status</label><select id="backendSaleStatus"><option value="available">Available</option><option value="inquiry_only">Inquiry Only</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="hidden">Hidden</option><option value="archived">Archived</option></select></div>
                       <div><label for="backendSortRank">Sort Rank</label><input id="backendSortRank" min="0" step="1" type="number"></div>
                       <div><label for="backendIsFeatured">Featured</label><select id="backendIsFeatured"><option value="false">No</option><option value="true">Yes</option></select></div>
                     </div>
@@ -1036,7 +1040,11 @@ window.DJ = window.DJ || {};
     document.getElementById('backendYear').value = product.year || '';
     document.getElementById('backendCondition').value = product.condition || '';
     document.getElementById('backendPrice').value = product.price ?? '';
+    document.getElementById('backendCheckoutPrice').value = product.checkoutPrice ?? '';
     document.getElementById('backendPriceLabel').value = product.priceLabel || '';
+    document.getElementById('backendQuantityAvailable').value = Number.isFinite(Number(product.quantityAvailable ?? product.copyCount)) ? Number(product.quantityAvailable ?? product.copyCount) : 1;
+    document.getElementById('backendCheckoutEnabled').value = product.checkoutEnabled === false ? 'false' : 'true';
+    document.getElementById('backendSaleStatus').value = product.saleStatus || 'available';
     document.getElementById('backendSortRank').value = Number.isFinite(Number(product.sortRank)) ? product.sortRank : 0;
     document.getElementById('backendIsFeatured').value = product.isFeatured ? 'true' : 'false';
     document.getElementById('backendImage').value = product.image || '';
@@ -1096,6 +1104,9 @@ window.DJ = window.DJ || {};
     document.getElementById('backendCategory').value = 'Baseball';
     document.getElementById('backendSortRank').value = '0';
     document.getElementById('backendIsFeatured').value = 'false';
+    document.getElementById('backendQuantityAvailable').value = '1';
+    document.getElementById('backendCheckoutEnabled').value = 'true';
+    document.getElementById('backendSaleStatus').value = 'available';
     showRemoteMainPreview('', 'Baseball', '');
     renderRemoteGallery();
     updateRemoteEditorContext({ mode: 'new', id: state.editingId });
@@ -1115,6 +1126,8 @@ window.DJ = window.DJ || {};
     const existingProduct = state.remoteProducts.find((item) => Number(item.id) === productId) || {};
     const yearValue = document.getElementById('backendYear').value;
     const priceValue = document.getElementById('backendPrice').value;
+    const checkoutPriceValue = document.getElementById('backendCheckoutPrice').value;
+    const quantityAvailableValue = document.getElementById('backendQuantityAvailable').value;
     const sortRankValue = document.getElementById('backendSortRank').value;
     const rawPhotoHostPageUrl = document.getElementById('backendPhotoHostPageUrl').value.trim();
 
@@ -1127,7 +1140,12 @@ window.DJ = window.DJ || {};
       year: yearValue === '' ? null : Number(yearValue),
       condition: document.getElementById('backendCondition').value.trim(),
       price: priceValue === '' ? null : Number(priceValue),
+      checkoutPrice: checkoutPriceValue === '' ? null : Number(checkoutPriceValue),
       priceLabel: document.getElementById('backendPriceLabel').value.trim(),
+      quantityAvailable: quantityAvailableValue === '' ? 1 : Math.max(0, Number(quantityAvailableValue)),
+      copyCount: quantityAvailableValue === '' ? 1 : Math.max(0, Number(quantityAvailableValue)),
+      checkoutEnabled: document.getElementById('backendCheckoutEnabled').value === 'true',
+      saleStatus: document.getElementById('backendSaleStatus').value || 'available',
       image: document.getElementById('backendImage').value.trim(),
       imageGallery: normalizeGallery(state.gallery),
       description: document.getElementById('backendDescription').value.trim(),

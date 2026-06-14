@@ -86,6 +86,7 @@ window.DJ = window.DJ || {};
   };
 
   const $ = (id) => document.getElementById(id);
+  const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
 
   function normalizeProfileValue(field, value) {
     const maxLength = field === 'notes'
@@ -770,7 +771,7 @@ window.DJ = window.DJ || {};
     }
 
     if (!orders.length) {
-      const checkoutSucceeded = new URLSearchParams(window.location.search).get('checkout') === 'success';
+      const checkoutSucceeded = pageParam('checkout') === 'success';
       renderOrderHistoryMessage(
         container,
         checkoutSucceeded ? 'Payment received.' : 'No checkout orders yet.',
@@ -787,11 +788,25 @@ window.DJ = window.DJ || {};
       const amount = formatOrderAmount(order);
       const status = String(order.status || 'pending').replaceAll('_', ' ');
       const createdAt = order.created_at ? new Date(order.created_at) : null;
+      const orderItems = Array.isArray(order.checkout_order_items) ? order.checkout_order_items : [];
+      const itemCount = orderItems.reduce((total, item) => total + Math.max(1, Number(item.quantity) || 1), 0)
+        || Math.max(1, Number(order.item_count) || 1);
+      const itemsList = createElement('ul', { className: 'account-order-items' });
+      orderItems.forEach((item) => {
+        itemsList.appendChild(createElement('li', {
+          text: `${Math.max(1, Number(item.quantity) || 1)} × ${item.product_name || `Listing #${item.product_id}`}`
+        }));
+      });
       card.append(
-        createElement('strong', { text: order.products?.name || `Listing #${order.product_id}` }),
+        createElement('strong', {
+          text: orderItems.length > 1
+            ? `${itemCount} items`
+            : (orderItems[0]?.product_name || order.products?.name || `Listing #${order.product_id}`)
+        }),
         createElement('span', { text: [status, amount].filter(Boolean).join(' - ') }),
         createElement('small', { text: createdAt && !Number.isNaN(createdAt.getTime()) ? createdAt.toLocaleString() : '' })
       );
+      if (orderItems.length) card.appendChild(itemsList);
       fragment.appendChild(card);
     });
     container.appendChild(fragment);
@@ -839,7 +854,7 @@ window.DJ = window.DJ || {};
     const signIn = $('accountSignIn');
     const signOut = $('accountSignOut');
     const passwordForm = $('accountPasswordForm');
-    const recoveryMode = new URLSearchParams(window.location.search).get('mode') === 'reset-password';
+    const recoveryMode = pageParam('mode') === 'reset-password';
 
     if (!DJ.remoteCatalog?.isConfigured?.()) {
       if (summary) summary.textContent = 'Secure customer accounts are not configured for this site.';
@@ -865,7 +880,7 @@ window.DJ = window.DJ || {};
     if (signIn) signIn.hidden = Boolean(session?.user);
     if (signOut) signOut.hidden = !session?.user;
     if (passwordForm) passwordForm.hidden = !(recoveryMode && session?.user);
-    if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+    if (pageParam('checkout') === 'success') {
       setAuthStatus('Payment submitted. Your secure order status will appear below as soon as Stripe confirms it.', 'success');
     }
     await renderOrderHistory(session);
@@ -974,7 +989,7 @@ window.DJ = window.DJ || {};
     loadProfileForm(savedProfile);
     renderAccountSummary();
     refreshAccountAuth().catch(console.error);
-    if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+    if (pageParam('checkout') === 'success') {
       window.setTimeout(() => refreshAccountAuth().catch(console.error), 4000);
     }
     renderWishlistPreview();

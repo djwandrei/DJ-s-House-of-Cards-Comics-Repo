@@ -13,8 +13,14 @@ const HTML_PAGES = [
   'about.html',
   'contact.html',
   'wishlist.html',
+  'cart.html',
+  'checkout-success.html',
   'account.html',
-  'admin.html'
+  'admin.html',
+  'privacy.html',
+  'terms.html',
+  'shipping.html',
+  'returns.html'
 ];
 
 const EXPECTED_PAGE_TYPES = {
@@ -29,8 +35,14 @@ const EXPECTED_PAGE_TYPES = {
   'about.html': 'AboutPage',
   'contact.html': 'ContactPage',
   'wishlist.html': 'WebPage',
+  'cart.html': 'WebPage',
+  'checkout-success.html': 'WebPage',
   'account.html': 'WebPage',
-  'admin.html': 'WebPage'
+  'admin.html': 'WebPage',
+  'privacy.html': 'WebPage',
+  'terms.html': 'WebPage',
+  'shipping.html': 'WebPage',
+  'returns.html': 'WebPage'
 };
 
 function assert(condition, message) {
@@ -60,6 +72,12 @@ function typeMatches(item, expectedType) {
 
 function findType(items, expectedType) {
   return items.find((item) => typeMatches(item, expectedType));
+}
+
+function uniqueTypes(items) {
+  return [...new Set(
+    items.flatMap((item) => Array.isArray(item['@type']) ? item['@type'] : [item['@type']]).filter(Boolean)
+  )];
 }
 
 function validateAbsoluteUrl(value, label) {
@@ -112,7 +130,7 @@ function validateStaticPage(fileName) {
 
   return {
     fileName,
-    types: [...new Set(items.flatMap((item) => Array.isArray(item['@type']) ? item['@type'] : [item['@type']]).filter(Boolean))]
+    types: uniqueTypes(items)
   };
 }
 
@@ -164,7 +182,7 @@ function validateProductRuntime() {
 
   return {
     fileName: 'seo.js product sample',
-    types: [...new Set(graph.flatMap((item) => Array.isArray(item['@type']) ? item['@type'] : [item['@type']]).filter(Boolean))]
+    types: uniqueTypes(graph)
   };
 }
 

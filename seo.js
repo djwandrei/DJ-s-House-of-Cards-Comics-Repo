@@ -10,7 +10,6 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   const SITE_URL = 'https://www.djshouseofcards-comics.com/';
-  const SITE_EMAIL = 'djscardscomics13@gmail.com';
   const PRODUCT_SCHEMA_SCRIPT_ID = 'seo-product-structured-data';
   const PRODUCT_LINK_PARAM = 'item';
 
@@ -82,6 +81,8 @@ window.DJ = window.DJ || {};
       : [product.image];
 
     return [...new Set(gallery
+      .map((image) => String(image || '').trim())
+      .filter(Boolean)
       .map((image) => absoluteUrl(image))
       .filter(Boolean))];
   }

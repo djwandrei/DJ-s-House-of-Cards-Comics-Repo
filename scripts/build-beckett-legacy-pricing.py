@@ -21,12 +21,6 @@ OUT_DIR = Path.home() / "Documents" / "eBay Docs" / "Listing Automation"
 OUT_PATH = OUT_DIR / "Beckett Legacy Pricing Review.xlsx"
 CACHE_PATH = OUT_DIR / "beckett_legacy_pricing_cache.json"
 
-SPORT_IDS = {
-    "Baseball": "185223",
-    "Basketball": "185226",
-    "Football": "185224",
-}
-
 SPORT_PATH = {
     "Baseball": "baseball",
     "Basketball": "basketball",

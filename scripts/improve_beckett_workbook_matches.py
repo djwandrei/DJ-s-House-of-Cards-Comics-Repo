@@ -71,15 +71,6 @@ MATCHABLE_STATUSES = {
     "No Beckett result found",
     "No confident Beckett match",
 }
-SKIP_STATUSES = {
-    "Matched",
-    "Not searched - non sports-card row",
-    "Not searched - non sports-card legacy row",
-    "REMOVE LISTING",
-    "REMOVE LISTING ",
-    "Sold",
-    "NOT AVAILABLE",
-}
 REALTIME_HEADER = "Beckett Real Time Pricing"
 YEAR_RE = re.compile(r"\b((?:18|19|20)\d{2})(?:[-/](?:\d{2}|\d{4}))?\b")
 CARD_CODE_RE = re.compile(r"(?:#|no\.?\s*)([A-Za-z0-9]+(?:[-/][A-Za-z0-9]+)*)", re.I)
@@ -322,14 +313,6 @@ def is_multi_item_listing(title: str) -> bool:
         or re.search(r"\b(?:base|insert|rookie)\s+set\b", text, flags=re.I)
         or re.search(r"(?:^|\s)w/\s|\bwith\b|\bin[-\s]?person\b", text, flags=re.I)
     )
-
-
-def is_single_card_exact_match(row: dict[str, Any], candidate: Candidate) -> bool:
-    source_codes = explicit_card_codes(row.get("Title"))
-    target_codes = explicit_card_codes(candidate.title)
-    if source_codes and target_codes and source_codes & target_codes:
-        return True
-    return False
 
 
 def exact_card_code_conflicts(row: dict[str, Any], candidate: Candidate) -> list[str]:

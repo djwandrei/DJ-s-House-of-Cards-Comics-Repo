@@ -37,6 +37,16 @@ function exists(relativePath) {
   return fs.existsSync(path.join(root, relativePath));
 }
 
+function duplicateValues(values) {
+  const seen = new Set();
+  const duplicates = new Set();
+  values.forEach((value) => {
+    if (seen.has(value)) duplicates.add(value);
+    else seen.add(value);
+  });
+  return [...duplicates];
+}
+
 function tagAttributes(tag) {
   const attributes = {};
   for (const match of tag.matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/gs)) {
@@ -72,10 +82,10 @@ if (!assetVersion) issues.push({ file: 'core.js', type: 'missing product asset v
 for (const file of HTML_FILES) {
   const html = read(file);
   const tags = [...html.matchAll(/<(?:meta|link|script|img|a)\b[^>]*>/gi)].map((match) => match[0]);
+  const meta = tags.map(tagAttributes);
   const ids = [...html.matchAll(/\bid=(["'])(.*?)\1/gi)].map((match) => match[2]);
-  const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
-  const imagePreloads = tags
-    .map(tagAttributes)
+  const duplicateIds = duplicateValues(ids);
+  const imagePreloads = meta
     .filter((attributes) => attributes.rel === 'preload' && attributes.as === 'image');
 
   if (duplicateIds.length) issues.push({ file, type: 'duplicate ids', values: duplicateIds });
@@ -86,7 +96,6 @@ for (const file of HTML_FILES) {
     issues.push({ file, type: 'public page exposes admin footer link' });
   }
 
-  const meta = tags.map(tagAttributes);
   const description = meta.find((attributes) => attributes.name?.toLowerCase() === 'description')?.content;
   const viewport = meta.find((attributes) => attributes.name?.toLowerCase() === 'viewport')?.content;
   const canonical = meta.find((attributes) => attributes.rel?.toLowerCase() === 'canonical')?.href;
@@ -241,7 +250,7 @@ if (richMetadataCount < 1000) {
 }
 for (const [file, items] of Object.entries(catalogs)) {
   const ids = items.map((item) => String(item.id));
-  const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+  const duplicateIds = duplicateValues(ids);
   if (duplicateIds.length) issues.push({ file, type: 'duplicate product ids', values: duplicateIds.slice(0, 10) });
 
   for (const item of items) {

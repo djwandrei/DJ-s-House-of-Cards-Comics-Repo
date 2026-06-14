@@ -4,33 +4,27 @@ import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2026-02-25.clover' as any
 });
-
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || '';
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const admin = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { persistSession: false }
-});
+const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
+
+type Reservation = { id: string; product_id: number; quantity: number; status: string };
 
 function isServerConfigured() {
-  // The webhook has no browser auth token, so every trusted input must come from
-  // Supabase secrets plus Stripe's verified signature.
   return Boolean(
-    Deno.env.get('STRIPE_SECRET_KEY') &&
-    webhookSecret &&
-    supabaseUrl &&
-    serviceRoleKey &&
-    /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(supabaseUrl)
+    Deno.env.get('STRIPE_SECRET_KEY')
+    && webhookSecret
+    && supabaseUrl
+    && serviceRoleKey
+    && /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(supabaseUrl)
   );
 }
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-store'
-    }
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
 
@@ -46,51 +40,107 @@ function compactSessionMetadata(session: Stripe.Checkout.Session) {
   };
 }
 
+function parsePriceRangeHigh(value = '') {
+  const match = String(value || '').match(/\$?\s*([\d,]+(?:\.\d{1,2})?)\s*(?:-|[\u2013\u2014]|\bto\b)\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  if (!match) return null;
+  const first = Number(match[1].replace(/,/g, ''));
+  const second = Number(match[2].replace(/,/g, ''));
+  return Number.isFinite(first) && Number.isFinite(second) ? Math.max(first, second) : null;
+}
+
+function checkoutUnitAmount(product: Record<string, unknown>) {
+  const explicit = Number(product.checkout_price);
+  const rangeHigh = parsePriceRangeHigh(String(product.display_price || product.price_label || ''));
+  const fallback = Number(product.price);
+  const amount = Number.isFinite(explicit) && explicit > 0
+    ? explicit
+    : rangeHigh ?? fallback;
+  return Number.isFinite(amount) ? Math.round(amount * 100) : null;
+}
+
 function assertNoSupabaseError(error: unknown, step: string) {
   if (!error) return;
   const message = error instanceof Error ? error.message : JSON.stringify(error);
   throw new Error(`Supabase ${step} failed: ${message}`);
 }
 
-type ReservationStatus = 'pending' | 'paid' | 'expired' | 'released';
+async function beginWebhookEvent(event: Stripe.Event) {
+  const { error: insertError } = await admin.from('webhook_events').insert({
+    stripe_event_id: event.id,
+    event_type: event.type,
+    processing_status: 'processing'
+  });
+  if (!insertError) return true;
+  if (insertError.code !== '23505') assertNoSupabaseError(insertError, 'webhook event insert');
 
-async function updateReservation(
-  session: Stripe.Checkout.Session,
-  status: ReservationStatus,
-  expiresAt?: string
-) {
-  const reservationId = String(session.metadata?.reservation_id || '').trim();
-  if (!reservationId) return;
+  const { data, error } = await admin
+    .from('webhook_events')
+    .select('processing_status')
+    .eq('stripe_event_id', event.id)
+    .single();
+  assertNoSupabaseError(error, 'webhook event lookup');
+  if (data?.processing_status === 'processed' || data?.processing_status === 'ignored') return false;
+  const { error: updateError } = await admin.from('webhook_events').update({
+    event_type: event.type,
+    processing_status: 'processing',
+    error_message: ''
+  }).eq('stripe_event_id', event.id);
+  assertNoSupabaseError(updateError, 'webhook event retry');
+  return true;
+}
 
+async function finishWebhookEvent(eventId: string, status: 'processed' | 'failed' | 'ignored', errorMessage = '') {
+  const { error } = await admin.from('webhook_events').update({
+    processing_status: status,
+    error_message: errorMessage.slice(0, 4000),
+    processed_at: new Date().toISOString()
+  }).eq('stripe_event_id', eventId);
+  assertNoSupabaseError(error, 'webhook event completion');
+}
+
+async function getReservations(session: Stripe.Checkout.Session) {
+  const { data, error } = await admin
+    .from('product_checkout_reservations')
+    .select('id,product_id,quantity,status')
+    .eq('stripe_session_id', session.id)
+    .order('product_id');
+  assertNoSupabaseError(error, 'reservation lookup');
+  if (Array.isArray(data) && data.length) return data as Reservation[];
+
+  const legacyReservationId = String(session.metadata?.reservation_id || '').trim();
+  if (!legacyReservationId) return [];
+  const { data: legacy, error: legacyError } = await admin
+    .from('product_checkout_reservations')
+    .select('id,product_id,quantity,status')
+    .eq('id', legacyReservationId)
+    .maybeSingle();
+  assertNoSupabaseError(legacyError, 'legacy reservation lookup');
+  return legacy ? [legacy as Reservation] : [];
+}
+
+async function updateReservations(session: Stripe.Checkout.Session, status: 'pending' | 'paid' | 'expired' | 'released', expiresAt?: string) {
   const update: Record<string, unknown> = { status };
   if (expiresAt) update.expires_at = expiresAt;
-
   const { error } = await admin
     .from('product_checkout_reservations')
     .update(update)
-    .eq('id', reservationId);
+    .eq('stripe_session_id', session.id);
   assertNoSupabaseError(error, 'reservation update');
 }
 
-async function upsertOrder(session: Stripe.Checkout.Session, status: string) {
-  const productId = Number(session.metadata?.product_id || session.client_reference_id);
+async function upsertOrder(session: Stripe.Checkout.Session, status: string, reservations: Reservation[]) {
   const buyerUserId = String(session.metadata?.buyer_user_id || '') || null;
-  if (!Number.isFinite(productId)) return null;
-
-  // Stripe retries events and does not guarantee delivery order. Never let a
-  // late unpaid/expired event downgrade an order that is already paid.
+  const firstProductId = reservations[0]?.product_id || Number(session.metadata?.product_id || session.client_reference_id) || null;
   const { data: existingOrder, error: existingOrderError } = await admin
     .from('checkout_orders')
-    .select('status')
+    .select('id,status,inventory_finalized_at')
     .eq('stripe_session_id', session.id)
     .maybeSingle();
   assertNoSupabaseError(existingOrderError, 'existing order lookup');
-  if (existingOrder?.status === 'paid' && status !== 'paid') {
-    return { productId, buyerUserId, status: 'paid' };
-  }
+  const resolvedStatus = existingOrder?.status === 'paid' && status !== 'paid' ? 'paid' : status;
 
-  const { error: orderError } = await admin.from('checkout_orders').upsert({
-    product_id: productId,
+  const { data, error } = await admin.from('checkout_orders').upsert({
+    product_id: firstProductId,
     buyer_user_id: buyerUserId,
     buyer_email: session.customer_details?.email || session.customer_email || '',
     stripe_customer_id: typeof session.customer === 'string' ? session.customer : '',
@@ -98,113 +148,99 @@ async function upsertOrder(session: Stripe.Checkout.Session, status: string) {
     stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : '',
     amount_total: session.amount_total,
     currency: session.currency || 'usd',
-    status,
+    status: resolvedStatus,
+    item_count: Math.max(1, reservations.reduce((total, reservation) => total + reservation.quantity, 0)),
     metadata: compactSessionMetadata(session)
   }, {
     onConflict: 'stripe_session_id'
+  }).select('id,status,inventory_finalized_at,buyer_user_id').single();
+  assertNoSupabaseError(error, 'order upsert');
+  return data;
+}
+
+async function snapshotOrderItems(orderId: string, reservations: Reservation[]) {
+  if (!reservations.length) return;
+  const productIds = reservations.map((reservation) => reservation.product_id);
+  const { data: products, error } = await admin
+    .from('products')
+    .select('id,name,image,price,checkout_price,price_label,display_price,category,year,condition')
+    .in('id', productIds);
+  assertNoSupabaseError(error, 'order item product lookup');
+  const productsById = new Map((products || []).map((product) => [Number(product.id), product]));
+  const rows = reservations.map((reservation) => {
+    const product = productsById.get(Number(reservation.product_id)) || {};
+    return {
+      order_id: orderId,
+      product_id: reservation.product_id,
+      quantity: reservation.quantity,
+      unit_amount: checkoutUnitAmount(product),
+      product_name: String(product.name || `Listing #${reservation.product_id}`),
+      product_image: String(product.image || ''),
+      product_price_label: String(product.display_price || product.price_label || ''),
+      product_category: String(product.category || ''),
+      product_year: Number.isFinite(Number(product.year)) ? Number(product.year) : null,
+      product_condition: String(product.condition || '')
+    };
   });
-  assertNoSupabaseError(orderError, 'order upsert');
-  return { productId, buyerUserId, status };
+  const { error: upsertError } = await admin.from('checkout_order_items').upsert(rows, {
+    onConflict: 'order_id,product_id'
+  });
+  assertNoSupabaseError(upsertError, 'order item snapshot');
 }
 
 async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUserId: string | null) {
-  if (buyerUserId && typeof session.customer === 'string') {
-    const { error: profileError } = await admin.from('customer_profiles').upsert({
-      id: buyerUserId,
-      email: session.customer_details?.email || session.customer_email || '',
-      stripe_customer_id: session.customer
-    }, {
-      onConflict: 'id'
-    });
-    assertNoSupabaseError(profileError, 'customer profile upsert');
-  }
-}
-
-async function markProductSold(session: Stripe.Checkout.Session, productId: number) {
-  // Hide paid one-of-one listings from public catalog views. The original row is
-  // preserved for admin/order review, but shoppers will not be able to buy it.
-  const { data: product, error: productError } = await admin
-    .from('products')
-    .select('metadata')
-    .eq('id', productId)
-    .single();
-  assertNoSupabaseError(productError, 'product lookup');
-  const existingMetadata = product?.metadata && typeof product.metadata === 'object' ? product.metadata : {};
-
-  const { error: productUpdateError } = await admin
-    .from('products')
-    .update({
-      is_deleted: true,
-      metadata: {
-        ...existingMetadata,
-        sold_via: 'stripe_checkout',
-        stripe_session_id: session.id,
-        sold_at: new Date().toISOString()
-      }
-    })
-    .eq('id', productId);
-  assertNoSupabaseError(productUpdateError, 'product sold marker update');
+  if (!buyerUserId || typeof session.customer !== 'string') return;
+  const { error } = await admin.from('customer_profiles').upsert({
+    id: buyerUserId,
+    email: session.customer_details?.email || session.customer_email || '',
+    stripe_customer_id: session.customer
+  }, { onConflict: 'id' });
+  assertNoSupabaseError(error, 'customer profile upsert');
 }
 
 async function finalizePaidCheckout(session: Stripe.Checkout.Session) {
-  const order = await upsertOrder(session, 'paid');
-  if (!order) return;
-
-  await updateReservation(session, 'paid');
-  await upsertCustomerProfile(session, order.buyerUserId);
-  await markProductSold(session, order.productId);
+  const reservations = await getReservations(session);
+  if (!reservations.length) throw new Error(`No checkout reservations found for Stripe session ${session.id}`);
+  const order = await upsertOrder(session, 'paid', reservations);
+  await snapshotOrderItems(order.id, reservations);
+  await upsertCustomerProfile(session, order.buyer_user_id);
+  const { error } = await admin.rpc('finalize_checkout_inventory', { p_stripe_session_id: session.id });
+  assertNoSupabaseError(error, 'inventory finalization');
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  if (session.payment_status === 'paid') {
+  if (session.payment_status === 'paid' || session.payment_status === 'no_payment_required') {
     await finalizePaidCheckout(session);
     return;
   }
-
-  // Some payment methods finish after Checkout completes. Keep the listing
-  // reserved until Stripe sends an explicit async success or failure event.
-  const order = await upsertOrder(session, 'unpaid');
+  const reservations = await getReservations(session);
+  const order = await upsertOrder(session, 'unpaid', reservations);
   if (order?.status === 'paid') return;
-  const delayedPaymentExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-  await updateReservation(session, 'pending', delayedPaymentExpiry);
+  await updateReservations(session, 'pending', new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString());
 }
 
-async function handleAsyncPaymentFailed(session: Stripe.Checkout.Session) {
-  const order = await upsertOrder(session, 'unpaid');
+async function handleNonPaidTerminalEvent(session: Stripe.Checkout.Session, orderStatus: 'unpaid' | 'expired', reservationStatus: 'released' | 'expired') {
+  const reservations = await getReservations(session);
+  const order = await upsertOrder(session, orderStatus, reservations);
   if (order?.status === 'paid') return;
-  await updateReservation(session, 'released');
-}
-
-async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
-  const order = await upsertOrder(session, 'expired');
-  if (order?.status === 'paid') return;
-  await updateReservation(session, 'expired');
+  await updateReservations(session, reservationStatus);
 }
 
 Deno.serve(async (request) => {
-  if (request.method !== 'POST') {
-    return jsonResponse({ error: 'Method not allowed.' }, 405);
-  }
-
-  if (!isServerConfigured()) {
-    return jsonResponse({ error: 'Stripe webhook is not fully configured.' }, 503);
-  }
-
+  if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
+  if (!isServerConfigured()) return jsonResponse({ error: 'Stripe webhook is not fully configured.' }, 503);
   const signature = request.headers.get('stripe-signature');
-  if (!signature) {
-    return jsonResponse({ error: 'Missing Stripe signature.' }, 400);
-  }
+  if (!signature) return jsonResponse({ error: 'Missing Stripe signature.' }, 400);
 
-  const payload = await request.text();
   let event: Stripe.Event;
-
   try {
-    event = await stripe.webhooks.constructEventAsync(payload, signature, webhookSecret);
+    event = await stripe.webhooks.constructEventAsync(await request.text(), signature, webhookSecret);
   } catch (error) {
     return jsonResponse({ error: error instanceof Error ? error.message : 'Invalid Stripe signature.' }, 400);
   }
 
   try {
+    if (!await beginWebhookEvent(event)) return jsonResponse({ received: true, duplicate: true });
     const session = event.data.object as Stripe.Checkout.Session;
     switch (event.type) {
       case 'checkout.session.completed':
@@ -214,16 +250,24 @@ Deno.serve(async (request) => {
         await finalizePaidCheckout(session);
         break;
       case 'checkout.session.async_payment_failed':
-        await handleAsyncPaymentFailed(session);
+        await handleNonPaidTerminalEvent(session, 'unpaid', 'released');
         break;
       case 'checkout.session.expired':
-        await handleCheckoutExpired(session);
+        await handleNonPaidTerminalEvent(session, 'expired', 'expired');
         break;
+      default:
+        await finishWebhookEvent(event.id, 'ignored');
+        return jsonResponse({ received: true, ignored: true });
     }
+    await finishWebhookEvent(event.id, 'processed');
   } catch (error) {
     console.error('[stripe-webhook]', error);
+    try {
+      await finishWebhookEvent(event.id, 'failed', error instanceof Error ? error.message : String(error));
+    } catch (loggingError) {
+      console.error('[stripe-webhook] Could not persist failure state', loggingError);
+    }
     return jsonResponse({ error: 'Webhook processing failed.' }, 500);
   }
-
   return jsonResponse({ received: true });
 });

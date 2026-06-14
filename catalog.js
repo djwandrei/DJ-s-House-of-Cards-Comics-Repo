@@ -95,7 +95,8 @@ window.DJ = window.DJ || {};
     'football-cards': 'products-football.json',
     comics: 'products-comics.json',
     collectibles: 'products-collectibles.json',
-    wishlist: 'products.json'
+    wishlist: 'products.json',
+    cart: 'products.json'
   };
   const BOOTSTRAP_SOURCE_BY_SOURCE = {
     'products-baseball.json': 'products-bootstrap-baseball.json',
@@ -530,7 +531,7 @@ window.DJ = window.DJ || {};
     const price = typeof DJ.payablePrice === 'function' ? DJ.payablePrice(product) : Number(product.price);
     const displayPrice = DJ.displayPrice(product).toLowerCase();
     if (!Number.isFinite(price) || price <= 0) return false;
-    if (Number(product.copyCount) > 1) return false;
+    if (typeof DJ.isProductCheckoutAvailable === 'function' && !DJ.isProductCheckoutAvailable(product)) return false;
     if (/contact|ask|inquir|availability/.test(displayPrice)) return false;
     return true;
   }
@@ -1040,6 +1041,11 @@ window.DJ = window.DJ || {};
       const sport = item.sport || (category === 'Collectibles' ? 'Other' : category);
       const league = item.league || '';
       const playerAthlete = item.playerAthlete || '';
+      const quantityAvailable = typeof DJ.availableQuantity === 'function'
+        ? DJ.availableQuantity(item)
+        : Math.max(0, Math.floor(Number(item.quantityAvailable ?? item.copyCount ?? 1) || 0));
+      const saleStatus = String(item.saleStatus || 'available').trim().toLowerCase();
+      const checkoutEnabled = item.checkoutEnabled !== false;
       const photoHostPageUrl = typeof DJ.safeExternalUrl === 'function'
         ? DJ.safeExternalUrl(item.photoHostPageUrl)
         : '';
@@ -1075,6 +1081,10 @@ window.DJ = window.DJ || {};
         sport,
         league,
         playerAthlete,
+        quantityAvailable,
+        copyCount: quantityAvailable,
+        saleStatus,
+        checkoutEnabled,
         photoHostPageUrl,
         image,
         attributes,
@@ -1101,6 +1111,9 @@ window.DJ = window.DJ || {};
     const seenListings = new Set();
     return (Array.isArray(items) ? items : []).filter((item) => {
       if (item?.isDeleted === true) {
+        return false;
+      }
+      if (['hidden', 'archived', 'sold'].includes(String(item?.saleStatus || '').toLowerCase())) {
         return false;
       }
 
@@ -1599,6 +1612,7 @@ window.DJ = window.DJ || {};
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
+    const availableQuantity = DJ.availableQuantity?.(product) || 0;
     const quickActionLabel = getProductActionLabel(product);
     const titleId = `product-card-title-${product.id}`;
     const gradeLabel = product.conditionFacet === 'Graded' ? 'Grade' : 'Condition';
@@ -1633,9 +1647,11 @@ window.DJ = window.DJ || {};
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
               <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
+              ${isDirectCheckout ? `<span class="product-inventory">${DJ.escapeHtml(`${availableQuantity} available`)}</span>` : ''}
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
+              ${isDirectCheckout ? `<button type="button" class="button-secondary add-cart-button" data-product-cart aria-label="${DJ.escapeHtml(`Add ${product.name} to cart`)}" aria-describedby="${summaryId}">Add to Cart</button>` : ''}
               <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}" aria-describedby="${summaryId}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
@@ -1750,7 +1766,7 @@ window.DJ = window.DJ || {};
     }
   }
 
-  async function buyNow(product) {
+  async function buyNow(product, options = {}) {
 
     const sendPurchaseInquiry = () => {
       openPurchaseInquiry(product);
@@ -1759,7 +1775,7 @@ window.DJ = window.DJ || {};
     try {
       const payments = await ensureCustomerAccountBridge();
       if (payments?.startCheckout) {
-        payments.startCheckout(product, { fallback: sendPurchaseInquiry });
+        payments.startCheckout(product, { ...options, fallback: sendPurchaseInquiry });
         return;
       }
     } catch (error) {
@@ -1767,6 +1783,47 @@ window.DJ = window.DJ || {};
     }
 
     sendPurchaseInquiry();
+  }
+
+  function addToCart(product, quantity = 1) {
+    if (!isDirectCheckoutCandidate(product)) {
+      openPurchaseInquiry(product);
+      return false;
+    }
+
+    const available = DJ.availableQuantity?.(product) || 0;
+    const existing = DJ.getCart?.().find((item) => item.productId === Number(product.id));
+    const requested = Math.max(1, Math.floor(Number(quantity) || 1));
+    const nextQuantity = Math.min(available, (existing?.quantity || 0) + requested);
+    if (nextQuantity <= (existing?.quantity || 0)) {
+      setModalStatus(`Only ${available} available for this listing.`, 'error');
+      return false;
+    }
+
+    DJ.updateCartQuantity?.(product.id, nextQuantity);
+    setModalStatus(`${product.name} added to cart.`, 'success');
+    return true;
+  }
+
+  async function checkoutCart(products = []) {
+    const productLookup = createProductLookup(products);
+    const items = DJ.getCart?.()
+      .map((item) => ({
+        ...item,
+        product: productLookup.get(Number(item.productId)) || null
+      }))
+      .filter((item) => item.product);
+    if (!items.length) return;
+
+    try {
+      const payments = await ensureCustomerAccountBridge();
+      if (payments?.startCartCheckout) {
+        payments.startCartCheckout(items, { returnPath: '/cart.html' });
+      }
+    } catch (error) {
+      console.error('Secure cart checkout could not be loaded.', error);
+      DJ.setStatus?.('cartStatus', 'Secure checkout could not be loaded. Please try again.', 'error');
+    }
   }
 
   function openPurchaseInquiry(product) {
@@ -1948,6 +2005,16 @@ Thank you.`
     });
   }
 
+  function bindCartStateSync() {
+    if (document.body.dataset.cartStateSyncBound === 'true') return;
+    document.body.dataset.cartStateSyncBound = 'true';
+    window.addEventListener('dj:cartchange', () => {
+      if (document.body.dataset.page === 'cart') {
+        renderCartPage().catch(console.error);
+      }
+    });
+  }
+
   function createProductLookup(products = []) {
     return new Map(
       (Array.isArray(products) ? products : [])
@@ -1996,6 +2063,13 @@ Thank you.`
         return;
       }
 
+      const wishlistAddCart = event.target.closest('[data-wishlist-add-cart]');
+      if (wishlistAddCart) {
+        renderedProducts.filter(isDirectCheckoutCandidate).forEach((product) => addToCart(product));
+        window.location.href = 'cart.html';
+        return;
+      }
+
       const productCard = event.target.closest('.product-card');
       if (!productCard) return;
 
@@ -2011,6 +2085,11 @@ Thank you.`
 
       if (event.target.closest('[data-product-buy]')) {
         buyNow(product);
+        return;
+      }
+
+      if (event.target.closest('[data-product-cart]')) {
+        addToCart(product);
         return;
       }
 
@@ -2045,6 +2124,9 @@ Thank you.`
     });
     bindCardAction('[data-product-buy]', 'Buy', (_productId, product) => {
       buyNow(product);
+    });
+    bindCardAction('[data-product-cart]', 'Cart', (_productId, product) => {
+      addToCart(product);
     });
     bindCardAction('[data-product-details]', 'Details', (_productId, product) => {
       openModal(product, {
@@ -2847,20 +2929,8 @@ Thank you.`
     syncState();
   }
 
-  function removeRetiredCatalogEnhancements() {
-    const filterPanel = document.querySelector('.filter-panel');
-    const heroCard = document.querySelector('.page-hero-card');
-
-    filterPanel?.querySelector('.filter-panel-quick-picks')?.remove();
-    filterPanel?.querySelector('.filter-panel-insights')?.remove();
-
-    if (heroCard) {
-      heroCard.classList.add('catalog-hero-card--streamlined');
-      heroCard.querySelector('.catalog-hero-insight-grid')?.remove();
-      heroCard.querySelector('.catalog-hero-support')?.remove();
-      heroCard.querySelector('.catalog-hero-summary')?.remove();
-      heroCard.querySelector('.catalog-hero-actions')?.remove();
-    }
+  function streamlineCatalogHero() {
+    document.querySelector('.page-hero-card')?.classList.add('catalog-hero-card--streamlined');
   }
 
   function insertCatalogSupportCallout(config = {}) {
@@ -3501,7 +3571,7 @@ Thank you.`
     // never flashes the old top-stacked filter layout during slow backend loads.
     enhanceFilterCopy(config);
     ensureCatalogBrowseLayout();
-    removeRetiredCatalogEnhancements();
+    streamlineCatalogHero();
     decorateSearchField(config);
     addToolbarActions();
     ensureCatalogPaginationControls();
@@ -3679,6 +3749,7 @@ Thank you.`);
           </ul>
         </div>
         <div class="wishlist-actions-buttons">
+          <button type="button" class="button" data-wishlist-add-cart>Add Available Items to Cart</button>
           <a class="button" href="${DJ.escapeHtml(buildWishlistInquiryUrl(savedProducts))}">Email DJ About Saved Items</a>
           <a class="button-secondary" href="sports-cards.html">Browse More</a>
           <button type="button" class="button-secondary wishlist-clear-button" data-wishlist-clear>Clear Wishlist</button>
@@ -3760,6 +3831,130 @@ Thank you.`);
     attachGridHandlers(wishlistContainer, wishlistProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(wishlistContainer);
+  }
+
+  function renderCartEmptyState() {
+    return `
+      <div class="empty-state cart-empty-state">
+        <span class="empty-state-kicker">Your cart is ready when you are</span>
+        <h2>Your shopping cart is empty</h2>
+        <p>Add checkout-ready listings from any catalog page. Wishlist items stay saved separately until you decide to move them here.</p>
+        <div class="empty-state-actions">
+          <a class="button" href="sports-cards.html">Browse Sports Cards</a>
+          <a class="button-secondary" href="comics.html">Browse Comics</a>
+          <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
+        </div>
+      </div>
+    `;
+  }
+
+  async function renderCartPage() {
+    const container = document.getElementById('cartContainer');
+    if (!container) return;
+    const storedCart = DJ.getCart?.() || [];
+    if (!storedCart.length) {
+      container.innerHTML = renderCartEmptyState();
+      DJ.updateCartCount?.();
+      return;
+    }
+
+    renderProductGridLoadingState(container, { count: Math.min(4, storedCart.length) });
+    const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    const productsById = createProductLookup(allProducts);
+    const cartItems = storedCart
+      .map((item) => ({ ...item, product: productsById.get(Number(item.productId)) }))
+      .filter((item) => item.product);
+    const reconciled = cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: Math.min(item.quantity, DJ.availableQuantity?.(item.product) || 0)
+    })).filter((item) => item.quantity > 0);
+
+    if (JSON.stringify(reconciled) !== JSON.stringify(storedCart)) {
+      DJ.setCart?.(reconciled);
+    }
+    if (!cartItems.length || !reconciled.length) {
+      clearProductGridLoadingState(container);
+      container.innerHTML = renderCartEmptyState();
+      return;
+    }
+
+    const activeItems = cartItems
+      .map((item) => ({
+        ...item,
+        quantity: reconciled.find((entry) => entry.productId === item.productId)?.quantity || 0
+      }))
+      .filter((item) => item.quantity > 0);
+    const itemCount = activeItems.reduce((total, item) => total + item.quantity, 0);
+    const subtotal = activeItems.reduce((total, item) => (
+      total + ((DJ.payablePrice?.(item.product) || 0) * item.quantity)
+    ), 0);
+
+    clearProductGridLoadingState(container);
+    container.innerHTML = `
+      <div class="cart-layout">
+        <div class="cart-items" aria-label="Shopping cart items">
+          ${activeItems.map(({ product, quantity }) => {
+            const available = DJ.availableQuantity?.(product) || 0;
+            const image = DJ.getThumbnailAssetCandidates(product.image)[0] || DJ.safeAssetUrl(product.image);
+            return `
+              <article class="cart-item" data-cart-product-id="${Number(product.id)}">
+                <a class="cart-item__image" href="${DJ.escapeHtml(DJ.productPageUrl(product))}">
+                  <img src="${DJ.escapeHtml(image)}" alt="${DJ.escapeHtml(product.name)}" width="120" height="120" loading="lazy" decoding="async">
+                </a>
+                <div class="cart-item__copy">
+                  <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
+                  <h2><a href="${DJ.escapeHtml(DJ.productPageUrl(product))}">${DJ.escapeHtml(product.name)}</a></h2>
+                  <p>${DJ.escapeHtml(DJ.displayPrice(product))} each · ${available} available</p>
+                  <div class="cart-item__actions">
+                    <label>Quantity
+                      <input data-cart-quantity type="number" min="1" max="${available}" value="${quantity}" inputmode="numeric">
+                    </label>
+                    <button type="button" class="button-secondary" data-cart-move-wishlist>Move to Wishlist</button>
+                    <button type="button" class="button-secondary" data-cart-remove>Remove</button>
+                  </div>
+                </div>
+                <strong class="cart-item__subtotal">${DJ.escapeHtml(DJ.currency((DJ.payablePrice?.(product) || 0) * quantity))}</strong>
+              </article>
+            `;
+          }).join('')}
+        </div>
+        <aside class="cart-summary panel">
+          <span class="kicker">Cart Summary</span>
+          <h2>${itemCount} item${itemCount === 1 ? '' : 's'}</h2>
+          <div class="cart-summary__row"><span>Merchandise subtotal</span><strong>${DJ.escapeHtml(DJ.currency(subtotal))}</strong></div>
+          <p>Shipping and any applicable taxes are calculated securely in Stripe Checkout.</p>
+          <button type="button" class="button" data-cart-checkout data-checkout-button>Checkout Cart</button>
+          <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
+          <button type="button" class="button-secondary" data-cart-clear>Clear Cart</button>
+          <p class="cart-status" id="cartStatus" aria-live="polite"></p>
+        </aside>
+      </div>
+    `;
+
+    container.querySelectorAll('[data-cart-quantity]').forEach((input) => {
+      input.addEventListener('change', () => {
+        const productId = Number(input.closest('[data-cart-product-id]')?.dataset.cartProductId);
+        DJ.updateCartQuantity?.(productId, input.value);
+      });
+    });
+    container.querySelectorAll('[data-cart-remove]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const productId = Number(button.closest('[data-cart-product-id]')?.dataset.cartProductId);
+        DJ.removeFromCart?.(productId);
+      });
+    });
+    container.querySelectorAll('[data-cart-move-wishlist]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const productId = Number(button.closest('[data-cart-product-id]')?.dataset.cartProductId);
+        if (!DJ.getWishlist().includes(productId)) DJ.setWishlist([...DJ.getWishlist(), productId]);
+        DJ.removeFromCart?.(productId);
+      });
+    });
+    container.querySelector('[data-cart-clear]')?.addEventListener('click', () => {
+      if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart?.();
+    });
+    container.querySelector('[data-cart-checkout]')?.addEventListener('click', () => checkoutCart(allProducts));
+    DJ.applyLazyLoading(container);
   }
 
   // ---------------------------------------------------------------------------
@@ -3865,6 +4060,7 @@ Thank you.`);
     const displayPrice = DJ.displayPrice(product);
     const modalActionLabel = getProductActionLabel(product, 'modal');
     const isDirectCheckout = isDirectCheckoutCandidate(product);
+    const availableQuantity = DJ.availableQuantity?.(product) || 0;
     const modalThumbs = gallery.map((image, index) => ({
       image,
       index,
@@ -3898,8 +4094,16 @@ Thank you.`);
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
+          ${isDirectCheckout ? `
+            <div class="modal-quantity-row">
+              <label for="modalQuantity">Quantity</label>
+              <input id="modalQuantity" type="number" min="1" max="${availableQuantity}" value="1" inputmode="numeric">
+              <span>${DJ.escapeHtml(`${availableQuantity} available`)}</span>
+            </div>
+          ` : ''}
           <div class="inline-actions">
             <button type="button" class="modal-cta${isDirectCheckout ? '' : ' modal-cta--inquiry'}" id="modalBuy" data-checkout-button>${DJ.escapeHtml(modalActionLabel)}</button>
+            ${isDirectCheckout ? '<button type="button" class="button-secondary" id="modalAddCart">Add to Cart</button>' : ''}
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
             <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
@@ -3964,7 +4168,14 @@ Thank you.`);
       });
     });
 
-    modalInner.querySelector('#modalBuy')?.addEventListener('click', () => buyNow(product));
+    modalInner.querySelector('#modalBuy')?.addEventListener('click', () => {
+      const quantity = Math.max(1, Number(modalInner.querySelector('#modalQuantity')?.value) || 1);
+      buyNow(product, { quantity });
+    });
+    modalInner.querySelector('#modalAddCart')?.addEventListener('click', () => {
+      const quantity = Math.max(1, Number(modalInner.querySelector('#modalQuantity')?.value) || 1);
+      addToCart(product, quantity);
+    });
     modalInner.querySelector('#modalCopyLink')?.addEventListener('click', () => copyProductLink(product));
     modalInner.querySelectorAll('[data-modal-nav]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -4187,11 +4398,11 @@ Thank you.`);
     if (document.body.dataset.catalogBooted === 'true') return;
     document.body.dataset.catalogBooted = 'true';
     const page = document.body.dataset.page;
-    const pageConfig = PAGE_CONFIG[page] || PAGE_CONFIG.shop;
     bindWishlistStateSync();
+    bindCartStateSync();
     hydrateCustomerAccountAfterPaint();
 
-    if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist'].includes(page)) {
+    if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist', 'cart'].includes(page)) {
       DJ.scheduleIdle?.(() => insertDepartmentSwitcher());
     }
 
@@ -4203,6 +4414,10 @@ Thank you.`);
 
     if (page === 'wishlist') {
       await renderWishlistPage();
+    }
+
+    if (page === 'cart') {
+      await renderCartPage();
     }
 
     const modal = document.getElementById('productModal');

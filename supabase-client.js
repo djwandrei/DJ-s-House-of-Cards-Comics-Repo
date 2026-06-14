@@ -93,6 +93,13 @@ window.DJ = window.DJ || {};
     'sport',
     'player_athlete',
     'copy_count',
+    'quantity_available',
+    'checkout_enabled',
+    'checkout_price',
+    'sale_status',
+    'sold_at',
+    'hidden_reason',
+    'archived_at',
     'item_photo_url',
     'item_photo_urls',
     'html_full_link',
@@ -406,6 +413,10 @@ window.DJ = window.DJ || {};
       : {};
   }
 
+  function normalizePlayerAthlete(value = '') {
+    return String(value || '').trim().replace(/\s*\|\s*/g, '|');
+  }
+
   function prepareSeedProducts(products = [], options = {}) {
     if (!Array.isArray(products)) return [];
 
@@ -460,8 +471,15 @@ window.DJ = window.DJ || {};
       sourcePage: row.source_page || '',
       league: row.league || '',
       sport: row.sport || '',
-      playerAthlete: row.player_athlete || '',
+      playerAthlete: normalizePlayerAthlete(row.player_athlete),
       copyCount: Number.isFinite(Number(row.copy_count)) ? Number(row.copy_count) : null,
+      quantityAvailable: Number.isFinite(Number(row.quantity_available)) ? Number(row.quantity_available) : null,
+      checkoutEnabled: row.checkout_enabled !== false,
+      checkoutPrice: Number.isFinite(Number(row.checkout_price)) ? Number(row.checkout_price) : null,
+      saleStatus: row.sale_status || 'available',
+      soldAt: row.sold_at || '',
+      hiddenReason: row.hidden_reason || '',
+      archivedAt: row.archived_at || '',
       itemPhotoUrl: row.item_photo_url || '',
       itemPhotoUrls: normalizeStringArray(row.item_photo_urls),
       htmlFullLink: row.html_full_link || '',
@@ -485,6 +503,12 @@ window.DJ = window.DJ || {};
     const normalizedCopyCount = product.copyCount === '' || product.copyCount === null || product.copyCount === undefined
       ? null
       : Number(product.copyCount);
+    const normalizedQuantityAvailable = product.quantityAvailable === '' || product.quantityAvailable === null || product.quantityAvailable === undefined
+      ? normalizedCopyCount
+      : Number(product.quantityAvailable);
+    const normalizedCheckoutPrice = product.checkoutPrice === '' || product.checkoutPrice === null || product.checkoutPrice === undefined
+      ? null
+      : Number(product.checkoutPrice);
     const normalizedGallery = normalizeStringArray(product.imageGallery);
     const hasOwn = (key) => Object.prototype.hasOwnProperty.call(product, key);
     const payload = {
@@ -525,7 +549,7 @@ window.DJ = window.DJ || {};
     }
 
     if (hasOwn('playerAthlete')) {
-      payload.player_athlete = String(product.playerAthlete || '').trim();
+      payload.player_athlete = normalizePlayerAthlete(product.playerAthlete);
     }
 
     if (hasOwn('displayPrice')) {
@@ -534,6 +558,34 @@ window.DJ = window.DJ || {};
 
     if (hasOwn('copyCount')) {
       payload.copy_count = Number.isFinite(normalizedCopyCount) ? normalizedCopyCount : null;
+    }
+
+    if (hasOwn('quantityAvailable') || hasOwn('copyCount')) {
+      payload.quantity_available = Number.isFinite(normalizedQuantityAvailable) ? normalizedQuantityAvailable : 1;
+    }
+
+    if (hasOwn('checkoutEnabled')) {
+      payload.checkout_enabled = Boolean(product.checkoutEnabled);
+    }
+
+    if (hasOwn('checkoutPrice')) {
+      payload.checkout_price = Number.isFinite(normalizedCheckoutPrice) ? normalizedCheckoutPrice : null;
+    }
+
+    if (hasOwn('saleStatus')) {
+      payload.sale_status = String(product.saleStatus || 'available').trim() || 'available';
+    }
+
+    if (hasOwn('soldAt')) {
+      payload.sold_at = product.soldAt || null;
+    }
+
+    if (hasOwn('hiddenReason')) {
+      payload.hidden_reason = String(product.hiddenReason || '').trim();
+    }
+
+    if (hasOwn('archivedAt')) {
+      payload.archived_at = product.archivedAt || null;
     }
 
     if (hasOwn('itemPhotoUrl')) {
@@ -737,7 +789,7 @@ window.DJ = window.DJ || {};
     return data;
   }
 
-  async function signUp(email, password) {
+  async function signUp(email, password, options = {}) {
     await ensureSupabaseLibrary();
     const client = getClient();
     if (!client) throw new Error('Backend is not configured.');
@@ -746,7 +798,7 @@ window.DJ = window.DJ || {};
       email,
       password,
       options: {
-        emailRedirectTo: `${siteOrigin}/account.html`
+        emailRedirectTo: `${siteOrigin}/account.html${options.resumeCheckout ? '?checkout=resume' : ''}`
       }
     });
     if (error) throw createFriendlyError(error, 'signUp');
@@ -780,7 +832,7 @@ window.DJ = window.DJ || {};
     if (!client) return [];
     const { data, error } = await client
       .from('checkout_orders')
-      .select('id,product_id,amount_total,currency,status,created_at,updated_at,products(name)')
+      .select('id,product_id,item_count,amount_total,currency,status,created_at,updated_at,products(name),checkout_order_items(product_id,quantity,unit_amount,product_name,product_image,product_price_label,product_category,product_year,product_condition)')
       .order('created_at', { ascending: false })
       .limit(12);
     if (error) throw createFriendlyError(error, 'listOrders');

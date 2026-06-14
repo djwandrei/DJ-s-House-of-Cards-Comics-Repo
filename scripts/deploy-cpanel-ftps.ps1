@@ -278,6 +278,8 @@ function Test-DeployablePath {
     "baseball-cards.html",
     "basketball-cards.html",
     "catalog.js",
+    "cart.html",
+    "checkout-success.html",
     "collectibles.html",
     "comics.html",
     "contact.html",
@@ -289,6 +291,7 @@ function Test-DeployablePath {
     "offline.html",
     "offline.js",
     "payments.js",
+    "privacy.html",
     "products-baseball.json",
     "products-basketball.json",
     "products-bootstrap-baseball.json",
@@ -312,6 +315,7 @@ function Test-DeployablePath {
     "products.json",
     "robots.txt",
     "seo.js",
+    "shipping.html",
     "shop.html",
     "site.webmanifest",
     "sitemap.xml",
@@ -320,6 +324,8 @@ function Test-DeployablePath {
     "styles-mobile-overrides.css",
     "supabase-client.js",
     "sw.js",
+    "terms.html",
+    "returns.html",
     "wishlist.html"
   )
 

@@ -38,22 +38,22 @@ window.DJ = window.DJ || {};
     }
   };
 
-  function getFieldValue(form, fieldName) {
+  // Centralize named control lookup so validation, draft restoration, and topic
+  // shortcuts all handle missing or non-value form entries the same way.
+  function getFormControl(form, fieldName) {
     const field = form?.elements?.namedItem(fieldName);
-    if (!field || typeof field.value !== 'string') return '';
-    return field.value.trim();
+    return field && typeof field.value === 'string' ? field : null;
+  }
+
+  function getFieldValue(form, fieldName) {
+    return getFormControl(form, fieldName)?.value.trim() || '';
   }
 
   function focusField(form, fieldName) {
-    const field = form?.elements?.namedItem(fieldName);
+    const field = getFormControl(form, fieldName);
     if (field && typeof field.focus === 'function') {
       field.focus();
     }
-  }
-
-  function getFormControl(form, fieldName) {
-    const field = form?.elements?.namedItem(fieldName);
-    return field && typeof field.setAttribute === 'function' ? field : null;
   }
 
   function updateDescribedBy(field, id, shouldInclude) {
@@ -130,8 +130,8 @@ window.DJ = window.DJ || {};
     const draft = readContactDraft();
     let restored = false;
     CONTACT_DRAFT_FIELDS.forEach((fieldName) => {
-      const field = form.elements.namedItem(fieldName);
-      if (!field || typeof field.value !== 'string' || field.value.trim() || !draft[fieldName]) return;
+      const field = getFormControl(form, fieldName);
+      if (!field || field.value.trim() || !draft[fieldName]) return;
       field.value = String(draft[fieldName]);
       restored = true;
     });
@@ -164,14 +164,14 @@ window.DJ = window.DJ || {};
         if (!topic) return;
 
         event.preventDefault();
-        const subjectField = form.elements.namedItem('subject');
-        const messageField = form.elements.namedItem('message');
+        const subjectField = getFormControl(form, 'subject');
+        const messageField = getFormControl(form, 'message');
 
-        if (subjectField && typeof subjectField.value === 'string') {
+        if (subjectField) {
           subjectField.value = topic.subject;
         }
 
-        if (messageField && typeof messageField.value === 'string' && !messageField.value.trim()) {
+        if (messageField && !messageField.value.trim()) {
           messageField.value = `${topic.prompt}\n\n`;
         }
 
