@@ -86,13 +86,21 @@ window.DJ = window.DJ || {};
     CONTACT_DRAFT_FIELDS.forEach((fieldName) => setFieldInvalid(form, fieldName, false));
   }
 
+  function removeContactDraft() {
+    try {
+      localStorage.removeItem(CONTACT_DRAFT_KEY);
+    } catch {
+      // Contact drafts are optional, including their cleanup.
+    }
+  }
+
   function readContactDraft() {
     try {
       const parsed = JSON.parse(localStorage.getItem(CONTACT_DRAFT_KEY) || '{}');
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
       const updatedAt = Date.parse(parsed.updatedAt || '');
       if (Number.isFinite(updatedAt) && Date.now() - updatedAt > CONTACT_DRAFT_MAX_AGE_MS) {
-        localStorage.removeItem(CONTACT_DRAFT_KEY);
+        removeContactDraft();
         return {};
       }
       return parsed;
@@ -111,7 +119,7 @@ window.DJ = window.DJ || {};
       if (CONTACT_DRAFT_FIELDS.some((fieldName) => draft[fieldName])) {
         localStorage.setItem(CONTACT_DRAFT_KEY, JSON.stringify(draft));
       } else {
-        localStorage.removeItem(CONTACT_DRAFT_KEY);
+        removeContactDraft();
       }
     } catch {
       // Contact drafts are a convenience only; blocked storage should not stop the form.
@@ -144,11 +152,7 @@ window.DJ = window.DJ || {};
   function clearContactDraft() {
     window.clearTimeout(contactDraftTimer);
     contactDraftTimer = 0;
-    try {
-      localStorage.removeItem(CONTACT_DRAFT_KEY);
-    } catch {
-      // Ignore blocked storage cleanup.
-    }
+    removeContactDraft();
   }
 
   function initContactTopics(form) {

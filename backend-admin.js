@@ -11,6 +11,7 @@ window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
+  const { escapeHtml } = DJ;
 
   // A tiny debounce helper keeps search responsive without rerendering the remote
   // listing manager on every single keystroke while the user is still typing.
@@ -43,10 +44,6 @@ window.DJ = window.DJ || {};
     remoteVisibleLimit: REMOTE_LIST_RENDER_LIMIT
   };
 
-  function getBusyControlledElements() {
-    return document.querySelectorAll(BUSY_CONTROL_SELECTOR);
-  }
-
   function normalizeGallery(items = []) {
     return [...new Set((Array.isArray(items) ? items : [])
       .map((item) => String(item || '').trim())
@@ -59,7 +56,7 @@ window.DJ = window.DJ || {};
 
     // A single busy toggle freezes the remote admin controls while requests are
     // running so sign-in, import, upload, and save actions cannot overlap.
-    getBusyControlledElements().forEach((element) => {
+    document.querySelectorAll(BUSY_CONTROL_SELECTOR).forEach((element) => {
       if ('disabled' in element) {
         element.disabled = state.isBusy;
       }
@@ -72,18 +69,6 @@ window.DJ = window.DJ || {};
 
   function backend() {
     return DJ.remoteCatalog;
-  }
-
-  function escapeHtml(value = '') {
-    if (typeof DJ.escapeHtml === 'function') {
-      return DJ.escapeHtml(String(value));
-    }
-    return String(value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
   }
 
   function formatCountLabel(count, singular, plural = `${singular}s`) {
@@ -1244,28 +1229,22 @@ window.DJ = window.DJ || {};
   }
 
   async function loadSeedSource(source) {
-    const preloaded = typeof DJ.getPreloadedProductsForSource === 'function'
-      ? DJ.getPreloadedProductsForSource(source)
-      : null;
+    const preloaded = DJ.getPreloadedProductsForSource(source);
 
     let products = preloaded;
     // Local file previews still need a browser-safe fallback path, so use the
     // preloaded bundle when available and only fetch the JSON file when needed.
-    if (!products && window.location.protocol === 'file:' && typeof DJ.loadPreloadedProductsForSource === 'function') {
+    if (!products && window.location.protocol === 'file:') {
       products = await DJ.loadPreloadedProductsForSource(source).catch(() => null);
     }
     if (!products) {
-      const versionedSource = typeof DJ.versionedProductAsset === 'function'
-        ? DJ.versionedProductAsset(source)
-        : source;
+      const versionedSource = DJ.versionedProductAsset(source);
       try {
         const response = await fetch(versionedSource, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Failed to fetch ${source} (${response.status})`);
         products = await response.json();
       } catch (error) {
-        products = typeof DJ.loadPreloadedProductsForSource === 'function'
-          ? await DJ.loadPreloadedProductsForSource(source).catch(() => null)
-          : null;
+        products = await DJ.loadPreloadedProductsForSource(source).catch(() => null);
         if (!products) throw error;
       }
     }

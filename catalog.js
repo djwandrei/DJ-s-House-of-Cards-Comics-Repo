@@ -131,16 +131,20 @@ window.DJ = window.DJ || {};
   ]);
   const PAGE_RENDER_BATCH_SIZES = {
     wishlist: 18,
-    collectibles: 20,
-    comics: 24,
-    'sports-hub': 24,
-    'sports-cards': 24,
-    'baseball-cards': 24,
-    'basketball-cards': 24,
-    'football-cards': 24
+    collectibles: 20
   };
   const DEFAULT_CATALOG_ITEMS_PER_PAGE = 48;
   const CATALOG_ITEMS_PER_PAGE_OPTIONS = [24, 48, 72];
+  // One ordered map drives sort validation, labels, and both select controls.
+  const DEFAULT_CATALOG_SORT = 'nameAsc';
+  const CATALOG_SORT_LABELS = Object.freeze({
+    nameAsc: 'Name A to Z',
+    nameDesc: 'Name Z to A',
+    priceAsc: 'Price low to high',
+    priceDesc: 'Price high to low',
+    yearAsc: 'Oldest first',
+    yearDesc: 'Newest first'
+  });
   const PRODUCT_LINK_PARAM = 'item';
   const MODAL_FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   const FILTER_PANEL_FOCUSABLE_SELECTOR = 'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -188,9 +192,7 @@ window.DJ = window.DJ || {};
     'Insert',
     'Error'
   ];
-  const FILTER_ATTRIBUTE_OPTIONS = [...PRODUCT_ATTRIBUTE_ORDER];
   const KNOWN_PRODUCT_ATTRIBUTES = new Set(PRODUCT_ATTRIBUTE_ORDER);
-  const PRODUCT_CARD_ATTRIBUTE_ALLOWLIST = new Set(PRODUCT_ATTRIBUTE_ORDER);
   const PRODUCT_ATTRIBUTE_ALIASES = new Map([
     ['auto', 'Autograph'],
     ['autographed', 'Autograph'],
@@ -444,7 +446,7 @@ window.DJ = window.DJ || {};
 
     // Keep grid cards aligned with the normalized product attributes so buyer
     // signals such as Rookie, Insert, and Short Print are not hidden.
-    return attributes.filter((attribute) => PRODUCT_CARD_ATTRIBUTE_ALLOWLIST.has(String(attribute || '').trim()));
+    return attributes.filter((attribute) => KNOWN_PRODUCT_ATTRIBUTES.has(String(attribute || '').trim()));
   }
 
   function getProductCardGradeLabel(product = {}) {
@@ -513,14 +515,8 @@ window.DJ = window.DJ || {};
     return 'Price';
   }
 
-  function getProductGuideRange(product = {}) {
-    return typeof DJ.priceRangeLabel === 'function' ? DJ.priceRangeLabel(product) : '';
-  }
-
   function isDirectCheckoutCandidate(product = {}) {
-    return typeof DJ.isDirectCheckoutEligible === 'function'
-      ? DJ.isDirectCheckoutEligible(product)
-      : false;
+    return DJ.isDirectCheckoutEligible(product);
   }
 
   function getProductActionLabel(product = {}, context = 'card') {
@@ -537,10 +533,6 @@ window.DJ = window.DJ || {};
 
   function getProductPrimaryContext(product = {}) {
     return normalizeTeamFacetValue(product.team, product);
-  }
-
-  function getProductCardContextValue(product = {}) {
-    return getProductPrimaryContext(product);
   }
 
   const GENERIC_TEAM_FACET_VALUES = new Set([
@@ -597,7 +589,7 @@ window.DJ = window.DJ || {};
   function renderProductCardSummary(product, summaryId, metaLine = '') {
     const pills = [];
     const yearLabel = product.yearLabel && product.yearLabel !== 'Year not listed' ? product.yearLabel : '';
-    const contextValue = getProductCardContextValue(product);
+    const contextValue = getProductPrimaryContext(product);
 
     if (yearLabel) {
       pills.push(`<span class="product-meta-pill product-meta-pill--year" data-label="Year">${DJ.escapeHtml(yearLabel)}</span>`);
@@ -626,23 +618,16 @@ window.DJ = window.DJ || {};
   }
 
   function renderProductCardMetaExtras(product = {}) {
-    const details = [];
     const league = String(product.league || '').trim();
-
-    if (league && !String(product.category || '').toLowerCase().includes(league.toLowerCase())) {
-      details.push(`<span class="product-meta-inline product-meta-inline--league" data-label="League">${DJ.escapeHtml(league)}</span>`);
-    }
-
-    return `
-      ${details.length ? `<div class="product-meta-inline-list">${details.join('')}</div>` : ''}
-    `;
+    if (!league || String(product.category || '').toLowerCase().includes(league.toLowerCase())) return '';
+    return `<div class="product-meta-inline-list"><span class="product-meta-inline product-meta-inline--league" data-label="League">${DJ.escapeHtml(league)}</span></div>`;
   }
 
   function renderModalFactStrip(product = {}, galleryCount = 1, displayPrice = DJ.displayPrice(product)) {
     // Keep condition/grade as the single source of truth in the quick facts.
     // The meta grid below intentionally skips it so modals do not show
     // duplicated values such as "Ungraded | Ungraded | Guide range listed".
-    const guideRange = getProductGuideRange(product);
+    const guideRange = DJ.priceRangeLabel(product);
     const facts = [
       {
         label: getProductPriceLabel(product),
@@ -863,7 +848,7 @@ window.DJ = window.DJ || {};
       conditionCounts,
       attributeCounts,
       teamCounts,
-      availableAttributes: FILTER_ATTRIBUTE_OPTIONS.filter((attribute) => attributeCounts.has(attribute)),
+      availableAttributes: PRODUCT_ATTRIBUTE_ORDER.filter((attribute) => attributeCounts.has(attribute)),
       teamValues: [...teamCounts.keys()].sort((left, right) => TEXT_COLLATOR.compare(left, right))
     };
   }
@@ -882,24 +867,11 @@ window.DJ = window.DJ || {};
       });
   }
 
-  function getSortLabel(value = 'nameAsc') {
-    const labels = {
-      nameAsc: 'Name A to Z',
-      nameDesc: 'Name Z to A',
-      priceAsc: 'Price low to high',
-      priceDesc: 'Price high to low',
-      yearAsc: 'Oldest first',
-      yearDesc: 'Newest first'
-    };
-
-    return labels[value] || value;
+  function getSortLabel(value = DEFAULT_CATALOG_SORT) {
+    return Object.hasOwn(CATALOG_SORT_LABELS, value) ? CATALOG_SORT_LABELS[value] : value;
   }
 
-  function getSortOptionValues() {
-    return ['nameAsc', 'nameDesc', 'priceAsc', 'priceDesc', 'yearAsc', 'yearDesc'];
-  }
-
-  function syncToolbarSortControl(value = 'nameAsc') {
+  function syncToolbarSortControl(value = DEFAULT_CATALOG_SORT) {
     const toolbarSort = document.getElementById('toolbarSortSelect');
     if (toolbarSort && toolbarSort.value !== value) {
       toolbarSort.value = value;
@@ -1028,14 +1000,10 @@ window.DJ = window.DJ || {};
       const sport = item.sport || (category === 'Collectibles' ? 'Other' : category);
       const league = item.league || '';
       const playerAthlete = item.playerAthlete || '';
-      const quantityAvailable = typeof DJ.availableQuantity === 'function'
-        ? DJ.availableQuantity(item)
-        : Math.max(0, Math.floor(Number(item.quantityAvailable ?? item.copyCount ?? 1) || 0));
+      const quantityAvailable = DJ.availableQuantity(item);
       const saleStatus = String(item.saleStatus || 'available').trim().toLowerCase();
       const checkoutEnabled = item.checkoutEnabled !== false;
-      const photoHostPageUrl = typeof DJ.safeExternalUrl === 'function'
-        ? DJ.safeExternalUrl(item.photoHostPageUrl)
-        : '';
+      const photoHostPageUrl = DJ.safeExternalUrl(item.photoHostPageUrl);
       const image = item.image || DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other;
       const attributes = deriveProductAttributes(item);
       // The static catalog carries admin/import-only fields such as raw eBay
@@ -1075,7 +1043,7 @@ window.DJ = window.DJ || {};
         photoHostPageUrl,
         image,
         attributes,
-        _price: DJ.numericPrice({ price }),
+        _price: DJ.payablePrice({ price }),
         _conditionLower: conditionInfo.status.toLowerCase(),
         _teamFacet: team,
         _searchNormalized: normalizeSearchString([
@@ -1169,9 +1137,7 @@ window.DJ = window.DJ || {};
     }
 
     const pendingRequest = (async () => {
-      const productAssetUrl = typeof DJ.versionedProductAsset === 'function'
-        ? DJ.versionedProductAsset(source)
-        : source;
+      const productAssetUrl = DJ.versionedProductAsset(source);
       // Let the browser/service worker revalidate catalog JSON instead of
       // pinning older payloads with force-cache across storefront deploys.
       const response = await fetch(productAssetUrl, { cache: 'default' });
@@ -1202,9 +1168,7 @@ window.DJ = window.DJ || {};
     }
 
     const pendingRequest = (async () => {
-      const bootstrapAssetUrl = typeof DJ.versionedProductAsset === 'function'
-        ? DJ.versionedProductAsset(bootstrapSource)
-        : bootstrapSource;
+      const bootstrapAssetUrl = DJ.versionedProductAsset(bootstrapSource);
       const response = await fetch(bootstrapAssetUrl, { cache: 'default' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -1230,18 +1194,6 @@ window.DJ = window.DJ || {};
       catalogBootstrapCache.delete(source);
       throw error;
     }
-  }
-
-  function getPreloadedProductsForSource(source) {
-    return typeof DJ.getPreloadedProductsForSource === 'function'
-      ? DJ.getPreloadedProductsForSource(source)
-      : null;
-  }
-
-  async function loadPreloadedProductsForSource(source) {
-    return typeof DJ.loadPreloadedProductsForSource === 'function'
-      ? DJ.loadPreloadedProductsForSource(source)
-      : null;
   }
 
   function withTimeout(promise, timeoutMs, label = 'Request') {
@@ -1276,7 +1228,7 @@ window.DJ = window.DJ || {};
     // the generated JS bundles as the first fallback there. Live HTTP/HTTPS
     // pages should prefer JSON to avoid parsing multi-megabyte script bundles.
     if (isFilePreview) {
-      const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
+      const bundledProducts = await DJ.loadPreloadedProductsForSource(source).catch(() => null);
       if (bundledProducts) {
         return { products: bundledProducts, origin: `${origin}-bundle` };
       }
@@ -1288,7 +1240,7 @@ window.DJ = window.DJ || {};
         origin
       };
     } catch (error) {
-      const bundledProducts = await loadPreloadedProductsForSource(source).catch(() => null);
+      const bundledProducts = await DJ.loadPreloadedProductsForSource(source).catch(() => null);
       if (bundledProducts) {
         return { products: bundledProducts, origin: `${origin}-bundle` };
       }
@@ -1430,7 +1382,7 @@ window.DJ = window.DJ || {};
       if (shouldOverlayPrice) {
         syncedProduct.price = parseCatalogPriceValue(staticProduct.price);
         const staticDisplay = getCatalogPriceDisplay(staticProduct)
-          || (typeof DJ.currency === 'function' ? DJ.currency(syncedProduct.price) : '');
+          || DJ.currency(syncedProduct.price);
         syncedProduct.priceLabel = staticDisplay;
         syncedProduct.displayPrice = staticDisplay;
       }
@@ -1440,7 +1392,7 @@ window.DJ = window.DJ || {};
   }
 
   async function getBestAvailableSourceResult(source) {
-    const preloaded = getPreloadedProductsForSource(source);
+    const preloaded = DJ.getPreloadedProductsForSource(source);
     if (preloaded) {
       return { products: preloaded, origin: 'preloaded' };
     }
@@ -1538,8 +1490,8 @@ window.DJ = window.DJ || {};
 
         return normalizedProducts;
       } catch (error) {
-        const preloadedFallback = getPreloadedProductsForSource(source)
-          || await loadPreloadedProductsForSource(source).catch(() => null);
+        const preloadedFallback = DJ.getPreloadedProductsForSource(source)
+          || await DJ.loadPreloadedProductsForSource(source).catch(() => null);
         const fallbackProducts = preloadedFallback || await fetchStaticProducts(source).catch(() => []);
 
         if (fallbackProducts.length) {
@@ -1599,7 +1551,7 @@ window.DJ = window.DJ || {};
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
-    const availableQuantity = DJ.availableQuantity?.(product) || 0;
+    const availableQuantity = DJ.availableQuantity(product);
     const quickActionLabel = getProductActionLabel(product);
     const titleId = `product-card-title-${product.id}`;
     const gradeLabel = product.conditionFacet === 'Graded' ? 'Grade' : 'Condition';
@@ -1728,10 +1680,6 @@ window.DJ = window.DJ || {};
       return DJ.payments;
     }
 
-    if (typeof DJ.loadScriptsInOrder !== 'function') {
-      return null;
-    }
-
     await DJ.loadScriptsInOrder([
       DJ.versionedProductAsset('backend-config.js'),
       DJ.versionedProductAsset('supabase-client.js'),
@@ -1746,15 +1694,10 @@ window.DJ = window.DJ || {};
         .then((payments) => payments?.hydrateAccount?.())
         .catch((error) => console.warn('Customer account could not be synced.', error));
     };
-    if (typeof DJ.scheduleIdle === 'function') {
-      DJ.scheduleIdle(hydrate, 1200);
-    } else {
-      window.setTimeout(hydrate, 800);
-    }
+    DJ.scheduleIdle(hydrate, 1200);
   }
 
   async function buyNow(product, options = {}) {
-
     const sendPurchaseInquiry = () => {
       openPurchaseInquiry(product);
     };
@@ -1778,26 +1721,26 @@ window.DJ = window.DJ || {};
       return false;
     }
 
-    const available = DJ.availableQuantity?.(product) || 0;
-    const productId = DJ.normalizeProductId?.(product.id);
+    const available = DJ.availableQuantity(product);
+    const productId = DJ.normalizeProductId(product.id);
     if (!productId) return false;
 
-    const existing = DJ.getCart?.().find((item) => item.productId === productId);
-    const requested = DJ.normalizeCartQuantity?.(quantity) || 1;
+    const existing = DJ.getCart().find((item) => item.productId === productId);
+    const requested = DJ.normalizeCartQuantity(quantity);
     const nextQuantity = Math.min(available, (existing?.quantity || 0) + requested);
     if (nextQuantity <= (existing?.quantity || 0)) {
       setModalStatus(`Only ${available} available for this listing.`, 'error');
       return false;
     }
 
-    DJ.updateCartQuantity?.(productId, nextQuantity);
+    DJ.updateCartQuantity(productId, nextQuantity);
     setModalStatus(`${product.name} added to cart.`, 'success');
     return true;
   }
 
   async function checkoutCart(products = []) {
     const productLookup = createProductLookup(products);
-    const items = DJ.getCart?.()
+    const items = DJ.getCart()
       .map((item) => ({
         ...item,
         product: productLookup.get(Number(item.productId)) || null
@@ -1812,7 +1755,7 @@ window.DJ = window.DJ || {};
       }
     } catch (error) {
       console.error('Secure cart checkout could not be loaded.', error);
-      DJ.setStatus?.('cartStatus', 'Secure checkout could not be loaded. Please try again.', 'error');
+      DJ.setStatus('cartStatus', 'Secure checkout could not be loaded. Please try again.', 'error');
     }
   }
 
@@ -1912,7 +1855,7 @@ Thank you.`
 
       await navigator.clipboard.writeText(shareUrl);
       setModalStatus('Product link copied.', 'success');
-    } catch (error) {
+    } catch {
       setModalStatus(`Copy this link: ${shareUrl}`, 'info');
     }
   }
@@ -2138,7 +2081,7 @@ Thank you.`
     if (filters.yearMax != null) addFilter('yearMax', 'Year to', filters.yearMax, 'range');
     if (filters.priceMin != null) addFilter('priceMin', 'Min price', DJ.currency(filters.priceMin), 'range');
     if (filters.priceMax != null) addFilter('priceMax', 'Max price', DJ.currency(filters.priceMax), 'range');
-    if (filters.sort && filters.sort !== 'nameAsc') {
+    if (filters.sort && filters.sort !== DEFAULT_CATALOG_SORT) {
       addFilter('sort', 'Sort', getSortLabel(filters.sort), 'sort');
     }
 
@@ -2228,7 +2171,7 @@ Thank you.`
       yearMax,
       priceMin,
       priceMax,
-      sort: document.getElementById('sortSelect')?.value || document.getElementById('toolbarSortSelect')?.value || 'nameAsc',
+      sort: document.getElementById('sortSelect')?.value || document.getElementById('toolbarSortSelect')?.value || DEFAULT_CATALOG_SORT,
       page: sanitizeCatalogPage(currentCatalogPage),
       perPage: sanitizeItemsPerPage(currentCatalogItemsPerPage)
     };
@@ -2248,7 +2191,7 @@ Thank you.`
     if (filters.yearMax != null) url.searchParams.set('yearMax', String(filters.yearMax));
     if (filters.priceMin != null) url.searchParams.set('priceMin', String(filters.priceMin));
     if (filters.priceMax != null) url.searchParams.set('priceMax', String(filters.priceMax));
-    if (filters.sort && filters.sort !== 'nameAsc') url.searchParams.set('sort', filters.sort);
+    if (filters.sort && filters.sort !== DEFAULT_CATALOG_SORT) url.searchParams.set('sort', filters.sort);
     if (filters.page && filters.page > 1) url.searchParams.set('page', String(filters.page));
     if (filters.perPage && filters.perPage !== DEFAULT_CATALOG_ITEMS_PER_PAGE) url.searchParams.set('perPage', String(filters.perPage));
 
@@ -2267,8 +2210,8 @@ Thank you.`
       yearMax: filters.yearMax || '',
       priceMin: filters.priceMin || '',
       priceMax: filters.priceMax || '',
-      sortSelect: filters.sort || 'nameAsc',
-      toolbarSortSelect: filters.sort || 'nameAsc'
+      sortSelect: filters.sort || DEFAULT_CATALOG_SORT,
+      toolbarSortSelect: filters.sort || DEFAULT_CATALOG_SORT
     };
 
     Object.entries(valueMap).forEach(([id, value]) => {
@@ -2298,15 +2241,14 @@ Thank you.`
       yearMax: params.get('yearMax'),
       priceMin: params.get('priceMin'),
       priceMax: params.get('priceMax'),
-      sort: params.get('sort') || 'nameAsc'
+      sort: params.get('sort') || DEFAULT_CATALOG_SORT
     };
 
     currentCatalogPage = sanitizeCatalogPage(params.get('page'));
     currentCatalogItemsPerPage = sanitizeItemsPerPage(params.get('perPage'));
 
-    const allowedSorts = new Set(['nameAsc', 'nameDesc', 'priceAsc', 'priceDesc', 'yearAsc', 'yearDesc']);
-    if (!allowedSorts.has(initial.sort)) {
-      initial.sort = 'nameAsc';
+    if (!Object.hasOwn(CATALOG_SORT_LABELS, initial.sort)) {
+      initial.sort = DEFAULT_CATALOG_SORT;
     }
 
     applyFilterStateToControls(initial);
@@ -2418,11 +2360,9 @@ Thank you.`
   // Progressive enhancements for the filter UI
   // ---------------------------------------------------------------------------
 
-  function decorateSearchField(config = {}) {
+  function decorateSearchField() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
-    const fieldGroup = searchInput.closest('.field-group');
-    const filterHelp = document.getElementById('filterHelp');
 
     let shell = searchInput.parentElement;
     if (!shell.classList.contains('search-shell')) {
@@ -2462,11 +2402,7 @@ Thank you.`
 
     syncState();
     searchInput.addEventListener('input', syncState);
-
-    if (!fieldGroup) return;
-
-    let suggestions = fieldGroup.querySelector('.search-suggestions');
-    suggestions?.remove();
+    searchInput.closest('.field-group')?.querySelector('.search-suggestions')?.remove();
   }
 
   function addToolbarActions() {
@@ -2480,14 +2416,14 @@ Thank you.`
       sortControl.innerHTML = `
         <label for="toolbarSortSelect">Sort by</label>
         <select id="toolbarSortSelect" aria-label="Sort catalog results">
-          ${getSortOptionValues().map((value) => `<option value="${DJ.escapeHtml(value)}">${DJ.escapeHtml(getSortLabel(value))}</option>`).join('')}
+          ${Object.entries(CATALOG_SORT_LABELS).map(([value, label]) => `<option value="${DJ.escapeHtml(value)}">${DJ.escapeHtml(label)}</option>`).join('')}
         </select>
       `;
 
       const toolbarSelect = sortControl.querySelector('#toolbarSortSelect');
       const primarySort = document.getElementById('sortSelect');
       if (toolbarSelect && primarySort) {
-        toolbarSelect.value = primarySort.value || 'nameAsc';
+        toolbarSelect.value = primarySort.value || DEFAULT_CATALOG_SORT;
         toolbarSelect.addEventListener('change', () => {
           primarySort.value = toolbarSelect.value;
           // Dispatch through the original select so the existing filter binding
@@ -2675,9 +2611,7 @@ Thank you.`
 
     const headerOffset = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 96;
     const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset - 16);
-    const behavior = window.DJ && typeof window.DJ.getScrollBehavior === 'function'
-      ? window.DJ.getScrollBehavior()
-      : 'smooth';
+    const behavior = DJ.getScrollBehavior();
     window.scrollTo({ top, behavior });
   }
 
@@ -2777,7 +2711,7 @@ Thank you.`
   function readStoredSidebarVisibility() {
     try {
       return localStorage.getItem(FILTER_SIDEBAR_VISIBILITY_KEY);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -2785,7 +2719,7 @@ Thank you.`
   function writeStoredSidebarVisibility(isVisible) {
     try {
       localStorage.setItem(FILTER_SIDEBAR_VISIBILITY_KEY, isVisible ? 'visible' : 'hidden');
-    } catch (error) {
+    } catch {
       // Ignore storage failures; the toggle should still work for the current session.
     }
   }
@@ -2888,10 +2822,6 @@ Thank you.`
     }, { runImmediately: false });
 
     syncState();
-  }
-
-  function streamlineCatalogHero() {
-    document.querySelector('.page-hero-card')?.classList.add('catalog-hero-card--streamlined');
   }
 
   function insertCatalogSupportCallout(config = {}) {
@@ -3013,11 +2943,11 @@ Thank you.`
       yearMax: filters.yearMax ?? null,
       priceMin: filters.priceMin ?? null,
       priceMax: filters.priceMax ?? null,
-      sort: filters.sort || 'nameAsc'
+      sort: filters.sort || DEFAULT_CATALOG_SORT
     });
   }
 
-  function getCatalogSortComparator(sort = 'nameAsc') {
+  function getCatalogSortComparator(sort = DEFAULT_CATALOG_SORT) {
     switch (sort) {
       case 'priceAsc':
         return (left, right) => (left._price ?? Number.POSITIVE_INFINITY) - (right._price ?? Number.POSITIVE_INFINITY);
@@ -3179,7 +3109,7 @@ Thank you.`
       const field = document.getElementById(fieldId);
       if (!field) return;
 
-      if (filterKey === 'sort') field.value = 'nameAsc';
+      if (filterKey === 'sort') field.value = DEFAULT_CATALOG_SORT;
       else field.value = '';
 
       if (filterKey === 'filterText') field.focus();
@@ -3201,8 +3131,8 @@ Thank you.`
 
     const primarySort = document.getElementById('sortSelect');
     const toolbarSort = document.getElementById('toolbarSortSelect');
-    if (primarySort) primarySort.value = 'nameAsc';
-    if (toolbarSort) toolbarSort.value = 'nameAsc';
+    if (primarySort) primarySort.value = DEFAULT_CATALOG_SORT;
+    if (toolbarSort) toolbarSort.value = DEFAULT_CATALOG_SORT;
 
     document.querySelectorAll('.facet-group.is-expanded').forEach((group) => group.classList.remove('is-expanded'));
     document.querySelectorAll('.facet-toggle').forEach((toggle) => {
@@ -3234,11 +3164,6 @@ Thank you.`
     });
   }
 
-  function setupResponsiveMobileUX(config) {
-    setupMobileFilterDrawer(config);
-    setupScrollableMobileRails();
-  }
-
   function canRenderCatalogBootstrap(initialFilters = {}) {
     const hasActiveFilters = Boolean(
       String(initialFilters.filterText || '').trim()
@@ -3249,7 +3174,7 @@ Thank you.`
       || initialFilters.yearMax
       || initialFilters.priceMin
       || initialFilters.priceMax
-      || (initialFilters.sort && initialFilters.sort !== 'nameAsc')
+      || (initialFilters.sort && initialFilters.sort !== DEFAULT_CATALOG_SORT)
     );
 
     return !hasActiveFilters
@@ -3532,15 +3457,16 @@ Thank you.`
     // never flashes the old top-stacked filter layout during slow backend loads.
     enhanceFilterCopy(config);
     ensureCatalogBrowseLayout();
-    streamlineCatalogHero();
-    decorateSearchField(config);
+    document.querySelector('.page-hero-card')?.classList.add('catalog-hero-card--streamlined');
+    decorateSearchField();
     addToolbarActions();
     ensureCatalogPaginationControls();
     setupFilterSidebarToggle();
     insertCatalogSupportCallout(config);
     bindCatalogPagination(config);
     setupSearchShortcuts();
-    setupResponsiveMobileUX(config);
+    setupMobileFilterDrawer(config);
+    setupScrollableMobileRails();
 
     let fullCatalogPromise = null;
     const hydrateFullCatalog = () => {
@@ -3812,10 +3738,10 @@ Thank you.`);
   async function renderCartPage() {
     const container = document.getElementById('cartContainer');
     if (!container) return;
-    const storedCart = DJ.getCart?.() || [];
+    const storedCart = DJ.getCart();
     if (!storedCart.length) {
       container.innerHTML = renderCartEmptyState();
-      DJ.updateCartCount?.();
+      DJ.updateCartCount();
       return;
     }
 
@@ -3827,11 +3753,11 @@ Thank you.`);
       .filter((item) => item.product);
     const reconciled = cartItems.map((item) => ({
       productId: item.productId,
-      quantity: Math.min(item.quantity, DJ.availableQuantity?.(item.product) || 0)
+      quantity: Math.min(item.quantity, DJ.availableQuantity(item.product))
     })).filter((item) => item.quantity > 0);
 
     if (JSON.stringify(reconciled) !== JSON.stringify(storedCart)) {
-      DJ.setCart?.(reconciled);
+      DJ.setCart(reconciled);
     }
     if (!cartItems.length || !reconciled.length) {
       clearProductGridLoadingState(container);
@@ -3847,7 +3773,7 @@ Thank you.`);
       .filter((item) => item.quantity > 0);
     const itemCount = activeItems.reduce((total, item) => total + item.quantity, 0);
     const subtotal = activeItems.reduce((total, item) => (
-      total + ((DJ.payablePrice?.(item.product) || 0) * item.quantity)
+      total + ((DJ.payablePrice(item.product) || 0) * item.quantity)
     ), 0);
 
     clearProductGridLoadingState(container);
@@ -3855,7 +3781,7 @@ Thank you.`);
       <div class="cart-layout">
         <div class="cart-items" aria-label="Shopping cart items">
           ${activeItems.map(({ product, quantity }) => {
-            const available = DJ.availableQuantity?.(product) || 0;
+            const available = DJ.availableQuantity(product);
             const image = DJ.getThumbnailAssetCandidates(product.image)[0] || DJ.safeAssetUrl(product.image);
             return `
               <article class="cart-item" data-cart-product-id="${Number(product.id)}">
@@ -3874,7 +3800,7 @@ Thank you.`);
                     <button type="button" class="button-secondary" data-cart-remove>Remove</button>
                   </div>
                 </div>
-                <strong class="cart-item__subtotal">${DJ.escapeHtml(DJ.currency((DJ.payablePrice?.(product) || 0) * quantity))}</strong>
+                <strong class="cart-item__subtotal">${DJ.escapeHtml(DJ.currency((DJ.payablePrice(product) || 0) * quantity))}</strong>
               </article>
             `;
           }).join('')}
@@ -3898,7 +3824,7 @@ Thank you.`);
     container.onchange = (event) => {
       const target = event.target instanceof Element ? event.target : null;
       if (!target?.matches('[data-cart-quantity]')) return;
-      DJ.updateCartQuantity?.(getCartProductId(target), target.value);
+      DJ.updateCartQuantity(getCartProductId(target), target.value);
     };
     container.onclick = (event) => {
       const target = event.target instanceof Element ? event.target : null;
@@ -3906,7 +3832,7 @@ Thank you.`);
 
       const removeButton = target.closest('[data-cart-remove]');
       if (removeButton) {
-        DJ.removeFromCart?.(getCartProductId(removeButton));
+        DJ.removeFromCart(getCartProductId(removeButton));
         return;
       }
 
@@ -3915,12 +3841,12 @@ Thank you.`);
         const productId = getCartProductId(wishlistButton);
         const wishlist = DJ.getWishlist();
         if (!wishlist.includes(productId)) DJ.setWishlist([...wishlist, productId]);
-        DJ.removeFromCart?.(productId);
+        DJ.removeFromCart(productId);
         return;
       }
 
       if (target.closest('[data-cart-clear]')) {
-        if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart?.();
+        if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart();
         return;
       }
 
@@ -4032,7 +3958,7 @@ Thank you.`);
     const displayPrice = DJ.displayPrice(product);
     const modalActionLabel = getProductActionLabel(product, 'modal');
     const isDirectCheckout = isDirectCheckoutCandidate(product);
-    const availableQuantity = DJ.availableQuantity?.(product) || 0;
+    const availableQuantity = DJ.availableQuantity(product);
     const modalThumbs = gallery.map((image, index) => ({
       image,
       index,
@@ -4094,7 +4020,7 @@ Thank you.`);
       `Open full size image${galleryCount > 1 ? ` ${activeGalleryIndex + 1} of ${galleryCount}` : ''} for ${product.name}`
     );
     const openModalImagePreview = () => {
-      if (!modalMainImage || typeof DJ.openImageLightbox !== 'function') return;
+      if (!modalMainImage) return;
       const src = modalMainImage.dataset.fullSizeSrc
         || modalMainImage.currentSrc
         || modalMainImage.getAttribute('src')
@@ -4339,7 +4265,7 @@ Thank you.`);
     hydrateCustomerAccountAfterPaint();
 
     if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist', 'cart'].includes(page)) {
-      DJ.scheduleIdle?.(() => insertDepartmentSwitcher());
+      DJ.scheduleIdle(() => insertDepartmentSwitcher());
     }
 
     if (page === 'home') {

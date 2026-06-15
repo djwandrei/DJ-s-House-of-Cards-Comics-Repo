@@ -14,6 +14,15 @@ const FILES = [
   'products-sports.json',
   'products-featured.json'
 ];
+const SEGMENTS = {
+  'products-baseball.json': (product) => product.category === 'Baseball',
+  'products-basketball.json': (product) => product.category === 'Basketball',
+  'products-football.json': (product) => product.category === 'Football',
+  'products-comics.json': (product) => product.category === 'Comics',
+  'products-collectibles.json': (product) => product.category === 'Collectibles',
+  'products-sports.json': (product) => ['Baseball', 'Basketball', 'Football'].includes(product.category),
+  'products-featured.json': (product) => product.isFeatured === true
+};
 
 const BUNDLE_FILES = {
   'products.json': 'products-data-full.js',
@@ -128,9 +137,15 @@ function pickStorefrontFields(item) {
   return out;
 }
 
+const canonicalProducts = JSON.parse(await fs.readFile(path.join(root, 'products.json'), 'utf8'));
+
 for (const file of FILES) {
   const fullPath = path.join(root, file);
-  const raw = JSON.parse(await fs.readFile(fullPath, 'utf8'));
+  // Derive every segment from products.json so one canonical catalog update
+  // cannot leave stale category JSON or preloaded bundles behind.
+  const raw = file === 'products.json'
+    ? canonicalProducts
+    : canonicalProducts.filter(SEGMENTS[file]);
   assertRangeCheckoutPrices(raw, file);
   const isFullCatalog = file === 'products.json';
   const activeRaw = Array.isArray(raw)

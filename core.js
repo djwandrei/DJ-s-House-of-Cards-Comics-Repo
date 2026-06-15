@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260614a';
+  const PRODUCT_ASSET_VERSION = '20260615a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -24,25 +24,17 @@ window.DJ = window.DJ || {};
   const FOOTER_THEME_QUERY = typeof window.matchMedia === 'function'
     ? window.matchMedia(`(max-width: ${FOOTER_THEME_BREAKPOINT}px)`)
     : null;
-  const PRELOADED_PRODUCT_SCRIPT_BY_SOURCE = {
-    'products.json': 'products-data-full.js',
-    'products-baseball.json': 'products-data-baseball.js',
-    'products-basketball.json': 'products-data-basketball.js',
-    'products-football.json': 'products-data-football.js',
-    'products-comics.json': 'products-data-comics.js',
-    'products-collectibles.json': 'products-data-collectibles.js',
-    'products-sports.json': 'products-data-sports.js',
-    'products-featured.json': 'products-data-featured.js'
-  };
-  const PRELOADED_PRODUCT_GLOBAL_BY_SOURCE = {
-    'products.json': 'DJ_PRODUCTS_FULL',
-    'products-baseball.json': 'DJ_PRODUCTS_BASEBALL',
-    'products-basketball.json': 'DJ_PRODUCTS_BASKETBALL',
-    'products-football.json': 'DJ_PRODUCTS_FOOTBALL',
-    'products-comics.json': 'DJ_PRODUCTS_COMICS',
-    'products-collectibles.json': 'DJ_PRODUCTS_COLLECTIBLES',
-    'products-sports.json': 'DJ_PRODUCTS_SPORTS',
-    'products-featured.json': 'DJ_PRODUCTS_FEATURED'
+  // Generated fallbacks expose both a script and a global. Keep those names
+  // paired so adding a catalog segment cannot update one registry but not the other.
+  const PRELOADED_PRODUCT_BUNDLES = {
+    'products.json': ['products-data-full.js', 'DJ_PRODUCTS_FULL'],
+    'products-baseball.json': ['products-data-baseball.js', 'DJ_PRODUCTS_BASEBALL'],
+    'products-basketball.json': ['products-data-basketball.js', 'DJ_PRODUCTS_BASKETBALL'],
+    'products-football.json': ['products-data-football.js', 'DJ_PRODUCTS_FOOTBALL'],
+    'products-comics.json': ['products-data-comics.js', 'DJ_PRODUCTS_COMICS'],
+    'products-collectibles.json': ['products-data-collectibles.js', 'DJ_PRODUCTS_COLLECTIBLES'],
+    'products-sports.json': ['products-data-sports.js', 'DJ_PRODUCTS_SPORTS'],
+    'products-featured.json': ['products-data-featured.js', 'DJ_PRODUCTS_FEATURED']
   };
   const CATEGORY_PAGE_ROUTES = [
     [/baseball/, 'baseball-cards.html'],
@@ -180,7 +172,7 @@ window.DJ = window.DJ || {};
   function safeStorageGet(key) {
     try {
       return localStorage.getItem(key);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -189,9 +181,14 @@ window.DJ = window.DJ || {};
     try {
       localStorage.setItem(key, value);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
+  }
+
+  function normalizeProductId(value) {
+    const productId = Number(value);
+    return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
   }
 
   /**
@@ -199,12 +196,9 @@ window.DJ = window.DJ || {};
    * can work whether products come from static JSON, local overrides, or Supabase.
    */
   function normalizeWishlist(items) {
-    return [...new Set((Array.isArray(items) ? items : []).map(Number).filter(Number.isFinite))];
-  }
-
-  function normalizeProductId(value) {
-    const productId = Number(value);
-    return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
+    return [...new Set((Array.isArray(items) ? items : [])
+      .map(normalizeProductId)
+      .filter(Boolean))];
   }
 
   function normalizeCartQuantity(value, { allowZero = false } = {}) {
@@ -1201,7 +1195,7 @@ window.DJ = window.DJ || {};
     try {
       const parsedUrl = new URL(rawValue);
       return allowedProtocols.includes(parsedUrl.protocol) ? parsedUrl.href : '';
-    } catch (error) {
+    } catch {
       return '';
     }
   };
@@ -1249,7 +1243,7 @@ window.DJ = window.DJ || {};
 
           try {
             return encodeURIComponent(decodeURIComponent(segment));
-          } catch (error) {
+          } catch {
             return encodeURIComponent(segment);
           }
         })
@@ -1370,7 +1364,7 @@ window.DJ = window.DJ || {};
       return preloadedProductsBySource.get(source);
     }
 
-    const sourceGlobal = PRELOADED_PRODUCT_GLOBAL_BY_SOURCE[source];
+    const sourceGlobal = PRELOADED_PRODUCT_BUNDLES[source]?.[1];
     if (sourceGlobal && Array.isArray(window[sourceGlobal])) {
       preloadedProductsBySource.set(source, window[sourceGlobal]);
       return window[sourceGlobal];
@@ -1395,7 +1389,7 @@ window.DJ = window.DJ || {};
       return existing;
     }
 
-    const scriptName = PRELOADED_PRODUCT_SCRIPT_BY_SOURCE[source];
+    const scriptName = PRELOADED_PRODUCT_BUNDLES[source]?.[0];
     if (!scriptName) {
       return null;
     }
@@ -1575,10 +1569,6 @@ window.DJ = window.DJ || {};
     const range = parsePriceRangeLabel(explicitLabel);
     if (range) return formatCurrency(range.high);
     return explicitLabel || formatCurrency(item?.price);
-  };
-
-  DJ.numericPrice = function numericPrice(item) {
-    return DJ.payablePrice(item);
   };
 
   DJ.isDirectCheckoutEligible = function isDirectCheckoutEligible(item = {}) {

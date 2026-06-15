@@ -7,40 +7,23 @@
  */
 
 (() => {
-  // Map body[data-page] values to the navigation link that should read as active.
-  const PAGE_TO_NAV_TARGET = {
-    home: 'index.html',
-    shop: 'shop.html',
-    'shop-hub': 'shop.html',
-    'sports-hub': 'sports-cards.html',
-    'sports-cards': 'sports-cards.html',
-    'baseball-cards': 'sports-cards.html',
-    'basketball-cards': 'sports-cards.html',
-    'football-cards': 'sports-cards.html',
-    comics: 'comics.html',
-    collectibles: 'collectibles.html',
-    wishlist: 'wishlist.html',
-    account: 'account.html',
-    about: 'about.html',
-    contact: 'contact.html',
-    admin: 'admin.html'
-  };
-  const PAGE_LABELS = {
-    home: 'Home',
-    shop: 'Shop',
-    'shop-hub': 'Shop',
-    'sports-hub': 'Sports Cards',
-    'sports-cards': 'Sports Cards',
-    'baseball-cards': 'Baseball Cards',
-    'basketball-cards': 'Basketball Cards',
-    'football-cards': 'Football Cards',
-    comics: 'Comics',
-    collectibles: 'Collectibles',
-    wishlist: 'Wishlist',
-    account: 'Account',
-    about: 'About',
-    contact: 'Contact',
-    admin: 'Admin Dashboard'
+  // Keep each page's active navigation target and drawer label together.
+  const PAGE_NAV_CONFIG = {
+    home: { target: 'index.html', label: 'Home' },
+    shop: { target: 'shop.html', label: 'Shop' },
+    'shop-hub': { target: 'shop.html', label: 'Shop' },
+    'sports-hub': { target: 'sports-cards.html', label: 'Sports Cards' },
+    'sports-cards': { target: 'sports-cards.html', label: 'Sports Cards' },
+    'baseball-cards': { target: 'sports-cards.html', label: 'Baseball Cards' },
+    'basketball-cards': { target: 'sports-cards.html', label: 'Basketball Cards' },
+    'football-cards': { target: 'sports-cards.html', label: 'Football Cards' },
+    comics: { target: 'comics.html', label: 'Comics' },
+    collectibles: { target: 'collectibles.html', label: 'Collectibles' },
+    wishlist: { target: 'wishlist.html', label: 'Wishlist' },
+    account: { target: 'account.html', label: 'Account' },
+    about: { target: 'about.html', label: 'About' },
+    contact: { target: 'contact.html', label: 'Contact' },
+    admin: { target: 'admin.html', label: 'Admin Dashboard' }
   };
   const COMPACT_NAV_BREAKPOINT = 900;
   // One shared breakpoint keeps the menu drawer and submenu behavior in sync.
@@ -51,7 +34,7 @@
 
   function getCurrentPageLabel() {
     const pageKey = document.body.dataset.page || '';
-    return PAGE_LABELS[pageKey] || 'Navigation';
+    return PAGE_NAV_CONFIG[pageKey]?.label || 'Navigation';
   }
 
   function isCompactNavViewport() {
@@ -92,7 +75,7 @@
     dedupePrimaryNavLinks();
     const pageKey = document.body.dataset.page || '';
     const currentFile = window.location.pathname.split('/').pop() || 'index.html';
-    const targetFile = PAGE_TO_NAV_TARGET[pageKey] || currentFile;
+    const targetFile = PAGE_NAV_CONFIG[pageKey]?.target || currentFile;
     const links = [...document.querySelectorAll('.site-nav a')];
     const navItems = [...document.querySelectorAll('.site-nav .primary-nav__item')];
     const submenuHrefs = new Set(
@@ -182,9 +165,7 @@
       document.body.appendChild(navBackdrop);
     }
 
-    if (window.DJ && typeof window.DJ.updateWishlistCount === 'function') {
-      window.DJ.updateWishlistCount();
-    }
+    window.DJ.updateWishlistCount();
 
     /**
      * Keep the off-canvas menu hidden from keyboard and assistive-tech users

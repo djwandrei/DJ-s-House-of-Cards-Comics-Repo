@@ -6,7 +6,7 @@
  * bypass caches so signed-in edits are immediately visible.
  */
 
-const CACHE_VERSION = 'dj-house-v2026-06-14-01';
+const CACHE_VERSION = 'dj-house-v2026-06-15-01';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -26,12 +26,12 @@ const CACHE_BYPASS_PATHS = new Set(['/admin.html', '/account.html', '/cart.html'
 // images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
   '/offline.html',
-  '/styles.css?v=20260614a',
-  '/styles-mobile-overrides.css?v=20260614a',
-  '/core.js?v=20260614a',
-  '/seo.js?v=20260614a',
-  '/site.webmanifest?v=20260614a',
-  '/offline.js?v=20260614a',
+  '/styles.css?v=20260615a',
+  '/styles-mobile-overrides.css?v=20260615a',
+  '/core.js?v=20260615a',
+  '/seo.js?v=20260615a',
+  '/site.webmanifest?v=20260615a',
+  '/offline.js?v=20260615a',
   '/assets/dj-logo.png',
   '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png'
@@ -43,7 +43,7 @@ self.addEventListener('install', (event) => {
     await Promise.all(APP_SHELL_ASSETS.map(async (asset) => {
       try {
         await cache.add(asset);
-      } catch (error) {
+      } catch {
         // Individual asset failures should not abort the offline shell install.
       }
     }));
@@ -109,14 +109,14 @@ function scheduleCacheWrite(event, cacheName, request, response) {
     // after caches.open() can be too late because the browser may already have
     // started consuming the original response body.
     cacheableResponse = response.clone();
-  } catch (error) {
+  } catch {
     return;
   }
   const cacheWrite = putInCache(cacheName, request, cacheableResponse).catch(() => null);
   if (event && typeof event.waitUntil === 'function') {
     try {
       event.waitUntil(cacheWrite);
-    } catch (error) {
+    } catch {
       // The response should still reach the page if the fetch event has already
       // left the phase where it accepts additional background work.
     }
@@ -136,7 +136,7 @@ async function fetchWithTimeout(request, timeoutMs = 6500) {
 
 // Static assets and images should appear instantly from cache, then refresh in
 // the background so returning shoppers see updates without a hard reload.
-async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = null) {
+async function staleWhileRevalidate(request, cacheName, event) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   const networkPromise = fetchWithTimeout(request)
@@ -155,7 +155,7 @@ async function staleWhileRevalidate(request, cacheName, event, fallbackUrl = nul
 
   const networkResponse = await networkPromise;
   if (networkResponse) return networkResponse;
-  return fallbackUrl ? caches.match(fallbackUrl) : Response.error();
+  return Response.error();
 }
 
 function isTransientHttpFailure(response) {
@@ -191,7 +191,7 @@ async function networkFirst(request, cacheName, fallbackUrl = '/offline.html', e
     }
     scheduleCacheWrite(event, cacheName, request, response);
     return response;
-  } catch (error) {
+  } catch {
     return await matchCachedFallback(request, fallbackUrl) || Response.error();
   }
 }
@@ -230,7 +230,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isImageRequest) {
-    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE, event, null));
+    event.respondWith(staleWhileRevalidate(request, IMAGE_CACHE, event));
     return;
   }
 
@@ -242,7 +242,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isStaticAsset) {
-    event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE, event, null));
+    event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE, event));
     return;
   }
 

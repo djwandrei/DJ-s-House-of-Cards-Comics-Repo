@@ -73,6 +73,15 @@ window.DJ = window.DJ || {};
     'products-comics.json': ['Comics'],
     'products-collectibles.json': ['Collectibles', 'Other']
   };
+  const REMOTE_LIST_SALE_STATE_COLUMNS = [
+    'quantity_available',
+    'checkout_enabled',
+    'checkout_price',
+    'sale_status',
+    'sold_at',
+    'hidden_reason',
+    'archived_at'
+  ];
   const REMOTE_LIST_SELECT_COLUMNS = [
     'id',
     'name',
@@ -111,6 +120,27 @@ window.DJ = window.DJ || {};
     'created_at',
     'updated_at'
   ].join(',');
+  const LEGACY_REMOTE_LIST_SELECT_COLUMNS = REMOTE_LIST_SELECT_COLUMNS
+    .split(',')
+    .filter((column) => !REMOTE_LIST_SALE_STATE_COLUMNS.includes(column))
+    .join(',');
+  let remoteListSelectColumns = REMOTE_LIST_SELECT_COLUMNS;
+
+  function isMissingRemoteListColumnError(error) {
+    const code = String(error?.code || error?.status || '').trim();
+    const message = [
+      error?.message,
+      error?.details,
+      error?.hint,
+      error?.error_description
+    ].filter(Boolean).join(' ').toLowerCase();
+
+    return (
+      code === '42703' ||
+      code === 'PGRST204' ||
+      (message.includes('column') && (message.includes('does not exist') || message.includes('schema cache')))
+    );
+  }
 
   function projectRefFromUrl(url = '') {
     const match = String(url).match(/^https:\/\/([^.]+)\.supabase\.co(?:\/|$)/i);
@@ -189,6 +219,10 @@ window.DJ = window.DJ || {};
 
     if (lower.includes('relation') && lower.includes(config.productsTable.toLowerCase()) && lower.includes('does not exist')) {
       return `The ${config.productsTable} table does not exist yet. Run the current supabase-schema.sql in the Supabase SQL Editor.`;
+    }
+
+    if (context === 'listProducts' && isMissingRemoteListColumnError(error)) {
+      return `The ${config.productsTable} table is missing the current storefront catalog columns. Run the current supabase-schema.sql in the Supabase SQL Editor.`;
     }
 
     if (lower.includes('bucket') && lower.includes(config.storageBucket.toLowerCase()) && lower.includes('not found')) {
@@ -648,9 +682,30 @@ window.DJ = window.DJ || {};
     return preparePromise;
   }
 
+  async function getRequiredClient() {
+    const client = await prepare();
+    if (!client) throw new Error('Backend is not configured.');
+    return client;
+  }
+
   // ---------------------------------------------------------------------------
   // Read operations used by the storefront
   // ---------------------------------------------------------------------------
+
+  async function runRemoteListQuery(buildQuery) {
+    const selectColumns = remoteListSelectColumns;
+    let { data, error } = await buildQuery(selectColumns);
+
+    if (error && selectColumns === REMOTE_LIST_SELECT_COLUMNS && isMissingRemoteListColumnError(error)) {
+      // Older live databases may not have the sale-state columns yet. The row
+      // mapper already defaults those fields, so storefront reads can continue
+      // while the SQL migration is applied.
+      remoteListSelectColumns = LEGACY_REMOTE_LIST_SELECT_COLUMNS;
+      ({ data, error } = await buildQuery(remoteListSelectColumns));
+    }
+
+    return { data: data || [], error };
+  }
 
   /**
    * Load products from Supabase with the same source semantics as the static JSON files.
@@ -684,17 +739,17 @@ window.DJ = window.DJ || {};
         let rows = [];
 
         if (Array.isArray(normalizedIds) && normalizedIds.length) {
-          const { data, error } = await client
+          const { data, error } = await runRemoteListQuery((selectColumns) => client
             .from(config.productsTable)
-            .select(REMOTE_LIST_SELECT_COLUMNS)
+            .select(selectColumns)
             .eq('is_deleted', false)
             .in('id', normalizedIds)
             .order('sort_rank', { ascending: true, nullsFirst: false })
             .order('year', { ascending: false, nullsFirst: false })
-            .order('id', { ascending: true });
+            .order('id', { ascending: true }));
 
           if (error) throw createFriendlyError(error, 'listProducts');
-          rows = data || [];
+          rows = data;
           const productsById = new Map(rows.map((row) => {
             const normalizedProduct = toLocalProduct(row);
             return [Number(normalizedProduct.id), normalizedProduct];
@@ -703,39 +758,42 @@ window.DJ = window.DJ || {};
         }
 
         if (options.featuredOnly) {
-          const { data, error } = await client
+          const { data, error } = await runRemoteListQuery((selectColumns) => client
             .from(config.productsTable)
-            .select(REMOTE_LIST_SELECT_COLUMNS)
+            .select(selectColumns)
             .eq('is_deleted', false)
             .eq('is_featured', true)
             .order('sort_rank', { ascending: true, nullsFirst: false })
             .order('year', { ascending: false, nullsFirst: false })
             .order('id', { ascending: true })
-            .limit(12);
+            .limit(12));
 
           if (error) throw error;
-          rows = data || [];
+          rows = data;
           return rows.map(toLocalProduct);
         }
 
         const pageSize = 1000;
         let start = 0;
         while (true) {
-          let query = client
+          const { data, error } = await runRemoteListQuery((selectColumns) => {
+            let query = client
             .from(config.productsTable)
-            .select(REMOTE_LIST_SELECT_COLUMNS)
+            .select(selectColumns)
             .eq('is_deleted', false);
 
-          query = applySourceFilters(query, options.source)
-            .order('sort_rank', { ascending: true, nullsFirst: false })
-            .order('year', { ascending: false, nullsFirst: false })
-            .order('id', { ascending: true })
-            .range(start, start + pageSize - 1);
+            query = applySourceFilters(query, options.source)
+              .order('sort_rank', { ascending: true, nullsFirst: false })
+              .order('year', { ascending: false, nullsFirst: false })
+              .order('id', { ascending: true })
+              .range(start, start + pageSize - 1);
 
-          const { data, error } = await query;
+            return query;
+          });
+
           if (error) throw error;
 
-          const page = data || [];
+          const page = data;
           rows = rows.concat(page);
 
           if (page.length < pageSize) {
@@ -772,8 +830,7 @@ window.DJ = window.DJ || {};
   // ---------------------------------------------------------------------------
 
   async function getSession() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
+    const client = await prepare();
     if (!client) return null;
     const { data, error } = await client.auth.getSession();
     if (error) throw createFriendlyError(error, 'getSession');
@@ -781,18 +838,14 @@ window.DJ = window.DJ || {};
   }
 
   async function signIn(email, password) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) throw createFriendlyError(error, 'signIn');
     return data;
   }
 
   async function signUp(email, password, options = {}) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const siteOrigin = String(config.siteUrl || window.location.origin).replace(/\/+$/, '');
     const { data, error } = await client.auth.signUp({
       email,
@@ -806,9 +859,7 @@ window.DJ = window.DJ || {};
   }
 
   async function resetPassword(email) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const siteOrigin = String(config.siteUrl || window.location.origin).replace(/\/+$/, '');
     const { data, error } = await client.auth.resetPasswordForEmail(email, {
       redirectTo: `${siteOrigin}/account.html?mode=reset-password`
@@ -818,17 +869,14 @@ window.DJ = window.DJ || {};
   }
 
   async function updatePassword(password) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const { data, error } = await client.auth.updateUser({ password });
     if (error) throw createFriendlyError(error, 'updatePassword');
     return data;
   }
 
   async function listOrders() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
+    const client = await prepare();
     if (!client) return [];
     const { data, error } = await client
       .from('checkout_orders')
@@ -847,8 +895,7 @@ window.DJ = window.DJ || {};
   }
 
   async function getAccountProfile() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
+    const client = await prepare();
     if (!client) return { profile: {}, updatedAt: '' };
     await requireAuthenticatedUser(client);
     const { data, error } = await client
@@ -863,9 +910,7 @@ window.DJ = window.DJ || {};
   }
 
   async function saveAccountProfile(profile = {}) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const user = await requireAuthenticatedUser(client);
     const { data, error } = await client
       .from('customer_account_profiles')
@@ -880,9 +925,7 @@ window.DJ = window.DJ || {};
   }
 
   async function clearAccountProfile() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const user = await requireAuthenticatedUser(client);
     const { error } = await client
       .from('customer_account_profiles')
@@ -892,8 +935,7 @@ window.DJ = window.DJ || {};
   }
 
   async function listWishlist() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
+    const client = await prepare();
     if (!client) return [];
     await requireAuthenticatedUser(client);
     const { data, error } = await client
@@ -905,9 +947,7 @@ window.DJ = window.DJ || {};
   }
 
   async function replaceWishlist(productIds = []) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     await requireAuthenticatedUser(client);
     const normalized = [...new Set(productIds.map(Number).filter(Number.isFinite))];
     const { error } = await client.rpc('replace_customer_wishlist', { product_ids: normalized });
@@ -916,8 +956,7 @@ window.DJ = window.DJ || {};
   }
 
   async function signOut() {
-    await ensureSupabaseLibrary();
-    const client = getClient();
+    const client = await prepare();
     if (!client) return;
     const { error } = await client.auth.signOut();
     if (error) throw createFriendlyError(error, 'signOut');
@@ -941,9 +980,7 @@ window.DJ = window.DJ || {};
   }
 
   async function invokeFunction(functionName, body = {}, options = {}) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
 
     const safeName = String(functionName || '').trim();
     if (!safeName) throw new Error('Choose a Supabase Edge Function to call.');
@@ -973,9 +1010,7 @@ window.DJ = window.DJ || {};
    * Upload a photo to Supabase Storage and return the resulting public URL.
    */
   async function uploadImage(file, options = {}) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     if (!(file instanceof File)) throw new Error('Choose a valid image file.');
     const allowedImageTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
     if (!allowedImageTypes.has(String(file.type || '').toLowerCase())) {
@@ -1007,9 +1042,7 @@ window.DJ = window.DJ || {};
   }
 
   async function upsertProduct(product) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
 
     const payload = toRemoteProduct(product);
     if (!Number.isFinite(payload.id)) {
@@ -1030,9 +1063,7 @@ window.DJ = window.DJ || {};
   }
 
   async function deleteProduct(productId) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
 
     const { error } = await client
       .from(config.productsTable)
@@ -1045,9 +1076,7 @@ window.DJ = window.DJ || {};
   }
 
   async function seedProducts(products, options = {}) {
-    await ensureSupabaseLibrary();
-    const client = getClient();
-    if (!client) throw new Error('Backend is not configured.');
+    const client = await getRequiredClient();
     const normalized = prepareSeedProducts(products, options)
       .map(toRemoteProduct)
       .filter((item) => Number.isFinite(item.id) && item.name);

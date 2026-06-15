@@ -10,9 +10,7 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   const PRODUCT_SOURCE = 'products.json';
-  const MAX_PROFILE_FIELD_LENGTH = 240;
-  const MAX_PROFILE_NOTES_LENGTH = 1200;
-  const MAX_COLLECTOR_BIO_LENGTH = 520;
+  const DEFAULT_PROFILE_FIELD_LENGTH = 240;
   const WISHLIST_PREVIEW_LIMIT = 5;
   const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
@@ -22,78 +20,40 @@ window.DJ = window.DJ || {};
   let hydratedUserId = '';
   let accountRefreshPromise = null;
 
-  const fields = [
-    'fullName',
-    'email',
-    'phone',
-    'preferredContact',
-    'favoritePlayers',
-    'favoriteTeams',
-    'budgetRange',
-    'preferredCondition',
-    'collectorDisplayName',
-    'profileVisibility',
-    'collectorFocus',
-    'favoriteEra',
-    'tradeStatus',
-    'wishlistSharing',
-    'collectorBio',
-    'shippingName',
-    'addressLine1',
-    'addressLine2',
-    'city',
-    'state',
-    'postalCode',
-    'notes'
-  ];
-  const profileCompletionFields = [
-    'fullName',
-    'email',
-    'preferredContact',
-    'favoritePlayers',
-    'favoriteTeams',
-    'budgetRange',
-    'shippingName',
-    'addressLine1',
-    'city',
-    'state',
-    'postalCode',
-    'notes'
-  ];
-  const profileFieldLabels = {
-    fullName: 'Full name',
-    email: 'Email',
-    phone: 'Phone',
-    preferredContact: 'Preferred contact',
-    favoritePlayers: 'Favorite players / characters',
-    favoriteTeams: 'Favorite teams / titles',
-    budgetRange: 'Budget range',
-    preferredCondition: 'Preferred condition',
-    collectorDisplayName: 'Collector display name',
-    profileVisibility: 'Profile visibility',
-    collectorFocus: 'Collecting focus',
-    favoriteEra: 'Favorite era',
-    tradeStatus: 'Trade status',
-    wishlistSharing: 'Wishlist sharing',
-    collectorBio: 'Collector bio',
-    shippingName: 'Shipping name',
-    addressLine1: 'Address line 1',
-    addressLine2: 'Address line 2',
-    city: 'City',
-    state: 'State',
-    postalCode: 'ZIP / postal code',
-    notes: 'Collecting notes'
+  // Keep labels, completion scoring, and exceptional limits in one registry so
+  // profile fields cannot drift between forms, summaries, and validation.
+  const PROFILE_FIELDS = {
+    fullName: { label: 'Full name', countsTowardCompletion: true },
+    email: { label: 'Email', countsTowardCompletion: true },
+    phone: { label: 'Phone' },
+    preferredContact: { label: 'Preferred contact', countsTowardCompletion: true },
+    favoritePlayers: { label: 'Favorite players / characters', countsTowardCompletion: true },
+    favoriteTeams: { label: 'Favorite teams / titles', countsTowardCompletion: true },
+    budgetRange: { label: 'Budget range', countsTowardCompletion: true },
+    preferredCondition: { label: 'Preferred condition' },
+    collectorDisplayName: { label: 'Collector display name' },
+    profileVisibility: { label: 'Profile visibility' },
+    collectorFocus: { label: 'Collecting focus' },
+    favoriteEra: { label: 'Favorite era' },
+    tradeStatus: { label: 'Trade status' },
+    wishlistSharing: { label: 'Wishlist sharing' },
+    collectorBio: { label: 'Collector bio', maxLength: 520 },
+    shippingName: { label: 'Shipping name', countsTowardCompletion: true },
+    addressLine1: { label: 'Address line 1', countsTowardCompletion: true },
+    addressLine2: { label: 'Address line 2' },
+    city: { label: 'City', countsTowardCompletion: true },
+    state: { label: 'State', countsTowardCompletion: true },
+    postalCode: { label: 'ZIP / postal code', countsTowardCompletion: true },
+    notes: { label: 'Collecting notes', countsTowardCompletion: true, maxLength: 1200 }
   };
+  const fields = Object.keys(PROFILE_FIELDS);
+  const profileCompletionFields = fields.filter((field) => PROFILE_FIELDS[field].countsTowardCompletion);
 
   const $ = (id) => document.getElementById(id);
   const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
 
   function normalizeProfileValue(field, value) {
-    const maxLength = field === 'notes'
-      ? MAX_PROFILE_NOTES_LENGTH
-      : field === 'collectorBio'
-        ? MAX_COLLECTOR_BIO_LENGTH
-        : MAX_PROFILE_FIELD_LENGTH;
+    const maxLength = PROFILE_FIELDS[field]?.maxLength || DEFAULT_PROFILE_FIELD_LENGTH;
     return String(value || '').trim().slice(0, maxLength);
   }
 
@@ -110,22 +70,23 @@ window.DJ = window.DJ || {};
     return element;
   }
 
-  function setStatus(message = '', tone = 'info') {
-    const status = $('accountStatus');
+  function setStatusElement(id, message = '', tone = 'info') {
+    const status = $(id);
     if (!status) return;
     status.textContent = message;
     status.dataset.tone = tone;
+  }
+
+  function setStatus(message = '', tone = 'info') {
+    setStatusElement('accountStatus', message, tone);
   }
 
   function setAuthStatus(message = '', tone = 'info') {
-    const status = $('accountAuthStatus');
-    if (!status) return;
-    status.textContent = message;
-    status.dataset.tone = tone;
+    setStatusElement('accountAuthStatus', message, tone);
   }
 
   function getWishlistIds() {
-    return typeof DJ.getWishlist === 'function' ? DJ.getWishlist().map(Number).filter(Number.isFinite) : [];
+    return DJ.getWishlist();
   }
 
   function loadProfileForm(profile = savedProfile) {
@@ -189,18 +150,14 @@ window.DJ = window.DJ || {};
 
   function loadAccountProducts() {
     if (accountProductsPromise) return accountProductsPromise;
-    const productSource = typeof DJ.versionedProductAsset === 'function'
-      ? DJ.versionedProductAsset(PRODUCT_SOURCE)
-      : PRODUCT_SOURCE;
+    const productSource = DJ.versionedProductAsset(PRODUCT_SOURCE);
     accountProductsPromise = fetch(productSource, { cache: 'default' })
       .then((response) => {
         if (!response.ok) throw new Error(`Unable to load ${PRODUCT_SOURCE}`);
         return response.json();
       })
       .catch(async (error) => {
-        const bundledProducts = typeof DJ.loadPreloadedProductsForSource === 'function'
-          ? await DJ.loadPreloadedProductsForSource(PRODUCT_SOURCE).catch(() => null)
-          : null;
+        const bundledProducts = await DJ.loadPreloadedProductsForSource(PRODUCT_SOURCE).catch(() => null);
         if (Array.isArray(bundledProducts)) return bundledProducts;
         throw error;
       })
@@ -216,7 +173,7 @@ window.DJ = window.DJ || {};
     const wishlistIds = getWishlistIds();
     if (!wishlistIds.length) return [];
     const order = new Map(wishlistIds.map((id, index) => [Number(id), index]));
-    if (DJ.remoteCatalog?.isConfigured?.()) {
+    if (DJ.remoteCatalog.isConfigured()) {
       const remoteProducts = await DJ.remoteCatalog.listProducts({ ids: wishlistIds }).catch(() => null);
       if (Array.isArray(remoteProducts)) return remoteProducts;
     }
@@ -238,14 +195,14 @@ window.DJ = window.DJ || {};
     fields.forEach((field) => {
       const value = normalizeProfileValue(field, profile[field]);
       if (value) {
-        lines.push(`${profileFieldLabels[field]}: ${value}`);
+        lines.push(`${PROFILE_FIELDS[field].label}: ${value}`);
       }
     });
 
     if (wishlistProducts.length) {
       lines.push('', 'Wishlist preview:');
       wishlistProducts.slice(0, WISHLIST_PREVIEW_LIMIT).forEach((product, index) => {
-        lines.push(`${index + 1}. ${product.name || 'Saved item'} - ${DJ.displayPrice?.(product) || ''} - #${product.id || ''}`.trim());
+        lines.push(`${index + 1}. ${product.name || 'Saved item'} - ${DJ.displayPrice(product) || ''} - #${product.id || ''}`.trim());
       });
     }
 
@@ -438,7 +395,7 @@ window.DJ = window.DJ || {};
     });
 
     const numericProducts = products
-      .map((product) => ({ product, price: DJ.numericPrice?.(product) }))
+      .map((product) => ({ product, price: DJ.payablePrice(product) }))
       .filter((entry) => Number.isFinite(entry.price));
     const highest = numericProducts.sort((left, right) => right.price - left.price)[0];
     const topCategory = [...categoryCounts.entries()].sort((left, right) => right[1] - left[1])[0];
@@ -451,7 +408,7 @@ window.DJ = window.DJ || {};
       },
       {
         label: 'Highest saved price',
-        value: highest ? DJ.displayPrice?.(highest.product) || DJ.currency(highest.price) : 'Ask'
+        value: highest ? DJ.displayPrice(highest.product) || DJ.currency(highest.price) : 'Ask'
       },
       {
         label: 'Catalog matches',
@@ -481,7 +438,7 @@ window.DJ = window.DJ || {};
 
     if (!accountSession?.user) {
       setStatus('Sign in to save these details to your customer account.', 'info');
-      DJ.payments?.openAuthModal?.({ message: 'Sign in or create an account to save your buyer details.' });
+      DJ.payments.openAuthModal({ message: 'Sign in or create an account to save your buyer details.' });
       return;
     }
 
@@ -626,7 +583,7 @@ window.DJ = window.DJ || {};
 
     const products = await getWishlistProducts();
     const visible = products.slice(0, WISHLIST_PREVIEW_LIMIT);
-    const numericPrices = products.map((product) => DJ.numericPrice?.(product)).filter((price) => Number.isFinite(price));
+    const numericPrices = products.map((product) => DJ.payablePrice(product)).filter((price) => Number.isFinite(price));
     const total = numericPrices.reduce((sum, price) => sum + price, 0);
     const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
     renderWishlistInsights(products, wishlistIds);
@@ -655,26 +612,26 @@ window.DJ = window.DJ || {};
     }
 
     container.replaceChildren(...visible.map((product) => {
-      const fallback = DJ.fallbackByCategory?.[product.category] || DJ.fallbackByCategory?.Other || 'assets/placeholder-baseball.svg';
+      const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
       const row = createElement('a', {
         className: 'account-wishlist-row',
         href: DJ.productPageUrl(product)
       });
       const image = createElement('img', {
         attributes: {
-          src: DJ.safeAssetUrl?.(product.image || fallback) || product.image || fallback,
+          src: DJ.safeAssetUrl(product.image || fallback),
           alt: product.name || 'Saved item',
           loading: 'lazy',
           decoding: 'async'
         }
       });
-      image.setAttribute('data-fallback-src', DJ.safeAssetUrl?.(fallback) || fallback);
+      image.setAttribute('data-fallback-src', DJ.safeAssetUrl(fallback));
       const copy = createElement('span');
       copy.append(
         createElement('strong', { text: product.name || 'Saved item' }),
         createElement('small', { text: [product.year, product.category, product.team].filter(Boolean).join(' | ') || 'Saved listing' })
       );
-      row.append(image, copy, createElement('b', { text: DJ.displayPrice?.(product) || 'Ask' }));
+      row.append(image, copy, createElement('b', { text: DJ.displayPrice(product) || 'Ask' }));
       return row;
     }));
 
@@ -686,7 +643,7 @@ window.DJ = window.DJ || {};
       });
       container.appendChild(moreLink);
     }
-    DJ.applyLazyLoading?.(container);
+    DJ.applyLazyLoading(container);
   }
 
   function scheduleWishlistPreviewRender() {
@@ -700,7 +657,7 @@ window.DJ = window.DJ || {};
   async function clearSavedProfile() {
     if (!accountSession?.user) {
       setStatus('Sign in to clear buyer details from your customer account.', 'info');
-      DJ.payments?.openAuthModal?.({ message: 'Sign in to manage your saved buyer details.' });
+      DJ.payments.openAuthModal({ message: 'Sign in to manage your saved buyer details.' });
       return;
     }
 
@@ -751,7 +708,7 @@ window.DJ = window.DJ || {};
     if (!container) return;
     container.replaceChildren();
 
-    if (!DJ.remoteCatalog?.isConfigured?.()) {
+    if (!DJ.remoteCatalog.isConfigured()) {
       renderOrderHistoryMessage(container, 'Checkout history is unavailable.', 'Secure customer accounts are not configured for this site.');
       return;
     }
@@ -843,7 +800,7 @@ window.DJ = window.DJ || {};
 
     savedProfile = profile;
     hydratedUserId = userId;
-    await DJ.syncWishlistWithAccount?.(session);
+    await DJ.syncWishlistWithAccount(session);
     loadProfileForm(savedProfile);
     renderAccountSummary();
     scheduleWishlistPreviewRender();
@@ -856,7 +813,7 @@ window.DJ = window.DJ || {};
     const passwordForm = $('accountPasswordForm');
     const recoveryMode = pageParam('mode') === 'reset-password';
 
-    if (!DJ.remoteCatalog?.isConfigured?.()) {
+    if (!DJ.remoteCatalog.isConfigured()) {
       if (summary) summary.textContent = 'Secure customer accounts are not configured for this site.';
       if (signIn) signIn.hidden = true;
       if (signOut) signOut.hidden = true;
@@ -897,11 +854,11 @@ window.DJ = window.DJ || {};
 
   function bindAccountAuth() {
     $('accountSignIn')?.addEventListener('click', () => {
-      DJ.payments?.openAuthModal?.({ message: 'Sign in to review your secure checkout orders.' });
+      DJ.payments.openAuthModal({ message: 'Sign in to review your secure checkout orders.' });
     });
     $('accountSignOut')?.addEventListener('click', async () => {
       try {
-        await DJ.remoteCatalog?.signOut?.();
+        await DJ.remoteCatalog.signOut();
         setAuthStatus('Signed out of the secure customer account.', 'success');
         await refreshAccountAuth();
       } catch (error) {
@@ -916,7 +873,7 @@ window.DJ = window.DJ || {};
         return;
       }
       try {
-        await DJ.remoteCatalog?.updatePassword?.(password);
+        await DJ.remoteCatalog.updatePassword(password);
         if ($('accountNewPassword')) $('accountNewPassword').value = '';
         const url = new URL(window.location.href);
         url.searchParams.delete('mode');

@@ -14,7 +14,7 @@ window.DJ = window.DJ || {};
   function absoluteUrl(path = '') {
     try {
       return new URL(path, SITE_URL).toString();
-    } catch (error) {
+    } catch {
       return SITE_URL;
     }
   }
@@ -49,9 +49,7 @@ window.DJ = window.DJ || {};
   function productPagePath(product = {}) {
     // core.js owns category-to-page routing; SEO reuses it so item URLs do not
     // drift between visible links and Product JSON-LD.
-    return typeof DJ.productPageUrl === 'function'
-      ? DJ.productPageUrl(product)
-      : 'shop.html';
+    return DJ.productPageUrl(product);
   }
 
   function productUrl(product = {}) {
@@ -90,9 +88,7 @@ window.DJ = window.DJ || {};
   }
 
   function offerPrice(product = {}) {
-    const price = typeof DJ.payablePrice === 'function'
-      ? DJ.payablePrice(product)
-      : Number(product.price);
+    const price = DJ.payablePrice(product);
     return Number.isFinite(price) && price >= 0
       ? Number(price.toFixed(2))
       : null;

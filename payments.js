@@ -27,10 +27,10 @@ window.DJ = window.DJ || {};
     const normalized = new Map();
     (Array.isArray(items) ? items : []).forEach((item) => {
       const product = item?.product || item;
-      const productId = DJ.normalizeProductId?.(item?.productId ?? product?.id);
+      const productId = DJ.normalizeProductId(item?.productId ?? product?.id);
       if (!productId) return;
 
-      const quantity = DJ.normalizeCartQuantity?.(item?.quantity) || 1;
+      const quantity = DJ.normalizeCartQuantity(item?.quantity);
       normalized.set(productId, {
         productId,
         quantity: (normalized.get(productId)?.quantity || 0) + quantity,
@@ -79,17 +79,11 @@ window.DJ = window.DJ || {};
   }
 
   function isBackendReady() {
-    return Boolean(DJ.remoteCatalog?.isConfigured?.());
+    return DJ.remoteCatalog.isConfigured();
   }
 
   function isCheckoutEnabled() {
     return Boolean(config.stripeCheckoutEnabled && config.stripeCheckoutFunction);
-  }
-
-  function isDirectCheckoutEligible(product = {}) {
-    return typeof DJ.isDirectCheckoutEligible === 'function'
-      ? DJ.isDirectCheckoutEligible(product)
-      : false;
   }
 
   function timeoutAfter(milliseconds, message) {
@@ -99,7 +93,7 @@ window.DJ = window.DJ || {};
   }
 
   async function syncCustomerAccount(session) {
-    if (!session?.user || typeof DJ.syncWishlistWithAccount !== 'function') return;
+    if (!session?.user) return;
     await DJ.syncWishlistWithAccount(session);
   }
 
@@ -359,7 +353,7 @@ window.DJ = window.DJ || {};
   }
 
   function bindAuthStateSync() {
-    if (state.authListenerBound || !DJ.remoteCatalog?.onAuthStateChange) return;
+    if (state.authListenerBound) return;
     state.authListenerBound = true;
     DJ.remoteCatalog.onAuthStateChange((event, session) => {
       state.session = session || null;
@@ -367,7 +361,7 @@ window.DJ = window.DJ || {};
       updateAccountControls();
       emitAuthChange(event, state.session);
       if (event === 'SIGNED_OUT') {
-        DJ.clearAccountWishlistCache?.();
+        DJ.clearAccountWishlistCache();
         return;
       }
       syncCustomerAccount(state.session).catch(console.error);
@@ -398,7 +392,7 @@ window.DJ = window.DJ || {};
         bindAuthStateSync();
         await syncCustomerAccount(state.session);
         emitAuthChange('INITIAL_SESSION', state.session);
-      } catch (error) {
+      } catch {
         state.session = null;
         state.authReady = false;
       }
@@ -488,15 +482,15 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (!isCheckoutEnabled() || !isBackendReady() || !DJ.remoteCatalog?.invokeFunction) {
+    if (!isCheckoutEnabled() || !isBackendReady()) {
       openInquiryFallback(options);
       return;
     }
 
     const unavailableItem = normalizedItems.find((item) => (
       item.product && (
-        !isDirectCheckoutEligible(item.product)
-        || item.quantity > (DJ.availableQuantity?.(item.product) || 0)
+        !DJ.isDirectCheckoutEligible(item.product)
+        || item.quantity > DJ.availableQuantity(item.product)
       )
     ));
     if (unavailableItem) {
@@ -553,7 +547,11 @@ window.DJ = window.DJ || {};
 
   function startCheckout(product = {}, options = {}) {
     return startCheckoutItems(
-      [{ product, productId: Number(product.id), quantity: Math.max(1, Number(options.quantity) || 1) }],
+      [{
+        product,
+        productId: DJ.normalizeProductId(product.id),
+        quantity: DJ.normalizeCartQuantity(options.quantity)
+      }],
       options,
       `${window.location.pathname}${window.location.search}`
     );
@@ -577,11 +575,7 @@ window.DJ = window.DJ || {};
           }
         })
         .catch(() => {});
-      if (typeof DJ.scheduleIdle === 'function') {
-        DJ.scheduleIdle(hydrateAfterPaint, 2400);
-      } else {
-        window.setTimeout(hydrateAfterPaint, 1200);
-      }
+      DJ.scheduleIdle(hydrateAfterPaint, 2400);
     }
 
     window.addEventListener('pageshow', () => {
@@ -596,7 +590,7 @@ window.DJ = window.DJ || {};
     closeAuthModal,
     startCheckout,
     startCartCheckout,
-    isDirectCheckoutEligible,
+    isDirectCheckoutEligible: DJ.isDirectCheckoutEligible,
     hydrateAccount: ensureAuthSession
   };
 

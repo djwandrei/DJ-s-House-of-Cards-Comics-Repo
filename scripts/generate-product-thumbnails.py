@@ -52,6 +52,22 @@ def iter_catalog_images(products: list[dict]) -> Iterable[str]:
             yield image_path
 
 
+def load_requested_paths(paths_file: Path) -> list[str]:
+    requested: list[str] = []
+    seen: set[str] = set()
+    for line in paths_file.read_text(encoding="utf-8").splitlines():
+        image_path = line.strip().replace("\\", "/")
+        if not image_path or image_path.startswith("#"):
+            continue
+        if not image_path.lower().startswith("assets/"):
+            raise ValueError(f"Thumbnail path must be under assets/: {image_path}")
+        if image_path in seen:
+            continue
+        seen.add(image_path)
+        requested.append(image_path)
+    return requested
+
+
 def thumbnail_path_for(root: Path, asset_path: str) -> Path:
     relative = Path(asset_path.replace("\\", "/")).relative_to("assets")
     return (root / "assets" / "thumbnails" / relative).with_suffix(".webp")
@@ -103,17 +119,31 @@ def main() -> int:
     parser.add_argument("--quality", type=int, default=78, help="WebP quality")
     parser.add_argument("--force", action="store_true", help="Regenerate even when the thumbnail is current")
     parser.add_argument("--prune", action="store_true", help="Delete generated thumbnails not referenced by products.json")
+    parser.add_argument(
+        "--paths-file",
+        type=Path,
+        help="Generate only asset paths listed in a newline-delimited file",
+    )
     args = parser.parse_args()
+    if args.paths_file and args.prune:
+        parser.error("--paths-file cannot be combined with --prune")
 
     root = Path(args.root).resolve()
     catalog_path = root / "products.json"
     products = json.loads(catalog_path.read_text(encoding="utf-8"))
+    catalog_images = set(iter_catalog_images(products))
+    image_paths = load_requested_paths(args.paths_file) if args.paths_file else sorted(catalog_images)
 
     result = ThumbnailResult()
     thumbnail_root = root / "assets" / "thumbnails"
     expected_targets: set[Path] = set()
 
-    for asset_path in iter_catalog_images(products):
+    for asset_path in image_paths:
+        # Targeted refreshes are for catalog-backed images only; this avoids
+        # generating thumbnails for stale or accidentally listed scratch paths.
+        if args.paths_file and asset_path not in catalog_images:
+            result.skipped += 1
+            continue
         source_path = source_path_for(root, asset_path)
         target_path = thumbnail_path_for(root, asset_path)
         expected_targets.add(target_path)

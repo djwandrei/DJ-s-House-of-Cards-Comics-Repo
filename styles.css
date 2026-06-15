@@ -3139,9 +3139,6 @@ body.dark-mode .product-card {
     justify-content:space-between;
     width:100%
   }
-  .site-nav .submenu-toggle {
-    display:inline-flex
-  }
   .site-nav .primary-nav__item {
     width:100%
   }
@@ -3364,9 +3361,6 @@ body.dark-mode .product-card {
     width:58px;
     height:58px
   }
-  .brand-kicker {
-    display:none
-  }
   .theme-toggle {
     padding:0 .8rem
   }
@@ -3410,9 +3404,6 @@ body.dark-mode .product-card {
   }
   .footer-logo-line {
     align-items:flex-start
-  }
-  .admin-toolbar-actions {
-    grid-template-columns:1fr
   }
   .mobile-filter-actions {
     grid-template-columns:1fr
@@ -7331,23 +7322,17 @@ body[data-page="collectibles"] {
   padding:.55rem;
 }
 
-.legacy-photo-card__images--quad {
-  grid-template-columns:repeat(2,minmax(0,1fr));
-}
-
+.legacy-photo-card__images--quad,
 .legacy-photo-card__images--duo {
   grid-template-columns:repeat(2,minmax(0,1fr));
 }
 
 .legacy-photo-card img {
   width:100%;
+  height:220px;
   display:block;
   object-fit:cover;
   background:rgba(31,47,163,.08);
-}
-
-.legacy-photo-card img {
-  height:220px;
 }
 
 .legacy-photo-card__images img {

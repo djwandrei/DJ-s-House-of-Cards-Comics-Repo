@@ -6,6 +6,7 @@ const applyChanges = process.argv.includes('--apply');
 const productsPath = path.join(root, 'products.json');
 const outputPath = path.join(root, 'outputs', 'external-product-image-materialization.json');
 const products = JSON.parse(await fs.readFile(productsPath, 'utf8'));
+const MATERIALIZED_IMAGE_ROOT = 'assets/Ebay Listing Photos/External Imports';
 
 const SEGMENTS = {
   'products-baseball.json': (product) => product.category === 'Baseball',
@@ -32,6 +33,23 @@ function extensionFor(url = '') {
 
 function categoryFolder(category = 'other') {
   return String(category || 'other').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'other';
+}
+
+function safeFilename(value = 'product-photo') {
+  return String(value || 'product-photo')
+    .replace(/[<>:"/\\|?*\u0000-\u001F]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160) || 'product-photo';
+}
+
+function localPhotoPath(product, index, photoCount, url) {
+  const suffix = photoCount > 1 ? ` (${index + 1})` : '';
+  return [
+    MATERIALIZED_IMAGE_ROOT,
+    categoryFolder(product.category),
+    `${safeFilename(product.name || product.id)}${suffix}${extensionFor(url)}`
+  ].join('/');
 }
 
 function externalPhotos(product = {}) {
@@ -69,9 +87,7 @@ const report = {
 
 for (const product of targets) {
   const photos = externalPhotos(product);
-  const localPhotos = photos.map((url, index) => (
-    `assets/hosted-listing-images/${categoryFolder(product.category)}/${product.id}-${String(index + 1).padStart(2, '0')}${extensionFor(url)}`
-  ));
+  const localPhotos = photos.map((url, index) => localPhotoPath(product, index, photos.length, url));
   const record = {
     id: Number(product.id),
     name: product.name,
