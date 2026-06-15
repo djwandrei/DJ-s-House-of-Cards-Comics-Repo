@@ -2,7 +2,9 @@ import Stripe from 'npm:stripe@22.1.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-  apiVersion: '2026-02-25.clover' as any
+  // Stripe's SDK types only model its latest API; production remains intentionally pinned.
+  // @ts-expect-error Older supported Stripe API version.
+  apiVersion: '2026-02-25.clover'
 });
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -26,6 +28,7 @@ const corsHeaders = {
 };
 
 type CheckoutItemRequest = { productId: number; quantity: number };
+type CheckoutSessionCreateParams = NonNullable<Parameters<typeof stripe.checkout.sessions.create>[0]>;
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -243,7 +246,7 @@ Deno.serve(async (request) => {
     ? { customer: stripeCustomerId }
     : { customer_email: email || undefined, customer_creation: 'always' as const };
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = requestedItems.map((item) => {
+  const lineItems = requestedItems.map((item) => {
     const product = productsById.get(item.productId)!;
     const amount = checkoutAmountCents(product);
     const priceRange = parsePriceRangeLabel(String(product.display_price || product.price_label || ''));
@@ -275,7 +278,7 @@ Deno.serve(async (request) => {
   let checkoutSession: Stripe.Checkout.Session;
   try {
     const metadata = { buyer_user_id: userResult.user.id, item_count: String(requestedItems.length) };
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+    const sessionParams: CheckoutSessionCreateParams = {
       mode: 'payment',
       ...customerOptions,
       allow_promotion_codes: allowPromotionCodes,
@@ -286,9 +289,9 @@ Deno.serve(async (request) => {
       payment_intent_data: { metadata },
       expires_at: checkoutExpiresAt,
       success_url: `${siteUrl}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: absoluteSiteUrl(payload.returnPath || '/cart.html')
+      cancel_url: absoluteSiteUrl(payload.returnPath || '/cart.html'),
+      ...(shippingRateId ? { shipping_options: [{ shipping_rate: shippingRateId }] } : {})
     };
-    if (shippingRateId) sessionParams.shipping_options = [{ shipping_rate: shippingRateId }];
     checkoutSession = await stripe.checkout.sessions.create(sessionParams);
   } catch (error) {
     await releaseReservations(reservationIds);

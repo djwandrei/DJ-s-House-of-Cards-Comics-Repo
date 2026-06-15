@@ -1349,11 +1349,21 @@ window.DJ = window.DJ || {};
     setBackendStatus('Saving remote listing...', 'info');
     try {
       const saved = await backend().upsertProduct(product);
+      let marketplaceWarning = '';
+      try {
+        await backend().syncProductToShopify?.(saved.id);
+      } catch (syncError) {
+        console.error('[backend-admin] Shopify sync failed after Supabase save', syncError);
+        marketplaceWarning = ` Shopify sync needs attention: ${syncError.message || 'unknown error'}`;
+      }
       const syncedProduct = syncRemoteProductInState(saved);
       renderRemoteListings();
       populateRemoteForm(syncedProduct.id);
       setRemoteEditorDirty(false);
-      setBackendStatus(`Saved remote listing #${saved.id}.`, 'success');
+      setBackendStatus(
+        `Saved remote listing #${saved.id}.${marketplaceWarning}`,
+        marketplaceWarning ? 'error' : 'success'
+      );
     } catch (error) {
       console.error(error);
       setBackendStatus(error.message || 'Unable to save remote listing.', 'error');

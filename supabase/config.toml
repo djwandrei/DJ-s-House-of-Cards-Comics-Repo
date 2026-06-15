@@ -3,3 +3,9 @@ verify_jwt = true
 
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.shopify-webhook]
+verify_jwt = false
+
+[functions.shopify-catalog-sync]
+verify_jwt = true

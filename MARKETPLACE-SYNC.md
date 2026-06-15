@@ -11,6 +11,10 @@ The official TikTok and Whatnot Shopify sales channels synchronize products,
 inventory, and orders. Shopify remains the source of truth for fields shared
 with Whatnot.
 
+Legacy listings are intentionally retained as Shopify drafts. Only eligible
+non-legacy workbook listings may be activated or published to TikTok and
+Whatnot.
+
 ## Prepared Catalog
 
 Generate the current Shopify import and review files:
@@ -47,6 +51,9 @@ Do not activate or publish the generated catalog until:
 4. Shopify location, shipping, tax, return, and payment settings are verified.
 5. A small product batch is imported and checked before the full catalog.
 
+The current catalog has 2,232 non-legacy listings with prices. The 948 legacy
+listings, including all 20 zero-price/contact-for-price rows, must remain draft.
+
 The generator's weight suggestions are review values, not measured package
 weights:
 
@@ -65,7 +72,10 @@ weights:
 5. Keep the products in draft until website synchronization is connected.
 6. Create a Shopify custom app with the minimum required Admin API scopes:
    `read_products`, `write_products`, `read_inventory`, `write_inventory`,
-   `read_locations`, and the order/webhook scopes required by the final flow.
+   `read_locations`, and the webhook scopes required by the final flow.
+7. Apply `supabase/marketplace-schema.sql`, configure the Shopify Edge Function
+   secrets, deploy `shopify-webhook` and `shopify-catalog-sync`, bootstrap the
+   SKU mappings, and register the inventory webhook.
 
 Keep Shopify credentials in Supabase Edge Function secrets or another trusted
 secret store. Never place them in browser JavaScript, static site files, Git,
@@ -85,11 +95,15 @@ The durable synchronization flow is:
 5. Webhook event IDs are recorded for idempotency so retries cannot decrement
    inventory twice.
 
-Use Shopify's `productSet` mutation for catalog synchronization and
-`inventorySetQuantities` or the appropriate inventory-adjustment mutation for
-inventory changes. The exact mutation and compare-and-swap behavior should be
-verified against the selected Shopify API version when the custom app is
-created.
+`shopify_product_mappings.publish_enabled` is an additional release gate.
+Mappings start with publishing disabled. Keep it disabled for every legacy
+listing; enabling it is allowed only for reviewed non-legacy listings.
+
+The integration uses Shopify API version `2026-04`. Admin listing saves use
+`productSet` for safe product fields and `productVariantsBulkUpdate` for price.
+Website Stripe sales use `inventoryAdjustQuantities` with Shopify's required
+`@idempotent` key. Shopify `inventory_levels/update` webhooks then apply the
+absolute quantity to Supabase.
 
 ## TikTok Shop
 

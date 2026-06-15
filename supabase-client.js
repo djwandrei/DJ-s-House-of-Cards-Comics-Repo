@@ -1062,6 +1062,17 @@ window.DJ = window.DJ || {};
     return toLocalProduct(data);
   }
 
+  async function syncProductToShopify(productId) {
+    const id = Number(productId);
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      throw new Error('A valid product id is required for Shopify sync.');
+    }
+    return invokeFunction('shopify-catalog-sync', {
+      action: 'sync-product',
+      productId: id
+    });
+  }
+
   async function deleteProduct(productId) {
     const client = await getRequiredClient();
 
@@ -1188,6 +1199,7 @@ window.DJ = window.DJ || {};
     replaceWishlist,
     upsertProduct,
     deleteProduct,
+    syncProductToShopify,
     uploadImage,
     seedProducts,
     testConnection,

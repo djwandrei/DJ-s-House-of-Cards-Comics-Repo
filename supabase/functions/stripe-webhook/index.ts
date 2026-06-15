@@ -1,8 +1,15 @@
 import Stripe from 'npm:stripe@22.1.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import {
+  adjustShopifyInventory,
+  isShopifyConfigured,
+  shopifyGid
+} from '../_shared/shopify.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-  apiVersion: '2026-02-25.clover' as any
+  // Stripe's SDK types only model its latest API; production remains intentionally pinned.
+  // @ts-expect-error Older supported Stripe API version.
+  apiVersion: '2026-02-25.clover'
 });
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || '';
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -10,6 +17,18 @@ const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
 type Reservation = { id: string; product_id: number; quantity: number; status: string };
+type OrderProduct = {
+  id: number;
+  name?: string | null;
+  image?: string | null;
+  price?: number | null;
+  checkout_price?: number | null;
+  price_label?: string | null;
+  display_price?: string | null;
+  category?: string | null;
+  year?: number | null;
+  condition?: string | null;
+};
 
 function isServerConfigured() {
   return Boolean(
@@ -29,12 +48,15 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
 }
 
 function compactSessionMetadata(session: Stripe.Checkout.Session) {
+  const shippingDetails = (
+    session as Stripe.Checkout.Session & { shipping_details?: unknown }
+  ).shipping_details;
   return {
     stripe_session_id: session.id,
     payment_status: session.payment_status,
     checkout_status: session.status,
     customer_details: session.customer_details || null,
-    shipping_details: session.shipping_details || null,
+    shipping_details: shippingDetails || null,
     total_details: session.total_details || null,
     metadata: session.metadata || {}
   };
@@ -155,6 +177,7 @@ async function upsertOrder(session: Stripe.Checkout.Session, status: string, res
     onConflict: 'stripe_session_id'
   }).select('id,status,inventory_finalized_at,buyer_user_id').single();
   assertNoSupabaseError(error, 'order upsert');
+  if (!data) throw new Error(`Supabase order upsert returned no row for Stripe session ${session.id}`);
   return data;
 }
 
@@ -166,20 +189,22 @@ async function snapshotOrderItems(orderId: string, reservations: Reservation[]) 
     .select('id,name,image,price,checkout_price,price_label,display_price,category,year,condition')
     .in('id', productIds);
   assertNoSupabaseError(error, 'order item product lookup');
-  const productsById = new Map((products || []).map((product) => [Number(product.id), product]));
+  const productsById = new Map<number, OrderProduct>(
+    (products || []).map((product) => [Number(product.id), product as OrderProduct])
+  );
   const rows = reservations.map((reservation) => {
-    const product = productsById.get(Number(reservation.product_id)) || {};
+    const product = productsById.get(Number(reservation.product_id));
     return {
       order_id: orderId,
       product_id: reservation.product_id,
       quantity: reservation.quantity,
-      unit_amount: checkoutUnitAmount(product),
-      product_name: String(product.name || `Listing #${reservation.product_id}`),
-      product_image: String(product.image || ''),
-      product_price_label: String(product.display_price || product.price_label || ''),
-      product_category: String(product.category || ''),
-      product_year: Number.isFinite(Number(product.year)) ? Number(product.year) : null,
-      product_condition: String(product.condition || '')
+      unit_amount: checkoutUnitAmount(product || {}),
+      product_name: String(product?.name || `Listing #${reservation.product_id}`),
+      product_image: String(product?.image || ''),
+      product_price_label: String(product?.display_price || product?.price_label || ''),
+      product_category: String(product?.category || ''),
+      product_year: Number.isFinite(Number(product?.year)) ? Number(product?.year) : null,
+      product_condition: String(product?.condition || '')
     };
   });
   const { error: upsertError } = await admin.from('checkout_order_items').upsert(rows, {
@@ -198,7 +223,44 @@ async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUser
   assertNoSupabaseError(error, 'customer profile upsert');
 }
 
-async function finalizePaidCheckout(session: Stripe.Checkout.Session) {
+async function syncCheckoutInventoryToShopify(
+  session: Stripe.Checkout.Session,
+  reservations: Reservation[],
+  eventId: string
+) {
+  if (!isShopifyConfigured()) return;
+
+  const productIds = reservations.map((reservation) => reservation.product_id);
+  const { data: mappings, error } = await admin
+    .from('shopify_product_mappings')
+    .select('product_id,shopify_inventory_item_id,shopify_location_id')
+    .in('product_id', productIds);
+  assertNoSupabaseError(error, 'Shopify product mapping lookup');
+
+  const mappingsByProductId = new Map(
+    (mappings || []).map((mapping) => [Number(mapping.product_id), mapping])
+  );
+  const missingProductIds = productIds.filter((productId) => !mappingsByProductId.has(Number(productId)));
+  if (missingProductIds.length) {
+    throw new Error(`Shopify inventory mappings are missing for product ids: ${missingProductIds.join(', ')}`);
+  }
+
+  await adjustShopifyInventory({
+    idempotencyKey: eventId,
+    reason: 'sale',
+    referenceDocumentUri: `gid://djshouseofcards/StripeCheckoutSession/${session.id}`,
+    changes: reservations.map((reservation) => {
+      const mapping = mappingsByProductId.get(Number(reservation.product_id))!;
+      return {
+        delta: -Math.abs(reservation.quantity),
+        inventoryItemId: shopifyGid('InventoryItem', mapping.shopify_inventory_item_id),
+        locationId: shopifyGid('Location', mapping.shopify_location_id)
+      };
+    })
+  });
+}
+
+async function finalizePaidCheckout(session: Stripe.Checkout.Session, eventId: string) {
   const reservations = await getReservations(session);
   if (!reservations.length) throw new Error(`No checkout reservations found for Stripe session ${session.id}`);
   const order = await upsertOrder(session, 'paid', reservations);
@@ -206,11 +268,12 @@ async function finalizePaidCheckout(session: Stripe.Checkout.Session) {
   await upsertCustomerProfile(session, order.buyer_user_id);
   const { error } = await admin.rpc('finalize_checkout_inventory', { p_stripe_session_id: session.id });
   assertNoSupabaseError(error, 'inventory finalization');
+  await syncCheckoutInventoryToShopify(session, reservations, eventId);
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId: string) {
   if (session.payment_status === 'paid' || session.payment_status === 'no_payment_required') {
-    await finalizePaidCheckout(session);
+    await finalizePaidCheckout(session, eventId);
     return;
   }
   const reservations = await getReservations(session);
@@ -244,10 +307,10 @@ Deno.serve(async (request) => {
     const session = event.data.object as Stripe.Checkout.Session;
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(session);
+        await handleCheckoutCompleted(session, event.id);
         break;
       case 'checkout.session.async_payment_succeeded':
-        await finalizePaidCheckout(session);
+        await finalizePaidCheckout(session, event.id);
         break;
       case 'checkout.session.async_payment_failed':
         await handleNonPaidTerminalEvent(session, 'unpaid', 'released');
