@@ -81,6 +81,20 @@ weights:
    non-embedded legacy install flow only for this standalone inventory sync app,
    install the app, bootstrap the SKU mappings, and register the inventory
    webhook.
+9. Run the read-only verification action before connecting TikTok or Whatnot:
+
+   ```powershell
+   node .\scripts\verify-shopify-sync.mjs
+   ```
+
+   The script requires `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the
+   current shell. It calls `shopify-catalog-sync` with
+   `action: verify-catalog`, confirms mapping coverage, SKU format, quantities,
+   prices, primary Shopify images, webhook failures, and verifies that every
+   legacy mapping remains draft-gated.
+   If the verifier reports `missingShopifyImages`, preview and repair only those
+   rows with `action: repair-missing-images`; the action defaults to dry-run
+   unless `dryRun` is explicitly set to `false`.
 
 Keep Shopify credentials in Supabase Edge Function secrets or another trusted
 secret store. Never place them in browser JavaScript, static site files, Git,
@@ -121,7 +135,9 @@ Install Shopify's TikTok sales channel after Shopify inventory is verified.
 TikTok requires a verifiable Shopify location, an online store, a TikTok for
 Business account, a visible return policy, merchant verification, and valid
 warehouse information. Product category, dimensions, weight, or certification
-review may still be required during channel onboarding.
+review may still be required during channel onboarding. Do not enable TikTok
+publishing until the verification action returns
+`safeForChannelOnboarding: true`.
 
 Official setup:
 
@@ -136,6 +152,7 @@ https://apps.shopify.com/whatnot
 Connect a Whatnot Owner or Manager account, select the Shopify products to
 sync, review failed inventory, and activate approved Buy It Now listings.
 Newly synchronized products initially appear as inactive Whatnot inventory.
+Keep legacy Shopify listings in Draft and exclude them from Whatnot activation.
 
 Official setup:
 
