@@ -1,0 +1,15 @@
+name = "DJHC Website Inventory Sync"
+client_id = "82d737fefce0df02a182133de02124d0"
+application_url = "https://gkqdymnmczabcggvigce.supabase.co/functions/v1/shopify-oauth-start"
+embedded = false
+
+[access_scopes]
+scopes = "read_products,write_products,read_inventory,write_inventory,read_locations"
+
+[auth]
+redirect_urls = [
+  "https://gkqdymnmczabcggvigce.supabase.co/functions/v1/shopify-oauth-callback"
+]
+
+[webhooks]
+api_version = "2026-04"

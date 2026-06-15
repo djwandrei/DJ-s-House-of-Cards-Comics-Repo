@@ -12,6 +12,11 @@ const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const adminEmail = String(Deno.env.get('ADMIN_EMAIL') || 'djwandrei@gmail.com').trim().toLowerCase();
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 const PAGE_SIZE = 250;
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
 
 type InventoryItemNode = {
   legacyResourceId: string;
@@ -50,7 +55,7 @@ type InventoryItemsPage = {
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
 
@@ -63,6 +68,9 @@ async function requireAdmin(request: Request) {
     .replace(/^Bearer\s+/i, '')
     .trim();
   if (!jwt) throw new Error('Admin sign-in is required.');
+  // Local maintenance scripts can use the service-role JWT; browser callers
+  // still have to prove they are the configured admin user below.
+  if (serviceRoleKey && jwt === serviceRoleKey) return;
   const { data, error } = await admin.auth.getUser(jwt);
   if (error || !data.user || String(data.user.email || '').toLowerCase() !== adminEmail) {
     throw new Error('Admin authorization failed.');
@@ -444,6 +452,7 @@ async function registerInventoryWebhook() {
 }
 
 Deno.serve(async (request) => {
+  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
   if (!supabaseUrl || !serviceRoleKey || !isShopifyConfigured()) {
     return jsonResponse({ error: 'Shopify catalog sync is not configured.' }, 503);

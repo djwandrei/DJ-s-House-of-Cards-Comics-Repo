@@ -70,16 +70,25 @@ weights:
 3. Import `shopify-products-draft.csv`.
 4. Verify products, images, quantities, prices, SKUs, and weights.
 5. Keep the products in draft until website synchronization is connected.
-6. Create a Shopify custom app with the minimum required Admin API scopes:
+6. Create a Shopify Dev Dashboard app with the minimum required Admin API scopes:
    `read_products`, `write_products`, `read_inventory`, `write_inventory`,
-   `read_locations`, and the webhook scopes required by the final flow.
+   and `read_locations`.
 7. Apply `supabase/marketplace-schema.sql`, configure the Shopify Edge Function
-   secrets, deploy `shopify-webhook` and `shopify-catalog-sync`, bootstrap the
-   SKU mappings, and register the inventory webhook.
+   secrets, deploy `shopify-webhook`, `shopify-catalog-sync`,
+   `shopify-oauth-start`, and `shopify-oauth-callback`.
+8. In the Shopify Dev Dashboard app version, use the OAuth start function as the
+   app URL and the callback function as the allowed redirection URL. Enable the
+   non-embedded legacy install flow only for this standalone inventory sync app,
+   install the app, bootstrap the SKU mappings, and register the inventory
+   webhook.
 
 Keep Shopify credentials in Supabase Edge Function secrets or another trusted
 secret store. Never place them in browser JavaScript, static site files, Git,
-or cPanel.
+or cPanel. New Dev Dashboard apps use `SHOPIFY_CLIENT_ID` and
+`SHOPIFY_CLIENT_SECRET`; the Edge Functions request and cache Shopify's
+short-lived Admin API token server-side when needed. The OAuth callback
+exchanges the authorization code to complete app installation, but it does not
+return or log the access token.
 
 ## Website Inventory Automation
 
@@ -103,7 +112,8 @@ The integration uses Shopify API version `2026-04`. Admin listing saves use
 `productSet` for safe product fields and `productVariantsBulkUpdate` for price.
 Website Stripe sales use `inventoryAdjustQuantities` with Shopify's required
 `@idempotent` key. Shopify `inventory_levels/update` webhooks then apply the
-absolute quantity to Supabase.
+absolute quantity to Supabase. The webhook HMAC still uses the Shopify client
+secret, while outbound Admin API calls use the client credentials grant flow.
 
 ## TikTok Shop
 

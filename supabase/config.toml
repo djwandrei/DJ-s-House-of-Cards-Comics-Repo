@@ -9,3 +9,9 @@ verify_jwt = false
 
 [functions.shopify-catalog-sync]
 verify_jwt = true
+
+[functions.shopify-oauth-start]
+verify_jwt = false
+
+[functions.shopify-oauth-callback]
+verify_jwt = false
