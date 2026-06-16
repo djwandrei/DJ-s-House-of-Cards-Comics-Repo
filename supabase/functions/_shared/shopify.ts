@@ -6,7 +6,9 @@ const DEFAULT_OAUTH_SCOPES = [
   'write_inventory',
   'read_locations',
   'read_publications',
-  'write_publications'
+  'write_publications',
+  'read_themes',
+  'write_themes'
 ].join(',');
 const SHOPIFY_SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 
@@ -147,7 +149,7 @@ export async function verifyShopifyOauthHmac(url: URL) {
   return timingSafeTextEqual(digest, providedHmac);
 }
 
-async function shopifyAccessToken() {
+export async function shopifyAccessToken() {
   const staticToken = String(Deno.env.get('SHOPIFY_ADMIN_ACCESS_TOKEN') || '').trim();
   if (staticToken) return staticToken;
 
@@ -183,6 +185,50 @@ async function shopifyAccessToken() {
     expiresAt: now + Math.max(60, Number(payload.expires_in) || 86_399) * 1000
   };
   return clientCredentialsToken.accessToken;
+}
+
+function shopifyRestErrorMessage(payload: unknown) {
+  if (!payload || typeof payload !== 'object') return '';
+  const data = payload as { errors?: unknown; error?: unknown; error_description?: unknown; raw?: unknown };
+  if (typeof data.errors === 'string') return data.errors;
+  if (data.errors) return JSON.stringify(data.errors);
+  if (data.error_description) return String(data.error_description);
+  if (data.error) return String(data.error);
+  if (data.raw) return String(data.raw).slice(0, 500);
+  return '';
+}
+
+export async function shopifyRest<T>(
+  method: string,
+  endpoint: string,
+  body: Record<string, unknown> | null = null
+): Promise<T> {
+  if (!isShopifyConfigured()) throw new Error('Shopify Admin API is not configured.');
+
+  const response = await fetch(`https://${shopifyShopDomain()}/admin/api/${shopifyApiVersion()}/${endpoint}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': await shopifyAccessToken()
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  const text = await response.text();
+  let payload: unknown = {};
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = { raw: text };
+    }
+  }
+
+  if (!response.ok) {
+    const detail = shopifyRestErrorMessage(payload);
+    throw new Error(`Shopify REST ${method} ${endpoint} returned HTTP ${response.status}${detail ? `: ${detail}` : ''}.`);
+  }
+  return payload as T;
 }
 
 export async function shopifyGraphql<T>(

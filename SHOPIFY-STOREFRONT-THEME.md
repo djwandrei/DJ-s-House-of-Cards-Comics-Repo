@@ -1,9 +1,9 @@
 # Shopify Storefront Theme Handoff
 
 This is the Shopify theme direction for making the Shopify storefront resemble
-the DJ's House of Cards website. The current sync app has product and inventory
-scopes only, so live theme publishing should happen through Shopify Admin's
-theme editor or after adding theme scopes in a reviewed app version.
+the DJ's House of Cards website. The sync app includes product, inventory,
+publication, and theme scopes so the reviewed styling pass can be applied with
+`scripts/apply-shopify-theme.mjs`.
 
 ## Design Brief
 
@@ -109,5 +109,5 @@ body {
 - Run `node .\scripts\verify-shopify-sync.mjs` before connecting or publishing
   TikTok/Whatnot products.
 - Do not publish legacy listings. They must remain Draft.
-- Do not expand the Shopify sync app to theme scopes without creating a new
-  reviewed app version and reauthorizing it.
+- Run `node .\scripts\apply-shopify-theme.mjs` first for a dry run, then rerun
+  with `--apply` after confirming the active theme and expected asset changes.
