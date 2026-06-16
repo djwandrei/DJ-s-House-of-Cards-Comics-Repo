@@ -7,6 +7,8 @@ import {
 } from '../_shared/shopify.ts';
 
 const OAUTH_STATE_COOKIE = 'shopify_oauth_state';
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 function htmlEscape(value = '') {
   return String(value || '')
@@ -39,6 +41,53 @@ function cookieValue(request: Request, name: string) {
 
 function clearStateCookieHeader() {
   return `${OAUTH_STATE_COOKIE}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`;
+}
+
+function base64UrlToBytes(value = '') {
+  const base64 = String(value || '').replaceAll('-', '+').replaceAll('_', '/');
+  const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+  return Uint8Array.from(atob(padded), (character) => character.charCodeAt(0));
+}
+
+function base64Url(bytes: Uint8Array) {
+  return btoa(String.fromCharCode(...bytes))
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replaceAll('=', '');
+}
+
+function timingSafeTextEqual(left: string, right: string) {
+  const leftBytes = encoder.encode(left);
+  const rightBytes = encoder.encode(right);
+  if (leftBytes.length !== rightBytes.length || !leftBytes.length) return false;
+  let mismatch = 0;
+  for (let index = 0; index < leftBytes.length; index += 1) {
+    mismatch |= leftBytes[index] ^ rightBytes[index];
+  }
+  return mismatch === 0;
+}
+
+async function isSignedManualState(shop: string, state: string) {
+  try {
+    const decoded = decoder.decode(base64UrlToBytes(state));
+    const [issuedAt, nonce, signature] = decoded.split('.');
+    if (!issuedAt || !nonce || !signature) return false;
+    const issuedAtMs = parseInt(issuedAt, 36);
+    if (!Number.isFinite(issuedAtMs) || Date.now() - issuedAtMs > 10 * 60 * 1000) return false;
+
+    const message = `${shop}|${issuedAt}|${nonce}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(shopifyClientCredentials().clientSecret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const expected = base64Url(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(message))));
+    return timingSafeTextEqual(signature, expected);
+  } catch {
+    return false;
+  }
 }
 
 function requiredScopes() {
@@ -112,7 +161,9 @@ Deno.serve(async (request) => {
   try {
     if (shop !== shopifyShopDomain()) throw new Error('Unexpected Shopify shop.');
     if (!code) throw new Error('Missing Shopify OAuth code.');
-    if (!state || state !== stateCookie) throw new Error('Invalid Shopify OAuth state.');
+    if (!state || (state !== stateCookie && !await isSignedManualState(shop, state))) {
+      throw new Error('Invalid Shopify OAuth state.');
+    }
     if (!await verifyShopifyOauthHmac(url)) throw new Error('Invalid Shopify OAuth signature.');
 
     const scopes = await exchangeAuthorizationCode(shop, code);
