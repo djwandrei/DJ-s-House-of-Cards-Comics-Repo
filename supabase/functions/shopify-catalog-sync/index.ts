@@ -55,6 +55,25 @@ type InventoryItemsPage = {
   };
 };
 
+type PublicationNode = {
+  id: string;
+  name?: string | null;
+  autoPublish?: boolean | null;
+  supportsFuturePublishing?: boolean | null;
+  catalog?: {
+    id?: string | null;
+    title?: string | null;
+    status?: string | null;
+  } | null;
+};
+
+type PublicationsPage = {
+  publications: {
+    nodes: PublicationNode[];
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null };
+  };
+};
+
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -97,6 +116,24 @@ function productIdFromSku(sku = '') {
 
 function firstItems<T>(items: T[], limit = 25) {
   return items.slice(0, limit);
+}
+
+function normalizedName(value: unknown) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function publicationLabel(publication: PublicationNode) {
+  return String(publication.name || publication.catalog?.title || publication.id).trim();
+}
+
+function matchesRequestedChannel(publication: PublicationNode, requestedChannel: string) {
+  const requested = normalizedName(requestedChannel);
+  const label = normalizedName(publicationLabel(publication));
+  const catalogTitle = normalizedName(publication.catalog?.title);
+  return Boolean(
+    requested
+    && (label === requested || label.includes(requested) || catalogTitle === requested || catalogTitle.includes(requested))
+  );
 }
 
 function sourceClass(product: Record<string, unknown>) {
@@ -157,6 +194,65 @@ function shouldActivate(product: Record<string, unknown>, mapping: Record<string
     && product.sale_status === 'available'
     && Number(product.quantity_available) > 0
     && directCheckoutPrice(product) !== null;
+}
+
+function isActivationEligible(product?: Record<string, unknown>) {
+  return Boolean(
+    product
+    && product.is_deleted !== true
+    && product.checkout_enabled !== false
+    && product.sale_status === 'available'
+    && Number(product.quantity_available) > 0
+    && directCheckoutPrice(product) !== null
+  );
+}
+
+async function loadEligibleNonlegacyMappings(options: {
+  limit?: number;
+  afterProductId?: number;
+}, config: {
+  defaultLimit?: number;
+  maxLimit?: number;
+  publishEnabledOnly?: boolean;
+} = {}) {
+  const limit = Math.min(
+    config.maxLimit || 100,
+    Math.max(1, Math.floor(Number(options.limit) || config.defaultLimit || 50))
+  );
+  const afterProductId = Math.max(0, Math.floor(Number(options.afterProductId) || 0));
+  let query = admin
+    .from('shopify_product_mappings')
+    .select('product_id,shopify_product_id,shopify_handle,publish_enabled')
+    .eq('source_class', 'nonlegacy')
+    .gt('product_id', afterProductId)
+    .order('product_id', { ascending: true })
+    .limit(limit);
+  if (config.publishEnabledOnly) query = query.eq('publish_enabled', true);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  const mappings = (data || []) as Record<string, unknown>[];
+  const nextAfterProductId = mappings.length ? Number(mappings[mappings.length - 1].product_id) : afterProductId;
+  if (!mappings.length) {
+    return { afterProductId, nextAfterProductId, mappings, eligibleMappings: [], skipped: [] };
+  }
+
+  const { data: products, error: productError } = await admin
+    .from('products')
+    .select('id,is_deleted,sale_status,checkout_enabled,quantity_available,checkout_price,price,display_price,price_label')
+    .in('id', mappings.map((mapping) => Number(mapping.product_id)));
+  if (productError) throw productError;
+
+  const productsById = new Map(
+    ((products || []) as Record<string, unknown>[]).map((product) => [Number(product.id), product])
+  );
+  const eligibleMappings = mappings.filter((mapping) => isActivationEligible(productsById.get(Number(mapping.product_id))));
+  const skipped = mappings
+    .filter((mapping) => !isActivationEligible(productsById.get(Number(mapping.product_id))))
+    .map((mapping) => ({ productId: Number(mapping.product_id), reason: 'not_checkout_eligible' }));
+
+  return { afterProductId, nextAfterProductId, mappings, eligibleMappings, skipped };
 }
 
 async function loadPagedRows(table: string, columns: string, orderColumn = 'id') {
@@ -318,6 +414,8 @@ async function verifyCatalogState() {
   const extraMappings: number[] = [];
   const sourceClassMismatches: number[] = [];
   const legacyPublishEnabled: number[] = [];
+  const nonlegacyPublishDisabled: number[] = [];
+  const nonlegacyNotActive: Array<{ productId: number; status: string }> = [];
   const malformedSkus: Array<{ productId: number; sku: string }> = [];
   const quantityMismatches: Array<{ productId: number; website: number; shopify: number | null }> = [];
   const priceMismatches: Array<{ productId: number; website: number | null; shopify: string | null }> = [];
@@ -345,6 +443,7 @@ async function verifyCatalogState() {
 
     if (!product) extraMappings.push(productId);
     if (classification === 'legacy' && mapping.publish_enabled === true) legacyPublishEnabled.push(productId);
+    if (classification === 'nonlegacy' && mapping.publish_enabled !== true) nonlegacyPublishDisabled.push(productId);
     if (String(mapping.sku || '') !== `DJHC-${productId}`) {
       malformedSkus.push({ productId, sku: String(mapping.sku || '') });
     }
@@ -372,6 +471,9 @@ async function verifyCatalogState() {
     if (classification === 'legacy' && variant?.product?.status !== 'DRAFT') {
       legacyNotDraft.push({ productId, status: String(variant?.product?.status || 'UNKNOWN') });
     }
+    if (classification === 'nonlegacy' && mapping.publish_enabled === true && variant?.product?.status !== 'ACTIVE') {
+      nonlegacyNotActive.push({ productId, status: String(variant?.product?.status || 'UNKNOWN') });
+    }
   }
 
   const webhookStatusCounts = webhooks.reduce<Record<string, number>>((counts, event) => {
@@ -385,6 +487,8 @@ async function verifyCatalogState() {
     extraMappings,
     sourceClassMismatches,
     legacyPublishEnabled,
+    nonlegacyPublishDisabled,
+    nonlegacyNotActive,
     malformedSkus,
     missingShopifyItems,
     quantityMismatches,
@@ -411,11 +515,13 @@ async function verifyCatalogState() {
       total: mappings.length,
       sourceCounts: mappingSourceCounts,
       publishEnabled: mappings.filter((mapping) => mapping.publish_enabled === true).length,
-      legacyPublishEnabled: legacyPublishEnabled.length
+      legacyPublishEnabled: legacyPublishEnabled.length,
+      nonlegacyPublishDisabled: nonlegacyPublishDisabled.length
     },
     shopify: {
       checked: Boolean(shopifyItems.length),
       skuCount: shopifyItems.length,
+      nonlegacyNotActive: nonlegacyNotActive.length,
       legacyNotDraft: legacyNotDraft.length,
       missingPrimaryImages: missingShopifyImages.length,
       quantityMismatches: quantityMismatches.length,
@@ -574,6 +680,271 @@ async function repairMissingImages(options: { dryRun?: boolean; limit?: number; 
     failedCount: failed.length,
     repaired,
     failed
+  };
+}
+
+async function setShopifyProductStatus(productId: number, shopifyProductId: unknown, status: 'ACTIVE' | 'DRAFT') {
+  const data = await shopifyGraphql<{
+    productSet: {
+      product?: { id: string; status: string } | null;
+      userErrors?: Array<{ field?: string[]; message?: string }> | null;
+    };
+  }>(
+    `mutation SetProductStatus($identifier: ProductSetIdentifiers, $input: ProductSetInput!) {
+      productSet(identifier: $identifier, input: $input, synchronous: true) {
+        product {
+          id
+          status
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    {
+      identifier: { id: shopifyGid('Product', shopifyProductId as number | string) },
+      input: {
+        handle: `djhc-${productId}`,
+        status
+      }
+    }
+  );
+  const result = data.productSet;
+  if (result.userErrors?.length) {
+    throw new Error(result.userErrors.map((error) => error.message || 'Unknown product status error').join('; '));
+  }
+  return result.product?.status || status;
+}
+
+async function loadPublications() {
+  const publications: PublicationNode[] = [];
+  let after: string | null = null;
+
+  do {
+    const data: PublicationsPage = await shopifyGraphql<PublicationsPage>(
+      `query ShopifyPublications($first: Int!, $after: String) {
+        publications(first: $first, after: $after) {
+          nodes {
+            id
+            name
+            autoPublish
+            supportsFuturePublishing
+            catalog {
+              id
+              title
+              status
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }`,
+      { first: 50, after }
+    );
+    publications.push(...data.publications.nodes);
+    after = data.publications.pageInfo.hasNextPage
+      ? data.publications.pageInfo.endCursor || null
+      : null;
+  } while (after);
+
+  return publications;
+}
+
+async function publishShopifyProduct(shopifyProductId: unknown, publications: PublicationNode[]) {
+  const publicationInput = publications.map((publication) => ({ publicationId: publication.id }));
+  if (!publicationInput.length) throw new Error('No Shopify publications were selected.');
+
+  const data = await shopifyGraphql<{
+    publishablePublish: {
+      publishable?: {
+        availablePublicationsCount?: { count?: number | null } | null;
+        resourcePublicationsCount?: { count?: number | null } | null;
+      } | null;
+      userErrors?: Array<{ field?: string[]; message?: string }> | null;
+    };
+  }>(
+    `mutation PublishProduct($id: ID!, $input: [PublicationInput!]!) {
+      publishablePublish(id: $id, input: $input) {
+        publishable {
+          availablePublicationsCount {
+            count
+          }
+          resourcePublicationsCount {
+            count
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    {
+      id: shopifyGid('Product', shopifyProductId as number | string),
+      input: publicationInput
+    }
+  );
+  const result = data.publishablePublish;
+  if (result.userErrors?.length) {
+    throw new Error(result.userErrors.map((error) => error.message || 'Unknown publication error').join('; '));
+  }
+  return {
+    availablePublications: result.publishable?.availablePublicationsCount?.count ?? null,
+    resourcePublications: result.publishable?.resourcePublicationsCount?.count ?? null
+  };
+}
+
+async function activateNonlegacyProducts(options: { dryRun?: boolean; limit?: number; afterProductId?: number } = {}) {
+  const batch = await loadEligibleNonlegacyMappings(options, { defaultLimit: 50, maxLimit: 100 });
+
+  if (options.dryRun) {
+    return {
+      dryRun: true,
+      selectedCount: batch.mappings.length,
+      eligibleCount: batch.eligibleMappings.length,
+      skippedCount: batch.skipped.length,
+      nextAfterProductId: batch.nextAfterProductId,
+      candidates: batch.eligibleMappings.map((mapping) => ({
+        productId: Number(mapping.product_id),
+        shopifyProductId: Number(mapping.shopify_product_id),
+        alreadyPublishEnabled: mapping.publish_enabled === true
+      })),
+      skipped: batch.skipped
+    };
+  }
+
+  const activated = [];
+  const failed = [];
+  for (const mapping of batch.eligibleMappings) {
+    const productId = Number(mapping.product_id);
+    try {
+      const status = await setShopifyProductStatus(productId, mapping.shopify_product_id, 'ACTIVE');
+      const { error: updateError } = await admin
+        .from('shopify_product_mappings')
+        .update({ publish_enabled: true, last_synced_at: new Date().toISOString() })
+        .eq('product_id', productId);
+      if (updateError) throw updateError;
+      activated.push({ productId, status });
+    } catch (error) {
+      failed.push({ productId, error: errorMessage(error) });
+    }
+  }
+
+  return {
+    dryRun: false,
+    selectedCount: batch.mappings.length,
+    eligibleCount: batch.eligibleMappings.length,
+    skippedCount: batch.skipped.length,
+    activatedCount: activated.length,
+    failedCount: failed.length,
+    nextAfterProductId: batch.nextAfterProductId,
+    activated,
+    failed,
+    skipped: batch.skipped
+  };
+}
+
+async function publishNonlegacyProducts(options: {
+  dryRun?: boolean;
+  limit?: number;
+  afterProductId?: number;
+  channels?: string[];
+} = {}) {
+  const requestedChannels = Array.isArray(options.channels) && options.channels.length
+    ? options.channels.map((channel) => String(channel || '').trim()).filter(Boolean)
+    : ['Online Store', 'TikTok', 'Whatnot'];
+  const limit = Math.min(50, Math.max(1, Math.floor(Number(options.limit) || 25)));
+  const afterProductId = Math.max(0, Math.floor(Number(options.afterProductId) || 0));
+  const publications = await loadPublications();
+  const selectedPublications = publications.filter((publication) => (
+    requestedChannels.some((channel) => matchesRequestedChannel(publication, channel))
+  ));
+  const batch = await loadEligibleNonlegacyMappings(
+    { limit, afterProductId },
+    { defaultLimit: 25, maxLimit: 50, publishEnabledOnly: true }
+  );
+
+  const publicationSummary = publications.map((publication) => ({
+    id: publication.id,
+    label: publicationLabel(publication),
+    catalogTitle: publication.catalog?.title || null,
+    catalogStatus: publication.catalog?.status || null,
+    selected: selectedPublications.some((selected) => selected.id === publication.id)
+  }));
+
+  if (!selectedPublications.length) {
+    return {
+      dryRun: options.dryRun !== false,
+      selectedCount: batch.mappings.length,
+      eligibleCount: batch.eligibleMappings.length,
+      skippedCount: batch.skipped.length,
+      requestedChannels,
+      selectedPublications: [],
+      availablePublications: publicationSummary,
+      nextAfterProductId: batch.nextAfterProductId,
+      candidates: firstItems(batch.eligibleMappings.map((mapping) => ({
+        productId: Number(mapping.product_id),
+        shopifyProductId: Number(mapping.shopify_product_id)
+      }))),
+      skipped: batch.skipped,
+      blocker: 'No Shopify publication matched the requested channel names.'
+    };
+  }
+
+  if (options.dryRun) {
+    return {
+      dryRun: true,
+      selectedCount: batch.mappings.length,
+      eligibleCount: batch.eligibleMappings.length,
+      skippedCount: batch.skipped.length,
+      requestedChannels,
+      selectedPublications: selectedPublications.map((publication) => ({
+        id: publication.id,
+        label: publicationLabel(publication),
+        catalogTitle: publication.catalog?.title || null
+      })),
+      availablePublications: publicationSummary,
+      nextAfterProductId: batch.nextAfterProductId,
+      candidates: batch.eligibleMappings.map((mapping) => ({
+        productId: Number(mapping.product_id),
+        shopifyProductId: Number(mapping.shopify_product_id)
+      })),
+      skipped: batch.skipped
+    };
+  }
+
+  const published = [];
+  const failed = [];
+  for (const mapping of batch.eligibleMappings) {
+    const productId = Number(mapping.product_id);
+    try {
+      const result = await publishShopifyProduct(mapping.shopify_product_id, selectedPublications);
+      published.push({ productId, ...result });
+    } catch (error) {
+      failed.push({ productId, error: errorMessage(error) });
+    }
+  }
+
+  return {
+    dryRun: false,
+    selectedCount: batch.mappings.length,
+    eligibleCount: batch.eligibleMappings.length,
+    skippedCount: batch.skipped.length,
+    publishedCount: published.length,
+    failedCount: failed.length,
+    requestedChannels,
+    selectedPublications: selectedPublications.map((publication) => ({
+      id: publication.id,
+      label: publicationLabel(publication),
+      catalogTitle: publication.catalog?.title || null
+    })),
+    nextAfterProductId: batch.nextAfterProductId,
+    published,
+    failed,
+    skipped: batch.skipped
   };
 }
 
@@ -837,7 +1208,14 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: errorMessage(error) }, 401);
   }
 
-  let payload: { action?: string; productId?: number; dryRun?: boolean; limit?: number } = {};
+  let payload: {
+    action?: string;
+    productId?: number;
+    dryRun?: boolean;
+    limit?: number;
+    afterProductId?: number;
+    channels?: string[];
+  } = {};
   try {
     payload = await request.json();
   } catch {
@@ -867,6 +1245,25 @@ Deno.serve(async (request) => {
             dryRun: payload.dryRun !== false,
             limit: payload.limit,
             productId: payload.productId
+          })
+        });
+      case 'activate-nonlegacy-products':
+        return jsonResponse({
+          ok: true,
+          result: await activateNonlegacyProducts({
+            dryRun: payload.dryRun !== false,
+            limit: payload.limit,
+            afterProductId: payload.afterProductId
+          })
+        });
+      case 'publish-nonlegacy-products':
+        return jsonResponse({
+          ok: true,
+          result: await publishNonlegacyProducts({
+            dryRun: payload.dryRun !== false,
+            limit: payload.limit,
+            afterProductId: payload.afterProductId,
+            channels: payload.channels
           })
         });
       default:

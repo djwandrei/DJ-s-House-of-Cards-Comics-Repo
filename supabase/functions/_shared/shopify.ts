@@ -4,7 +4,9 @@ const DEFAULT_OAUTH_SCOPES = [
   'write_products',
   'read_inventory',
   'write_inventory',
-  'read_locations'
+  'read_locations',
+  'read_publications',
+  'write_publications'
 ].join(',');
 const SHOPIFY_SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 

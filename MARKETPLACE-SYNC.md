@@ -72,7 +72,7 @@ weights:
 5. Keep the products in draft until website synchronization is connected.
 6. Create a Shopify Dev Dashboard app with the minimum required Admin API scopes:
    `read_products`, `write_products`, `read_inventory`, `write_inventory`,
-   and `read_locations`.
+   `read_locations`, `read_publications`, and `write_publications`.
 7. Apply `supabase/marketplace-schema.sql`, configure the Shopify Edge Function
    secrets, deploy `shopify-webhook`, `shopify-catalog-sync`,
    `shopify-oauth-start`, and `shopify-oauth-callback`.
@@ -95,6 +95,12 @@ weights:
    If the verifier reports `missingShopifyImages`, preview and repair only those
    rows with `action: repair-missing-images`; the action defaults to dry-run
    unless `dryRun` is explicitly set to `false`.
+10. Activate eligible non-legacy products with `action:
+    activate-nonlegacy-products`, then publish them to reviewed sales channels
+    with `action: publish-nonlegacy-products`. The publication action is also
+    dry-run by default and supports `channels`, `limit`, and `afterProductId`.
+    Shopify products must be `ACTIVE` before they can appear in channels, but
+    active status alone does not publish them.
 
 Keep Shopify credentials in Supabase Edge Function secrets or another trusted
 secret store. Never place them in browser JavaScript, static site files, Git,
