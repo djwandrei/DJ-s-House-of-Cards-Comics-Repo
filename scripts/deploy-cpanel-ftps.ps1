@@ -6,7 +6,8 @@ param(
   [switch]$Full,
   [switch]$DryRun,
   [switch]$SkipDelete,
-  [switch]$AllowAssetDelete
+  [switch]$AllowAssetDelete,
+  [string]$DeletePathList
 )
 
 $ErrorActionPreference = "Stop"
@@ -105,6 +106,40 @@ function Invoke-Git {
     throw "git $($Arguments -join ' ') failed.`n$output"
   }
   return @($output)
+}
+
+function Get-GitStatusEntries {
+  $rawOutput = -join (Invoke-Git -Arguments @("status", "--porcelain=v1", "-z"))
+  $records = @($rawOutput -split "`0" | Where-Object { $_ })
+  $entries = @()
+
+  for ($index = 0; $index -lt $records.Count; $index++) {
+    $record = [string]$records[$index]
+    if ($record.Length -lt 4) {
+      continue
+    }
+
+    $status = $record.Substring(0, 2)
+    $path = $record.Substring(3)
+
+    if ($status -like "R*" -or $status -like "C*") {
+      $sourcePath = if ($index + 1 -lt $records.Count) { [string]$records[++$index] } else { "" }
+      $entries += [pscustomobject]@{
+        Status = $status
+        Path = $path
+        SourcePath = $sourcePath
+      }
+      continue
+    }
+
+    $entries += [pscustomobject]@{
+      Status = $status
+      Path = $path
+      SourcePath = ""
+    }
+  }
+
+  return @($entries)
 }
 
 function Load-DeployConfig {
@@ -561,6 +596,34 @@ function Invoke-Delete {
   }
 }
 
+function Invoke-DeleteBatch {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$RelativePaths
+  )
+
+  if (-not $RelativePaths.Count) {
+    return
+  }
+
+  foreach ($relativePath in $RelativePaths) {
+    Write-Host ("delete {0}" -f $relativePath)
+  }
+
+  $remoteRootUrl = "{0}://{1}:{2}/" -f (Get-CurlUrlScheme), $script:DeployConfig.host, $script:DeployConfig.port
+  $args = Get-CurlCommonArguments
+  foreach ($relativePath in $RelativePaths) {
+    $remotePath = "/" + ((Get-RemotePathSegments -RelativePath $relativePath) -join "/")
+    $args += @("--quote", "*DELE $remotePath")
+  }
+  $args += @("--output", "NUL", $remoteRootUrl)
+
+  Invoke-SecureCurl -Arguments $args
+  if ($LASTEXITCODE -ne 0) {
+    Write-Warning "One or more remote deletes may have failed in the current batch."
+  }
+}
+
 function Get-FullUploadList {
   if (-not $script:IsGitRepository) {
     return @(Get-ChildItem -LiteralPath $script:RepoRoot -Recurse -File -Force |
@@ -641,20 +704,16 @@ function Get-ChangedFiles {
     }
   }
 
-  foreach ($line in (Invoke-Git -Arguments @("status", "--porcelain"))) {
-    if (-not $line) { continue }
-    $status = $line.Substring(0, 2)
-    $path = $line.Substring(3).Trim()
+  foreach ($entry in (Get-GitStatusEntries)) {
+    $status = $entry.Status
+    $path = $entry.Path
 
     if ($status -like "R*") {
-      $renameParts = $path -split " -> "
-      if ($renameParts.Count -eq 2) {
-        if (Test-DeployablePath -RelativePath $renameParts[0]) {
-          [void]$deletes.Add($renameParts[0])
-        }
-        if (Test-DeployableFile -RelativePath $renameParts[1]) {
-          [void]$uploads.Add($renameParts[1])
-        }
+      if ($entry.SourcePath -and (Test-DeployablePath -RelativePath $entry.SourcePath)) {
+        [void]$deletes.Add($entry.SourcePath)
+      }
+      if ($path -and (Test-DeployableFile -RelativePath $path)) {
+        [void]$uploads.Add($path)
       }
       continue
     }
@@ -714,13 +773,50 @@ function Get-PathListUploadSet {
   }
 }
 
+function Get-DeletePathListSet {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$ListPath
+  )
+
+  $resolvedListPath = if ([System.IO.Path]::IsPathRooted($ListPath)) { $ListPath } else { Join-Path $script:RepoRoot $ListPath }
+  if (-not (Test-Path -LiteralPath $resolvedListPath -PathType Leaf)) {
+    throw "Delete path list not found at '$ListPath'."
+  }
+
+  $deletes = New-Object System.Collections.Generic.HashSet[string]
+  foreach ($line in (Get-Content -LiteralPath $resolvedListPath)) {
+    $path = ($line -replace "\\", "/").Trim()
+    if (-not $path -or $path.StartsWith("#")) {
+      continue
+    }
+
+    if (Test-DeployablePath -RelativePath $path) {
+      [void]$deletes.Add($path)
+    } else {
+      Write-Warning "Skipping non-deployable delete path from list: $path"
+    }
+  }
+
+  return [pscustomobject]@{
+    uploads = @()
+    deletes = @($deletes | Sort-Object)
+  }
+}
+
 $script:RepoRoot = Get-RepoRoot
 $script:GitExe = Get-GitExecutable
 $script:IsGitRepository = Test-GitRepository
 $resolvedConfigPath = if ([System.IO.Path]::IsPathRooted($ConfigPath)) { $ConfigPath } else { Join-Path $script:RepoRoot $ConfigPath }
 $script:DeployConfig = Load-DeployConfig -Path $resolvedConfigPath
 
-$changeSet = if ($PathList) { Get-PathListUploadSet -ListPath $PathList } else { Get-ChangedFiles }
+$changeSet = if ($DeletePathList) {
+  Get-DeletePathListSet -ListPath $DeletePathList
+} elseif ($PathList) {
+  Get-PathListUploadSet -ListPath $PathList
+} else {
+  Get-ChangedFiles
+}
 $uploadList = @($changeSet.uploads | Where-Object { $_ })
 $pendingDeleteList = @($changeSet.deletes | Where-Object { $_ })
 $blockedAssetDeleteList = @($pendingDeleteList | Where-Object {
@@ -769,8 +865,16 @@ foreach ($relativePath in $uploadList) {
   Invoke-Upload -RelativePath $relativePath
 }
 
-foreach ($relativePath in $deleteList) {
-  Invoke-Delete -RelativePath $relativePath
+if ($DeletePathList -and -not $DryRun) {
+  $deleteBatchSize = 50
+  for ($index = 0; $index -lt $deleteList.Count; $index += $deleteBatchSize) {
+    $lastIndex = [Math]::Min($index + $deleteBatchSize - 1, $deleteList.Count - 1)
+    Invoke-DeleteBatch -RelativePaths @($deleteList[$index..$lastIndex])
+  }
+} else {
+  foreach ($relativePath in $deleteList) {
+    Invoke-Delete -RelativePath $relativePath
+  }
 }
 
 if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
@@ -778,6 +882,8 @@ if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
   Save-DeployState -Commit $headCommit
 } elseif (-not $DryRun -and $PathList) {
   Write-Host "Path-list deploy completed without changing the global deploy state."
+} elseif (-not $DryRun -and $DeletePathList) {
+  Write-Host "Delete path-list deploy completed without changing the global deploy state."
 } elseif (-not $DryRun -and $skippedDeleteList.Count) {
   Write-Warning ("Deploy state was not advanced because {0} deletion(s) were skipped." -f $skippedDeleteList.Count)
 }

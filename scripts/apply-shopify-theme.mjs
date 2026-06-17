@@ -4,6 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
 const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront.css';
+const MIRRORED_STYLE_ASSET_KEYS = [
+  STYLE_ASSET_KEY,
+  'assets/djhc-custom.css',
+  'assets/djhc-live.css'
+].filter((assetKey, index, assetKeys) => assetKeys.indexOf(assetKey) === index);
 const LOGO_ASSET_KEY = 'assets/dj-logo.png';
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
 const STYLE_FILENAME = path.basename(STYLE_ASSET_KEY);
@@ -14,6 +19,9 @@ const SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 const args = new Set(process.argv.slice(2));
 const apply = args.has('--apply');
 const viaSupabase = args.has('--via-supabase');
+const layoutCacheBust = args.has('--layout-cache-bust');
+const layoutCacheBustMarker = valueAfter('--layout-cache-bust-marker')
+  || `djhc-cache-bust-${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
 const themeIdArg = valueAfter('--theme-id');
 const apiVersion = valueAfter('--api-version') || process.env.SHOPIFY_API_VERSION || DEFAULT_API_VERSION;
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -134,6 +142,7 @@ function djhcCss() {
  * DJHC Shopify storefront layer.
  * Applied by scripts/apply-shopify-theme.mjs so the Shopify storefront tracks
  * the same brand system as the primary DJ's House of Cards website.
+ * Curated sports cards, comics, collectibles, and trusted hobby finds.
  */
 :root {
   --djhc-blue: #1f2fa3;
@@ -553,25 +562,186 @@ header.header {
 }
 
 body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.product__info-container)) main::before {
-  content: "DJ's House of Cards & Comics\\A Curated sports cards, comics, collectibles, and trusted hobby finds.";
-  white-space: pre-line;
-  display: block;
+  content: none !important;
+  display: none !important;
+}
+
+.hero-wrapper,
+.hero {
+  overflow: hidden !important;
+  border-radius: 0 0 34px 34px !important;
+}
+
+.hero.color-scheme-djhc {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(228, 177, 65, .34), transparent 27%),
+    radial-gradient(circle at 82% 12%, rgba(239, 24, 35, .28), transparent 30%),
+    linear-gradient(135deg, rgba(8, 14, 32, .96), rgba(21, 32, 107, .94) 52%, rgba(31, 47, 163, .9)) !important;
+}
+
+.hero .text-block,
+.hero .text-block p {
+  color: #fff !important;
+  text-shadow: 0 12px 30px rgba(0, 0, 0, .32) !important;
+}
+
+.hero .button {
+  min-height: 52px !important;
+  padding-inline: 1.8rem !important;
+  border: 1px solid rgba(255, 255, 255, .28) !important;
+}
+
+.djhc-shop-tools,
+.djhc-storefront-proof {
   width: min(1180px, calc(100% - 2rem));
-  margin: 1.35rem auto 1.75rem;
-  padding: clamp(2.25rem, 5vw, 4.5rem);
-  border: 1px solid rgba(255, 255, 255, .45);
+  margin: 0 auto;
+}
+
+.djhc-shop-tools {
+  display: grid;
+  grid-template-columns: minmax(260px, .82fr) minmax(0, 1.35fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border: 1px solid rgba(24, 37, 73, .12);
   border-radius: 30px;
   background:
-    linear-gradient(135deg, rgba(21, 32, 107, .94), rgba(31, 47, 163, .9) 54%, rgba(239, 24, 35, .9)),
-    radial-gradient(circle at 18% 20%, rgba(228, 177, 65, .32), transparent 28%);
-  color: #fff;
+    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(245, 248, 253, .94)),
+    radial-gradient(circle at top left, rgba(31, 47, 163, .1), transparent 30%);
+  box-shadow: 0 18px 46px rgba(16, 27, 57, .14);
+}
+
+.djhc-eyebrow {
+  margin: 0 0 .45rem;
+  color: var(--djhc-red);
+  font-size: .78rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.djhc-shop-tools__intro h2 {
+  margin: 0;
+  color: var(--djhc-blue-dark);
   font-family: var(--djhc-font-display);
-  font-size: clamp(2.35rem, 5vw, 5rem);
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
   letter-spacing: .035em;
-  line-height: .95;
-  text-align: center;
-  text-shadow: 0 10px 28px rgba(0, 0, 0, .34);
-  box-shadow: 0 24px 60px rgba(16, 27, 57, .24);
+  line-height: .9;
+}
+
+.djhc-shop-tools__intro p:last-child {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+  color: var(--djhc-muted);
+  font-weight: 650;
+  line-height: 1.65;
+}
+
+.djhc-shop-tools__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+}
+
+.djhc-shop-card {
+  display: flex;
+  min-height: 118px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: .7rem;
+  padding: 1rem;
+  border: 1px solid rgba(24, 37, 73, .13);
+  border-radius: 22px;
+  background: #fff;
+  color: var(--djhc-text) !important;
+  text-decoration: none;
+  box-shadow: 0 10px 26px rgba(16, 27, 57, .09);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.djhc-shop-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(31, 47, 163, .35);
+  box-shadow: 0 18px 38px rgba(16, 27, 57, .16);
+}
+
+.djhc-shop-card--primary {
+  background:
+    linear-gradient(135deg, rgba(21, 32, 107, .96), rgba(31, 47, 163, .92) 58%, rgba(239, 24, 35, .9));
+  color: #fff !important;
+}
+
+.djhc-shop-card strong {
+  color: inherit;
+  font-size: 1.02rem;
+  font-weight: 950;
+}
+
+.djhc-shop-card span {
+  color: currentColor;
+  font-size: .9rem;
+  font-weight: 650;
+  line-height: 1.45;
+  opacity: .78;
+}
+
+.djhc-quick-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  padding-top: .35rem;
+}
+
+.djhc-quick-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: .65rem .95rem;
+  border: 1px solid rgba(31, 47, 163, .18);
+  border-radius: 999px;
+  background: rgba(31, 47, 163, .08);
+  color: var(--djhc-blue) !important;
+  font-size: .88rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.djhc-quick-actions a:hover {
+  background: var(--djhc-blue);
+  color: #fff !important;
+}
+
+.djhc-storefront-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.djhc-storefront-proof article {
+  min-height: 122px;
+  padding: 1.15rem;
+  border: 1px solid rgba(228, 177, 65, .34);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .97), rgba(255, 248, 226, .78)),
+    radial-gradient(circle at top right, rgba(228, 177, 65, .2), transparent 32%);
+  box-shadow: 0 14px 32px rgba(16, 27, 57, .1);
+}
+
+.djhc-storefront-proof strong {
+  display: block;
+  color: var(--djhc-blue-dark);
+  font-size: 1rem;
+  font-weight: 950;
+}
+
+.djhc-storefront-proof span {
+  display: block;
+  margin-top: .55rem;
+  color: var(--djhc-muted);
+  font-size: .92rem;
+  font-weight: 650;
+  line-height: 1.5;
 }
 
 body:has(.main-collection-grid) main::before {
@@ -779,6 +949,171 @@ main,
   min-height: 220px;
 }
 
+/*
+ * 2026 shopping-layout pass.
+ * Keep the DJHC colors, but make the storefront feel easier to scan: product
+ * grids should not sit inside decorative cards, media areas should stay stable,
+ * and mobile filters/drawers must not introduce horizontal overflow.
+ */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip !important;
+}
+
+main,
+#MainContent,
+.content-for-layout,
+.shopify-section {
+  max-width: 100% !important;
+}
+
+main,
+#MainContent,
+.content-for-layout {
+  overflow-x: clip !important;
+}
+
+.skip-to-content-link:not(:focus):not(:focus-visible) {
+  position: fixed !important;
+  inset-block-start: 0 !important;
+  inset-inline-start: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  transform: translateY(-120%) !important;
+}
+
+.skip-to-content-link:focus,
+.skip-to-content-link:focus-visible {
+  position: fixed !important;
+  inset-block-start: 1rem !important;
+  inset-inline-start: 1rem !important;
+  width: auto !important;
+  height: auto !important;
+  clip-path: none !important;
+  transform: none !important;
+  z-index: 9999 !important;
+}
+
+.shopify-section:has(.product-list),
+.shopify-section:has(.product-grid) {
+  width: min(1240px, calc(100% - 2rem)) !important;
+  margin: 0 auto 2.25rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.collection-wrapper,
+.main-collection-grid,
+.facets-container {
+  border-radius: 14px !important;
+  box-shadow: 0 10px 24px rgba(16, 27, 57, .09) !important;
+}
+
+.product-grid,
+.collection-list,
+.grid {
+  align-items: stretch !important;
+}
+
+.product-grid__card,
+.product-card,
+.card-gallery,
+.card,
+.card-wrapper,
+.product-media-container,
+.predictive-search-results__card--product {
+  border-radius: 10px !important;
+  box-shadow: 0 10px 24px rgba(16, 27, 57, .11) !important;
+}
+
+.product-grid__card:hover,
+.product-card:hover,
+.card-gallery:hover,
+.card-wrapper:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 32px rgba(16, 27, 57, .17) !important;
+}
+
+.product-media,
+.product-media-container,
+.card-gallery,
+.card__media,
+.media {
+  aspect-ratio: 4 / 5 !important;
+  min-height: 0 !important;
+}
+
+.card-gallery,
+.product-media-container,
+slideshow-component,
+slideshow-container {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.card-gallery slideshow-slide,
+.product-media-container slideshow-slide {
+  max-width: 100% !important;
+}
+
+.product-media img,
+.product-media-container img,
+.card__media img,
+.media img,
+.product-media__image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.product-card__content,
+.card__content,
+.card-information {
+  display: grid !important;
+  align-content: start !important;
+  gap: .55rem !important;
+  padding: .85rem .9rem 1rem !important;
+}
+
+.product-card__link,
+.card__heading a,
+.full-unstyled-link,
+.text-block[class*="product_title"] {
+  display: -webkit-box !important;
+  min-height: 2.7em !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-height: 1.35 !important;
+}
+
+.facets-container,
+.facets,
+.facets-vertical,
+.facets-wrapper {
+  max-width: 100% !important;
+}
+
+.facets__summary,
+.facet-filters__field,
+.mobile-facets__open,
+.mobile-facets__close-button {
+  min-height: 42px !important;
+}
+
+.mobile-facets__inner,
+.drawer,
+.cart-drawer {
+  max-width: min(100vw, 440px) !important;
+}
+
 @media screen and (max-width: 749px) {
   .shopify-section-group-header-group::after {
     font-size: .68rem;
@@ -787,10 +1122,7 @@ main,
   }
 
   body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.product__info-container)) main::before {
-    margin-top: .85rem;
-    padding: 2rem 1rem;
-    border-radius: 22px;
-    font-size: clamp(2rem, 11vw, 3.1rem);
+    display: none !important;
   }
 
   body:has(.main-collection-grid) main::before {
@@ -803,6 +1135,43 @@ main,
     width: min(100% - 1rem, 720px) !important;
     padding: 1rem !important;
     border-radius: 22px !important;
+  }
+
+  .shopify-section:has(.product-list),
+  .shopify-section:has(.product-grid) {
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .product-grid__card,
+  .product-card,
+  .card-gallery,
+  .card,
+  .card-wrapper {
+    border-radius: 9px !important;
+  }
+
+  .hero-wrapper,
+  .hero {
+    border-radius: 0 0 22px 22px !important;
+  }
+
+  .djhc-shop-tools,
+  .djhc-storefront-proof {
+    width: min(100% - 1rem, 720px);
+  }
+
+  .djhc-shop-tools,
+  .djhc-storefront-proof {
+    grid-template-columns: 1fr;
+  }
+
+  .djhc-shop-tools__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .djhc-shop-card {
+    min-height: 96px;
   }
 }
 `;
@@ -834,17 +1203,26 @@ function backupLayout(themeId, layoutLiquid) {
   return backupPath;
 }
 
-function themePayload(action) {
+function themePayload(action, options = {}) {
+  const styleAssetKey = options.styleAssetKey || STYLE_ASSET_KEY;
+  const styleFilename = path.basename(styleAssetKey);
+  const shouldBustLayout = Boolean(options.layoutCacheBust);
+  const styleMarker = shouldBustLayout
+    ? options.layoutCacheBustMarker
+    : (styleAssetKey === STYLE_ASSET_KEY ? STYLE_MARKER : styleFilename);
+  const styleTag = shouldBustLayout
+    ? `{% comment %} ${options.layoutCacheBustMarker} {% endcomment %}\n  {{ '${styleFilename}' | asset_url | stylesheet_tag }}`
+    : `{{ '${styleFilename}' | asset_url | stylesheet_tag }}`;
   const logoPath = path.join(repoRoot, 'assets', 'dj-logo.png');
-  const logoExists = fs.existsSync(logoPath);
+  const logoExists = options.includeLogo !== false && fs.existsSync(logoPath);
   return {
     action,
     css: djhcCss(),
-    styleAssetKey: STYLE_ASSET_KEY,
-    styleMarker: STYLE_MARKER,
-    styleTag: STYLE_TAG,
+    styleAssetKey,
+    styleMarker,
+    styleTag,
     themeId: themeIdArg || undefined,
-    includeLayoutBackup: action === 'apply',
+    includeLayoutBackup: Boolean(options.includeLayoutBackup),
     logo: logoExists
       ? {
         assetKey: LOGO_ASSET_KEY,
@@ -857,26 +1235,44 @@ function themePayload(action) {
 async function applyViaSupabase() {
   const { supabaseUrl, serviceRoleKey } = supabaseConfig();
   const action = apply ? 'apply' : 'plan';
-  const response = await fetch(`${supabaseUrl}/functions/v1/shopify-theme-apply`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${serviceRoleKey}`,
-      apikey: serviceRoleKey,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(themePayload(action))
-  });
+  const payloads = [];
 
-  const payload = await readResponse(response);
-  if (!response.ok || payload?.ok !== true) {
-    throw new Error(payload?.error || `Supabase Shopify theme function failed with HTTP ${response.status}`);
+  for (const [index, styleAssetKey] of MIRRORED_STYLE_ASSET_KEYS.entries()) {
+    const response = await fetch(`${supabaseUrl}/functions/v1/shopify-theme-apply`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${serviceRoleKey}`,
+        apikey: serviceRoleKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(themePayload(action, {
+        styleAssetKey,
+        includeLogo: index === 0,
+        includeLayoutBackup: action === 'apply' && index === 0,
+        layoutCacheBust: layoutCacheBust && index === 0,
+        layoutCacheBustMarker
+      }))
+    });
+
+    const payload = await readResponse(response);
+    if (!response.ok || payload?.ok !== true) {
+      throw new Error(payload?.error || `Supabase Shopify theme function failed with HTTP ${response.status}`);
+    }
+    payloads.push(payload);
   }
 
-  if (payload.layoutBackup && payload.theme?.id) {
-    payload.backupPath = backupLayout(payload.theme.id, String(payload.layoutBackup));
-    delete payload.layoutBackup;
+  const primaryPayload = payloads[0];
+  if (primaryPayload.layoutBackup && primaryPayload.theme?.id) {
+    primaryPayload.backupPath = backupLayout(primaryPayload.theme.id, String(primaryPayload.layoutBackup));
+    delete primaryPayload.layoutBackup;
   }
-  console.log(JSON.stringify(payload, null, 2));
+  primaryPayload.mirroredStyleAssets = payloads.map((payload) => payload?.changes?.stylesheetAsset).filter(Boolean);
+  primaryPayload.mirroredStyleResults = payloads.map((payload) => ({
+    stylesheetAsset: payload?.changes?.stylesheetAsset,
+    layoutNeedsStylesheetTag: payload?.changes?.layoutNeedsStylesheetTag,
+    applied: payload?.applied?.stylesheetAsset || false
+  }));
+  console.log(JSON.stringify(primaryPayload, null, 2));
 }
 
 async function getMainTheme(rest) {
@@ -931,6 +1327,7 @@ async function main() {
     },
     changes: {
       stylesheetAsset: STYLE_ASSET_KEY,
+      mirroredStyleAssets: MIRRORED_STYLE_ASSET_KEYS,
       layoutNeedsStylesheetTag: injection.changed,
       logoAsset: logoExists ? LOGO_ASSET_KEY : null
     }
@@ -942,10 +1339,12 @@ async function main() {
   }
 
   const backupPath = backupLayout(themeId, layoutLiquid);
-  await putThemeAsset(rest, themeId, {
-    key: STYLE_ASSET_KEY,
-    value: djhcCss()
-  });
+  for (const styleAssetKey of MIRRORED_STYLE_ASSET_KEYS) {
+    await putThemeAsset(rest, themeId, {
+      key: styleAssetKey,
+      value: djhcCss()
+    });
+  }
 
   if (injection.changed) {
     await putThemeAsset(rest, themeId, {
@@ -966,6 +1365,7 @@ async function main() {
     backupPath,
     applied: {
       stylesheetAsset: true,
+      mirroredStyleAssets: MIRRORED_STYLE_ASSET_KEYS,
       layoutStylesheetTag: injection.changed ? 'inserted' : 'already-present',
       logoAsset: logoExists
     }
