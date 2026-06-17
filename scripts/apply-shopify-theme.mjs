@@ -3,11 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
-const STYLE_ASSET_KEY = 'assets/djhc-storefront.css';
+const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront.css';
 const LOGO_ASSET_KEY = 'assets/dj-logo.png';
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
-const STYLE_TAG = "{{ 'djhc-storefront.css' | asset_url | stylesheet_tag }}";
-const STYLE_MARKER = 'djhc-storefront.css';
+const STYLE_FILENAME = path.basename(STYLE_ASSET_KEY);
+const STYLE_TAG = `{{ '${STYLE_FILENAME}' | asset_url | stylesheet_tag }}`;
+const STYLE_MARKER = valueAfter('--style-marker') || STYLE_FILENAME;
 const SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 
 const args = new Set(process.argv.slice(2));

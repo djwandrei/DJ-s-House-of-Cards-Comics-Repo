@@ -15,6 +15,7 @@ cart.html
 checkout-success.html
 collectibles.html
 comics.html
+condition-authenticity.html
 contact.html
 contact.js
 core.js
@@ -31,9 +32,11 @@ products-bootstrap-collectibles.json
 products-bootstrap-comics.json
 products-bootstrap-football.json
 seo.js
+sell-trade-want-list.html
 shipping.html
 shop.html
 site.webmanifest
+sitemap.xml
 sports-cards.html
 styles.css
 styles-mobile-overrides.css

@@ -11,6 +11,10 @@ window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
+  const CATALOG_LOADING_MESSAGE = 'Loading current inventory...';
+  const FILTER_EMPTY_TITLE = 'No items match those filters.';
+  const FILTER_EMPTY_COPY = 'Clear filters or ask DJ.';
+  const WISHLIST_EMPTY_COPY = 'No saved items yet. Browse the collection, tap the heart on anything you like, and come back here to compare your shortlist before contacting DJ.';
 
   // Per-page configuration keeps page-specific copy, locked categories, and
   // filter labeling in one place instead of scattering those differences across
@@ -18,64 +22,48 @@ window.DJ = window.DJ || {};
   const PAGE_CONFIG = {
     shop: {
       allowedCategories: null,
-      emptyTitle: 'No items matched your filters',
-      emptyCopy: 'Try widening the year or price range, or clear a few filters and search again.',
       searchLabel: 'Search inventory',
       searchPlaceholder: 'Player, title, team, publisher, or keyword',
       helperText: 'Examples: Jordan rookie, All-Star, PSA, Marvel, Giants.'
     },
     'sports-cards': {
       allowedCategories: ['Baseball', 'Basketball', 'Football'],
-      emptyTitle: 'No sports cards matched your filters',
-      emptyCopy: 'Try a broader search, widen the year or price range, or reset a filter.',
       searchLabel: 'Search sports cards',
       searchPlaceholder: 'Player, set, team, slab, parallel, or keyword',
       helperText: 'Examples: Jordan rookie, Brady auto, Topps Chrome, PSA 9, All-Star.'
     },
     'sports-hub': {
       allowedCategories: ['Baseball', 'Basketball', 'Football'],
-      emptyTitle: 'No sports cards matched your filters',
-      emptyCopy: 'Try a broader player search, widen the year or price range, or reset a filter.',
       searchLabel: 'Search all sports cards',
       searchPlaceholder: 'Player, set, team, slab, parallel, or keyword',
       helperText: 'Examples: Jordan rookie, Brady auto, Topps Chrome, PSA 9, All-Star.'
     },
     comics: {
       allowedCategories: ['Comics'],
-      emptyTitle: 'No comics matched your filters',
-      emptyCopy: 'Try a broader title search, widen the year range, or clear a filter to see more comics.',
       searchLabel: 'Search comics',
       searchPlaceholder: 'Title, character, issue number, publisher, or keyword',
       helperText: 'Examples: Spider-Man, Batman, #1, Venom, newsstand, key issue.'
     },
     collectibles: {
       allowedCategories: ['Collectibles', 'Other'],
-      emptyTitle: 'No collectibles are listed yet',
-      emptyCopy: 'Try a broader keyword search, or check back as more memorabilia is added.',
       searchLabel: 'Search collectibles',
       searchPlaceholder: 'Autograph, jersey, display, signed, memorabilia, or keyword',
       helperText: 'Examples: signed ball, jersey, autograph, display piece, photo.'
     },
     'baseball-cards': {
       allowedCategories: ['Baseball'],
-      emptyTitle: 'No baseball cards matched your filters',
-      emptyCopy: 'Try a broader player search, widen the year range, or clear a filter to see more baseball inventory.',
       searchLabel: 'Search baseball cards',
       searchPlaceholder: 'Player, set, team, slab, parallel, or keyword',
       helperText: 'Examples: Mays, Mantle, rookie, Topps, PSA 5, autograph.'
     },
     'basketball-cards': {
       allowedCategories: ['Basketball'],
-      emptyTitle: 'No basketball cards matched your filters',
-      emptyCopy: 'Try a broader player search, widen the year range, or clear a filter to see more basketball inventory.',
       searchLabel: 'Search basketball cards',
       searchPlaceholder: 'Player, set, team, slab, refractor, or keyword',
       helperText: 'Examples: Jordan, Kobe, rookie, auto, refractor, PSA 10.'
     },
     'football-cards': {
       allowedCategories: ['Football'],
-      emptyTitle: 'No football cards matched your filters',
-      emptyCopy: 'Try a broader player search, widen the year range, or clear a filter to see more football inventory.',
       searchLabel: 'Search football cards',
       searchPlaceholder: 'Player, set, team, slab, rookie, or keyword',
       helperText: 'Examples: Brady, Mahomes, rookie, auto, patch, PSA 9.'
@@ -1663,13 +1651,13 @@ window.DJ = window.DJ || {};
       .join('|');
   }
 
-  function setCatalogLoadingState(message = 'Loading inventory...') {
+  function setCatalogLoadingState(message = CATALOG_LOADING_MESSAGE) {
     const resultsCount = document.getElementById('resultsCount');
     const resultsSummary = document.getElementById('resultsSummary');
     const resultsLive = document.getElementById('resultsLive');
     const activeFiltersWrap = document.getElementById('activeFilters');
 
-    if (resultsCount) resultsCount.textContent = 'Loading...';
+    if (resultsCount) resultsCount.textContent = CATALOG_LOADING_MESSAGE;
     if (resultsSummary) resultsSummary.textContent = message;
     if (resultsLive) resultsLive.textContent = message;
     if (activeFiltersWrap) activeFiltersWrap.innerHTML = '';
@@ -3039,8 +3027,8 @@ Thank you.`
     maybeOpenLinkedProduct(filteredProducts);
 
     if (!filteredProducts.length) {
-      const emptyTitle = config.emptyTitle || document.body.dataset.emptyTitle || 'No items matched your filters';
-      const emptyCopy = config.emptyCopy || document.body.dataset.emptyCopy || 'Try widening the year or price range, or clear a few filters and search again.';
+      const emptyTitle = FILTER_EMPTY_TITLE;
+      const emptyCopy = FILTER_EMPTY_COPY;
       clearProductGridLoadingState(productContainer);
       productContainer.dataset.productRenderSignature = 'empty';
       productContainer.innerHTML = `
@@ -3449,7 +3437,7 @@ Thank you.`
     renderProductGridLoadingState(productContainer, {
       count: Math.min(8, getRenderBatchSize(page))
     });
-    setCatalogLoadingState('Loading live inventory...');
+    setCatalogLoadingState(CATALOG_LOADING_MESSAGE);
 
     const initialFilters = applyUrlFilters();
 
@@ -3575,8 +3563,8 @@ Thank you.`
     return `
       <div class="empty-state wishlist-empty-state">
         <span class="empty-state-kicker">Nothing saved yet</span>
-        <h2>Your wishlist is empty</h2>
-        <p>Tap the heart icon on any listing to save it here for comparing, revisiting, or sending DJ a focused inquiry.</p>
+        <h2>No saved items yet</h2>
+        <p>${DJ.escapeHtml(WISHLIST_EMPTY_COPY)}</p>
         <div class="empty-state-actions">
           <a class="button" href="sports-cards.html">Browse Sports Cards</a>
           <a class="button-secondary" href="comics.html">Browse Comics</a>
@@ -3650,13 +3638,15 @@ Thank you.`);
     if (!wishlistContainer) return;
     const renderRequestId = ++wishlistRenderRequestId;
     const wishlistPageCount = document.getElementById('wishlistPageCount');
+    if (wishlistPageCount) {
+      wishlistPageCount.textContent = 'Loading saved items...';
+    }
     const storedWishlist = DJ.getWishlist().map(Number);
 
-    if (wishlistPageCount) {
-      wishlistPageCount.textContent = `${storedWishlist.length} saved item${storedWishlist.length === 1 ? '' : 's'}`;
-    }
-
     if (!storedWishlist.length) {
+      if (wishlistPageCount) {
+        wishlistPageCount.textContent = 'No saved items yet';
+      }
       wishlistContainer.innerHTML = renderWishlistEmptyState();
       DJ.updateWishlistCount();
       DJ.applyLazyLoading(wishlistContainer);
@@ -4006,6 +3996,11 @@ Thank you.`);
             <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
           <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
+          <p class="modal-trust-links">
+            <a href="condition-authenticity.html">Condition &amp; authenticity notes</a>
+            <span aria-hidden="true">|</span>
+            <a href="sell-trade-want-list.html">Sell, trade, or send a want list</a>
+          </p>
         </div>
       </div>
     `;
@@ -4235,12 +4230,17 @@ Thank you.`);
     const featuredProductsWrap = document.getElementById('featuredProducts');
     if (!featuredProductsWrap) return;
 
-    renderProductGridLoadingState(featuredProductsWrap, { count: 4 });
+    renderProductGridLoadingState(featuredProductsWrap, { count: 6 });
 
     const sourceProducts = (Array.isArray(window.DJ_HOME_FEATURED_PRODUCTS)
       ? normalizeProducts(window.DJ_HOME_FEATURED_PRODUCTS)
       : null) || await loadProducts({ source: 'products-featured.json' });
-    const featuredProducts = sourceProducts.slice(0, 4);
+    let featuredProducts = selectBalancedFeaturedProducts(sourceProducts);
+    const featuredCategories = new Set(featuredProducts.map((product) => product.category));
+    if (featuredProducts.length < 6 || featuredCategories.size < 5) {
+      const fullCatalogProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+      featuredProducts = selectBalancedFeaturedProducts(sourceProducts, fullCatalogProducts);
+    }
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
 
     clearProductGridLoadingState(featuredProductsWrap);
@@ -4253,6 +4253,36 @@ Thank you.`);
     attachGridHandlers(featuredProductsWrap, featuredProducts);
     DJ.updateWishlistCount();
     DJ.applyLazyLoading(featuredProductsWrap);
+  }
+
+  function selectBalancedFeaturedProducts(primaryProducts = [], fallbackProducts = []) {
+    const pools = [primaryProducts, fallbackProducts]
+      .filter(Array.isArray)
+      .map((products) => products.filter(Boolean));
+    const usedIds = new Set();
+    const takeFromCategory = (category, count) => {
+      const picked = [];
+      pools.forEach((products) => {
+        products.forEach((product) => {
+          if (picked.length >= count) return;
+          if (usedIds.has(Number(product.id)) || product.category !== category) return;
+          usedIds.add(Number(product.id));
+          picked.push(product);
+        });
+      });
+      return picked;
+    };
+
+    const balanced = [
+      ...takeFromCategory('Baseball', 2),
+      ...takeFromCategory('Basketball', 1),
+      ...takeFromCategory('Football', 1),
+      ...takeFromCategory('Comics', 1),
+      ...takeFromCategory('Collectibles', 1)
+    ];
+    const djPick = pools.flat().find((product) => !usedIds.has(Number(product.id)));
+    if (djPick) balanced.push(djPick);
+    return balanced.slice(0, 7);
   }
 
   // Kick off only the features that are relevant to the current page template.

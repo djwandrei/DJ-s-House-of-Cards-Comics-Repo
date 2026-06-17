@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260615a';
+  const PRODUCT_ASSET_VERSION = '20260617a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.

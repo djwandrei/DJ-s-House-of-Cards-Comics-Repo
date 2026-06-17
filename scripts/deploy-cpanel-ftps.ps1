@@ -282,6 +282,7 @@ function Test-DeployablePath {
     "checkout-success.html",
     "collectibles.html",
     "comics.html",
+    "condition-authenticity.html",
     "contact.html",
     "contact.js",
     "core.js",
@@ -326,6 +327,7 @@ function Test-DeployablePath {
     "sw.js",
     "terms.html",
     "returns.html",
+    "sell-trade-want-list.html",
     "wishlist.html"
   )
 

@@ -62,7 +62,11 @@ function localPathFromReference(reference, currentFile) {
   const [withoutHash] = reference.split('#');
   const [withoutQuery] = withoutHash.split('?');
   if (!withoutQuery) return currentFile;
-  return withoutQuery.replace(/^\//, '');
+  try {
+    return decodeURIComponent(withoutQuery).replace(/^\//, '');
+  } catch {
+    return withoutQuery.replace(/^\//, '');
+  }
 }
 
 function rangeHigh(item = {}) {

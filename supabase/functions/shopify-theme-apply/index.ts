@@ -1,5 +1,6 @@
 import {
   isShopifyConfigured,
+  shopifyGraphql,
   shopifyRest,
   shopifyShopDomain
 } from '../_shared/shopify.ts';
@@ -51,6 +52,86 @@ type ThemeRequest = {
   }>;
 };
 
+type ThemePublishPayload = {
+  themePublish: {
+    theme?: {
+      id?: string;
+      name?: string;
+    } | null;
+    userErrors?: Array<{
+      field?: string[];
+      message?: string;
+    }>;
+  };
+};
+
+type ThemeDuplicatePayload = {
+  themeDuplicate: {
+    newTheme?: {
+      id?: string;
+      name?: string;
+    } | null;
+    userErrors?: Array<{
+      field?: string[];
+      message?: string;
+    }>;
+  };
+};
+
+function onlineStoreThemeGid(themeId: string | number) {
+  return `gid://shopify/OnlineStoreTheme/${themeId}`;
+}
+
+function numericThemeIdFromGid(gid: unknown) {
+  const match = String(gid || '').match(/\/(\d+)$/);
+  if (!match) throw new Error(`Could not parse Shopify theme id from ${gid}.`);
+  return match[1];
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function publishTheme(themeId: string | number) {
+  const published = await shopifyGraphql<ThemePublishPayload>(
+    `mutation PublishTheme($id: ID!) {
+      themePublish(id: $id) {
+        theme {
+          id
+          name
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    { id: onlineStoreThemeGid(themeId) }
+  );
+  const userErrors = published.themePublish.userErrors || [];
+  if (userErrors.length) {
+    throw new Error(userErrors.map((error) => error.message || 'Unknown theme publish error').join('; '));
+  }
+  await shopifyRest('PUT', `themes/${themeId}.json`, {
+    theme: {
+      id: themeId,
+      role: 'main'
+    }
+  });
+  return published.themePublish.theme?.id || onlineStoreThemeGid(themeId);
+}
+
+async function waitForThemeReady(themeId: string | number) {
+  let lastTheme: Record<string, unknown> | null = null;
+  for (let attempt = 1; attempt <= 24; attempt += 1) {
+    const payload = await shopifyRest<{ theme?: Record<string, unknown> }>('GET', `themes/${themeId}.json`);
+    lastTheme = payload.theme || null;
+    if (lastTheme && lastTheme.processing !== true) return lastTheme;
+    await delay(5000);
+  }
+  throw new Error(`Theme ${themeId} did not finish processing. Last state: ${JSON.stringify(lastTheme)}`);
+}
+
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -80,7 +161,9 @@ function cleanAssetKey(value: unknown, fallback: string) {
 
 function cleanReadableThemeKey(value: unknown) {
   const key = String(value || '').trim();
-  if (!/^(?:config|layout|sections|templates)\/[A-Za-z0-9._\/-]+\.(?:json|liquid)$/.test(key)) {
+  const isThemeText = /^(?:config|layout|sections|templates)\/[A-Za-z0-9._\/-]+\.(?:json|liquid)$/.test(key);
+  const isThemeCss = /^assets\/[A-Za-z0-9._-]+\.css$/.test(key);
+  if (!isThemeText && !isThemeCss) {
     throw new Error(`Invalid readable theme asset key: ${key}`);
   }
   return key;
@@ -145,9 +228,89 @@ Deno.serve(async (request) => {
 
     const body = await request.json().catch(() => ({})) as ThemeRequest;
     const action = String(body.action || 'plan').trim().toLowerCase();
-    if (!['plan', 'apply', 'inspect'].includes(action)) throw new Error('Action must be plan, apply, or inspect.');
+    if (!['plan', 'apply', 'inspect', 'publish', 'duplicate-publish'].includes(action)) {
+      throw new Error('Action must be plan, apply, inspect, publish, or duplicate-publish.');
+    }
 
     const theme = await getMainTheme(body.themeId);
+    if (action === 'publish') {
+      const publishedThemeGid = await publishTheme(theme.id);
+      return jsonResponse({
+        ok: true,
+        action,
+        shopDomain: shopifyShopDomain(),
+        theme: {
+          id: theme.id,
+          name: theme.name || '',
+          role: 'main'
+        },
+        applied: {
+          publishedThemeId: theme.id,
+          publishedThemeGid
+        }
+      });
+    }
+
+    if (action === 'duplicate-publish') {
+      const themesPayload = await shopifyRest<ThemePayload>('GET', 'themes.json');
+      const themes = Array.isArray(themesPayload.themes) ? themesPayload.themes : [];
+      if (themes.length >= 20) throw new Error('Shopify theme limit is already at 20; duplicate-publish aborted.');
+      const stamp = new Date().toISOString().slice(0, 10);
+      const duplicate = await shopifyGraphql<ThemeDuplicatePayload>(
+        `mutation DuplicateTheme($id: ID!, $name: String) {
+          themeDuplicate(id: $id, name: $name) {
+            newTheme {
+              id
+              name
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }`,
+        {
+          id: onlineStoreThemeGid(theme.id),
+          name: `DJHC Horizon Live ${stamp}`
+        }
+      );
+      const userErrors = duplicate.themeDuplicate.userErrors || [];
+      if (userErrors.length || !duplicate.themeDuplicate.newTheme?.id) {
+        throw new Error(userErrors.map((error) => error.message || 'Unknown theme duplicate error').join('; ') || 'Theme duplicate returned no theme.');
+      }
+      const duplicatedThemeGid = duplicate.themeDuplicate.newTheme.id;
+      const duplicatedThemeId = numericThemeIdFromGid(duplicatedThemeGid);
+      const readyTheme = await waitForThemeReady(duplicatedThemeId);
+      const layout = await getThemeAsset(duplicatedThemeId, THEME_LAYOUT_KEY);
+      const index = await getThemeAsset(duplicatedThemeId, 'templates/index.json');
+      const css = await getThemeAsset(duplicatedThemeId, 'assets/djhc-storefront.css');
+      if (!layout.includes('djhc-storefront.css')) throw new Error('Duplicated theme is missing the DJHC stylesheet tag.');
+      if (!index.includes('Trusted hobby finds for sports cards')) throw new Error('Duplicated theme is missing the DJHC homepage copy.');
+      if (!css.includes('Curated sports cards')) throw new Error('Duplicated theme is missing the DJHC storefront CSS.');
+      const publishedThemeGid = await publishTheme(duplicatedThemeId);
+      return jsonResponse({
+        ok: true,
+        action,
+        shopDomain: shopifyShopDomain(),
+        sourceTheme: {
+          id: theme.id,
+          name: theme.name || '',
+          role: theme.role || ''
+        },
+        theme: {
+          id: duplicatedThemeId,
+          gid: duplicatedThemeGid,
+          name: duplicate.themeDuplicate.newTheme.name || readyTheme.name || '',
+          role: 'main'
+        },
+        applied: {
+          duplicatedThemeId,
+          publishedThemeGid,
+          verifiedAssets: ['layout/theme.liquid', 'templates/index.json', 'assets/djhc-storefront.css']
+        }
+      });
+    }
+
     if (action === 'inspect') {
       const keys = Array.isArray(body.inspectKeys) ? body.inspectKeys.slice(0, 12).map(cleanReadableThemeKey) : [];
       if (!keys.length) throw new Error('Provide at least one inspectKeys entry.');

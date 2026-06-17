@@ -641,6 +641,36 @@ body.dark-mode .product-badge {
 .empty-state-actions > * {
   min-width:190px;
 }
+
+.catalog-noscript,
+.static-fallback-note {
+  margin:1rem 0;
+  padding:1rem 1.1rem;
+  border:1px solid rgba(31,47,163,.14);
+  border-radius:18px;
+  background:rgba(255,255,255,.88);
+  color:var(--muted);
+  box-shadow:0 10px 24px rgba(16,27,57,.08);
+}
+
+.catalog-noscript a,
+.static-fallback-note a,
+.modal-trust-links a {
+  color:var(--primary);
+  font-weight:800;
+}
+
+.static-product-card .product-actions a {
+  text-decoration:none;
+}
+
+.modal-trust-links {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem .65rem;
+  margin:.75rem 0 0;
+  font-size:.92rem;
+}
 .brand-card,.contact-card,.story-card {
   display:grid;
   gap:1rem

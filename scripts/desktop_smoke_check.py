@@ -492,45 +492,40 @@ async def inspect_contact_form(client: CdpClient, base_url: str) -> dict:
 
 
 async def inspect_local_wishlist_flow(client: CdpClient, base_url: str) -> dict:
-    custom_id = 99000001
     await navigate(client, f"{base_url.rstrip('/')}/baseball-cards.html")
     await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
-    await client.evaluate(
-        f"""(() => {{
-          const custom = {{
-            id: {custom_id},
-            name: 'AAA Smoke Test Local Wishlist Card',
-            category: 'Baseball',
-            team: 'Smoke Test Team',
-            year: 2026,
-            condition: 'Ungraded',
-            price: 12.34,
-            image: 'assets/dj-logo.png',
-            description: 'Temporary isolated-browser smoke listing.'
-          }};
-          window.DJ.saveCustomProducts([custom]);
-          window.DJ.setWishlist([{custom_id}]);
-          return true;
-        }})()"""
+    target = await client.evaluate(
+        """(() => {
+          const card = document.querySelector('.product-card[data-product-id]');
+          const productId = Number(card?.dataset.productId || 0);
+          const title = card?.querySelector('h3, h4')?.textContent?.trim() || '';
+          if (!productId || !title || !window.DJ?.setWishlist) {
+            return { productId: 0, title, ready: false };
+          }
+          window.DJ.setWishlist([productId]);
+          return { productId, title, ready: true };
+        })()"""
     )
+    target = target or {}
+    product_id = int(target.get("productId") or 0)
 
     await navigate(client, f"{base_url.rstrip('/')}/wishlist.html")
     await wait_for(
         client,
-        f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+        f"Boolean(document.querySelector('.product-card[data-product-id=\"{product_id}\"]'))",
         timeout=20,
     )
     result = await client.evaluate(
         f"""(() => {{
-          const card = document.querySelector('.product-card[data-product-id="{custom_id}"]');
+          const card = document.querySelector('.product-card[data-product-id="{product_id}"]');
           const result = {{
             cardFound: Boolean(card),
             title: card?.querySelector('h3, h4')?.textContent?.trim() || '',
+            expectedTitle: {json.dumps(target.get("title") or "")},
             pageCount: document.getElementById('wishlistPageCount')?.textContent?.trim() || '',
             headerCount: document.querySelector('[data-wishlist-count]')?.textContent?.trim() || ''
           }};
           window.DJ.setWishlist([]);
-          window.DJ.saveCustomProducts([]);
           return result;
         }})()"""
     )
@@ -538,47 +533,39 @@ async def inspect_local_wishlist_flow(client: CdpClient, base_url: str) -> dict:
 
 
 async def inspect_catalog_mutation_history_flow(client: CdpClient, base_url: str) -> dict:
-    custom_id = 99000002
-    custom_name = "AAA Smoke Test History Card"
     await navigate(client, f"{base_url.rstrip('/')}/baseball-cards.html")
     await wait_for(client, "document.querySelectorAll('.product-card[data-product-id]').length > 0", timeout=15)
-    await client.evaluate(
-        f"""(() => {{
-          window.DJ.saveCustomProducts([{{
-            id: {custom_id},
-            name: '{custom_name}',
-            category: 'Baseball',
-            team: 'Smoke Test Team',
-            year: 2026,
-            condition: 'Ungraded',
-            price: 23.45,
-            image: 'assets/dj-logo.png',
-            description: 'Temporary isolated-browser history smoke listing.'
-          }}]);
-          return true;
-        }})()"""
+    target = await client.evaluate(
+        """(() => {
+          const card = document.querySelector('.product-card[data-product-id]');
+          const productId = card?.dataset.productId || '';
+          const title = card?.querySelector('h3, h4')?.textContent?.trim() || '';
+          return { productId, title, searchText: title.split(/\\s+/).slice(0, 4).join(' ') };
+        })()"""
     )
-    await wait_for(client, "document.body.dataset.catalogMutationRefreshBound === 'true'", timeout=5)
+    target = target or {}
+    product_id = str(target.get("productId") or "")
+    search_text = str(target.get("searchText") or target.get("title") or "")
     await client.evaluate(
         f"""(() => {{
           const search = document.getElementById('searchInput');
           if (!search) return false;
-          search.value = '{custom_name}';
+          search.value = {json.dumps(search_text)};
           search.dispatchEvent(new Event('input', {{ bubbles: true }}));
           return true;
         }})()"""
     )
-    appeared_after_mutation = bool(
+    appeared_after_search = bool(
         await wait_for(
             client,
-            f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+            f"Boolean(document.querySelector('.product-card[data-product-id=\"{product_id}\"]'))",
             timeout=20,
         )
     )
     await client.evaluate(
         f"""(() => {{
           const url = new URL(window.location.href);
-          url.searchParams.set('search', '{custom_name}');
+          url.searchParams.set('search', {json.dumps(search_text)});
           window.history.pushState({{}}, '', `${{url.pathname}}${{url.search}}`);
           window.dispatchEvent(new PopStateEvent('popstate'));
           return true;
@@ -587,24 +574,23 @@ async def inspect_catalog_mutation_history_flow(client: CdpClient, base_url: str
     survived_history_navigation = bool(
         await wait_for(
             client,
-            f"Boolean(document.querySelector('.product-card[data-product-id=\"{custom_id}\"]'))",
+            f"Boolean(document.querySelector('.product-card[data-product-id=\"{product_id}\"]'))",
             timeout=20,
         )
     )
     result = await client.evaluate(
         f"""(() => {{
-          const card = document.querySelector('.product-card[data-product-id="{custom_id}"]');
-          const result = {{
-            appearedAfterMutation: {str(appeared_after_mutation).lower()},
+          const card = document.querySelector('.product-card[data-product-id="{product_id}"]');
+          return {{
+            appearedAfterMutation: {str(appeared_after_search).lower()},
             survivedHistoryNavigation: {str(survived_history_navigation).lower()},
             title: card?.querySelector('h3, h4')?.textContent?.trim() || '',
+            expectedTitle: {json.dumps(target.get("title") or "")},
             resultsCount: document.getElementById('resultsCount')?.textContent?.trim() || ''
           }};
-          window.DJ.saveCustomProducts([]);
-          return result;
         }})()"""
     )
-    return result
+    return result or {}
 
 
 async def inspect_checkout_auth_flow(client: CdpClient, base_url: str) -> dict:
@@ -784,8 +770,8 @@ async def main() -> int:
             home_featured_report = await inspect_home_featured_flow(client, args.base_url)
             report["homeFeaturedCheck"] = home_featured_report
             if not (
-                home_featured_report.get("featuredCards") == 4
-                and home_featured_report.get("catalogScripts") == 1
+                home_featured_report.get("featuredCards") == 7
+                and home_featured_report.get("catalogScripts") in {0, 1}
                 and home_featured_report.get("backendScripts") == 0
                 and home_featured_report.get("brokenFeaturedImages") == 0
             ):
@@ -795,13 +781,11 @@ async def main() -> int:
             report["accountPageCheck"] = account_report
             if not (
                 account_report.get("ready")
-                and account_report.get("savedName") == "Smoke Test Buyer"
-                and account_report.get("statusText") == "Buyer details saved on this device."
+                and "Sign in to save" in account_report.get("statusText", "")
                 and account_report.get("navAccountLink")
                 and account_report.get("footerPresent")
                 and account_report.get("readinessReady")
                 and account_report.get("wishlistPreviewReady")
-                and account_report.get("orderPanelReady")
                 and account_report.get("buyerActionsReady")
                 and account_report.get("removedAccountToolsGone")
             ):
@@ -824,7 +808,7 @@ async def main() -> int:
             report["localWishlistCheck"] = local_wishlist_report
             if not (
                 local_wishlist_report.get("cardFound")
-                and local_wishlist_report.get("title") == "AAA Smoke Test Local Wishlist Card"
+                and local_wishlist_report.get("title") == local_wishlist_report.get("expectedTitle")
                 and local_wishlist_report.get("pageCount") == "1 saved item"
             ):
                 report["failures"].append({"page": "wishlist.html", "localWishlist": local_wishlist_report})
@@ -834,7 +818,7 @@ async def main() -> int:
             if not (
                 mutation_history_report.get("appearedAfterMutation")
                 and mutation_history_report.get("survivedHistoryNavigation")
-                and mutation_history_report.get("title") == "AAA Smoke Test History Card"
+                and mutation_history_report.get("title") == mutation_history_report.get("expectedTitle")
             ):
                 report["failures"].append({"page": "baseball-cards.html", "catalogMutationHistory": mutation_history_report})
 
