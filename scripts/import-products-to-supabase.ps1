@@ -153,7 +153,10 @@ function Convert-ToNullableInteger {
 }
 
 function Get-StringArray {
-  param($Value)
+  param(
+    $Value,
+    [switch]$PreserveDuplicates
+  )
 
   $items = New-Object System.Collections.ArrayList
 
@@ -178,7 +181,7 @@ function Get-StringArray {
       if ([string]::IsNullOrWhiteSpace($trimmed)) {
         continue
       }
-      if (-not $items.Contains($trimmed)) {
+      if ($PreserveDuplicates -or -not $items.Contains($trimmed)) {
         [void]$items.Add($trimmed)
       }
     }
@@ -289,7 +292,7 @@ function Convert-ToRemoteProduct {
     price_label = ([string](Get-PropertyValue $Product 'priceLabel')).Trim()
     display_price = ([string](Get-PropertyValue $Product 'displayPrice')).Trim()
     image = ([string](Get-PropertyValue $Product 'image')).Trim()
-    image_gallery = @(Get-StringArray (Get-PropertyValue $Product 'imageGallery'))
+    image_gallery = @(Get-StringArray (Get-PropertyValue $Product 'imageGallery') -PreserveDuplicates)
     description = ([string](Get-PropertyValue $Product 'description')).Trim()
     photo_host_page_url = ([string](Get-PropertyValue $Product 'photoHostPageUrl')).Trim()
     legacy_image_label = ([string](Get-PropertyValue $Product 'legacyImageLabel')).Trim()
@@ -335,10 +338,11 @@ function Get-AccessToken {
   $headers = @{
     apikey = $ApiKey
   }
-  $body = @{
+  $bodyJson = @{
     email = $Email
     password = $plainPassword
   } | ConvertTo-Json -Compress
+  $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
   $plainPassword = $null
 
   $response = Invoke-RestMethod `
@@ -346,8 +350,8 @@ function Get-AccessToken {
     -Method Post `
     -Headers $headers `
     -UserAgent $ServerUserAgent `
-    -ContentType 'application/json' `
-    -Body $body
+    -ContentType 'application/json; charset=utf-8' `
+    -Body $bodyBytes
 
   if ([string]::IsNullOrWhiteSpace([string]$response.access_token)) {
     throw 'Supabase auth succeeded but no access token was returned.'
@@ -412,15 +416,16 @@ function Invoke-ChunkUpsert {
   }
   $requestHeaders['Prefer'] = 'resolution=merge-duplicates,return=minimal'
 
-  $body = ConvertTo-Json -InputObject $Rows -Depth 40 -Compress
+  $bodyJson = ConvertTo-Json -InputObject $Rows -Depth 40 -Compress
+  $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($bodyJson)
 
   Invoke-RestMethod `
     -Uri ($ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?on_conflict=id") `
     -Method Post `
     -Headers $requestHeaders `
     -UserAgent $ServerUserAgent `
-    -ContentType 'application/json' `
-    -Body $body | Out-Null
+    -ContentType 'application/json; charset=utf-8' `
+    -Body $bodyBytes | Out-Null
 }
 
 $backendConfigPath = Join-Path $Root 'backend-config.js'
