@@ -3,11 +3,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
-const STYLE_ASSET_KEY = 'assets/djhc-custom.css';
+const STYLE_ASSET_KEY = 'assets/djhc-storefront.css';
 const LOGO_ASSET_KEY = 'assets/dj-logo.png';
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
-const STYLE_TAG = "{{ 'djhc-custom.css' | asset_url | stylesheet_tag }}";
-const STYLE_MARKER = 'djhc-custom.css';
+const STYLE_TAG = "{{ 'djhc-storefront.css' | asset_url | stylesheet_tag }}";
+const STYLE_MARKER = 'djhc-storefront.css';
 const SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 
 const args = new Set(process.argv.slice(2));
@@ -483,6 +483,269 @@ textarea:focus {
   .main-collection-grid,
   .facets-container {
     border-radius: 16px;
+  }
+}
+
+/*
+ * Horizon hardening layer.
+ * Horizon ships most visual choices through generated color-scheme and spacing
+ * classes. These selectors intentionally use higher specificity so the Shopify
+ * storefront looks unmistakably connected to the primary DJHC website.
+ */
+body.page-width-narrow.card-hover-effect-none {
+  max-width: none !important;
+  background:
+    radial-gradient(circle at top left, rgba(31, 47, 163, .16), transparent 32%),
+    radial-gradient(circle at top right, rgba(239, 24, 35, .13), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef3fb 48%, #f3f6fb 100%) !important;
+}
+
+.shopify-section-group-header-group,
+.header__row.color-scheme-djhc,
+.header__row--top.color-scheme-djhc,
+.header,
+header.header {
+  background:
+    linear-gradient(180deg, rgba(8, 14, 32, .96), rgba(14, 23, 47, .92)),
+    linear-gradient(90deg, var(--djhc-blue-dark), var(--djhc-blue) 58%, var(--djhc-red)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .16) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 36px rgba(10, 18, 42, .26) !important;
+}
+
+.shopify-section-group-header-group::after {
+  content: "DJ's House of Cards & Comics  |  Trusted Hobby Finds  |  Sports Cards, Comics & Collectibles";
+  display: block;
+  padding: .58rem 1rem;
+  background: linear-gradient(90deg, var(--djhc-gold), #f6d978, var(--djhc-gold)) !important;
+  color: #172033 !important;
+  font-size: .82rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.header a,
+.header button,
+.header .menu-list__link,
+.header .menu-list__link-title,
+.header-actions__action,
+.header-actions__action svg,
+.menu-list__link,
+.menu-list__link-title {
+  color: #fff !important;
+  fill: #fff !important;
+}
+
+.header-logo__image,
+.header-logo__image-container img {
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .28)) !important;
+  transform: scale(1.06);
+}
+
+.announcement-bar,
+.announcement-bar.color-scheme-5 {
+  background: linear-gradient(90deg, var(--djhc-red-dark), var(--djhc-red), var(--djhc-blue)) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+}
+
+body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.product__info-container)) main::before {
+  content: "DJ's House of Cards & Comics\\A Curated sports cards, comics, collectibles, and trusted hobby finds.";
+  white-space: pre-line;
+  display: block;
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.35rem auto 1.75rem;
+  padding: clamp(2.25rem, 5vw, 4.5rem);
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(21, 32, 107, .94), rgba(31, 47, 163, .9) 54%, rgba(239, 24, 35, .9)),
+    radial-gradient(circle at 18% 20%, rgba(228, 177, 65, .32), transparent 28%);
+  color: #fff;
+  font-family: var(--djhc-font-display);
+  font-size: clamp(2.35rem, 5vw, 5rem);
+  letter-spacing: .035em;
+  line-height: .95;
+  text-align: center;
+  text-shadow: 0 10px 28px rgba(0, 0, 0, .34);
+  box-shadow: 0 24px 60px rgba(16, 27, 57, .24);
+}
+
+body:has(.main-collection-grid) main::before {
+  content: "Shop DJHC Inventory";
+  display: block;
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.25rem auto 1rem;
+  padding: 1.1rem 1.4rem;
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, var(--djhc-blue-dark), var(--djhc-blue) 62%, var(--djhc-red));
+  color: #fff;
+  font-family: var(--djhc-font-display);
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: .045em;
+  text-align: center;
+  box-shadow: 0 18px 42px rgba(16, 27, 57, .18);
+}
+
+main,
+.content-for-layout,
+.shopify-section,
+.section,
+.section-content-wrapper {
+  background: transparent !important;
+}
+
+.collection-wrapper,
+.main-collection-grid,
+.facets-container,
+.product-information,
+.product__info-container,
+.cart-drawer,
+.drawer,
+.predictive-search-results__card {
+  background: rgba(255, 255, 255, .97) !important;
+  border: 1px solid rgba(24, 37, 73, .14) !important;
+  border-radius: var(--djhc-radius) !important;
+  box-shadow: 0 18px 44px rgba(16, 27, 57, .16) !important;
+}
+
+.product-grid__card,
+.product-card,
+.card-gallery,
+.card,
+.card-wrapper,
+.product-media-container,
+.predictive-search-results__card--product {
+  overflow: hidden !important;
+  background: #fff !important;
+  border: 1px solid rgba(24, 37, 73, .16) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 16px 34px rgba(16, 27, 57, .15) !important;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
+}
+
+.product-grid__card:hover,
+.product-card:hover,
+.card-gallery:hover,
+.card-wrapper:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(31, 47, 163, .42) !important;
+  box-shadow: 0 22px 52px rgba(16, 27, 57, .22) !important;
+}
+
+.product-media,
+.product-media-container,
+.card-gallery,
+.card__media,
+.media {
+  background:
+    linear-gradient(135deg, rgba(31, 47, 163, .08), rgba(239, 24, 35, .08)),
+    #fff !important;
+}
+
+.product-card__content,
+.card__content,
+.card-information {
+  background: #fff !important;
+  color: var(--djhc-text) !important;
+}
+
+.product-card__link,
+.card__heading a,
+.full-unstyled-link,
+.text-block[class*="product_title"] {
+  color: var(--djhc-text) !important;
+  font-weight: 900 !important;
+}
+
+.price,
+.price-item,
+.price__regular,
+.price__sale,
+.price-item--sale,
+.price-item--regular {
+  color: var(--djhc-red) !important;
+  font-size: 1.07rem !important;
+  font-weight: 950 !important;
+}
+
+.button,
+.button-primary,
+.button.button,
+.shopify-payment-button__button,
+.product-form__submit,
+.add-to-cart-button,
+.quick-add__button,
+.cart__checkout-button,
+.facets__see-results,
+.email-signup__button {
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--djhc-blue), var(--djhc-red)) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 14px 30px rgba(31, 47, 163, .28) !important;
+}
+
+.button-secondary,
+.clear-filter.button,
+.facets__clear-all,
+.facets__clear-all-link {
+  border: 1px solid rgba(31, 47, 163, .28) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--djhc-blue) !important;
+  font-weight: 900 !important;
+}
+
+.product-badges .badge,
+.badge,
+.product-form__inventory,
+.inventory-status {
+  border: 1px solid rgba(228, 177, 65, .42) !important;
+  border-radius: 999px !important;
+  background: rgba(228, 177, 65, .2) !important;
+  color: #6b4700 !important;
+  font-weight: 900 !important;
+}
+
+.footer,
+.shopify-section-group-footer-group,
+.footer-content {
+  background:
+    linear-gradient(180deg, rgba(8, 14, 32, .96), rgba(14, 23, 47, .94)),
+    linear-gradient(90deg, var(--djhc-blue-dark), var(--djhc-blue)) !important;
+  color: #fff !important;
+}
+
+.footer a,
+.footer p,
+.footer small,
+.footer .rte,
+.footer-utilities__text {
+  color: rgba(255, 255, 255, .86) !important;
+}
+
+@media screen and (max-width: 749px) {
+  .shopify-section-group-header-group::after {
+    font-size: .68rem;
+    line-height: 1.35;
+    padding: .5rem .75rem;
+  }
+
+  body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.product__info-container)) main::before {
+    margin-top: .85rem;
+    padding: 2rem 1rem;
+    border-radius: 22px;
+    font-size: clamp(2rem, 11vw, 3.1rem);
+  }
+
+  body:has(.main-collection-grid) main::before {
+    border-radius: 18px;
+    font-size: clamp(1.9rem, 10vw, 2.7rem);
   }
 }
 `;
