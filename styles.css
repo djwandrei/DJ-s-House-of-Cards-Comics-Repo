@@ -3001,9 +3001,10 @@ body.dark-mode .product-card {
 .footer::before {
   content:"";
   position:absolute;
-  inset:0;
-  background:     linear-gradient(180deg,rgba(7,11,24,.08),rgba(7,11,24,.52)),     var(--footer-image) center/cover no-repeat;
-  opacity:.45;
+  inset:0 0 auto 0;
+  height:clamp(3rem,4vw,4.5rem);
+  background:     linear-gradient(180deg,rgba(7,11,24,.08),rgba(7,11,24,.52)),     var(--footer-image) center 42%/cover no-repeat;
+  opacity:.32;
   pointer-events:none;
 }
 .footer::after {
@@ -5433,11 +5434,25 @@ body.dark-mode .product-card .details-button {
 .footer-brand {
   display:grid;
   gap:1.1rem;
+  align-self:start;
+  padding:1.05rem;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  background:rgba(7,12,28,.68);
+  box-shadow:0 18px 44px rgba(0,0,0,.2);
+  backdrop-filter:blur(10px);
 }
 
 .footer-links {
   display:grid;
   gap:1rem;
+  min-width:0;
+  padding:1.05rem;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  background:rgba(7,12,28,.7);
+  box-shadow:0 18px 44px rgba(0,0,0,.2);
+  backdrop-filter:blur(10px);
 }
 
 .footer-link-groups {
@@ -5449,9 +5464,10 @@ body.dark-mode .product-card .details-button {
 .footer-link-group {
   display:grid;
   gap:.65rem;
+  min-width:0;
   padding:1rem 1.05rem;
   border-radius:22px;
-  background:rgba(255,255,255,.08);
+  background:rgba(255,255,255,.1);
   border:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(8px);
 }
@@ -5462,11 +5478,13 @@ body.dark-mode .product-card .details-button {
 }
 
 .footer-link-group a {
+  min-width:0;
   min-height:40px;
   border-radius:14px;
   padding:.72rem .8rem;
   background:rgba(255,255,255,.04);
   border:1px solid transparent;
+  overflow-wrap:anywhere;
   transition:transform .2s ease,background .2s ease,border-color .2s ease;
 }
 
@@ -8235,18 +8253,30 @@ body.dark-mode .account-panel {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:.8rem;
+  align-items:start;
 }
 
 .account-form label {
+  box-sizing:border-box;
   display:grid;
   gap:.38rem;
+  min-width:0;
+  width:100%;
   color:inherit;
   font-weight:900;
+}
+
+.account-form-grid > *,
+.account-choice-group {
+  box-sizing:border-box;
+  min-width:0;
+  width:100%;
 }
 
 .account-form input,
 .account-form select,
 .account-form textarea {
+  box-sizing:border-box;
   width:100%;
   border:1px solid var(--border);
   border-radius:16px;
@@ -9575,6 +9605,7 @@ body.dark-mode .marketplace-link-grid a {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:.45rem;
+  width:100%;
 }
 
 .account-choice {
