@@ -730,6 +730,55 @@ main,
   color: rgba(255, 255, 255, .86) !important;
 }
 
+.shopify-section:has(.product-list),
+.shopify-section:has(.product-grid) {
+  width: min(1240px, calc(100% - 2rem)) !important;
+  margin: 0 auto 2rem !important;
+  padding: clamp(1.25rem, 3vw, 2rem) !important;
+  border: 1px solid rgba(24, 37, 73, .12) !important;
+  border-radius: 30px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(243, 246, 251, .9)),
+    radial-gradient(circle at top left, rgba(31, 47, 163, .09), transparent 28%) !important;
+  box-shadow: 0 18px 46px rgba(16, 27, 57, .14) !important;
+}
+
+.shopify-section:has(.product-list) h2,
+.shopify-section:has(.product-list) h3,
+.shopify-section:has(.product-grid) h2,
+.shopify-section:has(.product-grid) h3 {
+  color: var(--djhc-blue-dark) !important;
+  letter-spacing: .04em !important;
+}
+
+.shopify-section:has(.product-list)::before {
+  content: "Website featured picks";
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin-bottom: .85rem;
+  padding: .38rem .72rem;
+  border: 1px solid rgba(31, 47, 163, .16);
+  border-radius: 999px;
+  background: rgba(31, 47, 163, .08);
+  color: var(--djhc-blue);
+  font-size: .78rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.shopify-section:has(.product-list) .product-card,
+.shopify-section:has(.product-list) .card-wrapper {
+  border-radius: 24px !important;
+}
+
+.shopify-section:has(.product-list) .product-media,
+.shopify-section:has(.product-list) .card__media,
+.shopify-section:has(.product-list) .media {
+  min-height: 220px;
+}
+
 @media screen and (max-width: 749px) {
   .shopify-section-group-header-group::after {
     font-size: .68rem;
@@ -747,6 +796,13 @@ main,
   body:has(.main-collection-grid) main::before {
     border-radius: 18px;
     font-size: clamp(1.9rem, 10vw, 2.7rem);
+  }
+
+  .shopify-section:has(.product-list),
+  .shopify-section:has(.product-grid) {
+    width: min(100% - 1rem, 720px) !important;
+    padding: 1rem !important;
+    border-radius: 22px !important;
   }
 }
 `;

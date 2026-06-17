@@ -62,6 +62,16 @@ function displayPrice(product) {
     : 'Ask DJ for price';
 }
 
+function shouldSuppressStaticCondition(product, category) {
+  if (!/collectibles/i.test(category)) return false;
+  const raw = String(product.conditionCompact || product.condition || '').trim();
+  if (!raw) return false;
+  if (/\b(?:poor|fair|good|very good|excellent|mint|near mint|nm|graded|psa|sgc|bgs|cgc|beckett)\b/i.test(raw)) {
+    return false;
+  }
+  return /\b(?:autographed?|signed|signature|multi[- ]signed|memorabilia|collectible|baseball|bat|ball|postcard|photo|display|program)\b/i.test(raw);
+}
+
 function primaryImage(product) {
   return String(product.image || '').trim() || 'assets/dj-logo.png';
 }
@@ -86,7 +96,9 @@ function contextLine(product) {
 
 function fallbackCard(product, index) {
   const category = categoryOf(product);
-  const condition = product.conditionCompact || product.condition || 'Condition available by request';
+  const condition = shouldSuppressStaticCondition(product, category)
+    ? ''
+    : (product.conditionCompact || product.condition || 'Condition available by request');
   return `    <article class="product-card static-product-card" data-product-id="${escapeHtml(product.id)}" data-product-category="${escapeHtml(category)}">
       <div class="product-media">
         <img src="${escapeUrlAttribute(primaryImage(product))}" alt="${escapeHtml(product.name)} product photo" width="320" height="320" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async">
@@ -94,9 +106,9 @@ function fallbackCard(product, index) {
       <div class="product-content">
         <h3>${escapeHtml(product.name)}</h3>
         <div class="product-card-chip-rail">
-          <div class="product-topline">
+          ${condition ? `<div class="product-topline">
             <span class="product-meta product-grade-meta" data-label="Condition">${escapeHtml(condition)}</span>
-          </div>
+          </div>` : ''}
           <div class="product-card-summary">
             <p>${escapeHtml(contextLine(product))}</p>
           </div>
@@ -166,7 +178,8 @@ function featuredProducts(products) {
     ...take('Comics', 1),
     ...take('Collectibles', 1)
   ];
-  const djPick = sorted.find((product) => !usedIds.has(product.id));
+  const djPick = featured.find((product) => !usedIds.has(product.id))
+    || sorted.find((product) => !usedIds.has(product.id));
   if (djPick) balanced.push(djPick);
   return balanced.slice(0, 7);
 }

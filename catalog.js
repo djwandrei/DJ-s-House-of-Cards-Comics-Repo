@@ -271,6 +271,19 @@ window.DJ = window.DJ || {};
     return { raw, status: 'Ungraded', company: '', grade: '', summary: ungradedCondition, compact: ungradedCondition };
   }
 
+  function shouldSuppressCollectibleCondition(item = {}, category = '', conditionInfo = {}) {
+    if (!/collectibles/i.test(String(category || ''))) return false;
+    if (conditionInfo.status === 'Graded' || conditionInfo.company || conditionInfo.grade) return false;
+
+    const raw = String(conditionInfo.raw || item.condition || '').trim();
+    if (!raw) return false;
+    if (/\b(?:poor|fair|good|very good|excellent|mint|near mint|nm|graded|psa|sgc|bgs|cgc|beckett)\b/i.test(raw)) {
+      return false;
+    }
+
+    return /\b(?:autographed?|signed|signature|multi[- ]signed|memorabilia|collectible|baseball|bat|ball|postcard|photo|display|program)\b/i.test(raw);
+  }
+
   function hasSerialNumberingContext(value = '') {
     return /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|emerald|sepia|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|die[- ]cut|press proof|aspirations|status|mirror|prime|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp|ssp|auto|autographs?|au|signatures?|sigs?|patch|relic|memorabilia|jersey|materials?|swatch|prospect)\b/.test(value);
   }
@@ -616,6 +629,7 @@ window.DJ = window.DJ || {};
     // The meta grid below intentionally skips it so modals do not show
     // duplicated values such as "Ungraded | Ungraded | Guide range listed".
     const guideRange = DJ.priceRangeLabel(product);
+    const conditionFactValue = product.conditionCompact || product.conditionFacet || '';
     const facts = [
       {
         label: getProductPriceLabel(product),
@@ -626,10 +640,10 @@ window.DJ = window.DJ || {};
         label: 'Guide range',
         value: guideRange
       }] : []),
-      {
+      ...(conditionFactValue ? [{
         label: product.conditionFacet === 'Graded' ? 'Grade' : 'Condition',
-        value: product.conditionCompact || product.conditionFacet || 'Not listed'
-      }
+        value: conditionFactValue
+      }] : [])
     ];
 
     if (Number.isFinite(Number(galleryCount)) && Number(galleryCount) > 1) {
@@ -983,6 +997,10 @@ window.DJ = window.DJ || {};
       const team = normalizeTeamFacetValue(item.team, { ...item, category });
       const rawCondition = item.condition || '';
       const conditionInfo = parseConditionDetails(rawCondition);
+      const suppressCondition = shouldSuppressCollectibleCondition(item, category, conditionInfo);
+      const conditionSummary = suppressCondition ? '' : conditionInfo.summary;
+      const conditionFacet = suppressCondition ? '' : conditionInfo.status;
+      const conditionCompact = suppressCondition ? '' : conditionInfo.compact;
       const description = item.description || '';
       const searchableDescription = description.replace(/\s+/g, ' ').trim().slice(0, 280);
       const sport = item.sport || (category === 'Collectibles' ? 'Other' : category);
@@ -1015,11 +1033,11 @@ window.DJ = window.DJ || {};
         yearLabel,
         team,
         rawCondition,
-        condition: conditionInfo.summary,
-        conditionFacet: conditionInfo.status,
-        conditionCompany: conditionInfo.company,
-        conditionGrade: conditionInfo.grade,
-        conditionCompact: conditionInfo.compact,
+        condition: conditionSummary,
+        conditionFacet,
+        conditionCompany: suppressCondition ? '' : conditionInfo.company,
+        conditionGrade: suppressCondition ? '' : conditionInfo.grade,
+        conditionCompact,
         description,
         sport,
         league,
@@ -1032,7 +1050,7 @@ window.DJ = window.DJ || {};
         image,
         attributes,
         _price: DJ.payablePrice({ price }),
-        _conditionLower: conditionInfo.status.toLowerCase(),
+        _conditionLower: conditionFacet.toLowerCase(),
         _teamFacet: team,
         _searchNormalized: normalizeSearchString([
           item.name || '',
@@ -1043,7 +1061,7 @@ window.DJ = window.DJ || {};
           playerAthlete,
           searchableDescription,
           yearLabel,
-          conditionInfo.summary,
+          conditionSummary,
           attributes.join(' ')
         ].join(' ').toLowerCase())
       };
@@ -1536,6 +1554,7 @@ window.DJ = window.DJ || {};
     const cardImageCandidates = DJ.getThumbnailAssetCandidates(product.image);
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
     const cardGradeLabel = getProductCardGradeLabel(product);
+    const showConditionChip = Boolean(product.conditionCompact || product.conditionFacet);
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
@@ -1563,9 +1582,9 @@ window.DJ = window.DJ || {};
         <div class="product-content">
           <h3 id="${titleId}">${DJ.escapeHtml(product.name)}</h3>
           <div class="product-card-chip-rail">
-            <div class="product-topline">
+            ${showConditionChip ? `<div class="product-topline">
               <span class="product-meta product-grade-meta" data-label="${DJ.escapeHtml(gradeLabel)}">${DJ.escapeHtml(cardGradeLabel)}</span>
-            </div>
+            </div>` : ''}
             ${renderProductCardSummary(product, summaryId, metaLine)}
             ${renderProductCardMetaExtras(product)}
             ${renderAttributeTags(cardAttributes)}

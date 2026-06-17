@@ -35,7 +35,7 @@ export type ShopifyInventoryAdjustment = {
 };
 
 export type ShopifyInventoryQuantity = {
-  compareQuantity: number | null;
+  changeFromQuantity: number | null;
   inventoryItemId: string;
   locationId: string;
   quantity: number;
@@ -362,7 +362,6 @@ export async function setShopifyInventory(options: {
         reason: options.reason || 'correction',
         name: 'available',
         referenceDocumentUri: options.referenceDocumentUri,
-        ignoreCompareQuantity: false,
         quantities: options.quantities
       }
     }

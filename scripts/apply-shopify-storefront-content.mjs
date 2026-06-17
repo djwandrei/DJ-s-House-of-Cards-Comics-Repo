@@ -6,6 +6,7 @@ const THEME_KEYS = [
   'sections/header-group.json',
   'sections/footer-group.json'
 ];
+const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
 
 const apply = process.argv.includes('--apply');
 
@@ -90,8 +91,8 @@ function updateHomepage(rawJson) {
       changes.push('homepage hero headline');
     }
     if (heroButton?.settings) {
-      heroButton.settings.label = 'Shop Inventory';
-      heroButton.settings.link = 'shopify://collections/all';
+      heroButton.settings.label = 'Shop Featured Showcase';
+      heroButton.settings.link = `shopify://collections/${FEATURED_COLLECTION_HANDLE}`;
       heroButton.settings.style_class = 'button';
       changes.push('homepage hero button');
     }
@@ -107,9 +108,9 @@ function updateHomepage(rawJson) {
   }
 
   if (productList) {
-    productList.name = 'Latest DJHC Inventory';
-    productList.settings.collection = 'all';
-    productList.settings.max_products = 12;
+    productList.name = 'Featured DJHC Showcase';
+    productList.settings.collection = FEATURED_COLLECTION_HANDLE;
+    productList.settings.max_products = 7;
     productList.settings.columns = 4;
     productList.settings.columns_gap = 18;
     productList.settings.rows_gap = 30;
@@ -120,14 +121,15 @@ function updateHomepage(rawJson) {
     const title = Object.values(staticHeader?.blocks || {}).find((block) => block?.type === '_product-list-text');
     const button = Object.values(staticHeader?.blocks || {}).find((block) => block?.type === '_product-list-button');
     if (title?.settings) {
-      title.settings.text = '<h3>Latest DJHC Inventory</h3>';
+      title.settings.text = '<h3>Featured DJHC Showcase</h3>';
       title.settings.type_preset = 'h3';
       title.settings.font_size = 'clamp(1.8rem, 3vw, 3rem)';
       title.settings.color = 'var(--djhc-text)';
       changes.push('featured collection heading');
     }
     if (button?.settings) {
-      button.settings.label = 'View full catalog';
+      button.settings.label = 'View full featured showcase';
+      button.settings.link = `shopify://collections/${FEATURED_COLLECTION_HANDLE}`;
       button.settings.style_class = 'button-secondary';
       changes.push('featured collection button');
     }
@@ -197,7 +199,7 @@ function updateFooter(rawJson) {
     socials.settings.facebook_url = 'https://www.facebook.com/DJCardsComics/';
     socials.settings.instagram_url = '';
     socials.settings.youtube_url = '';
-    socials.settings.tiktok_url = '';
+    socials.settings.tiktok_url = 'https://www.tiktok.com/@djshouseofcards';
     socials.settings.twitter_url = '';
     changes.push('footer social links');
   }

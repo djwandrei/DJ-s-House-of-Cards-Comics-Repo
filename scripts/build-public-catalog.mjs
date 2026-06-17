@@ -137,15 +137,27 @@ function pickStorefrontFields(item) {
   return out;
 }
 
+function sortByStorefrontRank(items = []) {
+  return [...items].sort((left, right) => {
+    const leftRank = Number.isFinite(Number(left.sortRank)) ? Number(left.sortRank) : Number.MAX_SAFE_INTEGER;
+    const rightRank = Number.isFinite(Number(right.sortRank)) ? Number(right.sortRank) : Number.MAX_SAFE_INTEGER;
+    if (leftRank !== rightRank) return leftRank - rightRank;
+    return Number(left.id || 0) - Number(right.id || 0);
+  });
+}
+
 const canonicalProducts = JSON.parse(await fs.readFile(path.join(root, 'products.json'), 'utf8'));
 
 for (const file of FILES) {
   const fullPath = path.join(root, file);
   // Derive every segment from products.json so one canonical catalog update
   // cannot leave stale category JSON or preloaded bundles behind.
-  const raw = file === 'products.json'
+  let raw = file === 'products.json'
     ? canonicalProducts
     : canonicalProducts.filter(SEGMENTS[file]);
+  if (file === 'products-featured.json') {
+    raw = sortByStorefrontRank(raw);
+  }
   assertRangeCheckoutPrices(raw, file);
   const isFullCatalog = file === 'products.json';
   const activeRaw = Array.isArray(raw)

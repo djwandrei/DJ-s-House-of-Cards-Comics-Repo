@@ -14,6 +14,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$ServerUserAgent = 'DJHC-Catalog-Importer/1.0'
 
 function Get-ConfigValue {
   param(
@@ -344,6 +345,7 @@ function Get-AccessToken {
     -Uri ($ProjectUrl.TrimEnd('/') + '/auth/v1/token?grant_type=password') `
     -Method Post `
     -Headers $headers `
+    -UserAgent $ServerUserAgent `
     -ContentType 'application/json' `
     -Body $body
 
@@ -385,6 +387,7 @@ function Get-RemoteCount {
     -Uri ($ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?select=id&limit=1${activeFilter}") `
     -Method Head `
     -Headers $requestHeaders `
+    -UserAgent $ServerUserAgent `
     -UseBasicParsing
 
   $contentRange = if ($response.Headers) { [string]$response.Headers['Content-Range'] } else { '' }
@@ -415,6 +418,7 @@ function Invoke-ChunkUpsert {
     -Uri ($ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?on_conflict=id") `
     -Method Post `
     -Headers $requestHeaders `
+    -UserAgent $ServerUserAgent `
     -ContentType 'application/json' `
     -Body $body | Out-Null
 }

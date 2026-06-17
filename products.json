@@ -18,7 +18,7 @@
     ],
     "sport": "Baseball",
     "playerAthlete": "Hal Chase",
-    "isFeatured": true,
+    "isFeatured": false,
     "sortRank": 1,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
@@ -32,7 +32,8 @@
       "beckettSport": "Baseball",
       "beckettCardNumber": "#84",
       "beckettBrand": "T206"
-    }
+    },
+    "featured": false
   },
   {
     "id": 2,
@@ -71,7 +72,10 @@
     },
     "attributes": [
       "Rookie"
-    ]
+    ],
+    "featured": true,
+    "featuredSortRank": 2,
+    "featuredRank": 2
   },
   {
     "id": 3,
@@ -91,7 +95,7 @@
     ],
     "sport": "Baseball",
     "playerAthlete": "Willie Mays",
-    "isFeatured": true,
+    "isFeatured": false,
     "sortRank": 3,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
@@ -110,7 +114,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "featured": false
   },
   {
     "id": 4,
@@ -130,7 +135,7 @@
     ],
     "sport": "Baseball",
     "playerAthlete": "Hank Aaron",
-    "isFeatured": true,
+    "isFeatured": false,
     "sortRank": 4,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
@@ -149,7 +154,8 @@
       "beckettManufacturer": "Bowman (1948-55)"
     },
     "league": "MLB",
-    "displayPrice": "$250.00"
+    "displayPrice": "$250.00",
+    "featured": false
   },
   {
     "id": 5,
@@ -169,8 +175,8 @@
     ],
     "sport": "Baseball",
     "playerAthlete": "Hank Aaron",
-    "isFeatured": false,
-    "sortRank": 0,
+    "isFeatured": true,
+    "sortRank": 7,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
     "league": "MLB",
@@ -185,7 +191,10 @@
       "beckettCardNumber": "#47",
       "beckettBrand": "Topps",
       "beckettManufacturer": "Topps Co."
-    }
+    },
+    "featured": true,
+    "featuredSortRank": 7,
+    "featuredRank": 7
   },
   {
     "id": 6,
@@ -16592,8 +16601,8 @@
     ],
     "sport": "Football",
     "playerAthlete": "Rob Gronkowski",
-    "isFeatured": false,
-    "sortRank": 0,
+    "isFeatured": true,
+    "sortRank": 4,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
     "league": "NFL",
@@ -16616,7 +16625,10 @@
       "Autograph",
       "Serial Numbered",
       "Memorabilia"
-    ]
+    ],
+    "featured": true,
+    "featuredSortRank": 4,
+    "featuredRank": 4
   },
   {
     "id": 569,
@@ -21919,10 +21931,13 @@
     "imageGallery": [
       "assets/comics/Star Wars #1 Diamond Box .35 - No UPC Newsstand.jpeg"
     ],
-    "isFeatured": false,
-    "sortRank": 0,
+    "isFeatured": true,
+    "sortRank": 5,
     "itemPhotoUrls": [],
-    "htmlImageUrls": []
+    "htmlImageUrls": [],
+    "featured": true,
+    "featuredSortRank": 5,
+    "featuredRank": 5
   },
   {
     "name": "Superboy #223",
@@ -23217,8 +23232,8 @@
       "assets/collectibles/Autographed Baseball Signed by 5 Hall of Famers and Pete Rose - 5.jpg",
       "assets/collectibles/Autographed Baseball Signed by 5 Hall of Famers and Pete Rose - 6.jpg"
     ],
-    "isFeatured": false,
-    "sortRank": 0,
+    "isFeatured": true,
+    "sortRank": 6,
     "itemPhotoUrls": [],
     "htmlImageUrls": [],
     "sport": "Other",
@@ -23232,7 +23247,10 @@
     "attributes": [
       "Autograph",
       "Memorabilia"
-    ]
+    ],
+    "featured": true,
+    "featuredSortRank": 6,
+    "featuredRank": 6
   },
   {
     "id": 830,
@@ -198195,11 +198213,14 @@
         "C:Parallel/Variety": "Refractor|Gold"
       }
     },
-    "isFeatured": false,
+    "isFeatured": true,
     "isDeleted": false,
-    "sortRank": 0,
+    "sortRank": 3,
     "priceLabel": "$399.95",
-    "displayPrice": "$399.95"
+    "displayPrice": "$399.95",
+    "featured": true,
+    "featuredSortRank": 3,
+    "featuredRank": 3
   },
   {
     "id": 2465,
@@ -291405,11 +291426,14 @@
         "C:Parallel/Variety": ""
       }
     },
-    "isFeatured": false,
+    "isFeatured": true,
     "isDeleted": false,
-    "sortRank": 0,
+    "sortRank": 1,
     "priceLabel": "$499.95",
-    "displayPrice": "$499.95"
+    "displayPrice": "$499.95",
+    "featured": true,
+    "featuredSortRank": 1,
+    "featuredRank": 1
   },
   {
     "id": 3530,

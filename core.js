@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260617a';
+  const PRODUCT_ASSET_VERSION = '20260617c';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -42,6 +42,11 @@ window.DJ = window.DJ || {};
     [/football/, 'football-cards.html'],
     [/comic/, 'comics.html'],
     [/collect/, 'collectibles.html']
+  ];
+  const MARKETPLACE_LINKS = [
+    ['Whatnot', 'https://www.whatnot.com/user/djshouseofcards'],
+    ['Shopify Store', 'https://xy2hik-nq.myshopify.com/'],
+    ['TikTok Shop', 'https://www.tiktok.com/@djshouseofcards/shop']
   ];
 
   // Centralize localStorage keys so future refactors only need to update them in one place.
@@ -1024,7 +1029,11 @@ window.DJ = window.DJ || {};
 
   function buildFooterLinkGroup(title, links) {
     const group = document.createElement('div');
-    group.className = 'footer-link-group';
+    const groupSlug = String(title || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    group.className = `footer-link-group${groupSlug ? ` footer-link-group--${groupSlug}` : ''}`;
 
     const heading = document.createElement('strong');
     heading.textContent = title;
@@ -1078,14 +1087,34 @@ window.DJ = window.DJ || {};
           link.textContent = label;
           footerLinks.appendChild(link);
         });
+        MARKETPLACE_LINKS.forEach(([label, href]) => {
+          if (footerLinks.querySelector(`a[href="${href}"]`)) return;
+          const link = document.createElement('a');
+          link.href = href;
+          link.textContent = label;
+          link.className = 'footer-marketplace-link';
+          link.dataset.footerGroup = 'storefronts';
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          footerLinks.appendChild(link);
+        });
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
-        const browseLinks = directLinks.filter((link) => ['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
-        const supportLinks = directLinks.filter((link) => !['sports-cards.html', 'comics.html', 'collectibles.html'].includes(link.getAttribute('href')));
+        const browseHrefs = ['sports-cards.html', 'comics.html', 'collectibles.html'];
+        const browseLinks = directLinks.filter((link) => browseHrefs.includes(link.getAttribute('href')));
+        const storefrontLinks = directLinks.filter((link) => link.dataset.footerGroup === 'storefronts');
+        const supportLinks = directLinks.filter((link) => (
+          !browseHrefs.includes(link.getAttribute('href'))
+          && link.dataset.footerGroup !== 'storefronts'
+        ));
         const groups = document.createElement('div');
         groups.className = 'footer-link-groups';
 
         if (browseLinks.length) {
           groups.appendChild(buildFooterLinkGroup('Browse', browseLinks));
+        }
+
+        if (storefrontLinks.length) {
+          groups.appendChild(buildFooterLinkGroup('Storefronts', storefrontLinks));
         }
 
         if (supportLinks.length) {
@@ -1531,6 +1560,67 @@ window.DJ = window.DJ || {};
     scheduleIdle(loadHomeCatalog, 2500);
   }
 
+  function setHomeAuthStatus(message = '', state = 'info') {
+    const status = document.getElementById('homeAuthStatus');
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
+    if (message) {
+      status.dataset.state = state;
+    } else {
+      status.removeAttribute('data-state');
+    }
+  }
+
+  async function loadCustomerAccountBridge() {
+    if (DJ.payments?.openAuthModal) {
+      return DJ.payments;
+    }
+
+    await loadScriptsInOrder([
+      versionedProductAsset('backend-config.js'),
+      versionedProductAsset('supabase-client.js'),
+      versionedProductAsset('payments.js')
+    ]);
+    return DJ.payments || null;
+  }
+
+  function initHomeAccountCard() {
+    if (document.body.dataset.page !== 'home') {
+      return;
+    }
+
+    const signInButton = document.getElementById('homeSignIn');
+    if (!signInButton) {
+      return;
+    }
+
+    signInButton.addEventListener('click', async () => {
+      signInButton.disabled = true;
+      setHomeAuthStatus('Opening secure account sign-in...', 'info');
+      try {
+        const payments = await loadCustomerAccountBridge();
+        if (payments?.openAuthModal) {
+          payments.openAuthModal({ message: 'Sign in or create an account while you browse DJ\'s inventory.' });
+          setHomeAuthStatus('');
+          return;
+        }
+        window.location.href = 'account.html';
+      } catch (error) {
+        console.warn('Customer account sign-in could not be opened from home.', error);
+        setHomeAuthStatus('Account sign-in is opening on the account page.', 'info');
+        window.location.href = 'account.html';
+      } finally {
+        signInButton.disabled = false;
+      }
+    });
+
+    window.addEventListener('dj:authchange', (event) => {
+      const email = event.detail?.session?.user?.email || '';
+      setHomeAuthStatus(email ? `Signed in as ${email}.` : '', 'success');
+    });
+  }
+
   function explicitPriceLabel(item) {
     return String(item?.priceLabel || item?.displayPrice || '').trim();
   }
@@ -1719,6 +1809,7 @@ window.DJ = window.DJ || {};
       DJ.clearCart('checkout-success');
     }
     initHomeCatalogLoader();
+    initHomeAccountCard();
     initHeaderScrollState();
     initDeferredServiceWorkerRegistration();
   });

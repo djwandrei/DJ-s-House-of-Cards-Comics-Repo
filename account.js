@@ -48,6 +48,7 @@ window.DJ = window.DJ || {};
   };
   const fields = Object.keys(PROFILE_FIELDS);
   const profileCompletionFields = fields.filter((field) => PROFILE_FIELDS[field].countsTowardCompletion);
+  const MULTI_CHOICE_PROFILE_FIELDS = new Set(['collectorFocus', 'tradeStatus']);
 
   const $ = (id) => document.getElementById(id);
   const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
@@ -55,6 +56,51 @@ window.DJ = window.DJ || {};
   function normalizeProfileValue(field, value) {
     const maxLength = PROFILE_FIELDS[field]?.maxLength || DEFAULT_PROFILE_FIELD_LENGTH;
     return String(value || '').trim().slice(0, maxLength);
+  }
+
+  function splitProfileSelections(value = '') {
+    return [...new Set(String(value || '')
+      .split(/\s*\|\s*|[,;\n]+/)
+      .map((selection) => selection.trim())
+      .filter(Boolean))]
+      .slice(0, 12);
+  }
+
+  function joinProfileSelections(values = []) {
+    return [...new Set((Array.isArray(values) ? values : [])
+      .map((selection) => String(selection || '').trim())
+      .filter(Boolean))]
+      .join(' | ');
+  }
+
+  function getMultiChoiceInputs(field) {
+    return [...document.querySelectorAll(`[data-profile-multi="${field}"]`)];
+  }
+
+  function updateMultiChoiceHiddenField(field, value) {
+    const hidden = $(`account_${field}`);
+    if (hidden) hidden.value = normalizeProfileValue(field, value);
+  }
+
+  function readMultiChoiceField(field) {
+    const selected = getMultiChoiceInputs(field)
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+    const value = normalizeProfileValue(field, joinProfileSelections(selected));
+    updateMultiChoiceHiddenField(field, value);
+    return value;
+  }
+
+  function syncMultiChoiceField(field, value = '') {
+    const selected = new Set(splitProfileSelections(value).map((selection) => selection.toLowerCase()));
+    getMultiChoiceInputs(field).forEach((input) => {
+      input.checked = selected.has(String(input.value || '').trim().toLowerCase());
+    });
+    updateMultiChoiceHiddenField(field, joinProfileSelections(splitProfileSelections(value)));
+  }
+
+  function profileSelectionTags(value = '') {
+    return splitProfileSelections(value).slice(0, 6);
   }
 
   function createElement(tagName, options = {}) {
@@ -91,6 +137,12 @@ window.DJ = window.DJ || {};
 
   function loadProfileForm(profile = savedProfile) {
     fields.forEach((field) => {
+      if (MULTI_CHOICE_PROFILE_FIELDS.has(field)) {
+        const value = profile[field] || '';
+        syncMultiChoiceField(field, value);
+        return;
+      }
+
       const input = $(`account_${field}`);
       if (input) {
         input.value = profile[field]
@@ -103,6 +155,11 @@ window.DJ = window.DJ || {};
   function readProfileForm() {
     const profile = {};
     fields.forEach((field) => {
+      if (MULTI_CHOICE_PROFILE_FIELDS.has(field)) {
+        profile[field] = readMultiChoiceField(field);
+        return;
+      }
+
       const input = $(`account_${field}`);
       profile[field] = input
         ? normalizeProfileValue(field, input.value)
@@ -132,7 +189,7 @@ window.DJ = window.DJ || {};
   }
 
   function hasUnsavedProfileFormChanges() {
-    return Boolean($('accountProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), savedProfile);
+    return Boolean($('accountProfileForm') || $('collectorProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), savedProfile);
   }
 
   function formatSavedAt(value) {
@@ -324,8 +381,10 @@ window.DJ = window.DJ || {};
     const displayName = getCollectorDisplayName(profile);
     const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility) || 'Private account profile';
     const focus = normalizeProfileValue('collectorFocus', profile.collectorFocus);
+    const focusTags = profileSelectionTags(focus);
     const era = normalizeProfileValue('favoriteEra', profile.favoriteEra);
     const tradeStatus = normalizeProfileValue('tradeStatus', profile.tradeStatus);
+    const tradeStatusTags = profileSelectionTags(tradeStatus);
     const preferredCondition = normalizeProfileValue('preferredCondition', profile.preferredCondition);
     const collectorBio = normalizeProfileValue('collectorBio', profile.collectorBio)
       || normalizeProfileValue('notes', profile.notes);
@@ -352,12 +411,12 @@ window.DJ = window.DJ || {};
     const header = createElement('div', { className: 'collector-profile-preview-head' });
     const avatar = createElement('span', {
       className: 'collector-profile-avatar',
-      text: getCollectorInitials(displayName || focus || profile.fullName)
+      text: getCollectorInitials(displayName || focusTags[0] || profile.fullName)
     });
     const titleWrap = createElement('div');
     titleWrap.append(
       createElement('strong', { text: displayName || 'Collector profile' }),
-      createElement('small', { text: [visibility, focus].filter(Boolean).join(' | ') || 'Private collector notes' })
+      createElement('small', { text: [visibility, focusTags.join(' + ')].filter(Boolean).join(' | ') || 'Private collector notes' })
     );
     header.append(avatar, titleWrap);
 
@@ -366,11 +425,11 @@ window.DJ = window.DJ || {};
     });
     const tags = createElement('div', { className: 'collector-profile-tags' });
     renderCollectorTags(tags, [
-      focus,
+      ...focusTags,
       era,
       favorites,
       preferredCondition,
-      tradeStatus,
+      ...tradeStatusTags,
       wishlistSharing,
       wishlistLabel
     ]);

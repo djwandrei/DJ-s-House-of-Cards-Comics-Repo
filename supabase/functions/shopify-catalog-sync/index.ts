@@ -4,6 +4,7 @@ import {
   setShopifyInventory,
   shopifyGid,
   shopifyGraphql,
+  shopifyRest,
   shopifyShopDomain
 } from '../_shared/shopify.ts';
 
@@ -13,6 +14,9 @@ const adminEmail = String(Deno.env.get('ADMIN_EMAIL') || 'djwandrei@gmail.com').
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 const PAGE_SIZE = 250;
+const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
+const FEATURED_COLLECTION_TITLE = 'DJHC Featured Showcase';
+const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 3529, 2463, 3253, 3209, 3478, 2029];
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -72,6 +76,34 @@ type PublicationsPage = {
     nodes: PublicationNode[];
     pageInfo: { hasNextPage: boolean; endCursor?: string | null };
   };
+};
+
+type CustomCollectionPayload = {
+  custom_collection?: {
+    id?: number | string;
+    handle?: string;
+    title?: string;
+  };
+  custom_collections?: Array<{
+    id?: number | string;
+    handle?: string;
+    title?: string;
+  }>;
+};
+
+type CollectsPayload = {
+  collect?: {
+    id?: number | string;
+    collection_id?: number | string;
+    product_id?: number | string;
+    position?: number;
+  };
+  collects?: Array<{
+    id?: number | string;
+    collection_id?: number | string;
+    product_id?: number | string;
+    position?: number;
+  }>;
 };
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
@@ -160,6 +192,8 @@ function productTags(product: Record<string, unknown>, classification: string) {
     `DJHC-${product.id}`,
     'Website Sync',
     classification === 'nonlegacy' ? 'Non-Legacy' : 'Legacy',
+    product.is_featured === true ? 'DJHC Featured' : '',
+    SHOPIFY_SHOWCASE_PRODUCT_IDS.includes(Number(product.id)) ? 'DJHC Shopify Showcase' : '',
     product.category,
     product.sport,
     product.league,
@@ -1112,7 +1146,7 @@ async function syncProduct(productId: number) {
     reason: 'correction',
     referenceDocumentUri: `gid://djshouseofcards/Product/${productId}`,
     quantities: [{
-      compareQuantity: Number.isSafeInteger(Number(mapping.last_shopify_quantity))
+      changeFromQuantity: Number.isSafeInteger(Number(mapping.last_shopify_quantity))
         ? Number(mapping.last_shopify_quantity)
         : null,
       inventoryItemId: shopifyGid('InventoryItem', mapping.shopify_inventory_item_id),
@@ -1131,6 +1165,148 @@ async function syncProduct(productId: number) {
     status,
     sourceClass: classification,
     publishEnabled: mapping.publish_enabled === true
+  };
+}
+
+async function upsertFeaturedCustomCollection() {
+  const bodyHtml = '<p>Curated DJHC homepage showcase synced from published non-legacy website listings.</p>';
+  const existing = await shopifyRest<CustomCollectionPayload>(
+    'GET',
+    `custom_collections.json?handle=${encodeURIComponent(FEATURED_COLLECTION_HANDLE)}&limit=1`
+  );
+  const current = existing.custom_collections?.[0] || null;
+  const payload = {
+    custom_collection: {
+      ...(current?.id ? { id: current.id } : {}),
+      title: FEATURED_COLLECTION_TITLE,
+      handle: FEATURED_COLLECTION_HANDLE,
+      body_html: bodyHtml,
+      published: true,
+      sort_order: 'manual'
+    }
+  };
+
+  if (current?.id) {
+    const updated = await shopifyRest<CustomCollectionPayload>(
+      'PUT',
+      `custom_collections/${current.id}.json`,
+      payload
+    );
+    return updated.custom_collection || current;
+  }
+
+  const created = await shopifyRest<CustomCollectionPayload>('POST', 'custom_collections.json', payload);
+  if (!created.custom_collection?.id) {
+    throw new Error('Shopify did not return a featured custom collection id.');
+  }
+  return created.custom_collection;
+}
+
+async function ensureFeaturedCollection() {
+  const { data: showcaseProducts, error: showcaseError } = await admin
+    .from('products')
+    .select('id,name,is_deleted')
+    .in('id', SHOPIFY_SHOWCASE_PRODUCT_IDS)
+    .eq('is_deleted', false)
+    .order('id', { ascending: true });
+  if (showcaseError) throw showcaseError;
+
+  const availableIds = new Set(
+    (showcaseProducts || [])
+      .map((product) => Number(product.id))
+      .filter((id) => Number.isSafeInteger(id) && id > 0)
+  );
+  const featuredIds = SHOPIFY_SHOWCASE_PRODUCT_IDS.filter((id) => availableIds.has(id));
+  if (!featuredIds.length) {
+    throw new Error('No Shopify showcase products were found for the featured collection.');
+  }
+
+  const { data: websiteFeaturedProducts, error: websiteFeaturedError } = await admin
+    .from('products')
+    .select('id,is_featured,is_deleted,sort_rank')
+    .eq('is_featured', true)
+    .eq('is_deleted', false)
+    .order('sort_rank', { ascending: true, nullsFirst: false })
+    .order('id', { ascending: true });
+  if (websiteFeaturedError) throw websiteFeaturedError;
+  const websiteFeaturedIds = (websiteFeaturedProducts || [])
+    .map((product) => Number(product.id))
+    .filter((id) => Number.isSafeInteger(id) && id > 0);
+
+  const { data: mappings, error: mappingError } = await admin
+    .from('shopify_product_mappings')
+    .select('product_id,source_class,shopify_product_id,shopify_handle,publish_enabled')
+    .in('product_id', featuredIds);
+  if (mappingError) throw mappingError;
+
+  const mappingByProductId = new Map<number, Record<string, unknown>>();
+  for (const mapping of mappings || []) {
+    mappingByProductId.set(Number(mapping.product_id), mapping);
+  }
+
+  const desired = featuredIds
+    .map((productId) => {
+      const mapping = mappingByProductId.get(productId);
+      const shopifyProductId = String(mapping?.shopify_product_id || '').trim();
+      const source = String(mapping?.source_class || '');
+      return shopifyProductId && source === 'nonlegacy' && mapping?.publish_enabled === true
+        ? { productId, shopifyProductId, mapping }
+        : null;
+    })
+    .filter((entry): entry is { productId: number; shopifyProductId: string; mapping: Record<string, unknown> } => Boolean(entry));
+  if (!desired.length) {
+    throw new Error('Featured website products do not have Shopify product mappings yet.');
+  }
+
+  const collection = await upsertFeaturedCustomCollection();
+  const collectionId = String(collection.id || '').trim();
+  if (!collectionId) throw new Error('Featured custom collection id was missing.');
+
+  const current = await shopifyRest<CollectsPayload>(
+    'GET',
+    `collects.json?collection_id=${encodeURIComponent(collectionId)}&limit=250`
+  );
+  const desiredShopifyIds = new Set(desired.map((entry) => entry.shopifyProductId));
+  const currentCollects = current.collects || [];
+  const currentByProductId = new Map(
+    currentCollects.map((collect) => [String(collect.product_id || '').trim(), collect])
+  );
+  const removed: Array<{ collectId: string; shopifyProductId: string }> = [];
+  const created: Array<{ productId: number; shopifyProductId: string }> = [];
+
+  for (const collect of currentCollects) {
+    const shopifyProductId = String(collect.product_id || '').trim();
+    const collectId = String(collect.id || '').trim();
+    if (!collectId || desiredShopifyIds.has(shopifyProductId)) continue;
+    await shopifyRest('DELETE', `collects/${collectId}.json`);
+    removed.push({ collectId, shopifyProductId });
+  }
+
+  for (const [index, entry] of desired.entries()) {
+    if (currentByProductId.has(entry.shopifyProductId)) continue;
+    await shopifyRest<CollectsPayload>('POST', 'collects.json', {
+      collect: {
+        collection_id: collectionId,
+        product_id: entry.shopifyProductId,
+        position: index + 1
+      }
+    });
+    created.push({ productId: entry.productId, shopifyProductId: entry.shopifyProductId });
+  }
+
+  return {
+    collection: {
+      id: collectionId,
+      handle: collection.handle || FEATURED_COLLECTION_HANDLE,
+      title: collection.title || FEATURED_COLLECTION_TITLE
+    },
+    featuredProductIds: featuredIds,
+    websiteFeaturedIds,
+    mappedProductIds: desired.map((entry) => entry.productId),
+    createdCount: created.length,
+    removedCount: removed.length,
+    created,
+    removed
   };
 }
 
@@ -1235,6 +1411,8 @@ Deno.serve(async (request) => {
       }
       case 'register-webhooks':
         return jsonResponse({ ok: true, result: await registerInventoryWebhook() });
+      case 'ensure-featured-collection':
+        return jsonResponse({ ok: true, result: await ensureFeaturedCollection() });
       case 'verify-catalog':
       case 'verify-import':
         return jsonResponse({ ok: true, result: await verifyCatalogState() });

@@ -138,6 +138,7 @@ function productTags(product = {}) {
     `DJHC-${product.id}`,
     'Website Sync',
     isNonlegacy(product) ? 'Non-Legacy' : 'Legacy',
+    product.isFeatured === true ? 'DJHC Featured' : '',
     product.category,
     product.sport,
     product.league,
