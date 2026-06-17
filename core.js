@@ -48,6 +48,17 @@ window.DJ = window.DJ || {};
     ['Shopify Store', 'https://xy2hik-nq.myshopify.com/'],
     ['TikTok Shop', 'https://www.tiktok.com/@djshouseofcards/shop']
   ];
+  const FOOTER_POLICY_LINKS = [
+    ['Privacy', 'privacy.html'],
+    ['Terms', 'terms.html'],
+    ['Shipping', 'shipping.html'],
+    ['Returns', 'returns.html']
+  ];
+  const FOOTER_BROWSE_HREFS = new Set([
+    'sports-cards.html',
+    'comics.html',
+    'collectibles.html'
+  ]);
 
   // Centralize localStorage keys so future refactors only need to update them in one place.
   const STORAGE_KEYS = {
@@ -1075,12 +1086,7 @@ window.DJ = window.DJ || {};
       }
 
       if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
-        [
-          ['Privacy', 'privacy.html'],
-          ['Terms', 'terms.html'],
-          ['Shipping', 'shipping.html'],
-          ['Returns', 'returns.html']
-        ].forEach(([label, href]) => {
+        FOOTER_POLICY_LINKS.forEach(([label, href]) => {
           if (footerLinks.querySelector(`a[href="${href}"]`)) return;
           const link = document.createElement('a');
           link.href = href;
@@ -1099,11 +1105,10 @@ window.DJ = window.DJ || {};
           footerLinks.appendChild(link);
         });
         const directLinks = [...footerLinks.querySelectorAll(':scope > a:not(.footer-contact-link)')];
-        const browseHrefs = ['sports-cards.html', 'comics.html', 'collectibles.html'];
-        const browseLinks = directLinks.filter((link) => browseHrefs.includes(link.getAttribute('href')));
+        const browseLinks = directLinks.filter((link) => FOOTER_BROWSE_HREFS.has(link.getAttribute('href')));
         const storefrontLinks = directLinks.filter((link) => link.dataset.footerGroup === 'storefronts');
         const supportLinks = directLinks.filter((link) => (
-          !browseHrefs.includes(link.getAttribute('href'))
+          !FOOTER_BROWSE_HREFS.has(link.getAttribute('href'))
           && link.dataset.footerGroup !== 'storefronts'
         ));
         const groups = document.createElement('div');
