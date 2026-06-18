@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
-const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront-20260618.css';
+const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront-20260618b.css';
 const MIRRORED_STYLE_ASSET_KEYS = [
   STYLE_ASSET_KEY,
   'assets/djhc-storefront.css',
@@ -1014,6 +1014,183 @@ main,
   z-index: 9999 !important;
 }
 
+.header-actions__action[aria-label="Cart"],
+.header-actions__cart-icon,
+cart-icon {
+  border: 1px solid rgba(255, 255, 255, .28) !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, .12) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.header-actions__action[aria-label="Cart"] svg,
+.header-actions__cart-icon svg,
+cart-icon svg,
+cart-icon path {
+  color: #fff !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.account-button.header-actions__action,
+.header-actions__action[aria-label="Search"] {
+  border-radius: 8px !important;
+  color: #fff !important;
+}
+
+.account-button.header-actions__action:hover,
+.header-actions__action[aria-label="Search"]:hover,
+.header-actions__action[aria-label="Cart"]:hover {
+  background: rgba(255, 255, 255, .16) !important;
+}
+
+.shopify-section:has(.djhc-hero) {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #071126 !important;
+}
+
+.djhc-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: clamp(380px, 48vh, 520px);
+  overflow: hidden;
+  background: #071126;
+  color: #fff;
+}
+
+.djhc-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  opacity: .54;
+}
+
+.djhc-hero__media img {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  filter: saturate(.98) contrast(1.04);
+}
+
+.djhc-hero__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(7, 17, 38, .95) 0%, rgba(7, 17, 38, .78) 42%, rgba(7, 17, 38, .42) 100%),
+    linear-gradient(180deg, rgba(7, 17, 38, .22), rgba(7, 17, 38, .78));
+}
+
+.djhc-hero__content {
+  display: grid;
+  align-content: center;
+  gap: .86rem;
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(2.4rem, 5vw, 4rem) 0 clamp(2rem, 4vw, 3rem);
+}
+
+.djhc-hero h1 {
+  max-width: 17ch;
+  margin: 0;
+  color: #fff !important;
+  font-family: var(--djhc-font-display);
+  font-size: clamp(2.8rem, 6vw, 5.4rem);
+  font-weight: 950;
+  letter-spacing: 0 !important;
+  line-height: .94;
+  text-transform: none;
+  text-shadow: 0 16px 36px rgba(0, 0, 0, .35);
+}
+
+.djhc-hero__content > p:not(.djhc-eyebrow) {
+  max-width: 45rem;
+  margin: 0;
+  color: rgba(255, 255, 255, .9);
+  font-size: clamp(1.05rem, 1.5vw, 1.28rem);
+  font-weight: 720;
+  line-height: 1.55;
+}
+
+.djhc-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: .35rem;
+}
+
+.djhc-hero__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: .78rem 1.05rem;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--djhc-blue-dark) !important;
+  font-size: .95rem;
+  font-weight: 950;
+  text-decoration: none;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .24);
+}
+
+.djhc-hero__button--secondary {
+  background: rgba(255, 255, 255, .13);
+  color: #fff !important;
+  box-shadow: none;
+}
+
+.djhc-hero__button:hover {
+  transform: translateY(-1px);
+}
+
+.djhc-hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin: .7rem 0 0;
+  padding: 0;
+}
+
+.djhc-hero__facts div {
+  min-width: min(100%, 185px);
+  padding: .72rem .85rem;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .10);
+  backdrop-filter: blur(8px);
+}
+
+.djhc-hero__facts dt,
+.djhc-hero__facts dd {
+  margin: 0;
+}
+
+.djhc-hero__facts dt {
+  color: rgba(255, 255, 255, .72);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.djhc-hero__facts dd {
+  margin-top: .2rem;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
 .shopify-section:has(.product-list),
 .shopify-section:has(.product-grid) {
   width: min(1240px, calc(100% - 2rem)) !important;
@@ -1141,15 +1318,78 @@ slideshow-container {
     display: none !important;
   }
 
-  .shopify-section:has(.product-list),
-  .shopify-section:has(.product-grid) {
-    width: min(100% - 1rem, 720px) !important;
-    padding: 1rem !important;
-    border-radius: 8px !important;
+  .djhc-hero {
+    min-height: 540px;
+  }
+
+  .djhc-hero__media {
+    grid-template-columns: repeat(2, 1fr);
+    opacity: .36;
+  }
+
+  .djhc-hero__shade {
+    background:
+      linear-gradient(180deg, rgba(7, 17, 38, .92), rgba(7, 17, 38, .86)),
+      linear-gradient(90deg, rgba(7, 17, 38, .95), rgba(7, 17, 38, .55));
+  }
+
+  .djhc-hero__content {
+    width: min(100% - 1.25rem, 720px);
+    gap: .65rem;
+    padding-block: 2rem 1.45rem;
+  }
+
+  .djhc-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.35rem, 11vw, 3.25rem);
+    line-height: .96;
+  }
+
+  .djhc-hero__content > p:not(.djhc-eyebrow) {
+    font-size: .98rem;
+    line-height: 1.45;
+  }
+
+  .djhc-hero__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+  }
+
+  .djhc-hero__button {
+    width: 100%;
+    min-height: 42px;
+    padding: .6rem .7rem;
+    font-size: .82rem;
+  }
+
+  .djhc-hero__button:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .djhc-hero__facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .4rem;
+  }
+
+  .djhc-hero__facts div {
+    min-width: 0;
+    padding: .5rem .4rem;
+  }
+
+  .djhc-hero__facts dt {
+    font-size: .56rem;
+  }
+
+  .djhc-hero__facts dd {
+    font-size: .68rem;
+    line-height: 1.25;
   }
 
   .shopify-section:has(.product-list),
   .shopify-section:has(.product-grid) {
+    width: min(100% - 1rem, 720px) !important;
     padding: 0 !important;
     border-radius: 0 !important;
   }

@@ -130,12 +130,47 @@ function customLiquidSection(customLiquid, { colorScheme = 'scheme-1', paddingSt
   };
 }
 
+function placeSectionFirst(template, sectionId) {
+  const currentOrder = Array.isArray(template.order) ? template.order : Object.keys(template.sections || {});
+  template.order = [sectionId, ...currentOrder.filter((id) => id !== sectionId)];
+}
+
 function placeSectionAfter(template, sectionId, afterSectionId) {
   const currentOrder = Array.isArray(template.order) ? template.order : Object.keys(template.sections || {});
   const order = currentOrder.filter((id) => id !== sectionId);
   const afterIndex = afterSectionId ? order.indexOf(afterSectionId) : -1;
   order.splice(afterIndex >= 0 ? afterIndex + 1 : order.length, 0, sectionId);
   template.order = order;
+}
+
+function storefrontHeroMarkup() {
+  const heroImages = PRODUCT_SPOTLIGHTS.map((item) => `
+    <img src="${item.image}" alt="" loading="eager" decoding="async">
+  `).join('');
+
+  return `
+<section class="djhc-hero" aria-labelledby="djhc-hero-heading">
+  <div class="djhc-hero__media" aria-hidden="true">
+    ${heroImages}
+  </div>
+  <div class="djhc-hero__shade" aria-hidden="true"></div>
+  <div class="djhc-hero__content">
+    <p class="djhc-eyebrow">Collector-run shop</p>
+    <h1 id="djhc-hero-heading">DJ's House of Cards & Comics</h1>
+    <p>Sports cards, comics, autographs, memorabilia, and oddball hobby finds with clear photos and Shopify checkout.</p>
+    <div class="djhc-hero__actions" aria-label="Primary shopping actions">
+      <a class="djhc-hero__button" href="/collections/all">Shop all inventory</a>
+      <a class="djhc-hero__button djhc-hero__button--secondary" href="/collections/djhc-featured-showcase">Featured picks</a>
+      <a class="djhc-hero__button djhc-hero__button--secondary" href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
+    </div>
+    <dl class="djhc-hero__facts">
+      <div><dt>Ready now</dt><dd>2,232 active listings</dd></div>
+      <div><dt>Departments</dt><dd>Cards, comics, collectibles</dd></div>
+      <div><dt>Channels</dt><dd>Shopify plus social shops</dd></div>
+    </dl>
+  </div>
+</section>
+`;
 }
 
 function storefrontToolsMarkup() {
@@ -236,6 +271,9 @@ function updateHomepage(rawJson) {
   const template = JSON.parse(rawJson);
   const changes = [];
   const hero = findSectionByType(template, 'hero');
+  const heroSectionId = hero
+    ? Object.keys(template.sections || {}).find((id) => template.sections[id] === hero)
+    : null;
   const productList = findSectionByType(template, 'product-list');
 
   if (hero) {
@@ -272,12 +310,24 @@ function updateHomepage(rawJson) {
   }
 
   template.sections ||= {};
+  template.sections.djhc_hero = customLiquidSection(storefrontHeroMarkup(), {
+    colorScheme: 'scheme-djhc',
+    paddingStart: 0,
+    paddingEnd: 0
+  });
+  placeSectionFirst(template, 'djhc_hero');
+  if (heroSectionId) {
+    delete template.sections[heroSectionId];
+    template.order = template.order.filter((id) => id !== heroSectionId);
+  }
+  changes.push('custom DJHC hero');
+
   template.sections.djhc_spotlight = customLiquidSection(storefrontSpotlightMarkup(), {
     colorScheme: 'scheme-1',
     paddingStart: 24,
     paddingEnd: 18
   });
-  placeSectionAfter(template, 'djhc_spotlight', hero ? Object.keys(template.sections).find((id) => template.sections[id] === hero) : null);
+  placeSectionAfter(template, 'djhc_spotlight', 'djhc_hero');
   changes.push('homepage product spotlight');
 
   template.sections.djhc_shop_tools = customLiquidSection(storefrontToolsMarkup(), {

@@ -178,20 +178,30 @@ function cleanWritableJsonThemeKey(value: unknown) {
 }
 
 function injectStylesheet(layoutLiquid: string, styleMarker: string, styleTag: string) {
-  if (layoutLiquid.includes(styleMarker)) {
-    return { value: layoutLiquid, changed: false };
-  }
+  const normalized = layoutLiquid
+    .split(/\r?\n/)
+    .filter((line) => {
+      const trimmed = line.trim();
+      if (trimmed === '{% comment %} DJHC custom storefront styling injected by Codex. {% endcomment %}') return false;
+      if (/^\{% comment %\} djhc-(?:cache-bust|critical-overflow)-[^%]+ \{% endcomment %\}$/.test(trimmed)) return false;
+      if (/^<style id="djhc-critical-overflow-[^"]+">/.test(trimmed)) return false;
+      return !/^\{\{ 'djhc-[^']+\.css' \| asset_url \| stylesheet_tag \}\}$/.test(trimmed);
+    })
+    .join('\n');
   const injection = [
     '  {% comment %} DJHC custom storefront styling injected by Codex. {% endcomment %}',
     `  ${styleTag}`
   ].join('\n');
-  if (layoutLiquid.includes('</head>')) {
+  const value = normalized.includes('</head>')
+    ? normalized.replace('</head>', `${injection}\n</head>`)
+    : `${normalized.trimEnd()}\n${injection}\n`;
+  if (value.includes(styleMarker)) {
     return {
-      value: layoutLiquid.replace('</head>', `${injection}\n</head>`),
-      changed: true
+      value,
+      changed: value !== layoutLiquid
     };
   }
-  return { value: `${layoutLiquid.trimEnd()}\n${injection}\n`, changed: true };
+  return { value, changed: true };
 }
 
 async function getMainTheme(themeId?: string | number) {
