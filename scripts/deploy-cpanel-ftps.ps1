@@ -240,6 +240,10 @@ function Test-DeployablePath {
     return $false
   }
 
+  if ($normalizedPath.Equals("feeds/facebook-products.csv", [System.StringComparison]::OrdinalIgnoreCase)) {
+    return $true
+  }
+
   $leafName = Split-Path -Leaf $normalizedPath
   $extension = [System.IO.Path]::GetExtension($normalizedPath).ToLowerInvariant()
   $excludedFileNamesAnywhere = @(

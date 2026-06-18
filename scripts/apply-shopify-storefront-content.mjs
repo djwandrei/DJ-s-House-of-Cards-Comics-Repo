@@ -8,8 +8,35 @@ const THEME_KEYS = [
 ];
 const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
 const MAIN_SITE_URL = 'https://www.djshouseofcards-comics.com/';
+const FACEBOOK_URL = 'https://www.facebook.com/DJCardsComics/';
 const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
+const PRODUCT_SPOTLIGHTS = [
+  {
+    label: 'Baseball auto',
+    title: '1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP',
+    href: `${MAIN_SITE_URL}baseball-cards.html?item=856`,
+    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Baseball/Pre-2010/1997%20Just%20Minors%20Zach%20Sorensen%20Limited%20Edition%20Rookie%20Auto%20SP%20(1).jpg`
+  },
+  {
+    label: 'Basketball icons',
+    title: '1991-92 Upper Deck Michael Jordan / Magic Johnson Set',
+    href: `${MAIN_SITE_URL}basketball-cards.html?item=854`,
+    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/1900-2000/1991-92%20Upper%20Deck%20Confrontation%20Michael%20Jordan%20Magic%20Johnson%20%2B%201990%20Hoops%20Set%20(1).jpg`
+  },
+  {
+    label: 'Football rookies',
+    title: '2001 Pacific Dynagon Chad Johnson + Reggie Wayne Rookie Set',
+    href: `${MAIN_SITE_URL}football-cards.html?item=861`,
+    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Football/1990-2013/2001%20Pacific%20Dynagon%20Chad%20Johnson%20%23118%20%2B%20Reggie%20Wayne%20%23126%20Rookie%20Set%20(1).jpg`
+  },
+  {
+    label: 'Pop culture',
+    title: '2008 Donruss Celebrity Cuts Carrie Fisher /499',
+    href: `${MAIN_SITE_URL}collectibles.html?item=888`,
+    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/MISC/2008%20Donruss%20Celebrity%20Cuts%20Carrie%20Fisher%20Silver%20Foil%20499%20%2312%20Star%20Wars%20(1).jpg`
+  }
+];
 
 const apply = process.argv.includes('--apply');
 
@@ -69,6 +96,25 @@ function findSectionByType(template, type) {
 
 function firstBlockByType(section, type) {
   return Object.values(section?.blocks || {}).find((block) => block?.type === type) || null;
+}
+
+function backupThemeAssets(theme, assets) {
+  const backupDir = path.resolve('outputs', 'shopify-theme-backups');
+  fs.mkdirSync(backupDir, { recursive: true });
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const themeId = String(theme?.id || 'unknown').replace(/[^0-9A-Za-z_-]/g, '-');
+  const manifest = {};
+
+  for (const [key, value] of Object.entries(assets || {})) {
+    const safeKey = key.replace(/[\\/]/g, '__').replace(/[^0-9A-Za-z._-]/g, '-');
+    const backupPath = path.join(backupDir, `${stamp}-theme-${themeId}-${safeKey}`);
+    fs.writeFileSync(backupPath, String(value || ''), 'utf8');
+    manifest[key] = path.relative(process.cwd(), backupPath).replaceAll('\\', '/');
+  }
+
+  const manifestPath = path.join(backupDir, `${stamp}-theme-${themeId}-storefront-content-manifest.json`);
+  fs.writeFileSync(manifestPath, `${JSON.stringify({ theme, assets: manifest }, null, 2)}\n`, 'utf8');
+  return path.relative(process.cwd(), manifestPath).replaceAll('\\', '/');
 }
 
 function customLiquidSection(customLiquid, { colorScheme = 'scheme-1', paddingStart = 0, paddingEnd = 0 } = {}) {
@@ -136,9 +182,39 @@ function storefrontToolsMarkup() {
     <a href="/account">Account</a>
     <a href="${MAIN_SITE_URL}wishlist.html" target="_blank" rel="noopener noreferrer">Website Wishlist</a>
     <a href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
+    <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer">Facebook</a>
     <a href="${WHATNOT_URL}" target="_blank" rel="noopener noreferrer">Whatnot</a>
     <a href="${TIKTOK_SHOP_URL}" target="_blank" rel="noopener noreferrer">TikTok Shop</a>
   </nav>
+</section>
+`;
+}
+
+function storefrontSpotlightMarkup() {
+  const cards = PRODUCT_SPOTLIGHTS.map((item) => `
+    <a class="djhc-spotlight-card" href="${item.href}" target="_blank" rel="noopener noreferrer">
+      <img src="${item.image}" alt="${item.title}" loading="lazy" decoding="async">
+      <span>${item.label}</span>
+      <strong>${item.title}</strong>
+    </a>
+  `).join('');
+
+  return `
+<section class="djhc-spotlight" aria-labelledby="djhc-spotlight-heading">
+  <div class="djhc-spotlight__copy">
+    <p class="djhc-eyebrow">Fresh from the catalog</p>
+    <h2 id="djhc-spotlight-heading">Real inventory, ready to inspect.</h2>
+    <p>Shopify handles checkout while the main DJHC catalog remains the source for deeper photos, wishlist decisions, and cross-marketplace reconciliation.</p>
+  </div>
+  <div class="djhc-spotlight__rail" aria-label="Representative DJHC inventory">
+    ${cards}
+  </div>
+  <div class="djhc-sync-strip" aria-label="Marketplace sync status">
+    <span>Website catalog source</span>
+    <span>Shopify checkout active</span>
+    <span>Facebook feed prepared</span>
+    <span>Whatnot/TikTok links ready</span>
+  </div>
 </section>
 `;
 }
@@ -148,7 +224,7 @@ function storefrontProofMarkup() {
 <section class="djhc-storefront-proof" aria-label="Why shop DJ's House on Shopify">
   <article>
     <strong>Checkout-ready catalog</strong>
-    <span>Active Shopify listings stay synced to DJHC inventory, pricing, images, and quantities.</span>
+    <span>Active marketplace listings stay keyed to DJHC inventory, pricing, images, and quantities.</span>
   </article>
   <article>
     <strong>Collector-first browsing</strong>
@@ -172,7 +248,7 @@ function updateHomepage(rawJson) {
     const heroText = firstBlockByType(hero, 'text');
     const heroButton = firstBlockByType(hero, 'button');
     if (heroText?.settings) {
-      heroText.settings.text = "<p>DJ's House of Cards & Comics</p><p>Trusted hobby finds for sports cards, comics & collectibles, now checkout-ready.</p>";
+      heroText.settings.text = "<p>DJ's House of Cards & Comics</p><p>Sports cards, comics & collectibles with checkout-ready listings and deeper collector context on the main DJHC site.</p>";
       heroText.settings.alignment = 'center';
       heroText.settings.width = 'fill';
       heroText.settings.max_width = 'wide';
@@ -202,12 +278,20 @@ function updateHomepage(rawJson) {
   }
 
   template.sections ||= {};
+  template.sections.djhc_spotlight = customLiquidSection(storefrontSpotlightMarkup(), {
+    colorScheme: 'scheme-1',
+    paddingStart: 24,
+    paddingEnd: 18
+  });
+  placeSectionAfter(template, 'djhc_spotlight', hero ? Object.keys(template.sections).find((id) => template.sections[id] === hero) : null);
+  changes.push('homepage product spotlight');
+
   template.sections.djhc_shop_tools = customLiquidSection(storefrontToolsMarkup(), {
     colorScheme: 'scheme-1',
     paddingStart: 28,
     paddingEnd: 20
   });
-  placeSectionAfter(template, 'djhc_shop_tools', hero ? Object.keys(template.sections).find((id) => template.sections[id] === hero) : null);
+  placeSectionAfter(template, 'djhc_shop_tools', 'djhc_spotlight');
   changes.push('homepage shop lane shortcuts');
 
   template.sections.djhc_storefront_proof = customLiquidSection(storefrontProofMarkup(), {
@@ -290,7 +374,7 @@ function updateFooter(rawJson) {
     changes.push('footer heading');
   }
   if (textBlocks[1]?.settings) {
-    textBlocks[1].settings.text = `<p>Get first look at fresh cards, comics, collectibles, and storefront updates. Visit the <a href="${MAIN_SITE_URL}">main DJHC website</a>, <a href="${WHATNOT_URL}">Whatnot</a>, or <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p>`;
+    textBlocks[1].settings.text = `<p>Get first look at fresh cards, comics, collectibles, and storefront updates. Visit the <a href="${MAIN_SITE_URL}">main DJHC website</a>, <a href="${FACEBOOK_URL}">Facebook</a>, <a href="${WHATNOT_URL}">Whatnot</a>, or <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p>`;
     changes.push('footer signup copy');
   }
   if (footerSection?.settings) {
@@ -307,7 +391,7 @@ function updateFooter(rawJson) {
   }
   const socials = Object.values(utilitySection?.blocks || {}).find((block) => block?.type === 'social-links');
   if (socials?.settings) {
-    socials.settings.facebook_url = 'https://www.facebook.com/DJCardsComics/';
+    socials.settings.facebook_url = FACEBOOK_URL;
     socials.settings.instagram_url = '';
     socials.settings.youtube_url = '';
     socials.settings.tiktok_url = 'https://www.tiktok.com/@djshouseofcards';
@@ -339,6 +423,8 @@ async function main() {
     console.log(JSON.stringify(summary, null, 2));
     return;
   }
+
+  summary.backupManifestPath = backupThemeAssets(inspected.theme, assets);
 
   const result = await callThemeFunction({
     action: 'apply',

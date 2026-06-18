@@ -20,6 +20,7 @@ contact.html
 contact.js
 core.js
 football-cards.html
+feeds/facebook-products.csv
 index.html
 nav.js
 offline.html

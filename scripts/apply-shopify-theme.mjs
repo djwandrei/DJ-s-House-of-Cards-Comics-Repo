@@ -3,11 +3,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
-const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront.css';
+const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront-20260618.css';
 const MIRRORED_STYLE_ASSET_KEYS = [
   STYLE_ASSET_KEY,
+  'assets/djhc-storefront.css',
   'assets/djhc-custom.css',
-  'assets/djhc-live.css'
+  'assets/djhc-live.css',
+  'assets/djhc-storefront-20260617-overflow.css'
 ].filter((assetKey, index, assetKeys) => assetKeys.indexOf(assetKey) === index);
 const LOGO_ASSET_KEY = 'assets/dj-logo.png';
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
@@ -523,17 +525,10 @@ header.header {
   box-shadow: 0 16px 36px rgba(10, 18, 42, .26) !important;
 }
 
-.shopify-section-group-header-group::after {
-  content: "DJ's House of Cards & Comics  |  Trusted Hobby Finds  |  Sports Cards, Comics & Collectibles";
-  display: block;
-  padding: .58rem 1rem;
-  background: linear-gradient(90deg, var(--djhc-gold), #f6d978, var(--djhc-gold)) !important;
-  color: #172033 !important;
-  font-size: .82rem;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-align: center;
-  text-transform: uppercase;
+.shopify-section-group-header-group::after,
+.header-section::after {
+  content: none !important;
+  display: none !important;
 }
 
 .header a,
@@ -589,6 +584,121 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   min-height: 52px !important;
   padding-inline: 1.8rem !important;
   border: 1px solid rgba(255, 255, 255, .28) !important;
+}
+
+.djhc-spotlight {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 1.65rem);
+  border: 1px solid rgba(24, 37, 73, .12);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(246, 249, 253, .94)),
+    radial-gradient(circle at top right, rgba(228, 177, 65, .18), transparent 34%);
+  box-shadow: 0 16px 38px rgba(16, 27, 57, .12);
+}
+
+.djhc-spotlight__copy {
+  display: grid;
+  grid-template-columns: minmax(220px, .72fr) minmax(280px, 1fr);
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.djhc-spotlight__copy h2 {
+  margin: 0;
+  color: var(--djhc-blue-dark) !important;
+  font-family: var(--djhc-font-display);
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  letter-spacing: .035em;
+  line-height: .92;
+}
+
+.djhc-spotlight__copy p:last-child {
+  margin: 0;
+  color: var(--djhc-muted);
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.djhc-spotlight__rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .9rem;
+}
+
+.djhc-spotlight-card {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  gap: .58rem;
+  min-height: 100%;
+  padding: .72rem;
+  border: 1px solid rgba(24, 37, 73, .13);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--djhc-text) !important;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(16, 27, 57, .10);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.djhc-spotlight-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(31, 47, 163, .34);
+  box-shadow: 0 16px 34px rgba(16, 27, 57, .16);
+}
+
+.djhc-spotlight-card img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: contain;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(31, 47, 163, .06), rgba(239, 24, 35, .06)),
+    #f8fafc;
+}
+
+.djhc-spotlight-card span {
+  color: var(--djhc-red);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.djhc-spotlight-card strong {
+  display: -webkit-box;
+  min-height: 2.6em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--djhc-text);
+  font-size: .9rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.djhc-sync-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .55rem;
+  margin-top: .95rem;
+}
+
+.djhc-sync-strip span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: .5rem .7rem;
+  border: 1px solid rgba(31, 47, 163, .16);
+  border-radius: 999px;
+  background: rgba(31, 47, 163, .07);
+  color: var(--djhc-blue-dark);
+  font-size: .78rem;
+  font-weight: 900;
+  text-align: center;
 }
 
 .djhc-shop-tools,
@@ -745,7 +855,7 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
 }
 
 body:has(.main-collection-grid) main::before {
-  content: "Shop DJHC Inventory";
+  content: "Checkout-Ready DJHC Inventory";
   display: block;
   width: min(1180px, calc(100% - 2rem));
   margin: 1.25rem auto 1rem;
@@ -759,6 +869,21 @@ body:has(.main-collection-grid) main::before {
   letter-spacing: .045em;
   text-align: center;
   box-shadow: 0 18px 42px rgba(16, 27, 57, .18);
+}
+
+body:has(.main-collection-grid) h1 {
+  font-size: 0 !important;
+  line-height: 1 !important;
+}
+
+body:has(.main-collection-grid) h1::after {
+  content: "Shop Cards, Comics & Collectibles";
+  display: inline-block;
+  color: var(--djhc-text);
+  font-family: var(--djhc-font-display);
+  font-size: clamp(2.15rem, 5vw, 3.65rem);
+  letter-spacing: .04em;
+  line-height: .95;
 }
 
 main,
@@ -1157,13 +1282,24 @@ slideshow-container {
   }
 
   .djhc-shop-tools,
+  .djhc-spotlight,
   .djhc-storefront-proof {
     width: min(100% - 1rem, 720px);
   }
 
   .djhc-shop-tools,
+  .djhc-spotlight__copy,
   .djhc-storefront-proof {
     grid-template-columns: 1fr;
+  }
+
+  .djhc-spotlight__rail,
+  .djhc-sync-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .djhc-sync-strip span {
+    border-radius: 12px;
   }
 
   .djhc-shop-tools__grid {
@@ -1174,24 +1310,39 @@ slideshow-container {
     min-height: 96px;
   }
 }
+
+/* Final override for older mirrored DJHC assets that may still be loaded by the theme. */
+body:has(.main-collection-grid) main::before,
+body:has(.main-collection-grid) #MainContent::before {
+  content: "Checkout-Ready DJHC Inventory" !important;
+}
 `;
 }
 
 function injectStylesheet(layoutLiquid) {
-  if (layoutLiquid.includes(STYLE_MARKER)) {
-    return { value: layoutLiquid, changed: false };
-  }
   const injection = [
     '  {% comment %} DJHC custom storefront styling injected by Codex. {% endcomment %}',
     `  ${STYLE_TAG}`
   ].join('\n');
-  if (layoutLiquid.includes('</head>')) {
+  const normalized = layoutLiquid
+    .split(/\r?\n/)
+    .filter((line) => {
+      const trimmed = line.trim();
+      if (trimmed === '{% comment %} DJHC custom storefront styling injected by Codex. {% endcomment %}') return false;
+      if (/^\{% comment %\} djhc-cache-bust-[^%]+ \{% endcomment %\}$/.test(trimmed)) return false;
+      return !/^\{\{ 'djhc-[^']+\.css' \| asset_url \| stylesheet_tag \}\}$/.test(trimmed);
+    })
+    .join('\n');
+  if (normalized.includes(STYLE_MARKER)) {
+    return { value: normalized, changed: normalized !== layoutLiquid };
+  }
+  if (normalized.includes('</head>')) {
     return {
-      value: layoutLiquid.replace('</head>', `${injection}\n</head>`),
+      value: normalized.replace('</head>', `${injection}\n</head>`),
       changed: true
     };
   }
-  return { value: `${layoutLiquid.trimEnd()}\n${injection}\n`, changed: true };
+  return { value: `${normalized.trimEnd()}\n${injection}\n`, changed: true };
 }
 
 function backupLayout(themeId, layoutLiquid) {
@@ -1207,9 +1358,7 @@ function themePayload(action, options = {}) {
   const styleAssetKey = options.styleAssetKey || STYLE_ASSET_KEY;
   const styleFilename = path.basename(styleAssetKey);
   const shouldBustLayout = Boolean(options.layoutCacheBust);
-  const styleMarker = shouldBustLayout
-    ? options.layoutCacheBustMarker
-    : (styleAssetKey === STYLE_ASSET_KEY ? STYLE_MARKER : styleFilename);
+  const styleMarker = styleAssetKey === STYLE_ASSET_KEY ? STYLE_MARKER : styleFilename;
   const styleTag = shouldBustLayout
     ? `{% comment %} ${options.layoutCacheBustMarker} {% endcomment %}\n  {{ '${styleFilename}' | asset_url | stylesheet_tag }}`
     : `{{ '${styleFilename}' | asset_url | stylesheet_tag }}`;

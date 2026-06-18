@@ -1,15 +1,21 @@
-# Shopify, TikTok Shop, and Whatnot Sync
+# Shopify, Facebook, TikTok Shop, and Whatnot Sync
 
 Shopify should be the marketplace hub for this storefront:
 
 ```text
 DJ's website / Supabase <-> Shopify <-> TikTok Shop
                                   <-> Whatnot
+DJ's website / Supabase -> Facebook Commerce feed
 ```
 
 The official TikTok and Whatnot Shopify sales channels synchronize products,
 inventory, and orders. Shopify remains the source of truth for fields shared
 with Whatnot.
+
+Facebook is intentionally independent of Shopify for now. Its catalog feed is
+generated from the same website catalog and uses the same stable `DJHC-{product
+ID}` identifier as the Shopify SKU so sales can be reconciled back to the same
+website/Supabase inventory row.
 
 Legacy listings are intentionally retained as Shopify drafts. Only eligible
 non-legacy workbook listings may be activated or published to TikTok and
@@ -38,6 +44,25 @@ Every product uses a stable `DJHC-{product ID}` SKU and `djhc-{product ID}`
 Shopify handle. Do not replace these values with title-derived identifiers;
 titles can change, while channel inventory mappings must remain stable.
 
+Generate the current Facebook Commerce feed:
+
+```powershell
+node .\scripts\build-facebook-catalog.mjs
+```
+
+The command creates:
+
+- `facebook-products.csv`: Meta Commerce Manager feed for eligible non-legacy
+  products with real images, positive prices, and available inventory
+- `feeds/facebook-products.csv`: deployable public feed for Meta scheduled URL
+  ingestion at `https://www.djshouseofcards-comics.com/feeds/facebook-products.csv`
+- `facebook-product-review.json`: per-product eligibility/rejection data
+- `facebook-catalog-summary.json`: feed totals and blocker counts
+
+The Facebook feed uses the website URL as the product `link`, not Shopify. This
+keeps Facebook independent of Shopify while still preserving the same `DJHC-*`
+product IDs used by Shopify mappings.
+
 ## Release Gates
 
 Do not activate or publish the generated catalog until:
@@ -50,6 +75,8 @@ Do not activate or publish the generated catalog until:
    shipping profiles from Shopify weights.
 4. Shopify location, shipping, tax, return, and payment settings are verified.
 5. A small product batch is imported and checked before the full catalog.
+6. Facebook catalog imports should use the generated feed and preserve the
+   `id` column exactly. Do not allow Meta to regenerate item IDs from titles.
 
 The current catalog has 2,232 non-legacy listings with prices. The 948 legacy
 listings, including all 20 zero-price/contact-for-price rows, must remain draft.
@@ -127,6 +154,12 @@ The durable synchronization flow is:
 `shopify_product_mappings.publish_enabled` is an additional release gate.
 Mappings start with publishing disabled. Keep it disabled for every legacy
 listing; enabling it is allowed only for reviewed non-legacy listings.
+
+For Facebook, use the generated `DJHC-*` feed ID as the reconciliation key. If a
+Facebook sale is completed outside Shopify, subtract inventory from the matching
+website/Supabase product first, then let the Shopify sync flow reconcile the
+matching Shopify SKU. Do not mark Facebook-only sales against title text; title
+matching is not stable enough for inventory.
 
 The integration uses Shopify API version `2026-04`. Admin listing saves use
 `productSet` for safe product fields and `productVariantsBulkUpdate` for price.

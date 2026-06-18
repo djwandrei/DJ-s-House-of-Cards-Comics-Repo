@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
 const PRODUCTS_PATH = 'products.json';
 const FEATURED_PAGE = 'index.html';
@@ -15,6 +16,23 @@ const CATEGORY_ROUTES = new Map([
   ['Football', 'football-cards.html'],
   ['Comics', 'comics.html'],
   ['Collectibles', 'collectibles.html']
+]);
+const FALLBACK_BY_CATEGORY = {
+  Baseball: 'assets/placeholder-baseball.svg',
+  Basketball: 'assets/placeholder-basketball.svg',
+  Football: 'assets/placeholder-football.svg',
+  Comics: 'assets/placeholder-comics.svg',
+  Collectibles: 'assets/clubhouse-sign.png',
+  Other: 'assets/clubhouse-sign.png'
+};
+const THUMBNAIL_ELIGIBLE_ROOTS = new Set([
+  'baseball-cards',
+  'basketball-cards',
+  'collectibles',
+  'comics',
+  'ebay listing photos',
+  'personal collection',
+  'football-cards'
 ]);
 
 function readProducts() {
@@ -38,6 +56,66 @@ function escapeUrlAttribute(value) {
     .replaceAll('<', '%3C')
     .replaceAll('>', '%3E')
     .replaceAll('"', '%22');
+}
+
+function escapeDataAttribute(value) {
+  return escapeHtml(value).replace(/\r?\n/g, '&#10;');
+}
+
+function normalizeAssetPath(value) {
+  return String(value ?? '').trim().replace(/\\/g, '/');
+}
+
+function decodeAssetSegment(segment) {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+}
+
+function decodeAssetPath(assetPath) {
+  return normalizeAssetPath(assetPath).split('/').map(decodeAssetSegment).join('/');
+}
+
+function encodeAssetUrl(assetPath) {
+  const normalized = normalizeAssetPath(assetPath);
+  if (!/^assets\//i.test(normalized)) {
+    return escapeUrlAttribute(normalized);
+  }
+
+  return normalized
+    .split('/')
+    .map((segment, index) => (index === 0 ? segment : encodeURIComponent(decodeAssetSegment(segment))))
+    .join('/');
+}
+
+function localAssetExists(assetPath) {
+  const decoded = decodeAssetPath(assetPath);
+  if (!/^assets\//i.test(decoded)) return false;
+  return fs.existsSync(path.join(process.cwd(), ...decoded.split('/')));
+}
+
+function isThumbnailEligibleAsset(assetPath) {
+  const normalized = normalizeAssetPath(assetPath);
+  if (!/^assets\//i.test(normalized) || /^assets\/thumbnails\//i.test(normalized)) {
+    return false;
+  }
+
+  const relativePath = normalized.replace(/^assets\//i, '');
+  const rootSegment = relativePath.split('/')[0]?.toLowerCase() || '';
+  return THUMBNAIL_ELIGIBLE_ROOTS.has(rootSegment);
+}
+
+function deriveThumbnailPath(assetPath) {
+  const normalized = normalizeAssetPath(assetPath);
+  if (!isThumbnailEligibleAsset(normalized)) return '';
+
+  const relativePath = normalized.replace(/^assets\//i, '');
+  const extension = relativePath.split('.').pop()?.toLowerCase() || '';
+  if (!extension || extension === 'svg') return '';
+
+  return `assets/thumbnails/${relativePath.replace(/\.[^.]+$/, '.webp')}`;
 }
 
 function categoryOf(product) {
@@ -76,6 +154,32 @@ function primaryImage(product) {
   return String(product.image || '').trim() || 'assets/dj-logo.png';
 }
 
+function productThumbnailPath(product) {
+  const metadata = product.metadata && typeof product.metadata === 'object' ? product.metadata : {};
+  const configuredThumbnail = normalizeAssetPath(metadata.thumbnailPath || product.thumbnailPath);
+  if (configuredThumbnail && localAssetExists(configuredThumbnail)) {
+    return configuredThumbnail;
+  }
+
+  const derivedThumbnail = deriveThumbnailPath(primaryImage(product));
+  return derivedThumbnail && localAssetExists(derivedThumbnail) ? derivedThumbnail : '';
+}
+
+function productImageSources(product) {
+  const category = categoryOf(product);
+  const original = normalizeAssetPath(primaryImage(product));
+  const thumbnail = productThumbnailPath(product);
+  const source = thumbnail || original;
+  const fallback = FALLBACK_BY_CATEGORY[category] || FALLBACK_BY_CATEGORY.Other;
+  const candidates = [...new Set([thumbnail, original].filter(Boolean))].map(encodeAssetUrl);
+
+  return {
+    src: encodeAssetUrl(source),
+    candidates,
+    fallback: encodeAssetUrl(fallback)
+  };
+}
+
 function productHref(product) {
   const route = CATEGORY_ROUTES.get(categoryOf(product)) || 'shop.html';
   return `${route}?item=${encodeURIComponent(product.id)}`;
@@ -96,12 +200,13 @@ function contextLine(product) {
 
 function fallbackCard(product, index) {
   const category = categoryOf(product);
+  const image = productImageSources(product);
   const condition = shouldSuppressStaticCondition(product, category)
     ? ''
     : (product.conditionCompact || product.condition || 'Condition available by request');
   return `    <article class="product-card static-product-card" data-product-id="${escapeHtml(product.id)}" data-product-category="${escapeHtml(category)}">
       <div class="product-media">
-        <img src="${escapeUrlAttribute(primaryImage(product))}" alt="${escapeHtml(product.name)} product photo" width="320" height="320" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async">
+        <img src="${image.src}" data-asset-candidates="${escapeDataAttribute(image.candidates.join('\n'))}" data-fallback-src="${image.fallback}" alt="${escapeHtml(product.name)} product photo" width="320" height="320" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async">
       </div>
       <div class="product-content">
         <h3>${escapeHtml(product.name)}</h3>
