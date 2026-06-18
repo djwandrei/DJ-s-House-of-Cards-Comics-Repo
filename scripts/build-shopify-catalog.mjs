@@ -136,9 +136,9 @@ function productTags(product = {}) {
   const tags = [
     'DJHC',
     `DJHC-${product.id}`,
-    'Website Sync',
-    isNonlegacy(product) ? 'Non-Legacy' : 'Legacy',
-    product.isFeatured === true ? 'DJHC Featured' : '',
+    'Cards Comics Collectibles',
+    isNonlegacy(product) ? 'Website Catalog' : '',
+    product.isFeatured === true ? 'Featured Pick' : '',
     product.category,
     product.sport,
     product.league,
@@ -152,10 +152,6 @@ function productTags(product = {}) {
 
 function productDescription(product = {}) {
   const supplied = cleanText(product.description);
-  if (supplied) {
-    return `<p>${htmlEscape(supplied)}</p>`;
-  }
-
   const details = [
     ['Category', product.category],
     ['Sport', product.sport],
@@ -168,7 +164,17 @@ function productDescription(product = {}) {
   const list = details
     .map(([label, value]) => `<li><strong>${htmlEscape(label)}:</strong> ${htmlEscape(cleanText(value))}</li>`)
     .join('');
-  return `<p>${htmlEscape(product.name)}</p>${list ? `<ul>${list}</ul>` : ''}<p>Please review all photos for the exact item you will receive.</p>`;
+
+  if (supplied) {
+    const hasInlineDetails = /\bDetails:/i.test(supplied);
+    return [
+      `<p>${htmlEscape(supplied)}</p>`,
+      !hasInlineDetails && list ? `<ul>${list}</ul>` : '',
+      `<p>Please review all photos for the exact item you will receive. DJHC inventory ID: DJHC-${htmlEscape(product.id)}.</p>`
+    ].filter(Boolean).join('');
+  }
+
+  return `<p>${htmlEscape(product.name)}</p>${list ? `<ul>${list}</ul>` : ''}<p>Please review all photos for the exact item you will receive. DJHC inventory ID: DJHC-${htmlEscape(product.id)}.</p>`;
 }
 
 function seoDescription(product = {}) {

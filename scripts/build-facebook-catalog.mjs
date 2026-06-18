@@ -25,6 +25,7 @@ const headers = [
   'price',
   'link',
   'image_link',
+  'additional_image_link',
   'brand',
   'mpn',
   'inventory',
@@ -32,7 +33,9 @@ const headers = [
   'product_type',
   'custom_label_0',
   'custom_label_1',
-  'custom_label_2'
+  'custom_label_2',
+  'custom_label_3',
+  'custom_label_4'
 ];
 
 function csvValue(value) {
@@ -106,9 +109,45 @@ function productBrand(product = {}) {
   );
 }
 
+function fieldList(items = [], limit = 4) {
+  return [...new Set(items
+    .map((item) => cleanText(item).replace(/\s*\|\s*/g, ' | '))
+    .filter(Boolean))]
+    .slice(0, limit)
+    .join(' | ');
+}
+
+function readablePriceBand(price) {
+  if (!Number.isFinite(price)) return '';
+  if (price < 10) return 'Under $10';
+  if (price < 25) return '$10-$24.99';
+  if (price < 50) return '$25-$49.99';
+  if (price < 100) return '$50-$99.99';
+  return '$100+';
+}
+
 function productDescription(product = {}) {
   const supplied = cleanText(product.description);
-  if (supplied) return supplied.slice(0, 4999);
+  const facts = fieldList([
+    product.year ? `Year: ${product.year}` : '',
+    product.category ? `Category: ${product.category}` : '',
+    product.sport ? `Sport: ${product.sport}` : '',
+    product.league ? `League: ${product.league}` : '',
+    product.playerAthlete ? `Player/Athlete: ${product.playerAthlete}` : '',
+    product.team ? `Team: ${product.team}` : '',
+    product.condition ? `Condition: ${product.condition}` : ''
+  ], 7);
+  const galleryCount = productImages(product).length;
+
+  if (supplied) {
+    const hasInlineDetails = /\bDetails:/i.test(supplied);
+    return [
+      supplied,
+      !hasInlineDetails && facts ? `Listing details: ${facts}.` : '',
+      galleryCount > 1 ? `${galleryCount} product photos are included for review.` : 'Review the product photo before purchase.',
+      `DJHC inventory ID: DJHC-${product.id}.`
+    ].filter(Boolean).join(' ').slice(0, 4999);
+  }
 
   const details = [
     product.name,
@@ -123,6 +162,15 @@ function productDescription(product = {}) {
   ].map(cleanText).filter(Boolean);
 
   return details.join(' | ').slice(0, 4999);
+}
+
+function marketplaceLabel(product = {}) {
+  return fieldList([
+    product.sport,
+    product.league,
+    product.team,
+    product.year
+  ], 3);
 }
 
 const productsFile = JSON.parse(await fs.readFile(productsPath, 'utf8'));
@@ -181,6 +229,7 @@ for (const product of products) {
     price: `${price.toFixed(2)} USD`,
     link: productUrl(product),
     image_link: publicAssetUrl(images[0]),
+    additional_image_link: images[1] ? publicAssetUrl(images[1]) : '',
     brand: productBrand(product).slice(0, 100),
     mpn: `DJHC-${product.id}`,
     inventory: quantity,
@@ -188,7 +237,9 @@ for (const product of products) {
     product_type: productType(product),
     custom_label_0: source,
     custom_label_1: cleanText(product.category),
-    custom_label_2: cleanText(product.attributes?.[0] || product.condition || '')
+    custom_label_2: cleanText(product.attributes?.[0] || product.condition || ''),
+    custom_label_3: readablePriceBand(price),
+    custom_label_4: marketplaceLabel(product)
   });
 }
 

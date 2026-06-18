@@ -147,21 +147,21 @@ function djhcCss() {
  * Curated sports cards, comics, collectibles, and trusted hobby finds.
  */
 :root {
-  --djhc-blue: #1f2fa3;
-  --djhc-blue-dark: #15206b;
-  --djhc-red: #ef1823;
-  --djhc-red-dark: #b40f18;
-  --djhc-gold: #e4b141;
-  --djhc-green: #1b8d3d;
-  --djhc-bg: #f3f6fb;
-  --djhc-surface: rgba(255, 255, 255, .96);
-  --djhc-text: #172033;
-  --djhc-muted: #5c667f;
+  --djhc-blue: #20356f;
+  --djhc-blue-dark: #111d3d;
+  --djhc-red: #c81f2d;
+  --djhc-red-dark: #8e1721;
+  --djhc-gold: #c69736;
+  --djhc-green: #1b7a42;
+  --djhc-bg: #f6f7fb;
+  --djhc-surface: #ffffff;
+  --djhc-text: #141925;
+  --djhc-muted: #5e6676;
   --djhc-border: rgba(24, 37, 73, .12);
-  --djhc-shadow: 0 14px 34px rgba(16, 27, 57, .14);
-  --djhc-radius: 22px;
+  --djhc-shadow: 0 8px 20px rgba(16, 27, 57, .10);
+  --djhc-radius: 8px;
   --djhc-font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --djhc-font-display: "Bebas Neue", "Arial Narrow", Impact, sans-serif;
+  --djhc-font-display: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 html {
@@ -171,10 +171,7 @@ html {
 body {
   color: var(--djhc-text);
   font-family: var(--djhc-font-body);
-  background:
-    radial-gradient(circle at top left, rgba(31, 47, 163, .10), transparent 34%),
-    radial-gradient(circle at top right, rgba(239, 24, 35, .10), transparent 28%),
-    linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+  background: var(--djhc-bg);
 }
 
 .shopify-section,
@@ -187,16 +184,14 @@ body {
 .shopify-section-group-header-group,
 .shopify-section-group-footer-group,
 .footer {
-  background:
-    linear-gradient(180deg, rgba(8, 14, 32, .92), rgba(14, 23, 47, .88)),
-    linear-gradient(90deg, var(--djhc-blue), var(--djhc-blue-dark));
+  background: var(--djhc-blue-dark);
   color: #fff;
 }
 
 .header-wrapper,
 .shopify-section-group-header-group {
   border-bottom: 1px solid rgba(255, 255, 255, .14);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .14);
 }
 
 .header a,
@@ -215,8 +210,8 @@ body {
 .header-logo,
 .header-logo__link {
   font-family: var(--djhc-font-display);
-  letter-spacing: .035em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .header__heading-link::after,
@@ -228,13 +223,13 @@ body {
   font-family: var(--djhc-font-body);
   font-size: .68rem;
   font-weight: 700;
-  letter-spacing: .18em;
+  letter-spacing: 0;
   line-height: 1;
 }
 
 .menu-list__link,
 .header__menu-item {
-  border-radius: 999px;
+  border-radius: 6px;
   font-weight: 800;
 }
 
@@ -293,7 +288,7 @@ h1,
 h2 {
   color: var(--djhc-text);
   font-family: var(--djhc-font-display);
-  letter-spacing: .035em;
+  letter-spacing: 0;
 }
 
 .banner__text,
@@ -318,12 +313,12 @@ h2 {
 .facets__see-results,
 .clear-filter.button {
   border: 0;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--djhc-blue), var(--djhc-red));
+  border-radius: 8px;
+  background: var(--djhc-blue);
   color: #fff;
   font-weight: 800;
-  letter-spacing: .02em;
-  box-shadow: 0 14px 28px rgba(31, 47, 163, .22);
+  letter-spacing: 0;
+  box-shadow: 0 8px 18px rgba(31, 47, 163, .20);
   transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
 }
 
@@ -337,7 +332,7 @@ h2 {
 .customer button:hover,
 .facets__see-results:hover {
   transform: translateY(-1px);
-  box-shadow: 0 18px 34px rgba(31, 47, 163, .28);
+  box-shadow: 0 12px 24px rgba(31, 47, 163, .24);
 }
 
 .button-secondary,
@@ -346,7 +341,7 @@ h2 {
 .facets__clear-all-link,
 .clear-filter {
   border-color: rgba(31, 47, 163, .22);
-  border-radius: 999px;
+  border-radius: 8px;
   color: var(--djhc-blue);
   font-weight: 800;
 }
@@ -423,7 +418,7 @@ h2 {
 .card__badge,
 .inventory-status,
 .product-form__inventory {
-  border-radius: 999px;
+  border-radius: 8px;
   background: rgba(228, 177, 65, .18);
   color: #7b5200;
   font-weight: 850;
@@ -438,7 +433,7 @@ input,
 select,
 textarea {
   border-color: rgba(24, 37, 73, .14);
-  border-radius: 14px;
+  border-radius: 8px;
 }
 
 .field__input:focus,
@@ -466,7 +461,7 @@ textarea:focus {
 .footer h3 {
   color: #fff;
   font-family: var(--djhc-font-display);
-  letter-spacing: .04em;
+  letter-spacing: 0;
 }
 
 .footer .rte,
@@ -477,13 +472,13 @@ textarea:focus {
 
 @media screen and (max-width: 749px) {
   :root {
-    --djhc-radius: 18px;
+    --djhc-radius: 8px;
   }
 
   .header__heading-link::after,
   .header-logo__link::after {
     font-size: .58rem;
-    letter-spacing: .12em;
+    letter-spacing: 0;
   }
 
   .product-card__content,
@@ -494,7 +489,7 @@ textarea:focus {
 
   .main-collection-grid,
   .facets-container {
-    border-radius: 16px;
+    border-radius: 8px;
   }
 }
 
@@ -506,10 +501,7 @@ textarea:focus {
  */
 body.page-width-narrow.card-hover-effect-none {
   max-width: none !important;
-  background:
-    radial-gradient(circle at top left, rgba(31, 47, 163, .16), transparent 32%),
-    radial-gradient(circle at top right, rgba(239, 24, 35, .13), transparent 30%),
-    linear-gradient(180deg, #f8fbff 0%, #eef3fb 48%, #f3f6fb 100%) !important;
+  background: var(--djhc-bg) !important;
 }
 
 .shopify-section-group-header-group,
@@ -517,12 +509,10 @@ body.page-width-narrow.card-hover-effect-none {
 .header__row--top.color-scheme-djhc,
 .header,
 header.header {
-  background:
-    linear-gradient(180deg, rgba(8, 14, 32, .96), rgba(14, 23, 47, .92)),
-    linear-gradient(90deg, var(--djhc-blue-dark), var(--djhc-blue) 58%, var(--djhc-red)) !important;
+  background: var(--djhc-blue-dark) !important;
   border-bottom: 1px solid rgba(255, 255, 255, .16) !important;
   color: #fff !important;
-  box-shadow: 0 16px 36px rgba(10, 18, 42, .26) !important;
+  box-shadow: 0 8px 20px rgba(10, 18, 42, .20) !important;
 }
 
 .shopify-section-group-header-group::after,
@@ -568,10 +558,7 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
 }
 
 .hero.color-scheme-djhc {
-  background:
-    radial-gradient(circle at 18% 18%, rgba(228, 177, 65, .34), transparent 27%),
-    radial-gradient(circle at 82% 12%, rgba(239, 24, 35, .28), transparent 30%),
-    linear-gradient(135deg, rgba(8, 14, 32, .96), rgba(21, 32, 107, .94) 52%, rgba(31, 47, 163, .9)) !important;
+  background: linear-gradient(135deg, rgba(8, 14, 32, .96), rgba(32, 53, 111, .94)) !important;
 }
 
 .hero .text-block,
@@ -589,13 +576,11 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
 .djhc-spotlight {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: clamp(1rem, 3vw, 1.65rem);
+  padding: 1.5rem;
   border: 1px solid rgba(24, 37, 73, .12);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(246, 249, 253, .94)),
-    radial-gradient(circle at top right, rgba(228, 177, 65, .18), transparent 34%);
-  box-shadow: 0 16px 38px rgba(16, 27, 57, .12);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--djhc-shadow);
 }
 
 .djhc-spotlight__copy {
@@ -610,9 +595,9 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   margin: 0;
   color: var(--djhc-blue-dark) !important;
   font-family: var(--djhc-font-display);
-  font-size: clamp(2rem, 4vw, 3.6rem);
-  letter-spacing: .035em;
-  line-height: .92;
+  font-size: 2.35rem;
+  letter-spacing: 0;
+  line-height: 1.08;
 }
 
 .djhc-spotlight__copy p:last-child {
@@ -635,18 +620,18 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   min-height: 100%;
   padding: .72rem;
   border: 1px solid rgba(24, 37, 73, .13);
-  border-radius: 12px;
+  border-radius: 8px;
   background: #fff;
   color: var(--djhc-text) !important;
   text-decoration: none;
-  box-shadow: 0 10px 24px rgba(16, 27, 57, .10);
+  box-shadow: 0 6px 16px rgba(16, 27, 57, .08);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
 .djhc-spotlight-card:hover {
   transform: translateY(-2px);
   border-color: rgba(31, 47, 163, .34);
-  box-shadow: 0 16px 34px rgba(16, 27, 57, .16);
+  box-shadow: 0 10px 22px rgba(16, 27, 57, .12);
 }
 
 .djhc-spotlight-card img {
@@ -663,7 +648,7 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   color: var(--djhc-red);
   font-size: .72rem;
   font-weight: 950;
-  letter-spacing: .09em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -679,28 +664,6 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   line-height: 1.3;
 }
 
-.djhc-sync-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: .55rem;
-  margin-top: .95rem;
-}
-
-.djhc-sync-strip span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: .5rem .7rem;
-  border: 1px solid rgba(31, 47, 163, .16);
-  border-radius: 999px;
-  background: rgba(31, 47, 163, .07);
-  color: var(--djhc-blue-dark);
-  font-size: .78rem;
-  font-weight: 900;
-  text-align: center;
-}
-
 .djhc-shop-tools,
 .djhc-storefront-proof {
   width: min(1180px, calc(100% - 2rem));
@@ -710,14 +673,12 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
 .djhc-shop-tools {
   display: grid;
   grid-template-columns: minmax(260px, .82fr) minmax(0, 1.35fr);
-  gap: clamp(1rem, 3vw, 2rem);
-  padding: clamp(1.2rem, 3vw, 2rem);
+  gap: 1.5rem;
+  padding: 1.5rem;
   border: 1px solid rgba(24, 37, 73, .12);
-  border-radius: 30px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(245, 248, 253, .94)),
-    radial-gradient(circle at top left, rgba(31, 47, 163, .1), transparent 30%);
-  box-shadow: 0 18px 46px rgba(16, 27, 57, .14);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--djhc-shadow);
 }
 
 .djhc-eyebrow {
@@ -725,7 +686,7 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   color: var(--djhc-red);
   font-size: .78rem;
   font-weight: 950;
-  letter-spacing: .12em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -733,9 +694,9 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   margin: 0;
   color: var(--djhc-blue-dark);
   font-family: var(--djhc-font-display);
-  font-size: clamp(2.2rem, 5vw, 4.2rem);
-  letter-spacing: .035em;
-  line-height: .9;
+  font-size: 2.4rem;
+  letter-spacing: 0;
+  line-height: 1.06;
 }
 
 .djhc-shop-tools__intro p:last-child {
@@ -760,23 +721,22 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   gap: .7rem;
   padding: 1rem;
   border: 1px solid rgba(24, 37, 73, .13);
-  border-radius: 22px;
+  border-radius: 8px;
   background: #fff;
   color: var(--djhc-text) !important;
   text-decoration: none;
-  box-shadow: 0 10px 26px rgba(16, 27, 57, .09);
+  box-shadow: 0 6px 16px rgba(16, 27, 57, .08);
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 
 .djhc-shop-card:hover {
   transform: translateY(-3px);
   border-color: rgba(31, 47, 163, .35);
-  box-shadow: 0 18px 38px rgba(16, 27, 57, .16);
+  box-shadow: 0 10px 22px rgba(16, 27, 57, .12);
 }
 
 .djhc-shop-card--primary {
-  background:
-    linear-gradient(135deg, rgba(21, 32, 107, .96), rgba(31, 47, 163, .92) 58%, rgba(239, 24, 35, .9));
+  background: var(--djhc-blue-dark);
   color: #fff !important;
 }
 
@@ -808,7 +768,7 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   min-height: 42px;
   padding: .65rem .95rem;
   border: 1px solid rgba(31, 47, 163, .18);
-  border-radius: 999px;
+  border-radius: 8px;
   background: rgba(31, 47, 163, .08);
   color: var(--djhc-blue) !important;
   font-size: .88rem;
@@ -831,11 +791,9 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   min-height: 122px;
   padding: 1.15rem;
   border: 1px solid rgba(228, 177, 65, .34);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .97), rgba(255, 248, 226, .78)),
-    radial-gradient(circle at top right, rgba(228, 177, 65, .2), transparent 32%);
-  box-shadow: 0 14px 32px rgba(16, 27, 57, .1);
+  border-radius: 8px;
+  background: #fffdf7;
+  box-shadow: var(--djhc-shadow);
 }
 
 .djhc-storefront-proof strong {
@@ -852,38 +810,6 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   font-size: .92rem;
   font-weight: 650;
   line-height: 1.5;
-}
-
-body:has(.main-collection-grid) main::before {
-  content: "Checkout-Ready DJHC Inventory";
-  display: block;
-  width: min(1180px, calc(100% - 2rem));
-  margin: 1.25rem auto 1rem;
-  padding: 1.1rem 1.4rem;
-  border-radius: 24px;
-  background:
-    linear-gradient(90deg, var(--djhc-blue-dark), var(--djhc-blue) 62%, var(--djhc-red));
-  color: #fff;
-  font-family: var(--djhc-font-display);
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  letter-spacing: .045em;
-  text-align: center;
-  box-shadow: 0 18px 42px rgba(16, 27, 57, .18);
-}
-
-body:has(.main-collection-grid) h1 {
-  font-size: 0 !important;
-  line-height: 1 !important;
-}
-
-body:has(.main-collection-grid) h1::after {
-  content: "Shop Cards, Comics & Collectibles";
-  display: inline-block;
-  color: var(--djhc-text);
-  font-family: var(--djhc-font-display);
-  font-size: clamp(2.15rem, 5vw, 3.65rem);
-  letter-spacing: .04em;
-  line-height: .95;
 }
 
 main,
@@ -918,8 +844,8 @@ main,
   overflow: hidden !important;
   background: #fff !important;
   border: 1px solid rgba(24, 37, 73, .16) !important;
-  border-radius: 22px !important;
-  box-shadow: 0 16px 34px rgba(16, 27, 57, .15) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 18px rgba(16, 27, 57, .10) !important;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease !important;
 }
 
@@ -929,7 +855,7 @@ main,
 .card-wrapper:hover {
   transform: translateY(-4px) !important;
   border-color: rgba(31, 47, 163, .42) !important;
-  box-shadow: 0 22px 52px rgba(16, 27, 57, .22) !important;
+  box-shadow: 0 12px 26px rgba(16, 27, 57, .15) !important;
 }
 
 .product-media,
@@ -979,11 +905,11 @@ main,
 .facets__see-results,
 .email-signup__button {
   border: 0 !important;
-  border-radius: 999px !important;
-  background: linear-gradient(135deg, var(--djhc-blue), var(--djhc-red)) !important;
+  border-radius: 8px !important;
+  background: var(--djhc-blue) !important;
   color: #fff !important;
   font-weight: 900 !important;
-  box-shadow: 0 14px 30px rgba(31, 47, 163, .28) !important;
+  box-shadow: 0 8px 18px rgba(31, 47, 163, .22) !important;
 }
 
 .button-secondary,
@@ -991,7 +917,7 @@ main,
 .facets__clear-all,
 .facets__clear-all-link {
   border: 1px solid rgba(31, 47, 163, .28) !important;
-  border-radius: 999px !important;
+  border-radius: 8px !important;
   background: #fff !important;
   color: var(--djhc-blue) !important;
   font-weight: 900 !important;
@@ -1002,7 +928,7 @@ main,
 .product-form__inventory,
 .inventory-status {
   border: 1px solid rgba(228, 177, 65, .42) !important;
-  border-radius: 999px !important;
+  border-radius: 8px !important;
   background: rgba(228, 177, 65, .2) !important;
   color: #6b4700 !important;
   font-weight: 900 !important;
@@ -1025,47 +951,12 @@ main,
   color: rgba(255, 255, 255, .86) !important;
 }
 
-.shopify-section:has(.product-list),
-.shopify-section:has(.product-grid) {
-  width: min(1240px, calc(100% - 2rem)) !important;
-  margin: 0 auto 2rem !important;
-  padding: clamp(1.25rem, 3vw, 2rem) !important;
-  border: 1px solid rgba(24, 37, 73, .12) !important;
-  border-radius: 30px !important;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(243, 246, 251, .9)),
-    radial-gradient(circle at top left, rgba(31, 47, 163, .09), transparent 28%) !important;
-  box-shadow: 0 18px 46px rgba(16, 27, 57, .14) !important;
-}
-
 .shopify-section:has(.product-list) h2,
 .shopify-section:has(.product-list) h3,
 .shopify-section:has(.product-grid) h2,
 .shopify-section:has(.product-grid) h3 {
   color: var(--djhc-blue-dark) !important;
-  letter-spacing: .04em !important;
-}
-
-.shopify-section:has(.product-list)::before {
-  content: "Website featured picks";
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  margin-bottom: .85rem;
-  padding: .38rem .72rem;
-  border: 1px solid rgba(31, 47, 163, .16);
-  border-radius: 999px;
-  background: rgba(31, 47, 163, .08);
-  color: var(--djhc-blue);
-  font-size: .78rem;
-  font-weight: 950;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-.shopify-section:has(.product-list) .product-card,
-.shopify-section:has(.product-list) .card-wrapper {
-  border-radius: 24px !important;
+  letter-spacing: 0 !important;
 }
 
 .shopify-section:has(.product-list) .product-media,
@@ -1137,7 +1028,7 @@ main,
 .collection-wrapper,
 .main-collection-grid,
 .facets-container {
-  border-radius: 14px !important;
+  border-radius: 8px !important;
   box-shadow: 0 10px 24px rgba(16, 27, 57, .09) !important;
 }
 
@@ -1154,7 +1045,7 @@ main,
 .card-wrapper,
 .product-media-container,
 .predictive-search-results__card--product {
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   box-shadow: 0 10px 24px rgba(16, 27, 57, .11) !important;
 }
 
@@ -1250,16 +1141,11 @@ slideshow-container {
     display: none !important;
   }
 
-  body:has(.main-collection-grid) main::before {
-    border-radius: 18px;
-    font-size: clamp(1.9rem, 10vw, 2.7rem);
-  }
-
   .shopify-section:has(.product-list),
   .shopify-section:has(.product-grid) {
     width: min(100% - 1rem, 720px) !important;
     padding: 1rem !important;
-    border-radius: 22px !important;
+    border-radius: 8px !important;
   }
 
   .shopify-section:has(.product-list),
@@ -1273,12 +1159,12 @@ slideshow-container {
   .card-gallery,
   .card,
   .card-wrapper {
-    border-radius: 9px !important;
+    border-radius: 8px !important;
   }
 
   .hero-wrapper,
   .hero {
-    border-radius: 0 0 22px 22px !important;
+    border-radius: 0 !important;
   }
 
   .djhc-shop-tools,
@@ -1293,13 +1179,8 @@ slideshow-container {
     grid-template-columns: 1fr;
   }
 
-  .djhc-spotlight__rail,
-  .djhc-sync-strip {
+  .djhc-spotlight__rail {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .djhc-sync-strip span {
-    border-radius: 12px;
   }
 
   .djhc-shop-tools__grid {
@@ -1311,11 +1192,6 @@ slideshow-container {
   }
 }
 
-/* Final override for older mirrored DJHC assets that may still be loaded by the theme. */
-body:has(.main-collection-grid) main::before,
-body:has(.main-collection-grid) #MainContent::before {
-  content: "Checkout-Ready DJHC Inventory" !important;
-}
 `;
 }
 

@@ -142,18 +142,18 @@ function storefrontToolsMarkup() {
   return `
 <section class="djhc-shop-tools" aria-labelledby="djhc-shop-tools-heading">
   <div class="djhc-shop-tools__intro">
-    <p class="djhc-eyebrow">Shop the collection</p>
-    <h2 id="djhc-shop-tools-heading">Find the right lane fast.</h2>
-    <p>Use Shopify for cart checkout, then jump to the main DJHC site when you want wishlist, sell/trade, and deeper collector tools.</p>
+    <p class="djhc-eyebrow">Shop by department</p>
+    <h2 id="djhc-shop-tools-heading">Cards, comics, and collectible finds.</h2>
+    <p>Start with the full Shopify catalog or narrow the browse by the areas collectors ask for most.</p>
   </div>
   <div class="djhc-shop-tools__grid" aria-label="Shop by lane">
     <a class="djhc-shop-card djhc-shop-card--primary" href="/collections/all">
-      <strong>All Shopify Inventory</strong>
-      <span>Browse every active checkout-ready listing.</span>
+      <strong>All Inventory</strong>
+      <span>Browse every active listing available through Shopify checkout.</span>
     </a>
     <a class="djhc-shop-card" href="/collections/djhc-featured-showcase">
-      <strong>Featured Showcase</strong>
-      <span>Curated high-signal pieces from the website.</span>
+      <strong>Featured Picks</strong>
+      <span>A rotating set of cards, comics, and collectibles worth a closer look.</span>
     </a>
     <a class="djhc-shop-card" href="/search?q=baseball&type=product">
       <strong>Baseball Cards</strong>
@@ -169,7 +169,7 @@ function storefrontToolsMarkup() {
     </a>
     <a class="djhc-shop-card" href="/collections/comics">
       <strong>Comics</strong>
-      <span>Bronze Age favorites, keys, and collectible issues.</span>
+      <span>Reader copies, collectible issues, keys, and character favorites.</span>
     </a>
     <a class="djhc-shop-card" href="/collections/collectibles">
       <strong>Collectibles</strong>
@@ -180,7 +180,7 @@ function storefrontToolsMarkup() {
     <a href="/search">Search</a>
     <a href="/cart">Cart</a>
     <a href="/account">Account</a>
-    <a href="${MAIN_SITE_URL}wishlist.html" target="_blank" rel="noopener noreferrer">Website Wishlist</a>
+    <a href="${MAIN_SITE_URL}wishlist.html" target="_blank" rel="noopener noreferrer">Wishlist</a>
     <a href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
     <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer">Facebook</a>
     <a href="${WHATNOT_URL}" target="_blank" rel="noopener noreferrer">Whatnot</a>
@@ -202,18 +202,12 @@ function storefrontSpotlightMarkup() {
   return `
 <section class="djhc-spotlight" aria-labelledby="djhc-spotlight-heading">
   <div class="djhc-spotlight__copy">
-    <p class="djhc-eyebrow">Fresh from the catalog</p>
-    <h2 id="djhc-spotlight-heading">Real inventory, ready to inspect.</h2>
-    <p>Shopify handles checkout while the main DJHC catalog remains the source for deeper photos, wishlist decisions, and cross-marketplace reconciliation.</p>
+    <p class="djhc-eyebrow">Featured finds</p>
+    <h2 id="djhc-spotlight-heading">New and notable inventory.</h2>
+    <p>Collector-run listings with clear photos, straightforward pricing, and a mix of sports cards, comics, autographs, and memorabilia.</p>
   </div>
   <div class="djhc-spotlight__rail" aria-label="Representative DJHC inventory">
     ${cards}
-  </div>
-  <div class="djhc-sync-strip" aria-label="Marketplace sync status">
-    <span>Website catalog source</span>
-    <span>Shopify checkout active</span>
-    <span>Facebook feed prepared</span>
-    <span>Whatnot/TikTok links ready</span>
   </div>
 </section>
 `;
@@ -223,16 +217,16 @@ function storefrontProofMarkup() {
   return `
 <section class="djhc-storefront-proof" aria-label="Why shop DJ's House on Shopify">
   <article>
-    <strong>Checkout-ready catalog</strong>
-    <span>Active marketplace listings stay keyed to DJHC inventory, pricing, images, and quantities.</span>
+    <strong>Actual items shown</strong>
+    <span>Listings use the product photos and details available for the item being sold.</span>
   </article>
   <article>
-    <strong>Collector-first browsing</strong>
-    <span>Shop by lane, search by player or set, and use the main site wishlist for longer decisions.</span>
+    <strong>Collector-run selection</strong>
+    <span>The catalog is built around recognizable players, teams, eras, characters, and hobby categories.</span>
   </article>
   <article>
-    <strong>Trusted hobby finds</strong>
-    <span>Cards, comics, autographs, memorabilia, and showcase pieces selected with collector context.</span>
+    <strong>Secure checkout</strong>
+    <span>Shop through Shopify here, or follow DJHC on Facebook, Whatnot, and TikTok Shop.</span>
   </article>
 </section>
 `;
@@ -248,21 +242,21 @@ function updateHomepage(rawJson) {
     const heroText = firstBlockByType(hero, 'text');
     const heroButton = firstBlockByType(hero, 'button');
     if (heroText?.settings) {
-      heroText.settings.text = "<p>DJ's House of Cards & Comics</p><p>Sports cards, comics & collectibles with checkout-ready listings and deeper collector context on the main DJHC site.</p>";
+      heroText.settings.text = "<p>DJ's House of Cards & Comics</p><p>Sports cards, comics, and collectible finds from a collector-run shop.</p>";
       heroText.settings.alignment = 'center';
       heroText.settings.width = 'fill';
       heroText.settings.max_width = 'wide';
       heroText.settings.type_preset = 'h1';
-      heroText.settings.font_size = 'clamp(2.5rem, 6vw, 5rem)';
-      heroText.settings.line_height = '0.95';
-      heroText.settings.letter_spacing = '0.03em';
+      heroText.settings.font_size = '4rem';
+      heroText.settings.line_height = '1.04';
+      heroText.settings.letter_spacing = '0';
       heroText.settings.case = 'none';
       heroText.settings.color = '#ffffff';
       changes.push('homepage hero headline');
     }
     if (heroButton?.settings) {
-      heroButton.settings.label = 'Shop Featured Showcase';
-      heroButton.settings.link = `shopify://collections/${FEATURED_COLLECTION_HANDLE}`;
+      heroButton.settings.label = 'Shop all inventory';
+      heroButton.settings.link = 'shopify://collections/all';
       heroButton.settings.style_class = 'button';
       changes.push('homepage hero button');
     }
@@ -316,14 +310,14 @@ function updateHomepage(rawJson) {
     const title = Object.values(staticHeader?.blocks || {}).find((block) => block?.type === '_product-list-text');
     const button = Object.values(staticHeader?.blocks || {}).find((block) => block?.type === '_product-list-button');
     if (title?.settings) {
-      title.settings.text = '<h3>Featured DJHC Showcase</h3>';
+      title.settings.text = '<h3>Featured picks</h3>';
       title.settings.type_preset = 'h3';
-      title.settings.font_size = 'clamp(1.8rem, 3vw, 3rem)';
+      title.settings.font_size = '2.2rem';
       title.settings.color = 'var(--djhc-text)';
       changes.push('featured collection heading');
     }
     if (button?.settings) {
-      button.settings.label = 'View full featured showcase';
+      button.settings.label = 'View featured picks';
       button.settings.link = `shopify://collections/${FEATURED_COLLECTION_HANDLE}`;
       button.settings.style_class = 'button-secondary';
       changes.push('featured collection button');
@@ -340,11 +334,11 @@ function updateHeader(rawJson) {
   const announcements = Object.values(sections).find((section) => section?.type === 'header-announcements');
   const announcement = Object.values(announcements?.blocks || {}).find((block) => block?.type === '_announcement');
   if (announcement?.settings) {
-    announcement.settings.text = 'Trusted hobby finds | Sports cards, comics, collectibles, and new inventory added regularly';
+    announcement.settings.text = "DJ's House of Cards & Comics | Sports cards, comics, collectibles, and fresh finds";
     announcement.settings.font_size = '0.82rem';
     announcement.settings.weight = '700';
-    announcement.settings.letter_spacing = '0.08em';
-    announcement.settings.case = 'uppercase';
+    announcement.settings.letter_spacing = '0';
+    announcement.settings.case = 'none';
     changes.push('announcement text');
   }
 
@@ -369,13 +363,13 @@ function updateFooter(rawJson) {
   const group = Object.values(footerSection?.blocks || {}).find((block) => block?.type === 'group');
   const textBlocks = Object.values(group?.blocks || {}).filter((block) => block?.type === 'text');
   if (textBlocks[0]?.settings) {
-    textBlocks[0].settings.text = "<h2>Stay Close to DJ's House</h2>";
+    textBlocks[0].settings.text = "<h2>Follow DJ's House</h2>";
     textBlocks[0].settings.type_preset = 'h3';
     changes.push('footer heading');
   }
   if (textBlocks[1]?.settings) {
-    textBlocks[1].settings.text = `<p>Get first look at fresh cards, comics, collectibles, and storefront updates. Visit the <a href="${MAIN_SITE_URL}">main DJHC website</a>, <a href="${FACEBOOK_URL}">Facebook</a>, <a href="${WHATNOT_URL}">Whatnot</a>, or <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p>`;
-    changes.push('footer signup copy');
+    textBlocks[1].settings.text = `<p>Shop here through Shopify, browse the full DJHC catalog on the <a href="${MAIN_SITE_URL}">main website</a>, or follow along on <a href="${FACEBOOK_URL}">Facebook</a>, <a href="${WHATNOT_URL}">Whatnot</a>, and <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p>`;
+    changes.push('footer body copy');
   }
   if (footerSection?.settings) {
     footerSection.settings.color_scheme = 'scheme-djhc';

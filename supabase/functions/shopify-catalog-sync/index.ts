@@ -15,7 +15,7 @@ const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 const PAGE_SIZE = 250;
 const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
-const FEATURED_COLLECTION_TITLE = 'DJHC Featured Showcase';
+const FEATURED_COLLECTION_TITLE = 'Featured Picks';
 const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 3529, 2463, 3253, 3209, 3478, 2029];
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -190,10 +190,9 @@ function productTags(product: Record<string, unknown>, classification: string) {
   const tags = [
     'DJHC',
     `DJHC-${product.id}`,
-    'Website Sync',
-    classification === 'nonlegacy' ? 'Non-Legacy' : 'Legacy',
-    product.is_featured === true ? 'DJHC Featured' : '',
-    SHOPIFY_SHOWCASE_PRODUCT_IDS.includes(Number(product.id)) ? 'DJHC Shopify Showcase' : '',
+    'Cards Comics Collectibles',
+    classification === 'nonlegacy' ? 'Website Catalog' : '',
+    product.is_featured === true || SHOPIFY_SHOWCASE_PRODUCT_IDS.includes(Number(product.id)) ? 'Featured Pick' : '',
     product.category,
     product.sport,
     product.league,
@@ -202,6 +201,32 @@ function productTags(product: Record<string, unknown>, classification: string) {
     product.year
   ];
   return [...new Set(tags.map(cleanTag).filter(Boolean))];
+}
+
+function productDescriptionHtml(product: Record<string, unknown>) {
+  const supplied = String(product.description || '').trim();
+  const details = [
+    ['Category', product.category],
+    ['Sport', product.sport],
+    ['League', product.league],
+    ['Player/Athlete', product.player_athlete],
+    ['Team', product.team],
+    ['Year', product.year],
+    ['Condition', product.condition]
+  ].filter(([, value]) => String(value || '').trim());
+  const list = details
+    .map(([label, value]) => `<li><strong>${htmlEscape(String(label))}:</strong> ${htmlEscape(String(value || '').trim())}</li>`)
+    .join('');
+  const inventoryId = `DJHC-${product.id}`;
+  const hasInlineDetails = /\bDetails:/i.test(supplied);
+
+  return [
+    supplied
+      ? `<p>${htmlEscape(supplied)}</p>`
+      : `<p>${htmlEscape(String(product.name || `Listing #${product.id}`))}</p>`,
+    !hasInlineDetails && list ? `<ul>${list}</ul>` : '',
+    `<p>Please review all photos for the exact item you will receive. DJHC inventory ID: ${htmlEscape(inventoryId)}.</p>`
+  ].filter(Boolean).join('');
 }
 
 function htmlEscape(value = '') {
@@ -1062,7 +1087,6 @@ async function syncProduct(productId: number) {
 
   const price = directCheckoutPrice(product);
   const status = shouldActivate(product, mapping) ? 'ACTIVE' : 'DRAFT';
-  const description = String(product.description || '').trim();
   const productIdGid = shopifyGid('Product', mapping.shopify_product_id);
   const variantIdGid = shopifyGid('ProductVariant', mapping.shopify_variant_id);
 
@@ -1088,9 +1112,7 @@ async function syncProduct(productId: number) {
       identifier: { id: productIdGid },
       input: {
         title: String(product.name || `Listing #${productId}`),
-        descriptionHtml: description
-          ? `<p>${htmlEscape(description)}</p>`
-          : `<p>Please review all photos for the exact item you will receive.</p>`,
+        descriptionHtml: productDescriptionHtml(product),
         handle: mapping.shopify_handle || `djhc-${productId}`,
         productType: shopifyProductType(product.category),
         vendor: "DJ's House of Cards & Comics",
@@ -1169,7 +1191,7 @@ async function syncProduct(productId: number) {
 }
 
 async function upsertFeaturedCustomCollection() {
-  const bodyHtml = '<p>Curated DJHC homepage showcase synced from published non-legacy website listings.</p>';
+  const bodyHtml = '<p>A rotating set of cards, comics, and collectibles worth a closer look from DJHC inventory.</p>';
   const existing = await shopifyRest<CustomCollectionPayload>(
     'GET',
     `custom_collections.json?handle=${encodeURIComponent(FEATURED_COLLECTION_HANDLE)}&limit=1`
