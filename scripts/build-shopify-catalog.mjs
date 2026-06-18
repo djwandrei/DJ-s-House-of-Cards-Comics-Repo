@@ -5,6 +5,12 @@ const root = process.cwd();
 const productsPath = path.join(root, 'products.json');
 const outputDir = path.join(root, 'outputs', 'marketplace-sync');
 const siteUrl = 'https://www.djshouseofcards-comics.com/';
+const SHOPIFY_SHIPPING_WEIGHT_TIERS = [
+  { label: '3 oz or under', grams: 85 },
+  { label: '8 oz', grams: 227 },
+  { label: '12 oz', grams: 340 },
+  { label: '1 lb', grams: 454 }
+];
 const publish = process.argv.includes('--publish');
 const requestedStatus = process.argv
   .find((argument) => argument.startsWith('--status='))
@@ -90,25 +96,43 @@ function numberOfCards(product = {}) {
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
 }
 
+function shippingTierForEstimate(estimatedGrams) {
+  const tier = SHOPIFY_SHIPPING_WEIGHT_TIERS.find((item) => estimatedGrams <= item.grams)
+    || SHOPIFY_SHIPPING_WEIGHT_TIERS[SHOPIFY_SHIPPING_WEIGHT_TIERS.length - 1];
+  return {
+    ...tier,
+    needsReview: estimatedGrams > tier.grams
+  };
+}
+
 function suggestedWeight(product = {}) {
   const category = cleanText(product.category).toLowerCase();
+  const cardCount = numberOfCards(product);
+  let estimatedGrams = 85;
+  let basis = 'Shopify 3 oz or under card tier';
+
   if (category === 'comics') {
-    return { grams: 454, basis: 'Provisional 1 lb comic shipment' };
-  }
-  if (category === 'collectibles') {
-    return { grams: 907, basis: 'Provisional 2 lb collectible shipment' };
+    estimatedGrams = 454;
+    basis = 'Shopify 1 lb comic tier';
+  } else if (category === 'collectibles') {
+    estimatedGrams = 454;
+    basis = 'Shopify 1 lb collectible tier';
+  } else {
+    const graded = /\b(PSA|BGS|SGC|CGC|CSG|TAG|HGA|GMA|KSA)\b/i.test(
+      `${product.condition || ''} ${product.name || ''}`
+    );
+    const baseGrams = graded ? 170 : 85;
+    estimatedGrams = baseGrams + Math.max(0, cardCount - 1) * 5;
+    basis = graded
+      ? `Shopify graded-card weight tier${cardCount > 1 ? ` for ${cardCount} cards` : ''}`
+      : `Shopify raw-card weight tier${cardCount > 1 ? ` for ${cardCount} cards` : ''}`;
   }
 
-  const cardCount = numberOfCards(product);
-  const graded = /\b(PSA|BGS|SGC|CGC|CSG|TAG|HGA|GMA|KSA)\b/i.test(
-    `${product.condition || ''} ${product.name || ''}`
-  );
-  const baseGrams = graded ? 170 : 113;
+  const tier = shippingTierForEstimate(estimatedGrams);
   return {
-    grams: baseGrams + Math.max(0, cardCount - 1) * 5,
-    basis: graded
-      ? `Provisional graded-card weight${cardCount > 1 ? ` for ${cardCount} cards` : ''}`
-      : `Provisional raw-card weight${cardCount > 1 ? ` for ${cardCount} cards` : ''}`
+    grams: tier.grams,
+    basis: `${basis}; assigned to ${tier.label}`,
+    needsReview: tier.needsReview
   };
 }
 
@@ -259,7 +283,7 @@ for (const product of products) {
     primaryImageUrl: imageUrls[0] || '',
     suggestedWeightGrams: weight.grams,
     weightBasis: weight.basis,
-    weightNeedsReview: true,
+    weightNeedsReview: weight.needsReview,
     shopifyStatus: status,
     publishedOnOnlineStore: publish
   });

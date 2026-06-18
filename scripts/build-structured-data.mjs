@@ -6,8 +6,12 @@ const SITE_NAME = "DJ's House of Cards & Comics";
 const SITE_EMAIL = 'djscardscomics13@gmail.com';
 const SITE_LOGO = `${SITE_URL}assets/dj-logo.png`;
 const FACEBOOK_URL = 'https://www.facebook.com/DJCardsComics/';
+const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
+const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
+const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260613c';
+const SCRIPT_VERSION = '20260617d';
+const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
 const pages = {
   'index.html': {
     type: 'WebPage',
@@ -111,7 +115,7 @@ const pages = {
     type: 'ContactPage',
     path: '/contact.html',
     name: "Contact DJ's House of Cards & Comics",
-    description: "Contact DJ's House of Cards & Comics for buying inquiries, trades, questions, and collector-to-collector conversations.",
+    description: "Contact DJ's House of Cards & Comics for buying inquiries, shipping questions, no-return policy questions, trades, want lists, and collector-to-collector conversations.",
     image: 'assets/dj-logo.png',
     breadcrumb: [
       ['Home', '/'],
@@ -129,6 +133,18 @@ const pages = {
       [
         'Does the site take payment automatically?',
         'Eligible listings can use secure checkout when available. If checkout is unavailable or an item needs confirmation, the site opens an email inquiry so availability can be confirmed first.'
+      ],
+      [
+        'What shipping tiers does DJ use?',
+        'Shipping is organized around 3 ounces or under, 8 ounces, 12 ounces, and 1 pound tiers. The checkout page shows the available charge before payment.'
+      ],
+      [
+        'Does DJ accept returns?',
+        'No. Sales are final and DJ does not accept returns, exchanges, or buyer-remorse cancellations. Contact DJ quickly if the wrong item arrives or a package is damaged in transit.'
+      ],
+      [
+        'Are the same products available on Shopify and social shops?',
+        'DJ keeps the website, Shopify, Facebook, Whatnot, and TikTok storefronts aligned as closely as each channel allows, but availability can change quickly when an item sells.'
       ],
       [
         'How quickly does DJ respond?',
@@ -195,7 +211,7 @@ const pages = {
     type: 'WebPage',
     path: '/privacy.html',
     name: "Privacy Policy | DJ's House of Cards & Comics",
-    description: "Learn how DJ's House of Cards & Comics handles account, checkout, contact, wishlist, and cart information.",
+    description: "Learn how DJ's House of Cards & Comics handles account, checkout, contact, wishlist, cart, marketplace, and order-support information.",
     image: 'assets/dj-logo.png',
     breadcrumb: [['Home', '/'], ['Privacy Policy', '/privacy.html']]
   },
@@ -203,7 +219,7 @@ const pages = {
     type: 'WebPage',
     path: '/terms.html',
     name: "Terms of Sale | DJ's House of Cards & Comics",
-    description: 'Review the storefront terms for listings, pricing, checkout, availability, and customer communication.',
+    description: 'Review the storefront terms for listings, pricing, checkout, availability, final sale purchases, shipping, and customer communication.',
     image: 'assets/dj-logo.png',
     breadcrumb: [['Home', '/'], ['Terms of Sale', '/terms.html']]
   },
@@ -211,17 +227,17 @@ const pages = {
     type: 'WebPage',
     path: '/shipping.html',
     name: "Shipping Policy | DJ's House of Cards & Comics",
-    description: 'Review shipping, packaging, tracking, address, and delivery information for store orders.',
+    description: 'Review shipping weight tiers, packaging, tracking, address, and delivery information for store orders.',
     image: 'assets/dj-logo.png',
     breadcrumb: [['Home', '/'], ['Shipping Policy', '/shipping.html']]
   },
   'returns.html': {
     type: 'WebPage',
     path: '/returns.html',
-    name: "Returns Policy | DJ's House of Cards & Comics",
-    description: 'Review the process for reporting order problems and requesting a return.',
+    name: "No Returns Policy | DJ's House of Cards & Comics",
+    description: "Review DJ's House of Cards & Comics' no-return, final-sale policy and how to report damaged or incorrect shipments.",
     image: 'assets/dj-logo.png',
-    breadcrumb: [['Home', '/'], ['Returns Policy', '/returns.html']]
+    breadcrumb: [['Home', '/'], ['No Returns Policy', '/returns.html']]
   }
 };
 
@@ -257,7 +273,7 @@ function buildOrganization() {
     image: SITE_LOGO,
     email: SITE_EMAIL,
     description: SITE_DESCRIPTION,
-    sameAs: [FACEBOOK_URL],
+    sameAs: SAME_AS_LINKS,
     contactPoint: {
       '@type': 'ContactPoint',
       email: SITE_EMAIL,
@@ -278,7 +294,7 @@ function buildLocalBusiness() {
     email: SITE_EMAIL,
     description: SITE_DESCRIPTION,
     priceRange: '$$',
-    sameAs: [FACEBOOK_URL],
+    sameAs: SAME_AS_LINKS,
     areaServed: {
       '@type': 'Country',
       name: 'United States'

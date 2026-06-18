@@ -960,6 +960,10 @@ body.dark-mode .modal-image-stage {
     width:100%;
   }
 
+  .policy-summary-grid {
+    grid-template-columns:1fr;
+  }
+
   .page-hero-actions > *,
   .hero-brand-actions > *,
   .inline-actions > *,

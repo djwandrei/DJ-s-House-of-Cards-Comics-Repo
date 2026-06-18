@@ -9339,12 +9339,89 @@ body.dark-mode .admin-listing-row {
   max-width:900px;
 }
 
+.policy-lede {
+  margin:0 0 1.15rem;
+  color:var(--muted);
+  font-size:1.04rem;
+  line-height:1.65;
+}
+
+.policy-summary-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.85rem;
+  margin:1.25rem 0 1.5rem;
+}
+
+.policy-summary-card {
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:8px;
+  padding:1rem;
+  background:rgba(255,255,255,.72);
+}
+
+.policy-summary-card small {
+  display:block;
+  margin-bottom:.35rem;
+  color:var(--brand-red);
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.policy-summary-card strong {
+  display:block;
+  margin-bottom:.3rem;
+  color:var(--text);
+  font-size:1rem;
+}
+
+.policy-summary-card p,
+.policy-content li {
+  color:var(--muted);
+}
+
+.policy-note {
+  margin:1.4rem 0;
+  padding:1rem 1.1rem;
+  border:1px solid rgba(239,24,35,.18);
+  border-radius:8px;
+  background:rgba(239,24,35,.06);
+}
+
+.policy-note strong {
+  color:var(--brand-red);
+}
+
+.policy-list {
+  margin:.6rem 0 1.2rem;
+  padding-left:1.2rem;
+}
+
+.policy-list li + li {
+  margin-top:.45rem;
+}
+
 .policy-content h2 {
   margin-top:1.75rem;
 }
 
 .policy-content h2:first-child {
   margin-top:0;
+}
+
+body.dark-mode .policy-summary-card {
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.055);
+}
+
+body.dark-mode .policy-summary-card strong {
+  color:#fff;
+}
+
+body.dark-mode .policy-note {
+  border-color:rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
 }
 
 .account-order-items {
