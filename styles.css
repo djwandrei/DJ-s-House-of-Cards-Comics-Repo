@@ -6072,9 +6072,6 @@ body.dark-mode .filter-panel-dismiss {
     transform:translateX(0);
   }
 
-  .filter-panel--drawer .filter-grid,
-  .filter-panel--drawer .range-grid,
-  .filter-panel--drawer .inline-actions,
   .filter-panel--drawer .filter-panel-dismiss {
     display:grid;
     position:absolute;
