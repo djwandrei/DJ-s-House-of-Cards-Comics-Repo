@@ -6,15 +6,15 @@ import {
 } from '../_shared/shopify.ts';
 
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
+const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
 const DEFAULT_STYLE_ASSET_KEY = 'assets/djhc-custom.css';
 const DEFAULT_STYLE_MARKER = 'djhc-custom.css';
 const DEFAULT_STYLE_TAG = "{{ 'djhc-custom.css' | asset_url | stylesheet_tag }}";
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
-};
+const DEFAULT_CORS_ORIGINS = [
+  'https://www.djshouseofcards-comics.com',
+  'https://djshouseofcards-comics.com'
+];
 
 type Theme = {
   id: number | string;
@@ -132,10 +132,46 @@ async function waitForThemeReady(themeId: string | number) {
   throw new Error(`Theme ${themeId} did not finish processing. Last state: ${JSON.stringify(lastTheme)}`);
 }
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function normalizedOrigin(value: string) {
+  const trimmed = String(value || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return '';
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed;
+  }
+}
+
+function allowedCorsOrigins() {
+  const configured = String(Deno.env.get('ADMIN_CORS_ALLOWED_ORIGINS') || '')
+    .split(',')
+    .map(normalizedOrigin)
+    .filter(Boolean);
+  return [...new Set([
+    ...DEFAULT_CORS_ORIGINS,
+    normalizedOrigin(siteUrl),
+    ...configured
+  ].filter(Boolean))];
+}
+
+function corsHeadersFor(request?: Request) {
+  const allowed = allowedCorsOrigins();
+  const requestOrigin = normalizedOrigin(request?.headers.get('origin') || '');
+  const allowOrigin = requestOrigin && allowed.includes(requestOrigin)
+    ? requestOrigin
+    : allowed[0];
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin'
+  };
+}
+
+function jsonResponse(body: Record<string, unknown>, status = 200, request?: Request) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    headers: { ...corsHeadersFor(request), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
 
@@ -229,8 +265,9 @@ async function putThemeAsset(themeId: string | number, asset: Record<string, unk
 }
 
 Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  if (request.method !== 'POST') return jsonResponse({ ok: false, error: 'Method not allowed.' }, 405);
+  const respond = (body: Record<string, unknown>, status = 200) => jsonResponse(body, status, request);
+  if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeadersFor(request) });
+  if (request.method !== 'POST') return respond({ ok: false, error: 'Method not allowed.' }, 405);
 
   try {
     requireServiceRole(request);
@@ -245,7 +282,7 @@ Deno.serve(async (request) => {
     const theme = await getMainTheme(body.themeId);
     if (action === 'publish') {
       const publishedThemeGid = await publishTheme(theme.id);
-      return jsonResponse({
+      return respond({
         ok: true,
         action,
         shopDomain: shopifyShopDomain(),
@@ -298,7 +335,7 @@ Deno.serve(async (request) => {
       if (!index.includes('Trusted hobby finds for sports cards')) throw new Error('Duplicated theme is missing the DJHC homepage copy.');
       if (!css.includes('Curated sports cards')) throw new Error('Duplicated theme is missing the DJHC storefront CSS.');
       const publishedThemeGid = await publishTheme(duplicatedThemeId);
-      return jsonResponse({
+      return respond({
         ok: true,
         action,
         shopDomain: shopifyShopDomain(),
@@ -328,7 +365,7 @@ Deno.serve(async (request) => {
       for (const key of keys) {
         assets[key] = await getThemeAsset(theme.id, key);
       }
-      return jsonResponse({
+      return respond({
         ok: true,
         action,
         shopDomain: shopifyShopDomain(),
@@ -422,9 +459,9 @@ Deno.serve(async (request) => {
       if (body.includeLayoutBackup) summary.layoutBackup = layoutLiquid;
     }
 
-    return jsonResponse(summary);
+    return respond(summary);
   } catch (error) {
     console.error('[shopify-theme-apply]', error);
-    return jsonResponse({ ok: false, error: errorMessage(error) || 'Shopify theme update failed.' }, 500);
+    return respond({ ok: false, error: errorMessage(error) || 'Shopify theme update failed.' }, 500);
   }
 });

@@ -10,8 +10,16 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260617d';
+const SCRIPT_VERSION = '20260622a';
 const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
+const SOCIAL_METADATA_PAGES = new Set([
+  'cart.html',
+  'checkout-success.html',
+  'privacy.html',
+  'terms.html',
+  'shipping.html',
+  'returns.html'
+]);
 const pages = {
   'index.html': {
     type: 'WebPage',
@@ -189,7 +197,7 @@ const pages = {
     type: 'WebPage',
     path: '/account.html',
     name: "Account | DJ's House of Cards & Comics",
-    description: "Review your wishlist and save optional buyer notes locally at DJ's House of Cards & Comics.",
+    description: "Review your wishlist, buyer profile, and secure checkout history at DJ's House of Cards & Comics.",
     image: 'assets/dj-logo.png',
     breadcrumb: [
       ['Home', '/'],
@@ -317,11 +325,6 @@ function buildWebsite() {
     },
     about: {
       '@id': `${SITE_URL}#localbusiness`
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${SITE_URL}sports-cards.html?search={search_term_string}`,
-      'query-input': 'required name=search_term_string'
     }
   };
 }
@@ -431,10 +434,61 @@ function ensureSeoRuntime(html) {
   );
 }
 
+function metaTag(attributes) {
+  return `<meta ${Object.entries(attributes)
+    .map(([key, value]) => `${key}="${String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"`)
+    .join(' ')}>`;
+}
+
+function removeMetaTag(html, attributeName, attributeValue) {
+  const pattern = new RegExp(
+    `<meta\\s+[^>]*\\b${attributeName}=["']${attributeValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>\\s*`,
+    'gi'
+  );
+  return html.replace(pattern, '');
+}
+
+function ensureSocialMetadata(html, page) {
+  const tags = [
+    metaTag({ property: 'og:title', content: page.name }),
+    metaTag({ property: 'og:description', content: page.description }),
+    metaTag({ property: 'og:type', content: 'website' }),
+    metaTag({ property: 'og:url', content: absoluteUrl(page.path) }),
+    metaTag({ property: 'og:image', content: absoluteUrl(page.image) }),
+    metaTag({ name: 'twitter:card', content: 'summary_large_image' }),
+    metaTag({ name: 'twitter:title', content: page.name }),
+    metaTag({ name: 'twitter:description', content: page.description }),
+    metaTag({ name: 'twitter:image', content: absoluteUrl(page.image) })
+  ].join('\n');
+  const cleaned = [
+    ['property', 'og:title'],
+    ['property', 'og:description'],
+    ['property', 'og:type'],
+    ['property', 'og:url'],
+    ['property', 'og:image'],
+    ['name', 'twitter:card'],
+    ['name', 'twitter:title'],
+    ['name', 'twitter:description'],
+    ['name', 'twitter:image']
+  ].reduce((nextHtml, [attributeName, attributeValue]) => (
+    removeMetaTag(nextHtml, attributeName, attributeValue)
+  ), html);
+
+  const canonicalPattern = /(<link\b[^>]*\brel=["']canonical["'][^>]*>\s*)/i;
+  if (canonicalPattern.test(cleaned)) {
+    return cleaned.replace(canonicalPattern, `$1${tags}\n`);
+  }
+
+  return cleaned.replace('</head>', `${tags}\n</head>`);
+}
+
 for (const [fileName, page] of Object.entries(pages)) {
   const filePath = join(process.cwd(), fileName);
   const html = readFileSync(filePath, 'utf8');
-  const nextHtml = ensureSeoRuntime(replaceStructuredData(html, buildPageGraph(page)));
+  const structuredHtml = ensureSeoRuntime(replaceStructuredData(html, buildPageGraph(page)));
+  const nextHtml = SOCIAL_METADATA_PAGES.has(fileName)
+    ? ensureSocialMetadata(structuredHtml, page)
+    : structuredHtml;
   writeFileSync(filePath, nextHtml, 'utf8');
   console.log(`Updated ${fileName}`);
 }

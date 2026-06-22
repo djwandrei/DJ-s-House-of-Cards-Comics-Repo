@@ -25,7 +25,7 @@ import websockets
 EDGE_PATH = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 PORT = 9223
 DEFAULT_URL = "http://127.0.0.1:4173/baseball-cards.html"
-DEFAULT_OUT_DIR = Path(r"H:\My Drive\djshouseofcards-next-fixes-applied\outputs\mobile-smoke")
+DEFAULT_OUT_DIR = Path(r"C:\Users\djwan\Downloads\djshouseofcards-next-fixes-applied\outputs\mobile-smoke")
 
 
 def parse_args() -> argparse.Namespace:

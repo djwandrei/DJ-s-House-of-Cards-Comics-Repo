@@ -17,11 +17,10 @@ const PAGE_SIZE = 250;
 const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
 const FEATURED_COLLECTION_TITLE = 'Featured Picks';
 const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 3529, 2463, 3253, 3209, 3478, 2029];
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
-};
+const DEFAULT_CORS_ORIGINS = [
+  'https://www.djshouseofcards-comics.com',
+  'https://djshouseofcards-comics.com'
+];
 
 type InventoryItemNode = {
   legacyResourceId: string;
@@ -106,10 +105,46 @@ type CollectsPayload = {
   }>;
 };
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function normalizedOrigin(value: string) {
+  const trimmed = String(value || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return '';
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed;
+  }
+}
+
+function allowedCorsOrigins() {
+  const configured = String(Deno.env.get('ADMIN_CORS_ALLOWED_ORIGINS') || '')
+    .split(',')
+    .map(normalizedOrigin)
+    .filter(Boolean);
+  return [...new Set([
+    ...DEFAULT_CORS_ORIGINS,
+    normalizedOrigin(siteUrl),
+    ...configured
+  ].filter(Boolean))];
+}
+
+function corsHeadersFor(request?: Request) {
+  const allowed = allowedCorsOrigins();
+  const requestOrigin = normalizedOrigin(request?.headers.get('origin') || '');
+  const allowOrigin = requestOrigin && allowed.includes(requestOrigin)
+    ? requestOrigin
+    : allowed[0];
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin'
+  };
+}
+
+function jsonResponse(body: Record<string, unknown>, status = 200, request?: Request) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    headers: { ...corsHeadersFor(request), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
 
@@ -1394,16 +1429,17 @@ async function registerInventoryWebhook() {
 }
 
 Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
+  const respond = (body: Record<string, unknown>, status = 200) => jsonResponse(body, status, request);
+  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeadersFor(request) });
+  if (request.method !== 'POST') return respond({ error: 'Method not allowed.' }, 405);
   if (!supabaseUrl || !serviceRoleKey || !isShopifyConfigured()) {
-    return jsonResponse({ error: 'Shopify catalog sync is not configured.' }, 503);
+    return respond({ error: 'Shopify catalog sync is not configured.' }, 503);
   }
 
   try {
     await requireAdmin(request);
   } catch (error) {
-    return jsonResponse({ error: errorMessage(error) }, 401);
+    return respond({ error: errorMessage(error) }, 401);
   }
 
   let payload: {
@@ -1417,29 +1453,29 @@ Deno.serve(async (request) => {
   try {
     payload = await request.json();
   } catch {
-    return jsonResponse({ error: 'Invalid JSON request.' }, 400);
+    return respond({ error: 'Invalid JSON request.' }, 400);
   }
 
   try {
     switch (payload.action) {
       case 'bootstrap-mappings':
-        return jsonResponse({ ok: true, result: await bootstrapMappings() });
+        return respond({ ok: true, result: await bootstrapMappings() });
       case 'sync-product': {
         const productId = Number(payload.productId);
         if (!Number.isSafeInteger(productId) || productId <= 0) {
-          return jsonResponse({ error: 'A valid productId is required.' }, 400);
+          return respond({ error: 'A valid productId is required.' }, 400);
         }
-        return jsonResponse({ ok: true, result: await syncProduct(productId) });
+        return respond({ ok: true, result: await syncProduct(productId) });
       }
       case 'register-webhooks':
-        return jsonResponse({ ok: true, result: await registerInventoryWebhook() });
+        return respond({ ok: true, result: await registerInventoryWebhook() });
       case 'ensure-featured-collection':
-        return jsonResponse({ ok: true, result: await ensureFeaturedCollection() });
+        return respond({ ok: true, result: await ensureFeaturedCollection() });
       case 'verify-catalog':
       case 'verify-import':
-        return jsonResponse({ ok: true, result: await verifyCatalogState() });
+        return respond({ ok: true, result: await verifyCatalogState() });
       case 'repair-missing-images':
-        return jsonResponse({
+        return respond({
           ok: true,
           result: await repairMissingImages({
             dryRun: payload.dryRun !== false,
@@ -1448,7 +1484,7 @@ Deno.serve(async (request) => {
           })
         });
       case 'activate-nonlegacy-products':
-        return jsonResponse({
+        return respond({
           ok: true,
           result: await activateNonlegacyProducts({
             dryRun: payload.dryRun !== false,
@@ -1457,7 +1493,7 @@ Deno.serve(async (request) => {
           })
         });
       case 'publish-nonlegacy-products':
-        return jsonResponse({
+        return respond({
           ok: true,
           result: await publishNonlegacyProducts({
             dryRun: payload.dryRun !== false,
@@ -1467,10 +1503,10 @@ Deno.serve(async (request) => {
           })
         });
       default:
-        return jsonResponse({ error: 'Unknown Shopify sync action.' }, 400);
+        return respond({ error: 'Unknown Shopify sync action.' }, 400);
     }
   } catch (error) {
     console.error('[shopify-catalog-sync]', error);
-    return jsonResponse({ error: errorMessage(error) || 'Shopify catalog sync failed.' }, 500);
+    return respond({ error: errorMessage(error) || 'Shopify catalog sync failed.' }, 500);
   }
 });

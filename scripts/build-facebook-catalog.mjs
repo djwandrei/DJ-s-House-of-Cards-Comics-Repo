@@ -60,7 +60,13 @@ function publicAssetUrl(relativePath = '') {
 
 function productUrl(product = {}) {
   const category = cleanText(product.category);
-  const route = categoryRoutes.get(category) || 'shop.html';
+  const route = categoryRoutes.get(category);
+  if (!route) {
+    throw new Error(
+      `Product ${product.id || '(unknown id)'} has no Facebook deep-link route for category "${category || '(blank)'}". `
+      + 'Add a category route or make shop.html catalog-aware before generating item links.'
+    );
+  }
   return new URL(`${route}?item=${encodeURIComponent(product.id)}`, siteUrl).href;
 }
 

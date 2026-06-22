@@ -3185,6 +3185,7 @@ Thank you.`
     );
 
     return !hasActiveFilters
+      && !getLinkedProductId()
       && currentCatalogPage === 1
       && sanitizeItemsPerPage(currentCatalogItemsPerPage) <= 48
       && Boolean(BOOTSTRAP_SOURCE_BY_SOURCE[getProductSource()]);

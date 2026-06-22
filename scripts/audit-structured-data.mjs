@@ -80,6 +80,36 @@ function uniqueTypes(items) {
   )];
 }
 
+function htmlForUrlPath(pathname = '') {
+  const normalized = String(pathname || '/').replace(/^\/+/, '') || 'index.html';
+  return normalized === '' ? 'index.html' : normalized;
+}
+
+function hasSearchableCatalogRuntime(fileName) {
+  const html = readFileSync(fileName, 'utf8');
+  return (
+    /\bid=["']productContainer["']/.test(html)
+    && /src=["']catalog\.js(?:\?v=[^"']+)?["']/.test(html)
+  );
+}
+
+function validateSearchAction(fileName, website) {
+  const actions = [website.potentialAction].flat().filter(Boolean);
+  for (const action of actions) {
+    if (!typeMatches(action, 'SearchAction')) continue;
+    const rawTarget = typeof action.target === 'string'
+      ? action.target
+      : action.target?.urlTemplate;
+    assert(rawTarget, `${fileName}: SearchAction missing target`);
+    assert(rawTarget.includes('{search_term_string}'), `${fileName}: SearchAction target must include search_term_string`);
+    const target = new URL(rawTarget.replace('{search_term_string}', 'djhc-audit-search'), 'https://www.djshouseofcards-comics.com/');
+    const targetFile = htmlForUrlPath(target.pathname);
+    assert(HTML_PAGES.includes(targetFile), `${fileName}: SearchAction target page ${targetFile} is not audited`);
+    assert(hasSearchableCatalogRuntime(targetFile), `${fileName}: SearchAction target ${targetFile} is not a searchable catalog runtime page`);
+    assert(target.searchParams.has('search'), `${fileName}: SearchAction target must use the catalog search parameter`);
+  }
+}
+
 function validateAbsoluteUrl(value, label) {
   assert(/^https:\/\/www\.djshouseofcards-comics\.com\//.test(String(value || '')), `${label}: expected production HTTPS URL`);
 }
@@ -111,6 +141,7 @@ function validateStaticPage(fileName) {
   validateAbsoluteUrl(localBusiness.url, `${fileName}: LocalBusiness URL`);
   validateAbsoluteUrl(website.url, `${fileName}: WebSite URL`);
   validateAbsoluteUrl(page.url, `${fileName}: page URL`);
+  validateSearchAction(fileName, website);
 
   if (fileName !== 'index.html') {
     validateBreadcrumb(fileName, findType(items, 'BreadcrumbList'));

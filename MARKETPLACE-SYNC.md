@@ -82,13 +82,26 @@ The current catalog has 2,232 non-legacy listings with prices. The 948 legacy
 listings, including all 20 zero-price/contact-for-price rows, must remain draft.
 
 The generator's weight suggestions are review values, not measured package
-weights:
+weights. The current generator assigns each listing to the nearest Shopify tier
+from `3 oz or under` (85 g), `8 oz` (227 g), `12 oz` (340 g), and `1 lb`
+(454 g):
 
-- raw sports card: 113 g
-- graded sports card: 170 g
-- comic: 454 g
-- collectible: 907 g
+- raw sports card estimate: 85 g before tier assignment
+- graded sports card estimate: 170 g before tier assignment
+- comic estimate: 454 g
+- collectible estimate: 454 g
 - additional cards identified by workbook card count: 5 g each
+
+The website homepage fallback and Shopify featured collection use different
+selection rules:
+
+- Website static fallback: prioritize `isFeatured`, then `sortRank`, then ID;
+  balance the homepage cards across Baseball, Basketball, Football, Comics, and
+  Collectibles, with one final DJ pick.
+- Shopify featured showcase: the Edge Function uses the reviewed
+  `SHOPIFY_SHOWCASE_PRODUCT_IDS` list, keeps only available mapped products,
+  and builds the `djhc-featured-showcase` collection from non-legacy products
+  whose mappings are publication-enabled.
 
 ## Shopify Setup
 
@@ -155,11 +168,26 @@ The durable synchronization flow is:
 Mappings start with publishing disabled. Keep it disabled for every legacy
 listing; enabling it is allowed only for reviewed non-legacy listings.
 
-For Facebook, use the generated `DJHC-*` feed ID as the reconciliation key. If a
-Facebook sale is completed outside Shopify, subtract inventory from the matching
-website/Supabase product first, then let the Shopify sync flow reconcile the
-matching Shopify SKU. Do not mark Facebook-only sales against title text; title
-matching is not stable enough for inventory.
+For Facebook, use the generated `DJHC-*` feed ID as the reconciliation key.
+Every Facebook feed row sets `id` and `mpn` to `DJHC-{website product ID}` and
+links to the matching website item page.
+
+Facebook-only sale reconciliation:
+
+1. Copy the Facebook item ID exactly, for example `DJHC-1234`.
+2. Extract the numeric website product ID (`1234`) and verify the matching
+   product in Supabase or the admin listing editor.
+3. Confirm the buyer quantity against `quantity_available` and the product's
+   current `sale_status`.
+4. Reduce the matching website/Supabase inventory row first.
+5. Trigger or verify the Shopify product sync for the same product ID/SKU so
+   Shopify, TikTok, and Whatnot stay aligned.
+6. Record the platform sale note using the `DJHC-*` ID, not the title.
+
+Do not reconcile Facebook-only sales against title text; title matching is not
+stable enough for inventory. If a Facebook row has a category with no website
+item-detail route, the feed build should fail until a route is added or
+`shop.html` becomes catalog-aware.
 
 The integration uses Shopify API version `2026-04`. Admin listing saves use
 `productSet` for safe product fields and `productVariantsBulkUpdate` for price.

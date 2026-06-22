@@ -1,9 +1,11 @@
 # Shopify Storefront Theme Handoff
 
-This is the Shopify theme direction for making the Shopify storefront resemble
-the DJ's House of Cards website. The sync app includes product, inventory,
-publication, and theme scopes so the reviewed styling pass can be applied with
-`scripts/apply-shopify-theme.mjs`.
+This is the Shopify theme direction for keeping the Shopify storefront aligned
+with the DJ's House of Cards website. The live Shopify storefront is now based
+on Shopify's Horizon theme family with the DJHC brand layer applied through the
+theme automation. The sync app includes product, inventory, publication, and
+theme scopes so reviewed styling/content passes can be planned and applied with
+`scripts/apply-shopify-theme.mjs` and `scripts/apply-shopify-storefront-content.mjs`.
 
 ## Design Brief
 
@@ -32,24 +34,31 @@ publication, and theme scopes so the reviewed styling pass can be applied with
 
 ## Theme Editor Setup
 
-1. Start from Dawn or another lightweight Shopify 2.0 theme.
-2. Upload the DJHC logo and use the existing site lockup language:
+1. Start from the current Horizon-based live theme or duplicate it before a
+   material styling pass. Do not restart from Dawn unless the store is being
+   intentionally rebuilt.
+2. Keep the DJHC logo and existing site lockup language:
    `DJ's House of Cards & Comics` and `Trusted Hobby Finds`.
 3. Configure navigation:
-   `Sports Cards`, `Comics`, `Collectibles`, `Wishlist`, `Cart`, `Account`.
+   `Sports Cards`, `Comics`, `Collectibles`, `Cart`, `Account`, and policy
+   links in the footer.
 4. Set homepage sections in this order:
-   hero, featured category cards, newest non-legacy listings, value/trust block,
-   newsletter/contact, footer.
+   hero, shop-by-department cards, search/spotlight content, featured picks,
+   trust/proof block, contact/social links, footer.
 5. Use collections for `Baseball Cards`, `Basketball Cards`, `Football Cards`,
-   `Comics`, `Collectibles`, and `New Arrivals`.
+   `Comics`, `Collectibles`, and the managed `djhc-featured-showcase`
+   collection.
 6. Keep cart style as drawer or page, not popup-only, so multi-item checkout is
    obvious.
-7. Add policy links in the footer: Shipping, Returns, Privacy, Terms.
+7. Keep final-sale, shipping, privacy, and terms links visible in the footer.
 
-## Custom CSS Starter
+## Custom CSS Layer
 
-Paste this into the theme custom CSS area as the first pass, then tune against
-the rendered theme:
+The theme automation mirrors the reviewed DJHC CSS into Shopify theme assets
+such as `assets/djhc-storefront.css`, `assets/djhc-custom.css`, and
+`assets/djhc-live.css`, then verifies the layout includes the stylesheet tag.
+Use the CSS below as the brand-token baseline when reviewing or hand-editing a
+theme duplicate:
 
 ```css
 :root {
@@ -109,5 +118,11 @@ body {
 - Run `node .\scripts\verify-shopify-sync.mjs` before connecting or publishing
   TikTok/Whatnot products.
 - Do not publish legacy listings. They must remain Draft.
-- Run `node .\scripts\apply-shopify-theme.mjs` first for a dry run, then rerun
-  with `--apply` after confirming the active theme and expected asset changes.
+- Run `node .\scripts\apply-shopify-theme.mjs` first for a plan/dry run, then
+  rerun with `--apply` only after confirming the selected Horizon theme and
+  expected asset changes.
+- For homepage copy/navigation/content refreshes, use
+  `node .\scripts\apply-shopify-storefront-content.mjs` first without apply
+  behavior, then apply only the reviewed changes.
+- For live publication, prefer the duplicate-and-publish workflow so the
+  previous main theme remains available as a rollback point.

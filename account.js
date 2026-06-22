@@ -12,6 +12,11 @@ window.DJ = window.DJ || {};
   const PRODUCT_SOURCE = 'products.json';
   const DEFAULT_PROFILE_FIELD_LENGTH = 240;
   const WISHLIST_PREVIEW_LIMIT = 5;
+  const SAVED_SEARCH_ROUTES = [
+    ['Baseball', 'baseball-cards.html'],
+    ['Basketball', 'basketball-cards.html'],
+    ['Football', 'football-cards.html']
+  ];
   const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
   let wishlistRenderTimer = 0;
@@ -288,8 +293,8 @@ window.DJ = window.DJ || {};
     ].slice(0, 8);
   }
 
-  function buildSearchUrl(term = '') {
-    return `sports-cards.html?search=${encodeURIComponent(term)}`;
+  function buildSearchUrl(route, term = '') {
+    return `${route}?search=${encodeURIComponent(term)}`;
   }
 
   function renderSavedSearches(profile = readProfileForm()) {
@@ -304,12 +309,12 @@ window.DJ = window.DJ || {};
     }
 
     container.replaceChildren(
-      createElement('strong', { text: 'Saved searches' }),
-      ...terms.map((term) => createElement('a', {
+      createElement('strong', { text: 'Saved sports searches' }),
+      ...terms.flatMap((term) => SAVED_SEARCH_ROUTES.map(([label, route]) => createElement('a', {
         className: 'account-saved-search-link',
-        href: buildSearchUrl(term),
-        text: term
-      }))
+        href: buildSearchUrl(route, term),
+        text: `${term} - ${label}`
+      })))
     );
   }
 

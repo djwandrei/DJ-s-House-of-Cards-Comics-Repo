@@ -410,6 +410,7 @@ window.DJ = window.DJ || {};
 
                   <div class="inline-actions compact">
                     <button id="backendSaveListing" type="submit">Save Remote Listing</button>
+                    <button class="button-secondary" id="backendSyncShopify" type="button">Retry Shopify Sync</button>
                     <button class="button-secondary" id="backendClearEditor" type="button">Clear Editor</button>
                     <button class="button-ghost" id="backendDeleteListing" type="button">Delete Remote Listing</button>
                   </div>
@@ -1349,21 +1350,26 @@ window.DJ = window.DJ || {};
     setBackendStatus('Saving remote listing...', 'info');
     try {
       const saved = await backend().upsertProduct(product);
-      let marketplaceWarning = '';
+      let marketplaceWarning = null;
       try {
         await backend().syncProductToShopify?.(saved.id);
       } catch (syncError) {
         console.error('[backend-admin] Shopify sync failed after Supabase save', syncError);
-        marketplaceWarning = ` Shopify sync needs attention: ${syncError.message || 'unknown error'}`;
+        marketplaceWarning = syncError.message || 'unknown error';
       }
       const syncedProduct = syncRemoteProductInState(saved);
       renderRemoteListings();
       populateRemoteForm(syncedProduct.id);
       setRemoteEditorDirty(false);
-      setBackendStatus(
-        `Saved remote listing #${saved.id}.${marketplaceWarning}`,
-        marketplaceWarning ? 'error' : 'success'
-      );
+      if (marketplaceWarning) {
+        setBackendStatus({
+          title: `Saved remote listing #${saved.id}, but Shopify sync needs attention.`,
+          body: marketplaceWarning,
+          meta: 'Use Retry Shopify Sync after checking the listing and your marketplace configuration.'
+        }, 'error');
+      } else {
+        setBackendStatus(`Saved remote listing #${saved.id} and synced Shopify.`, 'success');
+      }
     } catch (error) {
       console.error(error);
       setBackendStatus(error.message || 'Unable to save remote listing.', 'error');
@@ -1399,6 +1405,40 @@ window.DJ = window.DJ || {};
     } catch (error) {
       console.error(error);
       setBackendStatus(error.message || 'Unable to delete remote listing.', 'error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleRetryShopifySync() {
+    if (state.isBusy) return;
+    if (!state.session) {
+      setBackendStatus('Sign in before syncing Shopify.', 'error');
+      return;
+    }
+
+    const productId = Number(document.getElementById('backendProductId')?.value);
+    if (!Number.isSafeInteger(productId) || productId <= 0) {
+      setBackendStatus('Select a saved remote listing before retrying Shopify sync.', 'error');
+      return;
+    }
+    if (state.editorDirty && !window.confirm('This listing has unsaved changes. Retry Shopify sync using the last saved Supabase values?')) {
+      return;
+    }
+
+    setBusy(true);
+    setBackendStatus(`Retrying Shopify sync for listing #${productId}...`, 'info');
+    try {
+      const result = await backend().syncProductToShopify(productId);
+      const status = result?.result?.status ? ` Shopify status: ${result.result.status}.` : '';
+      setBackendStatus(`Shopify sync completed for listing #${productId}.${status}`, 'success');
+    } catch (error) {
+      console.error('[backend-admin] Shopify sync retry failed', error);
+      setBackendStatus({
+        title: `Shopify sync still needs attention for listing #${productId}.`,
+        body: error.message || 'Unable to sync this listing to Shopify.',
+        meta: 'Review Shopify mapping, publish gate, credentials, and Edge Function logs before retrying.'
+      }, 'error');
     } finally {
       setBusy(false);
     }
@@ -1581,6 +1621,7 @@ window.DJ = window.DJ || {};
       markRemoteEditorDirty();
     });
     onClick('backendDeleteListing', handleDeleteRemoteListing);
+    onClick('backendSyncShopify', handleRetryShopifySync);
     onClick('backendClearEditor', () => {
       if (!confirmDiscardRemoteChanges()) return;
       clearRemoteForm();
