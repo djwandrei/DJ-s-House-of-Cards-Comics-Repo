@@ -3,14 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_API_VERSION = '2026-04';
-const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront-20260618b.css';
-const MIRRORED_STYLE_ASSET_KEYS = [
-  STYLE_ASSET_KEY,
-  'assets/djhc-storefront.css',
-  'assets/djhc-custom.css',
-  'assets/djhc-live.css',
-  'assets/djhc-storefront-20260617-overflow.css'
-].filter((assetKey, index, assetKeys) => assetKeys.indexOf(assetKey) === index);
+const STYLE_ASSET_KEY = valueAfter('--style-asset-key') || 'assets/djhc-storefront.css';
+const MIRRORED_STYLE_ASSET_KEYS = [STYLE_ASSET_KEY];
 const LOGO_ASSET_KEY = 'assets/dj-logo.png';
 const THEME_LAYOUT_KEY = 'layout/theme.liquid';
 const STYLE_FILENAME = path.basename(STYLE_ASSET_KEY);
@@ -52,6 +46,23 @@ function requireShopDomain() {
 
 function optionalEnv(name) {
   return String(process.env[name] || '').trim();
+}
+
+function loadLocalEnv() {
+  const envPath = path.join(repoRoot, 'codex_account_keys.env');
+  if (!fs.existsSync(envPath)) return;
+  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+  for (const line of lines) {
+    if (!line || /^\s*#/.test(line) || !line.includes('=')) continue;
+    const [rawName, ...rest] = line.split('=');
+    const name = rawName.trim();
+    if (!name || process.env[name]) continue;
+    let value = rest.join('=').trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    process.env[name] = value;
+  }
 }
 
 function hasDirectShopifyAuth() {
@@ -576,11 +587,16 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
 .djhc-spotlight {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1.5rem;
-  border: 1px solid rgba(24, 37, 73, .12);
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: var(--djhc-shadow);
+  padding: 2.3rem 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.shopify-section:has(.djhc-spotlight) {
+  border-bottom: 1px solid rgba(24, 37, 73, .1);
+  background: #f3f6fb;
 }
 
 .djhc-spotlight__copy {
@@ -605,6 +621,57 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   color: var(--djhc-muted);
   font-weight: 650;
   line-height: 1.55;
+}
+
+.djhc-inventory-search {
+  display: grid;
+  gap: .5rem;
+}
+
+.djhc-inventory-search label {
+  color: var(--djhc-blue-dark);
+  font-size: .85rem;
+  font-weight: 900;
+}
+
+.djhc-inventory-search > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .65rem;
+}
+
+.djhc-inventory-search input[type="search"] {
+  min-width: 0;
+  min-height: 48px;
+  padding: .78rem .9rem;
+  border: 1px solid rgba(24, 37, 73, .2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--djhc-text);
+  font: inherit;
+}
+
+.djhc-inventory-search button {
+  min-height: 48px;
+  padding: .78rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--djhc-blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.djhc-inventory-search button:hover {
+  background: var(--djhc-blue-dark);
+}
+
+.djhc-spotlight__hint {
+  margin: 0 0 .9rem;
+  color: var(--djhc-muted);
+  font-size: .88rem;
+  font-weight: 650;
 }
 
 .djhc-spotlight__rail {
@@ -674,11 +741,16 @@ body:not(:has(.main-collection-grid)):not(:has(.product-information)):not(:has(.
   display: grid;
   grid-template-columns: minmax(260px, .82fr) minmax(0, 1.35fr);
   gap: 1.5rem;
-  padding: 1.5rem;
-  border: 1px solid rgba(24, 37, 73, .12);
-  border-radius: 8px;
+  padding: 2.5rem 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.shopify-section:has(.djhc-shop-tools) {
+  border-bottom: 1px solid rgba(24, 37, 73, .1);
   background: #fff;
-  box-shadow: var(--djhc-shadow);
 }
 
 .djhc-eyebrow {
@@ -1414,6 +1486,11 @@ slideshow-container {
   }
 
   .djhc-shop-tools,
+  .djhc-spotlight {
+    padding-block: 1.65rem;
+  }
+
+  .djhc-shop-tools,
   .djhc-spotlight__copy,
   .djhc-storefront-proof {
     grid-template-columns: 1fr;
@@ -1421,6 +1498,10 @@ slideshow-container {
 
   .djhc-spotlight__rail {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .djhc-inventory-search > div {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .djhc-shop-tools__grid {
@@ -1564,6 +1645,7 @@ async function putThemeAsset(rest, themeId, asset) {
 }
 
 async function main() {
+  loadLocalEnv();
   if (viaSupabase || !hasDirectShopifyAuth()) {
     await applyViaSupabase();
     return;

@@ -78,7 +78,7 @@ function productImages(product = {}) {
     product.image,
     ...(Array.isArray(product.imageGallery) ? product.imageGallery : [])
   ];
-  return [...new Set(candidates.map((item) => cleanText(item)).filter(Boolean))]
+  return [...new Set(candidates.map((item) => String(item || '').trim()).filter(Boolean))]
     .filter((item) => /^assets\//i.test(item))
     .filter((item) => !/assets\/placeholder-/i.test(item));
 }

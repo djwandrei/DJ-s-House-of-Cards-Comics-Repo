@@ -15,25 +15,25 @@ const PRODUCT_SPOTLIGHTS = [
   {
     label: 'Baseball auto',
     title: '1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP',
-    href: `${MAIN_SITE_URL}baseball-cards.html?item=856`,
+    href: '/search?q=Zach+Sorensen&type=product',
     image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Baseball/Pre-2010/1997%20Just%20Minors%20Zach%20Sorensen%20Limited%20Edition%20Rookie%20Auto%20SP%20(1).jpg`
   },
   {
     label: 'Basketball icons',
     title: '1991-92 Upper Deck Michael Jordan / Magic Johnson Set',
-    href: `${MAIN_SITE_URL}basketball-cards.html?item=854`,
+    href: '/search?q=Michael+Jordan+Magic+Johnson&type=product',
     image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/1900-2000/1991-92%20Upper%20Deck%20Confrontation%20Michael%20Jordan%20Magic%20Johnson%20%2B%201990%20Hoops%20Set%20(1).jpg`
   },
   {
     label: 'Football rookies',
     title: '2001 Pacific Dynagon Chad Johnson + Reggie Wayne Rookie Set',
-    href: `${MAIN_SITE_URL}football-cards.html?item=861`,
+    href: '/search?q=Chad+Johnson+Reggie+Wayne&type=product',
     image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Football/1990-2013/2001%20Pacific%20Dynagon%20Chad%20Johnson%20%23118%20%2B%20Reggie%20Wayne%20%23126%20Rookie%20Set%20(1).jpg`
   },
   {
     label: 'Pop culture',
     title: '2008 Donruss Celebrity Cuts Carrie Fisher /499',
-    href: `${MAIN_SITE_URL}collectibles.html?item=888`,
+    href: '/search?q=Carrie+Fisher&type=product',
     image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/MISC/2008%20Donruss%20Celebrity%20Cuts%20Carrie%20Fisher%20Silver%20Foil%20499%20%2312%20Star%20Wars%20(1).jpg`
   }
 ];
@@ -160,13 +160,13 @@ function storefrontHeroMarkup() {
     <p>Sports cards, comics, autographs, memorabilia, and oddball hobby finds with clear photos and Shopify checkout.</p>
     <div class="djhc-hero__actions" aria-label="Primary shopping actions">
       <a class="djhc-hero__button" href="/collections/all">Shop all inventory</a>
-      <a class="djhc-hero__button djhc-hero__button--secondary" href="/collections/djhc-featured-showcase">Featured picks</a>
+      <a class="djhc-hero__button djhc-hero__button--secondary" href="#djhc-inventory-search">Search inventory</a>
       <a class="djhc-hero__button djhc-hero__button--secondary" href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
     </div>
     <dl class="djhc-hero__facts">
-      <div><dt>Ready now</dt><dd>2,232 active listings</dd></div>
-      <div><dt>Departments</dt><dd>Cards, comics, collectibles</dd></div>
-      <div><dt>Channels</dt><dd>Shopify plus social shops</dd></div>
+      <div><dt>Inventory</dt><dd>Thousands of one-of-a-kind listings</dd></div>
+      <div><dt>Details</dt><dd>Actual item photos and condition notes</dd></div>
+      <div><dt>Checkout</dt><dd>Secure Shopify purchasing</dd></div>
     </dl>
   </div>
 </section>
@@ -227,7 +227,7 @@ function storefrontToolsMarkup() {
 
 function storefrontSpotlightMarkup() {
   const cards = PRODUCT_SPOTLIGHTS.map((item) => `
-    <a class="djhc-spotlight-card" href="${item.href}" target="_blank" rel="noopener noreferrer">
+    <a class="djhc-spotlight-card" href="${item.href}">
       <img src="${item.image}" alt="${item.title}" loading="lazy" decoding="async">
       <span>${item.label}</span>
       <strong>${item.title}</strong>
@@ -235,12 +235,22 @@ function storefrontSpotlightMarkup() {
   `).join('');
 
   return `
-<section class="djhc-spotlight" aria-labelledby="djhc-spotlight-heading">
+<section class="djhc-spotlight" id="djhc-inventory-search" aria-labelledby="djhc-spotlight-heading">
   <div class="djhc-spotlight__copy">
-    <p class="djhc-eyebrow">Featured finds</p>
-    <h2 id="djhc-spotlight-heading">New and notable inventory.</h2>
-    <p>Collector-run listings with clear photos, straightforward pricing, and a mix of sports cards, comics, autographs, and memorabilia.</p>
+    <div>
+      <p class="djhc-eyebrow">Inventory search</p>
+      <h2 id="djhc-spotlight-heading">Find the player, set, title, or team you collect.</h2>
+    </div>
+    <form class="djhc-inventory-search" action="/search" method="get" role="search">
+      <label for="djhc-search-query">Search all Shopify listings</label>
+      <div>
+        <input id="djhc-search-query" name="q" type="search" placeholder="Try Michael Jordan, Topps, Batman..." autocomplete="off">
+        <input name="type" type="hidden" value="product">
+        <button type="submit">Search inventory</button>
+      </div>
+    </form>
   </div>
+  <p class="djhc-spotlight__hint">A few examples from the catalog. Select one to search for the matching listing without leaving Shopify.</p>
   <div class="djhc-spotlight__rail" aria-label="Representative DJHC inventory">
     ${cards}
   </div>
@@ -260,8 +270,8 @@ function storefrontProofMarkup() {
     <span>The catalog is built around recognizable players, teams, eras, characters, and hobby categories.</span>
   </article>
   <article>
-    <strong>Secure checkout</strong>
-    <span>Shop through Shopify here, or follow DJHC on Facebook, Whatnot, and TikTok Shop.</span>
+    <strong>Review before purchase</strong>
+    <span>Sales are final, so review the photos, description, condition, and shipping details before checkout.</span>
   </article>
 </section>
 `;
@@ -384,7 +394,7 @@ function updateHeader(rawJson) {
   const announcements = Object.values(sections).find((section) => section?.type === 'header-announcements');
   const announcement = Object.values(announcements?.blocks || {}).find((block) => block?.type === '_announcement');
   if (announcement?.settings) {
-    announcement.settings.text = "DJ's House of Cards & Comics | Sports cards, comics, collectibles, and fresh finds";
+    announcement.settings.text = 'Actual item photos | Secure Shopify checkout | Collector-run inventory';
     announcement.settings.font_size = '0.82rem';
     announcement.settings.weight = '700';
     announcement.settings.letter_spacing = '0';
@@ -418,7 +428,7 @@ function updateFooter(rawJson) {
     changes.push('footer heading');
   }
   if (textBlocks[1]?.settings) {
-    textBlocks[1].settings.text = `<p>Shop here through Shopify, browse the full DJHC catalog on the <a href="${MAIN_SITE_URL}">main website</a>, or follow along on <a href="${FACEBOOK_URL}">Facebook</a>, <a href="${WHATNOT_URL}">Whatnot</a>, and <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p>`;
+    textBlocks[1].settings.text = `<p>Shop here through Shopify, browse the full DJHC catalog on the <a href="${MAIN_SITE_URL}">main website</a>, or follow along on <a href="${FACEBOOK_URL}">Facebook</a>, <a href="${WHATNOT_URL}">Whatnot</a>, and <a href="${TIKTOK_SHOP_URL}">TikTok Shop</a>.</p><p><a href="/policies/refund-policy">Final-sale policy</a> · <a href="/policies/shipping-policy">Shipping policy</a> · <a href="/policies/privacy-policy">Privacy</a> · <a href="/policies/terms-of-service">Terms</a></p>`;
     changes.push('footer body copy');
   }
   if (footerSection?.settings) {

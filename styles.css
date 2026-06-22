@@ -4043,10 +4043,6 @@ body.dark-mode .modal-fact strong {
   color:#f8fbff;
 }
 
-body.dark-mode .modal-fact--price strong {
-  color:#ff9bb3;
-}
-
 body.dark-mode .modal-meta-grid p {
   background:rgba(255,255,255,.045);
   border-color:rgba(255,255,255,.1);
@@ -6616,15 +6612,6 @@ body.dark-mode .page-hero-card {
   font-size:.88rem;
   line-height:1.16;
   overflow-wrap:anywhere;
-}
-
-.modal-fact--price {
-  background:linear-gradient(135deg,rgba(31,95,255,.13),rgba(239,24,35,.1));
-  border-color:rgba(31,95,255,.16);
-}
-
-.modal-fact--price strong {
-  color:var(--brand-red);
 }
 
 .modal-copy p,
@@ -9390,15 +9377,6 @@ body.dark-mode .admin-listing-row {
   color:var(--brand-red);
 }
 
-.policy-list {
-  margin:.6rem 0 1.2rem;
-  padding-left:1.2rem;
-}
-
-.policy-list li + li {
-  margin-top:.45rem;
-}
-
 .policy-content h2 {
   margin-top:1.75rem;
 }
@@ -9563,14 +9541,6 @@ body.dark-mode .marketplace-link-grid a {
     padding:.5rem .64rem;
   }
 
-  .footer-link-group--support {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .footer-link-group--support strong {
-    grid-column:1 / -1;
-  }
-
   .account-collector-layout {
     grid-template-columns:minmax(0,640px) minmax(280px,1fr);
   }
@@ -9699,12 +9669,4 @@ body[data-page="admin"] {
     grid-template-columns:1fr;
   }
 
-  .footer-link-group--support {
-    grid-column:1 / -1;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .footer-link-group--support strong {
-    grid-column:1 / -1;
-  }
 }
