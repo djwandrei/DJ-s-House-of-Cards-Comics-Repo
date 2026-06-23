@@ -62,4 +62,5 @@ supabase-client.js
 sw.js
 terms.html
 returns.html
+vendor/supabase.min.js
 wishlist.html
