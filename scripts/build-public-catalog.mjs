@@ -4,6 +4,7 @@ import path from 'node:path';
 const root = process.cwd();
 const cleanJsonSources = process.argv.includes('--clean-json');
 const optimizeSegmentJson = process.argv.includes('--optimize-segments');
+const JSON_INDENT = 2;
 const FILES = [
   'products.json',
   'products-baseball.json',
@@ -148,6 +149,10 @@ function sortByStorefrontRank(items = []) {
 
 const canonicalProducts = JSON.parse(await fs.readFile(path.join(root, 'products.json'), 'utf8'));
 
+function structuredJson(value) {
+  return `${JSON.stringify(value, null, JSON_INDENT)}\n`;
+}
+
 for (const file of FILES) {
   const fullPath = path.join(root, file);
   // Derive every segment from products.json so one canonical catalog update
@@ -167,7 +172,7 @@ for (const file of FILES) {
     ? activeRaw.map((item) => pickStorefrontFields(item))
     : [];
   if (!isFullCatalog && (cleanJsonSources || optimizeSegmentJson)) {
-    await writeTextFile(fullPath, `${JSON.stringify(storefront)}\n`);
+    await writeTextFile(fullPath, structuredJson(storefront));
   }
   if (BOOTSTRAP_FILES[file]) {
     const bootstrap = {
@@ -175,12 +180,12 @@ for (const file of FILES) {
       total: storefront.length,
       products: storefront.slice(0, BOOTSTRAP_PRODUCT_LIMIT)
     };
-    await writeTextFile(path.join(root, BOOTSTRAP_FILES[file]), `${JSON.stringify(bootstrap)}\n`);
+    await writeTextFile(path.join(root, BOOTSTRAP_FILES[file]), structuredJson(bootstrap));
   }
   if (BUNDLE_FILES[file]) {
     const bundle = [
       `window.DJ_PRELOADED_SOURCE = ${JSON.stringify(file)};`,
-      `window.DJ_PRELOADED_PRODUCTS = ${JSON.stringify(storefront)};`,
+      `window.DJ_PRELOADED_PRODUCTS = ${JSON.stringify(storefront, null, JSON_INDENT)};`,
       ''
     ].join('\n');
     await writeTextFile(path.join(root, BUNDLE_FILES[file]), bundle);
