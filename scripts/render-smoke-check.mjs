@@ -181,7 +181,7 @@ function eventFailures(events) {
 
 async function inspectDesktopPage(client, baseUrl, page) {
   client.consumeEvents();
-  await navigate(client, `${baseUrl}${page.path}${page.path.includes('?') ? '&' : '?'}smokeVersion=20260623a`);
+  await navigate(client, `${baseUrl}${page.path}${page.path.includes('?') ? '&' : '?'}smokeVersion=20260623b`);
   if (page.expect?.modal) {
     for (let attempt = 0; attempt < 60; attempt += 1) {
       if (await client.evaluate('Boolean(document.querySelector("#productModal.active"))')) break;
@@ -238,7 +238,7 @@ async function inspectMobileFlow(client, baseUrl) {
     screenHeight: 844
   });
   await client.send('Emulation.setTouchEmulationEnabled', { enabled: true });
-  await navigate(client, `${baseUrl}/baseball-cards.html?smoke=mobile&smokeVersion=20260623a`);
+  await navigate(client, `${baseUrl}/baseball-cards.html?smoke=mobile&smokeVersion=20260623b`);
   for (let attempt = 0; attempt < 80; attempt += 1) {
     const ready = await client.evaluate('document.querySelectorAll(".product-card[data-product-id]").length > 0 && !!document.querySelector(".mobile-filter-trigger")');
     if (ready) break;

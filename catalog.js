@@ -26,12 +26,6 @@ window.DJ = window.DJ || {};
       searchPlaceholder: 'Player, title, team, publisher, or keyword',
       helperText: 'Examples: Jordan rookie, All-Star, PSA, Marvel, Giants.'
     },
-    'sports-cards': {
-      allowedCategories: ['Baseball', 'Basketball', 'Football'],
-      searchLabel: 'Search sports cards',
-      searchPlaceholder: 'Player, set, team, slab, parallel, or keyword',
-      helperText: 'Examples: Jordan rookie, Brady auto, Topps Chrome, PSA 9, All-Star.'
-    },
     'sports-hub': {
       allowedCategories: ['Baseball', 'Basketball', 'Football'],
       searchLabel: 'Search all sports cards',
@@ -77,7 +71,6 @@ window.DJ = window.DJ || {};
     home: 'products-featured.json',
     'shop-hub': 'products-sports.json',
     'sports-hub': 'products-sports.json',
-    'sports-cards': 'products-sports.json',
     'baseball-cards': 'products-baseball.json',
     'basketball-cards': 'products-basketball.json',
     'football-cards': 'products-football.json',
@@ -4214,7 +4207,6 @@ Thank you.`);
     const switchers = {
       'shop-hub': shopLinks,
       'sports-hub': sportsLinks,
-      'sports-cards': sportsLinks,
       'baseball-cards': sportsLinks,
       'basketball-cards': sportsLinks,
       'football-cards': sportsLinks,
@@ -4314,7 +4306,7 @@ Thank you.`);
     bindCartStateSync();
     hydrateCustomerAccountAfterPaint();
 
-    if (['home', 'shop-hub', 'sports-hub', 'sports-cards', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist', 'cart'].includes(page)) {
+    if (['home', 'shop-hub', 'sports-hub', 'baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles', 'wishlist', 'cart'].includes(page)) {
       DJ.scheduleIdle(() => insertDepartmentSwitcher());
     }
 

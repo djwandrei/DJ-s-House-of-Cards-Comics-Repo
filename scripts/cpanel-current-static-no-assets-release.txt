@@ -48,6 +48,7 @@ products-featured.json
 products-football.json
 products-sports.json
 products.json
+robots.txt
 seo.js
 sell-trade-want-list.html
 shipping.html

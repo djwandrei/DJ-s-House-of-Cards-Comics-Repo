@@ -10,7 +10,7 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260623a';
+const SCRIPT_VERSION = '20260623b';
 const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
 const SOCIAL_METADATA_PAGES = new Set([
   'cart.html',

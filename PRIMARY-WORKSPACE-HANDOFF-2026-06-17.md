@@ -135,7 +135,7 @@ Rendered browser checks:
 
 - The full Shopify/Supabase verifier was not run in this turn because `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are not set in the shell environment. I did not inspect `codex_account_keys.env`.
 - The secret audit fails on the ignored local `codex_account_keys.env` file. This is expected, but any commit/release flow should continue to verify the file remains ignored and untracked.
-- `PROJECT-HISTORY-CURRENT-STATE.md` exists but was last consolidated on 2026-06-13 and is stale relative to the later Shopify publishing/theme/site cleanup work. This file supersedes it for current handoff.
+- The older `PROJECT-HISTORY-CURRENT-STATE.md` handoff was removed after this file superseded it as the current project baseline.
 - Generated catalog files must not be manually edited. After approved `products.json` edits, run `node .\scripts\build-public-catalog.mjs --optimize-segments`.
 - Use `scripts/audit-product-catalog-quality.py --fix` only when explicitly asked; default mode is audit-only.
 - Live/destructive actions still require explicit authorization: cPanel deployment, Supabase writes, Shopify mutations, product/listing/asset deletion, payment changes, emails, and customer/order modifications.

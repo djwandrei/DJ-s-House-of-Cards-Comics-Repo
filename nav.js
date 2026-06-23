@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Navigation helpers for the shared site header.
  * -----------------------------------------------------------------------------
  * This module keeps the primary navigation in sync with the current page,
@@ -13,7 +13,6 @@
     shop: { target: 'shop.html', label: 'Shop' },
     'shop-hub': { target: 'shop.html', label: 'Shop' },
     'sports-hub': { target: 'sports-cards.html', label: 'Sports Cards' },
-    'sports-cards': { target: 'sports-cards.html', label: 'Sports Cards' },
     'baseball-cards': { target: 'sports-cards.html', label: 'Baseball Cards' },
     'basketball-cards': { target: 'sports-cards.html', label: 'Basketball Cards' },
     'football-cards': { target: 'sports-cards.html', label: 'Football Cards' },
