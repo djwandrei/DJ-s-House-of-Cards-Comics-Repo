@@ -35,10 +35,19 @@ const STOREFRONT_FIELDS = new Set([
   'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
   'displayPrice', 'image', 'imageGallery', 'description', 'photoHostPageUrl',
   'legacyImageLabel', 'sourcePage', 'league', 'sport', 'playerAthlete', 'copyCount',
-  'attributes', 'isFeatured', 'isDeleted', 'sortRank'
+  'attributes', 'isFeatured', 'isDeleted', 'sortRank', 'hasThumbnail'
 ]);
 const STOREFRONT_METADATA_FIELDS = new Set(['conditionNotes', 'playerAthlete']);
 const STOREFRONT_EXCEL_FIELDS = new Set(['Title', 'C:Features', 'C:Autographed']);
+const THUMBNAIL_ELIGIBLE_ROOTS = new Set([
+  'baseball-cards',
+  'basketball-cards',
+  'collectibles',
+  'comics',
+  'ebay listing photos',
+  'personal collection',
+  'football-cards'
+]);
 const CATEGORY_PAGES = [
   { file: 'baseball-cards.html', category: 'Baseball' },
   { file: 'basketball-cards.html', category: 'Basketball' },
@@ -91,6 +100,24 @@ function pickStorefrontMetadata(metadata) {
   return Object.keys(out).length ? out : undefined;
 }
 
+function normalizedAssetPath(reference = '') {
+  return String(reference || '').trim().replace(/\\/g, '/').replace(/^\/+/, '').split(/[?#]/)[0];
+}
+
+function thumbnailPathForAsset(reference = '') {
+  const normalized = normalizedAssetPath(reference);
+  if (!/^assets\//i.test(normalized) || /^assets\/thumbnails\//i.test(normalized)) return '';
+  const relativePath = normalized.replace(/^assets\//i, '');
+  const rootSegment = relativePath.split('/')[0]?.toLowerCase() || '';
+  if (!THUMBNAIL_ELIGIBLE_ROOTS.has(rootSegment) || /\.svg$/i.test(relativePath)) return '';
+  return `assets/thumbnails/${relativePath.replace(/\.[^.]+$/, '.webp')}`;
+}
+
+function hasGeneratedThumbnail(reference = '') {
+  const thumbnailPath = thumbnailPathForAsset(reference);
+  return Boolean(thumbnailPath && existsSync(path.join(ROOT, thumbnailPath)));
+}
+
 function pickStorefrontFields(item) {
   const out = {};
   for (const key of STOREFRONT_FIELDS) {
@@ -98,6 +125,8 @@ function pickStorefrontFields(item) {
   }
   const metadata = pickStorefrontMetadata(item.metadata);
   if (metadata) out.metadata = metadata;
+  if (hasGeneratedThumbnail(out.image)) out.hasThumbnail = true;
+  else delete out.hasThumbnail;
   return out;
 }
 

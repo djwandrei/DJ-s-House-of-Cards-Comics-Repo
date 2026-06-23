@@ -37,7 +37,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2,
@@ -100,7 +101,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 565,
@@ -188,7 +190,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sortRank": 6,
     "metadata": {
       "playerAthlete": "Hank Aaron|Willie Mays|Harmon Killebrew|Eddie Mathews|Tony Perez|Pete Rose"
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 5,

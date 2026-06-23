@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Backend configuration
  * -----------------------------------------------------------------------------
  * Browser-safe public config only. Never put a service-role key in this file.
@@ -26,7 +26,7 @@
     // snapshots remain the fast fallback when the backend is unavailable.
     preferStaticCatalog: false,
     remoteCatalogTimeoutMs: 3200,
-    staticCatalogFallbackDelayMs: 700,
+    staticCatalogFallbackDelayMs: 350,
     siteUrl: isUsableOrigin ? origin : 'https://www.djshouseofcards-comics.com'
   };
 })();

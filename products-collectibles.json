@@ -21,7 +21,8 @@
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 828,
@@ -45,7 +46,8 @@
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 829,
@@ -79,7 +81,8 @@
     "sortRank": 6,
     "metadata": {
       "playerAthlete": "Hank Aaron|Willie Mays|Harmon Killebrew|Eddie Mathews|Tony Perez|Pete Rose"
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 830,
@@ -103,7 +106,8 @@
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 888,
@@ -176,7 +180,8 @@
         "C:Features": "Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2171,
@@ -215,7 +220,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2172,
@@ -253,7 +259,8 @@
         "C:Features": "Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2380,
@@ -290,7 +297,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2680,
@@ -328,7 +336,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3056,
@@ -364,7 +373,8 @@
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3086,
@@ -400,7 +410,8 @@
         "C:Features": "Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3209,

@@ -22,7 +22,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 828,
@@ -46,7 +47,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 829,
@@ -80,7 +82,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sortRank": 6,
     "metadata": {
       "playerAthlete": "Hank Aaron|Willie Mays|Harmon Killebrew|Eddie Mathews|Tony Perez|Pete Rose"
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 830,
@@ -104,7 +107,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "Memorabilia"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 888,
@@ -177,7 +181,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2171,
@@ -216,7 +221,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2172,
@@ -254,7 +260,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2380,
@@ -291,7 +298,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2680,
@@ -329,7 +337,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3056,
@@ -365,7 +374,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3086,
@@ -401,7 +411,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3209,

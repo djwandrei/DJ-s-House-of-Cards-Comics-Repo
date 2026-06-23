@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
  * Authenticated buyer details, collector preferences, wishlists, and checkout
@@ -237,7 +237,11 @@ window.DJ = window.DJ || {};
     const order = new Map(wishlistIds.map((id, index) => [Number(id), index]));
     if (DJ.remoteCatalog.isConfigured()) {
       const remoteProducts = await DJ.remoteCatalog.listProducts({ ids: wishlistIds }).catch(() => null);
-      if (Array.isArray(remoteProducts)) return remoteProducts;
+      if (Array.isArray(remoteProducts)) {
+        return remoteProducts
+          .filter((product) => order.has(Number(product.id)))
+          .sort((left, right) => order.get(Number(left.id)) - order.get(Number(right.id)));
+      }
     }
     const products = await loadAccountProducts();
     return products

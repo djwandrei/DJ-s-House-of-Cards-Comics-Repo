@@ -95,14 +95,13 @@ window.DJ = window.DJ || {};
   const filteredCatalogResultsCache = new Map();
   const catalogProductsSignatureCache = new WeakMap();
   const FILTERED_RESULTS_CACHE_LIMIT = 18;
-  const CATALOG_BACKGROUND_HYDRATION_DELAY = 12000;
+  const CATALOG_BACKGROUND_HYDRATION_DELAY = 2500;
   const gridProductLookups = new WeakMap();
   const gridProductSequences = new WeakMap();
   const DEFAULT_RENDER_BATCH_SIZE = 24;
   const DESKTOP_FILTER_BREAKPOINT = 900;
   const FILTER_SIDEBAR_VISIBILITY_KEY = 'catalogSidebarVisible';
   const SIDEBAR_DEFAULT_OPEN_PAGES = new Set([
-    'sports-cards',
     'baseball-cards',
     'basketball-cards',
     'football-cards',
@@ -1359,10 +1358,16 @@ window.DJ = window.DJ || {};
         : shouldOverlayStaticPrice(product, staticProduct);
 
       if (!shouldOverlayLegacyFields && !shouldOverlayImage && !shouldOverlayPrice) {
-        return product;
+        return staticProduct.hasThumbnail === true && product.hasThumbnail !== true
+          ? { ...product, hasThumbnail: true }
+          : product;
       }
 
       const syncedProduct = { ...product };
+
+      if (staticProduct.hasThumbnail === true) {
+        syncedProduct.hasThumbnail = true;
+      }
 
       if (shouldOverlayLegacyFields) {
         syncedProduct.description = staticDescription;
@@ -1416,7 +1421,7 @@ window.DJ = window.DJ || {};
       // Race it against the local product bundle so a slow backend, stalled SDK
       // CDN, or mobile network hiccup never leaves shoppers on a loading state.
       const remoteCatalogTimeoutMs = getCatalogTimingValue('remoteCatalogTimeoutMs', 3200, 800, 10000);
-      const staticCatalogFallbackDelayMs = getCatalogTimingValue('staticCatalogFallbackDelayMs', 700, 0, 5000);
+      const staticCatalogFallbackDelayMs = getCatalogTimingValue('staticCatalogFallbackDelayMs', 350, 0, 5000);
       const remotePromise = withTimeout(
         DJ.remoteCatalog.listProducts({
           source,
@@ -1528,7 +1533,14 @@ window.DJ = window.DJ || {};
   function getPriorityProductCardCount() {
     // Product grids sit below their page hero and filter controls, so card
     // thumbnails should not compete with the actual LCP image during startup.
-    return document.body.dataset.page === 'wishlist' ? 2 : 0;
+    // After the shell is painted, prioritize the first visible row so shoppers
+    // are not left waiting on lazy image heuristics for the cards they can see.
+    const page = document.body.dataset.page || '';
+    if (page === 'wishlist') return 2;
+    if (['baseball-cards', 'basketball-cards', 'football-cards', 'comics', 'collectibles'].includes(page)) {
+      return 4;
+    }
+    return 0;
   }
 
   function renderProductCard(product, wishlistIds, options = {}) {
@@ -1544,7 +1556,9 @@ window.DJ = window.DJ || {};
     const priceLabel = getProductPriceLabel(product);
     const pricingClass = /contact/i.test(displayPrice) ? 'product-pricing product-pricing--inquiry' : 'product-pricing';
     const cardImageAlt = buildProductImageAlt(product, { context: 'card' });
-    const cardImageCandidates = DJ.getThumbnailAssetCandidates(product.image);
+    const cardImageCandidates = product.hasThumbnail === true
+      ? DJ.getThumbnailAssetCandidates(product.image)
+      : DJ.getAssetUrlCandidates(product.image);
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
     const cardGradeLabel = getProductCardGradeLabel(product);
     const showConditionChip = Boolean(product.conditionCompact || product.conditionFacet);
@@ -1694,6 +1708,12 @@ window.DJ = window.DJ || {};
         .then((payments) => payments?.hydrateAccount?.())
         .catch((error) => console.warn('Customer account could not be synced.', error));
     };
+
+    if (document.getElementById('productContainer')) {
+      window.setTimeout(() => DJ.scheduleIdle(hydrate, 1600), 8000);
+      return;
+    }
+
     DJ.scheduleIdle(hydrate, 1200);
   }
 
@@ -3213,11 +3233,14 @@ Thank you.`
     const perPage = sanitizeItemsPerPage(currentCatalogItemsPerPage);
     const visibleProducts = allowedProducts.slice(0, perPage);
     const wishlistIds = new Set(DJ.getWishlist().map(Number));
+    const priorityCardCount = getPriorityProductCardCount();
 
     clearProductGridLoadingState(productContainer);
     productContainer.dataset.productRenderSignature = `bootstrap:${source}:${perPage}:${visibleProducts.map((product) => product.id).join(',')}`;
     productContainer.innerHTML = visibleProducts
-      .map((product) => renderProductCard(product, wishlistIds, { imagePriority: 'low' }))
+      .map((product, index) => renderProductCard(product, wishlistIds, {
+        imagePriority: index < priorityCardCount ? 'high' : 'low'
+      }))
       .join('');
     attachGridHandlers(productContainer, visibleProducts, {
       modalContextProducts: visibleProducts
