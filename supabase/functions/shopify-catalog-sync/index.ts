@@ -1367,22 +1367,28 @@ async function ensureFeaturedCollection() {
   };
 }
 
-async function registerInventoryWebhook() {
+type ShopifyWebhookTopic = {
+  topic: 'INVENTORY_LEVELS_UPDATE' | 'ORDERS_PAID';
+  includeFields?: string[];
+};
+
+async function registerShopifyWebhook({ topic, includeFields }: ShopifyWebhookTopic) {
   const webhookUrl = `${supabaseUrl.replace(/\/+$/, '')}/functions/v1/shopify-webhook`;
   const existing = await shopifyGraphql<{
     webhookSubscriptions: {
       nodes: Array<{ id: string; topic: string; uri: string }>;
     };
   }>(
-    `query InventoryWebhooks {
-      webhookSubscriptions(first: 50, topics: [INVENTORY_LEVELS_UPDATE]) {
+    `query ExistingWebhooks($topics: [WebhookSubscriptionTopic!]) {
+      webhookSubscriptions(first: 50, topics: $topics) {
         nodes {
           id
           topic
           uri
         }
       }
-    }`
+    }`,
+    { topics: [topic] }
   );
   const match = existing.webhookSubscriptions.nodes.find((subscription) => subscription.uri === webhookUrl);
   if (match) return { created: false, subscription: match };
@@ -1410,11 +1416,11 @@ async function registerInventoryWebhook() {
       }
     }`,
     {
-      topic: 'INVENTORY_LEVELS_UPDATE',
+      topic,
       subscription: {
         uri: webhookUrl,
         format: 'JSON',
-        includeFields: ['inventory_item_id', 'location_id', 'available', 'updated_at']
+        ...(includeFields?.length ? { includeFields } : {})
       }
     }
   );
@@ -1426,6 +1432,36 @@ async function registerInventoryWebhook() {
     );
   }
   return { created: true, subscription: created.webhookSubscriptionCreate.webhookSubscription };
+}
+
+async function registerShopifyWebhooks() {
+  const topics: ShopifyWebhookTopic[] = [
+    {
+      topic: 'INVENTORY_LEVELS_UPDATE',
+      includeFields: ['inventory_item_id', 'location_id', 'available', 'updated_at']
+    },
+    {
+      topic: 'ORDERS_PAID'
+    }
+  ];
+  const results = [];
+  const failed = [];
+  for (const topic of topics) {
+    try {
+      results.push({ topic: topic.topic, ...(await registerShopifyWebhook(topic)) });
+    } catch (error) {
+      failed.push({
+        topic: topic.topic,
+        error: errorMessage(error)
+      });
+    }
+  }
+  return {
+    count: results.length,
+    failedCount: failed.length,
+    results,
+    failed
+  };
 }
 
 Deno.serve(async (request) => {
@@ -1468,7 +1504,7 @@ Deno.serve(async (request) => {
         return respond({ ok: true, result: await syncProduct(productId) });
       }
       case 'register-webhooks':
-        return respond({ ok: true, result: await registerInventoryWebhook() });
+        return respond({ ok: true, result: await registerShopifyWebhooks() });
       case 'ensure-featured-collection':
         return respond({ ok: true, result: await ensureFeaturedCollection() });
       case 'verify-catalog':

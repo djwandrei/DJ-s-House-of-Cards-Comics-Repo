@@ -5,6 +5,10 @@ import {
   isShopifyConfigured,
   shopifyGid
 } from '../_shared/shopify.ts';
+import {
+  sendSaleNotification
+} from '../_shared/sale-notifications.ts';
+import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
@@ -175,14 +179,14 @@ async function upsertOrder(session: Stripe.Checkout.Session, status: string, res
     metadata: compactSessionMetadata(session)
   }, {
     onConflict: 'stripe_session_id'
-  }).select('id,status,inventory_finalized_at,buyer_user_id').single();
+  }).select('id,status,inventory_finalized_at,buyer_user_id,buyer_email,amount_total,currency,stripe_session_id,created_at').single();
   assertNoSupabaseError(error, 'order upsert');
   if (!data) throw new Error(`Supabase order upsert returned no row for Stripe session ${session.id}`);
   return data;
 }
 
 async function snapshotOrderItems(orderId: string, reservations: Reservation[]) {
-  if (!reservations.length) return;
+  if (!reservations.length) return [];
   const productIds = reservations.map((reservation) => reservation.product_id);
   const { data: products, error } = await admin
     .from('products')
@@ -211,6 +215,7 @@ async function snapshotOrderItems(orderId: string, reservations: Reservation[]) 
     onConflict: 'order_id,product_id'
   });
   assertNoSupabaseError(upsertError, 'order item snapshot');
+  return rows;
 }
 
 async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUserId: string | null) {
@@ -260,26 +265,64 @@ async function syncCheckoutInventoryToShopify(
   });
 }
 
+function saleNotificationFromStripe(
+  session: Stripe.Checkout.Session,
+  order: Record<string, unknown>,
+  items: Array<Record<string, unknown>>,
+  eventId: string
+): SaleNotification {
+  const notificationItems: SaleNotificationItem[] = items.map((item) => {
+    const numericProductId = Number(item.product_id);
+    return {
+      productId: Number.isFinite(numericProductId) && numericProductId > 0
+        ? numericProductId
+        : String(item.product_id || ''),
+      name: String(item.product_name || `Listing #${item.product_id || ''}`).trim(),
+      quantity: Number(item.quantity) || 1,
+      unitAmount: Number(item.unit_amount),
+      priceLabel: String(item.product_price_label || ''),
+      category: String(item.product_category || ''),
+      image: String(item.product_image || '')
+    };
+  });
+  return {
+    provider: 'Stripe Checkout',
+    eventId,
+    platformOrderId: session.id,
+    status: 'paid',
+    buyerEmail: String(order.buyer_email || session.customer_details?.email || session.customer_email || ''),
+    amountTotal: Number(order.amount_total ?? session.amount_total),
+    currency: String(order.currency || session.currency || 'usd'),
+    occurredAt: String(order.created_at || new Date().toISOString()),
+    items: notificationItems,
+    metadata: {
+      stripe_session_id: session.id,
+      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : ''
+    }
+  };
+}
+
 async function finalizePaidCheckout(session: Stripe.Checkout.Session, eventId: string) {
   const reservations = await getReservations(session);
   if (!reservations.length) throw new Error(`No checkout reservations found for Stripe session ${session.id}`);
   const order = await upsertOrder(session, 'paid', reservations);
-  await snapshotOrderItems(order.id, reservations);
+  const items = await snapshotOrderItems(order.id, reservations);
   await upsertCustomerProfile(session, order.buyer_user_id);
   const { error } = await admin.rpc('finalize_checkout_inventory', { p_stripe_session_id: session.id });
   assertNoSupabaseError(error, 'inventory finalization');
   await syncCheckoutInventoryToShopify(session, reservations, eventId);
+  return saleNotificationFromStripe(session, order, items, eventId);
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId: string) {
   if (session.payment_status === 'paid' || session.payment_status === 'no_payment_required') {
-    await finalizePaidCheckout(session, eventId);
-    return;
+    return await finalizePaidCheckout(session, eventId);
   }
   const reservations = await getReservations(session);
   const order = await upsertOrder(session, 'unpaid', reservations);
-  if (order?.status === 'paid') return;
+  if (order?.status === 'paid') return null;
   await updateReservations(session, 'pending', new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString());
+  return null;
 }
 
 async function handleNonPaidTerminalEvent(session: Stripe.Checkout.Session, orderStatus: 'unpaid' | 'expired', reservationStatus: 'released' | 'expired') {
@@ -305,12 +348,13 @@ Deno.serve(async (request) => {
   try {
     if (!await beginWebhookEvent(event)) return jsonResponse({ received: true, duplicate: true });
     const session = event.data.object as Stripe.Checkout.Session;
+    let saleNotification: SaleNotification | null = null;
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(session, event.id);
+        saleNotification = await handleCheckoutCompleted(session, event.id);
         break;
       case 'checkout.session.async_payment_succeeded':
-        await finalizePaidCheckout(session, event.id);
+        saleNotification = await finalizePaidCheckout(session, event.id);
         break;
       case 'checkout.session.async_payment_failed':
         await handleNonPaidTerminalEvent(session, 'unpaid', 'released');
@@ -323,6 +367,14 @@ Deno.serve(async (request) => {
         return jsonResponse({ received: true, ignored: true });
     }
     await finishWebhookEvent(event.id, 'processed');
+    if (saleNotification) {
+      try {
+        const result = await sendSaleNotification(saleNotification);
+        if (!result.sent) console.warn('[stripe-webhook] Sale notification skipped:', result.skippedReason);
+      } catch (notificationError) {
+        console.error('[stripe-webhook] Sale notification failed', notificationError);
+      }
+    }
   } catch (error) {
     console.error('[stripe-webhook]', error);
     try {

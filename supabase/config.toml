@@ -10,6 +10,9 @@ verify_jwt = false
 [functions.shopify-catalog-sync]
 verify_jwt = true
 
+[functions.sale-notification]
+verify_jwt = false
+
 [functions.shopify-oauth-start]
 verify_jwt = false
 

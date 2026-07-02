@@ -8,7 +8,8 @@ const DEFAULT_OAUTH_SCOPES = [
   'read_publications',
   'write_publications',
   'read_themes',
-  'write_themes'
+  'write_themes',
+  'read_orders'
 ].join(',');
 const SHOPIFY_SHOP_DOMAIN_RE = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i;
 
