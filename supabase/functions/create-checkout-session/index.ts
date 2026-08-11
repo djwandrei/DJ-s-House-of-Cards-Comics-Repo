@@ -17,8 +17,12 @@ const requestedHoldMinutes = Number(Deno.env.get('STRIPE_CHECKOUT_HOLD_MINUTES')
 const checkoutHoldMinutes = Math.min(1440, Math.max(31, Math.round(Number.isFinite(requestedHoldMinutes) ? requestedHoldMinutes : 31)));
 const requestedMaxReservations = Number(Deno.env.get('STRIPE_MAX_ACTIVE_RESERVATIONS_PER_USER'));
 const maxActiveReservationsPerUser = Math.min(50, Math.max(1, Math.round(Number.isFinite(requestedMaxReservations) ? requestedMaxReservations : 20)));
+const allowGuestCheckout = Deno.env.get('STRIPE_ALLOW_GUEST_CHECKOUT') === 'true';
+const requestedGuestMaxReservations = Number(Deno.env.get('STRIPE_MAX_ACTIVE_RESERVATIONS_PER_GUEST'));
+const maxActiveReservationsPerGuest = Math.min(10, Math.max(1, Math.round(Number.isFinite(requestedGuestMaxReservations) ? requestedGuestMaxReservations : 5)));
 const MAX_CHECKOUT_ITEMS = 20;
 const MAX_ITEM_QUANTITY = 99;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
 const corsHeaders = {
@@ -167,18 +171,27 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'Shipping is not configured yet. Please contact DJ to complete this purchase.' }, 503);
   }
 
-  const jwt = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
-  if (!jwt) return jsonResponse({ error: 'Sign in before checkout.' }, 401);
-  const { data: userResult, error: userError } = await admin.auth.getUser(jwt);
-  if (userError || !userResult?.user) return jsonResponse({ error: 'Your session expired. Sign in again before checkout.' }, 401);
-
-  let payload: { productId?: number; items?: CheckoutItemRequest[]; returnPath?: string } = {};
+  let payload: { productId?: number; items?: CheckoutItemRequest[]; returnPath?: string; guestEmail?: string } = {};
   let requestedItems: CheckoutItemRequest[] = [];
   try {
     payload = await request.json();
     requestedItems = normalizeItems(payload);
   } catch (error) {
     return jsonResponse({ error: errorMessage(error) || 'Invalid checkout request.' }, 400);
+  }
+
+  const jwt = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  let buyerUserId: string | null = null;
+  let email = String(payload.guestEmail || '').trim().toLowerCase();
+  if (jwt) {
+    const { data: userResult, error: userError } = await admin.auth.getUser(jwt);
+    if (userError || !userResult?.user) return jsonResponse({ error: 'Your session expired. Sign in again before checkout.' }, 401);
+    buyerUserId = userResult.user.id;
+    email = String(userResult.user.email || '').trim().toLowerCase();
+  } else if (!allowGuestCheckout) {
+    return jsonResponse({ error: 'Sign in before checkout.' }, 401);
+  } else if (!emailPattern.test(email) || email.length > 254) {
+    return jsonResponse({ error: 'Enter a valid email address to continue as a guest.' }, 400);
   }
 
   const productIds = requestedItems.map((item) => item.productId);
@@ -206,30 +219,36 @@ Deno.serve(async (request) => {
   }
 
   const nowIso = new Date().toISOString();
-  const { error: expireError } = await admin
+  let expireQuery = admin
     .from('product_checkout_reservations')
     .update({ status: 'expired' })
-    .eq('buyer_user_id', userResult.user.id)
     .in('status', ['creating', 'pending'])
     .lt('expires_at', nowIso);
+  expireQuery = buyerUserId
+    ? expireQuery.eq('buyer_user_id', buyerUserId)
+    : expireQuery.eq('buyer_email', email).is('buyer_user_id', null);
+  const { error: expireError } = await expireQuery;
   if (expireError) return friendlyServerError(expireError, 'Checkout reservations could not be checked. Please contact DJ.');
 
-  const { count: activeCount, error: countError } = await admin
+  let countQuery = admin
     .from('product_checkout_reservations')
     .select('id', { count: 'exact', head: true })
-    .eq('buyer_user_id', userResult.user.id)
     .in('status', ['creating', 'pending'])
     .gt('expires_at', nowIso);
+  countQuery = buyerUserId
+    ? countQuery.eq('buyer_user_id', buyerUserId)
+    : countQuery.eq('buyer_email', email).is('buyer_user_id', null);
+  const { count: activeCount, error: countError } = await countQuery;
   if (countError) return friendlyServerError(countError, 'Checkout reservation limits could not be verified. Please contact DJ.');
-  if ((activeCount || 0) + requestedItems.length > maxActiveReservationsPerUser) {
+  const activeReservationLimit = buyerUserId ? maxActiveReservationsPerUser : maxActiveReservationsPerGuest;
+  if ((activeCount || 0) + requestedItems.length > activeReservationLimit) {
     return jsonResponse({ error: 'You already have several checkout holds open. Complete or wait for one to expire before starting another checkout.' }, 429);
   }
 
-  const email = userResult.user.email || '';
   const reservationExpiresAt = new Date(Date.now() + (checkoutHoldMinutes + 2) * 60 * 1000).toISOString();
   const checkoutExpiresAt = Math.floor(Date.now() / 1000) + checkoutHoldMinutes * 60;
   const { data: reservations, error: reservationError } = await admin.rpc('reserve_checkout_items', {
-    p_buyer_user_id: userResult.user.id,
+    p_buyer_user_id: buyerUserId,
     p_buyer_email: email,
     p_items: requestedItems,
     p_expires_at: reservationExpiresAt
@@ -240,7 +259,9 @@ Deno.serve(async (request) => {
   }
   const reservationIds = reservations.map((reservation) => String(reservation.id));
 
-  const { data: profile } = await admin.from('customer_profiles').select('stripe_customer_id').eq('id', userResult.user.id).maybeSingle();
+  const { data: profile } = buyerUserId
+    ? await admin.from('customer_profiles').select('stripe_customer_id').eq('id', buyerUserId).maybeSingle()
+    : { data: null };
   const stripeCustomerId = String(profile?.stripe_customer_id || '').trim();
   const customerOptions = stripeCustomerId
     ? { customer: stripeCustomerId }
@@ -277,7 +298,11 @@ Deno.serve(async (request) => {
 
   let checkoutSession: Stripe.Checkout.Session;
   try {
-    const metadata = { buyer_user_id: userResult.user.id, item_count: String(requestedItems.length) };
+    const metadata = {
+      buyer_user_id: buyerUserId || '',
+      checkout_mode: buyerUserId ? 'account' : 'guest',
+      item_count: String(requestedItems.length)
+    };
     const sessionParams: CheckoutSessionCreateParams = {
       mode: 'payment',
       ...customerOptions,

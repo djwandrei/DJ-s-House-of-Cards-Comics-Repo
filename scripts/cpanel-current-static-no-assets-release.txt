@@ -6,6 +6,7 @@ about.html
 account.html
 account.js
 admin.html
+analytics.js
 backend-admin.js
 backend-config.js
 baseball-cards.html
@@ -22,6 +23,7 @@ core.js
 football-cards.html
 feeds/facebook-products.csv
 index.html
+inquiries.js
 nav.js
 offline.html
 offline.js

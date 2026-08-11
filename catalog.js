@@ -1755,6 +1755,7 @@ window.DJ = window.DJ || {};
 
     DJ.updateCartQuantity(productId, nextQuantity);
     setModalStatus(`${product.name} added to cart.`, 'success');
+    DJ.trackEvent?.('add_to_cart', { productId, category: product.category });
     return true;
   }
 
@@ -2905,6 +2906,162 @@ Thank you.`
     });
   }
 
+  function searchSuggestionScore(product, normalizedQuery, queryTokens) {
+    const searchable = product?._searchNormalized || '';
+    if (!searchable || !normalizedQuery) return 0;
+    if (searchable.startsWith(normalizedQuery)) return 120;
+    if (searchable.includes(normalizedQuery)) return 100;
+    if (queryTokens.length && queryTokens.every((token) => searchable.includes(token))) return 80;
+
+    // A small, token-level edit-distance fallback catches common one-character
+    // mistakes without building a heavy fuzzy-search index for every page load.
+    if (queryTokens.length !== 1 || normalizedQuery.length < 4 || normalizedQuery.length > 24) return 0;
+    const candidates = product._searchDiscoveryTokens || (product._searchDiscoveryTokens = tokenizeSearchString([
+      product.name, product.team, product.playerAthlete, product.league, product.sport
+    ].join(' ')));
+    const query = queryTokens[0];
+    return candidates.some((candidate) => {
+      if (Math.abs(candidate.length - query.length) > 1) return false;
+      let differences = 0;
+      let queryIndex = 0;
+      let candidateIndex = 0;
+      while (queryIndex < query.length && candidateIndex < candidate.length) {
+        if (query[queryIndex] === candidate[candidateIndex]) {
+          queryIndex += 1;
+          candidateIndex += 1;
+          continue;
+        }
+        differences += 1;
+        if (differences > 1) return false;
+        if (query.length > candidate.length) queryIndex += 1;
+        else if (candidate.length > query.length) candidateIndex += 1;
+        else {
+          queryIndex += 1;
+          candidateIndex += 1;
+        }
+      }
+      return differences + (query.length - queryIndex) + (candidate.length - candidateIndex) <= 1;
+    }) ? 30 : 0;
+  }
+
+  function setupSearchDiscovery(products = [], config = {}) {
+    const searchInput = document.getElementById('searchInput');
+    const searchShell = searchInput?.closest('.search-shell');
+    if (!searchInput || !searchShell || searchInput.dataset.searchDiscoveryBound === 'true') return;
+    searchInput.dataset.searchDiscoveryBound = 'true';
+
+    const recentKey = 'djRecentCatalogSearchesV1';
+    const list = document.createElement('div');
+    list.className = 'search-discovery';
+    list.id = 'catalogSearchDiscovery';
+    list.hidden = true;
+    list.setAttribute('role', 'listbox');
+    searchInput.setAttribute('aria-controls', list.id);
+    searchInput.setAttribute('aria-autocomplete', 'list');
+    searchShell.appendChild(list);
+    let activeIndex = -1;
+    let dismissTimer = 0;
+
+    const readRecent = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(recentKey) || '[]');
+        return Array.isArray(saved) ? saved.filter((value) => typeof value === 'string').slice(0, 5) : [];
+      } catch {
+        return [];
+      }
+    };
+    const saveRecent = (value) => {
+      const query = String(value || '').trim().slice(0, 80);
+      if (query.length < 2) return;
+      try {
+        const next = [query, ...readRecent().filter((saved) => saved.toLowerCase() !== query.toLowerCase())].slice(0, 5);
+        localStorage.setItem(recentKey, JSON.stringify(next));
+      } catch {}
+    };
+    const quickSearches = (() => {
+      const page = document.body.dataset.page || '';
+      if (page.includes('comic')) return ['First appearance', 'Variant cover', 'CGC'];
+      if (page.includes('collectible')) return ['Autograph', 'Vintage', 'Signed'];
+      return ['Rookie', 'Autograph', 'Graded'];
+    })();
+    const suggestions = (query) => {
+      const normalized = normalizeSearchString(query);
+      if (!normalized) return [];
+      const tokens = tokenizeSearchString(query);
+      return products
+        .map((product) => ({ product, score: searchSuggestionScore(product, normalized, tokens) }))
+        .filter((entry) => entry.score > 0)
+        .sort((left, right) => right.score - left.score || TEXT_COLLATOR.compare(left.product.name, right.product.name))
+        .slice(0, 6);
+    };
+    const selectQuery = (query) => {
+      searchInput.value = query;
+      saveRecent(query);
+      list.hidden = true;
+      activeIndex = -1;
+      searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      DJ.trackEvent?.('catalog_search', { queryLength: query.length });
+    };
+    const render = () => {
+      const query = searchInput.value.trim();
+      const matches = suggestions(query);
+      const secondary = query ? [] : [...readRecent(), ...quickSearches.filter((item) => !readRecent().includes(item))].slice(0, 6);
+      if (!matches.length && !secondary.length) {
+        list.hidden = true;
+        return;
+      }
+      const title = query ? 'Suggested listings' : 'Recent and quick searches';
+      const entries = matches.length
+        ? matches.map(({ product }) => ({
+          query: product.name,
+          label: product.name,
+          meta: [product.team, product.year, DJ.displayPrice(product)].filter(Boolean).join(' · ')
+        }))
+        : secondary.map((item) => ({ query: item, label: item, meta: 'Search catalog' }));
+      list.innerHTML = `
+        <p class="search-discovery__title">${DJ.escapeHtml(title)}</p>
+        ${entries.map((entry, index) => `<button type="button" class="search-discovery__item" role="option" aria-selected="false" data-search-query="${DJ.escapeHtml(entry.query)}" data-search-index="${index}"><span>${DJ.escapeHtml(entry.label)}</span><small>${DJ.escapeHtml(entry.meta)}</small></button>`).join('')}
+      `;
+      activeIndex = -1;
+      list.hidden = false;
+    };
+    const setActive = (index) => {
+      const buttons = [...list.querySelectorAll('[data-search-index]')];
+      if (!buttons.length) return;
+      activeIndex = (index + buttons.length) % buttons.length;
+      buttons.forEach((button, buttonIndex) => button.setAttribute('aria-selected', String(buttonIndex === activeIndex)));
+    };
+
+    searchInput.addEventListener('focus', render);
+    searchInput.addEventListener('input', render);
+    searchInput.addEventListener('keydown', (event) => {
+      if (list.hidden) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setActive(activeIndex + 1);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setActive(activeIndex - 1);
+      } else if (event.key === 'Enter' && activeIndex >= 0) {
+        event.preventDefault();
+        const active = list.querySelector(`[data-search-index="${activeIndex}"]`);
+        if (active) selectQuery(active.dataset.searchQuery || '');
+      } else if (event.key === 'Escape') {
+        list.hidden = true;
+      }
+    });
+    searchInput.addEventListener('change', () => saveRecent(searchInput.value));
+    searchInput.addEventListener('blur', () => {
+      window.clearTimeout(dismissTimer);
+      dismissTimer = window.setTimeout(() => { list.hidden = true; }, 140);
+    });
+    list.addEventListener('mousedown', (event) => event.preventDefault());
+    list.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-search-query]');
+      if (button) selectQuery(button.dataset.searchQuery || '');
+    });
+  }
+
   function debounce(callback, delay = 90) {
     window.clearTimeout(debounceTimer);
     debounceTimer = window.setTimeout(() => callback(), delay);
@@ -3500,6 +3657,7 @@ Thank you.`
         const { allowedProducts } = await getCatalogPageProducts(config);
 
         mountFacetFilters(allowedProducts, config, initialFilters);
+        setupSearchDiscovery(allowedProducts, config);
         bindActiveFilterActions(config);
 
         const rerender = () => {
@@ -3610,32 +3768,13 @@ Thank you.`
     `;
   }
 
-  function buildWishlistInquiryUrl(products = []) {
+  function buildCollectorInquiryUrl(kind = 'bundle', products = []) {
     const savedProducts = normalizeModalContextProducts(products);
-    const listedProducts = savedProducts.slice(0, 12);
-    const extraCount = Math.max(0, savedProducts.length - listedProducts.length);
-    const lines = listedProducts.map((product, index) => (
-      `${index + 1}. ${product.name} | ${DJ.displayPrice(product)} | Listing ID #${product.id}`
-    ));
-
-    if (extraCount) {
-      lines.push(`...and ${extraCount} more saved item${extraCount === 1 ? '' : 's'}.`);
-    }
-
-    const subject = encodeURIComponent(`Wishlist Inquiry (${savedProducts.length} item${savedProducts.length === 1 ? '' : 's'})`);
-    const body = encodeURIComponent(`Hello DJ,
-
-I'm interested in the saved items below:
-
-${lines.join('\n')}
-
-Wishlist page: ${window.location.href}
-
-Please let me know what is available.
-
-Thank you.`);
-
-    return `mailto:djscardscomics13@gmail.com?subject=${subject}&body=${body}`;
+    const params = new URLSearchParams();
+    params.set('kind', ['contact', 'sell', 'trade', 'want_list', 'offer', 'bundle'].includes(kind) ? kind : 'bundle');
+    const ids = savedProducts.map((product) => Number(product.id)).filter((id) => Number.isSafeInteger(id) && id > 0).slice(0, 20);
+    if (ids.length) params.set('productIds', ids.join(','));
+    return `sell-trade-want-list.html?${params.toString()}`;
   }
 
   function renderWishlistActionsPanel(products = []) {
@@ -3651,7 +3790,7 @@ Thank you.`);
         <div class="wishlist-actions-copy">
           <span class="wishlist-actions-kicker">Saved list ready</span>
           <h2>${DJ.escapeHtml(countLabel)} in your wishlist</h2>
-          <p>Turn saved items into one focused email, keep browsing, or clear the list when you are done comparing.</p>
+          <p>Turn saved items into a focused bundle or offer request, keep browsing, or clear the list when you are done comparing.</p>
           <ul class="wishlist-actions-list" aria-label="Saved item preview">
             ${previewProducts.map((product) => `
               <li><span>${DJ.escapeHtml(product.name)}</span><strong>${DJ.escapeHtml(DJ.displayPrice(product))}</strong></li>
@@ -3661,7 +3800,7 @@ Thank you.`);
         </div>
         <div class="wishlist-actions-buttons">
           <button type="button" class="button" data-wishlist-add-cart>Add Available Items to Cart</button>
-          <a class="button" href="${DJ.escapeHtml(buildWishlistInquiryUrl(savedProducts))}">Email DJ About Saved Items</a>
+          <a class="button" href="${DJ.escapeHtml(buildCollectorInquiryUrl('bundle', savedProducts))}" data-wishlist-inquiry>Discuss a Bundle or Offer</a>
           <a class="button-secondary" href="sports-cards.html">Browse More</a>
           <button type="button" class="button-secondary wishlist-clear-button" data-wishlist-clear>Clear Wishlist</button>
         </div>
@@ -3953,6 +4092,7 @@ Thank you.`);
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
     if (!modal || !modalInner) return;
+    DJ.trackEvent?.('product_open', { productId: Number(product.id), category: product.category });
     if (!options.preserveUrl) {
       replaceProductUrl(product);
     }
@@ -4029,6 +4169,8 @@ Thank you.`);
             <button type="button" class="modal-cta${isDirectCheckout ? '' : ' modal-cta--inquiry'}" id="modalBuy" data-checkout-button>${DJ.escapeHtml(modalActionLabel)}</button>
             ${isDirectCheckout ? '<button type="button" class="button-secondary" id="modalAddCart">Add to Cart</button>' : ''}
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
+            <button type="button" class="button-secondary" id="modalOffer">Make an Offer</button>
+            <button type="button" class="button-secondary" id="modalBundle">Build a Bundle</button>
             <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
           <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
@@ -4106,6 +4248,14 @@ Thank you.`);
       addToCart(product, quantity);
     });
     modalInner.querySelector('#modalCopyLink')?.addEventListener('click', () => copyProductLink(product));
+    modalInner.querySelector('#modalOffer')?.addEventListener('click', () => {
+      DJ.trackEvent?.('offer_open', { productId: Number(product.id), category: product.category });
+      window.location.assign(buildCollectorInquiryUrl('offer', [product]));
+    });
+    modalInner.querySelector('#modalBundle')?.addEventListener('click', () => {
+      DJ.trackEvent?.('bundle_open', { productId: Number(product.id), category: product.category });
+      window.location.assign(buildCollectorInquiryUrl('bundle', [product]));
+    });
     modalInner.querySelectorAll('[data-modal-nav]').forEach((button) => {
       button.addEventListener('click', () => {
         navigateModalListing(button.dataset.modalNav === 'prev' ? -1 : 1);

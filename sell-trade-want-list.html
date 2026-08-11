@@ -8,8 +8,8 @@
 <link as="font" crossorigin="" href="assets/fonts/inter-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/inter-700.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
-<link href="styles.css?v=20260623c" rel="stylesheet"/>
-<link href="styles-mobile-overrides.css?v=20260623c" rel="stylesheet"/>
+<link href="styles.css?v=20260811a" rel="stylesheet"/>
+<link href="styles-mobile-overrides.css?v=20260811a" rel="stylesheet"/>
 <meta content="index,follow,max-image-preview:large" name="robots"/>
 <meta content="#1f2fa3" name="theme-color"/>
 <meta content="light dark" name="color-scheme"/>
@@ -24,7 +24,7 @@
 <meta content="Use this collector-friendly page to send DJ sell, trade, and want-list details." name="twitter:description"/>
 <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" name="twitter:image"/>
 <link href="https://www.djshouseofcards-comics.com/sell-trade-want-list.html" rel="canonical"/>
-<link href="site.webmanifest?v=20260623c" rel="manifest"/>
+<link href="site.webmanifest?v=20260811a" rel="manifest"/>
 <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
 <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://www.djshouseofcards-comics.com/#organization","name":"DJ's House of Cards & Comics","url":"https://www.djshouseofcards-comics.com/","logo":"https://www.djshouseofcards-comics.com/assets/dj-logo.png","email":"djscardscomics13@gmail.com","sameAs":["https://www.facebook.com/DJCardsComics/","https://www.whatnot.com/user/djshouseofcards","https://xy2hik-nq.myshopify.com/","https://www.tiktok.com/@djshouseofcards/shop"]},{"@type":"WebPage","@id":"https://www.djshouseofcards-comics.com/sell-trade-want-list.html#webpage","url":"https://www.djshouseofcards-comics.com/sell-trade-want-list.html","name":"Sell, Trade, or Send a Want List | DJ's House of Cards & Comics","description":"Send DJ cards, comics, collectibles, trade ideas, collection photos, or a want list with clear details for the next collector-to-collector conversation.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"publisher":{"@id":"https://www.djshouseofcards-comics.com/#organization"},"inLanguage":"en-US"}]}</script>
 </head>
@@ -45,7 +45,7 @@
 <span class="kicker">Collector Requests</span>
 <h1 class="page-title">Sell, trade, or tell DJ what you are hunting.</h1>
 <p>Use this page when you have a collection to sell, a trade idea, or a want list for cards, comics, autographs, memorabilia, and other collectibles.</p>
-<div class="page-hero-actions"><a class="button" href="mailto:djscardscomics13@gmail.com?subject=Sell%2C%20Trade%2C%20or%20Want%20List">Email DJ Your Details</a><a class="button-secondary" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">Message on Facebook</a></div>
+<div class="page-hero-actions"><a class="button" href="#collectorRequestForm">Send Your Details</a><a class="button-secondary" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">Message on Facebook</a></div>
 </div>
 </section>
 <section class="section">
@@ -63,16 +63,34 @@
 <article class="contact-card">
 <span class="kicker">Ready to send it?</span>
 <h2 class="section-title">Start with the basics and DJ can take it from there.</h2>
-<p>Include your name, best contact method, photos if you have them, and whether you want to sell, trade, consign, or ask DJ to find something. If you are responding to a site listing, include the Listing ID or product link.</p>
-<div class="inline-actions"><a class="button" href="mailto:djscardscomics13@gmail.com?subject=Sell%2C%20Trade%2C%20or%20Want%20List">Create Email Draft</a><a class="button-secondary" href="contact.html">Use Contact Page</a><a class="button-secondary" href="condition-authenticity.html">Condition Guide</a></div>
+<p>Include your name, best contact method, photos if you have them, and whether you want to sell, trade, consign, make an offer, build a bundle, or ask DJ to find something. If you are responding to a site listing, include the Listing ID or product link.</p>
+<form aria-describedby="collectorInquiryAssist collectorInquiryStatus" class="contact-form collector-inquiry-form" data-collector-inquiry-form="" data-status="collectorInquiryStatus" id="collectorRequestForm" novalidate="">
+<div class="field-group"><label for="collectorKind">What can DJ help with?</label><select id="collectorKind" name="kind"><option value="sell">Sell or consign</option><option value="trade">Trade discussion</option><option value="want_list">Want list</option><option value="offer">Make an offer</option><option value="bundle">Build a bundle</option></select></div>
+<div class="field-group"><label for="collectorName">Your name</label><input autocomplete="name" id="collectorName" name="name" required=""/></div>
+<div class="field-group"><label for="collectorEmail">Your email</label><input autocomplete="email" id="collectorEmail" name="email" required="" type="email"/></div>
+<div class="field-group"><label for="collectorPhone">Phone (optional)</label><input autocomplete="tel" id="collectorPhone" name="phone" type="tel"/></div>
+<div class="field-group"><label for="collectorContactMethod">Preferred reply method</label><select id="collectorContactMethod" name="preferredContact"><option value="Email">Email</option><option value="Phone">Phone</option><option value="Facebook Messenger">Facebook Messenger</option></select></div>
+<div class="field-group"><label for="collectorSubject">Subject (optional)</label><input id="collectorSubject" maxlength="180" name="subject" placeholder="Collection details, bundle request, or item you are hunting"/></div>
+<div class="field-group"><label for="collectorListingIds">Listing IDs (optional)</label><input id="collectorListingIds" inputmode="numeric" name="listingIds" placeholder="Example: 3460, 3482"/><p class="helper-text">Offer and bundle links prefill this field automatically.</p></div>
+<div class="field-group" data-offer-field="" hidden=""><label for="collectorOfferAmount">Offer or bundle budget (optional)</label><input id="collectorOfferAmount" min="0" name="offerAmount" step="0.01" type="number"/></div>
+<div class="field-group"><label for="collectorMessage">Details</label><textarea id="collectorMessage" name="message" placeholder="Tell DJ what you have, what you want, or how you would like to make a deal." required=""></textarea></div>
+<div class="field-group"><label for="collectorPhotos">Helpful photos (optional)</label><input accept="image/jpeg,image/png,image/webp" id="collectorPhotos" multiple="" name="photos" type="file"/><p class="helper-text">Up to three JPG, PNG, or WebP photos; 6 MB combined.</p></div>
+<div aria-hidden="true" class="form-honeypot"><label for="collectorWebsite">Website</label><input autocomplete="off" id="collectorWebsite" name="website" tabindex="-1" type="text"/></div>
+<p class="helper-text" id="collectorInquiryAssist">Your request is sent securely to DJ. No sale, trade, offer, or bundle is accepted until DJ reviews it with you.</p>
+<div class="contact-form-actions"><button type="submit">Send Request</button><a class="button-secondary" href="mailto:djscardscomics13@gmail.com?subject=Sell%2C%20Trade%2C%20or%20Want%20List">Email DJ Directly</a><a class="button-secondary" href="condition-authenticity.html">Condition Guide</a></div>
+<div aria-live="polite" class="status-message" hidden="" id="collectorInquiryStatus"></div>
+</form>
 </article>
 </div>
 </section>
 </main>
 <footer class="footer"><div class="container footer-inner"><div class="footer-brand"><div class="footer-logo-line"><img alt="DJ's House of Cards &amp; Comics logo" class="footer-logo" decoding="async" height="72" loading="lazy" src="assets/dj-logo.png" width="72"/><div><div class="brand-script">DJ's House of Cards</div><div class="brand-kicker">&amp; Comics &bull; Trusted Hobby Finds</div></div></div><p>Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.</p></div><div class="footer-links"><strong>Quick Links</strong><a href="sports-cards.html">Sports Cards</a><a href="comics.html">Comics</a><a href="collectibles.html">Collectibles</a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify Store</a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a><a href="wishlist.html">View wishlist <span data-wishlist-count="0">0</span></a><a href="about.html">About DJ</a><a href="condition-authenticity.html">Condition &amp; Authenticity</a><a href="sell-trade-want-list.html">Sell / Trade / Want List</a><a href="contact.html">Contact</a></div></div><div class="container footer-bottom"><span>&copy; 2026 DJ's House of Cards &amp; Comics. All rights reserved.</span></div></footer>
 <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-<script defer="" src="core.js?v=20260623c"></script>
-<script defer="" src="seo.js?v=20260623c"></script>
-<script defer="" src="nav.js?v=20260623c"></script>
+<script defer="" src="core.js?v=20260811a"></script>
+<script defer="" src="backend-config.js?v=20260811a"></script>
+<script defer="" src="analytics.js?v=20260811a"></script>
+<script defer="" src="seo.js?v=20260811a"></script>
+<script defer="" src="nav.js?v=20260811a"></script>
+<script defer="" src="inquiries.js?v=20260811a"></script>
 </body>
 </html>

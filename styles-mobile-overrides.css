@@ -1834,3 +1834,14 @@ body.dark-mode .modal-listing-nav__button {
     width:100%;
   }
 }
+
+@media (max-width: 640px) {
+  .search-discovery {
+    max-height:44vh;
+  }
+
+  .collector-inquiry-form .contact-form-actions {
+    align-items:stretch;
+    flex-direction:column;
+  }
+}

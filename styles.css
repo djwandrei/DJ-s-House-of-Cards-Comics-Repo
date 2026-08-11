@@ -1302,6 +1302,119 @@ main:focus {
     grid-template-columns:1fr
   }
 }
+
+/* Collector inquiry and discovery-search additions. */
+.form-honeypot {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+  clip:rect(0 0 0 0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+}
+
+.collector-inquiry-form {
+  margin-top:1.25rem;
+}
+
+.collector-inquiry-form input[type="file"] {
+  min-height:44px;
+  padding:.42rem;
+}
+
+.customer-auth-guest {
+  width:100%;
+  min-height:42px;
+  border:1px dashed var(--border);
+  border-radius:10px;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.customer-auth-guest:hover,
+.customer-auth-guest:focus-visible {
+  border-color:var(--brand-blue);
+  color:var(--brand-blue);
+}
+
+.search-shell {
+  z-index:2;
+}
+
+.search-shell:focus-within {
+  z-index:12;
+}
+
+.search-discovery {
+  position:absolute;
+  top:calc(100% + .38rem);
+  right:0;
+  left:0;
+  z-index:25;
+  display:grid;
+  gap:.22rem;
+  max-height:min(55vh,390px);
+  padding:.48rem;
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--surface, #fff);
+  box-shadow:0 18px 42px rgba(18,35,61,.2);
+}
+
+.search-discovery__title {
+  margin:.08rem .35rem .25rem;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.search-discovery__item {
+  display:grid;
+  gap:.12rem;
+  width:100%;
+  padding:.62rem .72rem;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+  cursor:pointer;
+}
+
+.search-discovery__item:hover,
+.search-discovery__item[aria-selected="true"] {
+  background:rgba(25,108,187,.12);
+}
+
+.search-discovery__item span {
+  overflow:hidden;
+  font-weight:800;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.search-discovery__item small {
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+body.dark-mode .search-discovery {
+  border-color:rgba(255,255,255,.14);
+  background:#142138;
+  box-shadow:0 18px 42px rgba(0,0,0,.38);
+}
+
+body.dark-mode .customer-auth-guest {
+  border-color:rgba(255,255,255,.18);
+  color:#f8fbff;
+}
 .footer::before {
   background:var(--image-baseball-footer) center/cover no-repeat;
   border-bottom:3px solid rgba(255,255,255,.14);

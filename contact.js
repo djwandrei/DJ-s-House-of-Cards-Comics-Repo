@@ -1,308 +1,145 @@
-﻿/**
- * Static contact form helper.
- * -----------------------------------------------------------------------------
- * The site remains a static frontend, so the contact page builds a mailto link
- * instead of posting to a backend. This file validates the required fields first
- * so the user gets immediate feedback before their email client opens.
+/**
+ * Contact form helper.
+ * The form keeps a short local draft, then submits through the rate-limited
+ * collector inquiry service. Direct email remains a visible fallback.
  */
 
 window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
-  let mailtoFallbackTimer = 0;
-  let contactDraftTimer = 0;
-  let mailtoHandoffPending = false;
-  const CONTACT_EMAIL = 'djscardscomics13@gmail.com';
-  const CONTACT_DRAFT_KEY = 'djContactDraftV1';
-  const CONTACT_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
-  const CONTACT_DRAFT_FIELDS = ['name', 'email', 'subject', 'message'];
-  const CONTACT_REQUIRED_FIELDS = ['name', 'email', 'message'];
-  const CONTACT_STATUS_ID = 'contactStatus';
+  const DRAFT_KEY = 'djContactDraftV2';
+  const DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const CONTACT_TOPICS = {
-    buying: {
-      subject: 'Buying Inquiry',
-      prompt: "I'm interested in this item or category:",
-      status: 'Buying inquiry selected. Add the item name, listing ID, or link before creating the email draft.'
-    },
-    trade: {
-      subject: 'Trade Discussion',
-      prompt: "I'd like to discuss a trade involving:",
-      status: 'Trade discussion selected. Add what you have, what you are looking for, and any condition details.'
-    },
-    sell: {
-      subject: 'Sell or Consign',
-      prompt: "I'd like to sell or consign:",
-      status: 'Sell or consign selected. Add the item, year, condition, asking range, and photo notes if available.'
-    }
+  const FIELDS = ['name', 'email', 'subject', 'message'];
+  const TOPICS = {
+    buying: { subject: 'Buying Inquiry', prompt: "I'm interested in this item or category:", kind: 'contact' },
+    trade: { subject: 'Trade Discussion', prompt: "I'd like to discuss a trade involving:", kind: 'trade' },
+    sell: { subject: 'Sell or Consign', prompt: "I'd like to sell or consign:", kind: 'sell' }
   };
 
-  // Centralize named control lookup so validation, draft restoration, and topic
-  // shortcuts all handle missing or non-value form entries the same way.
-  function getFormControl(form, fieldName) {
-    const field = form?.elements?.namedItem(fieldName);
-    return field && typeof field.value === 'string' ? field : null;
+  function field(form, name) {
+    const control = form?.elements?.namedItem(name);
+    return control && typeof control.value === 'string' ? control : null;
   }
 
-  function getFieldValue(form, fieldName) {
-    return getFormControl(form, fieldName)?.value.trim() || '';
+  function value(form, name) {
+    return field(form, name)?.value.trim() || '';
   }
 
-  function focusField(form, fieldName) {
-    const field = getFormControl(form, fieldName);
-    if (field && typeof field.focus === 'function') {
-      field.focus();
-    }
+  function setStatus(message = '', tone = 'info') {
+    DJ.setStatus('contactStatus', message, tone);
   }
 
-  function updateDescribedBy(field, id, shouldInclude) {
-    if (!field || !id) return;
-    const ids = new Set((field.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
-    if (shouldInclude) ids.add(id);
-    else ids.delete(id);
-
-    if (ids.size) {
-      field.setAttribute('aria-describedby', [...ids].join(' '));
-    } else {
-      field.removeAttribute('aria-describedby');
-    }
+  function setInvalid(form, name, invalid) {
+    const control = field(form, name);
+    if (!control) return;
+    if (invalid) control.setAttribute('aria-invalid', 'true');
+    else control.removeAttribute('aria-invalid');
   }
 
-  function setFieldInvalid(form, fieldName, isInvalid) {
-    const field = getFormControl(form, fieldName);
-    if (!field) return;
-
-    if (isInvalid) {
-      field.setAttribute('aria-invalid', 'true');
-      updateDescribedBy(field, CONTACT_STATUS_ID, true);
-    } else {
-      field.removeAttribute('aria-invalid');
-      updateDescribedBy(field, CONTACT_STATUS_ID, false);
-    }
-  }
-
-  function clearFieldErrors(form) {
-    CONTACT_DRAFT_FIELDS.forEach((fieldName) => setFieldInvalid(form, fieldName, false));
-  }
-
-  function removeContactDraft() {
+  function saveDraft(form) {
     try {
-      localStorage.removeItem(CONTACT_DRAFT_KEY);
-    } catch {
-      // Contact drafts are optional, including their cleanup.
-    }
+      const draft = Object.fromEntries(FIELDS.map((name) => [name, value(form, name)]));
+      if (Object.values(draft).some(Boolean)) localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, updatedAt: Date.now() }));
+      else localStorage.removeItem(DRAFT_KEY);
+    } catch {}
   }
 
-  function readContactDraft() {
+  function restoreDraft(form) {
     try {
-      const parsed = JSON.parse(localStorage.getItem(CONTACT_DRAFT_KEY) || '{}');
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-      const updatedAt = Date.parse(parsed.updatedAt || '');
-      if (Number.isFinite(updatedAt) && Date.now() - updatedAt > CONTACT_DRAFT_MAX_AGE_MS) {
-        removeContactDraft();
-        return {};
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+      if (!draft || Date.now() - Number(draft.updatedAt || 0) > DRAFT_MAX_AGE_MS) {
+        localStorage.removeItem(DRAFT_KEY);
+        return;
       }
-      return parsed;
-    } catch {
-      return {};
-    }
+      const restored = FIELDS.some((name) => {
+        const control = field(form, name);
+        if (!control || control.value || !draft[name]) return false;
+        control.value = String(draft[name]);
+        return true;
+      });
+      if (restored) setStatus('Restored your saved contact draft from this browser.', 'info');
+    } catch {}
   }
 
-  function writeContactDraft(form) {
-    try {
-      const draft = CONTACT_DRAFT_FIELDS.reduce((payload, fieldName) => {
-        payload[fieldName] = getFieldValue(form, fieldName);
-        return payload;
-      }, { updatedAt: new Date().toISOString() });
-
-      if (CONTACT_DRAFT_FIELDS.some((fieldName) => draft[fieldName])) {
-        localStorage.setItem(CONTACT_DRAFT_KEY, JSON.stringify(draft));
-      } else {
-        removeContactDraft();
-      }
-    } catch {
-      // Contact drafts are a convenience only; blocked storage should not stop the form.
-    }
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
   }
 
-  function scheduleContactDraftSave(form) {
-    window.clearTimeout(contactDraftTimer);
-    contactDraftTimer = window.setTimeout(() => {
-      contactDraftTimer = 0;
-      writeContactDraft(form);
-    }, 180);
-  }
-
-  function restoreContactDraft(form) {
-    const draft = readContactDraft();
-    let restored = false;
-    CONTACT_DRAFT_FIELDS.forEach((fieldName) => {
-      const field = getFormControl(form, fieldName);
-      if (!field || field.value.trim() || !draft[fieldName]) return;
-      field.value = String(draft[fieldName]);
-      restored = true;
-    });
-
-    if (restored) {
-      DJ.setStatus('contactStatus', 'Restored your saved contact draft from this browser.', 'info');
-    }
-  }
-
-  function clearContactDraft() {
-    window.clearTimeout(contactDraftTimer);
-    contactDraftTimer = 0;
-    removeContactDraft();
-  }
-
-  function initContactTopics(form) {
-    const topicLinks = [...document.querySelectorAll('[data-contact-topic]')];
-    if (!topicLinks.length || form.dataset.boundContactTopics === 'true') return;
-    form.dataset.boundContactTopics = 'true';
-
-    topicLinks.forEach((link) => {
-      link.addEventListener('click', (event) => {
+  function initTopics(form) {
+    document.querySelectorAll('[data-contact-topic]').forEach((button) => {
+      button.addEventListener('click', (event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
-        const topic = CONTACT_TOPICS[link.dataset.contactTopic];
+        const topic = TOPICS[button.dataset.contactTopic];
         if (!topic) return;
-
         event.preventDefault();
-        const subjectField = getFormControl(form, 'subject');
-        const messageField = getFormControl(form, 'message');
-
-        if (subjectField) {
-          subjectField.value = topic.subject;
-        }
-
-        if (messageField && !messageField.value.trim()) {
-          messageField.value = `${topic.prompt}\n\n`;
-        }
-
-        topicLinks.forEach((candidate) => candidate.classList.toggle('is-selected', candidate === link));
-        DJ.setStatus('contactStatus', topic.status, 'info');
-        writeContactDraft(form);
-        focusField(form, 'message');
+        field(form, 'subject').value = topic.subject;
+        const message = field(form, 'message');
+        if (message && !message.value.trim()) message.value = `${topic.prompt}\n\n`;
+        field(form, 'kind').value = topic.kind;
+        document.querySelectorAll('[data-contact-topic]').forEach((candidate) => candidate.classList.toggle('is-selected', candidate === button));
+        setStatus('Topic selected. Add the details DJ needs, then send your message.', 'info');
+        saveDraft(form);
+        message?.focus();
       });
     });
   }
 
-  /**
-   * Attach validation to the static contact form and build the outgoing mailto link.
-   */
   function initContactForm() {
     const form = document.getElementById('contactForm');
-    if (!form || form.dataset.boundContactForm === 'true') {
-      return;
-    }
+    if (!form || form.dataset.boundContactForm === 'true') return;
     form.dataset.boundContactForm = 'true';
-
     const submitButton = form.querySelector('button[type="submit"]');
-    restoreContactDraft(form);
-    initContactTopics(form);
-
-    const setSubmittingState = (isSubmitting) => {
-      if (!submitButton) return;
-      submitButton.disabled = isSubmitting;
-      submitButton.setAttribute('aria-busy', String(isSubmitting));
-    };
-
-    const clearFallbackState = () => {
-      if (mailtoFallbackTimer) {
-        window.clearTimeout(mailtoFallbackTimer);
-        mailtoFallbackTimer = 0;
-      }
-      if (mailtoHandoffPending) {
-        clearContactDraft();
-        mailtoHandoffPending = false;
-      }
-      setSubmittingState(false);
-    };
+    restoreDraft(form);
+    initTopics(form);
 
     form.addEventListener('input', (event) => {
-      scheduleContactDraftSave(form);
-      const fieldName = event.target?.name;
-      if (fieldName && CONTACT_DRAFT_FIELDS.includes(fieldName)) {
-        setFieldInvalid(form, fieldName, false);
-      }
+      if (FIELDS.includes(event.target?.name)) setInvalid(form, event.target.name, false);
+      saveDraft(form);
     });
-    form.addEventListener('change', () => writeContactDraft(form));
-
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('change', () => saveDraft(form));
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      window.clearTimeout(mailtoFallbackTimer);
-      DJ.setStatus('contactStatus');
-      setSubmittingState(true);
-      clearFieldErrors(form);
-
-      const name = getFieldValue(form, 'name');
-      const email = getFieldValue(form, 'email');
-      const subject = getFieldValue(form, 'subject') || 'Website Inquiry';
-      const message = getFieldValue(form, 'message');
-
-      if (!name || !email || !message) {
-        CONTACT_REQUIRED_FIELDS.forEach((fieldName) => {
-          setFieldInvalid(form, fieldName, !getFieldValue(form, fieldName));
-        });
-        DJ.setStatus(
-          'contactStatus',
-          'Please complete your name, email, and message before creating the email draft.',
-          'error'
-        );
-        focusField(form, !name ? 'name' : !email ? 'email' : 'message');
-        setSubmittingState(false);
+      const name = value(form, 'name');
+      const email = value(form, 'email');
+      const message = value(form, 'message');
+      const kind = value(form, 'kind') || 'contact';
+      FIELDS.forEach((name) => setInvalid(form, name, false));
+      if (!name || !EMAIL_PATTERN.test(email) || !message) {
+        setInvalid(form, 'name', !name);
+        setInvalid(form, 'email', !EMAIL_PATTERN.test(email));
+        setInvalid(form, 'message', !message);
+        setStatus('Please provide your name, a valid email address, and a message.', 'error');
+        field(form, !name ? 'name' : !EMAIL_PATTERN.test(email) ? 'email' : 'message')?.focus();
         return;
       }
 
-      if (!EMAIL_PATTERN.test(email)) {
-        setFieldInvalid(form, 'email', true);
-        DJ.setStatus(
-          'contactStatus',
-          'Enter a valid email address before creating the email draft.',
-          'error'
-        );
-        focusField(form, 'email');
-        setSubmittingState(false);
-        return;
-      }
-
-      clearFieldErrors(form);
-      DJ.setStatus('contactStatus', 'Opening your email app with a prefilled draft...', 'success');
-
-      const encodedSubject = encodeURIComponent(`Website Inquiry: ${subject}`);
-      const encodedBody = encodeURIComponent(
-        `Hello DJ,\n\nName: ${name}\nEmail: ${email}\nPage: ${window.location.href}\n\n${message}\n`
-      );
-      mailtoFallbackTimer = window.setTimeout(() => {
-        mailtoFallbackTimer = 0;
-        mailtoHandoffPending = false;
-        DJ.setStatus(
-          'contactStatus',
-          `If your email app did not open, send your message to ${CONTACT_EMAIL} and mention the subject line you entered above.`,
-          'info'
-        );
-        setSubmittingState(false);
-      }, 1400);
-      mailtoHandoffPending = true;
-      window.location.assign(`mailto:${CONTACT_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`);
-      window.setTimeout(() => {
-        setSubmittingState(false);
-      }, 300);
-    });
-
-    // When the browser leaves this page for the user's email client, treat that
-    // as a successful handoff and cancel the stale fallback message/timer.
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        clearFallbackState();
+      submitButton.disabled = true;
+      submitButton.setAttribute('aria-busy', 'true');
+      setStatus('Sending your message securely…', 'info');
+      try {
+        await DJ.submitCollectorInquiry({
+          kind,
+          name,
+          email,
+          subject: value(form, 'subject') || 'Website Inquiry',
+          message,
+          sourcePath: `${window.location.pathname}${window.location.search}`,
+          website: value(form, 'website')
+        }, form.elements.namedItem('photos')?.files || []);
+        form.reset();
+        clearDraft();
+        setStatus('Thanks — DJ received your message and will follow up by email.', 'success');
+        DJ.trackEvent?.('contact_submit', { kind });
+      } catch (error) {
+        setStatus(error?.message || 'Could not send your message. Please use the direct email link.', 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.removeAttribute('aria-busy');
       }
     });
-
-    window.addEventListener('pagehide', clearFallbackState);
   }
 
-  // Wait for the contact form markup to exist before attaching listeners.
   document.addEventListener('DOMContentLoaded', initContactForm);
 })();
-
-

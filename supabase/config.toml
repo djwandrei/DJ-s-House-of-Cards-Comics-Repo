@@ -13,6 +13,12 @@ verify_jwt = true
 [functions.sale-notification]
 verify_jwt = false
 
+[functions.collector-inquiry]
+verify_jwt = false
+
+[functions.analytics-event]
+verify_jwt = false
+
 [functions.shopify-oauth-start]
 verify_jwt = false
 

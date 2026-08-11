@@ -11,9 +11,9 @@
   <link as="font" crossorigin="" href="assets/fonts/inter-700.woff2" rel="preload" type="font/woff2"/>
   <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
   <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
-  <link as="image" fetchpriority="high" href="assets/clubhouse-sign.webp?v=20260623c" rel="preload" type="image/webp"/>
- <link href="styles.css?v=20260623c" rel="stylesheet"/>
-<link href="styles-mobile-overrides.css?v=20260623c" rel="stylesheet"/>
+  <link as="image" fetchpriority="high" href="assets/clubhouse-sign.webp?v=20260811a" rel="preload" type="image/webp"/>
+ <link href="styles.css?v=20260811a" rel="stylesheet"/>
+<link href="styles-mobile-overrides.css?v=20260811a" rel="stylesheet"/>
   <meta content="index,follow,max-image-preview:large" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
   <meta content="light dark" name="color-scheme"/>
@@ -29,7 +29,7 @@
   <meta content="Contact DJ's House of Cards &amp; Comics for buying inquiries, trades, questions, and collector-to-collector conversations." name="twitter:description"/>
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" name="twitter:image"/>
   <link href="https://www.djshouseofcards-comics.com/contact.html" rel="canonical"/>
-  <link href="site.webmanifest?v=20260623c" rel="manifest"/>
+  <link href="site.webmanifest?v=20260811a" rel="manifest"/>
   <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
   <link href="assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
   <!-- Shared JavaScript bundles. Load order matters because later files depend on window.DJ helpers. -->
@@ -143,7 +143,7 @@
       Reach DJ about a card, comic, or collectible.
      </h1>
      <p>
-      Send questions, want lists, offers, trade ideas, bundle requests, or item-specific questions. The form opens a ready-to-send email draft so the conversation starts cleanly.
+      Send questions, want lists, offers, trade ideas, bundle requests, or item-specific questions. DJ receives the details securely and can reply directly to the email you provide.
      </p>
      <div class="utility-row">
       <span class="utility-chip">
@@ -210,20 +210,21 @@
        Send a message
       </h2>
       <p class="section-subtitle section-subtitle--compact">
-       Share what you are interested in, what you want to trade, or what you want to sell, and DJ will have the details ready in the draft.
+       Share what you are interested in, what you want to trade, or what you want to sell. You can attach up to three clear photos when they would help.
       </p>
       <div class="contact-quick-actions">
-       <a class="button-secondary" data-contact-topic="buying" href="mailto:djscardscomics13@gmail.com?subject=Buying%20Inquiry">
+       <a class="button-secondary" data-contact-topic="buying" href="#contactForm">
         Buying Inquiry
        </a>
-       <a class="button-secondary" data-contact-topic="trade" href="mailto:djscardscomics13@gmail.com?subject=Trade%20Discussion">
+       <a class="button-secondary" data-contact-topic="trade" href="#contactForm">
         Trade Discussion
        </a>
-       <a class="button-secondary" data-contact-topic="sell" href="mailto:djscardscomics13@gmail.com?subject=Sell%20or%20Consign">
+       <a class="button-secondary" data-contact-topic="sell" href="#contactForm">
         Sell or Consign
        </a>
       </div>
       <form aria-describedby="contactAssist contactStatus" class="contact-form" id="contactForm" novalidate="">
+       <input name="kind" type="hidden" value="contact"/>
        <div class="field-group">
         <label for="contactName">
          Your Name
@@ -246,14 +247,25 @@
         <label for="contactMessage">
          Message
         </label>
-        <textarea autocomplete="off" id="contactMessage" name="message" placeholder="Tell DJ what you're looking for or asking about" required=""></textarea>
+       <textarea autocomplete="off" id="contactMessage" name="message" placeholder="Tell DJ what you're looking for or asking about" required=""></textarea>
+       </div>
+       <div class="field-group">
+        <label for="contactPhotos">
+         Helpful photos (optional)
+        </label>
+        <input accept="image/jpeg,image/png,image/webp" id="contactPhotos" multiple="" name="photos" type="file"/>
+        <p class="helper-text">Up to three JPG, PNG, or WebP photos; 6 MB combined.</p>
+       </div>
+       <div aria-hidden="true" class="form-honeypot">
+        <label for="contactWebsite">Website</label>
+        <input autocomplete="off" id="contactWebsite" name="website" tabindex="-1" type="text"/>
        </div>
        <p class="helper-text" id="contactAssist">
-        Submitting opens your email app with the details prefilled. Nothing is sent automatically from the website.
+        Your message is sent securely to DJ. You can also use the direct email link if you prefer.
        </p>
        <div class="contact-form-actions">
         <button type="submit">
-         Create Email Draft
+         Send Message
         </button>
         <a class="button-secondary" href="mailto:djscardscomics13@gmail.com">
          Email DJ Directly
@@ -399,12 +411,15 @@
 <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">
    &uarr;
   </button>
-<script defer="" src="core.js?v=20260623c">
+<script defer="" src="core.js?v=20260811a">
 </script>
-<script defer="" src="seo.js?v=20260623c"></script>
-<script defer="" src="nav.js?v=20260623c">
+<script defer="" src="backend-config.js?v=20260811a"></script>
+<script defer="" src="analytics.js?v=20260811a"></script>
+<script defer="" src="seo.js?v=20260811a"></script>
+<script defer="" src="nav.js?v=20260811a">
   </script>
-  <script defer="" src="contact.js?v=20260623c">
+  <script defer="" src="inquiries.js?v=20260811a"></script>
+  <script defer="" src="contact.js?v=20260811a">
   </script>
  </body>
 </html>

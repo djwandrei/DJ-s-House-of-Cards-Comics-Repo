@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260623c';
+  const PRODUCT_ASSET_VERSION = '20260811a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -1783,6 +1783,23 @@ window.DJ = window.DJ || {};
     return true;
   }
 
+  function initFirstPartyMeasurement() {
+    // Load measurement after the shared UI has painted. Pages that already
+    // include the public backend config reuse it; all other public pages load
+    // the same small browser-safe config on demand.
+    DJ.scheduleIdle(() => {
+      const analyticsSource = versionedProductAsset('analytics.js');
+      if (window.DJ?.trackEvent) return;
+      if (window.DJ_BACKEND_CONFIG) {
+        loadScript(analyticsSource).catch(() => {});
+        return;
+      }
+      loadScript(versionedProductAsset('backend-config.js'))
+        .then(() => loadScript(analyticsSource))
+        .catch(() => {});
+    }, 650);
+  }
+
   // Initialize shared UI behaviors once the DOM is ready. Individual page
   // modules layer their own features on top of these helpers later.
   document.addEventListener('DOMContentLoaded', () => {
@@ -1809,6 +1826,7 @@ window.DJ = window.DJ || {};
     initHomeAccountCard();
     initHeaderScrollState();
     initDeferredServiceWorkerRegistration();
+    initFirstPartyMeasurement();
   });
 
   window.addEventListener('storage', (event) => {

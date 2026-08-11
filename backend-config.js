@@ -22,6 +22,13 @@
     imageFolder: 'products',
     stripeCheckoutEnabled: true,
     stripeCheckoutFunction: 'create-checkout-session',
+    // Guest checkout still uses the server-side inventory reservation and Stripe
+    // Checkout flow. Keep this browser flag paired with the server setting so a
+    // disabled server route never presents a broken option to shoppers.
+    stripeGuestCheckoutEnabled: true,
+    collectorInquiryFunction: 'collector-inquiry',
+    analyticsEventFunction: 'analytics-event',
+    measurementEnabled: true,
     // Supabase is preferred for fresh storefront data; deploy-synced JSON
     // snapshots remain the fast fallback when the backend is unavailable.
     preferStaticCatalog: false,

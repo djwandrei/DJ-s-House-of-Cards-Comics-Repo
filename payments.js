@@ -13,6 +13,7 @@ window.DJ = window.DJ || {};
   const AUTH_SESSION_CHECK_TIMEOUT_MS = 6500;
   const PENDING_CHECKOUT_KEY = 'djPendingCheckout';
   const PENDING_CHECKOUT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const state = {
     session: null,
     pendingCheckoutRequest: null,
@@ -126,8 +127,8 @@ window.DJ = window.DJ || {};
       <section class="customer-auth-panel" role="dialog" aria-modal="true" aria-labelledby="customerAuthTitle">
         <button type="button" class="customer-auth-close" aria-label="Close account panel" data-customer-auth-close>&times;</button>
         <p class="customer-auth-eyebrow">Customer Account</p>
-        <h2 id="customerAuthTitle">Sign in to buy or save your place</h2>
-        <p class="customer-auth-copy">Create a customer account with email and password so checkout can connect your order to the right listing.</p>
+        <h2 id="customerAuthTitle">Sign in, create an account, or check out as a guest</h2>
+        <p class="customer-auth-copy">Accounts keep order history together. Guest checkout still uses the same secure Stripe payment and inventory hold.</p>
         <form class="customer-auth-form" id="customerAuthForm">
           <label>
             Email
@@ -141,6 +142,7 @@ window.DJ = window.DJ || {};
             <button type="submit" class="button" data-auth-action="signin">Sign In</button>
             <button type="button" class="button-secondary" data-auth-action="signup">Create Account</button>
           </div>
+          ${config.stripeGuestCheckoutEnabled === true ? '<button type="button" class="customer-auth-guest" data-auth-action="guest">Continue as Guest</button>' : ''}
           <button type="button" class="customer-auth-reset" data-auth-action="reset">Send password reset email</button>
           <p class="customer-auth-status" id="customerAuthStatus" aria-live="polite"></p>
         </form>
@@ -163,6 +165,7 @@ window.DJ = window.DJ || {};
       signUpFromModal();
     });
     modal.querySelector('[data-auth-action="reset"]')?.addEventListener('click', resetPasswordFromModal);
+    modal.querySelector('[data-auth-action="guest"]')?.addEventListener('click', continueAsGuestFromModal);
     document.addEventListener('keydown', (event) => {
       if (!modal.classList.contains('active')) {
         return;
@@ -265,6 +268,27 @@ window.DJ = window.DJ || {};
     const email = String(document.getElementById('customerAuthEmail')?.value || '').trim();
     const password = String(document.getElementById('customerAuthPassword')?.value || '');
     return { email, password };
+  }
+
+  async function continueAsGuestFromModal() {
+    const { email } = getAuthFields();
+    if (!EMAIL_PATTERN.test(email)) {
+      setAuthStatus('Enter a valid email address to continue as a guest.', 'error');
+      document.getElementById('customerAuthEmail')?.focus();
+      return;
+    }
+    const pending = state.pendingCheckoutRequest || restorePendingCheckout();
+    if (!pending?.items?.length) {
+      setAuthStatus('Your checkout request expired. Please try again from the listing.', 'error');
+      return;
+    }
+    setAuthStatus('Opening secure guest checkout...', 'info');
+    closeAuthModal();
+    await startCheckoutItems(pending.items, {
+      ...(pending.options || {}),
+      guestEmail: email,
+      guestCheckout: true
+    }, pending.returnPath);
   }
 
   async function signInFromModal() {
@@ -498,23 +522,32 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (!state.authReady) {
+    const requestedGuestEmail = String(options.guestEmail || '').trim().toLowerCase();
+    const canUseGuestCheckout = config.stripeGuestCheckoutEnabled === true
+      && options.guestCheckout === true
+      && EMAIL_PATTERN.test(requestedGuestEmail);
+
+    if (!canUseGuestCheckout && !state.authReady) {
       openAuthModal({
         items: normalizedItems,
         returnPath,
         checkoutOptions: options,
-        message: 'Checking for an existing customer session. You can sign in or create an account to continue checkout.'
+        message: config.stripeGuestCheckoutEnabled === true
+          ? 'Checking for an existing customer session. You can sign in, create an account, or continue as a guest.'
+          : 'Checking for an existing customer session. You can sign in or create an account to continue checkout.'
       });
       continueCheckoutIfExistingSession(options, returnPath);
       return;
     }
 
-    if (!state.session?.user) {
+    if (!canUseGuestCheckout && !state.session?.user) {
       openAuthModal({
         items: normalizedItems,
         returnPath,
         checkoutOptions: options,
-        message: 'Sign in or create a customer account before checkout.'
+        message: config.stripeGuestCheckoutEnabled === true
+          ? 'Sign in, create a customer account, or enter your email to continue as a guest.'
+          : 'Sign in or create a customer account before checkout.'
       });
       return;
     }
@@ -526,8 +559,13 @@ window.DJ = window.DJ || {};
     try {
       const payload = {
         items: normalizedItems.map(({ productId, quantity }) => ({ productId, quantity })),
-        returnPath: returnPath || `${window.location.pathname}${window.location.search}`
+        returnPath: returnPath || `${window.location.pathname}${window.location.search}`,
+        ...(canUseGuestCheckout && !state.session?.user ? { guestEmail: requestedGuestEmail } : {})
       };
+      DJ.trackEvent?.('begin_checkout', { resultCount: normalizedItems.length });
+      if (canUseGuestCheckout && !state.session?.user) {
+        DJ.trackEvent?.('guest_checkout', { resultCount: normalizedItems.length });
+      }
       const data = await DJ.remoteCatalog.invokeFunction(config.stripeCheckoutFunction, payload);
       if (!data?.url) {
         throw new Error('Stripe checkout did not return a checkout URL.');
