@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260811b';
+  const PRODUCT_ASSET_VERSION = '20260811c';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -1689,20 +1689,6 @@ window.DJ = window.DJ || {};
   DJ.setCart = function setCart(items) {
     return persistCart(items, 'local');
   };
-  DJ.addToCart = function addToCart(productId, quantity = 1) {
-    const cart = getCart();
-    const normalizedId = normalizeProductId(productId);
-    if (!normalizedId) return persistCart(cart, 'local');
-
-    const existing = cart.find((item) => item.productId === normalizedId);
-    const normalizedQuantity = normalizeCartQuantity(quantity);
-    if (existing) {
-      existing.quantity += normalizedQuantity;
-    } else {
-      cart.push({ productId: normalizedId, quantity: normalizedQuantity });
-    }
-    return persistCart(cart, 'local');
-  };
   DJ.updateCartQuantity = function updateCartQuantity(productId, quantity) {
     const currentCart = getCart();
     const normalizedId = normalizeProductId(productId);
@@ -1732,7 +1718,6 @@ window.DJ = window.DJ || {};
   };
   DJ.updateCartCount = updateCartCount;
   DJ.availableQuantity = availableQuantity;
-  DJ.isProductCheckoutAvailable = isProductCheckoutAvailable;
   DJ.applyLazyLoading = applyLazyLoading;
   DJ.scheduleIdle = scheduleIdle;
   DJ.loadScriptsInOrder = loadScriptsInOrder;
