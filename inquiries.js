@@ -160,9 +160,7 @@ window.DJ = window.DJ || {};
     });
   }
 
-  DJ.prepareInquiryPhotos = prepareInquiryPhotos;
   DJ.submitCollectorInquiry = submitCollectorInquiry;
-  DJ.bindCollectorInquiryForm = bindCollectorInquiryForm;
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-collector-inquiry-form]').forEach(bindCollectorInquiryForm);
   });

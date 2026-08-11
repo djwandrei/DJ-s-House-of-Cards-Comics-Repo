@@ -2944,7 +2944,7 @@ Thank you.`
     }) ? 30 : 0;
   }
 
-  function setupSearchDiscovery(products = [], config = {}) {
+  function setupSearchDiscovery(products = []) {
     const searchInput = document.getElementById('searchInput');
     const searchShell = searchInput?.closest('.search-shell');
     if (!searchInput || !searchShell || searchInput.dataset.searchDiscoveryBound === 'true') return;
@@ -3657,7 +3657,7 @@ Thank you.`
         const { allowedProducts } = await getCatalogPageProducts(config);
 
         mountFacetFilters(allowedProducts, config, initialFilters);
-        setupSearchDiscovery(allowedProducts, config);
+        setupSearchDiscovery(allowedProducts);
         bindActiveFilterActions(config);
 
         const rerender = () => {

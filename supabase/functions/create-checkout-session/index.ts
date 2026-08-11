@@ -183,14 +183,20 @@ Deno.serve(async (request) => {
   const jwt = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
   let buyerUserId: string | null = null;
   let email = String(payload.guestEmail || '').trim().toLowerCase();
+  const hasValidGuestEmail = allowGuestCheckout && emailPattern.test(email) && email.length <= 254;
   if (jwt) {
     const { data: userResult, error: userError } = await admin.auth.getUser(jwt);
-    if (userError || !userResult?.user) return jsonResponse({ error: 'Your session expired. Sign in again before checkout.' }, 401);
-    buyerUserId = userResult.user.id;
-    email = String(userResult.user.email || '').trim().toLowerCase();
-  } else if (!allowGuestCheckout) {
+    if (!userError && userResult?.user) {
+      buyerUserId = userResult.user.id;
+      email = String(userResult.user.email || '').trim().toLowerCase();
+    } else if (!hasValidGuestEmail) {
+      return jsonResponse({ error: 'Your session expired. Sign in again before checkout.' }, 401);
+    }
+  }
+  if (!buyerUserId && !allowGuestCheckout) {
     return jsonResponse({ error: 'Sign in before checkout.' }, 401);
-  } else if (!emailPattern.test(email) || email.length > 254) {
+  }
+  if (!buyerUserId && !hasValidGuestEmail) {
     return jsonResponse({ error: 'Enter a valid email address to continue as a guest.' }, 400);
   }
 
