@@ -10,13 +10,12 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260811c';
+const SCRIPT_VERSION = '20260812a';
 const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
 const SOCIAL_METADATA_PAGES = new Set([
   'cart.html',
   'checkout-success.html',
-  'privacy.html',
-  'terms.html',
+  'policies.html',
   'shipping.html',
   'returns.html'
 ]);
@@ -215,21 +214,21 @@ const pages = {
       ['Admin', '/admin.html']
     ]
   },
-  'privacy.html': {
+  'metrics.html': {
     type: 'WebPage',
-    path: '/privacy.html',
-    name: "Privacy Policy | DJ's House of Cards & Comics",
-    description: "Learn how DJ's House of Cards & Comics handles account, checkout, contact, wishlist, cart, marketplace, and order-support information.",
+    path: '/metrics.html',
+    name: "Conversion & Performance Metrics | DJ's House of Cards & Comics",
+    description: 'Private reporting dashboard for first-party storefront conversion and performance metrics.',
     image: 'assets/dj-logo.png',
-    breadcrumb: [['Home', '/'], ['Privacy Policy', '/privacy.html']]
+    breadcrumb: [['Home', '/'], ['Admin', '/admin.html'], ['Conversion & Performance Metrics', '/metrics.html']]
   },
-  'terms.html': {
+  'policies.html': {
     type: 'WebPage',
-    path: '/terms.html',
-    name: "Terms of Sale | DJ's House of Cards & Comics",
-    description: 'Review the storefront terms for listings, pricing, checkout, availability, final sale purchases, shipping, and customer communication.',
+    path: '/policies.html',
+    name: "Policies & Authenticity | DJ's House of Cards & Comics",
+    description: "Review privacy, terms of sale, and condition and authenticity guidance before purchasing from DJ's House of Cards & Comics.",
     image: 'assets/dj-logo.png',
-    breadcrumb: [['Home', '/'], ['Terms of Sale', '/terms.html']]
+    breadcrumb: [['Home', '/'], ['Policies & Authenticity', '/policies.html']]
   },
   'shipping.html': {
     type: 'WebPage',

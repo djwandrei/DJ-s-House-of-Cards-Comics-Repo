@@ -442,16 +442,6 @@ window.DJ = window.DJ || {};
     return attributes.filter((attribute) => KNOWN_PRODUCT_ATTRIBUTES.has(String(attribute || '').trim()));
   }
 
-  function getProductCardGradeLabel(product = {}) {
-    const compact = String(product.conditionCompact || '').trim();
-    if (!compact) return product.conditionFacet === 'Graded' ? 'Graded' : 'Ungraded';
-
-    // "Guide range listed" is a pricing note, not a grade. Replacing it on cards
-    // keeps the chip aligned with the allowed grade/status banner role.
-    if (/^guide range listed$/i.test(compact)) return product.conditionFacet || 'Ungraded';
-    return compact;
-  }
-
   /**
    * Preserve human-friendly name casing inside product-card pills without
    * forcing every underlying catalog record to be perfectly title-cased first.
@@ -577,43 +567,6 @@ window.DJ = window.DJ || {};
   function normalizeTeamFacetValue(value, product = {}) {
     const rawValue = String(value || '').trim();
     return isGenericTeamFacetValue(rawValue, product) ? '' : rawValue;
-  }
-
-  function renderProductCardSummary(product, summaryId, metaLine = '') {
-    const pills = [];
-    const yearLabel = product.yearLabel && product.yearLabel !== 'Year not listed' ? product.yearLabel : '';
-    const contextValue = getProductPrimaryContext(product);
-
-    if (yearLabel) {
-      pills.push(`<span class="product-meta-pill product-meta-pill--year" data-label="Year">${DJ.escapeHtml(yearLabel)}</span>`);
-    }
-
-    if (contextValue) {
-      const contextLabel = getProductContextLabel(product);
-      pills.push(`<span class="product-meta-pill product-meta-pill--context" data-label="${DJ.escapeHtml(contextLabel)}" title="${DJ.escapeHtml(contextValue)}">${DJ.escapeHtml(contextValue)}</span>`);
-    }
-
-    if (!pills.length) {
-      return `
-        <div class="product-card-summary" id="${summaryId}">
-          <span class="sr-only">${DJ.escapeHtml(metaLine || product.category || 'Catalog listing')}</span>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="product-card-summary" id="${summaryId}">
-        <div class="product-meta-pills">
-          ${pills.join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  function renderProductCardMetaExtras(product = {}) {
-    const league = String(product.league || '').trim();
-    if (!league || String(product.category || '').toLowerCase().includes(league.toLowerCase())) return '';
-    return `<div class="product-meta-inline-list"><span class="product-meta-inline product-meta-inline--league" data-label="League">${DJ.escapeHtml(league)}</span></div>`;
   }
 
   function renderModalFactStrip(product = {}, galleryCount = 1, displayPrice = DJ.displayPrice(product)) {
@@ -1546,7 +1499,7 @@ window.DJ = window.DJ || {};
   function renderProductCard(product, wishlistIds, options = {}) {
     const isWishlisted = wishlistIds.has(Number(product.id));
     const heart = isWishlisted ? '\u2665' : '\u2661';
-    const metaLine = [product.yearLabel || product.year || '', product.team || '']
+    const accessibilitySummary = [product.yearLabel || product.year || '', getProductPrimaryContext(product), product.league || '', product.conditionCompact || product.conditionFacet || '']
       .filter(Boolean)
       .map((part) => DJ.escapeHtml(part))
       .join(' | ');
@@ -1560,15 +1513,12 @@ window.DJ = window.DJ || {};
       ? DJ.getThumbnailAssetCandidates(product.image)
       : DJ.getAssetUrlCandidates(product.image);
     const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
-    const cardGradeLabel = getProductCardGradeLabel(product);
-    const showConditionChip = Boolean(product.conditionCompact || product.conditionFacet);
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
     const availableQuantity = DJ.availableQuantity(product);
     const quickActionLabel = getProductActionLabel(product);
     const titleId = `product-card-title-${product.id}`;
-    const gradeLabel = product.conditionFacet === 'Graded' ? 'Grade' : 'Condition';
     const cardImageSizes = [
       '(max-width: 640px) calc(100vw - 3rem)',
       '(max-width: 900px) 31vw',
@@ -1588,14 +1538,8 @@ window.DJ = window.DJ || {};
         </div>
         <div class="product-content">
           <h3 id="${titleId}">${DJ.escapeHtml(product.name)}</h3>
-          <div class="product-card-chip-rail">
-            ${showConditionChip ? `<div class="product-topline">
-              <span class="product-meta product-grade-meta" data-label="${DJ.escapeHtml(gradeLabel)}">${DJ.escapeHtml(cardGradeLabel)}</span>
-            </div>` : ''}
-            ${renderProductCardSummary(product, summaryId, metaLine)}
-            ${renderProductCardMetaExtras(product)}
-            ${renderAttributeTags(cardAttributes)}
-          </div>
+          <span class="sr-only" id="${summaryId}">${accessibilitySummary || 'Catalog listing'}</span>
+          ${cardAttributes.length ? `<div class="product-card-chip-rail">${renderAttributeTags(cardAttributes)}</div>` : ''}
           <div class="product-card-footer">
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
@@ -2021,6 +1965,11 @@ Thank you.`
       if (wishlistAddCart) {
         renderedProducts.filter(isDirectCheckoutCandidate).forEach((product) => addToCart(product));
         window.location.href = 'cart.html';
+        return;
+      }
+
+      if (event.target.closest('[data-wishlist-inquiry]')) {
+        DJ.trackEvent?.('bundle_open', { kind: 'wishlist' });
         return;
       }
 
@@ -3010,6 +2959,7 @@ Thank you.`
         list.hidden = true;
         return;
       }
+
       const title = query ? 'Suggested listings' : 'Recent and quick searches';
       const entries = matches.length
         ? matches.map(({ product }) => ({
@@ -3800,7 +3750,7 @@ Thank you.`
         </div>
         <div class="wishlist-actions-buttons">
           <button type="button" class="button" data-wishlist-add-cart>Add Available Items to Cart</button>
-          <a class="button" href="${DJ.escapeHtml(buildCollectorInquiryUrl('bundle', savedProducts))}" data-wishlist-inquiry>Discuss a Bundle or Offer</a>
+          <a class="button" href="${DJ.escapeHtml(buildCollectorInquiryUrl('bundle', savedProducts))}" data-wishlist-inquiry>Build a Bundle</a>
           <a class="button-secondary" href="sports-cards.html">Browse More</a>
           <button type="button" class="button-secondary wishlist-clear-button" data-wishlist-clear>Clear Wishlist</button>
         </div>
@@ -3976,6 +3926,7 @@ Thank you.`
           <div class="cart-summary__row"><span>Merchandise subtotal</span><strong>${DJ.escapeHtml(DJ.currency(subtotal))}</strong></div>
           <p>Shipping and any applicable taxes are calculated securely in Stripe Checkout.</p>
           <button type="button" class="button" data-cart-checkout data-checkout-button>Checkout Cart</button>
+          <a class="button-secondary" href="${DJ.escapeHtml(buildCollectorInquiryUrl('bundle', activeItems.map(({ product }) => product)))}" data-cart-bundle>Build a Bundle</a>
           <a class="button-secondary" href="wishlist.html">Open Wishlist</a>
           <button type="button" class="button-secondary" data-cart-clear>Clear Cart</button>
           <p class="cart-status" id="cartStatus" aria-live="polite"></p>
@@ -4012,6 +3963,11 @@ Thank you.`
 
       if (target.closest('[data-cart-clear]')) {
         if (window.confirm('Clear all items from your shopping cart?')) DJ.clearCart();
+        return;
+      }
+
+      if (target.closest('[data-cart-bundle]')) {
+        DJ.trackEvent?.('bundle_open', { kind: 'cart' });
         return;
       }
 
@@ -4170,12 +4126,11 @@ Thank you.`
             ${isDirectCheckout ? '<button type="button" class="button-secondary" id="modalAddCart">Add to Cart</button>' : ''}
             <button type="button" class="button-secondary" id="modalWishlist" data-product-id="${Number(product.id)}" aria-pressed="${wishlistIds.has(Number(product.id)) ? 'true' : 'false'}" aria-label="${wishlistIds.has(Number(product.id)) ? 'Remove from wishlist' : 'Save to wishlist'}">${wishlistIds.has(Number(product.id)) ? 'Remove from Wishlist' : 'Save to Wishlist'}</button>
             <button type="button" class="button-secondary" id="modalOffer">Make an Offer</button>
-            <button type="button" class="button-secondary" id="modalBundle">Build a Bundle</button>
             <button type="button" class="button-secondary modal-link-button" id="modalCopyLink">Copy Link</button>
           </div>
           <p class="modal-checkout-status" id="modalCheckoutStatus" aria-live="polite"></p>
           <p class="modal-trust-links">
-            <a href="condition-authenticity.html">Condition &amp; authenticity notes</a>
+            <a href="policies.html">Condition &amp; authenticity notes</a>
             <span aria-hidden="true">|</span>
             <a href="sell-trade-want-list.html">Sell, trade, or send a want list</a>
           </p>
@@ -4251,10 +4206,6 @@ Thank you.`
     modalInner.querySelector('#modalOffer')?.addEventListener('click', () => {
       DJ.trackEvent?.('offer_open', { productId: Number(product.id), category: product.category });
       window.location.assign(buildCollectorInquiryUrl('offer', [product]));
-    });
-    modalInner.querySelector('#modalBundle')?.addEventListener('click', () => {
-      DJ.trackEvent?.('bundle_open', { productId: Number(product.id), category: product.category });
-      window.location.assign(buildCollectorInquiryUrl('bundle', [product]));
     });
     modalInner.querySelectorAll('[data-modal-nav]').forEach((button) => {
       button.addEventListener('click', () => {

@@ -19,6 +19,9 @@ verify_jwt = false
 [functions.analytics-event]
 verify_jwt = false
 
+[functions.analytics-report]
+verify_jwt = true
+
 [functions.shopify-oauth-start]
 verify_jwt = false
 

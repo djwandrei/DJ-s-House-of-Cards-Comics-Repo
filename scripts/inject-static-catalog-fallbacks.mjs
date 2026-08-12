@@ -140,16 +140,6 @@ function displayPrice(product) {
     : 'Ask DJ for price';
 }
 
-function shouldSuppressStaticCondition(product, category) {
-  if (!/collectibles/i.test(category)) return false;
-  const raw = String(product.conditionCompact || product.condition || '').trim();
-  if (!raw) return false;
-  if (/\b(?:poor|fair|good|very good|excellent|mint|near mint|nm|graded|psa|sgc|bgs|cgc|beckett)\b/i.test(raw)) {
-    return false;
-  }
-  return /\b(?:autographed?|signed|signature|multi[- ]signed|memorabilia|collectible|baseball|bat|ball|postcard|photo|display|program)\b/i.test(raw);
-}
-
 function primaryImage(product) {
   return String(product.image || '').trim() || 'assets/dj-logo.png';
 }
@@ -185,43 +175,19 @@ function productHref(product) {
   return `${route}?item=${encodeURIComponent(product.id)}`;
 }
 
-function contextLine(product) {
-  const metadata = product.metadata && typeof product.metadata === 'object' ? product.metadata : {};
-  return [
-    product.year,
-    product.setName,
-    product.title,
-    product.publisher,
-    metadata.beckettTitle,
-    metadata.manufacturer,
-    metadata.publisher
-  ].filter(Boolean).map(String).find(Boolean) || categoryOf(product);
-}
-
 function fallbackCard(product, index) {
   const category = categoryOf(product);
   const image = productImageSources(product);
-  const condition = shouldSuppressStaticCondition(product, category)
-    ? ''
-    : (product.conditionCompact || product.condition || 'Condition available by request');
+  const attributes = Array.isArray(product.attributes)
+    ? product.attributes.map((attribute) => String(attribute || '').trim()).filter(Boolean)
+    : [];
   return `    <article class="product-card static-product-card" data-product-id="${escapeHtml(product.id)}" data-product-category="${escapeHtml(category)}">
       <div class="product-media">
         <img src="${image.src}" data-asset-candidates="${escapeDataAttribute(image.candidates.join('\n'))}" data-fallback-src="${image.fallback}" alt="${escapeHtml(product.name)} product photo" width="320" height="320" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async">
       </div>
       <div class="product-content">
         <h3>${escapeHtml(product.name)}</h3>
-        <div class="product-card-chip-rail">
-          ${condition ? `<div class="product-topline">
-            <span class="product-meta product-grade-meta" data-label="Condition">${escapeHtml(condition)}</span>
-          </div>` : ''}
-          <div class="product-card-summary">
-            <p>${escapeHtml(contextLine(product))}</p>
-          </div>
-          <div class="product-meta-inline-list">
-            <span class="product-meta-inline" data-label="Category">${escapeHtml(category)}</span>
-            ${product.team ? `<span class="product-meta-inline" data-label="Team">${escapeHtml(product.team)}</span>` : ''}
-          </div>
-        </div>
+        ${attributes.length ? `<div class="product-card-chip-rail"><div class="product-attribute-list">${attributes.map((attribute) => `<span class="product-attribute-pill">${escapeHtml(attribute)}</span>`).join('')}</div></div>` : ''}
         <div class="product-card-footer">
           <div class="product-pricing">
             <span class="product-price-label">Listing price</span>

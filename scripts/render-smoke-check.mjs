@@ -181,7 +181,7 @@ function eventFailures(events) {
 
 async function inspectDesktopPage(client, baseUrl, page) {
   client.consumeEvents();
-  await navigate(client, `${baseUrl}${page.path}${page.path.includes('?') ? '&' : '?'}smokeVersion=20260811c`);
+  await navigate(client, `${baseUrl}${page.path}${page.path.includes('?') ? '&' : '?'}smokeVersion=20260812a`);
   if (page.expect?.modal) {
     for (let attempt = 0; attempt < 60; attempt += 1) {
       if (await client.evaluate('Boolean(document.querySelector("#productModal.active"))')) break;
@@ -203,6 +203,7 @@ async function inspectDesktopPage(client, baseUrl, page) {
       accountForm: !!document.getElementById('accountProfileForm'),
       cartContainer: !!document.getElementById('cartContainer'),
       policyContent: !!document.querySelector('.policy-content'),
+      metricsMount: !!document.getElementById('metricsMount'),
       footer: !!document.querySelector('footer'),
       brokenImages,
       overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth
@@ -219,6 +220,7 @@ async function inspectDesktopPage(client, baseUrl, page) {
   if (page.expect?.account && !metrics.accountForm) failures.push('account form missing');
   if (page.expect?.cart && !metrics.cartContainer) failures.push('cart container missing');
   if (page.expect?.policy && !metrics.policyContent) failures.push('policy content missing');
+  if (page.expect?.metrics && !metrics.metricsMount) failures.push('metrics mount missing');
   return {
     label: page.label,
     metrics,
@@ -238,7 +240,7 @@ async function inspectMobileFlow(client, baseUrl) {
     screenHeight: 844
   });
   await client.send('Emulation.setTouchEmulationEnabled', { enabled: true });
-  await navigate(client, `${baseUrl}/baseball-cards.html?smoke=mobile&smokeVersion=20260811c`);
+  await navigate(client, `${baseUrl}/baseball-cards.html?smoke=mobile&smokeVersion=20260812a`);
   for (let attempt = 0; attempt < 80; attempt += 1) {
     const ready = await client.evaluate('document.querySelectorAll(".product-card[data-product-id]").length > 0 && !!document.querySelector(".mobile-filter-trigger")');
     if (ready) break;
@@ -321,7 +323,8 @@ async function main() {
       { label: 'baseball linked item', path: '/baseball-cards.html?item=6', expect: { modal: true } },
       { label: 'account', path: '/account.html', expect: { account: true } },
       { label: 'cart', path: '/cart.html', expect: { cart: true } },
-      { label: 'privacy policy', path: '/privacy.html', expect: { policy: true } }
+      { label: 'policies and authenticity', path: '/policies.html', expect: { policy: true } },
+      { label: 'private metrics', path: '/metrics.html', expect: { metrics: true } }
     ];
     const desktop = [];
     for (const page of desktopPages) {

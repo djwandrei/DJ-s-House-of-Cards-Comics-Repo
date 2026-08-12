@@ -5768,15 +5768,15 @@ body.dark-mode .footer-action-count {
 
   .header-actions {
     grid-area:actions;
-    flex-direction:column;
-    align-items:stretch;
+    flex-direction:row;
+    align-items:center;
     gap:.55rem;
   }
 
   .nav-toggle,
   .theme-toggle {
     justify-content:center;
-    width:100%;
+    width:auto;
   }
 
   .nav-toggle {
@@ -9496,6 +9496,89 @@ body.dark-mode .admin-listing-row {
 
 .policy-content h2:first-child {
   margin-top:0;
+}
+
+.metrics-toolbar {
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:1rem;
+  flex-wrap:wrap;
+  margin-bottom:1.25rem;
+}
+
+.metrics-toolbar label {
+  display:grid;
+  gap:.35rem;
+  font-weight:800;
+}
+
+.metrics-toolbar select {
+  min-width:150px;
+}
+
+.metrics-status {
+  min-height:1.45rem;
+  margin:0 0 1rem;
+  color:var(--muted);
+}
+
+.metrics-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:.85rem;
+}
+
+.metrics-card {
+  display:grid;
+  gap:.35rem;
+  min-height:132px;
+}
+
+.metrics-card small,
+.metrics-section-note {
+  color:var(--muted);
+}
+
+.metrics-card strong {
+  font-size:clamp(1.5rem,2.5vw,2.25rem);
+  line-height:1;
+}
+
+.metrics-section {
+  margin-top:1.4rem;
+}
+
+.metrics-section h2 {
+  margin-bottom:.35rem;
+}
+
+.metrics-table-wrap {
+  overflow-x:auto;
+}
+
+.metrics-table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+.metrics-table th,
+.metrics-table td {
+  padding:.7rem .8rem;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+}
+
+.metrics-table th {
+  color:var(--muted);
+  font-size:.78rem;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+
+.metrics-empty {
+  margin:0;
+  color:var(--muted);
 }
 
 body.dark-mode .policy-summary-card {

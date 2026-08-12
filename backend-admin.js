@@ -26,7 +26,7 @@ window.DJ = window.DJ || {};
   // Keep the listing manager responsive even with larger catalogs. The full
   // result count still appears in the header, while the grid renders a capped
   // slice for fast admin browsing.
-  const REMOTE_LIST_RENDER_LIMIT = 250;
+  const REMOTE_LIST_RENDER_LIMIT = 50;
   const BUSY_CONTROL_SELECTOR = '#backendLoginForm button, #backendRefreshProducts, #backendSeedProducts, #backendConnectionTest, #backendSignOut, #backendNewListing, #backendListingForm button, #backendListingForm input, #backendListingForm select, #backendListingForm textarea, #backendListingSearch';
 
   const state = {
@@ -778,7 +778,7 @@ window.DJ = window.DJ || {};
       ${visibleProducts.map(remoteListingCard).join('')}
       ${isTruncated ? `
         <div class="inline-actions compact backend-load-more-row">
-          <button type="button" class="button-secondary" id="backendLoadMoreListings">Load More Listings</button>
+          <button type="button" class="button-secondary" id="backendLoadMoreListings">Load 50 More Listings</button>
         </div>
       ` : ''}
     `;

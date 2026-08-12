@@ -16,7 +16,7 @@ window.DJ = window.DJ || {};
   const scriptLoadPromises = new Map();
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260811c';
+  const PRODUCT_ASSET_VERSION = '20260812a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -49,8 +49,7 @@ window.DJ = window.DJ || {};
     ['TikTok Shop', 'https://www.tiktok.com/@djshouseofcards/shop']
   ];
   const FOOTER_POLICY_LINKS = [
-    ['Privacy', 'privacy.html'],
-    ['Terms', 'terms.html'],
+    ['Policies & Authenticity', 'policies.html'],
     ['Shipping', 'shipping.html'],
     ['Returns', 'returns.html']
   ];

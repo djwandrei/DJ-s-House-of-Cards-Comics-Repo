@@ -732,6 +732,16 @@
     padding-inline:.72rem;
   }
 
+  .metrics-toolbar {
+    align-items:stretch;
+  }
+
+  .metrics-toolbar label,
+  .metrics-toolbar select,
+  .metrics-toolbar button {
+    width:100%;
+  }
+
   .footer-inner {
     padding-top:3.75rem !important;
   }

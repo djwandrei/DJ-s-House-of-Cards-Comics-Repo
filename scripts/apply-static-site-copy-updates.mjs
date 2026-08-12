@@ -24,17 +24,17 @@ function ensureFooterLinks(html) {
   if (footerEnd < 0) return html;
 
   const footer = html.slice(footerStart, footerEnd);
-  if (footer.includes('condition-authenticity.html') && footer.includes('sell-trade-want-list.html')) {
+  if (footer.includes('policies.html') && footer.includes('sell-trade-want-list.html')) {
     return html;
   }
 
   const expandedLinks = [
-    footer.includes('condition-authenticity.html') ? '' : '<a href="condition-authenticity.html">\n      Condition &amp; Authenticity\n     </a>',
+    footer.includes('policies.html') ? '' : '<a href="policies.html">\n      Policies &amp; Authenticity\n     </a>',
     footer.includes('sell-trade-want-list.html') ? '' : '<a href="sell-trade-want-list.html">\n      Sell / Trade / Want List\n     </a>'
   ].filter(Boolean).join('\n');
 
   const compactLinks = [
-    footer.includes('condition-authenticity.html') ? '' : '<a href="condition-authenticity.html">Condition &amp; Authenticity</a>',
+    footer.includes('policies.html') ? '' : '<a href="policies.html">Policies &amp; Authenticity</a>',
     footer.includes('sell-trade-want-list.html') ? '' : '<a href="sell-trade-want-list.html">Sell / Trade / Want List</a>'
   ].filter(Boolean).join('');
 
