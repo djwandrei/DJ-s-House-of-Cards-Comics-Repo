@@ -8115,15 +8115,6 @@ body.dark-mode .account-panel {
   box-shadow:0 20px 48px rgba(0,0,0,.26);
 }
 
-.account-summary-card {
-  grid-column:1;
-}
-
-.account-profile-card,
-.account-orders-card {
-  grid-column:2;
-}
-
 .account-eyebrow {
   color:var(--accent-blue);
   font-family:var(--font-display);
@@ -8142,120 +8133,6 @@ body.dark-mode .account-panel {
 .account-muted {
   color:var(--muted);
   margin:0;
-}
-
-.account-collector-layout {
-  display:grid;
-  grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);
-  gap:clamp(1rem,2vw,1.35rem);
-  align-items:start;
-}
-
-.account-collector-form {
-  margin-top:.2rem;
-}
-
-.collector-profile-side {
-  display:grid;
-  gap:.85rem;
-  min-width:0;
-}
-
-.collector-profile-meter {
-  display:grid;
-  gap:.58rem;
-  padding:1rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:20px;
-  background:linear-gradient(135deg,rgba(31,47,163,.07),rgba(239,24,35,.08));
-}
-
-.collector-profile-preview {
-  min-width:0;
-}
-
-.collector-profile-preview-card {
-  display:grid;
-  gap:.82rem;
-  min-width:0;
-  padding:1rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:22px;
-  background:
-    linear-gradient(135deg,rgba(255,255,255,.94),rgba(238,244,255,.78));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.74);
-}
-
-.collector-profile-preview-card.is-empty {
-  background:rgba(31,47,163,.055);
-}
-
-.collector-profile-preview-head {
-  display:grid;
-  grid-template-columns:auto minmax(0,1fr);
-  align-items:center;
-  gap:.72rem;
-  min-width:0;
-}
-
-.collector-profile-avatar {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:52px;
-  height:52px;
-  border-radius:18px;
-  background:linear-gradient(135deg,var(--brand-blue),var(--brand-red));
-  color:#fff;
-  font-family:var(--font-display);
-  font-size:1.12rem;
-  letter-spacing:.08em;
-  box-shadow:0 12px 24px rgba(16,27,57,.16);
-}
-
-.collector-profile-preview-head strong,
-.collector-profile-preview-head small {
-  display:block;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-.collector-profile-preview-head strong {
-  color:var(--text);
-  font-size:1.08rem;
-}
-
-.collector-profile-preview-head small {
-  color:var(--muted);
-  font-weight:800;
-}
-
-.collector-profile-preview-card p {
-  margin:0;
-  color:var(--muted);
-  line-height:1.5;
-}
-
-.collector-profile-tags {
-  display:flex;
-  flex-wrap:wrap;
-  gap:.45rem;
-}
-
-.collector-profile-tags span {
-  display:inline-flex;
-  align-items:center;
-  min-height:32px;
-  max-width:100%;
-  padding:.38rem .62rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:999px;
-  background:rgba(31,47,163,.06);
-  color:var(--brand-blue);
-  font-size:.8rem;
-  font-weight:900;
-  overflow-wrap:anywhere;
 }
 
 .account-form {
@@ -8280,8 +8157,7 @@ body.dark-mode .account-panel {
   font-weight:900;
 }
 
-.account-form-grid > *,
-.account-choice-group {
+.account-form-grid > * {
   box-sizing:border-box;
   min-width:0;
   width:100%;
@@ -8309,8 +8185,7 @@ body.dark-mode .account-form textarea {
 }
 
 .account-button-row,
-.account-empty-actions,
-.account-link-grid {
+.account-empty-actions {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:.7rem;
@@ -8340,7 +8215,6 @@ body.dark-mode .account-status[data-tone="error"] {
 }
 
 .account-empty-state,
-.account-mini-stat,
 .account-order-card {
   display:grid;
   gap:.5rem;
@@ -8351,47 +8225,9 @@ body.dark-mode .account-status[data-tone="error"] {
 }
 
 body.dark-mode .account-empty-state,
-body.dark-mode .account-mini-stat,
 body.dark-mode .account-order-card {
   background:rgba(255,255,255,.055);
   border-color:rgba(255,255,255,.12);
-}
-
-.account-mini-stat strong {
-  font-size:1.7rem;
-}
-
-.account-insight-grid {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:.55rem;
-}
-
-.account-insight-card {
-  display:grid;
-  gap:.2rem;
-  min-width:0;
-  padding:.78rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:16px;
-  background:rgba(31,47,163,.045);
-}
-
-.account-insight-card span {
-  color:var(--muted);
-  font-size:.72rem;
-  font-weight:900;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-}
-
-.account-insight-card strong {
-  overflow:hidden;
-  color:var(--text);
-  font-size:.9rem;
-  line-height:1.18;
-  text-overflow:ellipsis;
-  white-space:nowrap;
 }
 
 .account-orders {
@@ -8404,129 +8240,11 @@ body.dark-mode .account-order-card {
   color:var(--muted);
 }
 
-.account-mini-stat {
-  grid-template-columns:1fr auto;
-  align-items:center;
-}
-
-.account-readiness {
-  display:grid;
-  gap:.58rem;
-  padding:1rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:20px;
-  background:linear-gradient(135deg,rgba(31,47,163,.07),rgba(228,177,65,.12));
-}
-
-.account-readiness-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1rem;
-  font-weight:900;
-}
-
-.account-readiness-head strong {
-  color:var(--brand-red);
-  font-size:1.18rem;
-}
-
-.account-progress-track {
-  width:100%;
-  height:.62rem;
-  overflow:hidden;
-  border-radius:999px;
-  background:rgba(16,27,57,.1);
-}
-
-.account-progress-track span {
-  display:block;
-  width:0;
-  height:100%;
-  border-radius:inherit;
-  background:linear-gradient(90deg,var(--brand-blue),var(--brand-red));
-  transition:width .25s ease;
-}
-
-.account-summary-tools {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:.68rem;
-}
-
-.account-summary-tools .button,
-.account-summary-tools .button-secondary {
-  width:100%;
-}
-
-.account-summary-tools button:disabled,
 .offline-actions button:disabled {
   cursor:not-allowed;
   opacity:.58;
   transform:none;
   box-shadow:none;
-}
-
-body.dark-mode .account-readiness {
-  background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(228,177,65,.1));
-  border-color:rgba(255,255,255,.12);
-}
-
-body.dark-mode .collector-profile-meter,
-body.dark-mode .collector-profile-preview-card {
-  background:rgba(255,255,255,.055);
-  border-color:rgba(255,255,255,.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-body.dark-mode .collector-profile-preview-head strong {
-  color:#fff;
-}
-
-body.dark-mode .collector-profile-tags span {
-  background:rgba(255,255,255,.055);
-  border-color:rgba(255,255,255,.12);
-  color:#dfe7ff;
-}
-
-body.dark-mode .account-progress-track {
-  background:rgba(255,255,255,.12);
-}
-
-.account-checklist {
-  display:grid;
-  gap:.45rem;
-}
-
-.account-checklist-item {
-  display:flex;
-  align-items:center;
-  gap:.55rem;
-  color:var(--muted);
-  font-size:.88rem;
-  font-weight:900;
-}
-
-.account-checklist-item span {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:32px;
-  height:26px;
-  border-radius:999px;
-  background:rgba(16,27,57,.08);
-  color:var(--muted);
-  font-size:.72rem;
-  letter-spacing:.04em;
-}
-
-.account-checklist-item.is-complete {
-  color:var(--text);
-}
-
-.account-checklist-item.is-complete span {
-  background:rgba(31,157,88,.14);
-  color:#157a43;
 }
 
 .account-wishlist-card,
@@ -8599,57 +8317,9 @@ body.dark-mode .account-progress-track {
   margin-top:.2rem;
 }
 
-.account-saved-searches {
-  display:flex;
-  flex-wrap:wrap;
-  gap:.45rem;
-  padding-top:.2rem;
-}
-
-.account-saved-searches > strong {
-  flex-basis:100%;
-  color:var(--muted);
-  font-size:.78rem;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-
-.account-saved-search-link {
-  display:inline-flex;
-  align-items:center;
-  min-height:34px;
-  padding:.4rem .68rem;
-  border:1px solid rgba(31,47,163,.12);
-  border-radius:999px;
-  background:rgba(31,47,163,.06);
-  color:var(--brand-blue);
-  font-size:.82rem;
-  font-weight:900;
-  text-decoration:none;
-}
-
-.account-saved-search-link:hover,
-.account-saved-search-link:focus-visible {
-  border-color:rgba(31,47,163,.3);
-  background:rgba(31,47,163,.1);
-  color:var(--text);
-}
-
-body.dark-mode .account-checklist-item span,
 body.dark-mode .account-wishlist-row {
   background:rgba(255,255,255,.055);
   border-color:rgba(255,255,255,.12);
-}
-
-body.dark-mode .account-insight-card,
-body.dark-mode .account-saved-search-link {
-  background:rgba(255,255,255,.055);
-  border-color:rgba(255,255,255,.12);
-}
-
-body.dark-mode .account-checklist-item.is-complete span {
-  background:rgba(68,217,138,.16);
-  color:#65e7a3;
 }
 
 /* Offline recovery page --------------------------------------------------- */
@@ -8764,12 +8434,7 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
 @media (max-width:900px) {
   #backendMainImagePreviewWrap,
   .account-grid,
-  .account-collector-layout,
-  .account-form-grid,
-  .account-summary-card,
-  .account-profile-card,
-  .account-collector-card,
-  .account-orders-card {
+  .account-form-grid {
     grid-template-columns:1fr;
     grid-column:auto;
   }
@@ -8785,9 +8450,6 @@ body.dark-mode .offline-status-pill[data-state="offline"] {
     border-radius:22px;
   }
 
-  .account-summary-tools,
-  .account-insight-grid,
-  .account-hero-stats,
   .account-wishlist-row {
     grid-template-columns:1fr;
   }
@@ -9737,77 +9399,6 @@ body.dark-mode .marketplace-link-grid a {
     padding:.5rem .64rem;
   }
 
-  .account-collector-layout {
-    grid-template-columns:minmax(0,640px) minmax(280px,1fr);
-  }
-}
-
-.account-grid--simple {
-  grid-template-columns:minmax(0,.95fr) minmax(280px,.65fr);
-}
-
-.account-grid--simple .account-auth-card,
-.account-grid--simple .account-profile-card {
-  grid-column:1;
-}
-
-.account-grid--simple .account-summary-card,
-.account-grid--simple .account-wishlist-card,
-.account-grid--simple .account-orders-card {
-  grid-column:2;
-}
-
-.account-grid--simple .account-collector-card {
-  grid-column:1 / -1;
-}
-
-.account-choice-group {
-  display:grid;
-  gap:.52rem;
-  min-width:0;
-  margin:0;
-  padding:0;
-  border:0;
-}
-
-.account-choice-group legend {
-  margin:0 0 .12rem;
-  color:inherit;
-  font-weight:900;
-}
-
-.account-choice-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:.45rem;
-  width:100%;
-}
-
-.account-choice {
-  display:flex !important;
-  align-items:center;
-  gap:.5rem !important;
-  min-height:44px;
-  padding:.58rem .66rem;
-  border:1px solid var(--border);
-  border-radius:14px;
-  background:rgba(255,255,255,.72);
-  color:var(--text);
-  font-size:.88rem;
-  line-height:1.2;
-}
-
-.account-choice input {
-  width:1rem;
-  min-width:1rem;
-  height:1rem;
-  accent-color:var(--brand-blue);
-}
-
-body.dark-mode .account-choice {
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.13);
-  color:#f8fbff;
 }
 
 body[data-page="account"] .account-hero .page-hero-card,
@@ -9839,6 +9430,100 @@ body.dark-mode[data-page="account"] .account-hero .page-kicker {
   color:rgba(255,255,255,.78) !important;
 }
 
+/* Account page: keep the customer workflow concise and use the desktop width
+   for the two actions that benefit from side-by-side scanning. */
+body[data-page="account"] .account-hero-stats {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  max-width:620px;
+}
+
+.account-grid--simple {
+  grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);
+  grid-template-areas:
+    "details wishlist"
+    "details orders";
+  align-items:start;
+}
+
+.account-grid--simple .account-profile-card {
+  grid-area:details;
+  grid-column:auto;
+}
+
+.account-grid--simple .account-wishlist-card {
+  grid-area:wishlist;
+  grid-column:auto;
+}
+
+.account-grid--simple .account-orders-card {
+  grid-area:orders;
+  grid-column:auto;
+}
+
+.account-panel-heading {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(220px,.7fr);
+  gap:1rem;
+  align-items:start;
+}
+
+.account-auth-inline {
+  display:grid;
+  gap:.65rem;
+  align-self:stretch;
+  padding:.82rem .9rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:18px;
+  background:rgba(31,47,163,.045);
+}
+
+.account-button-row--compact {
+  grid-template-columns:repeat(auto-fit,minmax(118px,max-content));
+}
+
+.account-password-form {
+  padding:.9rem;
+  border:1px solid rgba(31,47,163,.12);
+  border-radius:18px;
+  background:rgba(31,47,163,.045);
+}
+
+.account-sync-note {
+  font-size:.86rem;
+}
+
+.account-wishlist-summary {
+  display:flex;
+  align-items:baseline;
+  gap:.38rem;
+  padding:.7rem .82rem;
+  border-radius:16px;
+  background:rgba(31,47,163,.055);
+}
+
+.account-wishlist-summary strong {
+  color:var(--brand-red);
+  font-size:1.4rem;
+}
+
+.account-wishlist-summary span {
+  color:var(--muted);
+  font-weight:800;
+}
+
+.account-wishlist-summary a {
+  margin-left:auto;
+  color:var(--brand-blue);
+  font-weight:900;
+}
+
+body.dark-mode .account-auth-inline,
+body.dark-mode .account-password-form,
+body.dark-mode .account-wishlist-summary {
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.055);
+}
+
 body[data-page="about"],
 body[data-page="contact"],
 body[data-page="wishlist"],
@@ -9849,9 +9534,7 @@ body[data-page="admin"] {
 
 @media (max-width:900px) {
   .account-grid--simple,
-  .account-grid--simple .account-auth-card,
   .account-grid--simple .account-profile-card,
-  .account-grid--simple .account-summary-card,
   .account-grid--simple .account-wishlist-card,
   .account-grid--simple .account-orders-card {
     display:grid;
@@ -9859,7 +9542,17 @@ body[data-page="admin"] {
     grid-column:1 / -1;
   }
 
-  .account-choice-grid,
+  .account-grid--simple {
+    grid-template-areas:
+      "details"
+      "wishlist"
+      "orders";
+  }
+
+  .account-panel-heading {
+    grid-template-columns:1fr;
+  }
+
   .marketplace-link-grid,
   .home-auth-actions {
     grid-template-columns:1fr;

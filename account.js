@@ -1,8 +1,8 @@
 /**
  * Customer account page helpers.
  * -----------------------------------------------------------------------------
- * Authenticated buyer details, collector preferences, wishlists, and checkout
- * history are stored in Supabase.
+ * Authenticated buyer details, wishlists, and checkout history are stored in
+ * Supabase.
  */
 
 window.DJ = window.DJ || {};
@@ -12,12 +12,6 @@ window.DJ = window.DJ || {};
   const PRODUCT_SOURCE = 'products.json';
   const DEFAULT_PROFILE_FIELD_LENGTH = 240;
   const WISHLIST_PREVIEW_LIMIT = 5;
-  const SAVED_SEARCH_ROUTES = [
-    ['Baseball', 'baseball-cards.html'],
-    ['Basketball', 'basketball-cards.html'],
-    ['Football', 'football-cards.html']
-  ];
-  const contactEmail = 'djscardscomics13@gmail.com';
   let accountProductsPromise = null;
   let wishlistRenderTimer = 0;
   let accountSession = null;
@@ -25,87 +19,13 @@ window.DJ = window.DJ || {};
   let hydratedUserId = '';
   let accountRefreshPromise = null;
 
-  // Keep labels, completion scoring, and exceptional limits in one registry so
-  // profile fields cannot drift between forms, summaries, and validation.
-  const PROFILE_FIELDS = {
-    fullName: { label: 'Full name', countsTowardCompletion: true },
-    email: { label: 'Email', countsTowardCompletion: true },
-    phone: { label: 'Phone' },
-    preferredContact: { label: 'Preferred contact', countsTowardCompletion: true },
-    favoritePlayers: { label: 'Favorite players / characters', countsTowardCompletion: true },
-    favoriteTeams: { label: 'Favorite teams / titles', countsTowardCompletion: true },
-    budgetRange: { label: 'Budget range', countsTowardCompletion: true },
-    preferredCondition: { label: 'Preferred condition' },
-    collectorDisplayName: { label: 'Collector display name' },
-    profileVisibility: { label: 'Profile visibility' },
-    collectorFocus: { label: 'Collecting focus' },
-    favoriteEra: { label: 'Favorite era' },
-    tradeStatus: { label: 'Trade status' },
-    wishlistSharing: { label: 'Wishlist sharing' },
-    collectorBio: { label: 'Collector bio', maxLength: 520 },
-    shippingName: { label: 'Shipping name', countsTowardCompletion: true },
-    addressLine1: { label: 'Address line 1', countsTowardCompletion: true },
-    addressLine2: { label: 'Address line 2' },
-    city: { label: 'City', countsTowardCompletion: true },
-    state: { label: 'State', countsTowardCompletion: true },
-    postalCode: { label: 'ZIP / postal code', countsTowardCompletion: true },
-    notes: { label: 'Collecting notes', countsTowardCompletion: true, maxLength: 1200 }
-  };
-  const fields = Object.keys(PROFILE_FIELDS);
-  const profileCompletionFields = fields.filter((field) => PROFILE_FIELDS[field].countsTowardCompletion);
-  const MULTI_CHOICE_PROFILE_FIELDS = new Set(['collectorFocus', 'tradeStatus']);
+  const fields = ['fullName', 'email', 'phone', 'preferredContact'];
 
   const $ = (id) => document.getElementById(id);
   const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
 
   function normalizeProfileValue(field, value) {
-    const maxLength = PROFILE_FIELDS[field]?.maxLength || DEFAULT_PROFILE_FIELD_LENGTH;
-    return String(value || '').trim().slice(0, maxLength);
-  }
-
-  function splitProfileSelections(value = '') {
-    return [...new Set(String(value || '')
-      .split(/\s*\|\s*|[,;\n]+/)
-      .map((selection) => selection.trim())
-      .filter(Boolean))]
-      .slice(0, 12);
-  }
-
-  function joinProfileSelections(values = []) {
-    return [...new Set((Array.isArray(values) ? values : [])
-      .map((selection) => String(selection || '').trim())
-      .filter(Boolean))]
-      .join(' | ');
-  }
-
-  function getMultiChoiceInputs(field) {
-    return [...document.querySelectorAll(`[data-profile-multi="${field}"]`)];
-  }
-
-  function updateMultiChoiceHiddenField(field, value) {
-    const hidden = $(`account_${field}`);
-    if (hidden) hidden.value = normalizeProfileValue(field, value);
-  }
-
-  function readMultiChoiceField(field) {
-    const selected = getMultiChoiceInputs(field)
-      .filter((input) => input.checked)
-      .map((input) => input.value);
-    const value = normalizeProfileValue(field, joinProfileSelections(selected));
-    updateMultiChoiceHiddenField(field, value);
-    return value;
-  }
-
-  function syncMultiChoiceField(field, value = '') {
-    const selected = new Set(splitProfileSelections(value).map((selection) => selection.toLowerCase()));
-    getMultiChoiceInputs(field).forEach((input) => {
-      input.checked = selected.has(String(input.value || '').trim().toLowerCase());
-    });
-    updateMultiChoiceHiddenField(field, joinProfileSelections(splitProfileSelections(value)));
-  }
-
-  function profileSelectionTags(value = '') {
-    return splitProfileSelections(value).slice(0, 6);
+    return String(value || '').trim().slice(0, DEFAULT_PROFILE_FIELD_LENGTH);
   }
 
   function createElement(tagName, options = {}) {
@@ -142,12 +62,6 @@ window.DJ = window.DJ || {};
 
   function loadProfileForm(profile = savedProfile) {
     fields.forEach((field) => {
-      if (MULTI_CHOICE_PROFILE_FIELDS.has(field)) {
-        const value = profile[field] || '';
-        syncMultiChoiceField(field, value);
-        return;
-      }
-
       const input = $(`account_${field}`);
       if (input) {
         input.value = profile[field]
@@ -158,13 +72,10 @@ window.DJ = window.DJ || {};
   }
 
   function readProfileForm() {
-    const profile = {};
+    // Preserve any older optional data already stored in the account. The
+    // streamlined page no longer surfaces or overwrites it.
+    const profile = { ...savedProfile };
     fields.forEach((field) => {
-      if (MULTI_CHOICE_PROFILE_FIELDS.has(field)) {
-        profile[field] = readMultiChoiceField(field);
-        return;
-      }
-
       const input = $(`account_${field}`);
       profile[field] = input
         ? normalizeProfileValue(field, input.value)
@@ -178,15 +89,6 @@ window.DJ = window.DJ || {};
     return fields.some((field) => Boolean(normalizeProfileValue(field, profile?.[field])));
   }
 
-  function getProfileCompletion(profile) {
-    const completed = profileCompletionFields.filter((field) => Boolean(normalizeProfileValue(field, profile?.[field]))).length;
-    return {
-      completed,
-      total: profileCompletionFields.length,
-      percent: Math.round((completed / profileCompletionFields.length) * 100)
-    };
-  }
-
   function hasUnsavedProfileChanges(currentProfile, storedProfile) {
     return fields.some((field) => (
       normalizeProfileValue(field, currentProfile?.[field]) !== normalizeProfileValue(field, storedProfile?.[field])
@@ -194,7 +96,7 @@ window.DJ = window.DJ || {};
   }
 
   function hasUnsavedProfileFormChanges() {
-    return Boolean($('accountProfileForm') || $('collectorProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), savedProfile);
+    return Boolean($('accountProfileForm')) && hasUnsavedProfileChanges(readProfileForm(), savedProfile);
   }
 
   function formatSavedAt(value) {
@@ -249,258 +151,8 @@ window.DJ = window.DJ || {};
       .sort((left, right) => order.get(Number(left.id)) - order.get(Number(right.id)));
   }
 
-  function buildBuyerSummary(profile, wishlistCount, wishlistProducts = []) {
-    const lines = [
-      'Hi DJ,',
-      '',
-      'I wanted to send over my saved buyer preferences.',
-      '',
-      `Wishlist items: ${wishlistCount}`
-    ];
-
-    fields.forEach((field) => {
-      const value = normalizeProfileValue(field, profile[field]);
-      if (value) {
-        lines.push(`${PROFILE_FIELDS[field].label}: ${value}`);
-      }
-    });
-
-    if (wishlistProducts.length) {
-      lines.push('', 'Wishlist preview:');
-      wishlistProducts.slice(0, WISHLIST_PREVIEW_LIMIT).forEach((product, index) => {
-        lines.push(`${index + 1}. ${product.name || 'Saved item'} - ${DJ.displayPrice(product) || ''} - #${product.id || ''}`.trim());
-      });
-    }
-
-    lines.push('', 'Thanks!');
-    return lines.join('\n');
-  }
-
-  function buildPreferencesEmailUrl(profile, wishlistCount, wishlistProducts = []) {
-    const subject = 'Saved buyer preferences';
-    const body = buildBuyerSummary(profile, wishlistCount, wishlistProducts);
-    return `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-
-  function parsePreferenceTerms(value = '') {
-    return [...new Set(String(value || '')
-      .split(/[,;\n]+/)
-      .map((term) => term.trim())
-      .filter((term) => term.length >= 2))]
-      .slice(0, 8);
-  }
-
-  function getSavedSearchTerms(profile = {}) {
-    return [
-      ...parsePreferenceTerms(profile.favoritePlayers),
-      ...parsePreferenceTerms(profile.favoriteTeams)
-    ].slice(0, 8);
-  }
-
-  function buildSearchUrl(route, term = '') {
-    return `${route}?search=${encodeURIComponent(term)}`;
-  }
-
-  function renderSavedSearches(profile = readProfileForm()) {
-    const container = $('accountSavedSearches');
-    if (!container) return;
-
-    const terms = getSavedSearchTerms(profile);
-
-    if (!terms.length) {
-      container.innerHTML = '';
-      return;
-    }
-
-    container.replaceChildren(
-      createElement('strong', { text: 'Saved sports searches' }),
-      ...terms.flatMap((term) => SAVED_SEARCH_ROUTES.map(([label, route]) => createElement('a', {
-        className: 'account-saved-search-link',
-        href: buildSearchUrl(route, term),
-        text: `${term} - ${label}`
-      })))
-    );
-  }
-
-  function getCollectorDisplayName(profile = {}) {
-    return normalizeProfileValue('collectorDisplayName', profile.collectorDisplayName)
-      || normalizeProfileValue('fullName', profile.fullName);
-  }
-
-  function hasCollectorProfileDetails(profile = {}) {
-    return Boolean(
-      getCollectorDisplayName(profile)
-      || normalizeProfileValue('collectorFocus', profile.collectorFocus)
-      || normalizeProfileValue('favoriteEra', profile.favoriteEra)
-      || normalizeProfileValue('tradeStatus', profile.tradeStatus)
-      || normalizeProfileValue('collectorBio', profile.collectorBio)
-      || normalizeProfileValue('favoritePlayers', profile.favoritePlayers)
-      || normalizeProfileValue('favoriteTeams', profile.favoriteTeams)
-      || normalizeProfileValue('preferredCondition', profile.preferredCondition)
-    );
-  }
-
-  function getCollectorProfileCompletion(profile = {}) {
-    const checks = [
-      getCollectorDisplayName(profile),
-      normalizeProfileValue('collectorFocus', profile.collectorFocus),
-      normalizeProfileValue('favoriteEra', profile.favoriteEra)
-        || normalizeProfileValue('favoritePlayers', profile.favoritePlayers)
-        || normalizeProfileValue('favoriteTeams', profile.favoriteTeams),
-      normalizeProfileValue('tradeStatus', profile.tradeStatus),
-      normalizeProfileValue('collectorBio', profile.collectorBio)
-    ];
-    const completed = checks.filter(Boolean).length;
-    return {
-      completed,
-      total: checks.length,
-      percent: Math.round((completed / checks.length) * 100)
-    };
-  }
-
-  function getCollectorProfileStatus(profile = {}) {
-    if (!hasCollectorProfileDetails(profile)) return 'Not started';
-    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility);
-    if (/public/i.test(visibility)) return 'Public-ready';
-    if (/shareable/i.test(visibility)) return 'Shareable';
-    return 'Private draft';
-  }
-
-  function getCollectorInitials(displayName = '') {
-    const parts = String(displayName || '')
-      .split(/\s+/)
-      .map((part) => part.replace(/[^a-z0-9]/gi, ''))
-      .filter(Boolean);
-    return (parts.length ? parts.slice(0, 2).map((part) => part[0]).join('') : 'DJ').toUpperCase();
-  }
-
-  function renderCollectorTags(container, tags = []) {
-    container.replaceChildren();
-    tags.filter(Boolean).slice(0, 6).forEach((tag) => {
-      container.appendChild(createElement('span', { text: tag }));
-    });
-  }
-
-  function renderCollectorProfile(profile = readProfileForm(), wishlistIds = getWishlistIds()) {
-    const heroStatus = $('accountHeroCollectorStatus');
-    const completionLabel = $('collectorProfileCompletionLabel');
-    const completionBar = $('collectorProfileCompletionBar');
-    const preview = $('collectorProfilePreview');
-    const completion = getCollectorProfileCompletion(profile);
-    const displayName = getCollectorDisplayName(profile);
-    const visibility = normalizeProfileValue('profileVisibility', profile.profileVisibility) || 'Private account profile';
-    const focus = normalizeProfileValue('collectorFocus', profile.collectorFocus);
-    const focusTags = profileSelectionTags(focus);
-    const era = normalizeProfileValue('favoriteEra', profile.favoriteEra);
-    const tradeStatus = normalizeProfileValue('tradeStatus', profile.tradeStatus);
-    const tradeStatusTags = profileSelectionTags(tradeStatus);
-    const preferredCondition = normalizeProfileValue('preferredCondition', profile.preferredCondition);
-    const collectorBio = normalizeProfileValue('collectorBio', profile.collectorBio)
-      || normalizeProfileValue('notes', profile.notes);
-    const favorites = [
-      normalizeProfileValue('favoritePlayers', profile.favoritePlayers),
-      normalizeProfileValue('favoriteTeams', profile.favoriteTeams)
-    ].filter(Boolean).join(' | ');
-    const wishlistSharing = normalizeProfileValue('wishlistSharing', profile.wishlistSharing);
-    const wishlistLabel = wishlistIds.length
-      ? `${wishlistIds.length} saved item${wishlistIds.length === 1 ? '' : 's'}`
-      : '';
-
-    if (heroStatus) heroStatus.textContent = getCollectorProfileStatus(profile);
-    if (completionLabel) {
-      completionLabel.textContent = `${completion.percent}%`;
-      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} collector profile fields filled`);
-    }
-    if (completionBar) completionBar.style.width = `${completion.percent}%`;
-    if (!preview) return;
-
-    const card = createElement('article', {
-      className: `collector-profile-preview-card${hasCollectorProfileDetails(profile) ? '' : ' is-empty'}`
-    });
-    const header = createElement('div', { className: 'collector-profile-preview-head' });
-    const avatar = createElement('span', {
-      className: 'collector-profile-avatar',
-      text: getCollectorInitials(displayName || focusTags[0] || profile.fullName)
-    });
-    const titleWrap = createElement('div');
-    titleWrap.append(
-      createElement('strong', { text: displayName || 'Collector profile' }),
-      createElement('small', { text: [visibility, focusTags.join(' + ')].filter(Boolean).join(' | ') || 'Private collector notes' })
-    );
-    header.append(avatar, titleWrap);
-
-    const copy = createElement('p', {
-      text: collectorBio || 'Add a short collector bio to make offers, trade ideas, and wishlist conversations easier to qualify.'
-    });
-    const tags = createElement('div', { className: 'collector-profile-tags' });
-    renderCollectorTags(tags, [
-      ...focusTags,
-      era,
-      favorites,
-      preferredCondition,
-      ...tradeStatusTags,
-      wishlistSharing,
-      wishlistLabel
-    ]);
-
-    card.append(header, copy, tags);
-    preview.replaceChildren(card);
-  }
-
-  function renderWishlistInsights(products = [], wishlistIds = getWishlistIds()) {
-    const container = $('accountWishlistInsights');
-    if (!container) return;
-
-    if (!wishlistIds.length) {
-      container.innerHTML = '';
-      return;
-    }
-
-    const categoryCounts = new Map();
-    products.forEach((product) => {
-      const category = String(product.category || 'Other').trim() || 'Other';
-      categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
-    });
-
-    const numericProducts = products
-      .map((product) => ({ product, price: DJ.payablePrice(product) }))
-      .filter((entry) => Number.isFinite(entry.price));
-    const highest = numericProducts.sort((left, right) => right.price - left.price)[0];
-    const topCategory = [...categoryCounts.entries()].sort((left, right) => right[1] - left[1])[0];
-    const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
-
-    const insights = [
-      {
-        label: 'Top category',
-        value: topCategory ? `${topCategory[0]} (${topCategory[1]})` : 'No matches'
-      },
-      {
-        label: 'Highest saved price',
-        value: highest ? DJ.displayPrice(highest.product) || DJ.currency(highest.price) : 'Ask'
-      },
-      {
-        label: 'Catalog matches',
-        value: `${products.length} of ${wishlistIds.length}`
-      }
-    ];
-
-    if (unresolvedCount) {
-      insights.push({ label: 'Needs cleanup', value: String(unresolvedCount) });
-    }
-
-    container.replaceChildren(...insights.map((insight) => {
-      const item = createElement('div', { className: 'account-insight-card' });
-      item.append(
-        createElement('span', { text: insight.label }),
-        createElement('strong', { text: insight.value })
-      );
-      return item;
-    }));
-  }
-
   async function saveProfileForm(event) {
     event?.preventDefault();
-    const isCollectorForm = event?.target?.id === 'collectorProfileForm';
     const profile = readProfileForm();
     profile.updatedAt = new Date().toISOString();
 
@@ -517,75 +169,29 @@ window.DJ = window.DJ || {};
         updatedAt: result.updatedAt || profile.updatedAt
       };
       loadProfileForm(savedProfile);
-      setStatus(
-        isCollectorForm ? 'Collector profile synced to your account.' : 'Buyer details synced to your account.',
-        'success'
-      );
+      setStatus('Account details synced.', 'success');
       renderAccountSummary();
     } catch (error) {
       setStatus(error.message || 'Buyer details could not be synced.', 'error');
     }
   }
 
-  function renderReadinessChecklist(profile, wishlistIds) {
-    const container = $('accountReadinessChecklist');
-    if (!container) return;
-    const items = [
-      {
-        label: 'Contact saved',
-        complete: Boolean(profile.fullName && (profile.email || profile.phone))
-      },
-      {
-        label: 'Shipping address ready',
-        complete: Boolean(profile.addressLine1 && profile.city && profile.state && profile.postalCode)
-      },
-      {
-        label: 'Wishlist started',
-        complete: Boolean(wishlistIds.length)
-      },
-      {
-        label: 'Collecting preferences saved',
-        complete: Boolean(profile.favoritePlayers || profile.favoriteTeams || profile.budgetRange || profile.preferredCondition)
-      },
-      {
-        label: 'Collecting notes added',
-        complete: Boolean(profile.notes)
-      }
-    ];
-
-    container.replaceChildren(...items.map((item) => {
-      const row = createElement('div', {
-        className: `account-checklist-item${item.complete ? ' is-complete' : ''}`,
-        attributes: { role: 'listitem' }
-      });
-      row.append(
-        createElement('span', { text: item.complete ? 'OK' : '--', attributes: { 'aria-hidden': 'true' } }),
-        createElement('strong', { text: item.label })
-      );
-      return row;
-    }));
-  }
-
   function renderAccountSummary() {
     const countTarget = $('accountWishlistCount');
     const heroCountTarget = $('accountHeroWishlistCount');
     const heroSavedStatus = $('accountHeroSavedStatus');
-    const heroReadiness = $('accountHeroReadiness');
-    const completionLabel = $('accountProfileCompletionLabel');
-    const completionBar = $('accountProfileCompletionBar');
+    const wishlistPlural = document.querySelector('.account-wishlist-summary-plural');
     const savedAt = $('accountProfileSavedAt');
-    const emailLink = $('accountEmailPreferences');
     const clearButton = $('accountClearProfile');
-    const profileStatus = $('accountProfileStatus');
     const wishlistIds = getWishlistIds();
     const currentProfile = readProfileForm();
     const storedProfile = savedProfile;
-    const completion = getProfileCompletion(currentProfile);
     const hasDetails = hasProfileDetails(currentProfile);
     const hasSavedDetails = hasProfileDetails(storedProfile);
     const hasUnsavedChanges = hasUnsavedProfileChanges(currentProfile, storedProfile);
 
     if (countTarget) countTarget.textContent = String(wishlistIds.length);
+    if (wishlistPlural) wishlistPlural.textContent = wishlistIds.length === 1 ? '' : 's';
     if (heroCountTarget) {
       heroCountTarget.textContent = `${wishlistIds.length} item${wishlistIds.length === 1 ? '' : 's'}`;
     }
@@ -596,43 +202,22 @@ window.DJ = window.DJ || {};
           ? 'Draft in progress'
           : 'Not saved yet';
     }
-    if (heroReadiness) heroReadiness.textContent = `${completion.percent}%`;
-    if (completionLabel) {
-      completionLabel.textContent = `${completion.percent}%`;
-      completionLabel.setAttribute('aria-label', `${completion.completed} of ${completion.total} buyer details filled`);
-    }
-    if (completionBar) completionBar.style.width = `${completion.percent}%`;
     if (savedAt) {
       savedAt.textContent = hasUnsavedChanges && hasDetails
         ? 'Unsaved changes in the form.'
         : formatSavedAt(storedProfile.updatedAt);
     }
-    if (profileStatus) {
-      profileStatus.textContent = hasDetails
-        ? `${completion.completed} of ${completion.total} buyer details filled.`
-        : 'Add buyer details once, then reuse them when asking about cards.';
-    }
-    if (emailLink) {
-      emailLink.href = buildPreferencesEmailUrl(currentProfile, wishlistIds.length);
-      emailLink.textContent = hasDetails || wishlistIds.length ? 'Email Buyer Summary' : 'Email DJ';
-    }
     if (clearButton) clearButton.disabled = !hasSavedDetails;
-    renderReadinessChecklist(currentProfile, wishlistIds);
-    renderSavedSearches(currentProfile);
-    renderCollectorProfile(currentProfile, wishlistIds);
   }
 
   async function renderWishlistPreview() {
     const container = $('accountWishlistPreview');
     const meta = $('accountWishlistPreviewMeta');
-    const totalTarget = $('accountWishlistTotal');
     if (!container) return;
     const wishlistIds = getWishlistIds();
 
     if (!wishlistIds.length) {
       if (meta) meta.textContent = 'No saved items yet.';
-      if (totalTarget) totalTarget.textContent = '$0';
-      renderWishlistInsights([], wishlistIds);
       container.innerHTML = `
         <div class="account-empty-state">
           <strong>Your wishlist is empty.</strong>
@@ -651,14 +236,7 @@ window.DJ = window.DJ || {};
 
     const products = await getWishlistProducts();
     const visible = products.slice(0, WISHLIST_PREVIEW_LIMIT);
-    const numericPrices = products.map((product) => DJ.payablePrice(product)).filter((price) => Number.isFinite(price));
-    const total = numericPrices.reduce((sum, price) => sum + price, 0);
     const unresolvedCount = Math.max(0, wishlistIds.length - products.length);
-    renderWishlistInsights(products, wishlistIds);
-
-    if (totalTarget) {
-      totalTarget.textContent = numericPrices.length ? DJ.currency(total) : 'Ask';
-    }
     if (meta) {
       meta.textContent = unresolvedCount
         ? `${products.length} saved item${products.length === 1 ? '' : 's'} shown. ${unresolvedCount} saved item${unresolvedCount === 1 ? '' : 's'} no longer match the catalog.`
@@ -960,39 +538,12 @@ window.DJ = window.DJ || {};
     });
   }
 
-  function useNameForShipping() {
-    const fullName = normalizeProfileValue('fullName', $('account_fullName')?.value);
-    const shippingName = $('account_shippingName');
-    if (!fullName || !shippingName) {
-      setStatus('Enter a full name first.', 'error');
-      return;
-    }
-    shippingName.value = fullName;
-    renderAccountSummary();
-    setStatus('Shipping name updated from the buyer name.', 'success');
-  }
-
-  async function refreshEmailPreferencesLink() {
-    const link = $('accountEmailPreferences');
-    if (!link) return;
-    const products = await getWishlistProducts();
-    link.href = buildPreferencesEmailUrl(readProfileForm(), getWishlistIds().length, products);
-  }
-
   function bindEvents() {
     $('accountClearProfile')?.addEventListener('click', clearSavedProfile);
-    $('accountUseNameForShipping')?.addEventListener('click', useNameForShipping);
-    $('accountEmailPreferences')?.addEventListener('mouseenter', refreshEmailPreferencesLink);
-    $('accountEmailPreferences')?.addEventListener('focus', refreshEmailPreferencesLink);
-
-    const bindProfileForm = (formId) => {
-      const form = $(formId);
-      form?.addEventListener('submit', saveProfileForm);
-      form?.addEventListener('input', renderAccountSummary);
-      form?.addEventListener('change', renderAccountSummary);
-    };
-    bindProfileForm('accountProfileForm');
-    bindProfileForm('collectorProfileForm');
+    const profileForm = $('accountProfileForm');
+    profileForm?.addEventListener('submit', saveProfileForm);
+    profileForm?.addEventListener('input', renderAccountSummary);
+    profileForm?.addEventListener('change', renderAccountSummary);
 
     window.addEventListener('beforeunload', (event) => {
       if (!hasUnsavedProfileFormChanges()) return;
@@ -1019,7 +570,6 @@ window.DJ = window.DJ || {};
       window.setTimeout(() => refreshAccountAuth().catch(console.error), 4000);
     }
     renderWishlistPreview();
-    refreshEmailPreferencesLink();
   }
 
   if (document.readyState === 'loading') {
