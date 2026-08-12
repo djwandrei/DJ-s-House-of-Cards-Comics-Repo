@@ -4,21 +4,49 @@ const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
+const DEFAULT_CORS_ORIGINS = [
+  'https://www.djshouseofcards-comics.com',
+  'https://djshouseofcards-comics.com'
+];
 const allowedEvents = new Set([
   'page_view', 'catalog_search', 'catalog_filter', 'product_open', 'add_to_cart',
   'begin_checkout', 'guest_checkout', 'contact_submit', 'inquiry_submit',
   'offer_open', 'bundle_open', 'web_vitals'
 ]);
-const corsHeaders = {
-  'Access-Control-Allow-Origin': siteUrl,
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
-};
+function normalizedOrigin(value: string) {
+  const trimmed = String(value || '').trim().replace(/\/+$/, '');
+  if (!trimmed) return '';
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed;
+  }
+}
 
-function jsonResponse(body: Record<string, unknown>, status = 200) {
+function allowedCorsOrigins() {
+  const configured = String(Deno.env.get('ANALYTICS_CORS_ALLOWED_ORIGINS') || '')
+    .split(',')
+    .map(normalizedOrigin)
+    .filter(Boolean);
+  return [...new Set([...DEFAULT_CORS_ORIGINS, normalizedOrigin(siteUrl), ...configured].filter(Boolean))];
+}
+
+function corsHeadersFor(request: Request) {
+  const allowed = allowedCorsOrigins();
+  const requestOrigin = normalizedOrigin(request.headers.get('origin') || '');
+  const allowOrigin = requestOrigin && allowed.includes(requestOrigin) ? requestOrigin : allowed[0];
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin'
+  };
+}
+
+function jsonResponse(body: Record<string, unknown>, status: number, request: Request) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    headers: { ...corsHeadersFor(request), 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
 
@@ -32,8 +60,8 @@ function safeText(value: unknown, max: number) {
 }
 
 function allowedOrigin(request: Request) {
-  const origin = String(request.headers.get('origin') || '').replace(/\/+$/, '');
-  return !origin || origin === siteUrl;
+  const origin = normalizedOrigin(request.headers.get('origin') || '');
+  return !origin || allowedCorsOrigins().includes(origin);
 }
 
 async function fingerprint(request: Request) {
@@ -73,21 +101,21 @@ function compactPayload(value: unknown) {
 }
 
 Deno.serve(async (request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
-  if (!allowedOrigin(request)) return jsonResponse({ error: 'This request origin is not allowed.' }, 403);
-  if (!supabaseUrl || !serviceRoleKey) return jsonResponse({ recorded: false }, 202);
+  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeadersFor(request) });
+  if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405, request);
+  if (!allowedOrigin(request)) return jsonResponse({ error: 'This request origin is not allowed.' }, 403, request);
+  if (!supabaseUrl || !serviceRoleKey) return jsonResponse({ recorded: false }, 202, request);
 
   let input: Record<string, unknown>;
   try {
     input = await request.json();
   } catch {
-    return jsonResponse({ error: 'Invalid event.' }, 400);
+    return jsonResponse({ error: 'Invalid event.' }, 400, request);
   }
   const eventType = safeText(input.event, 40).toLowerCase();
   const pagePath = safeText(input.page, 240);
   if (!allowedEvents.has(eventType) || !/^\/[A-Za-z0-9._/-]*$/.test(pagePath)) {
-    return jsonResponse({ error: 'Invalid event.' }, 400);
+    return jsonResponse({ error: 'Invalid event.' }, 400, request);
   }
 
   const { error } = await admin.rpc('record_site_analytics_event', {
@@ -100,5 +128,5 @@ Deno.serve(async (request) => {
     // Telemetry must never alter a shopper flow; rate-limited samples are simply dropped.
     console.error('[analytics-event]', error.message);
   }
-  return jsonResponse({ recorded: !error }, 202);
+  return jsonResponse({ recorded: !error }, 202, request);
 });
