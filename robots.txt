@@ -1,11 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /account.html
-Disallow: /wishlist.html
-Disallow: /cart.html
-Disallow: /checkout-success.html
-Disallow: /offline.html
 
 Sitemap: https://www.djshouseofcards-comics.com/sitemap.xml
 

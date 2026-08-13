@@ -115,24 +115,17 @@ function normalizedOrigin(value: string) {
   }
 }
 
-function allowedCorsOrigins() {
-  const configured = String(Deno.env.get('ADMIN_CORS_ALLOWED_ORIGINS') || '')
-    .split(',')
-    .map(normalizedOrigin)
-    .filter(Boolean);
-  return [...new Set([
-    ...DEFAULT_CORS_ORIGINS,
-    normalizedOrigin(siteUrl),
-    ...configured
-  ].filter(Boolean))];
-}
+const allowedCorsOrigins = [...new Set([
+  ...DEFAULT_CORS_ORIGINS,
+  normalizedOrigin(siteUrl),
+  ...String(Deno.env.get('ADMIN_CORS_ALLOWED_ORIGINS') || '').split(',').map(normalizedOrigin)
+].filter(Boolean))];
 
 function corsHeadersFor(request?: Request) {
-  const allowed = allowedCorsOrigins();
   const requestOrigin = normalizedOrigin(request?.headers.get('origin') || '');
-  const allowOrigin = requestOrigin && allowed.includes(requestOrigin)
+  const allowOrigin = requestOrigin && allowedCorsOrigins.includes(requestOrigin)
     ? requestOrigin
-    : allowed[0];
+    : allowedCorsOrigins[0];
   return {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',

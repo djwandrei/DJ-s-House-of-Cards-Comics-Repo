@@ -13,11 +13,13 @@ window.DJ = window.DJ || {};
   const MAX_PHOTOS = 3;
   const MAX_TOTAL_PHOTO_BYTES = 6 * 1024 * 1024;
   const validKinds = new Set(['contact', 'sell', 'trade', 'want_list', 'offer', 'bundle']);
-
-  function endpoint() {
-    if (!config.supabaseUrl || !config.supabasePublishableKey || !config.collectorInquiryFunction) return '';
-    return `${String(config.supabaseUrl).replace(/\/+$/, '')}/functions/v1/${encodeURIComponent(config.collectorInquiryFunction)}`;
-  }
+  const inquiryEndpoint = (
+    config.supabaseUrl
+    && config.supabasePublishableKey
+    && config.collectorInquiryFunction
+  )
+    ? `${String(config.supabaseUrl).replace(/\/+$/, '')}/functions/v1/${encodeURIComponent(config.collectorInquiryFunction)}`
+    : '';
 
   function normalizeProductIds(value = '') {
     return [...new Set(String(value || '')
@@ -52,10 +54,9 @@ window.DJ = window.DJ || {};
   }
 
   async function submitCollectorInquiry(payload = {}, files = []) {
-    const url = endpoint();
-    if (!url) throw new Error('The inquiry form is temporarily unavailable. Please use the direct email link.');
+    if (!inquiryEndpoint) throw new Error('The inquiry form is temporarily unavailable. Please use the direct email link.');
     const photos = await prepareInquiryPhotos(files);
-    const response = await fetch(url, {
+    const response = await fetch(inquiryEndpoint, {
       method: 'POST',
       headers: { apikey: config.supabasePublishableKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...payload, photos }),

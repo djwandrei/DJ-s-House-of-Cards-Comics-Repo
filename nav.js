@@ -6,9 +6,11 @@
  * keyboard and pointer users.
  */
 
+window.DJ = window.DJ || {};
+
 (() => {
   // Keep each page's active navigation target and drawer label together.
-  const PAGE_NAV_CONFIG = {
+  const PAGE_NAV_CONFIG = Object.freeze({
     home: { target: 'index.html', label: 'Home' },
     shop: { target: 'shop.html', label: 'Shop' },
     'shop-hub': { target: 'shop.html', label: 'Shop' },
@@ -19,17 +21,27 @@
     comics: { target: 'comics.html', label: 'Comics' },
     collectibles: { target: 'collectibles.html', label: 'Collectibles' },
     wishlist: { target: 'wishlist.html', label: 'Wishlist' },
+    cart: { target: 'cart.html', label: 'Cart' },
+    'checkout-success': { target: 'cart.html', label: 'Checkout submitted' },
     account: { target: 'account.html', label: 'Account' },
     about: { target: 'about.html', label: 'About' },
     contact: { target: 'contact.html', label: 'Contact' },
-    admin: { target: 'admin.html', label: 'Admin Dashboard' }
-  };
-  const COMPACT_NAV_BREAKPOINT = 900;
+    admin: { target: 'admin.html', label: 'Admin Dashboard' },
+    metrics: { target: 'admin.html', label: 'Conversion & Performance Metrics' },
+    policies: { target: 'about.html', label: 'Policies & Authenticity' },
+    policy: { target: 'about.html', label: 'Policies & Authenticity' },
+    'sell-trade-want-list': { target: 'contact.html', label: 'Sell, Trade & Want List' }
+  });
+  // CSS converts the header to its drawer layout at this exact width.
+  const COMPACT_NAV_BREAKPOINT = 1180;
   // One shared breakpoint keeps the menu drawer and submenu behavior in sync.
   const COMPACT_NAV_QUERY = typeof window.matchMedia === 'function'
     ? window.matchMedia(`(max-width: ${COMPACT_NAV_BREAKPOINT}px)`)
     : null;
   const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  window.DJ.PAGE_NAV_CONFIG = PAGE_NAV_CONFIG;
+  window.DJ.COMPACT_NAV_BREAKPOINT = COMPACT_NAV_BREAKPOINT;
 
   function getCurrentPageLabel() {
     const pageKey = document.body.dataset.page || '';
@@ -77,29 +89,28 @@
     const targetFile = PAGE_NAV_CONFIG[pageKey]?.target || currentFile;
     const links = [...document.querySelectorAll('.site-nav a')];
     const navItems = [...document.querySelectorAll('.site-nav .primary-nav__item')];
-    const submenuHrefs = new Set(
-      links
-        .filter((link) => link.closest('.primary-nav__submenu'))
-        .map((link) => link.getAttribute('href'))
+    const findPreferredLink = (candidates = []) => (
+      candidates.find((link) => !link.closest('.primary-nav__submenu'))
+      || candidates[0]
+      || null
     );
+    const currentLink = findPreferredLink(links.filter((link) => link.getAttribute('href') === currentFile));
+    const sectionLink = currentLink
+      ? null
+      : findPreferredLink(links.filter((link) => link.getAttribute('href') === targetFile));
+    const activeLink = currentLink || sectionLink;
 
     navItems.forEach((item) => item.classList.remove('is-current-section'));
 
     links.forEach((link) => {
       const href = link.getAttribute('href');
-      const isCurrentPage = href === currentFile;
       const isSectionMatch = href === targetFile;
-      const isSubmenuLink = Boolean(link.closest('.primary-nav__submenu'));
-      const shouldBeActive = isCurrentPage || isSectionMatch;
+      const shouldBeActive = link === activeLink || isSectionMatch;
 
       link.classList.toggle('active', shouldBeActive);
       link.removeAttribute('aria-current');
 
-      if (!isCurrentPage) {
-        return;
-      }
-
-      if (isSectionMatch && !isSubmenuLink && submenuHrefs.has(href)) {
+      if (link !== activeLink) {
         return;
       }
 

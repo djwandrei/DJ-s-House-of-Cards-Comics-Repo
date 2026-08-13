@@ -23,18 +23,17 @@ function normalizedOrigin(value: string) {
   }
 }
 
-function allowedCorsOrigins() {
-  const configured = String(Deno.env.get('ANALYTICS_CORS_ALLOWED_ORIGINS') || '')
-    .split(',')
-    .map(normalizedOrigin)
-    .filter(Boolean);
-  return [...new Set([...DEFAULT_CORS_ORIGINS, normalizedOrigin(siteUrl), ...configured].filter(Boolean))];
-}
+const allowedCorsOrigins = [...new Set([
+  ...DEFAULT_CORS_ORIGINS,
+  normalizedOrigin(siteUrl),
+  ...String(Deno.env.get('ANALYTICS_CORS_ALLOWED_ORIGINS') || '').split(',').map(normalizedOrigin)
+].filter(Boolean))];
 
 function corsHeadersFor(request: Request) {
-  const allowed = allowedCorsOrigins();
   const requestOrigin = normalizedOrigin(request.headers.get('origin') || '');
-  const allowOrigin = requestOrigin && allowed.includes(requestOrigin) ? requestOrigin : allowed[0];
+  const allowOrigin = requestOrigin && allowedCorsOrigins.includes(requestOrigin)
+    ? requestOrigin
+    : allowedCorsOrigins[0];
   return {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -61,7 +60,7 @@ function safeText(value: unknown, max: number) {
 
 function allowedOrigin(request: Request) {
   const origin = normalizedOrigin(request.headers.get('origin') || '');
-  return !origin || allowedCorsOrigins().includes(origin);
+  return !origin || allowedCorsOrigins.includes(origin);
 }
 
 async function fingerprint(request: Request) {
@@ -84,6 +83,8 @@ function compactPayload(value: unknown) {
   const ttfb = safeNumber(source.ttfb, 120_000);
   const domContentLoaded = safeNumber(source.domContentLoaded, 120_000);
   const load = safeNumber(source.load, 120_000);
+  const category = safeText(source.category, 80);
+  const kind = safeText(source.kind, 40);
   return {
     ...(productId !== undefined ? { productId } : {}),
     ...(resultCount !== undefined ? { resultCount } : {}),
@@ -95,8 +96,8 @@ function compactPayload(value: unknown) {
     ...(ttfb !== undefined ? { ttfb } : {}),
     ...(domContentLoaded !== undefined ? { domContentLoaded } : {}),
     ...(load !== undefined ? { load } : {}),
-    ...(safeText(source.category, 80) ? { category: safeText(source.category, 80) } : {}),
-    ...(safeText(source.kind, 40) ? { kind: safeText(source.kind, 40) } : {})
+    ...(category ? { category } : {}),
+    ...(kind ? { kind } : {})
   };
 }
 

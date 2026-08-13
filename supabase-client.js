@@ -794,7 +794,7 @@ window.DJ = window.DJ || {};
           if (error) throw error;
 
           const page = data;
-          rows = rows.concat(page);
+          rows.push(...page);
 
           if (page.length < pageSize) {
             break;

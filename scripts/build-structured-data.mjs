@@ -10,12 +10,13 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260812a';
+const SCRIPT_VERSION = '20260813b';
 const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
 const SOCIAL_METADATA_PAGES = new Set([
   'cart.html',
   'checkout-success.html',
   'policies.html',
+  'sell-trade-want-list.html',
   'shipping.html',
   'returns.html'
 ]);
@@ -157,6 +158,17 @@ const pages = {
         'How quickly does DJ respond?',
         'Most questions and purchase inquiries receive a reply within 24 hours.'
       ]
+    ]
+  },
+  'sell-trade-want-list.html': {
+    type: 'ContactPage',
+    path: '/sell-trade-want-list.html',
+    name: "Sell, Trade, or Send a Want List | DJ's House of Cards & Comics",
+    description: 'Send DJ cards, comics, collectibles, trade ideas, collection photos, or a want list with clear details for the next collector-to-collector conversation.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [
+      ['Home', '/'],
+      ['Sell / Trade / Want List', '/sell-trade-want-list.html']
     ]
   },
   'wishlist.html': {

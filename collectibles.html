@@ -12,8 +12,8 @@
 <link as="font" crossorigin="" href="assets/fonts/bebas-neue-400.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/Jordan.webp" rel="preload" type="image/webp"/>
- <link href="styles.css?v=20260812d" rel="stylesheet"/>
-<link href="styles-mobile-overrides.css?v=20260812d" rel="stylesheet"/>
+ <link href="styles.css?v=20260813b" rel="stylesheet"/>
+<link href="styles-mobile-overrides.css?v=20260813b" rel="stylesheet"/>
   <meta content="index,follow,max-image-preview:large" name="robots"/>
   <meta content="#1f2fa3" name="theme-color"/>
   <meta content="light dark" name="color-scheme"/>
@@ -29,7 +29,7 @@
   <meta content="Browse collectibles and memorabilia at DJ's House of Cards &amp; Comics, including hobby finds, autos, display pieces, and more." name="twitter:description"/>
   <meta content="https://www.djshouseofcards-comics.com/assets/Jordan.jpg" name="twitter:image"/>
   <link href="https://www.djshouseofcards-comics.com/collectibles.html" rel="canonical"/>
-  <link href="site.webmanifest?v=20260812d" rel="manifest"/>
+  <link href="site.webmanifest?v=20260813b" rel="manifest"/>
   <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
   <link href="assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
   <!-- Shared JavaScript bundles. Load order matters because later files depend on window.DJ helpers. -->
@@ -55,59 +55,39 @@
     </a>
     <nav aria-label="Primary navigation" class="site-nav" id="siteNav">
      <ul class="primary-nav__list">
+      <li class="primary-nav__item">
+       <a class="primary-nav__link" href="shop.html">Shop</a>
+      </li>
       <li class="primary-nav__item primary-nav__item--has-submenu">
        <div class="primary-nav__item-group">
-        <a class="primary-nav__link" href="sports-cards.html">
-         Sports Cards
-        </a>
-        <button aria-controls="sportsCardsSubmenu" aria-expanded="false" aria-label="Toggle Sports Cards submenu" class="submenu-toggle" type="button">
-         &#9662;
-        </button>
+        <a class="primary-nav__link" href="sports-cards.html">Sports Cards</a>
+        <button aria-controls="sportsCardsSubmenu" aria-expanded="false" aria-label="Toggle Sports Cards submenu" class="submenu-toggle" type="button">&#9662;</button>
        </div>
        <ul class="primary-nav__submenu" id="sportsCardsSubmenu">
-        <li class="primary-nav__submenu-item">
-         <a href="sports-cards.html">
-          Sports Hub
-         </a>
-        </li>
-        <li class="primary-nav__submenu-item">
-         <a href="baseball-cards.html">
-          Baseball
-         </a>
-        </li>
-        <li class="primary-nav__submenu-item">
-         <a href="basketball-cards.html">
-          Basketball
-         </a>
-        </li>
-        <li class="primary-nav__submenu-item">
-         <a href="football-cards.html">
-          Football
-         </a>
-        </li>
+        <li class="primary-nav__submenu-item"><a href="sports-cards.html">Sports Hub</a></li>
+        <li class="primary-nav__submenu-item"><a href="baseball-cards.html">Baseball</a></li>
+        <li class="primary-nav__submenu-item"><a href="basketball-cards.html">Basketball</a></li>
+        <li class="primary-nav__submenu-item"><a href="football-cards.html">Football</a></li>
        </ul>
       </li>
       <li class="primary-nav__item">
-       <a class="primary-nav__link" href="comics.html">
-        Comics
-       </a>
+       <a class="primary-nav__link" href="comics.html">Comics</a>
       </li>
       <li class="primary-nav__item">
-       <a class="primary-nav__link active" href="collectibles.html">
-        Collectibles
-       </a>
+       <a class="primary-nav__link" href="collectibles.html">Collectibles</a>
       </li>
       <li class="primary-nav__item">
-       <a class="primary-nav__link" href="about.html">
-        About
-       </a>
+       <a class="primary-nav__link" href="about.html">About</a>
       </li>
       <li class="primary-nav__item header-wishlist-item">
-       <a class="header-wishlist-link primary-nav__link" href="wishlist.html">
-        Wishlist
-       </a>
+       <a class="header-wishlist-link primary-nav__link" href="wishlist.html">Wishlist</a>
       </li>
-<li class="primary-nav__item"><a class="primary-nav__link" href="account.html">Account</a></li>
+      <li class="primary-nav__item header-cart-item">
+       <a class="header-cart-link primary-nav__link" data-cart-link href="cart.html">Cart <span data-cart-count="0">(0)</span></a>
+      </li>
+      <li class="primary-nav__item">
+       <a class="primary-nav__link" href="account.html">Account</a>
+      </li>
      </ul>
     </nav>
     <button aria-controls="siteNav" aria-expanded="false" class="nav-toggle" id="navToggle" type="button">
@@ -146,7 +126,7 @@
       Shop signed memorabilia, display pieces, and hobby extras that do not fit neatly into cards or comics.
      </p>
      <div class="utility-row">
-      <span aria-live="polite" class="utility-chip" id="resultsCount" role="status">
+      <span class="utility-chip" id="resultsCount">
        Loading current inventory...
       </span>
       <span class="utility-chip">
@@ -253,12 +233,12 @@
      </div>
      <div class="results-toolbar" id="resultsToolbar">
       <div class="results-meta">
-       <p aria-live="polite" class="results-summary" id="resultsSummary" role="status">
+       <p class="results-summary" id="resultsSummary">
         Loading current inventory...
        </p>
        <div aria-label="Active filters" class="active-filters" id="activeFilters" role="group">
        </div>
-       <p aria-live="polite" class="sr-only" id="resultsLive">
+       <p aria-live="polite" class="sr-only" id="resultsLive" role="status">
        </p>
       </div>
      </div>
@@ -268,7 +248,7 @@
       </div>
      </noscript>
 
-     <div aria-live="polite" class="products-grid" id="productContainer">
+     <div class="products-grid" id="productContainer">
     <article class="product-card static-product-card" data-product-id="827" data-product-category="Collectibles">
       <div class="product-media">
         <img src="assets/thumbnails/collectibles/Autographed%2035%20-%20Frank%20Robinson%20Adirondack%20Big%20Stick%20Bat.webp" data-asset-candidates="assets/thumbnails/collectibles/Autographed%2035%20-%20Frank%20Robinson%20Adirondack%20Big%20Stick%20Bat.webp&#10;assets/collectibles/Autographed%2035%20-%20Frank%20Robinson%20Adirondack%20Big%20Stick%20Bat.jpg" data-fallback-src="assets/clubhouse-sign.png" alt="Autographed 35&quot; Frank Robinson Adirondack Big Stick Bat product photo" width="320" height="320" loading="eager" decoding="async">
@@ -571,12 +551,12 @@
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">
    &uarr;
   </button>
-<script defer="" src="core.js?v=20260812d">
+<script defer="" src="core.js?v=20260813b">
   </script>
-<script defer="" src="seo.js?v=20260812d"></script>
-<script defer="" src="nav.js?v=20260812d">
+<script defer="" src="seo.js?v=20260813b"></script>
+<script defer="" src="nav.js?v=20260813b">
   </script>
-<script defer="" src="catalog.js?v=20260812d">
+<script defer="" src="catalog.js?v=20260813b">
   </script>
  </body>
 </html>

@@ -13,20 +13,18 @@ window.DJ = window.DJ || {};
   let largestContentfulPaint = 0;
   let cumulativeLayoutShift = 0;
   let interactionLatency = 0;
+  const analyticsEndpoint = (
+    config.measurementEnabled === true
+    && config.supabaseUrl
+    && config.supabasePublishableKey
+    && config.analyticsEventFunction
+  )
+    ? `${String(config.supabaseUrl).replace(/\/+$/, '')}/functions/v1/${encodeURIComponent(config.analyticsEventFunction)}`
+    : '';
 
   function currentPagePath() {
     const path = String(window.location.pathname || '/').replace(/\/+/g, '/');
     return path.startsWith('/') ? path : `/${path}`;
-  }
-
-  function endpoint() {
-    if (
-      config.measurementEnabled !== true
-      || !config.supabaseUrl
-      || !config.supabasePublishableKey
-      || !config.analyticsEventFunction
-    ) return '';
-    return `${String(config.supabaseUrl).replace(/\/+$/, '')}/functions/v1/${encodeURIComponent(config.analyticsEventFunction)}`;
   }
 
   function compactData(data = {}) {
@@ -46,6 +44,8 @@ window.DJ = window.DJ || {};
     const ttfb = number(source.ttfb, 120_000);
     const domContentLoaded = number(source.domContentLoaded, 120_000);
     const load = number(source.load, 120_000);
+    const category = text(source.category, 80);
+    const kind = text(source.kind, 40);
     return {
       ...(productId !== undefined ? { productId } : {}),
       ...(resultCount !== undefined ? { resultCount } : {}),
@@ -57,18 +57,17 @@ window.DJ = window.DJ || {};
       ...(ttfb !== undefined ? { ttfb } : {}),
       ...(domContentLoaded !== undefined ? { domContentLoaded } : {}),
       ...(load !== undefined ? { load } : {}),
-      ...(text(source.category, 80) ? { category: text(source.category, 80) } : {}),
-      ...(text(source.kind, 40) ? { kind: text(source.kind, 40) } : {})
+      ...(category ? { category } : {}),
+      ...(kind ? { kind } : {})
     };
   }
 
   function trackEvent(event, data = {}) {
-    const url = endpoint();
-    if (!url || !event) return;
+    if (!analyticsEndpoint || !event) return;
     const payload = JSON.stringify({ event: String(event).slice(0, 40), page: currentPagePath(), data: compactData(data) });
     // Keep this fire-and-forget so measurement cannot delay catalog rendering,
     // checkout redirects, or form submission feedback.
-    fetch(url, {
+    fetch(analyticsEndpoint, {
       method: 'POST',
       headers: {
         apikey: config.supabasePublishableKey,

@@ -14,9 +14,17 @@ window.DJ = window.DJ || {};
   const preloadedProductsBySource = new Map();
   const preloadedBundlePromises = new Map();
   const scriptLoadPromises = new Map();
+  const HTML_ESCAPE_PATTERN = /[&<>"']/g;
+  const HTML_ESCAPE_ENTITIES = Object.freeze({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260812d';
+  const PRODUCT_ASSET_VERSION = '20260813b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -66,6 +74,9 @@ window.DJ = window.DJ || {};
     wishlistBackendMigration: 'wishlistBackendMigration',
     cart: 'cart'
   };
+  const CHECKOUT_CART_SNAPSHOT_KEY_PREFIX = 'djCheckoutCartSnapshot:';
+  const CHECKOUT_CART_SNAPSHOT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+  const CHECKOUT_SESSION_ID_PATTERN = /^cs_(?:test_|live_)?[A-Za-z0-9_]{8,255}$/;
   const safeAssetUrlCache = new Map();
   const assetUrlCandidatesCache = new Map();
   const thumbnailAssetUrlCache = new Map();
@@ -201,6 +212,31 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function safeSessionStorageGet(key) {
+    try {
+      return sessionStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  function safeSessionStorageSet(key, value) {
+    try {
+      sessionStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function safeSessionStorageRemove(key) {
+    try {
+      sessionStorage.removeItem(key);
+    } catch {
+      // A missing session store only means the one-time cart snapshot cannot be used.
+    }
+  }
+
   function normalizeProductId(value) {
     const productId = Number(value);
     return Number.isSafeInteger(productId) && productId > 0 ? productId : null;
@@ -323,6 +359,90 @@ window.DJ = window.DJ || {};
     updateCartCount();
     emitCartChange(normalized, source);
     return normalized;
+  }
+
+  function normalizeCheckoutSessionId(value) {
+    const sessionId = String(value || '').trim();
+    return CHECKOUT_SESSION_ID_PATTERN.test(sessionId) ? sessionId : '';
+  }
+
+  function checkoutCartSnapshotKey(sessionId) {
+    return `${CHECKOUT_CART_SNAPSHOT_KEY_PREFIX}${sessionId}`;
+  }
+
+  /**
+   * Associate the exact cart quantities sent to Stripe with the session returned
+   * by the checkout function. The snapshot remains tab-scoped, so it cannot
+   * alter another browser tab before the shopper returns from Stripe.
+   */
+  function recordCheckoutCartSnapshot(sessionId, items = []) {
+    const normalizedSessionId = normalizeCheckoutSessionId(sessionId);
+    const normalizedItems = normalizeCart(items);
+    if (!normalizedSessionId || !normalizedItems.length) return false;
+
+    return safeSessionStorageSet(checkoutCartSnapshotKey(normalizedSessionId), JSON.stringify({
+      sessionId: normalizedSessionId,
+      items: normalizedItems,
+      createdAt: Date.now()
+    }));
+  }
+
+  function readCheckoutCartSnapshot(sessionId) {
+    const normalizedSessionId = normalizeCheckoutSessionId(sessionId);
+    if (!normalizedSessionId) return null;
+
+    const storageKey = checkoutCartSnapshotKey(normalizedSessionId);
+    try {
+      const snapshot = JSON.parse(safeSessionStorageGet(storageKey) || 'null');
+      const createdAt = Number(snapshot?.createdAt);
+      const items = normalizeCart(snapshot?.items);
+      if (
+        snapshot?.sessionId !== normalizedSessionId
+        || !Number.isFinite(createdAt)
+        || Date.now() - createdAt < 0
+        || Date.now() - createdAt > CHECKOUT_CART_SNAPSHOT_MAX_AGE_MS
+        || !items.length
+      ) {
+        safeSessionStorageRemove(storageKey);
+        return null;
+      }
+      return { sessionId: normalizedSessionId, items };
+    } catch {
+      safeSessionStorageRemove(storageKey);
+      return null;
+    }
+  }
+
+  /**
+   * Remove only the quantities captured when this exact Stripe session began.
+   * Items added later in another tab remain in localStorage and therefore stay
+   * in the cart after the customer returns from a successful checkout.
+   */
+  function reconcileCartAfterCheckoutSuccess(sessionId) {
+    const snapshot = readCheckoutCartSnapshot(sessionId);
+    if (!snapshot) return { reconciled: false, changed: false, itemsRemoved: 0 };
+
+    const quantitiesToRemove = new Map(snapshot.items.map((item) => [item.productId, item.quantity]));
+    const currentCart = getCart();
+    let itemsRemoved = 0;
+    const reconciledCart = currentCart.flatMap((item) => {
+      const quantityToRemove = quantitiesToRemove.get(item.productId) || 0;
+      if (!quantityToRemove) return [item];
+
+      const remainingQuantity = Math.max(0, item.quantity - quantityToRemove);
+      itemsRemoved += item.quantity - remainingQuantity;
+      return remainingQuantity ? [{ ...item, quantity: remainingQuantity }] : [];
+    });
+
+    // Consume the snapshot even when the cart was changed elsewhere. Repeated
+    // success-page loads must not remove a second quantity from a newer cart.
+    safeSessionStorageRemove(checkoutCartSnapshotKey(snapshot.sessionId));
+
+    if (itemsRemoved) {
+      persistCart(reconciledCart, 'checkout-success');
+    }
+
+    return { reconciled: true, changed: Boolean(itemsRemoved), itemsRemoved };
   }
 
   function availableQuantity(product = {}) {
@@ -1204,13 +1324,7 @@ window.DJ = window.DJ || {};
   };
 
   DJ.escapeHtml = function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[character]));
+    return String(value ?? '').replace(HTML_ESCAPE_PATTERN, (character) => HTML_ESCAPE_ENTITIES[character]);
   };
 
   /**
@@ -1715,6 +1829,8 @@ window.DJ = window.DJ || {};
   DJ.clearCart = function clearCart(source = 'local') {
     return persistCart([], source);
   };
+  DJ.recordCheckoutCartSnapshot = recordCheckoutCartSnapshot;
+  DJ.reconcileCartAfterCheckoutSuccess = reconcileCartAfterCheckoutSuccess;
   DJ.updateCartCount = updateCartCount;
   DJ.availableQuantity = availableQuantity;
   DJ.applyLazyLoading = applyLazyLoading;
@@ -1800,11 +1916,13 @@ window.DJ = window.DJ || {};
     initArchivePanels();
     updateWishlistCount();
     updateCartCount();
-    if (
-      document.body.dataset.page === 'checkout-success'
-      && new URLSearchParams(window.location.search).has('session_id')
-    ) {
-      DJ.clearCart('checkout-success');
+    if (document.body.dataset.page === 'checkout-success') {
+      const sessionId = new URLSearchParams(window.location.search).get('session_id');
+      const reconciliation = DJ.reconcileCartAfterCheckoutSuccess(sessionId);
+      const status = document.getElementById('checkoutSuccessCartStatus');
+      if (status && reconciliation.changed) {
+        status.textContent = 'The items from this completed checkout were removed from your cart.';
+      }
     }
     initHomeCatalogLoader();
     initHomeAccountCard();

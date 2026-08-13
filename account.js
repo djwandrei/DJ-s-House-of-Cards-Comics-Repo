@@ -13,13 +13,26 @@ window.DJ = window.DJ || {};
   const DEFAULT_PROFILE_FIELD_LENGTH = 240;
   const WISHLIST_PREVIEW_LIMIT = 5;
   let accountProductsPromise = null;
+  let accountProductsByIdPromise = null;
   let wishlistRenderTimer = 0;
   let accountSession = null;
   let savedProfile = {};
   let hydratedUserId = '';
   let accountRefreshPromise = null;
+  const orderCurrencyFormatters = new Map();
 
-  const fields = ['fullName', 'email', 'phone', 'preferredContact'];
+  const fields = [
+    'fullName',
+    'email',
+    'phone',
+    'preferredContact',
+    'addressLine1',
+    'addressLine2',
+    'addressCity',
+    'addressState',
+    'addressPostalCode',
+    'addressCountry'
+  ];
 
   const $ = (id) => document.getElementById(id);
   const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
@@ -133,22 +146,40 @@ window.DJ = window.DJ || {};
     return accountProductsPromise;
   }
 
+  function createProductIdLookup(products = []) {
+    const productsById = new Map();
+    for (const product of products) {
+      const productId = Number(product?.id);
+      if (Number.isFinite(productId) && !productsById.has(productId)) {
+        productsById.set(productId, product);
+      }
+    }
+    return productsById;
+  }
+
+  function loadAccountProductsById() {
+    if (accountProductsByIdPromise) return accountProductsByIdPromise;
+
+    accountProductsByIdPromise = loadAccountProducts().then(createProductIdLookup);
+    return accountProductsByIdPromise;
+  }
+
+  function orderWishlistProducts(products = [], wishlistIds = []) {
+    const productsById = createProductIdLookup(products);
+    return wishlistIds.map((id) => productsById.get(Number(id))).filter(Boolean);
+  }
+
   async function getWishlistProducts() {
     const wishlistIds = getWishlistIds();
     if (!wishlistIds.length) return [];
-    const order = new Map(wishlistIds.map((id, index) => [Number(id), index]));
     if (DJ.remoteCatalog.isConfigured()) {
       const remoteProducts = await DJ.remoteCatalog.listProducts({ ids: wishlistIds }).catch(() => null);
       if (Array.isArray(remoteProducts)) {
-        return remoteProducts
-          .filter((product) => order.has(Number(product.id)))
-          .sort((left, right) => order.get(Number(left.id)) - order.get(Number(right.id)));
+        return orderWishlistProducts(remoteProducts, wishlistIds);
       }
     }
-    const products = await loadAccountProducts();
-    return products
-      .filter((product) => order.has(Number(product.id)))
-      .sort((left, right) => order.get(Number(left.id)) - order.get(Number(right.id)));
+    const productsById = await loadAccountProductsById();
+    return wishlistIds.map((id) => productsById.get(Number(id))).filter(Boolean);
   }
 
   async function saveProfileForm(event) {
@@ -330,11 +361,14 @@ window.DJ = window.DJ || {};
   function formatOrderAmount(order = {}) {
     const cents = Number(order.amount_total);
     if (!Number.isFinite(cents)) return '';
+    const currency = String(order.currency || 'usd').toUpperCase();
     try {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: String(order.currency || 'usd').toUpperCase()
-      }).format(cents / 100);
+      let formatter = orderCurrencyFormatters.get(currency);
+      if (!formatter) {
+        formatter = new Intl.NumberFormat(undefined, { style: 'currency', currency });
+        orderCurrencyFormatters.set(currency, formatter);
+      }
+      return formatter.format(cents / 100);
     } catch {
       return `$${(cents / 100).toFixed(2)}`;
     }

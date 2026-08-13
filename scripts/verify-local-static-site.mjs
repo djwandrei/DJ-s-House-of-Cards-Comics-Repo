@@ -337,7 +337,11 @@ function verifyLocalHtmlReferences() {
 
 const checks = [
   ['site-integrity', () => run(process.execPath, ['scripts/site-integrity-check.mjs'])],
+  ['navigation-consistency', () => run(process.execPath, ['scripts/audit-navigation-consistency.mjs'])],
+  ['search-index-policy', () => run(process.execPath, ['scripts/audit-search-index-policy.mjs'])],
+  ['storefront-accessibility', () => run(process.execPath, ['scripts/audit-storefront-accessibility.mjs'])],
   ['structured-data', () => run(process.execPath, ['scripts/audit-structured-data.mjs'])],
+  ['correctness-regressions', () => run(process.execPath, ['scripts/run-correctness-regression-tests.mjs'])],
   ['javascript-syntax', verifyJavaScriptSyntax],
   ['generated-catalog-parity', verifyGeneratedCatalogParity],
   ['static-fallback-parity', verifyStaticFallbackParity],

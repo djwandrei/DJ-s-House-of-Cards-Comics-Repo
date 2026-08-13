@@ -37,25 +37,26 @@ const notificationReplyTo = String(Deno.env.get('SALE_NOTIFICATION_EMAIL_REPLY_T
 const notificationWebhookUrl = String(Deno.env.get('SALE_NOTIFICATION_WEBHOOK_URL') || '').trim();
 const notificationWebhookSecret = String(Deno.env.get('SALE_NOTIFICATION_WEBHOOK_SECRET') || '').trim();
 const subjectPrefix = String(Deno.env.get('SALE_NOTIFICATION_SUBJECT_PREFIX') || 'DJHC Sale').trim();
-
-function notificationRecipients() {
-  return String(
-    Deno.env.get('SALE_NOTIFICATION_EMAIL_TO')
-      || Deno.env.get('ADMIN_EMAIL')
-      || ''
-  )
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
+const notificationRecipients = String(
+  Deno.env.get('SALE_NOTIFICATION_EMAIL_TO')
+    || Deno.env.get('ADMIN_EMAIL')
+    || ''
+)
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+const HTML_ESCAPE_PATTERN = /[&<>"']/g;
+const HTML_ESCAPE_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+};
+const currencyFormatters = new Map<string, Intl.NumberFormat>();
 
 function escapeHtml(value: unknown) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+  return String(value ?? '').replace(HTML_ESCAPE_PATTERN, (character) => HTML_ESCAPE_ENTITIES[character]);
 }
 
 function normalizedCurrency(value?: string | null) {
@@ -65,11 +66,14 @@ function normalizedCurrency(value?: string | null) {
 function formatMoney(cents?: number | null, currency?: string | null) {
   const amount = Number(cents);
   if (!Number.isFinite(amount)) return '';
+  const normalized = normalizedCurrency(currency);
   try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: normalizedCurrency(currency)
-    }).format(amount / 100);
+    let formatter = currencyFormatters.get(normalized);
+    if (!formatter) {
+      formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: normalized });
+      currencyFormatters.set(normalized, formatter);
+    }
+    return formatter.format(amount / 100);
   } catch {
     return `$${(amount / 100).toFixed(2)}`;
   }
@@ -91,13 +95,14 @@ function subjectFor(notification: SaleNotification) {
 }
 
 function textBody(notification: SaleNotification) {
+  const total = formatMoney(notification.amountTotal, notification.currency);
   const lines = [
     `${notification.provider || 'Marketplace'} sale received`,
     notification.platformOrderId ? `Order: ${notification.platformOrderId}` : '',
     notification.status ? `Status: ${notification.status}` : '',
     notification.buyerEmail ? `Buyer: ${notification.buyerEmail}` : '',
-    formatMoney(notification.amountTotal, notification.currency)
-      ? `Total: ${formatMoney(notification.amountTotal, notification.currency)}`
+    total
+      ? `Total: ${total}`
       : '',
     notification.occurredAt ? `When: ${notification.occurredAt}` : '',
     '',
@@ -161,7 +166,6 @@ async function postJson(url: string, body: Record<string, unknown>, headers: Rec
 }
 
 export async function sendSaleNotification(notification: SaleNotification): Promise<NotificationResult> {
-  const recipients = notificationRecipients();
   let emailSent = false;
   let webhookSent = false;
 
@@ -173,10 +177,10 @@ export async function sendSaleNotification(notification: SaleNotification): Prom
     webhookSent = true;
   }
 
-  if (resendApiKey && notificationFrom && recipients.length) {
+  if (resendApiKey && notificationFrom && notificationRecipients.length) {
     await postJson('https://api.resend.com/emails', {
       from: notificationFrom,
-      to: recipients,
+      to: notificationRecipients,
       subject: subjectFor(notification),
       text: textBody(notification),
       html: htmlBody(notification),

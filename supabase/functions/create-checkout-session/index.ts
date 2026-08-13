@@ -348,5 +348,8 @@ Deno.serve(async (request) => {
     return friendlyServerError(pendingError, 'Checkout could not be finalized. Please try again.');
   }
 
-  return jsonResponse({ url: checkoutSession.url });
+  // The browser stores a tab-scoped cart snapshot under this exact session ID.
+  // Returning it lets checkout-success reconcile only the purchased quantities
+  // instead of clearing whatever the shopper added in another tab meanwhile.
+  return jsonResponse({ url: checkoutSession.url, sessionId: checkoutSession.id });
 });

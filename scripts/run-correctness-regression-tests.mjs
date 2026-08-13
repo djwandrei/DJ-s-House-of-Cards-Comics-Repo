@@ -1,0 +1,454 @@
+#!/usr/bin/env node
+/**
+ * Deterministic local safeguards for checkout intent cancellation, cart
+ * reconciliation, and resilient catalog-source selection. No network, payment,
+ * Supabase write, or deployment is performed by this file.
+ */
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function equal(actual, expected, message) {
+  const left = JSON.stringify(actual);
+  const right = JSON.stringify(expected);
+  assert(left === right, `${message}\nExpected: ${right}\nActual: ${left}`);
+}
+
+function createStorage() {
+  const values = new Map();
+  return {
+    getItem(key) { return values.has(String(key)) ? values.get(String(key)) : null; },
+    setItem(key, value) { values.set(String(key), String(value)); },
+    removeItem(key) { values.delete(String(key)); },
+    clear() { values.clear(); }
+  };
+}
+
+function createClassList() {
+  const values = new Set();
+  return {
+    add(...names) { names.forEach((name) => values.add(name)); },
+    remove(...names) { names.forEach((name) => values.delete(name)); },
+    contains(name) { return values.has(name); },
+    toggle(name, force) {
+      const next = force == null ? !values.has(name) : Boolean(force);
+      if (next) values.add(name);
+      else values.delete(name);
+      return next;
+    }
+  };
+}
+
+function evaluateCore() {
+  const localStorage = createStorage();
+  const sessionStorage = createStorage();
+  const document = {
+    readyState: 'loading',
+    body: { dataset: {}, classList: createClassList() },
+    addEventListener() {},
+    getElementById() { return null; },
+    querySelector() { return null; },
+    querySelectorAll() { return []; }
+  };
+  const window = {
+    DJ: {},
+    location: { pathname: '/cart.html', search: '', href: 'https://example.test/cart.html' },
+    matchMedia() { return { matches: false, addEventListener() {} }; },
+    addEventListener() {},
+    dispatchEvent() {},
+    setTimeout,
+    clearTimeout,
+    requestAnimationFrame(callback) { callback(); }
+  };
+  const context = {
+    window,
+    document,
+    localStorage,
+    sessionStorage,
+    CustomEvent: class CustomEvent { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
+    URL,
+    URLSearchParams,
+    console,
+    setTimeout,
+    clearTimeout
+  };
+  vm.runInNewContext(readFileSync(path.join(root, 'core.js'), 'utf8'), context, { filename: 'core.js' });
+  return { DJ: window.DJ };
+}
+
+function checkoutSessionId(name) {
+  return `cs_test_${name.replace(/[^a-z0-9]/gi, '')}12345678`;
+}
+
+function testCartReconciliation() {
+  const { DJ } = evaluateCore();
+
+  const multi = checkoutSessionId('multi');
+  DJ.setCart([{ productId: 1, quantity: 2 }, { productId: 2, quantity: 1 }]);
+  DJ.recordCheckoutCartSnapshot(multi, DJ.getCart());
+  equal(DJ.reconcileCartAfterCheckoutSuccess(multi), { reconciled: true, changed: true, itemsRemoved: 3 }, 'Multi-item checkout should remove only its snapshot quantities.');
+  equal(DJ.getCart(), [], 'Multi-item checkout should leave no purchased items.');
+
+  const single = checkoutSessionId('single');
+  DJ.setCart([{ productId: 9, quantity: 1 }]);
+  DJ.recordCheckoutCartSnapshot(single, DJ.getCart());
+  equal(DJ.reconcileCartAfterCheckoutSuccess(single), { reconciled: true, changed: true, itemsRemoved: 1 }, 'Single-item checkout should reconcile safely.');
+  equal(DJ.getCart(), [], 'Single checkout should remove the purchased item.');
+
+  const crossTab = checkoutSessionId('cross-tab');
+  DJ.setCart([{ productId: 3, quantity: 1 }]);
+  DJ.recordCheckoutCartSnapshot(crossTab, DJ.getCart());
+  DJ.setCart([{ productId: 3, quantity: 2 }, { productId: 4, quantity: 1 }]);
+  equal(DJ.reconcileCartAfterCheckoutSuccess(crossTab), { reconciled: true, changed: true, itemsRemoved: 1 }, 'Cross-tab additions should only subtract the original checkout quantity.');
+  equal(DJ.getCart(), [{ productId: 3, quantity: 1 }, { productId: 4, quantity: 1 }], 'Cross-tab cart additions must survive checkout reconciliation.');
+  equal(DJ.reconcileCartAfterCheckoutSuccess(crossTab), { reconciled: false, changed: false, itemsRemoved: 0 }, 'Repeated success-page loads must not remove cart items twice.');
+
+  DJ.setCart([{ productId: 11, quantity: 1 }]);
+  equal(DJ.reconcileCartAfterCheckoutSuccess('not-a-stripe-session'), { reconciled: false, changed: false, itemsRemoved: 0 }, 'Malformed session parameters must not change the cart.');
+  equal(DJ.getCart(), [{ productId: 11, quantity: 1 }], 'Malformed session parameters must preserve the latest cart.');
+}
+
+function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {} }) {
+  const source = readFileSync(path.join(root, 'catalog.js'), 'utf8');
+  const hookedSource = source.replace(
+    /\n  window\.closeModal = closeModal;[\s\S]*?\n\}\)\(\);\s*$/,
+    `\n  window.__catalogTestHooks = {\n    getBestAvailableSourceResult,\n    firstSuccessfulResult,\n    getRankedSearchSuggestions,\n    sortProductAttributes,\n    normalizeTeamFacetValue,\n    normalizeProducts,\n    buildFacetSummary,\n    toCountedFacetOptions\n  };\n  window.closeModal = closeModal;\n  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;\n})();\n`
+  );
+  assert(hookedSource !== source, 'Could not install catalog test hooks.');
+  const document = {
+    readyState: 'loading',
+    body: { dataset: {}, classList: createClassList() },
+    addEventListener() {},
+    getElementById() { return null; },
+    querySelector() { return null; },
+    querySelectorAll() { return []; }
+  };
+  const window = {
+    DJ: {
+      getPreloadedProductsForSource: () => null,
+      loadPreloadedProductsForSource: async () => { throw new Error('No preloaded fixture'); },
+      versionedProductAsset: (sourceName) => sourceName,
+      fallbackByCategory: { Basketball: 'assets/basketball-placeholder.svg', Other: 'assets/other-placeholder.svg' },
+      availableQuantity: (product) => Math.max(0, Number(product?.quantityAvailable ?? product?.copyCount ?? 1) || 0),
+      safeExternalUrl: (value) => String(value || ''),
+      payablePrice: (product) => {
+        const price = Number(product?.price);
+        return Number.isFinite(price) ? price : null;
+      },
+      remoteCatalog: {
+        isConfigured: () => true,
+        listProducts: remoteListProducts
+      }
+    },
+    DJ_BACKEND_CONFIG: backendConfig,
+    location: { protocol: 'https:', pathname: '/basketball-cards.html', search: '', href: 'https://example.test/basketball-cards.html' },
+    matchMedia() { return { matches: false, addEventListener() {} }; },
+    addEventListener() {},
+    setTimeout,
+    clearTimeout,
+    requestAnimationFrame(callback) { callback(); }
+  };
+  const quietConsole = { log() {}, warn() {}, error() {} };
+  vm.runInNewContext(hookedSource, {
+    window,
+    document,
+    fetch: staticFetch,
+    URL,
+    URLSearchParams,
+    console: quietConsole,
+    setTimeout,
+    clearTimeout
+  }, { filename: 'catalog.js' });
+  return window.__catalogTestHooks;
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function staticResponse(products = []) {
+  return { ok: true, status: 200, json: async () => products };
+}
+
+async function testCatalogFallbacks() {
+  const remoteSlow = evaluateCatalog({
+    remoteListProducts: async () => { await wait(480); return [{ id: 'remote-slow' }]; },
+    staticFetch: async () => { throw new Error('Static source failed quickly'); }
+  });
+  let started = Date.now();
+  let result = await remoteSlow.getBestAvailableSourceResult('remote-slow.json');
+  assert(result.origin === 'remote' && result.products[0].id === 'remote-slow', 'A slow successful remote response must beat a failed static fallback.');
+  assert(Date.now() - started >= 430, 'Remote-preference test returned before the slow remote source resolved.');
+
+  const staticAfterDelay = evaluateCatalog({
+    remoteListProducts: async () => { await wait(720); return [{ id: 'remote-late' }]; },
+    staticFetch: async () => staticResponse([{ id: 'static-after-delay' }])
+  });
+  started = Date.now();
+  result = await staticAfterDelay.getBestAvailableSourceResult('static-after-delay.json');
+  const staticElapsed = Date.now() - started;
+  assert(result.origin === 'static-fast-fallback', 'Static catalog should become available after the configured fallback delay.');
+  assert(staticElapsed >= 300 && staticElapsed < 680, `Static fallback timing should honor the 350ms delay; received ${staticElapsed}ms.`);
+
+  const remoteRejects = evaluateCatalog({
+    remoteListProducts: async () => { throw new Error('Remote rejected'); },
+    staticFetch: async () => staticResponse([{ id: 'static-after-remote-rejection' }])
+  });
+  result = await remoteRejects.getBestAvailableSourceResult('remote-rejection.json');
+  assert(result.origin === 'static-fast-fallback', 'A remote rejection must not prevent the delayed static fallback from succeeding.');
+
+  const remoteTimeout = evaluateCatalog({
+    remoteListProducts: () => new Promise(() => {}),
+    staticFetch: async () => { await wait(520); return staticResponse([{ id: 'static-after-timeout' }]); }
+  });
+  started = Date.now();
+  result = await remoteTimeout.getBestAvailableSourceResult('remote-timeout.json');
+  assert(result.origin === 'static-fast-fallback', 'Static catalog should recover after a remote timeout.');
+  assert(Date.now() - started >= 800, 'Remote timeout test completed before the 800ms timeout contract.');
+
+  const bothFail = evaluateCatalog({
+    remoteListProducts: async () => { throw new Error('Remote failed'); },
+    staticFetch: async () => { throw new Error('Static failed'); }
+  });
+  await bothFail.getBestAvailableSourceResult('both-fail.json')
+    .then(() => { throw new Error('Both failing sources should reject.'); })
+    .catch((error) => {
+      assert(/Remote and static catalog sources are unavailable/.test(error.message), 'Both-source failure should preserve a useful aggregate error.');
+    });
+}
+
+function testCatalogSearchUtilities() {
+  const catalog = evaluateCatalog({
+    remoteListProducts: async () => [],
+    staticFetch: async () => staticResponse([])
+  });
+  const suggestions = catalog.getRankedSearchSuggestions([
+    { id: 'alpha', name: 'Rookie Alpha', _searchNormalized: 'rookie alpha' },
+    { id: 'beta', name: 'Rookie Beta', _searchNormalized: 'rookie beta' },
+    { id: 'later', name: 'Later Rookie', _searchNormalized: 'later rookie' },
+    { id: 'none', name: 'Signed Card', _searchNormalized: 'signed card' }
+  ], 'rookie', 2);
+  equal(
+    suggestions.map((entry) => entry.product.id),
+    ['alpha', 'beta'],
+    'Search suggestions must retain the existing score, name tie-breaker, and limit behavior.'
+  );
+  equal(catalog.getRankedSearchSuggestions([], 'rookie'), [], 'An empty catalog must produce no suggestions.');
+  equal(
+    catalog.sortProductAttributes(['Insert', 'Rookie', 'Autograph']),
+    ['Autograph', 'Rookie', 'Insert'],
+    'Attribute ordering must remain stable when its order index is reused.'
+  );
+  equal(
+    [
+      catalog.normalizeTeamFacetValue('Basketball', { category: 'Basketball' }),
+      catalog.normalizeTeamFacetValue('Los Angeles Lakers', { category: 'Basketball' })
+    ],
+    ['', 'Los Angeles Lakers'],
+    'Team facet normalization must retain category-aware generic-team handling.'
+  );
+  const normalizedProducts = catalog.normalizeProducts([{
+    id: 41,
+    name: 'Rookie Sample',
+    category: 'Basketball',
+    team: 'Basketball',
+    price: 3,
+    metadata: { excelFields: { 'C:Features': 'Autograph' } }
+  }]);
+  equal(
+    normalizedProducts.map((product) => ({ team: product.team, attributes: product.attributes, price: product._price })),
+    [{ team: '', attributes: ['Autograph', 'Rookie'], price: 3 }],
+    'Catalog normalization must retain team, attribute, and price output without cloning the full source item.'
+  );
+  const facets = catalog.buildFacetSummary([
+    { conditionFacet: 'Graded', _teamFacet: 'Lakers', attributes: ['Autograph', 'Rookie'] },
+    { conditionFacet: 'Ungraded', _teamFacet: 'Lakers', attributes: ['Rookie'] },
+    { conditionFacet: 'Graded', _teamFacet: '', attributes: [] }
+  ]);
+  equal(
+    catalog.toCountedFacetOptions(['Rookie', 'Autograph'], facets.attributeCounts, ['Autograph']),
+    [
+      { value: 'Autograph', count: 1, selected: true },
+      { value: 'Rookie', count: 2, selected: false }
+    ],
+    'Facet option ordering and counts must stay stable after allocation reductions.'
+  );
+}
+
+function createDeferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((nextResolve, nextReject) => {
+    resolve = nextResolve;
+    reject = nextReject;
+  });
+  return { promise, resolve, reject };
+}
+
+function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ user: { email: 'collector@example.com' } }) }) {
+  const source = readFileSync(path.join(root, 'payments.js'), 'utf8');
+  const hookedSource = source.replace(
+    '  DJ.payments = {',
+    `  window.__paymentsTestHooks = {
+    closeAuthModal,
+    continueAsGuestFromModal,
+    continueCheckoutIfExistingSession,
+    signInFromModal,
+    showCheckoutMessage,
+    getState: () => ({ ...state }),
+    setPendingCheckout(request) {
+      state.pendingCheckoutRequest = request;
+      state.activeCheckoutIntentId = request?.intentId || '';
+      state.checkoutInFlight = false;
+      state.authReady = false;
+      state.session = null;
+    }
+  };
+
+  DJ.payments = {`
+  );
+  assert(hookedSource !== source, 'Could not install payment test hooks.');
+  const cartStatus = { hidden: false, textContent: '', dataset: {}, closest: () => null };
+  const fields = {
+    customerAuthEmail: { value: 'collector@example.com', focus() {} },
+    customerAuthPassword: { value: 'test-password', focus() {} },
+    cartStatus
+  };
+  const document = {
+    readyState: 'loading',
+    body: { classList: createClassList(), dataset: {} },
+    activeElement: null,
+    addEventListener() {},
+    getElementById(id) { return fields[id] || null; },
+    querySelector() { return null; },
+    querySelectorAll() { return []; },
+    createElement() { return { dataset: {}, setAttribute() {}, classList: createClassList() }; }
+  };
+  let invokeCount = 0;
+  const window = {
+    DJ: {
+      normalizeProductId: (value) => Number.isSafeInteger(Number(value)) && Number(value) > 0 ? Number(value) : null,
+      normalizeCartQuantity: (value) => Math.max(1, Math.min(99, Math.floor(Number(value) || 1))),
+      isDirectCheckoutEligible: () => true,
+      availableQuantity: () => 9,
+      syncWishlistWithAccount: async () => {},
+      clearAccountWishlistCache() {},
+      restoreFocus() {},
+      trackEvent() {},
+      remoteCatalog: {
+        isConfigured: () => true,
+        signIn,
+        signUp: async () => ({}),
+        getSession,
+        onAuthStateChange() {},
+        invokeFunction: async (...args) => {
+          invokeCount += 1;
+          return invokeFunction(...args);
+        }
+      }
+    },
+    DJ_BACKEND_CONFIG: {
+      stripeCheckoutEnabled: true,
+      stripeCheckoutFunction: 'create-checkout-session',
+      stripeGuestCheckoutEnabled: true
+    },
+    location: { pathname: '/cart.html', search: '', href: 'https://example.test/cart.html', assign() {} },
+    addEventListener() {},
+    dispatchEvent() {},
+    setTimeout,
+    clearTimeout,
+    requestAnimationFrame(callback) { callback(); }
+  };
+  const context = {
+    window,
+    document,
+    sessionStorage: createStorage(),
+    CustomEvent: class CustomEvent { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
+    HTMLElement: class HTMLElement {},
+    console,
+    setTimeout,
+    clearTimeout,
+    URLSearchParams
+  };
+  vm.runInNewContext(hookedSource, context, { filename: 'payments.js' });
+  return { hooks: window.__paymentsTestHooks, cartStatus, getInvokeCount: () => invokeCount };
+}
+
+async function testCheckoutIntentCancellation() {
+  const pendingSession = createDeferred();
+  const staleSession = evaluatePayments({
+    signIn: async () => ({}),
+    getSession: () => pendingSession.promise,
+    invokeFunction: async () => ({ url: 'https://example.test/should-not-run' })
+  });
+  const sessionIntent = 'checkout-stale-session';
+  staleSession.hooks.setPendingCheckout({
+    items: [{ productId: 7, quantity: 1, product: { id: 7 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: sessionIntent
+  });
+  staleSession.hooks.continueCheckoutIfExistingSession({}, '/cart.html', sessionIntent);
+  staleSession.hooks.closeAuthModal();
+  pendingSession.resolve({ user: { email: 'collector@example.com' } });
+  await pendingSession.promise;
+  await wait(0);
+  assert(staleSession.getInvokeCount() === 0, 'A stale ensureAuthSession result after modal cancellation must never create a checkout session.');
+
+  const pendingSignIn = createDeferred();
+  const staleAuth = evaluatePayments({
+    signIn: () => pendingSignIn.promise,
+    invokeFunction: async () => ({ url: 'https://example.test/should-not-run' })
+  });
+  const staleIntent = 'checkout-stale-auth';
+  staleAuth.hooks.setPendingCheckout({
+    items: [{ productId: 1, quantity: 1, product: { id: 1 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: staleIntent
+  });
+  const signInWork = staleAuth.hooks.signInFromModal();
+  staleAuth.hooks.closeAuthModal();
+  pendingSignIn.resolve({ user: { email: 'collector@example.com' } });
+  await signInWork;
+  assert(staleAuth.getInvokeCount() === 0, 'A stale authentication result after modal cancellation must never create a checkout session.');
+  assert(staleAuth.hooks.getState().activeCheckoutIntentId === '', 'Closing the auth modal must invalidate the active checkout intent.');
+  assert(/checkout request was canceled/i.test(staleAuth.cartStatus.textContent), 'Canceled authentication must report visible contextual feedback.');
+
+  const guestFailure = evaluatePayments({
+    signIn: async () => ({}),
+    invokeFunction: async () => { throw new Error('Guest checkout verification failure'); }
+  });
+  guestFailure.hooks.setPendingCheckout({
+    items: [{ productId: 2, quantity: 1, product: { id: 2 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: 'checkout-guest-error'
+  });
+  await guestFailure.hooks.continueAsGuestFromModal();
+  assert(guestFailure.getInvokeCount() === 1, 'Guest checkout test should make exactly one mocked Edge Function call.');
+  assert(/Guest checkout verification failure/.test(guestFailure.cartStatus.textContent), 'Post-authentication guest checkout errors must be visible after the modal closes.');
+  assert(guestFailure.cartStatus.dataset.tone === 'error', 'Post-authentication checkout errors must use error status styling.');
+}
+
+async function main() {
+  const { DJ } = evaluateCore();
+  equal(DJ.escapeHtml(`<>&"'`), '&lt;&gt;&amp;&quot;&#39;', 'HTML escaping must preserve every supported entity.');
+  testCartReconciliation();
+  await testCatalogFallbacks();
+  testCatalogSearchUtilities();
+  await testCheckoutIntentCancellation();
+  console.log('Correctness regression tests passed: core helpers, cart reconciliation, catalog fallback/search, and checkout intent cancellation.');
+}
+
+main().catch((error) => {
+  console.error(error.stack || error.message || error);
+  process.exit(1);
+});

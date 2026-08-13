@@ -140,6 +140,7 @@ window.DJ = window.DJ || {};
   let linkedProductAutoOpenedId = null;
   let activeModalProductId = null;
   let activeModalContextProducts = [];
+  let cartActionFeedbackTimer = 0;
 
   function setFilterPanelDescendantsFocusable(filterPanel, enabled) {
     if (!filterPanel) return;
@@ -174,6 +175,9 @@ window.DJ = window.DJ || {};
     'Error'
   ];
   const KNOWN_PRODUCT_ATTRIBUTES = new Set(PRODUCT_ATTRIBUTE_ORDER);
+  const PRODUCT_ATTRIBUTE_ORDER_INDEX = new Map(
+    PRODUCT_ATTRIBUTE_ORDER.map((attribute, index) => [attribute, index])
+  );
   const PRODUCT_ATTRIBUTE_ALIASES = new Map([
     ['auto', 'Autograph'],
     ['autographed', 'Autograph'],
@@ -345,10 +349,9 @@ window.DJ = window.DJ || {};
   }
 
   function sortProductAttributes(attributes = []) {
-    const order = new Map(PRODUCT_ATTRIBUTE_ORDER.map((attribute, index) => [attribute, index]));
     return [...attributes].sort((a, b) => {
-      const aOrder = order.has(a) ? order.get(a) : Number.MAX_SAFE_INTEGER;
-      const bOrder = order.has(b) ? order.get(b) : Number.MAX_SAFE_INTEGER;
+      const aOrder = PRODUCT_ATTRIBUTE_ORDER_INDEX.get(a) ?? Number.MAX_SAFE_INTEGER;
+      const bOrder = PRODUCT_ATTRIBUTE_ORDER_INDEX.get(b) ?? Number.MAX_SAFE_INTEGER;
       if (aOrder !== bOrder) return aOrder - bOrder;
       return a.localeCompare(b);
     });
@@ -772,7 +775,7 @@ window.DJ = window.DJ || {};
     const attributeCounts = new Map();
     const teamCounts = new Map();
 
-    (Array.isArray(products) ? products : []).forEach((product) => {
+    for (const product of (Array.isArray(products) ? products : [])) {
       const condition = String(product?.conditionFacet || '').trim();
       if (condition) {
         conditionCounts.set(condition, (conditionCounts.get(condition) || 0) + 1);
@@ -784,13 +787,13 @@ window.DJ = window.DJ || {};
       }
 
       const attributes = Array.isArray(product?.attributes) ? product.attributes : [];
-      attributes
-        .map((attribute) => String(attribute || '').trim())
-        .filter(Boolean)
-        .forEach((attribute) => {
+      for (const rawAttribute of attributes) {
+        const attribute = String(rawAttribute || '').trim();
+        if (attribute) {
           attributeCounts.set(attribute, (attributeCounts.get(attribute) || 0) + 1);
-        });
-    });
+        }
+      }
+    }
 
     return {
       conditionCounts,
@@ -803,16 +806,20 @@ window.DJ = window.DJ || {};
 
   function toCountedFacetOptions(values = [], countMap = new Map(), selectedValues = []) {
     const selected = new Set(selectedValues);
+    const options = [];
 
-    return (Array.isArray(values) ? values : [])
-      .map((value) => String(value || '').trim())
-      .filter(Boolean)
-      .map((value) => ({ value, count: countMap.get(value) || 0, selected: selected.has(value) }))
-      .sort((left, right) => {
-        if (left.selected !== right.selected) return left.selected ? -1 : 1;
-        if (left.count !== right.count) return right.count - left.count;
-        return TEXT_COLLATOR.compare(left.value, right.value);
-      });
+    for (const rawValue of (Array.isArray(values) ? values : [])) {
+      const value = String(rawValue || '').trim();
+      if (value) {
+        options.push({ value, count: countMap.get(value) || 0, selected: selected.has(value) });
+      }
+    }
+
+    return options.sort((left, right) => {
+      if (left.selected !== right.selected) return left.selected ? -1 : 1;
+      if (left.count !== right.count) return right.count - left.count;
+      return TEXT_COLLATOR.compare(left.value, right.value);
+    });
   }
 
   function getSortLabel(value = DEFAULT_CATALOG_SORT) {
@@ -940,7 +947,12 @@ window.DJ = window.DJ || {};
       const numericYear = Number(item.year);
       const year = Number.isFinite(numericYear) && numericYear > 0 ? numericYear : null;
       const yearLabel = year ? String(year) : 'Year not listed';
-      const team = normalizeTeamFacetValue(item.team, { ...item, category });
+      const team = normalizeTeamFacetValue(item.team, {
+        category,
+        sport: item.sport,
+        league: item.league,
+        sourcePage: item.sourcePage
+      });
       const rawCondition = item.condition || '';
       const conditionInfo = parseConditionDetails(rawCondition);
       const suppressCondition = shouldSuppressCollectibleCondition(item, category, conditionInfo);
@@ -1056,8 +1068,9 @@ window.DJ = window.DJ || {};
 
   async function getCatalogPageProducts(config = {}) {
     const source = getProductSource();
-    const allowedKey = Array.isArray(config.allowedCategories) && config.allowedCategories.length
-      ? config.allowedCategories.join('|')
+    const allowedCategories = Array.isArray(config.allowedCategories) ? config.allowedCategories : [];
+    const allowedKey = allowedCategories.length
+      ? allowedCategories.join('|')
       : 'all';
     const cacheKey = `${source}::${allowedKey}`;
 
@@ -1066,8 +1079,9 @@ window.DJ = window.DJ || {};
     }
 
     const allProducts = await loadProducts({ source });
-    const allowedProducts = config.allowedCategories && config.allowedCategories.length
-      ? allProducts.filter((product) => config.allowedCategories.includes(product.category))
+    const allowedCategorySet = new Set(allowedCategories);
+    const allowedProducts = allowedCategories.length
+      ? allProducts.filter((product) => allowedCategorySet.has(product.category))
       : allProducts;
 
     const context = { allProducts, allowedProducts };
@@ -1164,6 +1178,85 @@ window.DJ = window.DJ || {};
   function delay(ms) {
     return new Promise((resolve) => {
       window.setTimeout(resolve, ms);
+    });
+  }
+
+  function getVisibleFocusableElements(container) {
+    if (!container) return [];
+    return [...container.querySelectorAll(FILTER_PANEL_FOCUSABLE_SELECTOR)].filter((element) => (
+      element instanceof HTMLElement
+      && !element.disabled
+      && !element.closest('[hidden]')
+      && element.getClientRects().length > 0
+    ));
+  }
+
+  function setFilterDrawerBackgroundInert(filterPanel, overlay, enabled) {
+    if (!filterPanel) return;
+    const stateKey = 'filterDrawerBackgroundInert';
+    const setElementState = (element) => {
+      if (!(element instanceof HTMLElement)) return;
+
+      if (enabled) {
+        if (element.dataset[stateKey] === 'true') return;
+        element.dataset[stateKey] = 'true';
+        element.dataset.filterDrawerPreviousAriaHidden = element.getAttribute('aria-hidden') || '';
+        element.dataset.filterDrawerPreviousInert = element.hasAttribute('inert') ? 'true' : 'false';
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('inert', '');
+        return;
+      }
+
+      if (element.dataset[stateKey] !== 'true') return;
+      const previousAriaHidden = element.dataset.filterDrawerPreviousAriaHidden;
+      const wasInert = element.dataset.filterDrawerPreviousInert === 'true';
+      if (previousAriaHidden) element.setAttribute('aria-hidden', previousAriaHidden);
+      else element.removeAttribute('aria-hidden');
+      if (wasInert) element.setAttribute('inert', '');
+      else element.removeAttribute('inert');
+      delete element.dataset[stateKey];
+      delete element.dataset.filterDrawerPreviousAriaHidden;
+      delete element.dataset.filterDrawerPreviousInert;
+    };
+
+    let activeBranch = filterPanel;
+    while (activeBranch?.parentElement) {
+      const parent = activeBranch.parentElement;
+      [...parent.children].forEach((sibling) => {
+        if (sibling === activeBranch || sibling === overlay) return;
+        setElementState(sibling);
+      });
+      if (parent === document.body) break;
+      activeBranch = parent;
+    }
+  }
+
+  /**
+   * Resolve with the first successful source rather than the first settled
+   * source. Promise.race() would make one fast remote rejection win before the
+   * delayed static fallback has an opportunity to succeed.
+   */
+  function firstSuccessfulResult(promises = [], label = 'Catalog sources') {
+    return new Promise((resolve, reject) => {
+      const pending = Array.isArray(promises) ? promises.filter(Boolean) : [];
+      if (!pending.length) {
+        reject(new Error(`${label} are unavailable.`));
+        return;
+      }
+
+      const errors = [];
+      let rejected = 0;
+      pending.forEach((promise) => {
+        Promise.resolve(promise).then(resolve, (error) => {
+          errors.push(error);
+          rejected += 1;
+          if (rejected !== pending.length) return;
+
+          const failure = new Error(`${label} are unavailable.`);
+          failure.causes = errors;
+          reject(failure);
+        });
+      });
     });
   }
 
@@ -1376,6 +1469,7 @@ window.DJ = window.DJ || {};
       // CDN, or mobile network hiccup never leaves shoppers on a loading state.
       const remoteCatalogTimeoutMs = getCatalogTimingValue('remoteCatalogTimeoutMs', 3200, 800, 10000);
       const staticCatalogFallbackDelayMs = getCatalogTimingValue('staticCatalogFallbackDelayMs', 350, 0, 5000);
+      let sourceSelected = false;
       const remotePromise = withTimeout(
         DJ.remoteCatalog.listProducts({
           source,
@@ -1388,15 +1482,29 @@ window.DJ = window.DJ || {};
           return { products: remote, origin: 'remote' };
         }
         throw new Error('Remote catalog did not return a product list.');
+      }).catch((error) => {
+        if (!sourceSelected) {
+          console.warn(`Remote catalog was not ready for ${source}; waiting for the static fallback.`, error);
+        }
+        throw error;
       });
 
-      const staticFallbackPromise = delay(staticCatalogFallbackDelayMs).then(() => getStaticSourceResult(source, 'static-fast-fallback'));
+      const staticFallbackPromise = delay(staticCatalogFallbackDelayMs)
+        .then(() => getStaticSourceResult(source, 'static-fast-fallback'))
+        .catch((error) => {
+          if (!sourceSelected) {
+            console.warn(`Static catalog fallback was not ready for ${source}; waiting for the remote catalog.`, error);
+          }
+          throw error;
+        });
 
       try {
-        return await Promise.race([remotePromise, staticFallbackPromise]);
+        const result = await firstSuccessfulResult([remotePromise, staticFallbackPromise], 'Remote and static catalog sources');
+        sourceSelected = true;
+        return result;
       } catch (error) {
-        console.warn(`Remote catalog was not ready for ${source}; using static catalog fallback.`, error);
-        return getStaticSourceResult(source);
+        console.warn(`Remote and static catalog sources both failed for ${source}.`, error);
+        throw error;
       }
     }
 
@@ -1703,7 +1811,7 @@ window.DJ = window.DJ || {};
 
     if (resultsCount) resultsCount.textContent = CATALOG_LOADING_MESSAGE;
     if (resultsSummary) resultsSummary.textContent = message;
-    if (resultsLive) resultsLive.textContent = message;
+    if (resultsLive) resultsLive.textContent = 'Loading available items.';
     if (activeFiltersWrap) activeFiltersWrap.innerHTML = '';
   }
 
@@ -1761,18 +1869,21 @@ window.DJ = window.DJ || {};
 
     const available = DJ.availableQuantity(product);
     const productId = DJ.normalizeProductId(product.id);
-    if (!productId) return false;
+    if (!productId) {
+      showCartActionFeedback('This listing is not available to add to cart right now.', 'error');
+      return false;
+    }
 
     const existing = DJ.getCart().find((item) => item.productId === productId);
     const requested = DJ.normalizeCartQuantity(quantity);
     const nextQuantity = Math.min(available, (existing?.quantity || 0) + requested);
     if (nextQuantity <= (existing?.quantity || 0)) {
-      setModalStatus(`Only ${available} available for this listing.`, 'error');
+      showCartActionFeedback(`Only ${available} available for this listing.`, 'error');
       return false;
     }
 
     DJ.updateCartQuantity(productId, nextQuantity);
-    setModalStatus(`${product.name} added to cart.`, 'success');
+    showCartActionFeedback(`${product.name} added to cart.`, 'success');
     DJ.trackEvent?.('add_to_cart', { productId, category: product.category });
     return true;
   }
@@ -1882,6 +1993,42 @@ Thank you.`
     if (!target) return;
     target.textContent = message;
     target.dataset.tone = tone;
+  }
+
+  function showCartActionFeedback(message = '', tone = 'info') {
+    const activeModal = document.getElementById('productModal');
+    if (activeModal?.classList.contains('active')) {
+      setModalStatus(message, tone);
+      return;
+    }
+
+    const cartStatus = document.getElementById('cartStatus');
+    if (cartStatus) {
+      cartStatus.textContent = message;
+      cartStatus.dataset.tone = tone;
+      return;
+    }
+
+    let feedback = document.getElementById('catalogCartFeedback');
+    if (!feedback) {
+      feedback = document.createElement('p');
+      feedback.id = 'catalogCartFeedback';
+      feedback.className = 'catalog-cart-feedback';
+      feedback.setAttribute('role', 'status');
+      feedback.setAttribute('aria-live', 'polite');
+      document.body.appendChild(feedback);
+    }
+
+    window.clearTimeout(cartActionFeedbackTimer);
+    feedback.textContent = message;
+    feedback.dataset.tone = tone;
+    feedback.hidden = !message;
+    if (message) {
+      cartActionFeedbackTimer = window.setTimeout(() => {
+        feedback.textContent = '';
+        feedback.hidden = true;
+      }, 5200);
+    }
   }
 
   async function copyProductLink(product) {
@@ -2248,8 +2395,11 @@ Thank you.`
     if (resultsSummary && resultsSummary.textContent !== longSummary) {
       resultsSummary.textContent = longSummary;
     }
-    if (resultsLive && resultsLive.textContent !== longSummary) {
-      resultsLive.textContent = longSummary;
+    const conciseAnnouncement = activeFilters.length
+      ? `${count} matching item${count === 1 ? '' : 's'} available. ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'} active.`
+      : `${count} item${count === 1 ? '' : 's'} available.`;
+    if (resultsLive && resultsLive.textContent !== conciseAnnouncement) {
+      resultsLive.textContent = conciseAnnouncement;
     }
 
     if (activeFiltersWrap) {
@@ -3060,6 +3210,34 @@ Thank you.`
     }) ? 30 : 0;
   }
 
+  function compareSearchSuggestionEntries(left, right) {
+    return right.score - left.score || TEXT_COLLATOR.compare(left.product.name, right.product.name);
+  }
+
+  function getRankedSearchSuggestions(products = [], query = '', limit = 6) {
+    const normalized = normalizeSearchString(query);
+    const maxResults = Math.max(0, Number(limit) || 0);
+    if (!normalized || !maxResults) return [];
+
+    const tokens = tokenizeSearchString(query);
+    const ranked = [];
+    for (const product of (Array.isArray(products) ? products : [])) {
+      const score = searchSuggestionScore(product, normalized, tokens);
+      if (!score) continue;
+
+      const entry = { product, score };
+      const lastEntry = ranked[ranked.length - 1];
+      if (ranked.length >= maxResults && compareSearchSuggestionEntries(entry, lastEntry) >= 0) continue;
+
+      const insertionIndex = ranked.findIndex((current) => compareSearchSuggestionEntries(entry, current) < 0);
+      if (insertionIndex === -1) ranked.push(entry);
+      else ranked.splice(insertionIndex, 0, entry);
+      if (ranked.length > maxResults) ranked.pop();
+    }
+
+    return ranked;
+  }
+
   function setupSearchDiscovery(products = []) {
     const searchInput = document.getElementById('searchInput');
     const searchShell = searchInput?.closest('.search-shell');
@@ -3100,16 +3278,7 @@ Thank you.`
       if (page.includes('collectible')) return ['Autograph', 'Vintage', 'Signed'];
       return ['Rookie', 'Autograph', 'Graded'];
     })();
-    const suggestions = (query) => {
-      const normalized = normalizeSearchString(query);
-      if (!normalized) return [];
-      const tokens = tokenizeSearchString(query);
-      return products
-        .map((product) => ({ product, score: searchSuggestionScore(product, normalized, tokens) }))
-        .filter((entry) => entry.score > 0)
-        .sort((left, right) => right.score - left.score || TEXT_COLLATOR.compare(left.product.name, right.product.name))
-        .slice(0, 6);
-    };
+    const suggestions = (query) => getRankedSearchSuggestions(products, query);
     const selectQuery = (query) => {
       searchInput.value = query;
       saveRecent(query);
@@ -3121,7 +3290,10 @@ Thank you.`
     const render = () => {
       const query = searchInput.value.trim();
       const matches = suggestions(query);
-      const secondary = query ? [] : [...readRecent(), ...quickSearches.filter((item) => !readRecent().includes(item))].slice(0, 6);
+      const recentSearches = query ? [] : readRecent();
+      const secondary = query
+        ? []
+        : [...recentSearches, ...quickSearches.filter((item) => !recentSearches.includes(item))].slice(0, 6);
       if (!matches.length && !secondary.length) {
         list.hidden = true;
         return;
@@ -3591,6 +3763,7 @@ Thank you.`
     trigger.className = 'mobile-filter-trigger';
     trigger.setAttribute('aria-controls', filterPanel.id);
     trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-haspopup', 'dialog');
     trigger.innerHTML = `
       <span class="mobile-filter-trigger__copy">
         <span class="mobile-filter-trigger__title">Filters</span>
@@ -3612,6 +3785,12 @@ Thank you.`
     const closeButton = filterPanel.querySelector('.filter-panel-dismiss');
     const titleNode = trigger.querySelector('.mobile-filter-trigger__title');
     const metaNode = trigger.querySelector('.mobile-filter-trigger__meta');
+    const panelTitle = filterPanel.querySelector('.filter-panel-header h2');
+    if (panelTitle) {
+      panelTitle.id = panelTitle.id || `${filterPanel.id}Title`;
+    }
+    overlay.tabIndex = -1;
+    overlay.setAttribute('aria-hidden', 'true');
 
     const syncTrigger = (filters = getCurrentFilters(), count = null, activeConfig = config) => {
       const activeCount = renderActiveFilters(filters, activeConfig).length;
@@ -3635,8 +3814,12 @@ Thank you.`
       overlay.hidden = !isMobileViewport || !isDrawerOpen;
 
       if (!isMobileViewport) {
+        setFilterDrawerBackgroundInert(filterPanel, overlay, false);
         const isDesktopSidebarCollapsed = document.body.classList.contains('filters-sidebar-collapsed');
         filterPanel.hidden = false;
+        filterPanel.removeAttribute('role');
+        filterPanel.removeAttribute('aria-modal');
+        filterPanel.removeAttribute('aria-labelledby');
         trigger.setAttribute('aria-expanded', 'false');
         filterPanel.setAttribute('aria-hidden', String(isDesktopSidebarCollapsed));
         if ('inert' in filterPanel) {
@@ -3649,11 +3832,15 @@ Thank you.`
 
       filterPanel.hidden = !isDrawerOpen;
       filterPanel.setAttribute('aria-hidden', String(!isDrawerOpen));
+      filterPanel.setAttribute('role', 'dialog');
+      filterPanel.setAttribute('aria-modal', 'true');
+      if (panelTitle?.id) filterPanel.setAttribute('aria-labelledby', panelTitle.id);
       if ('inert' in filterPanel) {
         filterPanel.inert = !isDrawerOpen;
       }
       setFilterPanelDescendantsFocusable(filterPanel, isDrawerOpen);
       trigger.setAttribute('aria-expanded', String(isDrawerOpen));
+      setFilterDrawerBackgroundInert(filterPanel, overlay, isDrawerOpen);
     };
 
     const closeDrawer = ({ restoreFocus = true } = {}) => {
@@ -3670,7 +3857,8 @@ Thank you.`
       document.body.classList.add('filters-open');
       syncDrawerAccessibility();
       drawerFocusTimer = window.setTimeout(() => {
-        filterPanel.querySelector('input, select, textarea, button:not(.filter-panel-dismiss)')?.focus();
+        const focusTarget = closeButton || getVisibleFocusableElements(filterPanel)[0];
+        focusTarget?.focus();
       }, 60);
     };
 
@@ -3702,8 +3890,25 @@ Thank you.`
     }
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && document.body.classList.contains('filters-open')) {
+      if (!isMobileDrawerViewport() || !document.body.classList.contains('filters-open')) return;
+
+      if (event.key === 'Escape') {
         closeDrawer();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+      const focusableElements = getVisibleFocusableElements(filterPanel);
+      if (!focusableElements.length) return;
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
       }
     });
 

@@ -3,6 +3,7 @@ window.DJ = window.DJ || {};
 (() => {
   const DJ = window.DJ;
   const REPORT_WINDOWS = new Set([7, 30, 90]);
+  const USD_FORMATTER = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   const mount = document.getElementById('metricsMount');
 
   if (!mount) return;
@@ -31,7 +32,7 @@ window.DJ = window.DJ || {};
   }
 
   function formatCurrency(cents) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(asNumber(cents) / 100);
+    return USD_FORMATTER.format(asNumber(cents) / 100);
   }
 
   function formatMilliseconds(value) {
@@ -57,7 +58,8 @@ window.DJ = window.DJ || {};
     const vitals = report?.webVitals && typeof report.webVitals === 'object' ? report.webVitals : {};
     const topPages = Array.isArray(report?.topPages) ? report.topPages : [];
     const daily = Array.isArray(report?.daily) ? report.daily : [];
-    const windowDays = REPORT_WINDOWS.has(asNumber(report?.windowDays)) ? asNumber(report.windowDays) : 30;
+    const requestedWindowDays = asNumber(report?.windowDays);
+    const windowDays = REPORT_WINDOWS.has(requestedWindowDays) ? requestedWindowDays : 30;
     const checkoutStarts = asNumber(events.begin_checkout);
     const paidOrders = asNumber(sales.paidOrders);
     const latestDays = daily.slice(-7).reverse();
