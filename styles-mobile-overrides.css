@@ -1,4 +1,4 @@
-﻿/* Shared mobile/storefront stabilization layer.
+/* Shared mobile/storefront stabilization layer.
    This file stays loaded after styles.css so mobile fixes remain isolated,
    easier to review, and easier to revert than when they lived at the end of
    the main bundle. */
@@ -396,14 +396,14 @@
   .brand-copy {
     flex:1 1 auto;
     min-width:0;
-    max-width:min(20ch, calc(100vw - 188px));
+    max-width:min(25ch, calc(100vw - 180px));
     gap:.18rem;
     padding-block:.08rem;
     overflow:visible;
   }
 
   .brand-script {
-    font-size:1.16rem !important;
+    font-size:clamp(1.42rem,5.5vw,1.82rem) !important;
     line-height:1.02;
     white-space:nowrap;
   }
@@ -411,9 +411,9 @@
   .brand-kicker {
     display:block !important;
     max-width:none;
-    font-size:.48rem !important;
+    font-size:clamp(.54rem,2vw,.68rem) !important;
     line-height:1.08;
-    letter-spacing:.035em !important;
+    letter-spacing:.055em !important;
     white-space:nowrap;
     overflow:visible;
     text-overflow:clip;
@@ -715,16 +715,16 @@
   }
 
   .brand-copy {
-    max-width:min(20ch, calc(100vw - 184px));
+    max-width:min(24ch, calc(100vw - 170px));
   }
 
   .brand-script {
-    font-size:1.16rem !important;
+    font-size:clamp(1.32rem,5.2vw,1.62rem) !important;
   }
 
   .brand-kicker {
-    font-size:.46rem !important;
-    letter-spacing:.025em !important;
+    font-size:clamp(.52rem,2vw,.62rem) !important;
+    letter-spacing:.045em !important;
   }
 
   .nav-toggle {
@@ -812,6 +812,31 @@
   display:block;
   width:100%;
   height:auto;
+}
+
+.product-card .product-media--gallery {
+  touch-action:pan-y;
+}
+
+.product-card .product-card-gallery-button {
+  width:2.55rem !important;
+  min-width:2.55rem !important;
+  height:3rem !important;
+  min-height:3rem !important;
+  opacity:.96;
+}
+
+.product-card .product-card-gallery-button--prev {
+  left:.72rem;
+}
+
+.product-card .product-card-gallery-button--next {
+  right:.72rem;
+}
+
+.product-card .product-card-gallery-count {
+  bottom:.64rem;
+  font-size:.7rem;
 }
 
 body.dark-mode .product-card .product-media {

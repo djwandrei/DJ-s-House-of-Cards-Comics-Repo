@@ -178,14 +178,14 @@ body.dark-mode input,body.dark-mode select,body.dark-mode textarea {
 }
 .brand-script {
   font-family:"Lobster Two",cursive;
-  font-size:1.55rem;
+  font-size:clamp(1.7rem,2vw,2.1rem);
   line-height:1;
   letter-spacing:.02em
 }
 .brand-kicker {
   font-family:"Bebas Neue",sans-serif;
-  font-size:.92rem;
-  letter-spacing:.18em;
+  font-size:clamp(.82rem,.9vw,1rem);
+  letter-spacing:.12em;
   opacity:.9;
   text-transform:uppercase
 }
@@ -2459,7 +2459,7 @@ body.dark-mode[data-page=baseball-cards] .page-hero-card,body.dark-mode[data-pag
     height:62px
   }
   .brand-script {
-    font-size:1.2rem
+    font-size:1.55rem
   }
   .brand-kicker {
     display:none
@@ -2477,7 +2477,7 @@ body.dark-mode[data-page=baseball-cards] .page-hero-card,body.dark-mode[data-pag
     height:56px
   }
   .brand-script {
-    font-size:1.05rem
+    font-size:1.38rem
   }
   .nav-toggle,.theme-toggle,.theme-toggle--compact {
     height:40px;
@@ -6550,6 +6550,90 @@ body.dark-mode .filter-panel--drawer .facet-toggle {
 .product-card .product-media img {
   aspect-ratio:1 / 1;
   padding:.32rem;
+}
+
+.product-card .product-media--gallery {
+  touch-action:pan-y;
+}
+
+.product-card-gallery-button {
+  position:absolute;
+  top:50%;
+  z-index:6;
+  display:grid !important;
+  place-items:center;
+  width:2.35rem !important;
+  min-width:2.35rem !important;
+  height:2.85rem !important;
+  min-height:2.85rem !important;
+  padding:0 !important;
+  border:1px solid rgba(255,255,255,.52) !important;
+  border-radius:999px !important;
+  background:rgba(8,14,32,.72) !important;
+  color:#fff !important;
+  box-shadow:0 14px 24px rgba(16,27,57,.26);
+  transform:translateY(-50%);
+  backdrop-filter:blur(12px);
+}
+
+.product-card-gallery-button::before {
+  content:none !important;
+}
+
+.product-card-gallery-button span {
+  display:block;
+  margin-top:-.08em;
+  font-size:2rem;
+  font-weight:800;
+  line-height:1;
+}
+
+.product-card-gallery-button--prev {
+  left:.82rem;
+}
+
+.product-card-gallery-button--next {
+  right:.82rem;
+}
+
+.product-card-gallery-count {
+  position:absolute;
+  left:50%;
+  bottom:.72rem;
+  z-index:6;
+  transform:translateX(-50%);
+  min-width:3.25rem;
+  padding:.22rem .52rem;
+  border:1px solid rgba(255,255,255,.52);
+  border-radius:999px;
+  background:rgba(8,14,32,.72);
+  color:#fff;
+  font-size:.72rem;
+  font-weight:800;
+  line-height:1;
+  text-align:center;
+  box-shadow:0 10px 18px rgba(16,27,57,.22);
+  backdrop-filter:blur(12px);
+  pointer-events:none;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  .product-card-gallery-button,
+  .product-card-gallery-count {
+    opacity:.72;
+    transition:opacity .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+
+  .product-card:not(:hover):not(:focus-within) .product-card-gallery-button,
+  .product-card:not(:hover):not(:focus-within) .product-card-gallery-count {
+    opacity:0;
+  }
+
+  .product-card-gallery-button:hover,
+  .product-card-gallery-button:focus-visible {
+    opacity:1;
+    box-shadow:0 18px 32px rgba(16,27,57,.34);
+  }
 }
 
 .product-card .product-content {

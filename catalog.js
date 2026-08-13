@@ -94,6 +94,7 @@ window.DJ = window.DJ || {};
   const catalogPageCache = new Map();
   const filteredCatalogResultsCache = new Map();
   const catalogProductsSignatureCache = new WeakMap();
+  const productCardGalleryCache = new WeakMap();
   const FILTERED_RESULTS_CACHE_LIMIT = 18;
   const CATALOG_BACKGROUND_HYDRATION_DELAY = 2500;
   const gridProductLookups = new WeakMap();
@@ -1496,6 +1497,77 @@ window.DJ = window.DJ || {};
     return 0;
   }
 
+  function getProductCardGallery(product = {}) {
+    const cacheableProduct = product && typeof product === 'object';
+    const cachedGallery = cacheableProduct ? productCardGalleryCache.get(product) : null;
+    if (cachedGallery) return cachedGallery;
+
+    const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
+    const sourceGallery = Array.isArray(product.imageGallery) && product.imageGallery.length ? product.imageGallery : null;
+    const gallery = [];
+
+    if (sourceGallery) {
+      const seen = sourceGallery.length > 1 ? new Set() : null;
+      for (const image of sourceGallery) {
+        const normalizedImage = String(image || '').trim();
+        if (!normalizedImage || seen?.has(normalizedImage)) continue;
+        seen?.add(normalizedImage);
+        gallery.push(normalizedImage);
+      }
+    } else {
+      const normalizedImage = String(product.image || '').trim();
+      if (normalizedImage) gallery.push(normalizedImage);
+    }
+
+    const resolvedGallery = gallery.length ? gallery : [fallback];
+    if (cacheableProduct) productCardGalleryCache.set(product, resolvedGallery);
+    return resolvedGallery;
+  }
+
+  function getProductCardImageCandidates(product = {}, image = '') {
+    return product.hasThumbnail === true
+      ? DJ.getThumbnailAssetCandidates(image)
+      : DJ.getAssetUrlCandidates(image);
+  }
+
+  function getProductCardImageData(product = {}, index = 0) {
+    const gallery = getProductCardGallery(product);
+    const requestedIndex = Number(index);
+    const safeIndex = Number.isFinite(requestedIndex)
+      ? ((requestedIndex % gallery.length) + gallery.length) % gallery.length
+      : 0;
+    const image = gallery[safeIndex];
+    const fallback = DJ.fallbackByCategory[product.category] || DJ.fallbackByCategory.Other;
+    const candidates = getProductCardImageCandidates(product, image);
+    const source = candidates[0] || DJ.safeAssetUrl(image);
+    const alt = buildProductImageAlt(product, {
+      context: 'card',
+      photoIndex: safeIndex + 1,
+      photoCount: gallery.length
+    });
+
+    return {
+      alt,
+      candidates,
+      count: gallery.length,
+      fallback,
+      index: safeIndex,
+      source
+    };
+  }
+
+  function renderProductCardGalleryControls(product = {}, galleryCount = 1) {
+    if (galleryCount <= 1) return '';
+    return `
+          <button type="button" class="product-card-gallery-button product-card-gallery-button--prev" data-card-gallery-step="-1" aria-label="${DJ.escapeHtml(`Previous photo for ${product.name}`)}">
+            <span aria-hidden="true">&#8249;</span>
+          </button>
+          <button type="button" class="product-card-gallery-button product-card-gallery-button--next" data-card-gallery-step="1" aria-label="${DJ.escapeHtml(`Next photo for ${product.name}`)}">
+            <span aria-hidden="true">&#8250;</span>
+          </button>
+          <span class="product-card-gallery-count" data-card-gallery-count-label>1 / ${galleryCount}</span>`;
+  }
+
   function renderProductCard(product, wishlistIds, options = {}) {
     const isWishlisted = wishlistIds.has(Number(product.id));
     const heart = isWishlisted ? '\u2665' : '\u2661';
@@ -1508,11 +1580,9 @@ window.DJ = window.DJ || {};
     const displayPrice = DJ.displayPrice(product);
     const priceLabel = getProductPriceLabel(product);
     const pricingClass = /contact/i.test(displayPrice) ? 'product-pricing product-pricing--inquiry' : 'product-pricing';
-    const cardImageAlt = buildProductImageAlt(product, { context: 'card' });
-    const cardImageCandidates = product.hasThumbnail === true
-      ? DJ.getThumbnailAssetCandidates(product.image)
-      : DJ.getAssetUrlCandidates(product.image);
-    const cardImageSource = cardImageCandidates[0] || DJ.safeAssetUrl(product.image);
+    const cardImage = getProductCardImageData(product, 0);
+    const cardGalleryCount = cardImage.count;
+    const cardHasGallery = cardGalleryCount > 1;
     const cardAttributes = getProductCardAttributes(product.attributes);
     const wishlistActionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
     const isDirectCheckout = isDirectCheckoutCandidate(product);
@@ -1529,12 +1599,16 @@ window.DJ = window.DJ || {};
     // lazy so large catalog pages stay light on bandwidth and CPU.
     const imagePriority = options.imagePriority === 'high' ? 'high' : 'low';
     const imageLoading = imagePriority === 'high' ? 'eager' : 'lazy';
+    const mediaGalleryAttrs = cardHasGallery
+      ? ` data-card-gallery="true" data-card-gallery-index="0" data-card-gallery-count="${cardGalleryCount}"`
+      : '';
 
     return `
       <article class="product-card" data-product-id="${product.id}" data-product-category="${DJ.escapeHtml(product.category)}" aria-labelledby="${titleId}" aria-describedby="${summaryId}">
         <button type="button" class="wishlist-button product-card-wishlist${isWishlisted ? ' filled' : ''}" aria-pressed="${isWishlisted ? 'true' : 'false'}" aria-label="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}" title="${DJ.escapeHtml(`${wishlistActionLabel}: ${product.name}`)}">${heart}</button>
-        <div class="product-media">
-          <img src="${DJ.escapeHtml(cardImageSource)}" data-asset-candidates="${DJ.escapeHtml(cardImageCandidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(fallback))}" alt="${DJ.escapeHtml(cardImageAlt)}" title="${DJ.escapeHtml(cardImageAlt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
+        <div class="product-media${cardHasGallery ? ' product-media--gallery' : ''}"${mediaGalleryAttrs}>
+          <img data-card-gallery-image src="${DJ.escapeHtml(cardImage.source)}" data-asset-candidates="${DJ.escapeHtml(cardImage.candidates.join('\n'))}" data-fallback-src="${DJ.escapeHtml(DJ.safeAssetUrl(cardImage.fallback || fallback))}" alt="${DJ.escapeHtml(cardImage.alt)}" title="${DJ.escapeHtml(cardImage.alt)}" width="320" height="320" sizes="${DJ.escapeHtml(cardImageSizes)}" loading="${imageLoading}" decoding="async" fetchpriority="${imagePriority}">
+          ${renderProductCardGalleryControls(product, cardGalleryCount)}
         </div>
         <div class="product-content">
           <h3 id="${titleId}">${DJ.escapeHtml(product.name)}</h3>
@@ -1837,6 +1911,41 @@ Thank you.`
     refreshWishlistButtons();
   }
 
+  function setProductCardGalleryIndex(productCard, product, index) {
+    if (!productCard || !product) return;
+
+    const media = productCard.querySelector('[data-card-gallery]');
+    const image = productCard.querySelector('[data-card-gallery-image]');
+    if (!media || !image) return;
+
+    const nextImage = getProductCardImageData(product, index);
+    if (nextImage.count <= 1) return;
+
+    media.dataset.cardGalleryIndex = String(nextImage.index);
+    productCard.dataset.galleryIndex = String(nextImage.index);
+    image.dataset.assetRetrySources = '';
+    image.dataset.originalSrc = nextImage.source;
+    delete image.dataset.imageFallbackApplied;
+    image.setAttribute('src', nextImage.source);
+    image.setAttribute('data-asset-candidates', nextImage.candidates.join('\n'));
+    image.setAttribute('data-fallback-src', DJ.safeAssetUrl(nextImage.fallback));
+    image.setAttribute('alt', nextImage.alt);
+    image.setAttribute('title', nextImage.alt);
+
+    const countLabel = media.querySelector('[data-card-gallery-count-label]');
+    if (countLabel) {
+      countLabel.textContent = `${nextImage.index + 1} / ${nextImage.count}`;
+    }
+  }
+
+  function stepProductCardGallery(productCard, product, step) {
+    const media = productCard?.querySelector('[data-card-gallery]');
+    if (!media || !product) return;
+
+    const currentIndex = Number(media.dataset.cardGalleryIndex || productCard.dataset.galleryIndex || 0);
+    setProductCardGalleryIndex(productCard, product, currentIndex + step);
+  }
+
   function refreshWishlistButtons(scope = document, wishlistIds = new Set(DJ.getWishlist().map(Number))) {
     scope.querySelectorAll('.product-card').forEach((card) => {
       const productId = Number(card.dataset.productId);
@@ -1844,7 +1953,7 @@ Thank you.`
       if (!button) return;
 
       const isWishlisted = wishlistIds.has(productId);
-      const productName = card.querySelector('h4')?.textContent?.trim() || 'this item';
+      const productName = card.querySelector('h3, h4')?.textContent?.trim() || 'this item';
       const actionLabel = isWishlisted ? 'Remove from wishlist' : 'Add to wishlist';
       button.classList.toggle('filled', isWishlisted);
       button.textContent = isWishlisted ? '\u2665' : '\u2661';
@@ -1976,10 +2085,23 @@ Thank you.`
       const productCard = event.target.closest('.product-card');
       if (!productCard) return;
 
+      if (productCard.dataset.gallerySwipeHandled === 'true') {
+        event.preventDefault();
+        delete productCard.dataset.gallerySwipeHandled;
+        return;
+      }
+
       const productId = Number(productCard.dataset.productId);
       const product = gridProductLookups.get(container)?.get(productId);
       if (!product) return;
       const contextProducts = gridProductSequences.get(container) || productSequence;
+
+      const galleryStep = event.target.closest('[data-card-gallery-step]');
+      if (galleryStep) {
+        event.preventDefault();
+        stepProductCardGallery(productCard, product, Number(galleryStep.dataset.cardGalleryStep || 0));
+        return;
+      }
 
       if (event.target.closest('.wishlist-button')) {
         event.preventDefault();
@@ -2008,21 +2130,66 @@ Thank you.`
       openModal(product, { contextProducts });
     };
 
-    if (container.dataset.cardKeyboardBound === 'true') return;
-    container.dataset.cardKeyboardBound = 'true';
-    container.addEventListener('keydown', (event) => {
-      const productCard = event.target.closest('.product-card');
-      if (!productCard) return;
-      if (event.key !== 'Enter' && event.key !== ' ') return;
+    if (container.dataset.cardKeyboardBound !== 'true') {
+      container.dataset.cardKeyboardBound = 'true';
+      container.addEventListener('keydown', (event) => {
+        const productCard = event.target.closest('.product-card');
+        if (!productCard) return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (event.target.closest('button, a, input, select, textarea')) return;
+
+        const productId = Number(productCard.dataset.productId);
+        const product = gridProductLookups.get(container)?.get(productId);
+        if (!product) return;
+
+        event.preventDefault();
+        openModal(product, { contextProducts: gridProductSequences.get(container) || productSequence });
+      });
+    }
+
+    if (container.dataset.cardGallerySwipeBound === 'true') return;
+    container.dataset.cardGallerySwipeBound = 'true';
+    let cardGallerySwipe = null;
+
+    container.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse') return;
       if (event.target.closest('button, a, input, select, textarea')) return;
 
-      const productId = Number(productCard.dataset.productId);
+      const media = event.target.closest('[data-card-gallery="true"]');
+      const productCard = media?.closest('.product-card');
+      if (!media || !productCard) return;
+
+      cardGallerySwipe = {
+        card: productCard,
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY
+      };
+    }, { passive: true });
+
+    container.addEventListener('pointerup', (event) => {
+      if (!cardGallerySwipe || cardGallerySwipe.pointerId !== event.pointerId) return;
+
+      const swipe = cardGallerySwipe;
+      cardGallerySwipe = null;
+      const deltaX = event.clientX - swipe.x;
+      const deltaY = event.clientY - swipe.y;
+      if (Math.abs(deltaX) < 42 || Math.abs(deltaX) < Math.abs(deltaY) * 1.35) return;
+
+      const productId = Number(swipe.card.dataset.productId);
       const product = gridProductLookups.get(container)?.get(productId);
       if (!product) return;
 
-      event.preventDefault();
-      openModal(product, { contextProducts: gridProductSequences.get(container) || productSequence });
-    });
+      swipe.card.dataset.gallerySwipeHandled = 'true';
+      window.setTimeout(() => {
+        delete swipe.card.dataset.gallerySwipeHandled;
+      }, 450);
+      stepProductCardGallery(swipe.card, product, deltaX < 0 ? 1 : -1);
+    }, { passive: true });
+
+    container.addEventListener('pointercancel', () => {
+      cardGallerySwipe = null;
+    }, { passive: true });
   }
 
   function filterLabel(label, value) {
