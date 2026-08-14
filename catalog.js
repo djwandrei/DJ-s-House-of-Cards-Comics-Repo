@@ -4577,7 +4577,7 @@ Thank you.`
     modalInner.querySelector('#modalCopyLink')?.addEventListener('click', () => copyProductLink(product));
     modalInner.querySelector('#modalOffer')?.addEventListener('click', () => {
       DJ.trackEvent?.('offer_open', { productId: Number(product.id), category: product.category });
-      window.location.assign(buildCollectorInquiryUrl('offer', [product]));
+      window.location.assign(`offer.html?item=${encodeURIComponent(String(product.id))}`);
     });
     modalInner.querySelectorAll('[data-modal-nav]').forEach((button) => {
       button.addEventListener('click', () => {

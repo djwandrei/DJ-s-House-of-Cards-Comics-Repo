@@ -157,6 +157,7 @@ async function sendNotification(input: {
     input.offerAmount != null ? `Offer: $${input.offerAmount.toFixed(2)}` : '',
     input.productIds.length ? `Listings: ${input.productIds.join(', ')}` : '',
     input.sourcePath ? `Page: ${input.sourcePath}` : '',
+    `Review in Admin Inbox: ${siteUrl}/inbox.html`,
     '',
     input.message,
     ...(photoLines.length ? ['', ...photoLines] : [])
@@ -171,11 +172,12 @@ async function sendNotification(input: {
         ${input.subject ? `<strong>Subject:</strong> ${escapeHtml(input.subject)}<br>` : ''}
         ${input.offerAmount != null ? `<strong>Offer:</strong> $${escapeHtml(input.offerAmount.toFixed(2))}<br>` : ''}
         ${input.productIds.length ? `<strong>Listings:</strong> ${escapeHtml(input.productIds.join(', '))}<br>` : ''}
-        ${input.sourcePath ? `<strong>Page:</strong> ${escapeHtml(input.sourcePath)}<br>` : ''}
-        <strong>Reference:</strong> ${escapeHtml(input.id)}
+       ${input.sourcePath ? `<strong>Page:</strong> ${escapeHtml(input.sourcePath)}<br>` : ''}
+       <strong>Reference:</strong> ${escapeHtml(input.id)}
       </p>
       <p style="white-space:pre-wrap;">${escapeHtml(input.message)}</p>
       ${input.photoUrls.length ? `<p>${input.photoUrls.map((url, index) => `<a href="${escapeHtml(url)}">Open photo ${index + 1}</a>`).join('<br>')}</p>` : ''}
+      <p><a href="${escapeHtml(`${siteUrl}/inbox.html`)}">Open the Admin Inbox</a></p>
     </div>
   `;
   const response = await fetch('https://api.resend.com/emails', {

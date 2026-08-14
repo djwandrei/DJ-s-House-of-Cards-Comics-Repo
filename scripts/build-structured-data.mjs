@@ -10,7 +10,7 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const SHOPIFY_URL = 'https://xy2hik-nq.myshopify.com/';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const SITE_DESCRIPTION = 'Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.';
-const SCRIPT_VERSION = '20260813b';
+const SCRIPT_VERSION = '20260814b';
 const SAME_AS_LINKS = [FACEBOOK_URL, WHATNOT_URL, SHOPIFY_URL, TIKTOK_SHOP_URL];
 const SOCIAL_METADATA_PAGES = new Set([
   'cart.html',
@@ -233,6 +233,22 @@ const pages = {
     description: 'Private reporting dashboard for first-party storefront conversion and performance metrics.',
     image: 'assets/dj-logo.png',
     breadcrumb: [['Home', '/'], ['Admin', '/admin.html'], ['Conversion & Performance Metrics', '/metrics.html']]
+  },
+  'inbox.html': {
+    type: 'WebPage',
+    path: '/inbox.html',
+    name: "Admin Inbox | DJ's House of Cards & Comics",
+    description: 'Private inbox for customer messages and negotiated offers submitted through DJ\'s House of Cards & Comics.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Admin', '/admin.html'], ['Admin Inbox', '/inbox.html']]
+  },
+  'offer.html': {
+    type: 'WebPage',
+    path: '/offer.html',
+    name: "Make an Offer | DJ's House of Cards & Comics",
+    description: 'Submit and manage a private offer for a DJ\'s House of Cards & Comics listing.',
+    image: 'assets/dj-logo.png',
+    breadcrumb: [['Home', '/'], ['Make an Offer', '/offer.html']]
   },
   'policies.html': {
     type: 'WebPage',

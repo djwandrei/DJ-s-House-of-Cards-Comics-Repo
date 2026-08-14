@@ -32,7 +32,25 @@ const corsHeaders = {
 };
 
 type CheckoutItemRequest = { productId: number; quantity: number };
+type NegotiatedOfferRequest = { offerId: string; token: string };
+type CheckoutPayload = {
+  productId?: number;
+  items?: CheckoutItemRequest[];
+  returnPath?: string;
+  guestEmail?: string;
+  negotiatedOffer?: NegotiatedOfferRequest;
+};
+type NegotiatedOffer = {
+  id: string;
+  product_id: number;
+  buyer_email: string;
+  current_amount_cents: number;
+  status: string;
+  expires_at: string;
+  stripe_session_id: string | null;
+};
 type CheckoutSessionCreateParams = NonNullable<Parameters<typeof stripe.checkout.sessions.create>[0]>;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -90,7 +108,7 @@ function isDirectCheckoutEligible(product: Record<string, unknown>) {
     && !/contact|ask|inquir|availability/.test(display);
 }
 
-function normalizeItems(payload: { productId?: number; items?: CheckoutItemRequest[] }) {
+function normalizeItems(payload: CheckoutPayload) {
   const source = Array.isArray(payload.items) && payload.items.length
     ? payload.items
     : [{ productId: Number(payload.productId), quantity: 1 }];
@@ -107,6 +125,75 @@ function normalizeItems(payload: { productId?: number; items?: CheckoutItemReque
   }
   if (!normalized.size || normalized.size > MAX_CHECKOUT_ITEMS) throw new Error('Choose between 1 and 20 checkout items.');
   return [...normalized.entries()].map(([productId, quantity]) => ({ productId, quantity }));
+}
+
+async function offerAccessToken(offerId: string) {
+  const signingKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(serviceRoleKey),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = new Uint8Array(await crypto.subtle.sign(
+    'HMAC',
+    signingKey,
+    new TextEncoder().encode(`djhc-offer-access:v1:${offerId}`)
+  ));
+  let binary = '';
+  for (const byte of signature) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+}
+
+function tokensMatch(left = '', right = '') {
+  if (!left || !right || left.length !== right.length) return false;
+  let difference = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return difference === 0;
+}
+
+function offerCheckoutStillValid(offer: NegotiatedOffer) {
+  return offer.status === 'accepted'
+    && Number.isFinite(Date.parse(offer.expires_at))
+    && Date.parse(offer.expires_at) > Date.now()
+    && Number.isSafeInteger(Number(offer.current_amount_cents))
+    && Number(offer.current_amount_cents) >= 50
+    && Number(offer.current_amount_cents) <= 99_999_999;
+}
+
+async function validateNegotiatedOffer(input: unknown, requestedItems: CheckoutItemRequest[]) {
+  const raw = input && typeof input === 'object' ? input as Partial<NegotiatedOfferRequest> : {};
+  const offerId = String(raw.offerId || '').trim();
+  const token = String(raw.token || '').trim();
+  if (!uuidPattern.test(offerId) || !token) {
+    return { error: 'This negotiated checkout link is invalid.', status: 400 };
+  }
+  if (!tokensMatch(token, await offerAccessToken(offerId))) {
+    return { error: 'This negotiated checkout link is invalid or has expired.', status: 403 };
+  }
+  if (requestedItems.length !== 1 || requestedItems[0]?.quantity !== 1) {
+    return { error: 'A negotiated price applies to one listing only.', status: 400 };
+  }
+  const { data, error } = await admin
+    .from('negotiated_offers')
+    .select('id,product_id,buyer_email,current_amount_cents,status,expires_at,stripe_session_id')
+    .eq('id', offerId)
+    .maybeSingle();
+  if (error) throw new Error(`Offer lookup failed: ${error.message}`);
+  if (!data) return { error: 'This negotiated offer could not be found.', status: 404 };
+  const offer = data as NegotiatedOffer;
+  if (requestedItems[0].productId !== Number(offer.product_id)) {
+    return { error: 'This negotiated price does not match the selected listing.', status: 400 };
+  }
+  if (!offerCheckoutStillValid(offer)) {
+    if (['pending', 'countered', 'accepted'].includes(offer.status) && Date.parse(offer.expires_at) <= Date.now()) {
+      await admin.from('negotiated_offers').update({ status: 'expired' }).eq('id', offer.id).eq('status', offer.status);
+    }
+    return { error: 'This negotiated price is no longer available.', status: 409 };
+  }
+  return { offer };
 }
 
 function isServerConfigured() {
@@ -171,13 +258,24 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'Shipping is not configured yet. Please contact DJ to complete this purchase.' }, 503);
   }
 
-  let payload: { productId?: number; items?: CheckoutItemRequest[]; returnPath?: string; guestEmail?: string } = {};
+  let payload: CheckoutPayload = {};
   let requestedItems: CheckoutItemRequest[] = [];
   try {
     payload = await request.json();
     requestedItems = normalizeItems(payload);
   } catch (error) {
     return jsonResponse({ error: errorMessage(error) || 'Invalid checkout request.' }, 400);
+  }
+
+  let negotiatedOffer: NegotiatedOffer | null = null;
+  if (payload.negotiatedOffer != null) {
+    try {
+      const validation = await validateNegotiatedOffer(payload.negotiatedOffer, requestedItems);
+      if ('error' in validation) return jsonResponse({ error: validation.error }, validation.status);
+      negotiatedOffer = validation.offer;
+    } catch (error) {
+      return friendlyServerError(error, 'The negotiated price could not be verified. Please try again.');
+    }
   }
 
   const jwt = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
@@ -189,15 +287,28 @@ Deno.serve(async (request) => {
     if (!userError && userResult?.user) {
       buyerUserId = userResult.user.id;
       email = String(userResult.user.email || '').trim().toLowerCase();
-    } else if (!hasValidGuestEmail) {
+    } else if (!hasValidGuestEmail && !negotiatedOffer) {
       return jsonResponse({ error: 'Your session expired. Sign in again before checkout.' }, 401);
     }
   }
-  if (!buyerUserId && !allowGuestCheckout) {
-    return jsonResponse({ error: 'Sign in before checkout.' }, 401);
-  }
-  if (!buyerUserId && !hasValidGuestEmail) {
-    return jsonResponse({ error: 'Enter a valid email address to continue as a guest.' }, 400);
+  if (negotiatedOffer) {
+    const offerEmail = String(negotiatedOffer.buyer_email || '').trim().toLowerCase();
+    if (buyerUserId && email !== offerEmail) {
+      return jsonResponse({ error: 'Sign in with the email address that received this offer before checkout.' }, 403);
+    }
+    if (!buyerUserId && !allowGuestCheckout) {
+      return jsonResponse({ error: 'Sign in before using this negotiated checkout.' }, 401);
+    }
+    // Ignore browser-provided guest email for negotiated pricing. The private
+    // offer record is the source of truth for both recipient and amount.
+    email = offerEmail;
+  } else {
+    if (!buyerUserId && !allowGuestCheckout) {
+      return jsonResponse({ error: 'Sign in before checkout.' }, 401);
+    }
+    if (!buyerUserId && !hasValidGuestEmail) {
+      return jsonResponse({ error: 'Enter a valid email address to continue as a guest.' }, 400);
+    }
   }
 
   const productIds = requestedItems.map((item) => item.productId);
@@ -211,10 +322,18 @@ Deno.serve(async (request) => {
   const productsById = new Map(products.map((product) => [Number(product.id), product]));
   for (const item of requestedItems) {
     const product = productsById.get(item.productId);
-    const amount = product ? checkoutAmountCents(product) : 0;
+    const amount = negotiatedOffer && item.productId === Number(negotiatedOffer.product_id)
+      ? Number(negotiatedOffer.current_amount_cents)
+      : product ? checkoutAmountCents(product) : 0;
+    const availableForNegotiatedCheckout = Boolean(
+      product
+      && product.is_deleted !== true
+      && String(product.sale_status || 'available') === 'available'
+      && availableQuantity(product) > 0
+    );
     if (
       !product
-      || !isDirectCheckoutEligible(product)
+      || (negotiatedOffer ? !availableForNegotiatedCheckout : !isDirectCheckoutEligible(product))
       || item.quantity > availableQuantity(product)
       || !Number.isSafeInteger(amount)
       || amount < 50
@@ -225,6 +344,20 @@ Deno.serve(async (request) => {
   }
 
   const nowIso = new Date().toISOString();
+  if (negotiatedOffer?.stripe_session_id) {
+    try {
+      const existingSession = await stripe.checkout.sessions.retrieve(negotiatedOffer.stripe_session_id);
+      if (
+        existingSession.status === 'open'
+        && existingSession.url
+        && String(existingSession.metadata?.negotiated_offer_id || '') === negotiatedOffer.id
+      ) {
+        return jsonResponse({ url: existingSession.url, sessionId: existingSession.id, reused: true });
+      }
+    } catch (error) {
+      console.warn('[create-checkout-session] Existing negotiated checkout session could not be reused', errorMessage(error));
+    }
+  }
   let expireQuery = admin
     .from('product_checkout_reservations')
     .update({ status: 'expired' })
@@ -251,14 +384,34 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'You already have several checkout holds open. Complete or wait for one to expire before starting another checkout.' }, 429);
   }
 
-  const reservationExpiresAt = new Date(Date.now() + (checkoutHoldMinutes + 2) * 60 * 1000).toISOString();
-  const checkoutExpiresAt = Math.floor(Date.now() / 1000) + checkoutHoldMinutes * 60;
-  const { data: reservations, error: reservationError } = await admin.rpc('reserve_checkout_items', {
-    p_buyer_user_id: buyerUserId,
-    p_buyer_email: email,
-    p_items: requestedItems,
-    p_expires_at: reservationExpiresAt
-  });
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const standardCheckoutExpiresAt = nowSeconds + checkoutHoldMinutes * 60;
+  let checkoutExpiresAt = standardCheckoutExpiresAt;
+  if (negotiatedOffer) {
+    // A private price is valid only through its accepted-offer deadline. Stripe
+    // requires a Checkout Session to remain open for at least 30 minutes, so
+    // do not create a session when the seller's deadline is already too close.
+    const offerExpiresAt = Math.floor(Date.parse(negotiatedOffer.expires_at) / 1000);
+    if (!Number.isFinite(offerExpiresAt) || offerExpiresAt <= nowSeconds + 30 * 60) {
+      return jsonResponse({ error: 'This accepted offer is too close to its deadline to start checkout. Ask DJ to renew it.' }, 409);
+    }
+    checkoutExpiresAt = Math.min(standardCheckoutExpiresAt, offerExpiresAt);
+  }
+  const reservationExpiresAt = new Date((checkoutExpiresAt + 2 * 60) * 1000).toISOString();
+  const reservationRequest = negotiatedOffer
+    ? admin.rpc('reserve_negotiated_offer_checkout', {
+        p_offer_id: negotiatedOffer.id,
+        p_buyer_user_id: buyerUserId,
+        p_buyer_email: email,
+        p_expires_at: reservationExpiresAt
+      })
+    : admin.rpc('reserve_checkout_items', {
+        p_buyer_user_id: buyerUserId,
+        p_buyer_email: email,
+        p_items: requestedItems,
+        p_expires_at: reservationExpiresAt
+      });
+  const { data: reservations, error: reservationError } = await reservationRequest;
   if (reservationError || !Array.isArray(reservations) || reservations.length !== requestedItems.length) {
     console.error('[create-checkout-session] Reservation failed', reservationError);
     return jsonResponse({ error: 'One or more requested quantities are already reserved or unavailable.' }, 409);
@@ -275,14 +428,16 @@ Deno.serve(async (request) => {
 
   const lineItems = requestedItems.map((item) => {
     const product = productsById.get(item.productId)!;
-    const amount = checkoutAmountCents(product);
+    const amount = negotiatedOffer && item.productId === Number(negotiatedOffer.product_id)
+      ? Number(negotiatedOffer.current_amount_cents)
+      : checkoutAmountCents(product);
     const priceRange = parsePriceRangeLabel(String(product.display_price || product.price_label || ''));
     const imageGallery = Array.isArray(product.image_gallery) ? product.image_gallery : [];
     const image = absoluteImageUrl(String(product.image || imageGallery[0] || ''));
     const description = [
       product.description,
       priceRange ? `Guide price range: ${priceRange.label}` : '',
-      `Checkout price: $${(amount / 100).toFixed(2)}`,
+      negotiatedOffer ? `Private negotiated checkout price: $${(amount / 100).toFixed(2)}` : `Checkout price: $${(amount / 100).toFixed(2)}`,
       product.year ? `Year: ${product.year}` : '',
       product.condition ? `Condition: ${product.condition}` : '',
       product.team ? `Team/Publisher: ${product.team}` : ''
@@ -307,12 +462,19 @@ Deno.serve(async (request) => {
     const metadata = {
       buyer_user_id: buyerUserId || '',
       checkout_mode: buyerUserId ? 'account' : 'guest',
-      item_count: String(requestedItems.length)
+      item_count: String(requestedItems.length),
+      ...(negotiatedOffer ? {
+        negotiated_offer_id: negotiatedOffer.id,
+        negotiated_offer_price_cents: String(negotiatedOffer.current_amount_cents)
+      } : {})
     };
+    const negotiatedCancelPath = negotiatedOffer
+      ? `/offer.html?offer=${encodeURIComponent(negotiatedOffer.id)}&token=${encodeURIComponent(String(payload.negotiatedOffer?.token || ''))}`
+      : payload.returnPath || '/cart.html';
     const sessionParams: CheckoutSessionCreateParams = {
       mode: 'payment',
       ...customerOptions,
-      allow_promotion_codes: allowPromotionCodes,
+      allow_promotion_codes: negotiatedOffer ? false : allowPromotionCodes,
       billing_address_collection: 'auto',
       shipping_address_collection: { allowed_countries: ['US'] },
       line_items: lineItems,
@@ -320,7 +482,8 @@ Deno.serve(async (request) => {
       payment_intent_data: { metadata },
       expires_at: checkoutExpiresAt,
       success_url: `${siteUrl}/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: absoluteSiteUrl(payload.returnPath || '/cart.html'),
+      cancel_url: absoluteSiteUrl(negotiatedCancelPath),
+      ...(negotiatedOffer ? { client_reference_id: negotiatedOffer.id } : {}),
       ...(shippingRateId ? { shipping_options: [{ shipping_rate: shippingRateId }] } : {})
     };
     checkoutSession = await stripe.checkout.sessions.create(sessionParams);
@@ -346,6 +509,34 @@ Deno.serve(async (request) => {
     }
     await releaseReservations(reservationIds);
     return friendlyServerError(pendingError, 'Checkout could not be finalized. Please try again.');
+  }
+
+  if (negotiatedOffer) {
+    const { data: updatedOffer, error: offerUpdateError } = await admin
+      .from('negotiated_offers')
+      .update({ stripe_session_id: checkoutSession.id })
+      .eq('id', negotiatedOffer.id)
+      .eq('status', 'accepted')
+      .gt('expires_at', new Date().toISOString())
+      .select('id')
+      .maybeSingle();
+    if (offerUpdateError || !updatedOffer) {
+      if (offerUpdateError) console.error('[create-checkout-session] Could not attach negotiated offer session', offerUpdateError);
+      try {
+        await stripe.checkout.sessions.expire(checkoutSession.id);
+      } catch (error) {
+        console.error('[create-checkout-session] Could not expire negotiated checkout session', error);
+      }
+      await releaseReservations(reservationIds);
+      return jsonResponse({ error: 'This negotiated price changed before checkout could begin. Return to your offer page for the latest status.' }, 409);
+    }
+    const { error: eventError } = await admin.from('negotiated_offer_events').insert({
+      offer_id: negotiatedOffer.id,
+      actor: 'customer',
+      action: 'checkout_started',
+      amount_cents: Number(negotiatedOffer.current_amount_cents)
+    });
+    if (eventError) console.error('[create-checkout-session] Could not record negotiated checkout start', eventError);
   }
 
   // The browser stores a tab-scoped cart snapshot under this exact session ID.

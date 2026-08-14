@@ -27,7 +27,9 @@ window.DJ = window.DJ || {};
     about: { target: 'about.html', label: 'About' },
     contact: { target: 'contact.html', label: 'Contact' },
     admin: { target: 'admin.html', label: 'Admin Dashboard' },
+    inbox: { target: 'admin.html', label: 'Admin Inbox' },
     metrics: { target: 'admin.html', label: 'Conversion & Performance Metrics' },
+    offer: { target: 'shop.html', label: 'Make an Offer' },
     policies: { target: 'about.html', label: 'Policies & Authenticity' },
     policy: { target: 'about.html', label: 'Policies & Authenticity' },
     'sell-trade-want-list': { target: 'contact.html', label: 'Sell, Trade & Want List' }

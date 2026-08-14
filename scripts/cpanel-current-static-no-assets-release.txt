@@ -22,12 +22,16 @@ core.js
 football-cards.html
 feeds/facebook-products.csv
 index.html
+inbox.html
+inbox.js
 inquiries.js
 metrics.html
 metrics.js
 nav.js
 offline.html
 offline.js
+offer.html
+offers.js
 payments.js
 policies.html
 products-baseball.json

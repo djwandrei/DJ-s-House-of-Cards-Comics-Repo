@@ -567,6 +567,7 @@ window.DJ = window.DJ || {};
     const target = [
       document.getElementById('cartStatus'),
       document.getElementById('modalCheckoutStatus'),
+      document.getElementById('offerRuntimeStatus'),
       isAuthModalOpen() ? document.getElementById('customerAuthStatus') : null
     ].find(isVisibleStatusTarget) || ensureCheckoutStatusRegion();
     if (!target) return;
@@ -602,7 +603,7 @@ window.DJ = window.DJ || {};
   }
 
   function setCheckoutButtonsBusy(isBusy) {
-    document.querySelectorAll('[data-checkout-button], #modalBuy').forEach((button) => {
+    document.querySelectorAll('[data-checkout-button], [data-negotiated-offer-checkout], #modalBuy').forEach((button) => {
       button.disabled = Boolean(isBusy);
       button.setAttribute('aria-busy', String(Boolean(isBusy)));
       button.classList.toggle('is-busy', Boolean(isBusy));
@@ -613,6 +614,13 @@ window.DJ = window.DJ || {};
     if (state.checkoutInFlight) return;
     if (checkoutIntentId && !isCheckoutIntentActive(checkoutIntentId)) return;
     const normalizedItems = normalizeCheckoutItems(items);
+    const negotiatedOffer = options.negotiatedOffer && typeof options.negotiatedOffer === 'object'
+      ? {
+          offerId: String(options.negotiatedOffer.offerId || '').trim(),
+          token: String(options.negotiatedOffer.token || '').trim()
+        }
+      : null;
+    const hasNegotiatedOffer = Boolean(negotiatedOffer?.offerId && negotiatedOffer?.token);
     if (!normalizedItems.length) {
       showCheckoutMessage('Add at least one available item before checkout.', 'error');
       return;
@@ -625,7 +633,7 @@ window.DJ = window.DJ || {};
 
     const unavailableItem = normalizedItems.find((item) => (
       item.product && (
-        !DJ.isDirectCheckoutEligible(item.product)
+        (!hasNegotiatedOffer && !DJ.isDirectCheckoutEligible(item.product))
         || item.quantity > DJ.availableQuantity(item.product)
       )
     ));
@@ -636,8 +644,10 @@ window.DJ = window.DJ || {};
 
     const requestedGuestEmail = String(options.guestEmail || '').trim().toLowerCase();
     const canUseGuestCheckout = config.stripeGuestCheckoutEnabled === true
-      && options.guestCheckout === true
-      && EMAIL_PATTERN.test(requestedGuestEmail);
+      && (
+        hasNegotiatedOffer
+        || (options.guestCheckout === true && EMAIL_PATTERN.test(requestedGuestEmail))
+      );
 
     if (!canUseGuestCheckout && !state.authReady) {
       const intentId = openAuthModal({
@@ -674,10 +684,12 @@ window.DJ = window.DJ || {};
       const payload = {
         items: normalizedItems.map(({ productId, quantity }) => ({ productId, quantity })),
         returnPath: returnPath || `${window.location.pathname}${window.location.search}`,
-        ...(canUseGuestCheckout && !state.session?.user ? { guestEmail: requestedGuestEmail } : {})
+        ...(hasNegotiatedOffer
+          ? { negotiatedOffer }
+          : canUseGuestCheckout && !state.session?.user ? { guestEmail: requestedGuestEmail } : {})
       };
       DJ.trackEvent?.('begin_checkout', { resultCount: normalizedItems.length });
-      if (canUseGuestCheckout && !state.session?.user) {
+      if (canUseGuestCheckout && !state.session?.user && !hasNegotiatedOffer) {
         DJ.trackEvent?.('guest_checkout', { resultCount: normalizedItems.length });
       }
       const data = await DJ.remoteCatalog.invokeFunction(config.stripeCheckoutFunction, payload);
@@ -689,7 +701,9 @@ window.DJ = window.DJ || {};
         setCheckoutButtonsBusy(false);
         return;
       }
-      DJ.recordCheckoutCartSnapshot?.(data.sessionId, normalizedItems);
+      if (!options.skipCartSnapshot) {
+        DJ.recordCheckoutCartSnapshot?.(data.sessionId, normalizedItems);
+      }
       state.activeCheckoutIntentId = '';
       persistPendingCheckout(null);
       window.location.assign(data.url);
@@ -718,6 +732,30 @@ window.DJ = window.DJ || {};
 
   function startCartCheckout(items = [], options = {}) {
     return startCheckoutItems(items, options, options.returnPath || '/cart.html');
+  }
+
+  function startNegotiatedOfferCheckout(offer = {}) {
+    const offerId = String(offer.id || offer.offerId || '').trim();
+    const token = String(offer.token || '').trim();
+    const product = offer.product && typeof offer.product === 'object' ? offer.product : {};
+    const productId = DJ.normalizeProductId(product.id || offer.productId);
+    if (!offerId || !token || !productId) {
+      showCheckoutMessage('This negotiated offer is missing its secure checkout details. Return to your offer email and try again.', 'error');
+      return Promise.resolve();
+    }
+
+    return startCheckoutItems([{
+      product: {
+        ...product,
+        id: productId,
+        quantityAvailable: product.quantityAvailable ?? product.quantity_available ?? 1
+      },
+      productId,
+      quantity: 1
+    }], {
+      negotiatedOffer: { offerId, token },
+      skipCartSnapshot: true
+    }, `${window.location.pathname}${window.location.search}`);
   }
 
   async function init() {
@@ -754,6 +792,7 @@ window.DJ = window.DJ || {};
     closeAuthModal,
     startCheckout,
     startCartCheckout,
+    startNegotiatedOfferCheckout,
     isDirectCheckoutEligible: DJ.isDirectCheckoutEligible,
     hydrateAccount: ensureAuthSession
   };

@@ -25,8 +25,10 @@ the access controls for admin data and actions.
 | `/cart.html` | Crawlable-noindex | No | Self-canonical; `noindex,nofollow` |
 | `/checkout-success.html` | Crawlable-noindex | No | Self-canonical; `noindex,nofollow` |
 | `/account.html` | Crawlable-noindex | No | Self-canonical; `noindex,nofollow` |
+| `/offer.html` | Crawlable-noindex | No | Self-canonical; `noindex,nofollow` |
 | `/offline.html` | Crawlable-noindex | No | No indexable canonical; `noindex,nofollow` |
 | `/admin.html` | Authentication-protected | No | Self-canonical; `noindex,nofollow` |
+| `/inbox.html` | Authentication-protected | No | Self-canonical; `noindex,nofollow` |
 | `/metrics.html` | Authentication-protected | No | Self-canonical; `noindex,nofollow` |
 
 ## Release rule

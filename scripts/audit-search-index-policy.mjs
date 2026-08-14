@@ -27,9 +27,10 @@ const crawlableNoindex = new Set([
   'cart.html',
   'checkout-success.html',
   'account.html',
+  'offer.html',
   'offline.html'
 ]);
-const authenticationProtected = new Set(['admin.html', 'metrics.html']);
+const authenticationProtected = new Set(['admin.html', 'inbox.html', 'metrics.html']);
 const allPolicyFiles = new Set([...publicIndexable, ...crawlableNoindex, ...authenticationProtected]);
 
 function assert(condition, message) {

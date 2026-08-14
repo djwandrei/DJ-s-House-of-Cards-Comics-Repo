@@ -16,6 +16,9 @@ verify_jwt = false
 [functions.collector-inquiry]
 verify_jwt = false
 
+[functions.offer-workflow]
+verify_jwt = false
+
 [functions.analytics-event]
 verify_jwt = false
 

@@ -27,6 +27,7 @@
     // disabled server route never presents a broken option to shoppers.
     stripeGuestCheckoutEnabled: true,
     collectorInquiryFunction: 'collector-inquiry',
+    offerWorkflowFunction: 'offer-workflow',
     analyticsEventFunction: 'analytics-event',
     measurementEnabled: true,
     // Supabase is preferred for fresh storefront data; deploy-synced JSON

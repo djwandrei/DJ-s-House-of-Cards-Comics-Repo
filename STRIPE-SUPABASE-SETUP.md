@@ -67,6 +67,21 @@ free-shipping and promotion-code switches.
 Promotion codes are off by default so an active Stripe coupon cannot
 accidentally discount one-of-one inventory.
 
+## Negotiated offers
+
+The on-site offer workflow stores each proposal separately from the public
+catalog price. A customer receives a private capability link after a response;
+the checkout Edge Function verifies that link, the accepted offer state, the
+listing, the customer email, and current inventory before it gives Stripe the
+negotiated amount. Promotion codes are disabled for these one-off sessions so a
+coupon cannot stack on the agreed price.
+
+Apply `supabase/migrations/20260814000000_negotiated_offers.sql` before
+deploying `offer-workflow`, `create-checkout-session`, and `stripe-webhook`.
+The existing Resend notification settings are reused by default. Optional
+`OFFER_NOTIFICATION_*`, `OFFER_EXPIRATION_DAYS`, and `OFFER_ADMIN_EMAILS`
+settings are documented in `supabase/functions/.env.example`.
+
 Do not set live secrets until the same flow has been tested successfully with
 Stripe test keys.
 

@@ -18,7 +18,9 @@ const HTML_PAGES = [
   'checkout-success.html',
   'account.html',
   'admin.html',
+  'inbox.html',
   'metrics.html',
+  'offer.html',
   'policies.html',
   'shipping.html',
   'returns.html'
@@ -41,7 +43,9 @@ const EXPECTED_PAGE_TYPES = {
   'checkout-success.html': 'WebPage',
   'account.html': 'WebPage',
   'admin.html': 'WebPage',
+  'inbox.html': 'WebPage',
   'metrics.html': 'WebPage',
+  'offer.html': 'WebPage',
   'policies.html': 'WebPage',
   'shipping.html': 'WebPage',
   'returns.html': 'WebPage'

@@ -21,6 +21,7 @@ const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
 type Reservation = { id: string; product_id: number; quantity: number; status: string };
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type OrderProduct = {
   id: number;
   name?: string | null;
@@ -185,7 +186,13 @@ async function upsertOrder(session: Stripe.Checkout.Session, status: string, res
   return data;
 }
 
-async function snapshotOrderItems(orderId: string, reservations: Reservation[]) {
+function negotiatedUnitAmount(session: Stripe.Checkout.Session, reservationCount: number) {
+  if (reservationCount !== 1 || !uuidPattern.test(String(session.metadata?.negotiated_offer_id || '').trim())) return null;
+  const amount = Number(session.metadata?.negotiated_offer_price_cents);
+  return Number.isSafeInteger(amount) && amount >= 50 && amount <= 99_999_999 ? amount : null;
+}
+
+async function snapshotOrderItems(orderId: string, reservations: Reservation[], session: Stripe.Checkout.Session) {
   if (!reservations.length) return [];
   const productIds = reservations.map((reservation) => reservation.product_id);
   const { data: products, error } = await admin
@@ -202,7 +209,7 @@ async function snapshotOrderItems(orderId: string, reservations: Reservation[]) 
       order_id: orderId,
       product_id: reservation.product_id,
       quantity: reservation.quantity,
-      unit_amount: checkoutUnitAmount(product || {}),
+      unit_amount: negotiatedUnitAmount(session, reservations.length) ?? checkoutUnitAmount(product || {}),
       product_name: String(product?.name || `Listing #${reservation.product_id}`),
       product_image: String(product?.image || ''),
       product_price_label: String(product?.display_price || product?.price_label || ''),
@@ -216,6 +223,62 @@ async function snapshotOrderItems(orderId: string, reservations: Reservation[]) 
   });
   assertNoSupabaseError(upsertError, 'order item snapshot');
   return rows;
+}
+
+async function markNegotiatedOfferPurchased(session: Stripe.Checkout.Session) {
+  const offerId = String(session.metadata?.negotiated_offer_id || '').trim();
+  if (!uuidPattern.test(offerId)) return;
+  const { data: existing, error: lookupError } = await admin
+    .from('negotiated_offers')
+    .select('id,status,current_amount_cents')
+    .eq('id', offerId)
+    .eq('stripe_session_id', session.id)
+    .maybeSingle();
+  assertNoSupabaseError(lookupError, 'negotiated offer lookup');
+  if (!existing || existing.status === 'purchased') return;
+  const { data, error } = await admin
+    .from('negotiated_offers')
+    .update({
+      status: 'purchased',
+      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+      purchased_at: new Date().toISOString()
+    })
+    .eq('id', offerId)
+    .eq('stripe_session_id', session.id)
+    .eq('status', 'accepted')
+    .select('id,current_amount_cents')
+    .maybeSingle();
+  assertNoSupabaseError(error, 'negotiated offer payment update');
+  if (!data) return;
+  const { error: eventError } = await admin.from('negotiated_offer_events').insert({
+    offer_id: offerId,
+    actor: 'system',
+    action: 'purchased',
+    amount_cents: Number(data.current_amount_cents)
+  });
+  if (eventError) console.error('[stripe-webhook] Could not record negotiated offer purchase', eventError.message);
+}
+
+async function clearNegotiatedOfferCheckoutSession(session: Stripe.Checkout.Session) {
+  const offerId = String(session.metadata?.negotiated_offer_id || '').trim();
+  if (!uuidPattern.test(offerId)) return;
+  const { data, error } = await admin
+    .from('negotiated_offers')
+    .update({ stripe_session_id: null })
+    .eq('id', offerId)
+    .eq('stripe_session_id', session.id)
+    .eq('status', 'accepted')
+    .select('id,current_amount_cents')
+    .maybeSingle();
+  assertNoSupabaseError(error, 'negotiated offer checkout expiration update');
+  if (!data) return;
+  const { error: eventError } = await admin.from('negotiated_offer_events').insert({
+    offer_id: offerId,
+    actor: 'system',
+    action: 'checkout_expired',
+    amount_cents: Number(data.current_amount_cents)
+  });
+  if (eventError) console.error('[stripe-webhook] Could not record negotiated checkout expiration', eventError.message);
 }
 
 async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUserId: string | null) {
@@ -306,10 +369,11 @@ async function finalizePaidCheckout(session: Stripe.Checkout.Session, eventId: s
   const reservations = await getReservations(session);
   if (!reservations.length) throw new Error(`No checkout reservations found for Stripe session ${session.id}`);
   const order = await upsertOrder(session, 'paid', reservations);
-  const items = await snapshotOrderItems(order.id, reservations);
+  const items = await snapshotOrderItems(order.id, reservations, session);
   await upsertCustomerProfile(session, order.buyer_user_id);
   const { error } = await admin.rpc('finalize_checkout_inventory', { p_stripe_session_id: session.id });
   assertNoSupabaseError(error, 'inventory finalization');
+  await markNegotiatedOfferPurchased(session);
   await syncCheckoutInventoryToShopify(session, reservations, eventId);
   return saleNotificationFromStripe(session, order, items, eventId);
 }
@@ -330,6 +394,7 @@ async function handleNonPaidTerminalEvent(session: Stripe.Checkout.Session, orde
   const order = await upsertOrder(session, orderStatus, reservations);
   if (order?.status === 'paid') return;
   await updateReservations(session, reservationStatus);
+  await clearNegotiatedOfferCheckoutSession(session);
 }
 
 Deno.serve(async (request) => {
