@@ -22,6 +22,7 @@
     imageFolder: 'products',
     stripeCheckoutEnabled: true,
     stripeCheckoutFunction: 'create-checkout-session',
+    checkoutSessionStatusFunction: 'checkout-session-status',
     // Guest checkout still uses the server-side inventory reservation and Stripe
     // Checkout flow. Keep this browser flag paired with the server setting so a
     // disabled server route never presents a broken option to shoppers.

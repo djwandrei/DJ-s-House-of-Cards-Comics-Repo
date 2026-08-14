@@ -169,16 +169,12 @@ create table if not exists public.site_admins (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-
-insert into public.site_admins (email) values ('djwandrei@gmail.com')
-on conflict (email) do nothing;
-
+insert into public.site_admins (email) values ('djwandrei@gmail.com') on conflict (email) do nothing;
 create or replace function public.is_site_admin()
 returns boolean language sql stable security definer set search_path = public
 as $$
   select exists (
-    select 1 from public.site_admins
-    where enabled and (
+    select 1 from public.site_admins where enabled and (
       (user_id is not null and user_id = auth.uid())
       or email = lower(trim(coalesce(auth.jwt() ->> 'email', '')))
     )

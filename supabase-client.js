@@ -465,6 +465,40 @@ window.DJ = window.DJ || {};
       : {};
   }
 
+  const OPERATIONAL_METADATA_KEYS = new Set([
+    'sold_via',
+    'stripe_session_id',
+    'last_quantity_sold',
+    'last_sold_at',
+    'last_inventory_source',
+    'last_shopify_webhook_id',
+    'last_shopify_inventory_at',
+    'last_shopify_source_updated_at'
+  ]);
+
+  function isOperationalMetadataKey(key = '') {
+    const normalized = String(key || '').trim().toLowerCase();
+    return OPERATIONAL_METADATA_KEYS.has(normalized)
+      || normalized.startsWith('stripe_')
+      || normalized.startsWith('last_shopify_');
+  }
+
+  function catalogMetadata(value, includeOperationalState = false) {
+    const source = normalizeObject(value);
+    return Object.fromEntries(Object.entries(source).filter(([key]) => (
+      includeOperationalState || !isOperationalMetadataKey(key)
+    )));
+  }
+
+  function mergeRemoteOperationalMetadata(payload, remoteMetadata) {
+    const merged = { ...catalogMetadata(payload?.metadata, false) };
+    for (const [key, value] of Object.entries(normalizeObject(remoteMetadata))) {
+      if (isOperationalMetadataKey(key)) merged[key] = value;
+    }
+    payload.metadata = merged;
+    return payload;
+  }
+
   function normalizePlayerAthlete(value = '') {
     return String(value || '').trim().replace(/\s*\|\s*/g, '|');
   }
@@ -545,7 +579,7 @@ window.DJ = window.DJ || {};
     };
   }
 
-  function toRemoteProduct(product = {}) {
+  function toRemoteProduct(product = {}, options = {}) {
     const normalizedYear = product.year === '' || product.year === null || product.year === undefined
       ? null
       : Number(product.year);
@@ -563,6 +597,7 @@ window.DJ = window.DJ || {};
       : Number(product.checkoutPrice);
     const normalizedGallery = normalizeStringArray(product.imageGallery);
     const hasOwn = (key) => Object.prototype.hasOwnProperty.call(product, key);
+    const includeOperationalState = options.includeOperationalState === true;
     const payload = {
       id: Number(product.id),
       name: String(product.name || '').trim(),
@@ -576,7 +611,6 @@ window.DJ = window.DJ || {};
       image_gallery: normalizedGallery,
       description: String(product.description || '').trim(),
       is_featured: Boolean(product.isFeatured),
-      is_deleted: Boolean(product.isDeleted),
       sort_rank: Number.isFinite(Number(product.sortRank)) ? Number(product.sortRank) : 0
     };
 
@@ -608,15 +642,15 @@ window.DJ = window.DJ || {};
       payload.display_price = String(product.displayPrice || '').trim();
     }
 
-    if (hasOwn('copyCount')) {
+    if (includeOperationalState && hasOwn('copyCount')) {
       payload.copy_count = Number.isFinite(normalizedCopyCount) ? normalizedCopyCount : null;
     }
 
-    if (hasOwn('quantityAvailable') || hasOwn('copyCount')) {
+    if (includeOperationalState && (hasOwn('quantityAvailable') || hasOwn('copyCount'))) {
       payload.quantity_available = Number.isFinite(normalizedQuantityAvailable) ? normalizedQuantityAvailable : 1;
     }
 
-    if (hasOwn('checkoutEnabled')) {
+    if (includeOperationalState && hasOwn('checkoutEnabled')) {
       payload.checkout_enabled = Boolean(product.checkoutEnabled);
     }
 
@@ -624,20 +658,24 @@ window.DJ = window.DJ || {};
       payload.checkout_price = Number.isFinite(normalizedCheckoutPrice) ? normalizedCheckoutPrice : null;
     }
 
-    if (hasOwn('saleStatus')) {
+    if (includeOperationalState && hasOwn('saleStatus')) {
       payload.sale_status = String(product.saleStatus || 'available').trim() || 'available';
     }
 
-    if (hasOwn('soldAt')) {
+    if (includeOperationalState && hasOwn('soldAt')) {
       payload.sold_at = product.soldAt || null;
     }
 
-    if (hasOwn('hiddenReason')) {
+    if (includeOperationalState && hasOwn('hiddenReason')) {
       payload.hidden_reason = String(product.hiddenReason || '').trim();
     }
 
-    if (hasOwn('archivedAt')) {
+    if (includeOperationalState && hasOwn('archivedAt')) {
       payload.archived_at = product.archivedAt || null;
+    }
+
+    if (includeOperationalState && hasOwn('isDeleted')) {
+      payload.is_deleted = Boolean(product.isDeleted);
     }
 
     if (hasOwn('itemPhotoUrl')) {
@@ -657,7 +695,7 @@ window.DJ = window.DJ || {};
     }
 
     if (hasOwn('metadata')) {
-      payload.metadata = normalizeObject(product.metadata);
+      payload.metadata = catalogMetadata(product.metadata, includeOperationalState);
     }
 
     return payload;
@@ -1062,7 +1100,7 @@ window.DJ = window.DJ || {};
   async function upsertProduct(product) {
     const client = await getRequiredClient();
 
-    const payload = toRemoteProduct(product);
+    const payload = toRemoteProduct(product, { includeOperationalState: true });
     if (!Number.isFinite(payload.id)) {
       throw new Error('Product id is required for remote saves.');
     }
@@ -1092,22 +1130,34 @@ window.DJ = window.DJ || {};
   }
 
   async function deleteProduct(productId) {
-    const client = await getRequiredClient();
-
-    const { error } = await client
-      .from(config.productsTable)
-      .delete()
-      .eq('id', Number(productId));
-
-    if (error) throw createFriendlyError(error, 'deleteProduct');
+    const id = Number(productId);
+    if (!Number.isSafeInteger(id) || id <= 0) throw new Error('A valid product id is required for deletion.');
+    const result = await invokeFunction('shopify-catalog-sync', {
+      action: 'delete-product',
+      productId: id,
+      confirmProductId: id,
+      reason: 'Deleted from the DJHC admin listing editor.'
+    });
     clearCache();
-    return true;
+    return result;
+  }
+
+  async function verifyCheckoutSession(sessionId) {
+    const normalized = String(sessionId || '').trim();
+    if (!/^cs_(?:test_|live_)?[A-Za-z0-9_]{12,255}$/.test(normalized)) {
+      throw new Error('A valid checkout session is required.');
+    }
+    const functionName = String(config.checkoutSessionStatusFunction || 'checkout-session-status').trim();
+    const result = await invokeFunction(functionName, { sessionId: normalized });
+    return { status: String(result?.status || 'unknown').trim().toLowerCase() };
   }
 
   async function seedProducts(products, options = {}) {
     const client = await getRequiredClient();
     const normalized = prepareSeedProducts(products, options)
-      .map(toRemoteProduct)
+      .map((product) => toRemoteProduct(product, {
+        includeOperationalState: options.includeOperationalState === true
+      }))
       .filter((item) => Number.isFinite(item.id) && item.name);
     if (!normalized.length) return 0;
 
@@ -1116,6 +1166,16 @@ window.DJ = window.DJ || {};
 
     for (let index = 0; index < normalized.length; index += chunkSize) {
       const slice = normalized.slice(index, index + chunkSize);
+      if (options.includeOperationalState !== true && slice.some((item) => Object.hasOwn(item, 'metadata'))) {
+        const ids = slice.map((item) => Number(item.id)).filter(Number.isSafeInteger);
+        const { data: currentRows, error: currentError } = await client
+          .from(config.productsTable)
+          .select('id,metadata')
+          .in('id', ids);
+        if (currentError) throw createFriendlyError(currentError, 'seedProducts');
+        const currentMetadata = new Map((currentRows || []).map((row) => [Number(row.id), row.metadata]));
+        slice.forEach((item) => mergeRemoteOperationalMetadata(item, currentMetadata.get(Number(item.id))));
+      }
       const { error } = await client
         .from(config.productsTable)
         .upsert(slice, { onConflict: 'id' });
@@ -1218,6 +1278,7 @@ window.DJ = window.DJ || {};
     upsertProduct,
     deleteProduct,
     syncProductToShopify,
+    verifyCheckoutSession,
     uploadImage,
     seedProducts,
     testConnection,

@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import { readJsonBody } from '../_shared/http.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
@@ -109,7 +110,7 @@ Deno.serve(async (request) => {
 
   let input: Record<string, unknown>;
   try {
-    input = await request.json();
+    input = await readJsonBody(request, 8 * 1024);
   } catch {
     return jsonResponse({ error: 'Invalid event.' }, 400, request);
   }

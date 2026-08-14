@@ -2,7 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.cwd();
-const checkOnly = process.argv.includes('--check');
+const apply = process.argv.includes('--apply');
+const check = process.argv.includes('--check');
+if (apply && check) throw new Error('Choose either --apply or --check, not both.');
 const FILES = [
   'products.json',
   'products-baseball.json',
@@ -40,20 +42,22 @@ for (const file of FILES) {
     fileRanged += 1;
     if (Math.abs(Number(product.price) - high) < 0.001) continue;
     fileIncorrect += 1;
-    if (!checkOnly) product.price = high;
+    if (apply) product.price = high;
   }
 
-  if (!checkOnly && fileIncorrect) {
+  if (apply && fileIncorrect) {
     await fs.writeFile(fullPath, `${JSON.stringify(products, null, 2)}\n`, 'utf8');
   }
 
   incorrectCount += fileIncorrect;
   rangedCount += fileRanged;
-  console.log(`${file}: ${fileRanged} ranged listings, ${fileIncorrect} ${checkOnly ? 'incorrect' : 'normalized'}`);
+  console.log(`${file}: ${fileRanged} ranged listings, ${fileIncorrect} ${apply ? 'normalized' : 'would change'}`);
 }
 
-if (checkOnly && incorrectCount) {
+console.log(`${apply ? 'Normalized' : 'Audited'} ${rangedCount} ranged listings across ${FILES.length} catalog files.`);
+if (check && incorrectCount) {
   throw new Error(`${incorrectCount} of ${rangedCount} ranged listings do not use the high price.`);
 }
-
-console.log(`${checkOnly ? 'Checked' : 'Normalized'} ${rangedCount} ranged listings across ${FILES.length} catalog files.`);
+if (!apply && incorrectCount) {
+  console.log(`Audit only: ${incorrectCount} listing prices would change. Re-run with --apply to write them.`);
+}

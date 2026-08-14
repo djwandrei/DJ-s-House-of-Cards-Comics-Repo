@@ -1,3 +1,4 @@
+import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import {
   isShopifyConfigured,
   shopifyClientCredentials,
@@ -5,10 +6,17 @@ import {
   shopifyShopDomain,
   verifyShopifyOauthHmac
 } from '../_shared/shopify.ts';
+import { fetchWithTimeout } from '../_shared/http.ts';
+import { encryptSecret } from '../_shared/secret-crypto.ts';
 
 const OAUTH_STATE_COOKIE = 'shopify_oauth_state';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
+const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
+const admin = supabaseUrl && serviceRoleKey
+  ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } })
+  : null;
 
 function htmlEscape(value = '') {
   return String(value || '')
@@ -120,7 +128,7 @@ function isOauthConfigured() {
 
 async function exchangeAuthorizationCode(shop: string, code: string) {
   const { clientId, clientSecret } = shopifyClientCredentials();
-  const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+  const response = await fetchWithTimeout(`https://${shop}/admin/oauth/access_token`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -131,7 +139,7 @@ async function exchangeAuthorizationCode(shop: string, code: string) {
       client_secret: clientSecret,
       code
     })
-  });
+  }, 15_000);
   const payload = await response.json().catch(() => ({})) as {
     access_token?: string;
     scope?: string;
@@ -143,7 +151,24 @@ async function exchangeAuthorizationCode(shop: string, code: string) {
     throw new Error(`Shopify OAuth token exchange failed: ${description}`);
   }
   validateGrantedScopes(payload.scope || '');
-  return payload.scope || '';
+  return { accessToken: payload.access_token, scopes: payload.scope || '' };
+}
+
+async function persistAuthorization(shop: string, accessToken: string, scopes: string) {
+  if (!admin) throw new Error('Supabase service credentials are required to store Shopify authorization.');
+  const encryptionSecret = String(Deno.env.get('SHOPIFY_TOKEN_ENCRYPTION_KEY') || '').trim();
+  if (!encryptionSecret) throw new Error('SHOPIFY_TOKEN_ENCRYPTION_KEY is required to store Shopify authorization.');
+  const encrypted = await encryptSecret(accessToken, encryptionSecret);
+  const now = new Date().toISOString();
+  const { error } = await admin.from('shopify_oauth_credentials').upsert({
+    shop_domain: shop,
+    encrypted_access_token: encrypted.encryptedValue,
+    initialization_vector: encrypted.initializationVector,
+    scopes,
+    installed_at: now,
+    updated_at: now
+  }, { onConflict: 'shop_domain' });
+  if (error) throw new Error(`Shopify authorization could not be stored: ${error.message}`);
 }
 
 Deno.serve(async (request) => {
@@ -166,8 +191,9 @@ Deno.serve(async (request) => {
     }
     if (!await verifyShopifyOauthHmac(url)) throw new Error('Invalid Shopify OAuth signature.');
 
-    const scopes = await exchangeAuthorizationCode(shop, code);
-    console.info('[shopify-oauth-callback] Shopify app installed', { shop, scopes });
+    const authorization = await exchangeAuthorizationCode(shop, code);
+    await persistAuthorization(shop, authorization.accessToken, authorization.scopes);
+    console.info('[shopify-oauth-callback] Shopify app installed', { shop, scopes: authorization.scopes });
 
     return htmlResponse(
       `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Shopify Installed</title></head><body><h1>Shopify app installed</h1><p>DJHC Website Inventory Sync is authorized for ${htmlEscape(shop)}. You can close this tab and return to Codex.</p></body></html>`,

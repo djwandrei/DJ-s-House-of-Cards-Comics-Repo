@@ -6,10 +6,10 @@ This site is a static storefront with Supabase-backed catalog administration and
 
 1. Each HTML page loads shared styles and the small page modules it needs.
 2. `core.js` provides shared browser helpers such as safe asset URLs, theme state, wishlist/cart state, image fallbacks, and accessibility utilities.
-3. `supabase-client.js` is the only module that talks directly to Supabase. It maps database rows to storefront products and centralizes authentication, caching, uploads, saves, and permanent deletes.
+3. `supabase-client.js` is the only browser module that talks directly to Supabase. It maps database rows to storefront products and centralizes authentication, caching, uploads, and saves. Permanent deletion is delegated to the protected Shopify catalog-sync Edge Function.
 4. `catalog.js` loads Supabase first, falls back to static catalog files, normalizes products, and renders all storefront product views.
 5. `backend-admin.js` powers the only listing editor. Signed-in changes update Supabase immediately.
-6. `payments.js` bridges buyer authentication and quantity-aware, multi-item Stripe Checkout through Supabase Edge Functions.
+6. `payments.js` bridges buyer authentication and quantity-aware, multi-item Stripe Checkout through Supabase Edge Functions. Checkout success removes only the saved checkout snapshot after the server confirms that the returned session is paid.
 
 ## Sources Of Truth
 
@@ -21,8 +21,34 @@ This site is a static storefront with Supabase-backed catalog administration and
 The static catalog and Supabase should always contain the same product IDs and media paths after a release.
 
 Listings are never intentionally hidden as a substitute for deletion. Use
-`scripts/hard-delete-supabase-products-not-in-catalog.mjs` to audit and
-permanently remove Supabase rows that are absent from `products.json`.
+`scripts/hard-delete-supabase-products-not-in-catalog.mjs` to audit and,
+after explicit review, permanently remove Supabase rows that are absent from
+`products.json`. Apply mode creates a full remote backup, preserves remote
+sale/reservation metadata during content reconciliation, and routes each
+deletion through the audited Shopify/Supabase Edge workflow.
+
+## Backend Safety Boundaries
+
+- `supabase/migrations/` is the canonical ordered database history. A fresh
+  local Supabase start in CI must replay every migration successfully.
+- `public.site_admins` and `public.is_site_admin()` are the central admin
+  authorization source. Browser product-delete policies are intentionally
+  absent.
+- Public checkout, offer, and inquiry endpoints use rate limits and bounded
+  request sizes. Checkout inventory is held transactionally and only an
+  unexpired hold can be finalized by a paid Stripe event.
+- Offer access links carry random capabilities in URL fragments. Only hashes
+  are stored, and capabilities expire or are revoked when the workflow ends.
+- Sale, offer, and inquiry email/webhook work is recorded in
+  `notification_outbox`. `notification-worker` retries each channel
+  independently and requires `NOTIFICATION_WORKER_SECRET`.
+- Schedule `notification-worker` from the hosting environment at a regular
+  interval and pass `x-djhc-worker-secret`. Immediate delivery attempts
+  reduce latency, but the schedule is what guarantees recovery after a provider
+  or function interruption.
+- Shopify OAuth tokens are encrypted before database storage. The encryption
+  key and worker secret belong only in Edge Function secrets, never browser
+  configuration or this repository.
 
 ## Main Files
 
@@ -52,6 +78,8 @@ Run these before deployment:
 
 ```powershell
 node scripts/site-integrity-check.mjs
+node scripts/audit-backend-hardening.mjs
+node scripts/run-correctness-regression-tests.mjs
 node scripts/audit-structured-data.mjs
 powershell -ExecutionPolicy Bypass -File scripts/audit-secrets.ps1
 git diff --check

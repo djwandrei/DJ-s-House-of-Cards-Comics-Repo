@@ -1,3 +1,7 @@
+import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import { fetchWithTimeout } from './http.ts';
+import { decryptSecret } from './secret-crypto.ts';
+
 const DEFAULT_API_VERSION = '2026-04';
 const DEFAULT_OAUTH_SCOPES = [
   'read_products',
@@ -43,7 +47,12 @@ export type ShopifyInventoryQuantity = {
 };
 
 let clientCredentialsToken: TokenCache | null = null;
+let storedOauthToken: TokenCache | null = null;
 const encoder = new TextEncoder();
+
+function requestTimeoutMs() {
+  return Math.max(2_000, Math.min(60_000, Number(Deno.env.get('SHOPIFY_REQUEST_TIMEOUT_MS')) || 15_000));
+}
 
 function configuredShopDomain() {
   return String(Deno.env.get('SHOPIFY_SHOP_DOMAIN') || '')
@@ -77,6 +86,35 @@ export function isShopifyConfigured() {
     isShopifyShopDomain(configuredShopDomain())
     && (staticToken || (clientId && clientSecret))
   );
+}
+
+async function storedOauthAccessToken() {
+  const now = Date.now();
+  if (storedOauthToken && now < storedOauthToken.expiresAt) return storedOauthToken.accessToken;
+
+  const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
+  const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
+  if (!supabaseUrl || !serviceRoleKey) return '';
+
+  const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
+  const { data, error } = await admin
+    .from('shopify_oauth_credentials')
+    .select('encrypted_access_token,initialization_vector')
+    .eq('shop_domain', shopifyShopDomain())
+    .maybeSingle();
+  if (error) throw new Error(`Stored Shopify OAuth credentials could not be read: ${error.message}`);
+  if (!data) return '';
+
+  const encryptionSecret = String(Deno.env.get('SHOPIFY_TOKEN_ENCRYPTION_KEY') || '').trim();
+  if (!encryptionSecret) throw new Error('SHOPIFY_TOKEN_ENCRYPTION_KEY is required to use the stored Shopify OAuth token.');
+  const accessToken = await decryptSecret(
+    String(data.encrypted_access_token || ''),
+    String(data.initialization_vector || ''),
+    encryptionSecret
+  );
+  if (!accessToken) throw new Error('The stored Shopify OAuth token is empty.');
+  storedOauthToken = { accessToken, expiresAt: now + 5 * 60 * 1000 };
+  return accessToken;
 }
 
 export function shopifyShopDomain() {
@@ -154,6 +192,9 @@ export async function shopifyAccessToken() {
   const staticToken = String(Deno.env.get('SHOPIFY_ADMIN_ACCESS_TOKEN') || '').trim();
   if (staticToken) return staticToken;
 
+  const persistedToken = await storedOauthAccessToken();
+  if (persistedToken) return persistedToken;
+
   const { clientId, clientSecret } = shopifyClientCredentials();
 
   const now = Date.now();
@@ -161,7 +202,7 @@ export async function shopifyAccessToken() {
     return clientCredentialsToken.accessToken;
   }
 
-  const response = await fetch(`https://${shopifyShopDomain()}/admin/oauth/access_token`, {
+  const response = await fetchWithTimeout(`https://${shopifyShopDomain()}/admin/oauth/access_token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -169,7 +210,7 @@ export async function shopifyAccessToken() {
       client_id: clientId,
       client_secret: clientSecret
     })
-  });
+  }, requestTimeoutMs());
   const payload = await response.json().catch(() => ({})) as {
     access_token?: string;
     expires_in?: number;
@@ -206,14 +247,14 @@ export async function shopifyRest<T>(
 ): Promise<T> {
   if (!isShopifyConfigured()) throw new Error('Shopify Admin API is not configured.');
 
-  const response = await fetch(`https://${shopifyShopDomain()}/admin/api/${shopifyApiVersion()}/${endpoint}`, {
+  const response = await fetchWithTimeout(`https://${shopifyShopDomain()}/admin/api/${shopifyApiVersion()}/${endpoint}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': await shopifyAccessToken()
     },
     body: body ? JSON.stringify(body) : undefined
-  });
+  }, requestTimeoutMs());
 
   const text = await response.text();
   let payload: unknown = {};
@@ -234,11 +275,12 @@ export async function shopifyRest<T>(
 
 export async function shopifyGraphql<T>(
   query: string,
-  variables: Record<string, unknown> = {}
+  variables: Record<string, unknown> = {},
+  timeoutMs = requestTimeoutMs()
 ): Promise<T> {
   if (!isShopifyConfigured()) throw new Error('Shopify Admin API is not configured.');
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `https://${shopifyShopDomain()}/admin/api/${shopifyApiVersion()}/graphql.json`,
     {
       method: 'POST',
@@ -247,7 +289,8 @@ export async function shopifyGraphql<T>(
         'X-Shopify-Access-Token': await shopifyAccessToken()
       },
       body: JSON.stringify({ query, variables })
-    }
+    },
+    timeoutMs
   );
 
   const payload = await response.json().catch(() => ({})) as GraphqlResponse<T>;
@@ -365,7 +408,8 @@ export async function setShopifyInventory(options: {
         referenceDocumentUri: options.referenceDocumentUri,
         quantities: options.quantities
       }
-    }
+    },
+    requestTimeoutMs()
   );
 
   const result = data.inventorySetQuantities;

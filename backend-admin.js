@@ -231,7 +231,7 @@ window.DJ = window.DJ || {};
               </div>
               <div class="admin-toolbar-actions">
                 <button class="button-secondary" id="backendRefreshProducts" type="button">Refresh Remote Listings</button>
-                <button class="button-secondary" id="backendSeedProducts" type="button">Import Current products.json</button>
+                <button class="button-secondary" id="backendSeedProducts" type="button">Import Catalog Content</button>
                 <button class="button-secondary" id="backendConnectionTest" type="button">Run Connection Test</button>
                 <button class="button-ghost" id="backendSignOut" type="button">Sign Out</button>
               </div>
@@ -1260,7 +1260,7 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (!window.confirm('Import the current products.json catalog into Supabase? Existing rows with the same id will be updated.')) {
+    if (!window.confirm('Import product content from products.json into Supabase? Live quantity, availability, sold, hidden, archived, and deletion state will be preserved.')) {
       return;
     }
 
@@ -1274,7 +1274,7 @@ window.DJ = window.DJ || {};
         featuredProducts
       });
       await refreshRemoteProducts(true);
-      setBackendStatus(`Imported ${total} product${total === 1 ? '' : 's'} into Supabase, including ${featuredProducts.length} featured listing${featuredProducts.length === 1 ? '' : 's'}.`, 'success');
+      setBackendStatus(`Imported catalog content for ${total} product${total === 1 ? '' : 's'} while preserving live operational state, including ${featuredProducts.length} featured listing${featuredProducts.length === 1 ? '' : 's'}.`, 'success');
     } catch (error) {
       console.error(error);
       setBackendStatus(error.message || 'Unable to import products into Supabase.', 'error');
@@ -1391,17 +1391,17 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    if (!window.confirm('Permanently delete this listing from Supabase? This cannot be undone.')) return;
+    if (!window.confirm('Permanently delete this listing from Shopify and Supabase? An audit snapshot will be retained, but this cannot be undone from the admin page.')) return;
 
     setBusy(true);
-    setBackendStatus('Deleting remote listing...', 'info');
+    setBackendStatus('Deleting listing from Shopify and Supabase...', 'info');
     try {
       await backend().deleteProduct(productId);
       state.remoteProducts = state.remoteProducts.filter((product) => Number(product.id) !== productId);
       state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       clearRemoteForm();
       renderRemoteListings();
-      setBackendStatus(`Deleted remote listing #${productId}.`, 'success');
+      setBackendStatus(`Deleted listing #${productId} from Shopify and Supabase.`, 'success');
     } catch (error) {
       console.error(error);
       setBackendStatus(error.message || 'Unable to delete remote listing.', 'error');

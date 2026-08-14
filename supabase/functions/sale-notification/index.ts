@@ -1,7 +1,12 @@
-import { sendSaleNotification } from '../_shared/sale-notifications.ts';
+import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import { queueSaleNotification } from '../_shared/sale-notifications.ts';
+import { readJsonBody } from '../_shared/http.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
 
 const inboundSecret = String(Deno.env.get('SALE_NOTIFICATION_INBOUND_SECRET') || '').trim();
+const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
+const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
+const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -63,7 +68,8 @@ function normalizedItems(payload: Record<string, unknown>): SaleNotificationItem
 
 function notificationFromPayload(payload: Record<string, unknown>): SaleNotification {
   const provider = String(payload.provider || payload.platform || payload.source || 'Marketplace').trim();
-  const eventId = String(payload.eventId || payload.event_id || payload.orderId || payload.order_id || crypto.randomUUID()).trim();
+  const eventId = String(payload.eventId || payload.event_id || payload.orderId || payload.order_id || '').trim();
+  if (!eventId) throw new Error('A stable event or order identifier is required.');
   return {
     provider,
     eventId,
@@ -89,7 +95,7 @@ Deno.serve(async (request) => {
 
   let payload: Record<string, unknown>;
   try {
-    const parsed = await request.json();
+    const parsed = await readJsonBody(request, 256 * 1024);
     if (!isRecord(parsed)) throw new Error('Invalid payload shape.');
     payload = parsed;
   } catch {
@@ -97,8 +103,8 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const result = await sendSaleNotification(notificationFromPayload(payload));
-    return jsonResponse({ received: true, notification: result });
+    const result = await queueSaleNotification(admin, notificationFromPayload(payload));
+    return jsonResponse({ received: true, notification: result }, 202);
   } catch (error) {
     console.error('[sale-notification]', error);
     return jsonResponse({ error: 'Sale notification failed.' }, 500);

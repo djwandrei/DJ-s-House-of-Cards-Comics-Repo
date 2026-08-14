@@ -1,17 +1,19 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import {
+  processNotificationOutbox,
+  queueEmailNotification
+} from '../_shared/notification-outbox.ts';
+import { enforcePublicRateLimits } from '../_shared/request-security.ts';
+import { readJsonBody } from '../_shared/http.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
-const resendApiKey = String(Deno.env.get('RESEND_API_KEY') || '').trim();
-const notificationFrom = String(
-  Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_FROM') || Deno.env.get('SALE_NOTIFICATION_EMAIL_FROM') || ''
-).trim();
 const notificationReplyTo = String(
   Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_REPLY_TO') || Deno.env.get('SALE_NOTIFICATION_EMAIL_REPLY_TO') || ''
 ).trim();
 const notificationRecipients = String(
-  Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_TO') || Deno.env.get('SALE_NOTIFICATION_EMAIL_TO') || Deno.env.get('ADMIN_EMAIL') || ''
+  Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_TO') || Deno.env.get('SALE_NOTIFICATION_EMAIL_TO') || ''
 )
   .split(',')
   .map((value) => value.trim())
@@ -20,6 +22,7 @@ const uploadBucket = 'collector-inquiry-uploads';
 const maxPhotos = 3;
 const maxPhotoBytes = 6 * 1024 * 1024;
 const maxTotalPhotoBytes = 6 * 1024 * 1024;
+const maxRequestBodyBytes = 10 * 1024 * 1024;
 const maxEncodedPhotoCharacters = Math.ceil(maxPhotoBytes / 3) * 4 + 4;
 const supportedPhotoTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const supportedKinds = new Set(['contact', 'sell', 'trade', 'want_list', 'offer', 'bundle']);
@@ -64,18 +67,6 @@ function safeText(value: unknown, limit: number) {
 function allowedOrigin(request: Request) {
   const origin = String(request.headers.get('origin') || '').replace(/\/+$/, '');
   return !origin || origin === siteUrl;
-}
-
-function requestIp(request: Request) {
-  const forwarded = String(request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
-  return forwarded || String(request.headers.get('cf-connecting-ip') || '').trim() || 'unknown';
-}
-
-async function fingerprint(request: Request, email: string) {
-  const source = `collector-inquiry:${requestIp(request)}:${email.toLowerCase()}`;
-  const bytes = new TextEncoder().encode(source);
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
-  return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
 
 function extensionFor(type: string) {
@@ -146,7 +137,7 @@ function escapeHtml(value: unknown) {
     .replaceAll("'", '&#39;');
 }
 
-async function sendNotification(input: {
+async function queueNotification(input: {
   id: string;
   kind: string;
   name: string;
@@ -160,10 +151,6 @@ async function sendNotification(input: {
   sourcePath: string;
   photoUrls: string[];
 }) {
-  if (!resendApiKey || !notificationFrom || !notificationRecipients.length) {
-    return { sent: false, skippedReason: 'Inquiry email settings are not configured.' };
-  }
-
   const subject = `[DJHC Inquiry] ${input.kind.replaceAll('_', ' ')} from ${input.name}`;
   const photoLines = input.photoUrls.map((url, index) => `Photo ${index + 1}: ${url}`);
   const text = [
@@ -199,23 +186,30 @@ async function sendNotification(input: {
       <p><a href="${escapeHtml(`${siteUrl}/inbox.html`)}">Open the Admin Inbox</a></p>
     </div>
   `;
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: notificationFrom,
-      to: notificationRecipients,
-      subject,
-      text,
-      html,
-      reply_to: input.email || notificationReplyTo || undefined
-    })
+  const queued = await queueEmailNotification(admin, `inquiry:${input.id}:owner`, 'inquiry', {
+    to: notificationRecipients,
+    subject,
+    text,
+    html,
+    replyTo: input.email || notificationReplyTo || undefined
   });
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Inquiry notification failed (${response.status}): ${detail.slice(0, 300)}`);
+  if (queued) {
+    try {
+      await processNotificationOutbox(admin, 10);
+    } catch (error) {
+      console.error('[collector-inquiry] Immediate notification processing failed', error);
+    }
   }
-  return { sent: true };
+  return { queued };
+}
+
+async function cleanupFailedInquiry(inquiryId: string, photoPaths: string[]) {
+  if (photoPaths.length) {
+    const { error } = await admin.storage.from(uploadBucket).remove(photoPaths);
+    if (error) console.error('[collector-inquiry] Uploaded-photo cleanup failed', error.message);
+  }
+  const { error } = await admin.from('collector_inquiries').delete().eq('id', inquiryId);
+  if (error) console.error('[collector-inquiry] Failed-inquiry cleanup failed', error.message);
 }
 
 Deno.serve(async (request) => {
@@ -226,7 +220,7 @@ Deno.serve(async (request) => {
 
   let input: InquiryInput;
   try {
-    input = await request.json();
+    input = await readJsonBody<InquiryInput>(request, maxRequestBodyBytes);
   } catch {
     return jsonResponse({ error: 'Please submit the form again.' }, 400);
   }
@@ -249,16 +243,40 @@ Deno.serve(async (request) => {
   let productIds: number[];
   let offerAmount: number | null;
   let photos: InquiryPhoto[];
+  const preparedPhotos: PreparedPhoto[] = [];
   try {
     productIds = normalizedProductIds(input.productIds);
     offerAmount = normalizedAmount(input.offerAmount);
     photos = Array.isArray(input.photos) ? input.photos.slice(0, maxPhotos) as InquiryPhoto[] : [];
     if (Array.isArray(input.photos) && input.photos.length > maxPhotos) throw new Error('Attach no more than three photos.');
+    const uploadGroupId = crypto.randomUUID();
+    for (let index = 0; index < photos.length; index += 1) {
+      preparedPhotos.push(decodePhoto(photos[index], uploadGroupId, index));
+    }
+    const totalBytes = preparedPhotos.reduce((total, photo) => total + photo.bytes.length, 0);
+    if (totalBytes > maxTotalPhotoBytes) throw new Error('Your combined photos must be 6 MB or smaller.');
   } catch (error) {
     return jsonResponse({ error: error instanceof Error ? error.message : 'Invalid inquiry details.' }, 400);
   }
 
-  const submissionFingerprint = await fingerprint(request, email);
+  let submissionFingerprint = '';
+  try {
+    const rateLimit = await enforcePublicRateLimits(admin, request, {
+      scope: 'collector-inquiry',
+      discriminator: email,
+      perIpLimit: 12,
+      perIdentityLimit: 5,
+      windowSeconds: 3600
+    });
+    submissionFingerprint = rateLimit.identityFingerprint;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/wait before|rate limit|too many/i.test(message)) {
+      return jsonResponse({ error: 'Please wait before submitting another request.' }, 429);
+    }
+    console.error('[collector-inquiry] Rate limit failed', message);
+    return jsonResponse({ error: 'Your request could not be verified. Please try again.' }, 503);
+  }
   const { data: inquiryId, error: inquiryError } = await admin.rpc('create_collector_inquiry', {
     p_fingerprint: submissionFingerprint,
     p_kind: kind,
@@ -280,18 +298,6 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: status === 429 ? 'Please wait before submitting another request.' : 'Could not send your inquiry. Please try again.' }, status);
   }
 
-  const preparedPhotos: PreparedPhoto[] = [];
-  try {
-    for (let index = 0; index < photos.length; index += 1) {
-      preparedPhotos.push(decodePhoto(photos[index], String(inquiryId), index));
-    }
-    const totalBytes = preparedPhotos.reduce((total, photo) => total + photo.bytes.length, 0);
-    if (totalBytes > maxTotalPhotoBytes) throw new Error('Your combined photos must be 6 MB or smaller.');
-  } catch (error) {
-    await admin.from('collector_inquiries').update({ status: 'spam' }).eq('id', inquiryId);
-    return jsonResponse({ error: error instanceof Error ? error.message : 'One photo could not be read.' }, 400);
-  }
-
   const photoPaths: string[] = [];
   for (const photo of preparedPhotos) {
     const { error: uploadError } = await admin.storage.from(uploadBucket).upload(photo.path, photo.bytes, {
@@ -300,30 +306,38 @@ Deno.serve(async (request) => {
     });
     if (uploadError) {
       console.error('[collector-inquiry] Photo upload failed', uploadError.message);
-      continue;
+      await cleanupFailedInquiry(String(inquiryId), photoPaths);
+      return jsonResponse({ error: 'One photo could not be uploaded. No partial inquiry was saved.' }, 503);
     }
     photoPaths.push(photo.path);
   }
   if (photoPaths.length) {
     const { error: photoUpdateError } = await admin.from('collector_inquiries').update({ photo_paths: photoPaths }).eq('id', inquiryId);
-    if (photoUpdateError) console.error('[collector-inquiry] Could not attach photo paths', photoUpdateError.message);
+    if (photoUpdateError) {
+      console.error('[collector-inquiry] Could not attach photo paths', photoUpdateError.message);
+      await cleanupFailedInquiry(String(inquiryId), photoPaths);
+      return jsonResponse({ error: 'Your photos could not be attached. No partial inquiry was saved.' }, 503);
+    }
   }
 
-  const photoUrls = (await Promise.all(photoPaths.map(async (path) => {
-    const { data, error } = await admin.storage.from(uploadBucket).createSignedUrl(path, 7 * 24 * 60 * 60);
-    if (error || !data?.signedUrl) return '';
-    return data.signedUrl;
-  }))).filter(Boolean);
+  const { data: signedRows, error: signedError } = photoPaths.length
+    ? await admin.storage.from(uploadBucket).createSignedUrls(photoPaths, 7 * 24 * 60 * 60)
+    : { data: [], error: null };
+  if (signedError) console.error('[collector-inquiry] Photo URL signing failed', signedError.message);
+  const photoUrls = (signedRows || []).map((row) => row.signedUrl || '').filter(Boolean);
 
-  let notification: { sent: boolean; skippedReason?: string } = { sent: false };
+  let notification = { queued: false };
   try {
-    notification = await sendNotification({
+    notification = await queueNotification({
       id: String(inquiryId), kind, name, email, phone, preferredContact,
       subject, message, offerAmount, productIds, sourcePath, photoUrls
     });
   } catch (error) {
-    console.error('[collector-inquiry] Notification failed', error);
+    // The inquiry and any photos are already durable and visible in the admin
+    // inbox. Do not tell the shopper the submission failed and invite a
+    // duplicate merely because notification enqueueing was temporarily down.
+    console.error('[collector-inquiry] Notification enqueue failed', error);
   }
 
-  return jsonResponse({ accepted: true, notification: { sent: notification.sent } }, 201);
+  return jsonResponse({ accepted: true, notification: { queued: notification.queued } }, 201);
 });

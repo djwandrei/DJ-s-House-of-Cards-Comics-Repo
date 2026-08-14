@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import shutil
 import subprocess
 from collections import defaultdict
 from datetime import datetime
@@ -37,7 +36,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--old-products", default="")
     parser.add_argument("--output-dir", default="outputs")
     parser.add_argument("--review-dir", default="")
-    parser.add_argument("--apply", action="store_true")
     return parser.parse_args()
 
 
@@ -117,11 +115,6 @@ def write_json(path: Path, value: Any) -> None:
 
 def main() -> int:
     args = parse_args()
-    if args.apply:
-        raise RuntimeError(
-            "Asset quarantine is disabled. Product removals do not prove that an asset is unused; "
-            "run this script without --apply for an audit-only report."
-        )
     root = Path(args.root).resolve()
     products_path = (root / args.products).resolve()
     output_dir = (root / args.output_dir).resolve()
@@ -180,13 +173,10 @@ def main() -> int:
             ],
         }
         moves.append(record)
-        if args.apply:
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(source), str(destination))
 
     report = {
         "generatedAt": datetime.now().astimezone().isoformat(),
-        "applied": args.apply,
+        "applied": False,
         "currentProductCount": len(current),
         "oldProductCount": len(old),
         "removedProductIds": removed_ids,
@@ -203,18 +193,6 @@ def main() -> int:
         "moves": moves,
     }
     write_json(output_dir / "asset-presence-and-deleted-item-review.json", report)
-    if args.apply and moves:
-        manifest_path = review_dir / "manifest.json"
-        existing_moves: list[dict[str, Any]] = []
-        if manifest_path.is_file():
-            existing = json.loads(manifest_path.read_text(encoding="utf-8"))
-            existing_moves = existing.get("moves", [])
-        combined_moves = {
-            record["destination"]: record for record in [*existing_moves, *moves]
-        }
-        manifest = {**report, "moves": list(combined_moves.values())}
-        manifest["cumulativeMovedAssetCount"] = len(manifest["moves"])
-        write_json(manifest_path, manifest)
     print(
         json.dumps(
             {

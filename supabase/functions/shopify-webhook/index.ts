@@ -1,6 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { shopifyShopDomain } from '../_shared/shopify.ts';
-import { sendSaleNotification } from '../_shared/sale-notifications.ts';
+import { queueSaleNotification } from '../_shared/sale-notifications.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -79,7 +79,8 @@ async function recordFailure(options: {
     processing_status: 'failed',
     payload_summary: options.summary || {},
     error_message: message.slice(0, 4000),
-    processed_at: new Date().toISOString()
+    processed_at: new Date().toISOString(),
+    locked_at: null
   }, { onConflict: 'provider,event_id' });
   if (error) console.error('[shopify-webhook] Could not persist failure', error);
 }
@@ -90,38 +91,16 @@ async function beginMarketplaceEvent(options: {
   shopDomain: string;
   summary?: Record<string, unknown>;
 }) {
-  const { error: insertError } = await admin.from('marketplace_webhook_events').insert({
-    provider: 'shopify',
-    event_id: options.eventId,
-    event_type: options.eventType,
-    shop_domain: options.shopDomain,
-    processing_status: 'processing',
-    payload_summary: options.summary || {}
+  const { data, error } = await admin.rpc('claim_marketplace_webhook_event', {
+    p_provider: 'shopify',
+    p_event_id: options.eventId,
+    p_event_type: options.eventType,
+    p_shop_domain: options.shopDomain,
+    p_payload_summary: options.summary || {},
+    p_lease_seconds: 300
   });
-  if (!insertError) return true;
-  if (insertError.code !== '23505') throw insertError;
-
-  const { data, error } = await admin
-    .from('marketplace_webhook_events')
-    .select('processing_status')
-    .eq('provider', 'shopify')
-    .eq('event_id', options.eventId)
-    .single();
   if (error) throw error;
-  if (data?.processing_status === 'processed' || data?.processing_status === 'ignored') return false;
-
-  const { error: updateError } = await admin.from('marketplace_webhook_events').update({
-    event_type: options.eventType,
-    shop_domain: options.shopDomain,
-    processing_status: 'processing',
-    payload_summary: options.summary || {},
-    error_message: '',
-    processed_at: null
-  })
-    .eq('provider', 'shopify')
-    .eq('event_id', options.eventId);
-  if (updateError) throw updateError;
-  return true;
+  return data === true;
 }
 
 async function finishMarketplaceEvent(options: {
@@ -134,7 +113,8 @@ async function finishMarketplaceEvent(options: {
     processing_status: options.status,
     product_id: options.productId || null,
     error_message: String(options.errorMessage || '').slice(0, 4000),
-    processed_at: new Date().toISOString()
+    processed_at: new Date().toISOString(),
+    locked_at: null
   })
     .eq('provider', 'shopify')
     .eq('event_id', options.eventId);
@@ -173,9 +153,10 @@ function shopifyOrderNotification(
   shopDomain: string
 ): SaleNotification {
   const orderId = String(payload.id || '').trim();
+  const notificationEventId = orderId || eventId;
   return {
     provider: 'Shopify',
-    eventId,
+    eventId: notificationEventId,
     platformOrderId: String(payload.name || orderId || eventId),
     status: String(payload.financial_status || 'paid'),
     buyerEmail: String(payload.email || payload.contact_email || ''),
@@ -189,15 +170,6 @@ function shopifyOrderNotification(
       shopify_webhook_id: eventId
     }
   };
-}
-
-async function sendNotificationWithoutBlocking(source: string, notification: SaleNotification) {
-  try {
-    const result = await sendSaleNotification(notification);
-    if (!result.sent) console.warn(`[shopify-webhook] ${source} sale notification skipped:`, result.skippedReason);
-  } catch (error) {
-    console.error(`[shopify-webhook] ${source} sale notification failed`, error);
-  }
 }
 
 async function handleOrderPaidWebhook(options: {
@@ -221,15 +193,15 @@ async function handleOrderPaidWebhook(options: {
   }
 
   const primaryProductId = Number(items.find((item) => item.productId)?.productId) || null;
+  await queueSaleNotification(
+    admin,
+    shopifyOrderNotification(options.payload, options.eventId, options.shopDomain)
+  );
   await finishMarketplaceEvent({
     eventId: options.eventId,
     status: 'processed',
     productId: primaryProductId
   });
-  await sendNotificationWithoutBlocking(
-    'order',
-    shopifyOrderNotification(options.payload, options.eventId, options.shopDomain)
-  );
   return jsonResponse({ received: true });
 }
 
@@ -310,25 +282,29 @@ Deno.serve(async (request) => {
       p_inventory_item_id: inventoryItemId,
       p_location_id: locationId,
       p_available: available,
+      p_source_updated_at: payload.updated_at || null,
       p_payload_summary: summary
     });
     if (error) throw error;
     const result = data as { processed?: boolean; product_id?: number; quantity_available?: number } | null;
+    const mappedProductId = Number(result?.product_id);
+    const mappedQuantity = Number(result?.quantity_available);
     if (
       notifyInventoryZero
-      && result?.processed
-      && Number(result.quantity_available) <= 0
-      && Number(result.product_id) > 0
+      && result?.processed === true
+      && mappedQuantity <= 0
+      && Number.isSafeInteger(mappedProductId)
+      && mappedProductId > 0
     ) {
-      await sendNotificationWithoutBlocking('inventory', {
+      await queueSaleNotification(admin, {
         provider: 'Shopify Inventory',
         eventId,
         platformOrderId: eventId,
         status: 'inventory_zero',
         occurredAt: String(payload.updated_at || new Date().toISOString()),
         items: [{
-          productId: Number(result.product_id),
-          name: `Listing #${result.product_id}`,
+          productId: mappedProductId,
+          name: `Listing #${mappedProductId}`,
           quantity: 1
         }],
         metadata: summary

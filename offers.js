@@ -10,6 +10,27 @@ window.DJ = window.DJ || {};
 
   if (!mount) return;
 
+  function offerTokenStorageKey(offerId) {
+    return `djhc-offer-access:${String(offerId || '').trim()}`;
+  }
+
+  function saveOfferToken(offerId, token) {
+    if (!offerId || !token) return;
+    try {
+      sessionStorage.setItem(offerTokenStorageKey(offerId), token);
+    } catch {
+      // The current in-memory token still supports this page session.
+    }
+  }
+
+  function savedOfferToken(offerId) {
+    try {
+      return sessionStorage.getItem(offerTokenStorageKey(offerId)) || '';
+    } catch {
+      return '';
+    }
+  }
+
   function escapeHtml(value = '') {
     return DJ.escapeHtml ? DJ.escapeHtml(String(value ?? '')) : String(value ?? '')
       .replace(/&/g, '&amp;')
@@ -117,6 +138,7 @@ window.DJ = window.DJ || {};
   }
 
   function renderCreate(product) {
+    const requestId = crypto.randomUUID();
     setBusy(false);
     mount.innerHTML = `
       <div class="offer-layout">
@@ -151,6 +173,7 @@ window.DJ = window.DJ || {};
       try {
         const data = await invoke({
           action: 'create',
+          requestId,
           productId: product.id,
           name: values.get('name'),
           email: values.get('email'),
@@ -166,7 +189,8 @@ window.DJ = window.DJ || {};
         }
         const url = new URL(data.offerUrl, window.location.origin);
         state.offerId = url.searchParams.get('offer') || '';
-        state.token = url.searchParams.get('token') || '';
+        state.token = new URLSearchParams(url.hash.replace(/^#/, '')).get('token') || '';
+        saveOfferToken(state.offerId, state.token);
         window.history.replaceState({}, '', `${url.pathname}${url.search}`);
         await loadOffer();
       } catch (error) {
@@ -321,7 +345,14 @@ window.DJ = window.DJ || {};
   async function init() {
     const params = new URLSearchParams(window.location.search);
     state.offerId = String(params.get('offer') || '').trim();
-    state.token = String(params.get('token') || '').trim();
+    const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    state.token = String(fragment.get('token') || params.get('token') || savedOfferToken(state.offerId)).trim();
+    if (state.offerId && state.token) saveOfferToken(state.offerId, state.token);
+    if (fragment.has('token') || params.has('token')) {
+      params.delete('token');
+      const query = params.toString();
+      window.history.replaceState({}, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
+    }
     if (state.offerId || state.token) {
       await loadOffer();
       return;

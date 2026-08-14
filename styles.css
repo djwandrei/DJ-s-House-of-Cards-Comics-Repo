@@ -1659,6 +1659,28 @@ body[data-page="inbox"] {
   overflow-wrap:anywhere;
 }
 
+.inbox-photo-list {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+  margin-top:.8rem;
+}
+
+.inbox-photo-list a {
+  width:min(150px,32%);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:var(--surface);
+}
+
+.inbox-photo-list img {
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+}
+
 .inbox-inquiry-form {
   align-items:end;
   justify-content:space-between;

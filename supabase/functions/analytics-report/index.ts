@@ -1,8 +1,9 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import { requireSiteAdmin, SiteAdminError } from '../_shared/admin-auth.ts';
+import { readJsonBody } from '../_shared/http.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
-const adminEmail = String(Deno.env.get('ADMIN_EMAIL') || 'djwandrei@gmail.com').trim().toLowerCase();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 const DEFAULT_CORS_ORIGINS = [
@@ -51,16 +52,6 @@ function allowedOrigin(request: Request) {
   return !origin || allowedCorsOrigins.includes(origin);
 }
 
-async function requireAdmin(request: Request) {
-  const jwt = String(request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
-  if (!jwt) throw new Error('Admin sign-in is required.');
-  if (serviceRoleKey && jwt === serviceRoleKey) return;
-  const { data, error } = await admin.auth.getUser(jwt);
-  if (error || !data.user || String(data.user.email || '').toLowerCase() !== adminEmail) {
-    throw new Error('Admin authorization failed.');
-  }
-}
-
 function reportWindow(value: unknown) {
   const days = Number(value);
   return [7, 30, 90].includes(days) ? days : 30;
@@ -74,15 +65,19 @@ Deno.serve(async (request) => {
 
   let payload: Record<string, unknown> = {};
   try {
-    payload = await request.json();
+    payload = await readJsonBody(request, 4 * 1024);
   } catch {
     return jsonResponse({ error: 'Invalid report request.' }, 400, request);
   }
 
   try {
-    await requireAdmin(request);
+    await requireSiteAdmin(request, admin);
   } catch (error) {
-    return jsonResponse({ error: error instanceof Error ? error.message : 'Admin authorization failed.' }, 403, request);
+    return jsonResponse(
+      { error: error instanceof Error ? error.message : 'Admin authorization failed.' },
+      error instanceof SiteAdminError ? error.status : 503,
+      request
+    );
   }
 
   const { data, error } = await admin.rpc('get_site_analytics_report', {

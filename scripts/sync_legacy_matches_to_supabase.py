@@ -36,7 +36,16 @@ REPORT_PATH = ROOT / "outputs" / "supabase-legacy-sync-report.json"
 BECKETT_REPORT_PATH = ROOT / "outputs" / "beckett-legacy-update-report.json"
 SUPABASE_URL = "https://gkqdymnmczabcggvigce.supabase.co"
 SUPABASE_KEY = "sb_publishable_BHrJWQtop2ovkpOMOd9w3A_-9MTaeGG"
-ADMIN_EMAIL = "djwandrei@gmail.com"
+OPERATIONAL_METADATA_KEYS = {
+    "sold_via",
+    "stripe_session_id",
+    "last_quantity_sold",
+    "last_sold_at",
+    "last_inventory_source",
+    "last_shopify_webhook_id",
+    "last_shopify_inventory_at",
+    "last_shopify_source_updated_at",
+}
 
 
 def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | None = None, body: Any = None) -> Any:
@@ -51,13 +60,13 @@ def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | Non
         raise RuntimeError(f"{method} {url} failed: {error.code} {detail}") from error
 
 
-def auth_token(password: str) -> str:
+def auth_token(email: str, password: str) -> str:
     url = f"{SUPABASE_URL}/auth/v1/token?grant_type=password"
     headers = {
         "apikey": SUPABASE_KEY,
         "Content-Type": "application/json",
     }
-    data = request_json(url, method="POST", headers=headers, body={"email": ADMIN_EMAIL, "password": password})
+    data = request_json(url, method="POST", headers=headers, body={"email": email, "password": password})
     token = str((data or {}).get("access_token") or "").strip()
     if not token:
         raise RuntimeError("Supabase auth did not return an access token.")
@@ -166,11 +175,26 @@ def to_remote_patch(product: dict[str, Any]) -> dict[str, Any]:
         "html_full_link": str(product.get("htmlFullLink") or "").strip(),
         "html_image_urls": product.get("htmlImageUrls") or [],
         "metadata": product.get("metadata") or {},
-        "copy_count": int(product.get("copyCount") or 1),
         "is_featured": bool(product.get("isFeatured")),
         "sort_rank": int(product.get("sortRank") or 0),
-        "is_deleted": False,
     }
+
+
+def is_operational_metadata_key(key: str) -> bool:
+    normalized = str(key or "").strip().lower()
+    return (
+        normalized in OPERATIONAL_METADATA_KEYS
+        or normalized.startswith("stripe_")
+        or normalized.startswith("last_shopify_")
+    )
+
+
+def merged_catalog_metadata(local: Any, remote: Any) -> dict[str, Any]:
+    local_values = local if isinstance(local, dict) else {}
+    remote_values = remote if isinstance(remote, dict) else {}
+    merged = {key: value for key, value in local_values.items() if not is_operational_metadata_key(key)}
+    merged.update({key: value for key, value in remote_values.items() if is_operational_metadata_key(key)})
+    return merged
 
 
 def get_remote_rows(ids: list[int], token: str) -> dict[int, dict[str, Any]]:
@@ -226,7 +250,7 @@ def soft_delete_remote_product(product_id: int, token: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workbook", type=Path, default=DEFAULT_WORKBOOK)
-    parser.add_argument("--password", default=os.environ.get("SUPABASE_ADMIN_PASSWORD", ""))
+    parser.add_argument("--apply", action="store_true", help="Apply the reviewed upserts and soft deletions.")
     parser.add_argument("--min-id", type=int, default=1)
     parser.add_argument("--max-id", type=int, default=430)
     parser.add_argument("--remove-ids", default="")
@@ -234,13 +258,18 @@ def main() -> int:
     parser.add_argument("--delay", type=float, default=0.02)
     args = parser.parse_args()
 
-    if not args.password:
-        raise SystemExit("Set SUPABASE_ADMIN_PASSWORD or pass --password.")
+    email = os.environ.get("SUPABASE_ADMIN_EMAIL", "").strip()
+    password = os.environ.get("SUPABASE_ADMIN_PASSWORD", "")
+    if not email or not password:
+        raise SystemExit(
+            "Set SUPABASE_ADMIN_EMAIL and SUPABASE_ADMIN_PASSWORD in the process environment. "
+            "Credentials are not accepted as command-line arguments."
+        )
 
     products = {int(item["id"]): item for item in json.loads((ROOT / "products.json").read_text(encoding="utf-8"))}
     remove_ids = parse_id_list(args.remove_ids) or removal_ids_from_report(args.removal_report)
     ids = sorted(product_id for product_id in matched_legacy_ids(args.workbook, args.min_id, args.max_id) if product_id in products)
-    token = auth_token(args.password)
+    token = auth_token(email, password)
     before = get_remote_rows(ids, token)
 
     changed: list[dict[str, Any]] = []
@@ -261,7 +290,7 @@ def main() -> int:
             continue
 
         patch = to_remote_patch(product)
-        upsert_remote_product(product_id, patch, token)
+        patch["metadata"] = merged_catalog_metadata(product.get("metadata"), remote.get("metadata"))
         changed.append(
             {
                 "id": product_id,
@@ -275,7 +304,26 @@ def main() -> int:
                 "newTeam": product.get("team", ""),
             }
         )
-        time.sleep(max(0, args.delay))
+        if args.apply:
+            upsert_remote_product(product_id, patch, token)
+            time.sleep(max(0, args.delay))
+
+    if not args.apply:
+        report = {
+            "auditOnly": True,
+            "minId": args.min_id,
+            "maxId": args.max_id,
+            "matchedLegacyRows": len(ids),
+            "plannedUpserts": len(changed),
+            "plannedSoftDeletes": len(remove_ids),
+            "plannedSoftDeleteIds": sorted(remove_ids),
+            "changed": changed,
+        }
+        REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+        REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        print("Audit only: no Supabase rows were changed. Re-run with --apply after reviewing this report.")
+        return 0
 
     removed: list[int] = []
     for product_id in sorted(remove_ids):

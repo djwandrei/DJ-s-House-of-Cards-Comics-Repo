@@ -4,6 +4,7 @@ import {
   shopifyRest,
   shopifyShopDomain
 } from '../_shared/shopify.ts';
+import { readJsonBody } from '../_shared/http.ts';
 
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
@@ -266,7 +267,12 @@ Deno.serve(async (request) => {
     requireServiceRole(request);
     if (!isShopifyConfigured()) throw new Error('Shopify Admin API is not configured.');
 
-    const body = await request.json().catch(() => ({})) as ThemeRequest;
+    let body: ThemeRequest = {};
+    try {
+      body = await readJsonBody<ThemeRequest>(request, 512 * 1024);
+    } catch {
+      body = {};
+    }
     const action = String(body.action || 'plan').trim().toLowerCase();
     if (!['plan', 'apply', 'inspect', 'publish', 'duplicate-publish'].includes(action)) {
       throw new Error('Action must be plan, apply, inspect, publish, or duplicate-publish.');

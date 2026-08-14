@@ -15,6 +15,7 @@ window.DJ = window.DJ || {};
     hasMoreInquiries: false,
     offerStatus: 'all',
     inquiryStatus: 'all',
+    notificationSummary: { pending: null, failed: null },
     focusOfferId: new URLSearchParams(window.location.search).get('offer') || '',
     loadRequestId: 0
   };
@@ -132,6 +133,7 @@ window.DJ = window.DJ || {};
         </div>
         ${inquiry.productIds?.length ? `<p class="inbox-card__meta">Listing IDs: ${escapeHtml(inquiry.productIds.join(', '))}</p>` : ''}
         ${inquiry.sourcePath ? `<p class="inbox-card__meta">Submitted from: ${escapeHtml(inquiry.sourcePath)}</p>` : ''}
+        ${inquiry.photoUrls?.length ? `<div class="inbox-photo-list" aria-label="Submitted photos">${inquiry.photoUrls.map((url, index) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(url)}" alt="Submitted inquiry photo ${index + 1}" loading="lazy" decoding="async"></a>`).join('')}</div>` : ''}
         <div class="inbox-note"><strong>Message</strong><p>${escapeHtml(inquiry.message || '')}</p></div>
         <form class="inbox-inquiry-form" data-inbox-inquiry-form data-inquiry-id="${escapeHtml(inquiry.id)}"><label>Message status<select name="status">${selectOptions(['new', 'reviewing', 'replied', 'closed', 'spam'], inquiry.status, { new: 'New', reviewing: 'Reviewing', replied: 'Replied', closed: 'Closed', spam: 'Spam' })}</select></label><button class="button-secondary" type="submit">Save Status</button></form>
       </article>
@@ -142,7 +144,7 @@ window.DJ = window.DJ || {};
     setBusy(false);
     mount.innerHTML = `
       <div class="inbox-toolbar panel">
-        <div><h2>Messages &amp; offers</h2><p>New site messages and offers send email notifications when the existing notification settings are configured.</p></div>
+        <div><h2>Messages &amp; offers</h2><p>Messages and offers use the durable notification queue.${state.notificationSummary.failed ? ` <strong>${escapeHtml(state.notificationSummary.failed)} delivery attempt${state.notificationSummary.failed === 1 ? '' : 's'} need retry.</strong>` : ''}${state.notificationSummary.pending ? ` ${escapeHtml(state.notificationSummary.pending)} queued.` : ''}</p></div>
         <div class="inbox-toolbar__filters"><label>Offer status<select data-inbox-offer-filter>${selectOptions(['all', 'pending', 'countered', 'accepted', 'declined', 'rejected', 'expired', 'purchased'], state.offerStatus, { all: 'All offers', pending: 'Awaiting review', countered: 'Counter sent', accepted: 'Accepted', declined: 'Declined', rejected: 'Customer declined', expired: 'Expired', purchased: 'Purchased' })}</select></label><label>Message status<select data-inbox-inquiry-filter>${selectOptions(['all', 'new', 'reviewing', 'replied', 'closed', 'spam'], state.inquiryStatus, { all: 'All messages', new: 'New', reviewing: 'Reviewing', replied: 'Replied', closed: 'Closed', spam: 'Spam' })}</select></label><button class="button-secondary" type="button" data-inbox-refresh>Refresh</button></div>
         <p class="inbox-runtime-status" id="inboxRuntimeStatus" role="status" aria-live="polite"></p>
       </div>
@@ -195,6 +197,7 @@ window.DJ = window.DJ || {};
       if (requestId !== state.loadRequestId) return;
       const offers = Array.isArray(data?.offers) ? data.offers : [];
       const inquiries = Array.isArray(data?.inquiries) ? data.inquiries : [];
+      state.notificationSummary = data?.notificationSummary || { pending: null, failed: null };
       const replaceBoth = !appendOffers && !appendInquiries;
       if (appendOffers || replaceBoth) {
         state.offers = appendOffers ? appendUniqueRecords(state.offers, offers) : offers;

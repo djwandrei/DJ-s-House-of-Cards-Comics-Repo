@@ -1,15 +1,16 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import Stripe from 'npm:stripe@22.1.0';
+import { requireSiteAdmin, SiteAdminError } from '../_shared/admin-auth.ts';
+import {
+  processNotificationOutbox,
+  queueEmailNotification
+} from '../_shared/notification-outbox.ts';
+import { enforcePublicRateLimits } from '../_shared/request-security.ts';
+import { readJsonBody } from '../_shared/http.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
-const offerFrom = String(
-  Deno.env.get('OFFER_NOTIFICATION_EMAIL_FROM')
-    || Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_FROM')
-    || Deno.env.get('SALE_NOTIFICATION_EMAIL_FROM')
-    || ''
-).trim();
 const offerReplyTo = String(
   Deno.env.get('OFFER_NOTIFICATION_EMAIL_REPLY_TO')
     || Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_REPLY_TO')
@@ -20,20 +21,13 @@ const offerRecipients = String(
   Deno.env.get('OFFER_NOTIFICATION_EMAIL_TO')
     || Deno.env.get('INQUIRY_NOTIFICATION_EMAIL_TO')
     || Deno.env.get('SALE_NOTIFICATION_EMAIL_TO')
-    || Deno.env.get('ADMIN_EMAIL')
     || ''
 )
   .split(',')
   .map((value) => value.trim())
   .filter(Boolean);
-const resendApiKey = String(Deno.env.get('RESEND_API_KEY') || '').trim();
 const stripeSecretKey = String(Deno.env.get('STRIPE_SECRET_KEY') || '').trim();
-const adminEmails = new Set(
-  String(Deno.env.get('OFFER_ADMIN_EMAILS') || Deno.env.get('ADMIN_EMAIL') || 'djwandrei@gmail.com')
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean)
-);
+const inquiryUploadBucket = String(Deno.env.get('INQUIRY_UPLOAD_BUCKET') || 'collector-inquiry-uploads').trim();
 const requestedExpirationDays = Number(Deno.env.get('OFFER_EXPIRATION_DAYS'));
 const defaultExpirationDays = Math.min(30, Math.max(1, Math.round(
   Number.isFinite(requestedExpirationDays) ? requestedExpirationDays : 7
@@ -47,7 +41,9 @@ const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession
 const stripe = new Stripe(stripeSecretKey, {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
   // @ts-expect-error Older supported Stripe API version.
-  apiVersion: '2026-02-25.clover'
+  apiVersion: '2026-02-25.clover',
+  maxNetworkRetries: 1,
+  timeout: 12_000
 });
 
 const corsHeaders = {
@@ -75,7 +71,7 @@ type ProductRow = {
 
 type OfferRow = {
   id: string;
-  product_id: number;
+  product_id: number | null;
   product_name: string;
   product_image: string;
   product_public_amount_cents: number | null;
@@ -95,6 +91,10 @@ type OfferRow = {
   declined_at: string | null;
   rejected_at: string | null;
   purchased_at: string | null;
+  access_token_hash: string | null;
+  access_token_expires_at: string | null;
+  access_token_revoked_at: string | null;
+  submission_key?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -126,17 +126,6 @@ function escapeHtml(value: unknown) {
 function allowedOrigin(request: Request) {
   const origin = String(request.headers.get('origin') || '').replace(/\/+$/, '');
   return !origin || origin === siteUrl;
-}
-
-function requestIp(request: Request) {
-  const forwarded = String(request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
-  return forwarded || String(request.headers.get('cf-connecting-ip') || '').trim() || 'unknown';
-}
-
-async function requestFingerprint(request: Request, email: string) {
-  const source = `negotiated-offer:${requestIp(request)}:${email.toLowerCase()}`;
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(source));
-  return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
 
 function moneyCents(value: unknown, label = 'amount') {
@@ -212,9 +201,24 @@ function isConfigured() {
   );
 }
 
-// A deterministic HMAC token means the capability link can be re-created for
-// every notification without persisting a raw browser credential in the table.
-async function offerAccessToken(offerId: string) {
+function base64Url(bytes: Uint8Array) {
+  let binary = '';
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+}
+
+function randomOfferAccessToken() {
+  return base64Url(crypto.getRandomValues(new Uint8Array(32)));
+}
+
+async function hashOfferAccessToken(token: string) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+  return base64Url(new Uint8Array(digest));
+}
+
+// Compatibility for links issued before random capability tokens were added.
+// Legacy links are accepted only through the offer's existing expiration.
+async function legacyOfferAccessToken(offerId: string) {
   const signingKey = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(serviceRoleKey),
@@ -227,14 +231,23 @@ async function offerAccessToken(offerId: string) {
     signingKey,
     new TextEncoder().encode(`djhc-offer-access:v1:${offerId}`)
   ));
-  let binary = '';
-  for (const byte of signature) binary += String.fromCharCode(byte);
-  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+  return base64Url(signature);
 }
 
-async function customerOfferUrl(offerId: string) {
-  const token = await offerAccessToken(offerId);
-  return `${siteUrl}/offer.html?offer=${encodeURIComponent(offerId)}&token=${encodeURIComponent(token)}`;
+async function newOfferCapability(expiresAt: string) {
+  const token = randomOfferAccessToken();
+  return {
+    token,
+    access_token_hash: await hashOfferAccessToken(token),
+    access_token_expires_at: expiresAt,
+    access_token_revoked_at: null
+  };
+}
+
+function customerOfferUrl(offerId: string, token: string) {
+  // The capability is in the fragment, so it is not sent in HTTP requests,
+  // access logs, or Referer headers. The page moves it into sessionStorage.
+  return `${siteUrl}/offer.html?offer=${encodeURIComponent(offerId)}#token=${encodeURIComponent(token)}`;
 }
 
 function tokensMatch(left: string, right: string) {
@@ -251,36 +264,28 @@ function inboxUrl(offerId = '') {
   return `${siteUrl}/inbox.html${query}`;
 }
 
-async function sendEmail(input: {
+async function queueOfferEmail(eventKey: string, input: {
   to: string[];
   subject: string;
   text: string;
   html: string;
   replyTo?: string;
 }) {
-  if (!resendApiKey || !offerFrom || !input.to.length) {
-    return { sent: false, skippedReason: 'Offer email settings are not configured.' };
-  }
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: offerFrom,
-      to: input.to,
-      subject: input.subject,
-      text: input.text,
-      html: input.html,
-      ...(input.replyTo || offerReplyTo ? { reply_to: input.replyTo || offerReplyTo } : {})
-    })
+  const queued = await queueEmailNotification(admin, eventKey, 'offer', {
+    ...input,
+    ...(input.replyTo || offerReplyTo ? { replyTo: input.replyTo || offerReplyTo } : {})
   });
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Offer notification failed (${response.status}): ${detail.slice(0, 300)}`);
+  if (queued) {
+    try {
+      await processNotificationOutbox(admin, 10);
+    } catch (error) {
+      console.error('[offer-workflow] Immediate notification processing failed', errorMessage(error));
+    }
   }
-  return { sent: true };
+  return { queued };
 }
 
-async function sendOwnerOfferNotification(offer: OfferRow, subject: string, summary: string) {
+async function queueOwnerOfferNotification(eventKey: string, offer: OfferRow, subject: string, summary: string) {
   const url = inboxUrl(offer.id);
   const text = [
     summary,
@@ -304,11 +309,17 @@ async function sendOwnerOfferNotification(offer: OfferRow, subject: string, summ
       <p><a href="${escapeHtml(url)}">Open the Admin Inbox</a></p>
     </div>
   `;
-  return await sendEmail({ to: offerRecipients, subject, text, html, replyTo: offer.buyer_email });
+  return await queueOfferEmail(eventKey, { to: offerRecipients, subject, text, html, replyTo: offer.buyer_email });
 }
 
-async function sendBuyerOfferNotification(offer: OfferRow, subject: string, summary: string) {
-  const url = await customerOfferUrl(offer.id);
+async function queueBuyerOfferNotification(
+  eventKey: string,
+  offer: OfferRow,
+  subject: string,
+  summary: string,
+  accessToken = ''
+) {
+  const url = accessToken ? customerOfferUrl(offer.id, accessToken) : '';
   const text = [
     `Hi ${offer.buyer_name},`,
     '',
@@ -316,7 +327,7 @@ async function sendBuyerOfferNotification(offer: OfferRow, subject: string, summ
     `Listing: #${offer.product_id} ${offer.product_name}`,
     `Agreed/current price: ${formatMoney(offer.current_amount_cents)}`,
     offer.admin_note ? `Note from DJ: ${offer.admin_note}` : '',
-    `Open your private offer page: ${url}`
+    url ? `Open your private offer page: ${url}` : ''
   ].filter(Boolean).join('\n');
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.45;color:#1f2933;">
@@ -327,10 +338,10 @@ async function sendBuyerOfferNotification(offer: OfferRow, subject: string, summ
         <strong>Agreed/current price:</strong> ${escapeHtml(formatMoney(offer.current_amount_cents))}
       </p>
       ${offer.admin_note ? `<p style="white-space:pre-wrap;"><strong>Note from DJ:</strong> ${escapeHtml(offer.admin_note)}</p>` : ''}
-      <p><a href="${escapeHtml(url)}">Open your private offer page</a></p>
+      ${url ? `<p><a href="${escapeHtml(url)}">Open your private offer page</a></p>` : ''}
     </div>
   `;
-  return await sendEmail({ to: [offer.buyer_email], subject, text, html });
+  return await queueOfferEmail(eventKey, { to: [offer.buyer_email], subject, text, html });
 }
 
 async function findOffer(id: string) {
@@ -340,14 +351,15 @@ async function findOffer(id: string) {
 }
 
 async function addOfferEvent(offerId: string, actor: 'customer' | 'admin' | 'system', action: string, amountCents: number | null, note = '') {
-  const { error } = await admin.from('negotiated_offer_events').insert({
+  const { data, error } = await admin.from('negotiated_offer_events').insert({
     offer_id: offerId,
     actor,
     action,
     amount_cents: amountCents,
     note: safeText(note, 2000)
-  });
-  if (error) console.error('[offer-workflow] Could not record offer event', error.message);
+  }).select('id').single();
+  if (error || !data) throw new Error(`Offer event could not be recorded: ${error?.message || 'no row returned'}`);
+  return String(data.id);
 }
 
 async function invalidateOpenOfferCheckout(offer: OfferRow) {
@@ -377,7 +389,7 @@ async function expireIfNeeded(offer: OfferRow) {
   if (!isExpired(offer)) return offer;
   const { data, error } = await admin
     .from('negotiated_offers')
-    .update({ status: 'expired' })
+    .update({ status: 'expired', access_token_revoked_at: new Date().toISOString() })
     .eq('id', offer.id)
     .in('status', activeOfferStatuses)
     .lte('expires_at', new Date().toISOString())
@@ -395,29 +407,40 @@ async function requireOfferAccess(input: Record<string, unknown>) {
   const offerId = safeText(input.offerId, 50);
   const token = safeText(input.token, 120);
   if (!uuidPattern.test(offerId) || !token) return { error: jsonResponse({ error: 'This offer link is invalid.' }, 400) };
-  const expectedToken = await offerAccessToken(offerId);
-  if (!tokensMatch(token, expectedToken)) return { error: jsonResponse({ error: 'This offer link is invalid or has expired.' }, 403) };
   const offer = await findOffer(offerId);
   if (!offer) return { error: jsonResponse({ error: 'This offer could not be found.' }, 404) };
+  const accessExpiresAt = Date.parse(String(offer.access_token_expires_at || offer.expires_at || ''));
+  if (offer.access_token_revoked_at || !Number.isFinite(accessExpiresAt) || accessExpiresAt <= Date.now()) {
+    return { error: jsonResponse({ error: 'This offer link is invalid or has expired.' }, 403) };
+  }
+  const expectedToken = offer.access_token_hash
+    ? offer.access_token_hash
+    : await legacyOfferAccessToken(offerId);
+  const suppliedToken = offer.access_token_hash ? await hashOfferAccessToken(token) : token;
+  if (!tokensMatch(suppliedToken, expectedToken)) {
+    return { error: jsonResponse({ error: 'This offer link is invalid or has expired.' }, 403) };
+  }
   return { offer: await expireIfNeeded(offer) };
 }
 
 async function requireAdmin(request: Request) {
-  const jwt = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
-  if (!jwt) return { error: jsonResponse({ error: 'Sign in as the configured admin to continue.' }, 401) };
-  const { data, error } = await admin.auth.getUser(jwt);
-  const email = String(data?.user?.email || '').trim().toLowerCase();
-  if (error || !email || !adminEmails.has(email)) {
-    return { error: jsonResponse({ error: 'This account is not authorized to manage offers and messages.' }, 403) };
+  try {
+    const identity = await requireSiteAdmin(request, admin);
+    return { ...identity, error: null as Response | null };
+  } catch (error) {
+    if (error instanceof SiteAdminError) {
+      return { id: '', email: '', error: jsonResponse({ error: error.message }, error.status) };
+    }
+    throw error;
   }
-  return { email };
 }
 
 function publicOffer(offer: OfferRow) {
+  const productId = Number(offer.product_id);
   return {
     id: offer.id,
     product: {
-      id: Number(offer.product_id),
+      id: Number.isSafeInteger(productId) && productId > 0 ? productId : null,
       name: offer.product_name,
       image: offer.product_image
     },
@@ -458,6 +481,52 @@ async function getProduct(productId: number) {
   return data as ProductRow | null;
 }
 
+async function reuseOfferSubmission(submissionKey: string, productId: number, buyerEmail: string) {
+  if (!submissionKey) return null;
+  const { data: existing, error: existingError } = await admin
+    .from('negotiated_offers')
+    .select('*')
+    .eq('submission_key', submissionKey)
+    .maybeSingle();
+  if (existingError) throw new Error(`Existing offer request lookup failed: ${existingError.message}`);
+  if (!existing) return null;
+
+  const existingOffer = existing as OfferRow;
+  if (Number(existingOffer.product_id) !== productId || existingOffer.buyer_email !== buyerEmail) {
+    return jsonResponse({ error: 'This offer request identifier is already in use.' }, 409);
+  }
+  if (!activeOfferStatuses.includes(existingOffer.status) || Date.parse(existingOffer.expires_at) <= Date.now()) {
+    return jsonResponse({ accepted: true, reused: true, offer: publicOffer(existingOffer) });
+  }
+
+  const capability = await newOfferCapability(existingOffer.expires_at);
+  const { data: refreshed, error: refreshError } = await admin
+    .from('negotiated_offers')
+    .update({
+      access_token_hash: capability.access_token_hash,
+      access_token_expires_at: capability.access_token_expires_at,
+      access_token_revoked_at: null
+    })
+    .eq('id', existingOffer.id)
+    .eq('status', existingOffer.status)
+    .select('*')
+    .maybeSingle();
+  if (refreshError || !refreshed) throw new Error('Your private offer link could not be renewed.');
+  const refreshedOffer = refreshed as OfferRow;
+  await queueOwnerOfferNotification(
+    `offer-submission:${refreshedOffer.id}:owner`,
+    refreshedOffer,
+    `[DJHC Offer] ${formatMoney(refreshedOffer.current_amount_cents)} for ${refreshedOffer.product_name}`,
+    'New offer awaiting your review'
+  );
+  return jsonResponse({
+    accepted: true,
+    reused: true,
+    offer: publicOffer(refreshedOffer),
+    offerUrl: customerOfferUrl(refreshedOffer.id, capability.token)
+  });
+}
+
 async function createOffer(request: Request, input: Record<string, unknown>) {
   if (safeText(input.website, 200)) return jsonResponse({ accepted: true }, 202);
   const productId = Number(input.productId);
@@ -465,14 +534,31 @@ async function createOffer(request: Request, input: Record<string, unknown>) {
   const buyerEmail = safeText(input.email, 254).toLowerCase();
   const buyerPhone = safeText(input.phone, 80);
   const customerNote = safeText(input.message, 2000);
+  const submissionKey = safeText(input.requestId, 50);
   let amountCents: number;
   try {
     amountCents = moneyCents(input.amount, 'offer amount');
   } catch (error) {
     return jsonResponse({ error: errorMessage(error) }, 400);
   }
-  if (!Number.isSafeInteger(productId) || productId <= 0 || buyerName.length < 2 || !emailPattern.test(buyerEmail)) {
+  if (
+    !Number.isSafeInteger(productId)
+    || productId <= 0
+    || buyerName.length < 2
+    || !emailPattern.test(buyerEmail)
+    || (submissionKey && !uuidPattern.test(submissionKey))
+  ) {
     return jsonResponse({ error: 'Enter the listing, your name, a valid email address, and an offer amount.' }, 400);
+  }
+
+  if (submissionKey) {
+    try {
+      const reused = await reuseOfferSubmission(submissionKey, productId, buyerEmail);
+      if (reused) return reused;
+    } catch (error) {
+      console.error('[offer-workflow] Existing offer request lookup failed', errorMessage(error));
+      return jsonResponse({ error: 'Your offer could not be checked. Please try again.' }, 503);
+    }
   }
 
   let product: ProductRow | null;
@@ -485,23 +571,25 @@ async function createOffer(request: Request, input: Record<string, unknown>) {
   if (!isOfferable(product)) return jsonResponse({ error: 'This listing is no longer available for an offer.' }, 409);
 
   try {
-    const fingerprint = await requestFingerprint(request, buyerEmail);
-    const { error } = await admin.rpc('take_public_submission_slot', {
-      p_scope: 'negotiated-offer',
-      p_fingerprint: fingerprint,
-      p_limit: 5,
-      p_window_seconds: 3600
+    await enforcePublicRateLimits(admin, request, {
+      scope: 'negotiated-offer',
+      discriminator: buyerEmail,
+      perIpLimit: 12,
+      perIdentityLimit: 5,
+      windowSeconds: 3600
     });
-    if (error) {
-      const message = String(error.message || '');
-      return jsonResponse({ error: /wait before/i.test(message) ? 'Please wait before submitting another offer.' : 'Your offer could not be accepted. Please try again.' }, /wait before/i.test(message) ? 429 : 400);
-    }
   } catch (error) {
-    console.error('[offer-workflow] Offer rate limit failed', errorMessage(error));
+    const message = errorMessage(error);
+    if (/wait before|rate limit|too many/i.test(message)) {
+      return jsonResponse({ error: 'Please wait before submitting another offer.' }, 429);
+    }
+    console.error('[offer-workflow] Offer rate limit failed', message);
     return jsonResponse({ error: 'Your offer could not be accepted. Please try again.' }, 503);
   }
 
   const publicAmount = checkoutPriceCents(product!);
+  const expiresAt = expiresAtFromDays(undefined);
+  const capability = await newOfferCapability(expiresAt);
   const { data, error } = await admin.from('negotiated_offers').insert({
     product_id: productId,
     product_name: safeText(product!.name, 250) || `Listing #${productId}`,
@@ -513,25 +601,38 @@ async function createOffer(request: Request, input: Record<string, unknown>) {
     customer_note: customerNote,
     initial_amount_cents: amountCents,
     current_amount_cents: amountCents,
-    expires_at: expiresAtFromDays(undefined)
+    expires_at: expiresAt,
+    submission_key: submissionKey || null,
+    access_token_hash: capability.access_token_hash,
+    access_token_expires_at: capability.access_token_expires_at,
+    access_token_revoked_at: null
   }).select('*').single();
   if (error || !data) {
+    if (submissionKey && String(error?.code || '') === '23505') {
+      try {
+        const reused = await reuseOfferSubmission(submissionKey, productId, buyerEmail);
+        if (reused) return reused;
+      } catch (reuseError) {
+        console.error('[offer-workflow] Concurrent offer request recovery failed', errorMessage(reuseError));
+      }
+    }
     console.error('[offer-workflow] Offer insert failed', error?.message || 'No inserted row');
     return jsonResponse({ error: 'Your offer could not be saved. Please try again.' }, 503);
   }
 
   const offer = data as OfferRow;
   await addOfferEvent(offer.id, 'customer', 'submitted', offer.current_amount_cents, customerNote);
-  try {
-    await sendOwnerOfferNotification(offer, `[DJHC Offer] ${formatMoney(offer.current_amount_cents)} for ${offer.product_name}`, 'New offer awaiting your review');
-  } catch (error) {
-    console.error('[offer-workflow] Owner notification failed', errorMessage(error));
-  }
+  await queueOwnerOfferNotification(
+    `offer-submission:${offer.id}:owner`,
+    offer,
+    `[DJHC Offer] ${formatMoney(offer.current_amount_cents)} for ${offer.product_name}`,
+    'New offer awaiting your review'
+  );
 
   return jsonResponse({
     accepted: true,
     offer: publicOffer(offer),
-    offerUrl: await customerOfferUrl(offer.id)
+    offerUrl: customerOfferUrl(offer.id, capability.token)
   }, 201);
 }
 
@@ -585,11 +686,13 @@ async function updateCustomerOffer(input: Record<string, unknown>, action: 'cust
       return jsonResponse({ error: errorMessage(error) }, 400);
     }
     const note = safeText(input.message, 2000);
+    const nextExpiresAt = expiresAtFromDays(undefined);
     next = {
       status: 'pending',
       current_amount_cents: amountCents,
       customer_note: note,
-      expires_at: expiresAtFromDays(undefined)
+      expires_at: nextExpiresAt,
+      access_token_expires_at: nextExpiresAt
     };
     eventAction = 'customer_counter';
     eventAmount = amountCents;
@@ -600,7 +703,12 @@ async function updateCustomerOffer(input: Record<string, unknown>, action: 'cust
       return jsonResponse({ error: 'This offer is already closed.' }, 409);
     }
     const note = safeText(input.message, 2000);
-    next = { status: 'rejected', rejected_at: new Date().toISOString(), customer_note: note || offer.customer_note };
+    next = {
+      status: 'rejected',
+      rejected_at: new Date().toISOString(),
+      customer_note: note || offer.customer_note,
+      access_token_revoked_at: new Date().toISOString()
+    };
     eventAction = 'customer_reject';
     ownerSummary = 'Customer declined the offer';
     ownerSubject = `[DJHC Offer] Customer declined ${offer.product_name}`;
@@ -628,12 +736,8 @@ async function updateCustomerOffer(input: Record<string, unknown>, action: 'cust
   if (!data) return jsonResponse({ error: 'This offer changed before your response was saved. Refresh to see the latest status.' }, 409);
 
   const updatedOffer = data as OfferRow;
-  await addOfferEvent(updatedOffer.id, 'customer', eventAction, eventAmount, safeText(input.message, 2000));
-  try {
-    await sendOwnerOfferNotification(updatedOffer, ownerSubject, ownerSummary);
-  } catch (error) {
-    console.error('[offer-workflow] Owner response notification failed', errorMessage(error));
-  }
+  const eventId = await addOfferEvent(updatedOffer.id, 'customer', eventAction, eventAmount, safeText(input.message, 2000));
+  await queueOwnerOfferNotification(`offer-event:${eventId}:owner`, updatedOffer, ownerSubject, ownerSummary);
   return jsonResponse({ offer: publicOffer(updatedOffer) });
 }
 
@@ -648,7 +752,7 @@ async function listAdminInbox(request: Request, input: Record<string, unknown>) 
 
   await admin
     .from('negotiated_offers')
-    .update({ status: 'expired' })
+    .update({ status: 'expired', access_token_revoked_at: new Date().toISOString() })
     .in('status', activeOfferStatuses)
     .lte('expires_at', new Date().toISOString());
 
@@ -661,7 +765,7 @@ async function listAdminInbox(request: Request, input: Record<string, unknown>) 
 
   let inquiryQuery = admin
     .from('collector_inquiries')
-    .select('id,kind,name,email,phone,preferred_contact,subject,message,offer_amount,product_ids,source_path,status,created_at,updated_at')
+    .select('id,kind,name,email,phone,preferred_contact,subject,message,offer_amount,product_ids,source_path,photo_paths,status,created_at,updated_at')
     .order('updated_at', { ascending: false })
     .range(inquiryOffset, inquiryOffset + limit);
   if (inquiryStatus && inquiryStatus !== 'all') inquiryQuery = inquiryQuery.eq('status', inquiryStatus);
@@ -674,6 +778,28 @@ async function listAdminInbox(request: Request, input: Record<string, unknown>) 
 
   const offers = (offerRows || []) as OfferRow[];
   const inquiries = inquiryRows || [];
+  const allPhotoPaths = [...new Set(inquiries.flatMap((inquiry) => (
+    Array.isArray(inquiry.photo_paths) ? inquiry.photo_paths.map(String).filter(Boolean) : []
+  )))];
+  const signedPhotos = new Map<string, string>();
+  if (allPhotoPaths.length) {
+    const { data: signedRows, error: signedError } = await admin.storage
+      .from(inquiryUploadBucket)
+      .createSignedUrls(allPhotoPaths, 60 * 60);
+    if (signedError) console.error('[offer-workflow] Inquiry photo signing failed', signedError.message);
+    for (const signed of signedRows || []) {
+      if (signed.path && signed.signedUrl) signedPhotos.set(String(signed.path), String(signed.signedUrl));
+    }
+  }
+  const notificationQueries = await Promise.all([
+    admin.from('notification_outbox').select('id', { count: 'exact', head: true }).in('status', ['pending', 'processing']),
+    admin.from('notification_outbox').select('id', { count: 'exact', head: true }).eq('status', 'failed')
+  ]);
+  const photoUrlsFor = (inquiry: Record<string, unknown>) => (
+    Array.isArray(inquiry.photo_paths)
+      ? inquiry.photo_paths.map((path) => signedPhotos.get(String(path)) || '').filter(Boolean)
+      : []
+  );
   return jsonResponse({
     offers: offers.slice(0, limit).map(adminOffer),
     inquiries: inquiries.slice(0, limit).map((inquiry) => ({
@@ -688,12 +814,17 @@ async function listAdminInbox(request: Request, input: Record<string, unknown>) 
       offerAmount: inquiry.offer_amount == null ? null : Number(inquiry.offer_amount),
       productIds: Array.isArray(inquiry.product_ids) ? inquiry.product_ids.map(Number).filter(Number.isFinite) : [],
       sourcePath: String(inquiry.source_path || ''),
+      photoUrls: photoUrlsFor(inquiry),
       status: String(inquiry.status || 'new'),
       createdAt: inquiry.created_at,
       updatedAt: inquiry.updated_at
     })),
     hasMoreOffers: offers.length > limit,
-    hasMoreInquiries: inquiries.length > limit
+    hasMoreInquiries: inquiries.length > limit,
+    notificationSummary: {
+      pending: notificationQueries[0].error ? null : Number(notificationQueries[0].count || 0),
+      failed: notificationQueries[1].error ? null : Number(notificationQueries[1].count || 0)
+    }
   });
 }
 
@@ -721,8 +852,19 @@ async function decideOffer(request: Request, input: Record<string, unknown>) {
   let eventAction = '';
   let subject = '';
   let summary = '';
+  let nextAccessToken = '';
   if (decision === 'accept') {
-    update = { status: 'accepted', admin_note: adminNote, accepted_at: new Date().toISOString(), expires_at: expiresAt };
+    const capability = await newOfferCapability(expiresAt);
+    nextAccessToken = capability.token;
+    update = {
+      status: 'accepted',
+      admin_note: adminNote,
+      accepted_at: new Date().toISOString(),
+      expires_at: expiresAt,
+      access_token_hash: capability.access_token_hash,
+      access_token_expires_at: capability.access_token_expires_at,
+      access_token_revoked_at: null
+    };
     eventAction = 'admin_accept';
     subject = `[DJHC Offer Accepted] ${offer.product_name}`;
     summary = `DJ accepted your offer. You can purchase this item at the agreed price until ${new Date(expiresAt).toLocaleDateString('en-US')}.`;
@@ -733,12 +875,27 @@ async function decideOffer(request: Request, input: Record<string, unknown>) {
     } catch (error) {
       return jsonResponse({ error: errorMessage(error) }, 400);
     }
-    update = { status: 'countered', current_amount_cents: amountCents, admin_note: adminNote, expires_at: expiresAt };
+    const capability = await newOfferCapability(expiresAt);
+    nextAccessToken = capability.token;
+    update = {
+      status: 'countered',
+      current_amount_cents: amountCents,
+      admin_note: adminNote,
+      expires_at: expiresAt,
+      access_token_hash: capability.access_token_hash,
+      access_token_expires_at: capability.access_token_expires_at,
+      access_token_revoked_at: null
+    };
     eventAction = 'admin_counter';
     subject = `[DJHC Counteroffer] ${offer.product_name}`;
     summary = `DJ sent a counteroffer of ${formatMoney(amountCents)}. Review it and accept, counter, or decline on your private offer page.`;
   } else {
-    update = { status: 'declined', admin_note: adminNote, declined_at: new Date().toISOString() };
+    update = {
+      status: 'declined',
+      admin_note: adminNote,
+      declined_at: new Date().toISOString(),
+      access_token_revoked_at: new Date().toISOString()
+    };
     eventAction = 'admin_decline';
     subject = `[DJHC Offer Update] ${offer.product_name}`;
     summary = 'DJ is unable to accept this offer.';
@@ -766,12 +923,14 @@ async function decideOffer(request: Request, input: Record<string, unknown>) {
   if (!data) return jsonResponse({ error: 'This offer changed before your decision was saved. Refresh the inbox.' }, 409);
 
   const updatedOffer = data as OfferRow;
-  await addOfferEvent(updatedOffer.id, 'admin', eventAction, updatedOffer.current_amount_cents, adminNote);
-  try {
-    await sendBuyerOfferNotification(updatedOffer, subject, summary);
-  } catch (error) {
-    console.error('[offer-workflow] Buyer decision notification failed', errorMessage(error));
-  }
+  const eventId = await addOfferEvent(updatedOffer.id, 'admin', eventAction, updatedOffer.current_amount_cents, adminNote);
+  await queueBuyerOfferNotification(
+    `offer-event:${eventId}:buyer`,
+    updatedOffer,
+    subject,
+    summary,
+    nextAccessToken
+  );
   return jsonResponse({ offer: adminOffer(updatedOffer) });
 }
 
@@ -805,7 +964,7 @@ Deno.serve(async (request) => {
 
   let input: Record<string, unknown>;
   try {
-    const parsed = await request.json();
+    const parsed = await readJsonBody(request, 64 * 1024);
     input = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, unknown> : {};
   } catch {
     return jsonResponse({ error: 'Please submit the form again.' }, 400);

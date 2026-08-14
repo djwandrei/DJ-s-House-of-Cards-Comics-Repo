@@ -1,3 +1,5 @@
+project_id = "djhc-local"
+
 [functions.create-checkout-session]
 verify_jwt = false
 
@@ -20,6 +22,12 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.analytics-event]
+verify_jwt = false
+
+[functions.notification-worker]
+verify_jwt = false
+
+[functions.checkout-session-status]
 verify_jwt = false
 
 [functions.analytics-report]

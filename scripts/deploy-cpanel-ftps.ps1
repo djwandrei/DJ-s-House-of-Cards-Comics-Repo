@@ -540,6 +540,9 @@ function Invoke-SecureCurl {
   try {
     Set-Content -LiteralPath $configPath -Value "user = `"$userPassword`"" -Encoding Ascii
     & curl.exe --config $configPath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+      throw "FTPS curl exited with code $LASTEXITCODE."
+    }
   } finally {
     if (Test-Path -LiteralPath $configPath) {
       Remove-Item -LiteralPath $configPath -Force
@@ -604,9 +607,6 @@ function Invoke-Delete {
   )
 
   Invoke-SecureCurl -Arguments $args
-  if ($LASTEXITCODE -ne 0) {
-    Write-Warning "Remote delete failed for '$RelativePath'. You may need to remove it manually in cPanel."
-  }
 }
 
 function Invoke-DeleteBatch {
@@ -627,14 +627,11 @@ function Invoke-DeleteBatch {
   $args = Get-CurlCommonArguments
   foreach ($relativePath in $RelativePaths) {
     $remotePath = "/" + ((Get-RemotePathSegments -RelativePath $relativePath) -join "/")
-    $args += @("--quote", "*DELE $remotePath")
+    $args += @("--quote", "DELE $remotePath")
   }
   $args += @("--output", "NUL", $remoteRootUrl)
 
   Invoke-SecureCurl -Arguments $args
-  if ($LASTEXITCODE -ne 0) {
-    Write-Warning "One or more remote deletes may have failed in the current batch."
-  }
 }
 
 function Get-FullUploadList {

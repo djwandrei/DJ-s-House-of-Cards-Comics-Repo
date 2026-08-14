@@ -12,3 +12,5 @@ else
 fi
 
 "$powershell_command" -NoProfile -ExecutionPolicy Bypass -File "$repo_root/scripts/audit-secrets.ps1" -TrackedOnly
+cd "$repo_root"
+node scripts/verify-local-static-site.mjs

@@ -87,6 +87,67 @@ function checkoutSessionId(name) {
   return `cs_test_${name.replace(/[^a-z0-9]/gi, '')}12345678`;
 }
 
+function evaluateSupabaseAdapter() {
+  const window = {
+    DJ: {},
+    DJ_BACKEND_CONFIG: { enabled: false },
+    location: { origin: 'https://example.test' },
+    addEventListener() {}
+  };
+  const document = {
+    visibilityState: 'visible',
+    addEventListener() {},
+    querySelector() { return null; },
+    createElement() { return { addEventListener() {}, dataset: {} }; },
+    head: { appendChild() {} }
+  };
+  vm.runInNewContext(
+    readFileSync(path.join(root, 'supabase-client.js'), 'utf8'),
+    { window, document, console, URL, setTimeout, clearTimeout },
+    { filename: 'supabase-client.js' }
+  );
+  return window.DJ.remoteCatalog;
+}
+
+function testCatalogImportStateIsolation() {
+  const adapter = evaluateSupabaseAdapter();
+  const product = {
+    id: 501,
+    name: 'State isolation fixture',
+    category: 'Basketball',
+    price: 10,
+    checkoutPrice: 9,
+    copyCount: 4,
+    quantityAvailable: 0,
+    checkoutEnabled: false,
+    saleStatus: 'sold',
+    soldAt: '2026-08-14T00:00:00.000Z',
+    hiddenReason: 'Sold elsewhere',
+    archivedAt: '2026-08-14T01:00:00.000Z',
+    isDeleted: true,
+    metadata: {
+      manufacturer: 'Fixture Brand',
+      sold_via: 'stale-static-source',
+      stripe_session_id: 'stale-static-session',
+      last_shopify_inventory_at: '2026-08-14T01:00:00.000Z'
+    }
+  };
+  const contentOnly = adapter.toRemoteProduct(product);
+  for (const field of [
+    'copy_count', 'quantity_available', 'checkout_enabled', 'sale_status',
+    'sold_at', 'hidden_reason', 'archived_at', 'is_deleted'
+  ]) {
+    assert(!Object.prototype.hasOwnProperty.call(contentOnly, field), `Catalog imports must omit live operational field ${field}.`);
+  }
+  assert(contentOnly.checkout_price === 9, 'Catalog imports should retain explicit catalog checkout pricing.');
+  equal(contentOnly.metadata, { manufacturer: 'Fixture Brand' }, 'Catalog imports must strip stale operational metadata.');
+
+  const editorPayload = adapter.toRemoteProduct(product, { includeOperationalState: true });
+  assert(editorPayload.quantity_available === 0, 'Explicit listing edits must retain quantity changes.');
+  assert(editorPayload.sale_status === 'sold' && editorPayload.is_deleted === true, 'Explicit listing edits must retain live state changes.');
+  assert(editorPayload.metadata.stripe_session_id === 'stale-static-session', 'Explicit editor saves should retain the complete loaded metadata object.');
+}
+
 function testCartReconciliation() {
   const { DJ } = evaluateCore();
 
@@ -113,6 +174,57 @@ function testCartReconciliation() {
   DJ.setCart([{ productId: 11, quantity: 1 }]);
   equal(DJ.reconcileCartAfterCheckoutSuccess('not-a-stripe-session'), { reconciled: false, changed: false, itemsRemoved: 0 }, 'Malformed session parameters must not change the cart.');
   equal(DJ.getCart(), [{ productId: 11, quantity: 1 }], 'Malformed session parameters must preserve the latest cart.');
+}
+
+async function testVerifiedCheckoutReconciliation() {
+  const { DJ } = evaluateCore();
+  const paidSession = checkoutSessionId('verified-paid');
+  DJ.setCart([{ productId: 21, quantity: 2 }]);
+  DJ.recordCheckoutCartSnapshot(paidSession, [{ productId: 21, quantity: 1 }]);
+  const paid = await DJ.confirmCheckoutSuccessAndReconcile(paidSession, {
+    verifySession: async () => ({ status: 'paid' }),
+    maxAttempts: 1,
+    delayMs: 0
+  });
+  assert(paid.verification.status === 'paid', 'A server-confirmed paid checkout should be recognized.');
+  equal(DJ.getCart(), [{ productId: 21, quantity: 1 }], 'Paid checkout should subtract only its saved quantity.');
+
+  const pendingSession = checkoutSessionId('verified-pending');
+  DJ.setCart([{ productId: 22, quantity: 1 }]);
+  DJ.recordCheckoutCartSnapshot(pendingSession, DJ.getCart());
+  const pending = await DJ.confirmCheckoutSuccessAndReconcile(pendingSession, {
+    verifySession: async () => ({ status: 'pending' }),
+    maxAttempts: 2,
+    delayMs: 0
+  });
+  assert(pending.verification.status === 'pending', 'A pending server order should remain pending after bounded polling.');
+  equal(DJ.getCart(), [{ productId: 22, quantity: 1 }], 'Pending checkout must leave the cart untouched.');
+  const eventuallyPaid = await DJ.confirmCheckoutSuccessAndReconcile(pendingSession, {
+    verifySession: async () => ({ status: 'paid' }),
+    maxAttempts: 1,
+    delayMs: 0
+  });
+  assert(eventuallyPaid.reconciliation.changed, 'A later paid confirmation should still consume the preserved snapshot.');
+  equal(DJ.getCart(), [], 'The preserved snapshot should reconcile exactly once after payment is confirmed.');
+
+  const failedSession = checkoutSessionId('verification-failed');
+  DJ.setCart([{ productId: 23, quantity: 1 }]);
+  DJ.recordCheckoutCartSnapshot(failedSession, DJ.getCart());
+  const unavailable = await DJ.confirmCheckoutSuccessAndReconcile(failedSession, {
+    verifySession: async () => { throw new Error('mock network failure'); },
+    maxAttempts: 2,
+    delayMs: 0
+  });
+  assert(unavailable.verification.status === 'unavailable', 'Verification errors must fail closed.');
+  equal(DJ.getCart(), [{ productId: 23, quantity: 1 }], 'Failed verification must preserve the cart and checkout snapshot.');
+
+  let malformedCalls = 0;
+  const malformed = await DJ.confirmCheckoutSuccessAndReconcile('bad-session', {
+    verifySession: async () => { malformedCalls += 1; return { status: 'paid' }; },
+    maxAttempts: 1,
+    delayMs: 0
+  });
+  assert(malformed.verification.status === 'invalid' && malformedCalls === 0, 'Malformed session ids must never reach the status endpoint.');
 }
 
 function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {}, initialWishlist = [] }) {
@@ -517,7 +629,9 @@ async function testCheckoutIntentCancellation() {
 async function main() {
   const { DJ } = evaluateCore();
   equal(DJ.escapeHtml(`<>&"'`), '&lt;&gt;&amp;&quot;&#39;', 'HTML escaping must preserve every supported entity.');
+  testCatalogImportStateIsolation();
   testCartReconciliation();
+  await testVerifiedCheckoutReconciliation();
   await testCatalogFallbacks();
   testCatalogSearchUtilities();
   testDeferredAnalyticsPageView();

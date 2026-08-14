@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260814c';
+  const PRODUCT_ASSET_VERSION = '20260814d';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -443,6 +443,52 @@ window.DJ = window.DJ || {};
     }
 
     return { reconciled: true, changed: Boolean(itemsRemoved), itemsRemoved };
+  }
+
+  async function verifyCheckoutSessionWithRetries(sessionId, verifySession, options = {}) {
+    const normalizedSessionId = normalizeCheckoutSessionId(sessionId);
+    if (!normalizedSessionId) return { status: 'invalid', attempts: 0 };
+    if (typeof verifySession !== 'function') return { status: 'unavailable', attempts: 0 };
+
+    const requestedAttempts = Number(options.maxAttempts);
+    const requestedDelay = Number(options.delayMs);
+    const maxAttempts = Math.max(1, Math.min(10, Number.isFinite(requestedAttempts) ? requestedAttempts : 6));
+    const delayMs = Math.max(0, Math.min(5000, Number.isFinite(requestedDelay) ? requestedDelay : 1250));
+    let status = 'unknown';
+    let attempts = 0;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      attempts = attempt;
+      try {
+        const result = await verifySession(normalizedSessionId);
+        const nextStatus = String(result?.status || '').trim().toLowerCase();
+        status = ['paid', 'pending', 'not_paid', 'unknown'].includes(nextStatus)
+          ? nextStatus
+          : 'unknown';
+        if (status === 'paid' || status === 'not_paid') break;
+      } catch {
+        status = 'unavailable';
+      }
+      if (attempt < maxAttempts && delayMs) {
+        await new Promise((resolve) => window.setTimeout(resolve, delayMs));
+      }
+    }
+    return { status, attempts };
+  }
+
+  async function confirmCheckoutSuccessAndReconcile(sessionId, options = {}) {
+    const verifySession = options.verifySession
+      || DJ.remoteCatalog?.verifyCheckoutSession?.bind(DJ.remoteCatalog);
+    const verification = await verifyCheckoutSessionWithRetries(sessionId, verifySession, options);
+    if (verification.status !== 'paid') {
+      return {
+        verification,
+        reconciliation: { reconciled: false, changed: false, itemsRemoved: 0 }
+      };
+    }
+    return {
+      verification,
+      reconciliation: reconcileCartAfterCheckoutSuccess(sessionId)
+    };
   }
 
   function availableQuantity(product = {}) {
@@ -1831,6 +1877,8 @@ window.DJ = window.DJ || {};
   };
   DJ.recordCheckoutCartSnapshot = recordCheckoutCartSnapshot;
   DJ.reconcileCartAfterCheckoutSuccess = reconcileCartAfterCheckoutSuccess;
+  DJ.verifyCheckoutSessionWithRetries = verifyCheckoutSessionWithRetries;
+  DJ.confirmCheckoutSuccessAndReconcile = confirmCheckoutSuccessAndReconcile;
   DJ.updateCartCount = updateCartCount;
   DJ.availableQuantity = availableQuantity;
   DJ.applyLazyLoading = applyLazyLoading;
@@ -1918,11 +1966,26 @@ window.DJ = window.DJ || {};
     updateCartCount();
     if (document.body.dataset.page === 'checkout-success') {
       const sessionId = new URLSearchParams(window.location.search).get('session_id');
-      const reconciliation = DJ.reconcileCartAfterCheckoutSuccess(sessionId);
       const status = document.getElementById('checkoutSuccessCartStatus');
-      if (status && reconciliation.changed) {
-        status.textContent = 'The items from this completed checkout were removed from your cart.';
-      }
+      if (status) status.textContent = 'Confirming payment before updating this cart...';
+      void DJ.confirmCheckoutSuccessAndReconcile(sessionId).then(({ verification, reconciliation }) => {
+        if (!status) return;
+        if (verification.status === 'paid' && reconciliation.changed) {
+          status.textContent = 'Payment confirmed. The purchased quantities were removed from this cart.';
+        } else if (verification.status === 'paid' && reconciliation.reconciled) {
+          status.textContent = 'Payment confirmed. This cart was already up to date.';
+        } else if (verification.status === 'paid') {
+          status.textContent = 'Payment confirmed. No matching checkout snapshot was found in this tab, so the cart was left unchanged.';
+        } else if (verification.status === 'invalid') {
+          status.textContent = 'This checkout return link could not be verified. Your cart was not changed.';
+        } else if (verification.status === 'not_paid') {
+          status.textContent = 'Payment was not completed. Your cart was not changed.';
+        } else {
+          status.textContent = 'Payment confirmation is still pending. Your cart has not been changed.';
+        }
+      }).catch(() => {
+        if (status) status.textContent = 'Payment status could not be verified yet. Your cart has not been changed.';
+      });
     }
     initHomeCatalogLoader();
     initHomeAccountCard();

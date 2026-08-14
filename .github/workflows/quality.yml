@@ -1,0 +1,64 @@
+name: Quality checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-and-edge:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Run complete static-site verification
+        run: node scripts/verify-local-static-site.mjs
+      - name: Compile Python maintenance tools
+        run: python -m compileall -q scripts
+      - name: Parse PowerShell maintenance tools
+        shell: pwsh
+        run: |
+          $failures = @()
+          Get-ChildItem -LiteralPath scripts -Filter *.ps1 -File | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count) {
+              $failures += $errors | ForEach-Object { "$($_.Extent.File):$($_.Extent.StartLineNumber): $($_.Message)" }
+            }
+          }
+          if ($failures.Count) { throw ($failures -join "`n") }
+      - name: Type-check Supabase Edge Functions
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -LiteralPath supabase/functions -Recurse -Filter *.ts -File |
+            ForEach-Object { $_.FullName }
+          deno check @files
+
+  migration-reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: supabase/setup-cli@v2
+        with:
+          version: 2.84.2
+          github-token: ${{ github.token }}
+      - name: Apply every migration to a fresh local Supabase database
+        run: supabase db start
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup || true

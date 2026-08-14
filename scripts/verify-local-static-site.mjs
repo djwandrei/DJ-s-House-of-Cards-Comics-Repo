@@ -343,6 +343,7 @@ const checks = [
   ['structured-data', () => run(process.execPath, ['scripts/audit-structured-data.mjs'])],
   ['correctness-regressions', () => run(process.execPath, ['scripts/run-correctness-regression-tests.mjs'])],
   ['negotiated-offer-workflow', () => run(process.execPath, ['scripts/audit-negotiated-offer-workflow.mjs'])],
+  ['backend-hardening', () => run(process.execPath, ['scripts/audit-backend-hardening.mjs'])],
   ['javascript-syntax', verifyJavaScriptSyntax],
   ['generated-catalog-parity', verifyGeneratedCatalogParity],
   ['static-fallback-parity', verifyStaticFallbackParity],

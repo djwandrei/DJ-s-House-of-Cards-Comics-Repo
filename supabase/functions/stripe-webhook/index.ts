@@ -6,14 +6,16 @@ import {
   shopifyGid
 } from '../_shared/shopify.ts';
 import {
-  sendSaleNotification
+  queueSaleNotification
 } from '../_shared/sale-notifications.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
   // @ts-expect-error Older supported Stripe API version.
-  apiVersion: '2026-02-25.clover'
+  apiVersion: '2026-02-25.clover',
+  maxNetworkRetries: 1,
+  timeout: 12_000
 });
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || '';
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
@@ -92,35 +94,21 @@ function assertNoSupabaseError(error: unknown, step: string) {
 }
 
 async function beginWebhookEvent(event: Stripe.Event) {
-  const { error: insertError } = await admin.from('webhook_events').insert({
-    stripe_event_id: event.id,
-    event_type: event.type,
-    processing_status: 'processing'
+  const { data, error } = await admin.rpc('claim_stripe_webhook_event', {
+    p_event_id: event.id,
+    p_event_type: event.type,
+    p_lease_seconds: 300
   });
-  if (!insertError) return true;
-  if (insertError.code !== '23505') assertNoSupabaseError(insertError, 'webhook event insert');
-
-  const { data, error } = await admin
-    .from('webhook_events')
-    .select('processing_status')
-    .eq('stripe_event_id', event.id)
-    .single();
-  assertNoSupabaseError(error, 'webhook event lookup');
-  if (data?.processing_status === 'processed' || data?.processing_status === 'ignored') return false;
-  const { error: updateError } = await admin.from('webhook_events').update({
-    event_type: event.type,
-    processing_status: 'processing',
-    error_message: ''
-  }).eq('stripe_event_id', event.id);
-  assertNoSupabaseError(updateError, 'webhook event retry');
-  return true;
+  assertNoSupabaseError(error, 'webhook event claim');
+  return data === true;
 }
 
 async function finishWebhookEvent(eventId: string, status: 'processed' | 'failed' | 'ignored', errorMessage = '') {
   const { error } = await admin.from('webhook_events').update({
     processing_status: status,
     error_message: errorMessage.slice(0, 4000),
-    processed_at: new Date().toISOString()
+    processed_at: new Date().toISOString(),
+    locked_at: null
   }).eq('stripe_event_id', eventId);
   assertNoSupabaseError(error, 'webhook event completion');
 }
@@ -293,8 +281,7 @@ async function upsertCustomerProfile(session: Stripe.Checkout.Session, buyerUser
 
 async function syncCheckoutInventoryToShopify(
   session: Stripe.Checkout.Session,
-  reservations: Reservation[],
-  eventId: string
+  reservations: Reservation[]
 ) {
   if (!isShopifyConfigured()) return;
 
@@ -314,7 +301,11 @@ async function syncCheckoutInventoryToShopify(
   }
 
   await adjustShopifyInventory({
-    idempotencyKey: eventId,
+    // Stripe can report one payment through both checkout.session.completed
+    // and checkout.session.async_payment_succeeded. Session-scoped
+    // idempotency prevents those distinct webhook ids from decrementing the
+    // same Shopify inventory twice.
+    idempotencyKey: session.id,
     reason: 'sale',
     referenceDocumentUri: `gid://djshouseofcards/StripeCheckoutSession/${session.id}`,
     changes: reservations.map((reservation) => {
@@ -350,7 +341,9 @@ function saleNotificationFromStripe(
   });
   return {
     provider: 'Stripe Checkout',
-    eventId,
+    // One sale notification per checkout, even if Stripe emits multiple paid
+    // event types for the same session.
+    eventId: session.id,
     platformOrderId: session.id,
     status: 'paid',
     buyerEmail: String(order.buyer_email || session.customer_details?.email || session.customer_email || ''),
@@ -360,6 +353,7 @@ function saleNotificationFromStripe(
     items: notificationItems,
     metadata: {
       stripe_session_id: session.id,
+      stripe_webhook_event_id: eventId,
       stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : ''
     }
   };
@@ -374,8 +368,10 @@ async function finalizePaidCheckout(session: Stripe.Checkout.Session, eventId: s
   const { error } = await admin.rpc('finalize_checkout_inventory', { p_stripe_session_id: session.id });
   assertNoSupabaseError(error, 'inventory finalization');
   await markNegotiatedOfferPurchased(session);
-  await syncCheckoutInventoryToShopify(session, reservations, eventId);
-  return saleNotificationFromStripe(session, order, items, eventId);
+  const saleNotification = saleNotificationFromStripe(session, order, items, eventId);
+  await queueSaleNotification(admin, saleNotification);
+  await syncCheckoutInventoryToShopify(session, reservations);
+  return null;
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId: string) {
@@ -431,15 +427,10 @@ Deno.serve(async (request) => {
         await finishWebhookEvent(event.id, 'ignored');
         return jsonResponse({ received: true, ignored: true });
     }
-    await finishWebhookEvent(event.id, 'processed');
     if (saleNotification) {
-      try {
-        const result = await sendSaleNotification(saleNotification);
-        if (!result.sent) console.warn('[stripe-webhook] Sale notification skipped:', result.skippedReason);
-      } catch (notificationError) {
-        console.error('[stripe-webhook] Sale notification failed', notificationError);
-      }
+      await queueSaleNotification(admin, saleNotification);
     }
+    await finishWebhookEvent(event.id, 'processed');
   } catch (error) {
     console.error('[stripe-webhook]', error);
     try {

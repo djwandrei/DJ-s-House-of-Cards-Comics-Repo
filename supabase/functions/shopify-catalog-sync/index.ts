@@ -1,4 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
+import { requireSiteAdmin, SiteAdminError, type SiteAdminIdentity } from '../_shared/admin-auth.ts';
+import { readJsonBody } from '../_shared/http.ts';
 import {
   isShopifyConfigured,
   setShopifyInventory,
@@ -10,7 +12,6 @@ import {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const adminEmail = String(Deno.env.get('ADMIN_EMAIL') || 'djwandrei@gmail.com').trim().toLowerCase();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
 const PAGE_SIZE = 250;
@@ -145,18 +146,16 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String((error as { message?: string })?.message || error || '');
 }
 
-async function requireAdmin(request: Request) {
+async function requireAdmin(request: Request): Promise<SiteAdminIdentity> {
   const jwt = String(request.headers.get('authorization') || '')
     .replace(/^Bearer\s+/i, '')
     .trim();
-  if (!jwt) throw new Error('Admin sign-in is required.');
   // Local maintenance scripts can use the service-role JWT; browser callers
-  // still have to prove they are the configured admin user below.
-  if (serviceRoleKey && jwt === serviceRoleKey) return;
-  const { data, error } = await admin.auth.getUser(jwt);
-  if (error || !data.user || String(data.user.email || '').toLowerCase() !== adminEmail) {
-    throw new Error('Admin authorization failed.');
+  // still have to prove membership in the centralized site-admin registry.
+  if (serviceRoleKey && jwt === serviceRoleKey) {
+    return { id: 'service-role', email: 'service-role@internal.invalid' };
   }
+  return await requireSiteAdmin(request, admin);
 }
 
 function numericId(value: unknown, label: string) {
@@ -362,6 +361,41 @@ async function loadPagedRows(table: string, columns: string, orderColumn = 'id')
   return rows;
 }
 
+async function loadWebhookHealth() {
+  const statuses = ['pending', 'processing', 'processed', 'failed'];
+  const [totalResult, failureResult, ...statusResults] = await Promise.all([
+    admin.from('marketplace_webhook_events').select('event_id', { count: 'exact', head: true }),
+    admin
+      .from('marketplace_webhook_events')
+      .select('event_id,event_type,product_id,error_message,created_at')
+      .eq('processing_status', 'failed')
+      .order('created_at', { ascending: false })
+      .limit(10),
+    ...statuses.map((status) => admin
+      .from('marketplace_webhook_events')
+      .select('event_id', { count: 'exact', head: true })
+      .eq('processing_status', status))
+  ]);
+  if (totalResult.error) throw totalResult.error;
+  if (failureResult.error) throw failureResult.error;
+
+  const statusCounts: Record<string, number> = {};
+  statusResults.forEach((result, index) => {
+    if (result.error) throw result.error;
+    statusCounts[statuses[index]] = Number(result.count) || 0;
+  });
+  return {
+    total: Number(totalResult.count) || 0,
+    statusCounts,
+    recentFailures: (failureResult.data || []).map((event) => ({
+      eventId: event.event_id,
+      eventType: event.event_type,
+      productId: event.product_id,
+      error: event.error_message
+    }))
+  };
+}
+
 function mappedInventoryLevel(item: InventoryItemNode, mapping?: Record<string, unknown>) {
   const levels = item.inventoryLevels?.nodes || [];
   if (!mapping) return levels[0] || null;
@@ -468,7 +502,7 @@ async function loadInventoryItems() {
 }
 
 async function verifyCatalogState() {
-  const [products, mappings, webhooks, shopifyItems] = await Promise.all([
+  const [products, mappings, webhookHealth, shopifyItems] = await Promise.all([
     loadPagedRows(
       'products',
       'id,name,metadata,is_deleted,sale_status,checkout_enabled,quantity_available,price,checkout_price,display_price,price_label,image,image_gallery',
@@ -479,11 +513,11 @@ async function verifyCatalogState() {
       'product_id,sku,source_class,publish_enabled,shopify_product_id,shopify_inventory_item_id,shopify_location_id,last_shopify_quantity,last_synced_at',
       'product_id'
     ),
-    loadPagedRows(
-      'marketplace_webhook_events',
-      'provider,event_id,event_type,processing_status,product_id,created_at,processed_at,error_message',
-      'created_at'
-    ).catch(() => []),
+    loadWebhookHealth().catch((error) => ({
+      total: 0,
+      statusCounts: {},
+      recentFailures: [{ error: `Webhook health unavailable: ${errorMessage(error)}` }]
+    })),
     isShopifyConfigured() ? loadInventoryItems() : Promise.resolve([])
   ]);
 
@@ -563,12 +597,6 @@ async function verifyCatalogState() {
     }
   }
 
-  const webhookStatusCounts = webhooks.reduce<Record<string, number>>((counts, event) => {
-    const key = String(event.processing_status || 'unknown');
-    counts[key] = (counts[key] || 0) + 1;
-    return counts;
-  }, {});
-
   const blockers = {
     missingMappings,
     extraMappings,
@@ -615,19 +643,9 @@ async function verifyCatalogState() {
       priceMismatches: priceMismatches.length
     },
     webhooks: {
-      total: webhooks.length,
-      statusCounts: webhookStatusCounts,
-      recentFailures: firstItems(
-        webhooks
-          .filter((event) => event.processing_status === 'failed')
-          .map((event) => ({
-            eventId: event.event_id,
-            eventType: event.event_type,
-            productId: event.product_id,
-            error: event.error_message
-          })),
-        10
-      )
+      total: webhookHealth.total,
+      statusCounts: webhookHealth.statusCounts,
+      recentFailures: webhookHealth.recentFailures
     },
     safeForChannelOnboarding: Object.values(blockerCounts).every((count) => count === 0),
     blockerCounts,
@@ -1205,10 +1223,11 @@ async function syncProduct(productId: number) {
     }]
   });
 
-  await admin.from('shopify_product_mappings').update({
+  const { error: mappingUpdateError } = await admin.from('shopify_product_mappings').update({
     last_shopify_quantity: quantity,
     last_synced_at: new Date().toISOString()
   }).eq('product_id', productId);
+  if (mappingUpdateError) throw mappingUpdateError;
 
   return {
     productId,
@@ -1427,6 +1446,82 @@ async function registerShopifyWebhook({ topic, includeFields }: ShopifyWebhookTo
   return { created: true, subscription: created.webhookSubscriptionCreate.webhookSubscription };
 }
 
+async function deleteProductEverywhere(productId: number, deletedBy: string, reason = '') {
+  const [{ data: product, error: productError }, { data: mapping, error: mappingError }] = await Promise.all([
+    admin.from('products').select('*').eq('id', productId).maybeSingle(),
+    admin
+      .from('shopify_product_mappings')
+      .select('shopify_product_id,shopify_handle')
+      .eq('product_id', productId)
+      .maybeSingle()
+  ]);
+  if (productError) throw productError;
+  if (mappingError) throw mappingError;
+  if (!product) throw new Error(`Listing #${productId} does not exist.`);
+
+  const { error: prepareError } = await admin.rpc('prepare_product_deletion', {
+    p_product_id: productId
+  });
+  if (prepareError) throw new Error(`Listing deletion could not begin: ${prepareError.message}`);
+
+  let shopifyAction = 'not_mapped';
+  const shopifyProductId = String(mapping?.shopify_product_id || '').trim();
+  if (shopifyProductId) {
+    const gid = shopifyGid('Product', shopifyProductId);
+    const lookup = await shopifyGraphql<{ product: { id: string } | null }>(
+      `query ProductForDeletion($id: ID!) { product(id: $id) { id } }`,
+      { id: gid }
+    );
+    if (lookup.product) {
+      const deletion = await shopifyGraphql<{
+        productDelete: {
+          deletedProductId?: string | null;
+          userErrors?: Array<{ field?: string[]; message?: string }>;
+        };
+      }>(
+        `mutation DeleteProduct($input: ProductDeleteInput!) {
+          productDelete(input: $input) {
+            deletedProductId
+            userErrors { field message }
+          }
+        }`,
+        { input: { id: gid } }
+      );
+      if (deletion.productDelete.userErrors?.length) {
+        throw new Error(`Shopify product deletion failed: ${deletion.productDelete.userErrors
+          .map((error) => error.message || 'Unknown deletion error')
+          .join('; ')}`);
+      }
+      if (!deletion.productDelete.deletedProductId) {
+        throw new Error('Shopify did not confirm product deletion.');
+      }
+      shopifyAction = 'deleted';
+    } else {
+      shopifyAction = 'already_absent';
+    }
+  }
+
+  const { error: deleteError } = await admin.rpc('delete_product_with_audit', {
+    p_product_id: productId,
+    p_deleted_by: deletedBy,
+    p_shopify_action: shopifyAction,
+    p_metadata: {
+      reason: String(reason || '').trim().slice(0, 500),
+      shopifyProductId: shopifyProductId || null,
+      shopifyHandle: mapping?.shopify_handle || null,
+      originalProductSnapshot: product
+    }
+  });
+  if (deleteError) {
+    throw new Error(
+      shopifyAction === 'deleted'
+        ? `Shopify was deleted, but the audited Supabase deletion failed: ${deleteError.message}`
+        : `The audited Supabase deletion failed: ${deleteError.message}`
+    );
+  }
+  return { productId, name: product.name, shopifyAction };
+}
+
 async function registerShopifyWebhooks() {
   const topics: ShopifyWebhookTopic[] = [
     {
@@ -1465,10 +1560,11 @@ Deno.serve(async (request) => {
     return respond({ error: 'Shopify catalog sync is not configured.' }, 503);
   }
 
+  let adminIdentity: SiteAdminIdentity;
   try {
-    await requireAdmin(request);
+    adminIdentity = await requireAdmin(request);
   } catch (error) {
-    return respond({ error: errorMessage(error) }, 401);
+    return respond({ error: errorMessage(error) }, error instanceof SiteAdminError ? error.status : 503);
   }
 
   let payload: {
@@ -1478,9 +1574,11 @@ Deno.serve(async (request) => {
     limit?: number;
     afterProductId?: number;
     channels?: string[];
+    confirmProductId?: number;
+    reason?: string;
   } = {};
   try {
-    payload = await request.json();
+    payload = await readJsonBody(request, 64 * 1024);
   } catch {
     return respond({ error: 'Invalid JSON request.' }, 400);
   }
@@ -1495,6 +1593,16 @@ Deno.serve(async (request) => {
           return respond({ error: 'A valid productId is required.' }, 400);
         }
         return respond({ ok: true, result: await syncProduct(productId) });
+      }
+      case 'delete-product': {
+        const productId = Number(payload.productId);
+        if (!Number.isSafeInteger(productId) || productId <= 0 || Number(payload.confirmProductId) !== productId) {
+          return respond({ error: 'A matching productId and confirmProductId are required.' }, 400);
+        }
+        return respond({
+          ok: true,
+          result: await deleteProductEverywhere(productId, adminIdentity.email, payload.reason)
+        });
       }
       case 'register-webhooks':
         return respond({ ok: true, result: await registerShopifyWebhooks() });

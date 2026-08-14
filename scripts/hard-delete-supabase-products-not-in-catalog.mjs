@@ -4,10 +4,9 @@ import path from 'node:path';
 /**
  * Make Supabase catalog membership exactly match products.json.
  *
- * The audit mode reports remote-only rows. --apply first upserts the complete
- * local catalog, writes a backup of remote-only rows, then permanently deletes
- * those rows. This is intentionally the only catalog reconciliation script
- * allowed to remove listings.
+ * The audit mode reports remote-only rows. --apply first writes a complete
+ * remote-table backup, then upserts catalog content and sends each reviewed
+ * deletion through the audited Shopify/Supabase deletion workflow.
  */
 
 const root = process.cwd();
@@ -50,7 +49,32 @@ function array(value) {
   return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
-function remoteProduct(product) {
+const OPERATIONAL_METADATA_KEYS = new Set([
+  'sold_via', 'stripe_session_id', 'last_quantity_sold', 'last_sold_at',
+  'last_inventory_source', 'last_shopify_webhook_id',
+  'last_shopify_inventory_at', 'last_shopify_source_updated_at'
+]);
+
+function isOperationalMetadataKey(key = '') {
+  const normalized = String(key || '').trim().toLowerCase();
+  return OPERATIONAL_METADATA_KEYS.has(normalized)
+    || normalized.startsWith('stripe_')
+    || normalized.startsWith('last_shopify_');
+}
+
+function mergedCatalogMetadata(localMetadata, remoteMetadata) {
+  const merged = Object.fromEntries(Object.entries(
+    localMetadata && typeof localMetadata === 'object' && !Array.isArray(localMetadata) ? localMetadata : {}
+  ).filter(([key]) => !isOperationalMetadataKey(key)));
+  for (const [key, value] of Object.entries(
+    remoteMetadata && typeof remoteMetadata === 'object' && !Array.isArray(remoteMetadata) ? remoteMetadata : {}
+  )) {
+    if (isOperationalMetadataKey(key)) merged[key] = value;
+  }
+  return merged;
+}
+
+function remoteProduct(product, remoteRow) {
   return {
     id: Number(product.id),
     name: String(product.name || '').trim(),
@@ -71,18 +95,17 @@ function remoteProduct(product) {
     sport: String(product.sport || '').trim(),
     player_athlete: String(product.playerAthlete || '').trim(),
     is_featured: product.isFeatured === true,
-    is_deleted: false,
     sort_rank: Number.isFinite(Number(product.sortRank)) ? Number(product.sortRank) : Number(product.id),
-    copy_count: Number.isFinite(Number(product.copyCount)) ? Number(product.copyCount) : 1,
     item_photo_url: String(product.itemPhotoUrl || '').trim(),
     item_photo_urls: array(product.itemPhotoUrls),
     html_full_link: String(product.htmlFullLink || '').trim(),
     html_image_urls: array(product.htmlImageUrls),
-    metadata: product.metadata && typeof product.metadata === 'object' ? product.metadata : {}
+    metadata: mergedCatalogMetadata(product.metadata, remoteRow?.metadata)
   };
 }
 
-async function upsertCatalog(projectUrl, apiKey, table, rows) {
+async function upsertCatalog(projectUrl, apiKey, table, rows, currentRows) {
+  const currentById = new Map(currentRows.map((row) => [Number(row.id), row]));
   for (let index = 0; index < rows.length; index += 100) {
     const response = await fetch(`${projectUrl}/rest/v1/${table}?on_conflict=id`, {
       method: 'POST',
@@ -92,12 +115,31 @@ async function upsertCatalog(projectUrl, apiKey, table, rows) {
         'Content-Type': 'application/json',
         Prefer: 'resolution=merge-duplicates,return=minimal'
       },
-      body: JSON.stringify(rows.slice(index, index + 100).map(remoteProduct))
+      body: JSON.stringify(rows.slice(index, index + 100).map((product) => (
+        remoteProduct(product, currentById.get(Number(product.id)))
+      )))
     });
     if (!response.ok) {
       throw new Error(`Supabase upsert failed at row ${index}: ${response.status} ${await response.text()}`);
     }
   }
+}
+
+async function deleteCatalogProduct(projectUrl, apiKey, productId) {
+  await requestJson(`${projectUrl}/functions/v1/shopify-catalog-sync`, {
+    method: 'POST',
+    headers: {
+      apikey: apiKey,
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'delete-product',
+      productId,
+      confirmProductId: productId,
+      reason: 'Removed because the listing is absent from the reviewed canonical catalog.'
+    })
+  });
 }
 
 const projectUrl = configValue('supabaseUrl').replace(/\/+$/, '');
@@ -108,21 +150,30 @@ if (!projectUrl || !serviceRoleKey) {
 }
 
 const localIds = new Set(products.map((product) => Number(product.id)).filter(Number.isFinite));
-if (applyChanges) await upsertCatalog(projectUrl, serviceRoleKey, table, products);
 const beforeRows = await fetchAllRows(projectUrl, serviceRoleKey, table);
 const deleteRows = beforeRows.filter((row) => !localIds.has(Number(row.id)));
 const deleteIds = deleteRows.map((row) => Number(row.id)).sort((left, right) => left - right);
 const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+const backupName = `supabase-full-products-backup-${timestamp}.json`;
 const report = {
   generatedAt: new Date().toISOString(),
   applied: applyChanges,
   localRows: localIds.size,
   remoteRowsBefore: beforeRows.length,
   hardDeleteCount: deleteRows.length,
-  hardDeleteIds: deleteIds
+  hardDeleteIds: deleteIds,
+  fullBackup: applyChanges ? `outputs/${backupName}` : null
 };
 
 await fs.mkdir(path.join(root, 'outputs'), { recursive: true });
+if (applyChanges) {
+  await fs.writeFile(
+    path.join(root, 'outputs', backupName),
+    `${JSON.stringify(beforeRows, null, 2)}\n`,
+    'utf8'
+  );
+  await upsertCatalog(projectUrl, serviceRoleKey, table, products, beforeRows);
+}
 await fs.writeFile(
   path.join(root, 'outputs', 'supabase-hard-delete-catalog-reconcile.json'),
   `${JSON.stringify(report, null, 2)}\n`,
@@ -130,24 +181,8 @@ await fs.writeFile(
 );
 
 if (applyChanges && deleteRows.length) {
-  await fs.writeFile(
-    path.join(root, 'outputs', `supabase-hard-delete-backup-${timestamp}.json`),
-    `${JSON.stringify(deleteRows, null, 2)}\n`,
-    'utf8'
-  );
-  for (let index = 0; index < deleteIds.length; index += 100) {
-    const ids = deleteIds.slice(index, index + 100).join(',');
-    const response = await fetch(`${projectUrl}/rest/v1/${table}?id=in.(${ids})`, {
-      method: 'DELETE',
-      headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
-        Prefer: 'return=minimal'
-      }
-    });
-    if (!response.ok) {
-      throw new Error(`Supabase hard delete failed: ${response.status} ${await response.text()}`);
-    }
+  for (const productId of deleteIds) {
+    await deleteCatalogProduct(projectUrl, serviceRoleKey, productId);
   }
 }
 

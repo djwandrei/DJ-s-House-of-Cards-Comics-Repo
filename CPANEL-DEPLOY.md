@@ -109,9 +109,11 @@ run:
 node .\scripts\hard-delete-supabase-products-not-in-catalog.mjs
 ```
 
-After reviewing the generated report, add `--apply` to upsert the complete
-local catalog and permanently delete remote-only rows. The script writes a
-backup before deleting anything.
+After reviewing the generated report, add `--apply` to reconcile local catalog
+content and permanently delete remote-only rows. Apply mode writes a complete
+remote backup first, preserves live operational sale/reservation metadata, and
+uses the authenticated, audited Edge deletion workflow for each removed row.
+It does not mirror stale sold state from the static catalog.
 
 ## Reviewed static release
 

@@ -18,6 +18,7 @@ function assert(condition, message) {
 }
 
 const migration = read('supabase/migrations/20260814000000_negotiated_offers.sql');
+const hardeningMigration = read('supabase/migrations/20260815000000_backend_hardening.sql');
 const workflow = read('supabase/functions/offer-workflow/index.ts');
 const checkout = read('supabase/functions/create-checkout-session/index.ts');
 const webhook = read('supabase/functions/stripe-webhook/index.ts');
@@ -30,10 +31,10 @@ assert(/create table if not exists public\.negotiated_offers/i.test(migration), 
 assert(/create table if not exists public\.negotiated_offer_events/i.test(migration), 'Negotiated-offer event history migration is missing.');
 assert(/enable row level security/i.test(migration) && /revoke all on table public\.negotiated_offers from anon, authenticated/i.test(migration), 'Negotiated offers must remain service-role only.');
 assert(/create or replace function public\.reserve_negotiated_offer_checkout/i.test(migration) && /grant execute on function public\.reserve_negotiated_offer_checkout/i.test(migration), 'Accepted offers need their own service-role-only inventory reservation path.');
-assert(/offerAccessToken/.test(workflow) && /tokensMatch/.test(workflow), 'Offer capability-link validation is missing.');
+assert(/hashOfferAccessToken/.test(workflow) && /tokensMatch/.test(workflow) && /access_token_hash/.test(hardeningMigration), 'Hashed offer capability-link validation is missing.');
 assert(/case 'customer-accept'/.test(workflow) && /case 'customer-counter'/.test(workflow) && /case 'customer-reject'/.test(workflow), 'Customer offer response actions are incomplete.');
 assert(/case 'admin-list-inbox'/.test(workflow) && /case 'admin-decide'/.test(workflow) && /case 'admin-update-inquiry'/.test(workflow), 'Admin Inbox actions are incomplete.');
-assert(/sendOwnerOfferNotification/.test(workflow) && /sendBuyerOfferNotification/.test(workflow), 'Offer email notification paths are missing.');
+assert(/queueOwnerOfferNotification/.test(workflow) && /queueBuyerOfferNotification/.test(workflow) && /processNotificationOutbox/.test(workflow), 'Durable offer email notification paths are missing.');
 assert(/validateNegotiatedOffer/.test(checkout) && /negotiated_offer_id/.test(checkout), 'Stripe checkout must validate and tag negotiated offers server-side.');
 assert(/current_amount_cents/.test(checkout) && /allow_promotion_codes: negotiatedOffer \? false/i.test(checkout), 'Negotiated Stripe prices must be server-derived and must not stack promotion codes.');
 assert(/reserve_negotiated_offer_checkout/.test(checkout) && /standardCheckoutExpiresAt/.test(checkout) && /offerExpiresAt/.test(checkout), 'Negotiated checkout must reserve stock privately and cannot outlive its accepted-offer deadline.');

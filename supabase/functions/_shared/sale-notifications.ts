@@ -1,3 +1,9 @@
+import {
+  processNotificationOutbox,
+  queueEmailNotification,
+  queueWebhookNotification
+} from './notification-outbox.ts';
+
 export type SaleNotificationItem = {
   productId?: number | string | null;
   name: string;
@@ -24,23 +30,10 @@ export type SaleNotification = {
   metadata?: Record<string, unknown>;
 };
 
-type NotificationResult = {
-  sent: boolean;
-  emailSent: boolean;
-  webhookSent: boolean;
-  skippedReason?: string;
-};
-
-const resendApiKey = String(Deno.env.get('RESEND_API_KEY') || '').trim();
-const notificationFrom = String(Deno.env.get('SALE_NOTIFICATION_EMAIL_FROM') || '').trim();
 const notificationReplyTo = String(Deno.env.get('SALE_NOTIFICATION_EMAIL_REPLY_TO') || '').trim();
-const notificationWebhookUrl = String(Deno.env.get('SALE_NOTIFICATION_WEBHOOK_URL') || '').trim();
-const notificationWebhookSecret = String(Deno.env.get('SALE_NOTIFICATION_WEBHOOK_SECRET') || '').trim();
 const subjectPrefix = String(Deno.env.get('SALE_NOTIFICATION_SUBJECT_PREFIX') || 'DJHC Sale').trim();
 const notificationRecipients = String(
-  Deno.env.get('SALE_NOTIFICATION_EMAIL_TO')
-    || Deno.env.get('ADMIN_EMAIL')
-    || ''
+  Deno.env.get('SALE_NOTIFICATION_EMAIL_TO') || ''
 )
   .split(',')
   .map((value) => value.trim())
@@ -86,7 +79,7 @@ function itemLine(item: SaleNotificationItem) {
   return `${quantity}x${id} ${item.name}${price ? ` (${price})` : ''}`;
 }
 
-function subjectFor(notification: SaleNotification) {
+export function subjectFor(notification: SaleNotification) {
   const platform = notification.provider || 'Marketplace';
   const total = formatMoney(notification.amountTotal, notification.currency);
   const itemCount = notification.items.reduce((sum, item) => sum + Math.max(1, Number(item.quantity) || 1), 0);
@@ -94,7 +87,7 @@ function subjectFor(notification: SaleNotification) {
   return `[${subjectPrefix}] ${platform}${order} sold ${itemCount} item${itemCount === 1 ? '' : 's'}${total ? ` - ${total}` : ''}`;
 }
 
-function textBody(notification: SaleNotification) {
+export function textBody(notification: SaleNotification) {
   const total = formatMoney(notification.amountTotal, notification.currency);
   const lines = [
     `${notification.provider || 'Marketplace'} sale received`,
@@ -114,7 +107,7 @@ function textBody(notification: SaleNotification) {
   return lines.join('\n');
 }
 
-function htmlBody(notification: SaleNotification) {
+export function htmlBody(notification: SaleNotification) {
   const total = formatMoney(notification.amountTotal, notification.currency);
   const rows = notification.items.map((item) => `
     <tr>
@@ -151,54 +144,29 @@ function htmlBody(notification: SaleNotification) {
   `;
 }
 
-async function postJson(url: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers
-    },
-    body: JSON.stringify(body)
-  });
-  if (response.ok) return;
-  const detail = await response.text().catch(() => '');
-  throw new Error(`Notification POST failed (${response.status}): ${detail.slice(0, 400)}`);
-}
-
-export async function sendSaleNotification(notification: SaleNotification): Promise<NotificationResult> {
-  let emailSent = false;
-  let webhookSent = false;
-
-  if (notificationWebhookUrl) {
-    await postJson(notificationWebhookUrl, {
-      type: 'sale_notification',
-      notification
-    }, notificationWebhookSecret ? { 'X-DJHC-Notification-Secret': notificationWebhookSecret } : {});
-    webhookSent = true;
-  }
-
-  if (resendApiKey && notificationFrom && notificationRecipients.length) {
-    await postJson('https://api.resend.com/emails', {
-      from: notificationFrom,
+export async function queueSaleNotification(admin: any, notification: SaleNotification) {
+  const providerKey = String(notification.provider || 'marketplace').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const eventKey = `sale:${providerKey}:${notification.eventId}`;
+  const [emailQueued, webhookQueued] = await Promise.all([
+    queueEmailNotification(admin, eventKey, 'sale', {
       to: notificationRecipients,
       subject: subjectFor(notification),
       text: textBody(notification),
       html: htmlBody(notification),
-      ...(notificationReplyTo ? { reply_to: notificationReplyTo } : {})
-    }, {
-      Authorization: `Bearer ${resendApiKey}`
-    });
-    emailSent = true;
+      ...(notificationReplyTo ? { replyTo: notificationReplyTo } : {})
+    }),
+    queueWebhookNotification(admin, eventKey, 'sale', {
+      type: 'sale_notification',
+      notification
+    })
+  ]);
+  let processing = { claimed: 0, sent: 0, failed: 0 };
+  if (emailQueued || webhookQueued) {
+    try {
+      processing = await processNotificationOutbox(admin, 10);
+    } catch (error) {
+      console.error('[sale-notifications] Immediate outbox processing failed', error);
+    }
   }
-
-  if (!emailSent && !webhookSent) {
-    return {
-      sent: false,
-      emailSent,
-      webhookSent,
-      skippedReason: 'SALE_NOTIFICATION_EMAIL_TO plus an email provider, or SALE_NOTIFICATION_WEBHOOK_URL, is not configured.'
-    };
-  }
-
-  return { sent: true, emailSent, webhookSent };
+  return { queued: emailQueued || webhookQueued, emailQueued, webhookQueued, processing };
 }
