@@ -353,7 +353,7 @@ async function loadPagedRows(table: string, columns: string, orderColumn = 'id')
       .order(orderColumn, { ascending: true })
       .range(from, from + PAGE_SIZE - 1);
     if (error) throw error;
-    const chunk = (data || []) as Record<string, unknown>[];
+    const chunk = (data || []) as unknown as Record<string, unknown>[];
     rows.push(...chunk);
     if (chunk.length < PAGE_SIZE) break;
     from += PAGE_SIZE;
@@ -632,7 +632,7 @@ async function verifyCatalogState() {
     safeForChannelOnboarding: Object.values(blockerCounts).every((count) => count === 0),
     blockerCounts,
     blockerSamples: Object.fromEntries(
-      Object.entries(blockers).map(([key, value]) => [key, firstItems(value)])
+      Object.entries(blockers).map(([key, value]) => [key, value.slice(0, 25)])
     )
   };
 }
@@ -672,7 +672,7 @@ async function addProductMedia(product: Record<string, unknown>, mapping: Record
     }`,
     {
       media,
-      productId: shopifyGid('Product', mapping.shopify_product_id)
+      productId: shopifyGid('Product', numericId(mapping.shopify_product_id, 'product id'))
     }
   );
 

@@ -43,7 +43,9 @@ window.DJ = window.DJ || {};
       const draft = Object.fromEntries(FIELDS.map((name) => [name, value(form, name)]));
       if (Object.values(draft).some(Boolean)) localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, updatedAt: Date.now() }));
       else localStorage.removeItem(DRAFT_KEY);
-    } catch {}
+    } catch {
+      // Draft persistence is optional when private storage is unavailable.
+    }
   }
 
   function restoreDraft(form) {
@@ -60,11 +62,17 @@ window.DJ = window.DJ || {};
         return true;
       });
       if (restored) setStatus('Restored your saved contact draft from this browser.', 'info');
-    } catch {}
+    } catch {
+      // A blocked draft read must not prevent the contact form from loading.
+    }
   }
 
   function clearDraft() {
-    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      // Clearing an optional local draft is best effort.
+    }
   }
 
   function initTopics(form) {

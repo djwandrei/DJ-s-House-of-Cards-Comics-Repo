@@ -6,7 +6,7 @@ window.DJ = window.DJ || {};
   const config = window.DJ_BACKEND_CONFIG || {};
   const moneyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-  const state = { offerId: '', token: '', offer: null, events: [] };
+  const state = { offerId: '', token: '', offer: null, events: [], actionInFlight: false };
 
   if (!mount) return;
 
@@ -260,12 +260,23 @@ window.DJ = window.DJ || {};
   }
 
   async function customerAction(action, data = {}) {
+    if (state.actionInFlight) return;
+    state.actionInFlight = true;
+    const controls = [...mount.querySelectorAll('[data-offer-customer-action], [data-offer-reject], #offerCounterForm button')];
+    controls.forEach((control) => { control.disabled = true; });
+    setBusy(true);
     setStatus('Saving your response...', 'info');
     try {
       await invoke({ action, offerId: state.offerId, token: state.token, ...data });
       await loadOffer();
     } catch (error) {
       setStatus(error?.message || 'Your response could not be saved. Please try again.', 'error');
+    } finally {
+      state.actionInFlight = false;
+      setBusy(false);
+      controls.forEach((control) => {
+        if (control.isConnected) control.disabled = false;
+      });
     }
   }
 

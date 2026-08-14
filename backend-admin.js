@@ -1539,7 +1539,7 @@ window.DJ = window.DJ || {};
       if (state.session) {
         await refreshRemoteProducts();
       }
-      state.authSubscription = backendApi.onAuthStateChange(async (event, session) => {
+      state.authSubscription = backendApi.onAuthStateChange(async (_event, session) => {
         state.session = session || null;
         updateSetupMessage();
         if (state.session) {

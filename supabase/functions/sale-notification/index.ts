@@ -24,12 +24,27 @@ function amountCents(value: unknown, centsValue?: unknown) {
   return Number.isFinite(amount) ? Math.round(amount * 100) : null;
 }
 
+function optionalIdentifier(value: unknown): string | number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') return value.trim().slice(0, 250) || null;
+  return null;
+}
+
+function positiveQuantity(value: unknown) {
+  const quantity = Math.floor(Number(value));
+  return Number.isSafeInteger(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
 function normalizedItems(payload: Record<string, unknown>): SaleNotificationItem[] {
-  const rawItems = Array.isArray(payload.items) ? payload.items as Array<Record<string, unknown>> : [];
+  const rawItems = Array.isArray(payload.items) ? payload.items.filter(isRecord) : [];
   const items = rawItems.map((item) => ({
-    productId: item.productId ?? item.product_id ?? item.listingId ?? item.listing_id ?? null,
+    productId: optionalIdentifier(item.productId ?? item.product_id ?? item.listingId ?? item.listing_id),
     name: String(item.name || item.title || item.sku || item.product_name || 'Marketplace item').trim(),
-    quantity: Number(item.quantity) || 1,
+    quantity: positiveQuantity(item.quantity),
     unitAmount: amountCents(item.price ?? item.unitAmount, item.unitAmountCents ?? item.unit_amount),
     priceLabel: String(item.priceLabel || item.price_label || ''),
     sku: String(item.sku || ''),
@@ -38,9 +53,9 @@ function normalizedItems(payload: Record<string, unknown>): SaleNotificationItem
   }));
   if (items.length) return items;
   return [{
-    productId: payload.productId ?? payload.product_id ?? payload.listingId ?? payload.listing_id ?? null,
+    productId: optionalIdentifier(payload.productId ?? payload.product_id ?? payload.listingId ?? payload.listing_id),
     name: String(payload.name || payload.title || payload.product_name || 'Marketplace item').trim(),
-    quantity: Number(payload.quantity) || 1,
+    quantity: positiveQuantity(payload.quantity),
     unitAmount: amountCents(payload.price ?? payload.unitAmount, payload.unitAmountCents ?? payload.unit_amount),
     priceLabel: String(payload.priceLabel || payload.price_label || '')
   }];
@@ -52,7 +67,7 @@ function notificationFromPayload(payload: Record<string, unknown>): SaleNotifica
   return {
     provider,
     eventId,
-    platformOrderId: payload.platformOrderId ?? payload.platform_order_id ?? payload.orderId ?? payload.order_id ?? null,
+    platformOrderId: optionalIdentifier(payload.platformOrderId ?? payload.platform_order_id ?? payload.orderId ?? payload.order_id),
     status: String(payload.status || 'sold'),
     buyerEmail: String(payload.buyerEmail || payload.buyer_email || payload.email || ''),
     amountTotal: amountCents(payload.amountTotal ?? payload.total ?? payload.orderTotal, payload.amountTotalCents ?? payload.amount_total),
@@ -74,7 +89,9 @@ Deno.serve(async (request) => {
 
   let payload: Record<string, unknown>;
   try {
-    payload = await request.json();
+    const parsed = await request.json();
+    if (!isRecord(parsed)) throw new Error('Invalid payload shape.');
+    payload = parsed;
   } catch {
     return jsonResponse({ error: 'Invalid JSON payload.' }, 400);
   }

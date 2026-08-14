@@ -40,7 +40,9 @@ assert(/reserve_negotiated_offer_checkout/.test(checkout) && /standardCheckoutEx
 assert(/markNegotiatedOfferPurchased/.test(webhook) && /clearNegotiatedOfferCheckoutSession/.test(webhook) && /negotiatedUnitAmount/.test(webhook), 'Stripe webhook reconciliation and negotiated order snapshots are incomplete.');
 assert(/startNegotiatedOfferCheckout/.test(payments) && /skipCartSnapshot/.test(payments), 'Negotiated checkout must preserve an unrelated cart snapshot.');
 assert(/data-negotiated-offer-checkout/.test(offers) && /customer-counter/.test(offers), 'Customer offer page actions are incomplete.');
+assert(/actionInFlight/.test(offers), 'Customer offer responses must reject duplicate in-flight actions.');
 assert(/admin-list-inbox/.test(inbox) && /admin-update-inquiry/.test(inbox), 'Admin Inbox client is incomplete.');
+assert(/loadRequestId/.test(inbox) && /appendUniqueRecords/.test(inbox), 'Admin Inbox pagination must ignore stale responses and deduplicate appended records.');
 assert(/Open the Admin Inbox/.test(inquiry), 'New collector-inquiry email notifications must link to the Admin Inbox.');
 
 console.log('Negotiated offer workflow audit passed: private pricing, customer responses, inbox access, email notifications, and Stripe reconciliation are wired locally.');

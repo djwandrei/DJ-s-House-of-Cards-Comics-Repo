@@ -20,6 +20,7 @@ const uploadBucket = 'collector-inquiry-uploads';
 const maxPhotos = 3;
 const maxPhotoBytes = 6 * 1024 * 1024;
 const maxTotalPhotoBytes = 6 * 1024 * 1024;
+const maxEncodedPhotoCharacters = Math.ceil(maxPhotoBytes / 3) * 4 + 4;
 const supportedPhotoTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const supportedKinds = new Set(['contact', 'sell', 'trade', 'want_list', 'offer', 'bundle']);
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,10 +84,27 @@ function extensionFor(type: string) {
   return 'jpg';
 }
 
+function hasExpectedImageSignature(bytes: Uint8Array, type: string) {
+  if (type === 'image/jpeg') {
+    return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+  if (type === 'image/png') {
+    const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    return bytes.length >= signature.length && signature.every((value, index) => bytes[index] === value);
+  }
+  if (type === 'image/webp') {
+    return bytes.length >= 12
+      && String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF'
+      && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP';
+  }
+  return false;
+}
+
 function decodePhoto(photo: InquiryPhoto, inquiryId: string, index: number): PreparedPhoto {
   const type = safeText(photo.type, 80).toLowerCase();
   const rawData = String(photo.data || '').replace(/^data:[^;]+;base64,/i, '').trim();
   if (!supportedPhotoTypes.has(type) || !rawData) throw new Error('Use JPG, PNG, or WebP photos.');
+  if (rawData.length > maxEncodedPhotoCharacters) throw new Error('Each photo must be 6 MB or smaller.');
   if (!/^[A-Za-z0-9+/=]+$/.test(rawData)) throw new Error('One photo could not be read.');
 
   let binary = '';
@@ -97,6 +115,7 @@ function decodePhoto(photo: InquiryPhoto, inquiryId: string, index: number): Pre
   }
   if (!binary.length || binary.length > maxPhotoBytes) throw new Error('Each photo must be 6 MB or smaller.');
   const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  if (!hasExpectedImageSignature(bytes, type)) throw new Error('One attachment does not match its image type.');
   return {
     bytes,
     type,

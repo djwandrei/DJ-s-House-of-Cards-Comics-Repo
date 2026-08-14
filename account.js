@@ -37,7 +37,7 @@ window.DJ = window.DJ || {};
   const $ = (id) => document.getElementById(id);
   const pageParam = (name) => new URLSearchParams(window.location.search).get(name);
 
-  function normalizeProfileValue(field, value) {
+  function normalizeProfileValue(value) {
     return String(value || '').trim().slice(0, DEFAULT_PROFILE_FIELD_LENGTH);
   }
 
@@ -91,20 +91,20 @@ window.DJ = window.DJ || {};
     fields.forEach((field) => {
       const input = $(`account_${field}`);
       profile[field] = input
-        ? normalizeProfileValue(field, input.value)
-        : normalizeProfileValue(field, savedProfile[field]);
+        ? normalizeProfileValue(input.value)
+        : normalizeProfileValue(savedProfile[field]);
     });
     profile.updatedAt = savedProfile.updatedAt || '';
     return profile;
   }
 
   function hasProfileDetails(profile) {
-    return fields.some((field) => Boolean(normalizeProfileValue(field, profile?.[field])));
+    return fields.some((field) => Boolean(normalizeProfileValue(profile?.[field])));
   }
 
   function hasUnsavedProfileChanges(currentProfile, storedProfile) {
     return fields.some((field) => (
-      normalizeProfileValue(field, currentProfile?.[field]) !== normalizeProfileValue(field, storedProfile?.[field])
+      normalizeProfileValue(currentProfile?.[field]) !== normalizeProfileValue(storedProfile?.[field])
     ));
   }
 

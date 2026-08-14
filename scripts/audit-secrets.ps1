@@ -59,8 +59,10 @@ function Get-CandidatePaths {
     return @(& git -C $repoRoot -c core.quotepath=false ls-files -- . ":!assets/**" ":!vendor/**")
   }
 
-  return @(Get-ChildItem -LiteralPath $repoRoot -Recurse -Force -File |
-    ForEach-Object { Convert-ToRelativePath -Path $_.FullName })
+  # Scan every tracked or non-ignored candidate that could enter a commit while
+  # skipping machine-local credentials, generated dependencies, and outputs
+  # already protected by .gitignore.
+  return @(& git -C $repoRoot -c core.quotepath=false ls-files --cached --others --exclude-standard -- . ":!assets/**" ":!vendor/**")
 }
 
 function Get-CandidateContent {

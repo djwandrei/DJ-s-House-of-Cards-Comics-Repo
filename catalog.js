@@ -137,6 +137,7 @@ window.DJ = window.DJ || {};
   let wishlistPageRefreshTimer = 0;
   let catalogRenderRequestId = 0;
   let wishlistRenderRequestId = 0;
+  let cartRenderRequestId = 0;
   let linkedProductAutoOpenedId = null;
   let activeModalProductId = null;
   let activeModalContextProducts = [];
@@ -285,7 +286,7 @@ window.DJ = window.DJ || {};
     return /\b(?:gold|silver|bronze|blue|red|green|purple|orange|pink|black|aqua|yellow|fuchsia|lime|cyan|white|emerald|sepia|tie-dye|rainbow|platinum|foil|border|parallel|refractor|prizm|holo|shimmer|wave|lava|pulsar|speckle|mojo|ice|glitter|chrome|optic|choice|cosmic|sapphire|x-?fractor|die[- ]cut|press proof|aspirations|status|mirror|prime|the finals|playoff ticket|premium stock|masterpieces|limited|numbered|serial|short print|sp|ssp|auto|autographs?|au|signatures?|sigs?|patch|relic|memorabilia|jersey|materials?|swatch|prospect)\b/.test(value);
   }
 
-  function hasSerialNumberedSignal(item = {}, excelFields = {}, includesFeature = () => false) {
+  function hasSerialNumberedSignal(item = {}, excelFields = {}) {
     // Serial-number checks intentionally avoid generated description text.
     // Descriptions can inherit old workbook mistakes, while the title carries
     // the reliable numbering context buyers actually see. Be conservative:
@@ -366,12 +367,6 @@ window.DJ = window.DJ || {};
     const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
     const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
     const featureSet = new Set(featuresText.split('|').map((value) => value.trim()).filter(Boolean));
-    const titleText = [
-      item.name || '',
-      item.condition || '',
-      item.legacyImageLabel || '',
-      excelFields['Title'] || ''
-    ].join(' ').toLowerCase();
     const text = [
       item.name || '',
       item.description || '',
@@ -392,7 +387,6 @@ window.DJ = window.DJ || {};
       excelFields['CD:Grade - (ID: 27502)'] || ''
     ].join(' ').toLowerCase();
     const attributes = [];
-    const includesFeature = (feature) => featureSet.has(String(feature || '').trim());
     if (!featureSet.size && Array.isArray(item.attributes)) {
       item.attributes.forEach((attribute) => {
         // Re-evaluate serial numbering from the current title/features instead
@@ -421,7 +415,7 @@ window.DJ = window.DJ || {};
 
     if (/\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b/.test(text)) pushProductAttribute(attributes, 'Rookie');
     if (hasAutographLanguage || autographedValue === 'yes') pushProductAttribute(attributes, 'Autograph');
-    if (hasSerialNumberedSignal(item, excelFields, includesFeature)) pushProductAttribute(attributes, 'Serial Numbered');
+    if (hasSerialNumberedSignal(item, excelFields)) pushProductAttribute(attributes, 'Serial Numbered');
     if (hasOneOfOneLanguage) pushProductAttribute(attributes, 'One of One');
     if (hasShortPrintLanguage) pushProductAttribute(attributes, 'Short Print');
     if (hasMemorabiliaLanguage) pushProductAttribute(attributes, 'Memorabilia');
@@ -753,7 +747,7 @@ window.DJ = window.DJ || {};
     const middleSlots = Math.max(3, maxVisible - 4);
     const halfWindow = Math.floor(middleSlots / 2);
     let start = Math.max(2, page - halfWindow);
-    let end = Math.min(totalPages - 1, start + middleSlots - 1);
+    const end = Math.min(totalPages - 1, start + middleSlots - 1);
     start = Math.max(2, Math.min(start, end - middleSlots + 1));
 
     const pages = [1];
@@ -1516,10 +1510,19 @@ window.DJ = window.DJ || {};
    * This prevents deleted or backend-removed listings from inflating badge counts
    * on pages outside the dedicated wishlist view.
    */
+  function hasUsableCatalogSnapshot(products) {
+    return Array.isArray(products) && products.length > 0;
+  }
+
   function reconcileWishlistIds(products, options = {}) {
     const shouldPersist = options.persist !== false;
-    const validIds = new Set((Array.isArray(products) ? products : []).map((product) => Number(product.id)).filter(Number.isFinite));
     const currentWishlist = DJ.getWishlist();
+    // A transient remote/static failure must never be interpreted as an empty
+    // catalog and erase shopper state. A successful non-empty snapshot can
+    // still prune listings that were genuinely removed.
+    if (!hasUsableCatalogSnapshot(products)) return currentWishlist;
+
+    const validIds = new Set(products.map((product) => Number(product.id)).filter(Number.isFinite));
     const reconciledWishlist = currentWishlist.filter((productId) => validIds.has(Number(productId)));
 
     if (shouldPersist && reconciledWishlist.length !== currentWishlist.length) {
@@ -2046,7 +2049,7 @@ Thank you.`
     }
   }
 
-  function toggleWishlist(productId, product = null) {
+  function toggleWishlist(productId) {
     const wishlist = DJ.getWishlist();
     const index = wishlist.indexOf(productId);
     const wasWishlisted = index > -1;
@@ -2252,7 +2255,7 @@ Thank you.`
 
       if (event.target.closest('.wishlist-button')) {
         event.preventDefault();
-        toggleWishlist(productId, product);
+        toggleWishlist(productId);
         return;
       }
 
@@ -3111,7 +3114,7 @@ Thank you.`
     syncState();
   }
 
-  function insertCatalogSupportCallout(config = {}) {
+  function insertCatalogSupportCallout() {
     const productContainer = document.getElementById('productContainer');
     if (!productContainer || document.getElementById('catalogSupportCallout')) return;
 
@@ -3270,7 +3273,9 @@ Thank you.`
       try {
         const next = [query, ...readRecent().filter((saved) => saved.toLowerCase() !== query.toLowerCase())].slice(0, 5);
         localStorage.setItem(recentKey, JSON.stringify(next));
-      } catch {}
+      } catch {
+        // Browsing still works when private storage is unavailable.
+      }
     };
     const quickSearches = (() => {
       const page = document.body.dataset.page || '';
@@ -3965,7 +3970,7 @@ Thank you.`
     addToolbarActions();
     ensureCatalogPaginationControls();
     setupFilterSidebarToggle();
-    insertCatalogSupportCallout(config);
+    insertCatalogSupportCallout();
     bindCatalogPagination(config);
     setupSearchShortcuts();
     setupMobileFilterDrawer(config);
@@ -4099,6 +4104,20 @@ Thank you.`
     return `sell-trade-want-list.html?${params.toString()}`;
   }
 
+  function renderSavedCatalogUnavailableState(title, message, retryPath) {
+    return `
+      <div class="empty-state">
+        <span class="empty-state-kicker">Temporarily unavailable</span>
+        <h2>${DJ.escapeHtml(title)}</h2>
+        <p>${DJ.escapeHtml(message)}</p>
+        <div class="empty-state-actions">
+          <a class="button" href="${DJ.escapeHtml(retryPath)}">Try Again</a>
+          <a class="button-secondary" href="shop.html">Continue Browsing</a>
+        </div>
+      </div>
+    `;
+  }
+
   function renderWishlistActionsPanel(products = []) {
     const savedProducts = normalizeModalContextProducts(products);
     if (!savedProducts.length) return '';
@@ -4162,10 +4181,21 @@ Thank you.`
     // the remote timeout plus static fallback instead of leaving the wishlist
     // blocked on a direct backend request.
     const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    if (renderRequestId !== wishlistRenderRequestId) return;
+    if (!hasUsableCatalogSnapshot(allProducts)) {
+      if (wishlistPageCount) {
+        wishlistPageCount.textContent = `${storedWishlist.length} saved item${storedWishlist.length === 1 ? '' : 's'} still stored`;
+      }
+      clearProductGridLoadingState(wishlistContainer);
+      wishlistContainer.innerHTML = renderSavedCatalogUnavailableState(
+        'Saved items could not load',
+        'Your wishlist is still saved. Refresh when the catalog connection is available again.',
+        'wishlist.html'
+      );
+      return;
+    }
     const wishlistIdSet = new Set(storedWishlist);
     let wishlistProducts = allProducts.filter((product) => wishlistIdSet.has(Number(product.id)));
-
-    if (renderRequestId !== wishlistRenderRequestId) return;
 
     wishlistProducts = sortProductsByIdOrder(wishlistProducts, storedWishlist);
 
@@ -4225,6 +4255,7 @@ Thank you.`
   async function renderCartPage() {
     const container = document.getElementById('cartContainer');
     if (!container) return;
+    const renderRequestId = ++cartRenderRequestId;
     const storedCart = DJ.getCart();
     if (!storedCart.length) {
       container.innerHTML = renderCartEmptyState();
@@ -4234,6 +4265,16 @@ Thank you.`
 
     renderProductGridLoadingState(container, { count: Math.min(4, storedCart.length) });
     const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    if (renderRequestId !== cartRenderRequestId) return;
+    if (!hasUsableCatalogSnapshot(allProducts)) {
+      clearProductGridLoadingState(container);
+      container.innerHTML = renderSavedCatalogUnavailableState(
+        'Cart details could not load',
+        'Your cart is still saved. Refresh when the catalog connection is available again.',
+        'cart.html'
+      );
+      return;
+    }
     const productsById = createProductLookup(allProducts);
     const cartItems = storedCart
       .map((item) => ({ ...item, product: productsById.get(Number(item.productId)) }))
@@ -4245,6 +4286,7 @@ Thank you.`
 
     if (JSON.stringify(reconciled) !== JSON.stringify(storedCart)) {
       DJ.setCart(reconciled);
+      if (renderRequestId !== cartRenderRequestId) return;
     }
     if (!cartItems.length || !reconciled.length) {
       clearProductGridLoadingState(container);
@@ -4585,7 +4627,7 @@ Thank you.`
       });
     });
     modalInner.querySelector('#modalWishlist')?.addEventListener('click', () => {
-      toggleWishlist(product.id, product);
+      toggleWishlist(product.id);
       closeModal();
     });
 

@@ -39,6 +39,18 @@ for (const file of catalogPages) {
   assert(liveRegions.length === 1, `${file}: expected exactly one catalog aria-live region, found ${liveRegions.length}.`);
 }
 
+const wishlistHtml = read('wishlist.html');
+const wishlistCount = tagForId(wishlistHtml, 'wishlistPageCount');
+const wishlistGrid = tagForId(wishlistHtml, 'wishlistContainer');
+assert(/aria-live=["']polite["']/i.test(wishlistCount) && /role=["']status["']/i.test(wishlistCount), 'wishlist.html: wishlistPageCount must remain the concise saved-items status region.');
+assert(wishlistGrid && !/aria-live|role=["']status/i.test(wishlistGrid), 'wishlist.html: the full wishlist grid must not be a live region.');
+
+const metricsHtml = read('metrics.html');
+const metricsMount = tagForId(metricsHtml, 'metricsMount');
+const metricsLiveStatus = tagForId(metricsHtml, 'metricsLiveStatus');
+assert(metricsMount && !/aria-live|role=["']status/i.test(metricsMount), 'metrics.html: the full metrics dashboard must not be a live region.');
+assert(/aria-live=["']polite["']/i.test(metricsLiveStatus) && /role=["']status["']/i.test(metricsLiveStatus), 'metrics.html: metricsLiveStatus must be the concise reporting status region.');
+
 const navSource = read('nav.js');
 const styles = read('styles.css');
 assert(/COMPACT_NAV_BREAKPOINT\s*=\s*1180/.test(navSource), 'nav.js compact-navigation breakpoint must be 1180px.');
@@ -47,4 +59,4 @@ assert(/@media \(max-width:900px\)\s*\{\s*\.filter-panel--drawer/.test(styles), 
 assert(/showCartActionFeedback/.test(read('catalog.js')), 'catalog add-to-cart feedback helper is missing.');
 assert(/Only \$\{available\} available/.test(read('catalog.js')), 'catalog stock-limit feedback is missing.');
 
-console.log(`Storefront accessibility audit passed for ${catalogPages.length} catalog pages.`);
+console.log(`Storefront accessibility audit passed for ${catalogPages.length} catalog pages plus wishlist and metrics live-region contracts.`);

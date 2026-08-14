@@ -13,8 +13,16 @@ window.DJ = window.DJ || {};
   let largestContentfulPaint = 0;
   let cumulativeLayoutShift = 0;
   let interactionLatency = 0;
+  const measurementAllowedOrigins = Array.isArray(config.measurementAllowedOrigins)
+    ? config.measurementAllowedOrigins.map((value) => String(value || '').replace(/\/+$/, '')).filter(Boolean)
+    : [];
+  const measurementOriginAllowed = (
+    !measurementAllowedOrigins.length
+    || measurementAllowedOrigins.includes(String(window.location.origin || '').replace(/\/+$/, ''))
+  );
   const analyticsEndpoint = (
     config.measurementEnabled === true
+    && measurementOriginAllowed
     && config.supabaseUrl
     && config.supabasePublishableKey
     && config.analyticsEventFunction
@@ -87,21 +95,27 @@ window.DJ = window.DJ || {};
           largestContentfulPaint = Math.max(largestContentfulPaint, entry.startTime || 0);
         });
       }).observe({ type: 'largest-contentful-paint', buffered: true });
-    } catch {}
+    } catch {
+      // Unsupported observer types should not interrupt storefront analytics.
+    }
     try {
       new PerformanceObserver((entries) => {
         entries.getEntries().forEach((entry) => {
           if (!entry.hadRecentInput) cumulativeLayoutShift += entry.value || 0;
         });
       }).observe({ type: 'layout-shift', buffered: true });
-    } catch {}
+    } catch {
+      // Unsupported observer types should not interrupt storefront analytics.
+    }
     try {
       new PerformanceObserver((entries) => {
         entries.getEntries().forEach((entry) => {
           interactionLatency = Math.max(interactionLatency, entry.duration || 0);
         });
       }).observe({ type: 'event', buffered: true, durationThreshold: 40 });
-    } catch {}
+    } catch {
+      // Unsupported observer types should not interrupt storefront analytics.
+    }
   }
 
   function sendVitals() {
@@ -120,6 +134,12 @@ window.DJ = window.DJ || {};
 
   DJ.trackEvent = trackEvent;
   observeVitals();
-  document.addEventListener('DOMContentLoaded', () => trackEvent('page_view'), { once: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => trackEvent('page_view'), { once: true });
+  } else {
+    // core.js intentionally loads measurement after first paint on most pages.
+    // Record the view immediately when DOMContentLoaded has already fired.
+    trackEvent('page_view');
+  }
   window.addEventListener('pagehide', sendVitals, { once: true });
 })();

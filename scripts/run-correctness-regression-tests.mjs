@@ -115,11 +115,11 @@ function testCartReconciliation() {
   equal(DJ.getCart(), [{ productId: 11, quantity: 1 }], 'Malformed session parameters must preserve the latest cart.');
 }
 
-function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {} }) {
+function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {}, initialWishlist = [] }) {
   const source = readFileSync(path.join(root, 'catalog.js'), 'utf8');
   const hookedSource = source.replace(
     /\n  window\.closeModal = closeModal;[\s\S]*?\n\}\)\(\);\s*$/,
-    `\n  window.__catalogTestHooks = {\n    getBestAvailableSourceResult,\n    firstSuccessfulResult,\n    getRankedSearchSuggestions,\n    sortProductAttributes,\n    normalizeTeamFacetValue,\n    normalizeProducts,\n    buildFacetSummary,\n    toCountedFacetOptions\n  };\n  window.closeModal = closeModal;\n  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;\n})();\n`
+    `\n  window.__catalogTestHooks = {\n    getBestAvailableSourceResult,\n    firstSuccessfulResult,\n    getRankedSearchSuggestions,\n    sortProductAttributes,\n    normalizeTeamFacetValue,\n    normalizeProducts,\n    buildFacetSummary,\n    toCountedFacetOptions,\n    hasUsableCatalogSnapshot,\n    reconcileWishlistIds,\n    getTestWishlist: () => DJ.getWishlist()\n  };\n  window.closeModal = closeModal;\n  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;\n})();\n`
   );
   assert(hookedSource !== source, 'Could not install catalog test hooks.');
   const document = {
@@ -132,6 +132,11 @@ function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {} }
   };
   const window = {
     DJ: {
+      getWishlist: () => [...initialWishlist],
+      setWishlist(items) {
+        initialWishlist = [...items];
+        return [...initialWishlist];
+      },
       getPreloadedProductsForSource: () => null,
       loadPreloadedProductsForSource: async () => { throw new Error('No preloaded fixture'); },
       versionedProductAsset: (sourceName) => sourceName,
@@ -280,6 +285,77 @@ function testCatalogSearchUtilities() {
     ],
     'Facet option ordering and counts must stay stable after allocation reductions.'
   );
+
+  const preservedWishlist = evaluateCatalog({
+    remoteListProducts: async () => [],
+    staticFetch: async () => staticResponse([]),
+    initialWishlist: [41, 42]
+  });
+  equal(
+    preservedWishlist.reconcileWishlistIds([], { persist: true }),
+    [41, 42],
+    'An unavailable/empty catalog snapshot must preserve the shopper wishlist.'
+  );
+  equal(preservedWishlist.getTestWishlist(), [41, 42], 'Empty catalog failures must not persist an erased wishlist.');
+  equal(
+    preservedWishlist.reconcileWishlistIds([{ id: 42 }], { persist: true }),
+    [42],
+    'A usable catalog snapshot should still remove genuinely stale wishlist ids.'
+  );
+}
+
+function evaluateDeferredAnalytics(origin) {
+  const requests = [];
+  const document = {
+    readyState: 'complete',
+    addEventListener() {
+      throw new Error('DOMContentLoaded must not be awaited after the document is complete.');
+    }
+  };
+  const window = {
+    DJ: {},
+    DJ_BACKEND_CONFIG: {
+      measurementEnabled: true,
+      supabaseUrl: 'https://example.supabase.co',
+      supabasePublishableKey: 'publishable-test-key',
+      analyticsEventFunction: 'analytics-event',
+      measurementAllowedOrigins: ['https://www.djshouseofcards-comics.com']
+    },
+    location: { origin, pathname: '/shop.html' },
+    addEventListener() {}
+  };
+  vm.runInNewContext(readFileSync(path.join(root, 'analytics.js'), 'utf8'), {
+    window,
+    document,
+    fetch: (url, options) => {
+      requests.push({ url, options });
+      return Promise.resolve({ ok: true });
+    },
+    console
+  }, { filename: 'analytics.js' });
+  return requests;
+}
+
+function testDeferredAnalyticsPageView() {
+  const productionRequests = evaluateDeferredAnalytics('https://www.djshouseofcards-comics.com');
+  assert(productionRequests.length === 1, 'Deferred analytics loading must record exactly one page view after DOMContentLoaded.');
+  const payload = JSON.parse(productionRequests[0].options.body);
+  assert(payload.event === 'page_view' && payload.page === '/shop.html', 'Deferred analytics must preserve the page-view payload.');
+  assert(evaluateDeferredAnalytics('http://127.0.0.1:4173').length === 0, 'Local previews must not send production analytics or create CORS noise.');
+}
+
+function testMetricsAggregation() {
+  const source = readFileSync(path.join(root, 'metrics.js'), 'utf8');
+  const hookedSource = source.replace(
+    /\n  loadReport\(\);\s*\n\}\)\(\);\s*$/,
+    '\n  window.__metricsTestHooks = { totalContactSubmissions };\n})();\n'
+  );
+  assert(hookedSource !== source, 'Could not install metrics test hooks.');
+  const mount = { addEventListener() {}, innerHTML: '' };
+  const window = { DJ: {} };
+  const document = { getElementById: (id) => id === 'metricsMount' ? mount : null };
+  vm.runInNewContext(hookedSource, { window, document, console, Intl }, { filename: 'metrics.js' });
+  assert(window.__metricsTestHooks.totalContactSubmissions({ contact_submit: 10, inquiry_submit: 2 }) === 12, 'Contact and inquiry totals must be added numerically, not concatenated.');
 }
 
 function createDeferred() {
@@ -444,8 +520,10 @@ async function main() {
   testCartReconciliation();
   await testCatalogFallbacks();
   testCatalogSearchUtilities();
+  testDeferredAnalyticsPageView();
+  testMetricsAggregation();
   await testCheckoutIntentCancellation();
-  console.log('Correctness regression tests passed: core helpers, cart reconciliation, catalog fallback/search, and checkout intent cancellation.');
+  console.log('Correctness regression tests passed: core helpers, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and checkout intent cancellation.');
 }
 
 main().catch((error) => {

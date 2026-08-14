@@ -339,6 +339,40 @@ window.DJ = window.DJ || {};
   }
 
   let supabaseLibraryPromise = null;
+  const SUPABASE_LIBRARY_LOAD_TIMEOUT_MS = 8000;
+
+  function hasSupabaseLibrary() {
+    return Boolean(window.supabase && typeof window.supabase.createClient === 'function');
+  }
+
+  function waitForSupabaseScript(script, url) {
+    if (hasSupabaseLibrary()) return Promise.resolve(true);
+    if (script.dataset.supabaseLoadState === 'failed' || script.dataset.supabaseLoadState === 'loaded') {
+      script.remove();
+      return Promise.resolve(false);
+    }
+
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (loaded) => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        script.removeEventListener('load', onLoad);
+        script.removeEventListener('error', onError);
+        script.dataset.supabaseLoadState = loaded ? 'loaded' : 'failed';
+        if (!loaded) script.remove();
+        resolve(loaded);
+      };
+      const onLoad = () => finish(hasSupabaseLibrary());
+      const onError = () => finish(false);
+      const timer = window.setTimeout(() => finish(false), SUPABASE_LIBRARY_LOAD_TIMEOUT_MS);
+      script.addEventListener('load', onLoad, { once: true });
+      script.addEventListener('error', onError, { once: true });
+      script.dataset.supabaseLoadState = script.dataset.supabaseLoadState || 'loading';
+      script.dataset.supabaseCdnUrl = url;
+    });
+  }
 
   /**
    * Lazy-load the Supabase browser SDK only when backend mode is enabled.
@@ -346,7 +380,7 @@ window.DJ = window.DJ || {};
    */
   function ensureSupabaseLibrary() {
     if (!isConfigured()) return Promise.resolve(false);
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
+    if (hasSupabaseLibrary()) {
       return Promise.resolve(true);
     }
 
@@ -365,34 +399,18 @@ window.DJ = window.DJ || {};
       for (const url of candidateUrls) {
         const existing = document.querySelector(`script[data-supabase-cdn-url="${url}"]`);
         if (existing) {
-          await new Promise((resolve, reject) => {
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-              resolve(true);
-              return;
-            }
-            existing.addEventListener('load', () => resolve(true), { once: true });
-            existing.addEventListener('error', () => reject(new Error(`Failed to load the Supabase client library from ${url}.`)), { once: true });
-          }).catch(() => false);
-
-          if (window.supabase && typeof window.supabase.createClient === 'function') {
-            return true;
-          }
+          if (await waitForSupabaseScript(existing, url)) return true;
           continue;
         }
 
-        const loaded = await new Promise((resolve) => {
-          const script = document.createElement('script');
-          script.src = url;
-          script.defer = true;
-          script.crossOrigin = 'anonymous';
-          script.dataset.supabaseCdn = 'true';
-          script.dataset.supabaseCdnUrl = url;
-          script.addEventListener('load', () => {
-            resolve(Boolean(window.supabase && typeof window.supabase.createClient === 'function'));
-          }, { once: true });
-          script.addEventListener('error', () => resolve(false), { once: true });
-          document.head.appendChild(script);
-        });
+        const script = document.createElement('script');
+        script.src = url;
+        script.defer = true;
+        script.crossOrigin = 'anonymous';
+        script.dataset.supabaseCdn = 'true';
+        const loadResult = waitForSupabaseScript(script, url);
+        document.head.appendChild(script);
+        const loaded = await loadResult;
 
         if (loaded) {
           return true;

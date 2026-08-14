@@ -15,7 +15,8 @@ window.DJ = window.DJ || {};
     hasMoreInquiries: false,
     offerStatus: 'all',
     inquiryStatus: 'all',
-    focusOfferId: new URLSearchParams(window.location.search).get('offer') || ''
+    focusOfferId: new URLSearchParams(window.location.search).get('offer') || '',
+    loadRequestId: 0
   };
 
   if (!mount) return;
@@ -168,7 +169,19 @@ window.DJ = window.DJ || {};
     mount.innerHTML = `<div class="panel inbox-empty"><h2>${isError ? 'Admin Inbox unavailable' : 'Admin sign-in required'}</h2><p>${escapeHtml(message)}</p><div class="inline-actions"><a class="button" href="admin.html">Open Admin Dashboard</a><a class="button-secondary" href="account.html">Open Account</a></div></div>`;
   }
 
+  function appendUniqueRecords(current = [], incoming = []) {
+    const seenIds = new Set(current.map((record) => String(record?.id || '')).filter(Boolean));
+    const uniqueIncoming = incoming.filter((record) => {
+      const id = String(record?.id || '');
+      if (id && seenIds.has(id)) return false;
+      if (id) seenIds.add(id);
+      return true;
+    });
+    return [...current, ...uniqueIncoming];
+  }
+
   async function loadInbox({ appendOffers = false, appendInquiries = false } = {}) {
+    const requestId = ++state.loadRequestId;
     setBusy(true);
     try {
       const data = await invoke({
@@ -179,16 +192,23 @@ window.DJ = window.DJ || {};
         offerStatus: state.offerStatus,
         inquiryStatus: state.inquiryStatus
       });
+      if (requestId !== state.loadRequestId) return;
       const offers = Array.isArray(data?.offers) ? data.offers : [];
       const inquiries = Array.isArray(data?.inquiries) ? data.inquiries : [];
-      state.offers = appendOffers ? [...state.offers, ...offers] : offers;
-      state.inquiries = appendInquiries ? [...state.inquiries, ...inquiries] : inquiries;
-      state.offerOffset = state.offers.length;
-      state.inquiryOffset = state.inquiries.length;
-      state.hasMoreOffers = Boolean(data?.hasMoreOffers);
-      state.hasMoreInquiries = Boolean(data?.hasMoreInquiries);
+      const replaceBoth = !appendOffers && !appendInquiries;
+      if (appendOffers || replaceBoth) {
+        state.offers = appendOffers ? appendUniqueRecords(state.offers, offers) : offers;
+        state.offerOffset = state.offers.length;
+        state.hasMoreOffers = Boolean(data?.hasMoreOffers);
+      }
+      if (appendInquiries || replaceBoth) {
+        state.inquiries = appendInquiries ? appendUniqueRecords(state.inquiries, inquiries) : inquiries;
+        state.inquiryOffset = state.inquiries.length;
+        state.hasMoreInquiries = Boolean(data?.hasMoreInquiries);
+      }
       render();
     } catch (error) {
+      if (requestId !== state.loadRequestId) return;
       renderAccessMessage(error?.message || 'The Admin Inbox could not be loaded.', true);
     }
   }

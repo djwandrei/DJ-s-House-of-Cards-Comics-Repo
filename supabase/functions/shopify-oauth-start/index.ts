@@ -83,7 +83,7 @@ function bearerToken(request: Request) {
   return String(request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
 }
 
-async function authorizeUrlFor(requestUrl: URL, shop: string, state: string) {
+function authorizeUrlFor(requestUrl: URL, shop: string, state: string) {
   const authorizeUrl = new URL(`https://${shop}/admin/oauth/authorize`);
   authorizeUrl.searchParams.set('client_id', shopifyClientCredentials().clientId);
   authorizeUrl.searchParams.set('scope', shopifyOauthScopes());
@@ -103,13 +103,13 @@ Deno.serve(async (request) => {
   if (shop !== shopifyShopDomain()) return htmlResponse('Unexpected Shopify shop.', 401);
   if (url.searchParams.get('manual') === '1' && serviceRoleKey && bearerToken(request) === serviceRoleKey) {
     const state = await signedManualState(shop);
-    const authorizeUrl = await authorizeUrlFor(url, shop, state);
+    const authorizeUrl = authorizeUrlFor(url, shop, state);
     return jsonResponse({ authorizeUrl: authorizeUrl.toString(), scopes: shopifyOauthScopes() });
   }
   if (!await verifyShopifyOauthHmac(url)) return htmlResponse('Invalid Shopify OAuth signature.', 401);
 
   const state = crypto.randomUUID();
-  const authorizeUrl = await authorizeUrlFor(url, shop, state);
+  const authorizeUrl = authorizeUrlFor(url, shop, state);
 
   return redirectResponse(authorizeUrl.toString(), state);
 });

@@ -30,6 +30,10 @@
     offerWorkflowFunction: 'offer-workflow',
     analyticsEventFunction: 'analytics-event',
     measurementEnabled: true,
+    measurementAllowedOrigins: [
+      'https://www.djshouseofcards-comics.com',
+      'https://djshouseofcards-comics.com'
+    ],
     // Supabase is preferred for fresh storefront data; deploy-synced JSON
     // snapshots remain the fast fallback when the backend is unavailable.
     preferStaticCatalog: false,

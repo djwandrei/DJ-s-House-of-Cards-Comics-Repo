@@ -5,6 +5,7 @@ window.DJ = window.DJ || {};
   const REPORT_WINDOWS = new Set([7, 30, 90]);
   const USD_FORMATTER = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   const mount = document.getElementById('metricsMount');
+  let reportRequestId = 0;
 
   if (!mount) return;
 
@@ -40,16 +41,27 @@ window.DJ = window.DJ || {};
     return milliseconds >= 1000 ? `${(milliseconds / 1000).toFixed(2)}s` : `${Math.round(milliseconds)}ms`;
   }
 
+  function totalContactSubmissions(events = {}) {
+    return asNumber(events.contact_submit) + asNumber(events.inquiry_submit);
+  }
+
+  function announce(message = '') {
+    const status = document.getElementById('metricsLiveStatus');
+    if (status) status.textContent = message;
+  }
+
   function metricCard(label, value, note = '') {
     return `<article class="stat-card metrics-card"><small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong>${note ? `<span class="metrics-section-note">${escapeHtml(note)}</span>` : ''}</article>`;
   }
 
-  function renderLoading() {
+  function renderLoading(days = 30) {
     mount.innerHTML = '<div class="panel"><p class="metrics-status">Loading private reporting…</p></div>';
+    announce(`Loading metrics for the last ${days} days.`);
   }
 
   function renderAccessMessage(message, isError = false) {
     mount.innerHTML = `<div class="panel"><h2>${isError ? 'Metrics unavailable' : 'Admin sign-in required'}</h2><p class="metrics-status">${escapeHtml(message)}</p><div class="inline-actions compact"><a class="button" href="admin.html">Open Admin Dashboard</a><a class="button-secondary" href="account.html">Open Account</a></div></div>`;
+    announce(message);
   }
 
   function renderReport(report) {
@@ -92,7 +104,7 @@ window.DJ = window.DJ || {};
             ${metricCard('Paid revenue', formatCurrency(sales.revenueCents))}
             ${metricCard('Items sold', formatCount(sales.itemsSold))}
             ${metricCard('Guest checkout attempts', formatCount(events.guest_checkout))}
-            ${metricCard('Contact submissions', formatCount(events.contact_submit) + asNumber(events.inquiry_submit))}
+            ${metricCard('Contact submissions', formatCount(totalContactSubmissions(events)))}
           </div>
         </section>
         <section class="metrics-section" aria-labelledby="metrics-performance-heading">
@@ -119,9 +131,11 @@ window.DJ = window.DJ || {};
         </section>
       </div>
     `;
+    announce(`Metrics updated for the last ${windowDays} days.`);
   }
 
   async function loadReport(days = 30) {
+    const requestId = ++reportRequestId;
     const normalizedDays = REPORT_WINDOWS.has(Number(days)) ? Number(days) : 30;
     if (!DJ.remoteCatalog?.isConfigured?.()) {
       renderAccessMessage('The Supabase browser connection is not configured on this page.', true);
@@ -129,16 +143,19 @@ window.DJ = window.DJ || {};
     }
 
     const session = await DJ.remoteCatalog.getSession().catch(() => null);
+    if (requestId !== reportRequestId) return;
     if (!session?.user) {
       renderAccessMessage('Sign in with the configured admin account to view this private report.');
       return;
     }
 
-    renderLoading();
+    renderLoading(normalizedDays);
     try {
       const response = await DJ.remoteCatalog.invokeFunction('analytics-report', { days: normalizedDays });
+      if (requestId !== reportRequestId) return;
       renderReport(response?.report || {});
     } catch (error) {
+      if (requestId !== reportRequestId) return;
       renderAccessMessage(error?.message || 'The metrics report could not be loaded.', true);
     }
   }
