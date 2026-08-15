@@ -37,7 +37,8 @@ const requiredBaseMigrations = [
   '20260810010000_account_base.sql',
   '20260810020000_checkout_base.sql',
   '20260810030000_marketplace_base.sql',
-  '20260815000000_backend_hardening.sql'
+  '20260815000000_backend_hardening.sql',
+  '20260815010000_operational_resilience.sql'
 ];
 const migrationDirectory = path.join(ROOT, 'supabase', 'migrations');
 const migrations = existsSync(migrationDirectory)
@@ -50,6 +51,10 @@ for (const migration of requiredBaseMigrations) {
 assertions += 1;
 if (migrations.indexOf('20260815000000_backend_hardening.sql') <= migrations.indexOf('20260810030000_marketplace_base.sql')) {
   failures.push('supabase/migrations: backend hardening must run after all canonical base migrations');
+}
+assertions += 1;
+if (migrations.indexOf('20260815010000_operational_resilience.sql') <= migrations.indexOf('20260815000000_backend_hardening.sql')) {
+  failures.push('supabase/migrations: operational resilience must run after backend hardening');
 }
 
 assert(
@@ -95,6 +100,22 @@ assert(
     'p_max_active_reservations integer default 5',
     'last_shopify_source_updated_at timestamptz',
     'create or replace function public.prune_operational_history('
+  )
+);
+assert(
+  'supabase/migrations/20260815010000_operational_resilience.sql',
+  'operational tables need time-first indexes and bounded retention under the protected maintenance function',
+  containsAll(
+    'site_analytics_events_created_idx',
+    'public_submission_rate_limits_window_idx',
+    'grant execute on function public.take_public_submission_slot(text, text, integer, integer) to service_role',
+    'delete from public.site_analytics_events',
+    'delete from public.public_submission_rate_limits',
+    "interval '2 days'",
+    "'analytics', analytics_count",
+    "'rateLimits', rate_limit_count",
+    'revoke all on function public.prune_operational_history(integer) from public',
+    'grant execute on function public.prune_operational_history(integer) to service_role'
   )
 );
 assert(
@@ -166,16 +187,30 @@ if (rawJsonReaders.length) {
     rawJsonReaders.map((file) => path.relative(ROOT, file)).join(', ')
   }`);
 }
+const rawTextReaders = edgeFunctionFiles.filter((file) => readFileSync(file, 'utf8').includes('request.text('));
+assertions += 1;
+if (rawTextReaders.length) {
+  failures.push(`Edge Functions must use bounded readTextBody instead of raw request.text(): ${
+    rawTextReaders.map((file) => path.relative(ROOT, file)).join(', ')
+  }`);
+}
 
 assert(
   'supabase/functions/_shared/http.ts',
-  'shared HTTP helper must provide bounded JSON parsing',
+  'shared HTTP helper must provide bounded JSON and signature-preserving text parsing',
   containsAll(
     'export async function readJsonBody',
+    'export async function readTextBody',
+    'export class RequestBodyTooLargeError',
     "request.headers.get('content-length')",
     'request.body.getReader()',
     'Request body is too large'
   )
+);
+assert(
+  'supabase/functions/_shared/constant-time.ts',
+  'shared secret comparison must operate on encoded bytes without an early content mismatch exit',
+  containsAll('export function timingSafeEqualText', 'TextEncoder', 'mismatch |=', 'return mismatch === 0')
 );
 
 assert(
@@ -195,7 +230,14 @@ assert(
 assert(
   'supabase/functions/notification-worker/index.ts',
   'notification retry worker must require its secret and process the durable outbox',
-  containsAll('NOTIFICATION_WORKER_SECRET', 'constantTimeEqual', 'processNotificationOutbox', "admin.rpc('prune_operational_history'")
+  containsAll('NOTIFICATION_WORKER_SECRET', 'timingSafeEqualText', 'processNotificationOutbox', "admin.rpc('prune_operational_history'")
+);
+assert(
+  'supabase/functions/sale-notification/index.ts',
+  'inbound notification secrets must use the shared timing-safe comparison',
+  (content) => content.includes('timingSafeEqualText')
+    && !content.includes('bearer === inboundSecret')
+    && !content.includes('headerSecret === inboundSecret')
 );
 for (const producer of [
   'supabase/functions/stripe-webhook/index.ts',
@@ -216,6 +258,33 @@ assert(
   'supabase/functions/stripe-webhook/index.ts',
   'Stripe webhook must atomically claim events and use checkout-session idempotency for sale side effects',
   containsAll("admin.rpc('claim_stripe_webhook_event'", 'idempotencyKey: session.id', 'eventId: session.id')
+);
+for (const webhook of [
+  'supabase/functions/stripe-webhook/index.ts',
+  'supabase/functions/shopify-webhook/index.ts'
+]) {
+  assert(
+    webhook,
+    'public webhook bodies must be bounded before signature verification',
+    containsAll('readTextBody', 'RequestBodyTooLargeError', '413')
+  );
+}
+for (const stripeFunction of [
+  'supabase/functions/create-checkout-session/index.ts',
+  'supabase/functions/offer-workflow/index.ts',
+  'supabase/functions/stripe-webhook/index.ts'
+]) {
+  assert(
+    stripeFunction,
+    'Stripe clients must not crash the Edge worker when the function is intentionally unconfigured',
+    (content) => content.includes('stripeSecretKey ? new Stripe(stripeSecretKey')
+      && !/new Stripe\([^\n]*\|\|\s*['"]{2}/.test(content)
+  );
+}
+assert(
+  'supabase/functions/shopify-webhook/index.ts',
+  'Shopify webhook JSON must be an object before event-specific processing',
+  containsAll("typeof parsed !== 'object'", 'Array.isArray(parsed)', 'Invalid Shopify webhook JSON.')
 );
 assert(
   'supabase/functions/stripe-webhook/index.ts',
@@ -313,6 +382,20 @@ assert(
     "admin.rpc('reserve_negotiated_offer_checkout'"
   )
 );
+assert(
+  'supabase/functions/create-checkout-session/index.ts',
+  'checkout must enforce browser origin and prove every reservation was attached before returning a Stripe URL',
+  containsAll(
+    'allowedOrigin(request)',
+    'This request origin is not allowed.',
+    ".eq('status', 'creating')",
+    ".select('id')",
+    'updatedReservationIds',
+    'pendingReservations?.length === reservationIds.length',
+    'expireCheckoutSession(checkoutSession.id',
+    'const checkoutUrl = checkoutSession.url'
+  )
+);
 
 assert(
   'supabase-client.js',
@@ -350,8 +433,43 @@ assert(
 );
 assert(
   'scripts/normalize-range-checkout-prices.mjs',
-  'normalizer must require explicit --apply for writes',
-  containsAll("const apply = process.argv.includes('--apply')", 'Audit only')
+  'normalizer must require explicit --apply and rebuild every catalog fallback through the canonical builder',
+  containsAll(
+    "const apply = process.argv.includes('--apply')",
+    'Audit only',
+    'build-public-catalog.mjs',
+    '--optimize-segments'
+  )
+);
+assert(
+  'scripts/materialize-external-product-images.mjs',
+  'applied image materialization must regenerate every deployable catalog fallback through the canonical builder',
+  (content) => content.includes('build-public-catalog.mjs')
+    && content.includes('--optimize-segments')
+    && !content.includes('const SEGMENTS =')
+);
+for (const catalogMaintenanceScript of [
+  'scripts/normalize-missing-images.mjs',
+  'scripts/remove-confirmed-legacy-duplicates.mjs'
+]) {
+  assert(
+    catalogMaintenanceScript,
+    'catalog maintenance must require explicit apply mode and regenerate all fallbacks through the canonical builder',
+    (content) => content.includes("process.argv.includes('--apply')")
+      && content.includes('build-public-catalog.mjs')
+      && content.includes('--optimize-segments')
+      && !content.includes('const SEGMENTS =')
+  );
+}
+assert(
+  'scripts/reconcile-authoritative-listings.py',
+  'authoritative reconciliation must retain its apply gate and rebuild all generated fallbacks canonically',
+  containsAll('args.apply', 'build-public-catalog.mjs', '--optimize-segments', 'subprocess.run(')
+);
+assert(
+  'sw.js',
+  'private/admin shells and only genuine Supabase hosts must bypass caches',
+  containsAll("'/metrics.html'", 'const SUPABASE_HOST_PATTERN = /(^|\\.)supabase\\.co$/i')
 );
 
 assert(

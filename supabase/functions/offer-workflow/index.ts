@@ -7,6 +7,7 @@ import {
 } from '../_shared/notification-outbox.ts';
 import { enforcePublicRateLimits } from '../_shared/request-security.ts';
 import { readJsonBody } from '../_shared/http.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
@@ -38,13 +39,13 @@ const activeOfferStatuses = ['pending', 'countered', 'accepted'];
 const inquiryStatuses = new Set(['new', 'reviewing', 'replied', 'closed', 'spam']);
 const adminDecisions = new Set(['accept', 'counter', 'decline']);
 const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
-const stripe = new Stripe(stripeSecretKey, {
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
   // @ts-expect-error Older supported Stripe API version.
   apiVersion: '2026-02-25.clover',
   maxNetworkRetries: 1,
   timeout: 12_000
-});
+}) : null;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': siteUrl,
@@ -250,14 +251,7 @@ function customerOfferUrl(offerId: string, token: string) {
   return `${siteUrl}/offer.html?offer=${encodeURIComponent(offerId)}#token=${encodeURIComponent(token)}`;
 }
 
-function tokensMatch(left: string, right: string) {
-  if (!left || !right || left.length !== right.length) return false;
-  let difference = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-  return difference === 0;
-}
+const tokensMatch = timingSafeEqualText;
 
 function inboxUrl(offerId = '') {
   const query = offerId ? `?offer=${encodeURIComponent(offerId)}` : '';
@@ -365,7 +359,7 @@ async function addOfferEvent(offerId: string, actor: 'customer' | 'admin' | 'sys
 async function invalidateOpenOfferCheckout(offer: OfferRow) {
   const sessionId = String(offer.stripe_session_id || '').trim();
   if (!sessionId) return;
-  if (!stripeSecretKey) throw new Error('The active Stripe checkout could not be withdrawn because Stripe is not configured.');
+  if (!stripe) throw new Error('The active Stripe checkout could not be withdrawn because Stripe is not configured.');
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   if (session.status === 'complete' || session.payment_status === 'paid' || session.payment_status === 'no_payment_required') {
     throw new Error('This checkout was already submitted. Wait for its payment status before changing the accepted offer.');

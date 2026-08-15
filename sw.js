@@ -6,7 +6,7 @@
  * bypass caches so signed-in edits are immediately visible.
  */
 
-const CACHE_VERSION = 'dj-house-v2026-08-14-04';
+const CACHE_VERSION = 'dj-house-v2026-08-15-01';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -19,8 +19,16 @@ const CACHE_ENTRY_LIMITS = {
   [IMAGE_CACHE]: 350
 };
 const STATIC_ASSET_DESTINATIONS = new Set(['style', 'script', 'font', 'manifest']);
-const SUPABASE_HOST_PATTERN = /supabase\.co$/i;
-const CACHE_BYPASS_PATHS = new Set(['/admin.html', '/account.html', '/cart.html', '/checkout-success.html', '/inbox.html', '/offer.html']);
+const SUPABASE_HOST_PATTERN = /(^|\.)supabase\.co$/i;
+const CACHE_BYPASS_PATHS = new Set([
+  '/admin.html',
+  '/account.html',
+  '/cart.html',
+  '/checkout-success.html',
+  '/inbox.html',
+  '/metrics.html',
+  '/offer.html'
+]);
 
 // Keep the offline shell limited to the app frame. Large decorative and product
 // images are collected by runtime caching only after a shopper actually sees them.

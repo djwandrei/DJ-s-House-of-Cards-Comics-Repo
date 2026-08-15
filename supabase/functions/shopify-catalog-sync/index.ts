@@ -1,6 +1,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { requireSiteAdmin, SiteAdminError, type SiteAdminIdentity } from '../_shared/admin-auth.ts';
 import { readJsonBody } from '../_shared/http.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 import {
   isShopifyConfigured,
   setShopifyInventory,
@@ -152,7 +153,7 @@ async function requireAdmin(request: Request): Promise<SiteAdminIdentity> {
     .trim();
   // Local maintenance scripts can use the service-role JWT; browser callers
   // still have to prove membership in the centralized site-admin registry.
-  if (serviceRoleKey && jwt === serviceRoleKey) {
+  if (serviceRoleKey && timingSafeEqualText(jwt, serviceRoleKey)) {
     return { id: 'service-role', email: 'service-role@internal.invalid' };
   }
   return await requireSiteAdmin(request, admin);

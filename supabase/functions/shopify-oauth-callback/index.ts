@@ -8,6 +8,7 @@ import {
 } from '../_shared/shopify.ts';
 import { fetchWithTimeout } from '../_shared/http.ts';
 import { encryptSecret } from '../_shared/secret-crypto.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
 const OAUTH_STATE_COOKIE = 'shopify_oauth_state';
 const encoder = new TextEncoder();
@@ -64,17 +65,6 @@ function base64Url(bytes: Uint8Array) {
     .replaceAll('=', '');
 }
 
-function timingSafeTextEqual(left: string, right: string) {
-  const leftBytes = encoder.encode(left);
-  const rightBytes = encoder.encode(right);
-  if (leftBytes.length !== rightBytes.length || !leftBytes.length) return false;
-  let mismatch = 0;
-  for (let index = 0; index < leftBytes.length; index += 1) {
-    mismatch |= leftBytes[index] ^ rightBytes[index];
-  }
-  return mismatch === 0;
-}
-
 async function isSignedManualState(shop: string, state: string) {
   try {
     const decoded = decoder.decode(base64UrlToBytes(state));
@@ -92,7 +82,7 @@ async function isSignedManualState(shop: string, state: string) {
       ['sign']
     );
     const expected = base64Url(new Uint8Array(await crypto.subtle.sign('HMAC', key, encoder.encode(message))));
-    return timingSafeTextEqual(signature, expected);
+    return timingSafeEqualText(signature, expected);
   } catch {
     return false;
   }

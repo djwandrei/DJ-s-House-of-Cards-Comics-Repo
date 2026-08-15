@@ -9,6 +9,7 @@ import html
 import json
 import re
 import shutil
+import subprocess
 from collections import Counter, defaultdict
 from datetime import date, datetime
 from decimal import Decimal
@@ -576,19 +577,15 @@ def main() -> int:
         backup = output_dir / f"products-before-authoritative-sync-{timestamp}.json"
         shutil.copy2(products_path, backup)
         write_json(products_path, final_products)
-        segments = {
-            "products-baseball.json": lambda product: product.get("category") == "Baseball",
-            "products-basketball.json": lambda product: product.get("category") == "Basketball",
-            "products-football.json": lambda product: product.get("category") == "Football",
-            "products-comics.json": lambda product: product.get("category") == "Comics",
-            "products-collectibles.json": lambda product: product.get("category") == "Collectibles",
-            "products-sports.json": lambda product: product.get("category")
-            in {"Baseball", "Basketball", "Football"},
-            "products-featured.json": lambda product: product.get("isFeatured") is True,
-        }
-        active = [product for product in final_products if product.get("isDeleted") is not True]
-        for filename, predicate in segments.items():
-            write_json(products_path.parent / filename, [p for p in active if predicate(p)])
+        subprocess.run(
+            [
+                "node",
+                str(products_path.parent / "scripts" / "build-public-catalog.mjs"),
+                "--optimize-segments",
+            ],
+            cwd=products_path.parent,
+            check=True,
+        )
         report["applied"] = True
         report["backup"] = str(backup)
         write_json(output_dir / "authoritative-listings-reconciliation.json", report)

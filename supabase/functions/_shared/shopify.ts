@@ -1,6 +1,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { fetchWithTimeout } from './http.ts';
 import { decryptSecret } from './secret-crypto.ts';
+import { timingSafeEqualText } from './constant-time.ts';
 
 const DEFAULT_API_VERSION = '2026-04';
 const DEFAULT_OAUTH_SCOPES = [
@@ -151,17 +152,6 @@ function hexBytes(bytes: Uint8Array) {
   return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-function timingSafeTextEqual(left: string, right: string) {
-  const leftBytes = encoder.encode(left);
-  const rightBytes = encoder.encode(right);
-  if (leftBytes.length !== rightBytes.length || !leftBytes.length) return false;
-  let mismatch = 0;
-  for (let index = 0; index < leftBytes.length; index += 1) {
-    mismatch |= leftBytes[index] ^ rightBytes[index];
-  }
-  return mismatch === 0;
-}
-
 function oauthHmacMessage(searchParams: URLSearchParams) {
   return [...searchParams.entries()]
     .filter(([key]) => key !== 'hmac' && key !== 'signature')
@@ -185,7 +175,7 @@ export async function verifyShopifyOauthHmac(url: URL) {
   const digest = hexBytes(new Uint8Array(
     await crypto.subtle.sign('HMAC', key, encoder.encode(oauthHmacMessage(url.searchParams)))
   ));
-  return timingSafeTextEqual(digest, providedHmac);
+  return timingSafeEqualText(digest, providedHmac);
 }
 
 export async function shopifyAccessToken() {

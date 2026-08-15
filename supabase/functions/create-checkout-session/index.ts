@@ -2,14 +2,16 @@ import Stripe from 'npm:stripe@22.1.0';
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { enforcePublicRateLimits } from '../_shared/request-security.ts';
 import { readJsonBody } from '../_shared/http.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+const stripeSecretKey = String(Deno.env.get('STRIPE_SECRET_KEY') || '').trim();
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
   // @ts-expect-error Older supported Stripe API version.
   apiVersion: '2026-02-25.clover',
   maxNetworkRetries: 1,
   timeout: 12_000
-});
+}) : null;
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -56,7 +58,7 @@ type NegotiatedOffer = {
   access_token_expires_at: string | null;
   access_token_revoked_at: string | null;
 };
-type CheckoutSessionCreateParams = NonNullable<Parameters<typeof stripe.checkout.sessions.create>[0]>;
+type CheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
@@ -73,6 +75,11 @@ function errorMessage(error: unknown) {
 function friendlyServerError(error: unknown, fallback = 'Checkout could not be started. Please try again or contact DJ.') {
   console.error('[create-checkout-session]', errorMessage(error));
   return jsonResponse({ error: fallback }, 500);
+}
+
+function allowedOrigin(request: Request) {
+  const origin = String(request.headers.get('origin') || '').replace(/\/+$/, '');
+  return !origin || origin === siteUrl;
 }
 
 function parsePriceRangeLabel(value = '') {
@@ -161,14 +168,7 @@ async function legacyOfferAccessToken(offerId: string) {
   return base64Url(signature);
 }
 
-function tokensMatch(left = '', right = '') {
-  if (!left || !right || left.length !== right.length) return false;
-  let difference = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-  return difference === 0;
-}
+const tokensMatch = timingSafeEqualText;
 
 function offerCheckoutStillValid(offer: NegotiatedOffer) {
   return offer.status === 'accepted'
@@ -227,7 +227,7 @@ async function validateNegotiatedOffer(input: unknown, requestedItems: CheckoutI
 
 function isServerConfigured() {
   return Boolean(
-    Deno.env.get('STRIPE_SECRET_KEY')
+    stripe
     && supabaseUrl
     && serviceRoleKey
     && /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(supabaseUrl)
@@ -275,13 +275,27 @@ function absoluteImageUrl(image = '') {
 
 async function releaseReservations(reservationIds: string[], status = 'released') {
   if (!reservationIds.length) return;
-  const { error } = await admin.from('product_checkout_reservations').update({ status }).in('id', reservationIds);
+  const { error } = await admin
+    .from('product_checkout_reservations')
+    .update({ status })
+    .in('id', reservationIds)
+    .in('status', ['creating', 'pending']);
   if (error) console.error('[create-checkout-session] Could not release reservations', error);
+}
+
+async function expireCheckoutSession(sessionId: string, context: string) {
+  if (!stripe) return;
+  try {
+    await stripe.checkout.sessions.expire(sessionId);
+  } catch (error) {
+    console.error(`[create-checkout-session] Could not expire ${context} checkout session`, error);
+  }
 }
 
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405);
+  if (!allowedOrigin(request)) return jsonResponse({ error: 'This request origin is not allowed.' }, 403);
   if (!isServerConfigured()) return jsonResponse({ error: 'Secure checkout is not fully configured on the server yet.' }, 503);
   if (!shippingRateId && !allowFreeShipping) {
     return jsonResponse({ error: 'Shipping is not configured yet. Please contact DJ to complete this purchase.' }, 503);
@@ -374,7 +388,7 @@ Deno.serve(async (request) => {
 
   if (negotiatedOffer?.stripe_session_id) {
     try {
-      const existingSession = await stripe.checkout.sessions.retrieve(negotiatedOffer.stripe_session_id);
+      const existingSession = await stripe!.checkout.sessions.retrieve(negotiatedOffer.stripe_session_id);
       if (
         existingSession.status === 'open'
         && existingSession.url
@@ -515,13 +529,20 @@ Deno.serve(async (request) => {
       ...(negotiatedOffer ? { client_reference_id: negotiatedOffer.id } : {}),
       ...(shippingRateId ? { shipping_options: [{ shipping_rate: shippingRateId }] } : {})
     };
-    checkoutSession = await stripe.checkout.sessions.create(sessionParams);
+    checkoutSession = await stripe!.checkout.sessions.create(sessionParams);
   } catch (error) {
     await releaseReservations(reservationIds);
     return friendlyServerError(error);
   }
 
-  const { error: pendingError } = await admin
+  const checkoutUrl = checkoutSession.url;
+  if (!checkoutUrl) {
+    await expireCheckoutSession(checkoutSession.id, 'unusable');
+    await releaseReservations(reservationIds);
+    return friendlyServerError(new Error('Stripe returned a checkout session without a URL.'));
+  }
+
+  const { data: pendingReservations, error: pendingError } = await admin
     .from('product_checkout_reservations')
     .update({
       status: 'pending',
@@ -529,15 +550,21 @@ Deno.serve(async (request) => {
       expires_at: checkoutSession.expires_at ? new Date(checkoutSession.expires_at * 1000).toISOString() : reservationExpiresAt
     })
     .in('id', reservationIds)
-    .eq('status', 'creating');
-  if (pendingError) {
-    try {
-      await stripe.checkout.sessions.expire(checkoutSession.id);
-    } catch (error) {
-      console.error('[create-checkout-session] Could not expire orphan checkout session', error);
-    }
+    .eq('status', 'creating')
+    .select('id');
+  const updatedReservationIds = new Set(
+    (pendingReservations || []).map((reservation) => String(reservation.id))
+  );
+  const reservationsLinked = !pendingError
+    && pendingReservations?.length === reservationIds.length
+    && reservationIds.every((reservationId) => updatedReservationIds.has(reservationId));
+  if (!reservationsLinked) {
+    await expireCheckoutSession(checkoutSession.id, 'orphan');
     await releaseReservations(reservationIds);
-    return friendlyServerError(pendingError, 'Checkout could not be finalized. Please try again.');
+    return friendlyServerError(
+      pendingError || new Error(`Only ${updatedReservationIds.size} of ${reservationIds.length} reservations were attached.`),
+      'Checkout could not be finalized. Please try again.'
+    );
   }
 
   if (negotiatedOffer) {
@@ -551,11 +578,7 @@ Deno.serve(async (request) => {
       .maybeSingle();
     if (offerUpdateError || !updatedOffer) {
       if (offerUpdateError) console.error('[create-checkout-session] Could not attach negotiated offer session', offerUpdateError);
-      try {
-        await stripe.checkout.sessions.expire(checkoutSession.id);
-      } catch (error) {
-        console.error('[create-checkout-session] Could not expire negotiated checkout session', error);
-      }
+      await expireCheckoutSession(checkoutSession.id, 'negotiated');
       await releaseReservations(reservationIds);
       return jsonResponse({ error: 'This negotiated price changed before checkout could begin. Return to your offer page for the latest status.' }, 409);
     }
@@ -571,5 +594,5 @@ Deno.serve(async (request) => {
   // The browser stores a tab-scoped cart snapshot under this exact session ID.
   // Returning it lets checkout-success reconcile only the purchased quantities
   // instead of clearing whatever the shopper added in another tab meanwhile.
-  return jsonResponse({ url: checkoutSession.url, sessionId: checkoutSession.id });
+  return jsonResponse({ url: checkoutUrl, sessionId: checkoutSession.id });
 });

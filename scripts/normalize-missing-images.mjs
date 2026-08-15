@@ -1,7 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
 const root = process.cwd();
+const applyChanges = process.argv.includes('--apply');
+const execFileAsync = promisify(execFile);
 const FILES = [
   'products.json',
   'products-baseball.json',
@@ -79,15 +83,20 @@ async function normalizeAssetPath(assetPath) {
   return '';
 }
 
+let totalChanges = 0;
 for (const file of FILES) {
   const fullPath = path.join(root, file);
   const raw = JSON.parse(await fs.readFile(fullPath, 'utf8'));
+  let fileChanges = 0;
 
   for (const item of raw) {
     const fallback = FALLBACKS[item.category] || FALLBACKS.Other;
-    item.image = await normalizeAssetPath(item.image) || fallback;
+    const nextImage = await normalizeAssetPath(item.image) || fallback;
+    if (nextImage !== item.image) fileChanges += 1;
+    item.image = nextImage;
 
     if (Array.isArray(item.imageGallery)) {
+      const previousGallery = JSON.stringify(item.imageGallery);
       const validGallery = [];
       for (const imagePath of item.imageGallery) {
         const normalizedPath = await normalizeAssetPath(imagePath);
@@ -97,9 +106,23 @@ for (const file of FILES) {
         validGallery.push(item.image);
       }
       item.imageGallery = validGallery;
+      if (JSON.stringify(validGallery) !== previousGallery) fileChanges += 1;
     }
   }
 
-  await fs.writeFile(fullPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
-  console.log(`Normalized images in ${file}`);
+  if (applyChanges && file === 'products.json' && fileChanges) {
+    await fs.writeFile(fullPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
+  }
+  totalChanges += fileChanges;
+  console.log(`${file}: ${fileChanges} image reference(s) ${applyChanges ? 'normalized' : 'would change'}`);
 }
+
+if (applyChanges) {
+  await execFileAsync(
+    process.execPath,
+    [path.join(root, 'scripts', 'build-public-catalog.mjs'), '--optimize-segments'],
+    { cwd: root, maxBuffer: 16 * 1024 * 1024 }
+  );
+}
+
+console.log(`${applyChanges ? 'Normalized' : 'Audited'} ${totalChanges} image reference(s) across ${FILES.length} catalog files.`);

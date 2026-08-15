@@ -5,6 +5,7 @@ import {
   shopifyShopDomain
 } from '../_shared/shopify.ts';
 import { readJsonBody } from '../_shared/http.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
@@ -178,7 +179,7 @@ function bearerToken(request: Request) {
 }
 
 function requireServiceRole(request: Request) {
-  if (!serviceRoleKey || bearerToken(request) !== serviceRoleKey) {
+  if (!serviceRoleKey || !timingSafeEqualText(bearerToken(request), serviceRoleKey)) {
     throw new Error('Service role authorization is required.');
   }
 }

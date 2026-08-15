@@ -1,6 +1,13 @@
 const DEFAULT_TIMEOUT_MS = 12_000;
 const DEFAULT_JSON_BODY_BYTES = 64 * 1024;
 
+export class RequestBodyTooLargeError extends Error {
+  constructor(limit: number) {
+    super(`Request body is too large. Maximum size is ${limit} bytes.`);
+    this.name = 'RequestBodyTooLargeError';
+  }
+}
+
 export function fetchWithTimeout(
   input: string | URL | Request,
   init: RequestInit = {},
@@ -13,14 +20,11 @@ export function fetchWithTimeout(
   });
 }
 
-export async function readJsonBody<T = Record<string, unknown>>(
-  request: Request,
-  maxBytes = DEFAULT_JSON_BODY_BYTES
-): Promise<T> {
+async function readBodyBytes(request: Request, maxBytes: number) {
   const limit = Math.max(1024, Math.floor(Number(maxBytes) || DEFAULT_JSON_BODY_BYTES));
   const lengthHeader = Number(request.headers.get('content-length') || 0);
   if (Number.isFinite(lengthHeader) && lengthHeader > limit) {
-    throw new Error(`Request body is too large. Maximum size is ${limit} bytes.`);
+    throw new RequestBodyTooLargeError(limit);
   }
 
   if (!request.body) throw new Error('Missing request body.');
@@ -35,7 +39,7 @@ export async function readJsonBody<T = Record<string, unknown>>(
     totalBytes += value.byteLength;
     if (totalBytes > limit) {
       try { await reader.cancel(); } catch { /* ignore */ }
-      throw new Error(`Request body is too large. Maximum size is ${limit} bytes.`);
+      throw new RequestBodyTooLargeError(limit);
     }
     chunks.push(value);
   }
@@ -46,7 +50,21 @@ export async function readJsonBody<T = Record<string, unknown>>(
     bytes.set(chunk, offset);
     offset += chunk.byteLength;
   }
-  const text = new TextDecoder().decode(bytes).trim();
+  return bytes;
+}
+
+export async function readTextBody(
+  request: Request,
+  maxBytes = DEFAULT_JSON_BODY_BYTES
+) {
+  return new TextDecoder().decode(await readBodyBytes(request, maxBytes));
+}
+
+export async function readJsonBody<T = Record<string, unknown>>(
+  request: Request,
+  maxBytes = DEFAULT_JSON_BODY_BYTES
+): Promise<T> {
+  const text = (await readTextBody(request, maxBytes)).trim();
   if (!text) throw new Error('Missing request body.');
   return JSON.parse(text) as T;
 }

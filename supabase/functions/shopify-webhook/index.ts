@@ -2,6 +2,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { shopifyShopDomain } from '../_shared/shopify.ts';
 import { queueSaleNotification } from '../_shared/sale-notifications.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
+import { RequestBodyTooLargeError, readTextBody } from '../_shared/http.ts';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -213,7 +214,6 @@ Deno.serve(async (request) => {
   const eventType = String(request.headers.get('x-shopify-topic') || '').trim().toLowerCase();
   const shopDomain = String(request.headers.get('x-shopify-shop-domain') || '').trim().toLowerCase();
   const hmac = String(request.headers.get('x-shopify-hmac-sha256') || '').trim();
-  const rawBody = await request.text();
 
   if (!eventId || !eventType || !shopDomain || !hmac) {
     return jsonResponse({ error: 'Missing Shopify webhook headers.' }, 400);
@@ -221,13 +221,27 @@ Deno.serve(async (request) => {
   if (shopDomain !== shopifyShopDomain()) {
     return jsonResponse({ error: 'Unexpected Shopify shop domain.' }, 401);
   }
+
+  let rawBody: string;
+  try {
+    rawBody = await readTextBody(request, 5 * 1024 * 1024);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) {
+      return jsonResponse({ error: 'Shopify webhook payload is too large.' }, 413);
+    }
+    return jsonResponse({ error: 'Invalid Shopify webhook body.' }, 400);
+  }
   if (!await validHmac(rawBody, hmac)) {
     return jsonResponse({ error: 'Invalid Shopify webhook signature.' }, 401);
   }
 
   let payload: Record<string, unknown>;
   try {
-    payload = JSON.parse(rawBody);
+    const parsed = JSON.parse(rawBody);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Invalid Shopify webhook payload shape.');
+    }
+    payload = parsed as Record<string, unknown>;
   } catch {
     return jsonResponse({ error: 'Invalid Shopify webhook JSON.' }, 400);
   }

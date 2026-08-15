@@ -1,9 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
 const root = process.cwd();
 const apply = process.argv.includes('--apply');
 const check = process.argv.includes('--check');
+const execFileAsync = promisify(execFile);
 if (apply && check) throw new Error('Choose either --apply or --check, not both.');
 const FILES = [
   'products.json',
@@ -45,13 +48,21 @@ for (const file of FILES) {
     if (apply) product.price = high;
   }
 
-  if (apply && fileIncorrect) {
+  if (apply && file === 'products.json' && fileIncorrect) {
     await fs.writeFile(fullPath, `${JSON.stringify(products, null, 2)}\n`, 'utf8');
   }
 
   incorrectCount += fileIncorrect;
   rangedCount += fileRanged;
   console.log(`${file}: ${fileRanged} ranged listings, ${fileIncorrect} ${apply ? 'normalized' : 'would change'}`);
+}
+
+if (apply) {
+  await execFileAsync(
+    process.execPath,
+    [path.join(root, 'scripts', 'build-public-catalog.mjs'), '--optimize-segments'],
+    { cwd: root, maxBuffer: 16 * 1024 * 1024 }
+  );
 }
 
 console.log(`${apply ? 'Normalized' : 'Audited'} ${rangedCount} ranged listings across ${FILES.length} catalog files.`);

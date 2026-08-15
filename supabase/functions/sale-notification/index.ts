@@ -1,6 +1,7 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { queueSaleNotification } from '../_shared/sale-notifications.ts';
 import { readJsonBody } from '../_shared/http.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
 
 const inboundSecret = String(Deno.env.get('SALE_NOTIFICATION_INBOUND_SECRET') || '').trim();
@@ -19,7 +20,8 @@ function authorized(request: Request) {
   if (!inboundSecret) return false;
   const bearer = String(request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
   const headerSecret = String(request.headers.get('x-djhc-notification-secret') || '').trim();
-  return bearer === inboundSecret || headerSecret === inboundSecret;
+  return timingSafeEqualText(bearer, inboundSecret)
+    || timingSafeEqualText(headerSecret, inboundSecret);
 }
 
 function amountCents(value: unknown, centsValue?: unknown) {

@@ -9,14 +9,16 @@ import {
   queueSaleNotification
 } from '../_shared/sale-notifications.ts';
 import type { SaleNotification, SaleNotificationItem } from '../_shared/sale-notifications.ts';
+import { RequestBodyTooLargeError, readTextBody } from '../_shared/http.ts';
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+const stripeSecretKey = String(Deno.env.get('STRIPE_SECRET_KEY') || '').trim();
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   // Stripe's SDK types only model its latest API; production remains intentionally pinned.
   // @ts-expect-error Older supported Stripe API version.
   apiVersion: '2026-02-25.clover',
   maxNetworkRetries: 1,
   timeout: 12_000
-});
+}) : null;
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || '';
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -39,7 +41,7 @@ type OrderProduct = {
 
 function isServerConfigured() {
   return Boolean(
-    Deno.env.get('STRIPE_SECRET_KEY')
+    stripe
     && webhookSecret
     && supabaseUrl
     && serviceRoleKey
@@ -401,9 +403,13 @@ Deno.serve(async (request) => {
 
   let event: Stripe.Event;
   try {
-    event = await stripe.webhooks.constructEventAsync(await request.text(), signature, webhookSecret);
+    const rawBody = await readTextBody(request, 1024 * 1024);
+    event = await stripe!.webhooks.constructEventAsync(rawBody, signature, webhookSecret);
   } catch (error) {
-    return jsonResponse({ error: error instanceof Error ? error.message : 'Invalid Stripe signature.' }, 400);
+    if (error instanceof RequestBodyTooLargeError) {
+      return jsonResponse({ error: 'Stripe webhook payload is too large.' }, 413);
+    }
+    return jsonResponse({ error: 'Invalid Stripe signature.' }, 400);
   }
 
   try {

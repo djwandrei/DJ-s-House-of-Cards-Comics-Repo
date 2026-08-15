@@ -1,5 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
 const root = process.cwd();
 const applyChanges = process.argv.includes('--apply');
@@ -7,16 +9,7 @@ const productsPath = path.join(root, 'products.json');
 const outputPath = path.join(root, 'outputs', 'external-product-image-materialization.json');
 const products = JSON.parse(await fs.readFile(productsPath, 'utf8'));
 const MATERIALIZED_IMAGE_ROOT = 'assets/Ebay Listing Photos/External Imports';
-
-const SEGMENTS = {
-  'products-baseball.json': (product) => product.category === 'Baseball',
-  'products-basketball.json': (product) => product.category === 'Basketball',
-  'products-football.json': (product) => product.category === 'Football',
-  'products-comics.json': (product) => product.category === 'Comics',
-  'products-collectibles.json': (product) => product.category === 'Collectibles',
-  'products-sports.json': (product) => ['Baseball', 'Basketball', 'Football'].includes(product.category),
-  'products-featured.json': (product) => product.isFeatured === true
-};
+const execFileAsync = promisify(execFile);
 
 function isExternal(value = '') {
   return /^https?:\/\//i.test(String(value || '').trim());
@@ -63,14 +56,11 @@ function externalPhotos(product = {}) {
 
 async function writeCatalogFiles(items) {
   await fs.writeFile(productsPath, `${JSON.stringify(items, null, 2)}\n`, 'utf8');
-  const active = items.filter((product) => product?.isDeleted !== true);
-  for (const [filename, predicate] of Object.entries(SEGMENTS)) {
-    await fs.writeFile(
-      path.join(root, filename),
-      `${JSON.stringify(active.filter(predicate), null, 2)}\n`,
-      'utf8'
-    );
-  }
+  await execFileAsync(
+    process.execPath,
+    [path.join(root, 'scripts', 'build-public-catalog.mjs'), '--optimize-segments'],
+    { cwd: root, maxBuffer: 16 * 1024 * 1024 }
+  );
 }
 
 const targets = products.filter((product) => (

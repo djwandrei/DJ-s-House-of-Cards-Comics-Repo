@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2.105.1';
 import { processNotificationOutbox } from '../_shared/notification-outbox.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
@@ -13,20 +14,11 @@ function jsonResponse(body: Record<string, unknown>, status = 200) {
   });
 }
 
-function constantTimeEqual(left: string, right: string) {
-  if (!left || !right || left.length !== right.length) return false;
-  let difference = 0;
-  for (let index = 0; index < left.length; index += 1) {
-    difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  }
-  return difference === 0;
-}
-
 function authorized(request: Request) {
   if (!workerSecret) return false;
   const bearer = String(request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
   const header = String(request.headers.get('x-djhc-worker-secret') || '').trim();
-  return constantTimeEqual(bearer, workerSecret) || constantTimeEqual(header, workerSecret);
+  return timingSafeEqualText(bearer, workerSecret) || timingSafeEqualText(header, workerSecret);
 }
 
 Deno.serve(async (request) => {

@@ -5,6 +5,7 @@ import {
   shopifyShopDomain,
   verifyShopifyOauthHmac
 } from '../_shared/shopify.ts';
+import { timingSafeEqualText } from '../_shared/constant-time.ts';
 
 const OAUTH_STATE_COOKIE = 'shopify_oauth_state';
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
@@ -101,7 +102,11 @@ Deno.serve(async (request) => {
   const url = new URL(request.url);
   const shop = String(url.searchParams.get('shop') || '').trim().toLowerCase();
   if (shop !== shopifyShopDomain()) return htmlResponse('Unexpected Shopify shop.', 401);
-  if (url.searchParams.get('manual') === '1' && serviceRoleKey && bearerToken(request) === serviceRoleKey) {
+  if (
+    url.searchParams.get('manual') === '1'
+    && serviceRoleKey
+    && timingSafeEqualText(bearerToken(request), serviceRoleKey)
+  ) {
     const state = await signedManualState(shop);
     const authorizeUrl = authorizeUrlFor(url, shop, state);
     return jsonResponse({ authorizeUrl: authorizeUrl.toString(), scopes: shopifyOauthScopes() });
