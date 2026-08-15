@@ -408,6 +408,27 @@ on public.product_checkout_reservations
 for select
 using (auth.uid() = buyer_user_id);
 
+drop policy if exists "Customers can read purchased products" on public.products;
+create policy "Customers can read purchased products"
+on public.products
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.checkout_orders
+    where checkout_orders.product_id = products.id
+      and checkout_orders.buyer_user_id = auth.uid()
+  )
+  or exists (
+    select 1
+    from public.checkout_order_items
+    join public.checkout_orders on checkout_orders.id = checkout_order_items.order_id
+    where checkout_order_items.product_id = products.id
+      and checkout_orders.buyer_user_id = auth.uid()
+  )
+);
+
 drop policy if exists "Admin can manage customer profiles" on public.customer_profiles;
 create policy "Admin can manage customer profiles"
 on public.customer_profiles

@@ -53,6 +53,31 @@ if (migrations.indexOf('20260815000000_backend_hardening.sql') <= migrations.ind
 }
 
 assert(
+  'supabase/migrations/20260810010000_account_base.sql',
+  'account bootstrap must define its trigger helper before use and must not reference later checkout tables',
+  (content) => {
+    const helperIndex = content.indexOf('create or replace function public.set_checkout_records_updated_at()');
+    const triggerIndex = content.indexOf('create trigger customer_account_profiles_set_updated_at');
+    return helperIndex >= 0
+      && triggerIndex > helperIndex
+      && !content.includes('from public.checkout_orders')
+      && !content.includes('from public.checkout_order_items');
+  }
+);
+assert(
+  'supabase/migrations/20260810020000_checkout_base.sql',
+  'purchased-product access policy must be created only after checkout tables exist',
+  (content) => {
+    const checkoutTableIndex = content.indexOf('create table if not exists public.checkout_orders');
+    const policyIndex = content.indexOf('create policy "Customers can read purchased products"');
+    return checkoutTableIndex >= 0
+      && policyIndex > checkoutTableIndex
+      && content.indexOf('from public.checkout_orders', policyIndex) > policyIndex
+      && content.indexOf('from public.checkout_order_items', policyIndex) > policyIndex;
+  }
+);
+
+assert(
   'supabase/migrations/20260815000000_backend_hardening.sql',
   'hardening migration is missing central admin authorization, durable queues, atomic claims, audited deletion, or checkout protections',
   containsAll(

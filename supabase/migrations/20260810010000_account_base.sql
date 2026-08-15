@@ -22,6 +22,18 @@ create table if not exists public.customer_wishlist_items (
 create index if not exists customer_wishlist_items_user_created_idx
 on public.customer_wishlist_items(user_id, created_at);
 
+-- This migration runs before checkout_base on a clean database, so define the
+-- shared updated_at helper before attaching the account-profile trigger.
+create or replace function public.set_checkout_records_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
 drop trigger if exists customer_account_profiles_set_updated_at on public.customer_account_profiles;
 create trigger customer_account_profiles_set_updated_at
 before update on public.customer_account_profiles
@@ -30,27 +42,6 @@ execute function public.set_checkout_records_updated_at();
 
 alter table public.customer_account_profiles enable row level security;
 alter table public.customer_wishlist_items enable row level security;
-
-drop policy if exists "Customers can read purchased products" on public.products;
-create policy "Customers can read purchased products"
-on public.products
-for select
-to authenticated
-using (
-  exists (
-    select 1
-    from public.checkout_orders
-    where checkout_orders.product_id = products.id
-      and checkout_orders.buyer_user_id = auth.uid()
-  )
-  or exists (
-    select 1
-    from public.checkout_order_items
-    join public.checkout_orders on checkout_orders.id = checkout_order_items.order_id
-    where checkout_order_items.product_id = products.id
-      and checkout_orders.buyer_user_id = auth.uid()
-  )
-);
 
 drop policy if exists "Customers can manage own account profile" on public.customer_account_profiles;
 create policy "Customers can manage own account profile"
