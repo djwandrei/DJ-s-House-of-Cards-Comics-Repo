@@ -21,6 +21,11 @@ Legacy listings are intentionally retained as Shopify drafts. Only eligible
 non-legacy workbook listings may be activated or published to TikTok and
 Whatnot.
 
+The authoritative non-legacy marketplace input is the `Listings` sheet in
+`C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx`.
+The workbook's other sheets remain review/staging material and are not catalog
+inputs.
+
 ## Prepared Catalog
 
 Generate the current Shopify import and review files:

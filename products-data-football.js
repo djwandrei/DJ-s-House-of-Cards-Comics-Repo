@@ -2405,7 +2405,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/1900-2000/1982 Topps Receiving Leaders Kellen Winslow + Dwight Clark 258 (1).jpg"
     ],
-    "description": "Upgrade your collection with this 1982 Topps sports trading card featuring Dwight Clark and Kellen Winslow with connections to the San Francisco 49ers and Tampa Bay Buccaneers Card #258. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Set: 1982 Topps; Year: 1982; Player: Dwight Clark | Kellen Winslow; Team: San Francisco 49ers | Tampa Bay Buccaneers; Sport: Football; League: NFL; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "1982 Topps Receiving Leaders Kellen Winslow + Dwight Clark #258\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 1982 Topps; Season: 1982; Year manufactured: 1982; Player/Athlete: Dwight Clark, Kellen Winslow; Team: San Francisco 49ers, Tampa Bay Buccaneers; Sport: Football; League: NFL; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1982-topps-receiving-leaders-kellen-winslow-plus-dwight-clark-258-2.BuckIEX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2439,7 +2439,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/1999 Collector's Edge Peyton Manning Supreme T3 #T3-07 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/1999 Collector's Edge Peyton Manning Supreme T3 #T3-07 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 1999 sports trading card featuring Peyton Manning and the Indianapolis Colts Card #T3-07. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Year: 1999; Player: Peyton Manning; Team: Indianapolis Colts; Sport: Football; League: NFL; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "1999 Collector's Edge Peyton Manning Supreme T3 #T3-07\n\nListing details: Type: Sports Trading Card; Manufacturer: Collector's Edge; Set: 1999 Collector's Edge; Season: 1999; Year manufactured: 1999; Player/Athlete: Peyton Manning; Team: Indianapolis Colts; Sport: Football; League: NFL; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1999-collector-and-039s-edge-peyton-manning-supreme-t3-t3-07-1.Bu7XT2S",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2472,7 +2472,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2001 Pacific Dynagon Chad Johnson #118 + Reggie Wayne #126 Rookie Set (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2001 Pacific Dynagon Chad Johnson #118 + Reggie Wayne #126 Rookie Set (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2001 sports trading card featuring Chad Johnson and Reggie Wayne with connections to the Cincinnati Bengals and Indianapolis Colts Card #118. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Year: 2001; Player: Chad Johnson | Reggie Wayne; Team: Cincinnati Bengals | Indianapolis Colts; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2001 Pacific Dynagon Chad Johnson #118 + Reggie Wayne #126 Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Pacific; Set: 2001 Pacific Dynagon; Season: 2001; Year manufactured: 2001; Player/Athlete: Chad Johnson, Reggie Wayne; Team: Cincinnati Bengals, Indianapolis Colts; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2001-pacific-dynagon-chad-johnson-118-plus-reggie-wayne-126-rookie-set-1.Bu7X9BR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2508,7 +2508,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2002 Pacific Trading David Boston Game-Worn Patch #1 Arizona Cardinals (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2002 Pacific Trading David Boston Game-Worn Patch #1 Arizona Cardinals (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2002 sports trading card featuring David Boston and the Arizona Cardinals Card #1. A strong addition for football fans, NFL collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2002; Player: David Boston; Team: Arizona Cardinals; Sport: Football; League: NFL; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2002 Pacific Trading David Boston Game-Worn Patch #1 Arizona Cardinals\n\nListing details: Type: Sports Trading Card; Manufacturer: Pacific; Set: 2002 Pacific Trading; Season: 2002; Year manufactured: 2002; Player/Athlete: David Boston; Team: Arizona Cardinals; Sport: Football; League: NFL; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2002-pacific-trading-david-boston-game-worn-patch-1-arizona-cardinals-1.Bu7hgKQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2544,7 +2544,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2004 Leaf Certified Materials Greg Jones Rookie Patch 1250 #219 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2004 Leaf Certified Materials Greg Jones Rookie Patch 1250 #219 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2004-05 sports trading card featuring Greg Jones and the Los Angeles Angels of Anaheim Card #219. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Season: 2004-05; Year: 2004; Player: Greg Jones; Team: Los Angeles Angels of Anaheim; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2004 Leaf Certified Materials Greg Jones Rookie Patch /1250 #219\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2004 Leaf Certified Materials; Season: 2004-05; Year manufactured: 2004; Player/Athlete: Greg Jones; Team: Jacksonville Jaguars; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2004-leaf-certified-materials-greg-jones-rookie-patch-1250-219-1.Bu7jfsf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2582,7 +2582,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2005 Fleer Ultra Edgerrin James All Ultra Team SSP Game Worn Patch 50 Colts (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2005 Fleer Ultra Edgerrin James All Ultra Team SSP Game Worn Patch 50 Colts (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2005 sports trading card featuring Edgerrin James and the Arizona Cardinals. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Year: 2005; Player: Edgerrin James; Team: Arizona Cardinals; Sport: Football; League: NFL; Condition: Ungraded; Features: Short Print | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2005 Fleer Ultra Edgerrin James All Ultra Team SSP Game Worn Patch /50 Colts\n\nListing details: Type: Sports Trading Card; Manufacturer: Fleer; Set: 2005 Fleer Ultra; Season: 2005; Year manufactured: 2005; Player/Athlete: Edgerrin James; Team: Arizona Cardinals; Sport: Football; League: NFL; Features: Serial Numbered, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2005-fleer-ultra-edgerrin-james-all-ultra-team-ssp-game-worn-patch-50-colts-1.Bu7Nxte",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2621,7 +2621,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2006 Topps Turkey Red Vince Young Relics 399 #TRR-VY Rookie (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2006 Topps Turkey Red Vince Young Relics 399 #TRR-VY Rookie (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2006 Topps sports trading card featuring Vince Young and the Tennessee Titans Card #TRR-VY. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2006 Topps; Year: 2006; Player: Vince Young; Team: Tennessee Titans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2006 Topps Turkey Red Vince Young Relics /399 #TRR-VY Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2006 Topps; Season: 2006; Year manufactured: 2006; Player/Athlete: Vince Young; Team: Tennessee Titans; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2006-topps-turkey-red-vince-young-relics-399-trr-vy-rookie-2.Bu7Ok7V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2660,7 +2660,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2006 Upper Deck SPX DeAngelo Williams Winning Materials Rookie SP Patch #WMR-DW (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2006 Upper Deck SPX DeAngelo Williams Winning Materials Rookie SP Patch #WMR-DW (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2006 Upper Deck sports trading card featuring DeAngelo Williams and the Carolina Panthers Card #WMR-DW. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2006 Upper Deck; Year: 2006; Player: DeAngelo Williams; Team: Carolina Panthers; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2006 Upper Deck SPX DeAngelo Williams Winning Materials Rookie SP Patch #WMR-DW\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2006 Upper Deck; Season: 2006; Year manufactured: 2006; Player/Athlete: DeAngelo Williams; Team: Carolina Panthers; Sport: Football; League: NFL; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2006-upper-deck-spx-deangelo-williams-winning-materials-rookie-sp-patch-wmr-dw-1.Bu7k3Pa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2698,7 +2698,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Absolute Memorabilia Marks of Fame Larry Johnson Patch #16 200 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Absolute Memorabilia Marks of Fame Larry Johnson Patch #16 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2007 sports trading card featuring Larry Johnson and the Kansas City Chiefs Card #16. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Year: 2007; Player: Larry Johnson; Team: Kansas City Chiefs; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2007 Absolute Memorabilia Marks of Fame Larry Johnson Patch #16 /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2007 Absolute; Season: 2007; Year manufactured: 2007; Player/Athlete: Larry Johnson; Team: Kansas City Chiefs; Sport: Football; League: NFL; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-absolute-memorabilia-marks-of-fame-larry-johnson-patch-16-200-1.Bu7vBqu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2735,7 +2735,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Ultimate Collection Jamarcus Russell Brady Quinn Rookie Material Patch 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Ultimate Collection Jamarcus Russell Brady Quinn Rookie Material Patch 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2007 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Year: 2007; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2007 Ultimate Collection Jamarcus Russell Brady Quinn Rookie Material Patch /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2007 Ultimate Collection; Season: 2007; Year manufactured: 2007; Player/Athlete: Jamarcus Russell; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-ultimate-collection-jamarcus-russell-brady-quinn-rookie-material-patch-99-1.Bu786wN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2774,7 +2774,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2008 SP Malcolm Kelly Rookie Threads Green Dual Patch 75 #RT-MK (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2008 SP Malcolm Kelly Rookie Threads Green Dual Patch 75 #RT-MK (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2008 sports trading card highlighted in the title Card #RT-MK. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Year: 2008; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2008 SP Malcolm Kelly Rookie Threads Green Dual Patch /75 #RT-MK\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2008 SP Rookie Threads; Season: 2008; Year manufactured: 2008; Player/Athlete: Malcolm Kelly; Team: Washington Redskins; Sport: Football; League: NFL; Parallel/Variety: Green; Features: Rookie, Serial Numbered, Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2008-sp-malcolm-kelly-rookie-threads-green-dual-patch-75-rt-mk-1.Bu7UJ5v",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2814,7 +2814,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2008 Upper Deck Dexter Jackson Rookie Jersey Relic + Topps Progression RC Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2008 Upper Deck Dexter Jackson Rookie Jersey Relic + Topps Progression RC Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2008 Upper Deck sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2008 Upper Deck; Year: 2008; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2008 Upper Deck Dexter Jackson Rookie Jersey Relic + Topps Progression RC Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2008 Upper Deck; Season: 2008; Year manufactured: 2008; Player/Athlete: Dexter Jackson; Sport: Football; League: NFL; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2008-upper-deck-dexter-jackson-rookie-jersey-relic-plus-topps-progression-rc-patch-1.Bu7g3Yb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2852,7 +2852,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto 25 BGS 9 Auto 10 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto 25 BGS 9 Auto 10 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010-11 sports trading card featuring Sam Bradford and the Los Angeles Rams. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, autograph appeal, and memorabilia-card appeal.\nDetails: Season: 2010-11; Year: 2010; Player: Sam Bradford; Team: Los Angeles Rams; Sport: Football; League: NFL; Condition: Graded; Features: Rookie | Serial Numbered | Autograph | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto /25 BGS 9 Auto 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2010 Panini Plates and Patches; Season: 2010-11; Year manufactured: 2010; Player/Athlete: Sam Bradford; Team: Los Angeles Rams; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: BGS 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-panini-plates-and-patches-sam-bradford-rookie-blitz-auto-25-bgs-9-auto-10-1.Bu7rOOv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2871,7 +2871,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Sam Bradford",
       "excelFields": {
         "Title": "2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto /25 BGS 9 Auto 10",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -2892,7 +2892,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Topps Chrome Eric Decker Rookie #98 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Topps Chrome Eric Decker Rookie #98 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 Topps Chrome sports trading card featuring Eric Decker and the Denver Broncos Card #98. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2010 Topps Chrome; Year: 2010; Player: Eric Decker; Team: Denver Broncos; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Topps Chrome Eric Decker Rookie #98\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2010 Topps Chrome; Season: 2010; Year manufactured: 2010; Player/Athlete: Eric Decker; Team: Denver Broncos; Sport: Football; League: NFL; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-topps-chrome-eric-decker-rookie-98-2.Bu7satf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -2929,7 +2929,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Upper Deck NCAA Sweet Spot Anthony McCoy Rookie Helmet Auto 200 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Upper Deck NCAA Sweet Spot Anthony McCoy Rookie Helmet Auto 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 Upper Deck sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2010 Upper Deck; Year: 2010; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Upper Deck NCAA Sweet Spot Anthony McCoy Rookie Helmet Auto /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2010 Upper Deck; Season: 2010; Year manufactured: 2010; Sport: Football; League: NCAA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-upper-deck-ncaa-sweet-spot-anthony-mccoy-rookie-helmet-auto-200-1.Bu7Phg9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -2947,7 +2947,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2010 Upper Deck NCAA Sweet Spot Anthony McCoy Rookie Helmet Auto /200",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     }
@@ -2967,7 +2967,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto 50 USC (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto 50 USC (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 Upper Deck sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2010 Upper Deck; Year: 2010; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto /50 USC\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2010 Upper Deck; Season: 2010; Year manufactured: 2010; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-upper-deck-ncaa-sweet-spot-joe-mcknight-blue-rookie-helmet-auto-50-usc-1.Bu7L3il",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -2986,7 +2986,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto /50 USC",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -3007,7 +3007,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Panini Crown Royale Kendall Hunter 3-Color Rookie Patch Auto 50 #204 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Panini Crown Royale Kendall Hunter 3-Color Rookie Patch Auto 50 #204 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Panini Crown Royale sports trading card highlighted in the title Card #204. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2011 Panini Crown Royale; Year: 2011; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Panini Crown Royale Kendall Hunter 3-Color Rookie Patch Auto /50 #204\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2011 Panini Crown Royale; Season: 2011; Year manufactured: 2011; Player/Athlete: Kendall Hunter; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-panini-crown-royale-kendall-hunter-3-color-rookie-patch-auto-50-204-1.Bu7QwEQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3026,7 +3026,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kendall Hunter",
       "excelFields": {
         "Title": "2011 Panini Crown Royale Kendall Hunter 3-Color Rookie Patch Auto /50 #204",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     }
@@ -3046,7 +3046,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Panini Donruss Elite Kyle Rudolph New Breed Rookie Patch 299 #21 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Panini Donruss Elite Kyle Rudolph New Breed Rookie Patch 299 #21 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Donruss Elite sports trading card featuring Kyle Rudolph and the Minnesota Vikings Card #21. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Set: 2011 Donruss Elite; Year: 2011; Player: Kyle Rudolph; Team: Minnesota Vikings; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Panini Donruss Elite Kyle Rudolph New Breed Rookie Patch /299 #21\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2011 Donruss Elite; Season: 2011; Year manufactured: 2011; Player/Athlete: Kyle Rudolph; Team: Minnesota Vikings; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-panini-donruss-elite-kyle-rudolph-new-breed-rookie-patch-299-21-1.Bu7QC1p",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3084,7 +3084,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Press Pass Kendall Hunter On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Press Pass Kendall Hunter On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Press Pass Kendall Hunter On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2011 Press Pass; Season: 2011; Year manufactured: 2011; Player/Athlete: Kendall Hunter; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-press-pass-kendall-hunter-on-card-rookie-auto-1.Bu7ZLVj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3101,7 +3101,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kendall Hunter",
       "excelFields": {
         "Title": "2011 Press Pass Kendall Hunter On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -3122,7 +3122,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Armand Robinson Rookie Auto #A79 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Armand Robinson Rookie Auto #A79 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title Card #A79. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Armand Robinson Rookie Auto #A79\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Armand Robinson; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-armand-robinson-rookie-auto-a79-2.Bu7DnrQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3139,7 +3139,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Armand Robinson",
       "excelFields": {
         "Title": "2011 Sage Hit Armand Robinson Rookie Auto #A79",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -3159,7 +3159,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Austin Pettis Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Austin Pettis Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Austin Pettis Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Austin Pettis; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-austin-pettis-rookie-auto-1.Bu7bqut",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3176,7 +3176,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Austin Pettis",
       "excelFields": {
         "Title": "2011 Sage Hit Austin Pettis Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -3197,7 +3197,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Charles Clay Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Charles Clay Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card featuring Charles Clay and the Miami Dolphins. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Player: Charles Clay; Team: Miami Dolphins; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Charles Clay Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Charles Clay; Team: Miami Dolphins; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-charles-clay-rookie-auto-1.Bu7pjCg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3214,7 +3214,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Charles Clay",
       "excelFields": {
         "Title": "2011 Sage Hit Charles Clay Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -3235,7 +3235,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Chimdi Chekwa Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Chimdi Chekwa Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Chimdi Chekwa Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Chimdi Chekwa; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-chimdi-chekwa-rookie-auto-1.Bu7yhR2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3252,7 +3252,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Chimdi Chekwa",
       "excelFields": {
         "Title": "2011 Sage Hit Chimdi Chekwa Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -3273,7 +3273,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Curtis Brown Rookie Auto  (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Curtis Brown Rookie Auto  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Curtis Brown Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Curtis Brown; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-curtis-brown-rookie-auto-1.BuYHTpp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3291,7 +3291,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Curtis Brown",
       "excelFields": {
         "Title": "2011 Sage Hit Curtis Brown Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -3312,7 +3312,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit DeAndre McDaniel Rookie Auto #A96 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit DeAndre McDaniel Rookie Auto #A96 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title Card #A96. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit DeAndre McDaniel Rookie Auto #A96\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: DeAndre McDaniel; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-deandre-mcdaniel-rookie-auto-a96-1.BuYd4rg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3329,7 +3329,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "DeAndre McDaniel",
       "excelFields": {
         "Title": "2011 Sage Hit DeAndre McDaniel Rookie Auto #A96",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -3349,7 +3349,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 SAGE HIT Denarius Moore Make Ready Yellow #87 Rookie 50 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 SAGE HIT Denarius Moore Make Ready Yellow #87 Rookie 50 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card featuring Denarius Moore and the Las Vegas Raiders Card #87. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Year: 2011; Player: Denarius Moore; Team: Las Vegas Raiders; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 SAGE HIT Denarius Moore Make Ready Yellow #87 Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 SAGE HIT; Season: 2011; Year manufactured: 2011; Player/Athlete: Denarius Moore; Team: Las Vegas Raiders; Sport: Football; League: NFL; Parallel/Variety: Yellow; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-denarius-moore-make-ready-yellow-87-rookie-50-1.BuY2gwl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3387,7 +3387,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Jacquizz Rodgers Big Time Elusiveness Rookie Auto 100 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Jacquizz Rodgers Big Time Elusiveness Rookie Auto 100 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card featuring Jacquizz Rodgers and the Atlanta Falcons. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2011; Player: Jacquizz Rodgers; Team: Atlanta Falcons; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Jacquizz Rodgers Big Time Elusiveness Rookie Auto /100\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Jacquizz Rodgers; Team: Atlanta Falcons; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-jacquizz-rodgers-big-time-elusiveness-rookie-auto-100-1.BuYK6np",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3405,7 +3405,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jacquizz Rodgers",
       "excelFields": {
         "Title": "2011 Sage Hit Jacquizz Rodgers Big Time Elusiveness Rookie Auto /100",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -3426,7 +3426,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Kyle Adams Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Kyle Adams Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Kyle Adams Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Kyle Adams; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-kyle-adams-rookie-auto-1.BuYfJPS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3443,7 +3443,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kyle Adams",
       "excelFields": {
         "Title": "2011 Sage Hit Kyle Adams Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -3464,7 +3464,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Lester Jean Rookie Auto Gold 250 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Sage Hit Lester Jean Rookie Auto Gold 250 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2011; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Sage Hit Lester Jean Rookie Auto Gold /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2011 Sage Hit; Season: 2011; Year manufactured: 2011; Player/Athlete: Lester Jean; Sport: Football; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-sage-hit-lester-jean-rookie-auto-gold-250-1.BuYBZS1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -3483,7 +3483,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Lester Jean",
       "excelFields": {
         "Title": "2011 Sage Hit Lester Jean Rookie Auto Gold /250",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -3504,7 +3504,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Finest sports trading card highlighted in the title Card #54. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2011 Topps Finest; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Finest; Season: 2011; Year manufactured: 2011; Player/Athlete: Finest Alex; Sport: Football; League: NFL; Parallel/Variety: Refractor, Speckle, Green; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-finest-alex-green-speckle-refractor-rookie-sp-54-1.BuYCqRn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3542,7 +3542,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Game Day Relics Dustin Keller #GDR-DK (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Game Day Relics Dustin Keller #GDR-DK (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps sports trading card highlighted in the title Card #GDR-DK. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2011 Topps; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Game Day Relics Dustin Keller #GDR-DK\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps; Season: 2011; Year manufactured: 2011; Player/Athlete: Dustin Keller; Sport: Football; League: NFL; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-game-day-relics-dustin-keller-gdr-dk-1.BuYoLKl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3578,7 +3578,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Legends Darren Evans Rookie Set (x2) #RA-DE (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Legends Darren Evans Rookie Set (x2) #RA-DE (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps sports trading card highlighted in the title Card #RA-DE. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2011 Topps; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Legends Darren Evans Rookie Set (x2) #RA-DE\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps; Season: 2011; Year manufactured: 2011; Player/Athlete: Darren Evans; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-legends-darren-evans-rookie-set-x2-ra-de-1.BuYxVg2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3614,7 +3614,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Legends Jamie Harper Bronze Rookie Auto 99 + Legacies Shield Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Legends Jamie Harper Bronze Rookie Auto 99 + Legacies Shield Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2011 Topps; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Legends Jamie Harper Bronze Rookie Auto /99 + Legacies Shield Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps; Season: 2011; Year manufactured: 2011; Player/Athlete: Jamie Harper; Sport: Football; League: NFL; Parallel/Variety: Bronze; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-legends-jamie-harper-bronze-rookie-auto-99-plus-legacies-shield-patch-1.BuYTFUl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3634,7 +3634,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jamie Harper",
       "excelFields": {
         "Title": "2011 Topps Legends Jamie Harper Bronze Rookie Auto /99 + Legacies Shield Patch",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -3655,7 +3655,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Triple Threads Louis Murphy Unity Relic 27 TTUSR-56 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Triple Threads Louis Murphy Unity Relic 27 TTUSR-56 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Triple Threads sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2011 Topps Triple Threads; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Triple Threads Louis Murphy Unity Relic /27 TTUSR-56\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Triple Threads; Season: 2011; Year manufactured: 2011; Player/Athlete: Louis Murphy; Sport: Football; League: NFL; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-triple-threads-louis-murphy-unity-relic-27-ttusr-56-1.BuYRUrJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3693,7 +3693,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Donruss Elite Alfred Morris Rookie Hard Hats 399 + Refractor 999 + SP RC (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Donruss Elite Alfred Morris Rookie Hard Hats 399 + Refractor 999 + SP RC (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite sports trading card featuring Alfred Morris and the Washington Commanders. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Donruss Elite; Year: 2012; Player: Alfred Morris; Team: Washington Commanders; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Alfred Morris Rookie Hard Hats /399 + Refractor /999 + SP RC\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite; Season: 2012; Year manufactured: 2012; Player/Athlete: Alfred Morris; Team: Washington Commanders; Sport: Football; League: NFL; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-alfred-morris-rookie-hard-hats-399-plus-refractor-999-plus-sp-rc-1.BuYumnn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3733,7 +3733,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Prestige Dwayne Allen Draft Ticket Rookie Auto #18 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Prestige Dwayne Allen Draft Ticket Rookie Auto #18 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Prestige sports trading card featuring Dwayne Allen and the Indianapolis Colts Card #18. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2012 Prestige; Year: 2012; Player: Dwayne Allen; Team: Indianapolis Colts; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Prestige Dwayne Allen Draft Ticket Rookie Auto #18\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Prestige; Season: 2012; Year manufactured: 2012; Player/Athlete: Dwayne Allen; Team: Indianapolis Colts; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-prestige-dwayne-allen-draft-ticket-rookie-auto-18-1.BuYRVgj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3750,7 +3750,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dwayne Allen",
       "excelFields": {
         "Title": "2012 Panini Prestige Dwayne Allen Draft Ticket Rookie Auto #18",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -3770,7 +3770,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Prominence Brock Osweiler Rookie Jumbo Patch 299 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Prominence Brock Osweiler Rookie Jumbo Patch 299 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012-13 sports trading card featuring Brock Osweiler and the Denver Broncos. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Season: 2012-13; Year: 2012; Player: Brock Osweiler; Team: Denver Broncos; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Prominence Brock Osweiler Rookie Jumbo Patch /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Panini Prominence; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Brock Osweiler; Team: Denver Broncos; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-prominence-brock-osweiler-rookie-jumbo-patch-299-1.BuY7ESj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3808,7 +3808,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Davin Meggett Rookie Auto 999 + Sage Hit RC Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Davin Meggett Rookie Auto 999 + Sage Hit RC Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Rookies & Stars sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2012 Rookies & Stars; Year: 2012; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Rookies & Stars Davin Meggett Rookie Auto /999 + Sage Hit RC Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Rookies & Stars; Season: 2012; Year manufactured: 2012; Player/Athlete: Davin Meggett; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-rookies-stars-davin-meggett-rookie-auto-999-plus-sage-hit-rc-auto-1.BuY7rDN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3826,7 +3826,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Davin Meggett",
       "excelFields": {
         "Title": "2012 Panini Rookies & Stars Davin Meggett Rookie Auto /999 + Sage Hit RC Auto",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -3847,7 +3847,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Longevity Joe Adams Rookie Patch + Press Pass Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Longevity Joe Adams Rookie Patch + Press Pass Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Rookies & Stars sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2012 Rookies & Stars; Year: 2012; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Rookies & Stars Longevity Joe Adams Rookie Patch + Press Pass Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Rookies & Stars; Season: 2012; Year manufactured: 2012; Player/Athlete: Joe Adams; Sport: Football; League: NFL; Features: Autograph, Rookie, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-rookies-stars-longevity-joe-adams-rookie-patch-plus-press-pass-auto-1.BuYaQ9f",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3865,7 +3865,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Joe Adams",
       "excelFields": {
         "Title": "2012 Panini Rookies & Stars Longevity Joe Adams Rookie Patch + Press Pass Auto",
-        "C:Features": "Rookie|Memorabilia",
+        "C:Features": "Autograph|Rookie|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -3886,7 +3886,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Michael Floyd Freshman Orientation Rookie Patch #29 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Michael Floyd Freshman Orientation Rookie Patch #29 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Rookies & Stars sports trading card featuring Michael Floyd and the Arizona Cardinals Card #29. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2012 Rookies & Stars; Year: 2012; Player: Michael Floyd; Team: Arizona Cardinals; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Rookies & Stars Michael Floyd Freshman Orientation Rookie Patch #29\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Rookies & Stars; Season: 2012; Year manufactured: 2012; Player/Athlete: Michael Floyd; Team: Arizona Cardinals; Sport: Football; League: NFL; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-rookies-stars-michael-floyd-freshman-orientation-rookie-patch-29-1.BuYcd8b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3923,7 +3923,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Quinton Coples Rookie Auto SP 999 New York Jets (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies & Stars Quinton Coples Rookie Auto SP 999 New York Jets (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Rookies & Stars sports trading card highlighted in the title and the New York Jets. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2012 Rookies & Stars; Year: 2012; Team: New York Jets; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Rookies & Stars Quinton Coples Rookie Auto SP /999 New York Jets\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Rookies & Stars; Season: 2012; Year manufactured: 2012; Player/Athlete: Quinton Coples; Team: New York Jets; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-rookies-stars-quinton-coples-rookie-auto-sp-999-new-york-jets-1.BuYl30X",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3942,7 +3942,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Quinton Coples",
       "excelFields": {
         "Title": "2012 Panini Rookies & Stars Quinton Coples Rookie Auto SP /999 New York Jets",
-        "C:Features": "Rookie|Serial Numbered|Short Print",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Short Print",
         "C:Autographed": "Yes"
       }
     },
@@ -3963,7 +3963,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies and Stars Ben Tate Great American Heroes Auto 10 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Rookies and Stars Ben Tate Great American Heroes Auto 10 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012-13 sports trading card featuring Ben Tate and the Houston Texans. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Season: 2012-13; Year: 2012; Player: Ben Tate; Team: Houston Texans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Rookies and Stars Ben Tate Great American Heroes Auto /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Panini Rookies and Stars; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Ben Tate; Team: Houston Texans; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-rookies-and-stars-ben-tate-great-american-heroes-auto-10-1.BuYELhv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3981,7 +3981,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ben Tate",
       "excelFields": {
         "Title": "2012 Panini Rookies and Stars Ben Tate Great American Heroes Auto /10",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -4002,7 +4002,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Totally Certified Blaine Gabbert Certified Future Rookie Patch 499 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Panini Totally Certified Blaine Gabbert Certified Future Rookie Patch 499 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012-13 sports trading card featuring Blaine Gabbert and the Jacksonville Jaguars. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Season: 2012-13; Year: 2012; Player: Blaine Gabbert; Team: Jacksonville Jaguars; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Panini Totally Certified Blaine Gabbert Certified Future Rookie Patch /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012 Panini Totally Certified; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Blaine Gabbert; Team: Jacksonville Jaguars; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-panini-totally-certified-blaine-gabbert-certified-future-rookie-patch-499-1.BuYMDJt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4041,7 +4041,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass DeVier Posey On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass DeVier Posey On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass DeVier Posey On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: DeVier Posey; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-devier-posey-on-card-rookie-auto-1.BuYWicN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4058,7 +4058,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "DeVier Posey",
       "excelFields": {
         "Title": "2012 Press Pass DeVier Posey On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -4079,7 +4079,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Dont'a Hightower On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Dont'a Hightower On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Dont'a Hightower and the New England Patriots. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Player: Dont'a Hightower; Team: New England Patriots; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Dont'a Hightower On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Dont'a Hightower; Team: New England Patriots; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-dont-and-039a-hightower-on-card-rookie-auto-1.BuYhjkP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4096,7 +4096,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dont'a Hightower",
       "excelFields": {
         "Title": "2012 Press Pass Dont'a Hightower On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -4117,7 +4117,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Dontari Poe On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Dontari Poe On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Dontari Poe and the Kansas City Chiefs. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Player: Dontari Poe; Team: Kansas City Chiefs; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Dontari Poe On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Dontari Poe; Team: Kansas City Chiefs; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-dontari-poe-on-card-rookie-auto-1.BuYwYxe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4134,7 +4134,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dontari Poe",
       "excelFields": {
         "Title": "2012 Press Pass Dontari Poe On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -4155,7 +4155,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Jayron Hosely On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Jayron Hosely On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Jayron Hosely On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Jayron Hosely; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-jayron-hosely-on-card-rookie-auto-1.BuYOut9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4172,7 +4172,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jayron Hosely",
       "excelFields": {
         "Title": "2012 Press Pass Jayron Hosely On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -4193,7 +4193,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Mark Barron On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Mark Barron On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Mark Barron and the Los Angeles Rams. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Player: Mark Barron; Team: Los Angeles Rams; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Mark Barron On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Mark Barron; Team: Los Angeles Rams; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-mark-barron-on-card-rookie-auto-1.BuYevgj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4210,7 +4210,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Mark Barron",
       "excelFields": {
         "Title": "2012 Press Pass Mark Barron On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -4231,7 +4231,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Marquis Maze Bronze On-Card Rookie Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Marquis Maze Bronze On-Card Rookie Auto 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Marquis Maze Bronze On-Card Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Marquis Maze; Sport: Football; League: NCAA; Parallel/Variety: Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-marquis-maze-bronze-on-card-rookie-auto-99-1.BuYUmxV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4250,7 +4250,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Marquis Maze",
       "excelFields": {
         "Title": "2012 Press Pass Marquis Maze Bronze On-Card Rookie Auto /99",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -4271,7 +4271,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Mohamed Sanu On-Card Rookie Auto + Leaf Draft Blue RC Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Mohamed Sanu On-Card Rookie Auto + Leaf Draft Blue RC Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Mohamed Sanu and the Cincinnati Bengals. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Player: Mohamed Sanu; Team: Cincinnati Bengals; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Mohamed Sanu On-Card Rookie Auto + Leaf Draft Blue RC Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Mohamed Sanu; Team: Cincinnati Bengals; Sport: Football; League: NFL; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-mohamed-sanu-on-card-rookie-auto-plus-leaf-draft-blue-rc-auto-1.BuYUlSa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4289,7 +4289,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Mohamed Sanu",
       "excelFields": {
         "Title": "2012 Press Pass Mohamed Sanu On-Card Rookie Auto + Leaf Draft Blue RC Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -4310,7 +4310,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Ryan Tannehill Power Picks Rookie Auto 99 BGS 8.5 Auto 10 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Ryan Tannehill Power Picks Rookie Auto 99 BGS 8.5 Auto 10 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Ryan Tannehill and the Miami Dolphins. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Player: Ryan Tannehill; Team: Miami Dolphins; Sport: Football; League: NFL; Condition: Graded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Ryan Tannehill Power Picks Rookie Auto /99 BGS 8.5 Auto 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Ryan Tannehill; Team: Miami Dolphins; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: BGS 8.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-ryan-tannehill-power-picks-rookie-auto-99-bgs-85-auto-10-1.BuYiCKB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4328,7 +4328,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ryan Tannehill",
       "excelFields": {
         "Title": "2012 Press Pass Ryan Tannehill Power Picks Rookie Auto /99 BGS 8.5 Auto 10",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -4349,7 +4349,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Stephen Hill Bronze On-Card Rookie Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Press Pass Stephen Hill Bronze On-Card Rookie Auto 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Press Pass Stephen Hill Bronze On-Card Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2012 Press Pass; Season: 2012; Year manufactured: 2012; Player/Athlete: Stephen Hill; Sport: Football; League: NCAA; Parallel/Variety: Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-press-pass-stephen-hill-bronze-on-card-rookie-auto-99-1.BuY6U7e",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4368,7 +4368,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Stephen Hill",
       "excelFields": {
         "Title": "2012 Press Pass Stephen Hill Bronze On-Card Rookie Auto /99",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -4389,7 +4389,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Broderick Green Rookie Auto #A92 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Broderick Green Rookie Auto #A92 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title Card #A92. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Broderick Green Rookie Auto #A92\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Broderick Green; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-broderick-green-rookie-auto-a92-1.BuYLJQj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4407,7 +4407,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Broderick Green",
       "excelFields": {
         "Title": "2012 Sage Hit Broderick Green Rookie Auto #A92",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4427,7 +4427,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Case Keenum Gold Rookie Auto 250 #A107 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Case Keenum Gold Rookie Auto 250 #A107 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Case Keenum and the Denver Broncos Card #A107. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Player: Case Keenum; Team: Denver Broncos; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Case Keenum Gold Rookie Auto /250 #A107\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Case Keenum; Team: Denver Broncos; Sport: Football; League: NFL; Parallel/Variety: Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-case-keenum-gold-rookie-auto-250-a107-1.BuYQ3ts",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4446,7 +4446,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Case Keenum",
       "excelFields": {
         "Title": "2012 Sage Hit Case Keenum Gold Rookie Auto /250 #A107",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4466,7 +4466,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Cyrus Gray Gold Rookie Auto 250 #A32 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Cyrus Gray Gold Rookie Auto 250 #A32 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title Card #A32. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Cyrus Gray Gold Rookie Auto /250 #A32\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Cyrus Gray; Sport: Football; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-cyrus-gray-gold-rookie-auto-250-a32-1.BuYZvrQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4485,7 +4485,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Cyrus Gray",
       "excelFields": {
         "Title": "2012 Sage Hit Cyrus Gray Gold Rookie Auto /250 #A32",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4505,7 +4505,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Jared Crick Gold Rookie Auto 250 #A36 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Jared Crick Gold Rookie Auto 250 #A36 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card featuring Jared Crick and the Houston Texans Card #A36. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Player: Jared Crick; Team: Houston Texans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Jared Crick Gold Rookie Auto /250 #A36\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Jared Crick; Team: Houston Texans; Sport: Football; League: NFL; Parallel/Variety: Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-jared-crick-gold-rookie-auto-250-a36-1.BuYtrF4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4524,7 +4524,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jared Crick",
       "excelFields": {
         "Title": "2012 Sage Hit Jared Crick Gold Rookie Auto /250 #A36",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4544,7 +4544,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Ladarius Green Rookie Auto SP 250 #A89 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Ladarius Green Rookie Auto SP 250 #A89 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title Card #A89. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Ladarius Green Rookie Auto SP /250 #A89\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Ladarius Green; Sport: Football; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-ladarius-green-rookie-auto-sp-250-a89-1.BuYbahF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4564,7 +4564,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ladarius Green",
       "excelFields": {
         "Title": "2012 Sage Hit Ladarius Green Rookie Auto SP /250 #A89",
-        "C:Features": "Rookie|Serial Numbered|Short Print|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4584,7 +4584,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Markelle Martin Gold Rookie Auto 250 #A110 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Sage Hit Markelle Martin Gold Rookie Auto 250 #A110 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title Card #A110. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Sage Hit Markelle Martin Gold Rookie Auto /250 #A110\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2012 Sage Hit; Season: 2012; Year manufactured: 2012; Player/Athlete: Markelle Martin; Sport: Football; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-sage-hit-markelle-martin-gold-rookie-auto-250-a110-1.BuYpGON",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -4603,7 +4603,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Markelle Martin",
       "excelFields": {
         "Title": "2012 Sage Hit Markelle Martin Gold Rookie Auto /250 #A110",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -4623,7 +4623,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Topps Paramount Pairs Andrew Luck & Robert Griffin III Rookie #PA-LG (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Topps Paramount Pairs Andrew Luck & Robert Griffin III Rookie #PA-LG (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps sports trading card featuring Andrew Luck and Robert Griffin III with connections to the Indianapolis Colts and Washington Commanders Card #PA-LG. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2012 Topps; Year: 2012; Player: Andrew Luck | Robert Griffin III; Team: Indianapolis Colts | Washington Commanders; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Paramount Pairs Andrew Luck & Robert Griffin III Rookie #PA-LG\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps; Season: 2012; Year manufactured: 2012; Player/Athlete: Andrew Luck, Robert Griffin III; Team: Indianapolis Colts, Washington Commanders; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-paramount-pairs-andrew-luck-robert-griffin-iii-rookie-pa-lg-1.Bua93Ge",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4659,7 +4659,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Topps Prolific Playmakers Ronnie Hillman Rookie Auto + Freshman RC Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2012 Topps Prolific Playmakers Ronnie Hillman Rookie Auto + Freshman RC Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. 2012 Topps football card featuring Ronnie Hillman with connections to the Denver Broncos. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2012 Topps; Year: 2012; Player: Ronnie Hillman; Team: Denver Broncos; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Prolific Playmakers Ronnie Hillman Rookie Auto + Freshman RC Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps; Season: 2012; Year manufactured: 2012; Player/Athlete: Ronnie Hillman; Team: Denver Broncos; Sport: Football; League: NFL; Features: Autograph, Rookie, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-prolific-playmakers-ronnie-hillman-rookie-auto-plus-freshman-rc-patch-1.BuaJChB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4677,7 +4677,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ronnie Hillman",
       "excelFields": {
         "Title": "2012 Topps Prolific Playmakers Ronnie Hillman Rookie Auto + Freshman RC Patch",
-        "C:Features": "Rookie|Memorabilia",
+        "C:Features": "Autograph|Rookie|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -4698,7 +4698,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Bowman Chrome Dennis Johnson Refractor Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Bowman Chrome Dennis Johnson Refractor Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. 2013 Bowman Chrome football card featuring Dennis Johnson with connections to the Houston Texans. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2013 Bowman Chrome; Year: 2013; Player: Dennis Johnson; Team: Houston Texans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Chrome Dennis Johnson Refractor Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Chrome; Season: 2013; Year manufactured: 2013; Player/Athlete: Dennis Johnson; Team: Houston Texans; Sport: Football; League: NFL; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-chrome-dennis-johnson-refractor-rookie-auto-1.Bua3E41",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4716,7 +4716,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dennis Johnson",
       "excelFields": {
         "Title": "2013 Bowman Chrome Dennis Johnson Refractor Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -4737,7 +4737,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Bowman Chrome Sam Montgomery Blue Refractor Rookie Auto 99 Number Match (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Bowman Chrome Sam Montgomery Blue Refractor Rookie Auto 99 Number Match (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Chrome sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Bowman Chrome; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Chrome Sam Montgomery Blue Refractor Rookie Auto /99 Number Match\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Chrome; Season: 2013; Year manufactured: 2013; Player/Athlete: Sam Montgomery; Sport: Football; League: NFL; Parallel/Variety: Refractor, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-chrome-sam-montgomery-blue-refractor-rookie-auto-99-number-match-1.BuaFOAb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4756,7 +4756,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Sam Montgomery",
       "excelFields": {
         "Title": "2013 Bowman Chrome Sam Montgomery Blue Refractor Rookie Auto /99 Number Match",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -4776,7 +4776,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Bowman JJ Watt DeAndre Hopkins Arian Foster Andre Johnson Texans Set (x36).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card featuring Andre Johnson, Arian Foster, DeAndre Hopkins, and J.J. Watt with connections to the Houston Texans and Arizona Cardinals. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Set: 2013 Bowman; Year: 2013; Player: Andre Johnson | Arian Foster | DeAndre Hopkins | J.J. Watt; Team: Houston Texans | Arizona Cardinals; Sport: Football; League: NFL; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman JJ Watt DeAndre Hopkins Arian Foster Andre Johnson Texans Set (x36)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Andre Johnson, Arian Foster, DeAndre Hopkins, J.J. Watt; Team: Houston Texans; Sport: Football; League: NFL; Autographed: No; Cards included: 36; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-jj-watt-deandre-hopkins-arian-foster-andre-johnson-texans-set-x36.BuaFbiN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4810,7 +4810,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Leaf Certified Kyle Rudolph Red Foil Patch 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Leaf Certified Kyle Rudolph Red Foil Patch 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013-14 sports trading card featuring Kyle Rudolph and the Minnesota Vikings. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Season: 2013-14; Year: 2013; Player: Kyle Rudolph; Team: Minnesota Vikings; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Certified Kyle Rudolph Red Foil Patch /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Certified; Season: 2013; Year manufactured: 2013; Player/Athlete: Kyle Rudolph; Team: Minnesota Vikings; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-certified-kyle-rudolph-red-foil-patch-99-1.BuafjTb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4848,7 +4848,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Jimmy Graham #106 Red Foil 250 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Jimmy Graham #106 Red Foil 250 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Panini Certified sports trading card featuring Jimmy Graham and the New Orleans Saints Card #106. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Panini Certified; Year: 2013; Player: Jimmy Graham; Team: New Orleans Saints; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Certified Jimmy Graham #106 Red Foil /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Panini Certified; Season: 2013; Year manufactured: 2013; Player/Athlete: Jimmy Graham; Team: New Orleans Saints; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-certified-jimmy-graham-106-red-foil-250-1.BuaKc0P",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4885,7 +4885,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Peyton Manning Silver #56 + 2006 Topps Total Red SP #300 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Peyton Manning Silver #56 + 2006 Topps Total Red SP #300 (2).jpg"
     ],
-    "description": "2013 Panini Certified card featuring Peyton Manning with connections to Indianapolis Colts. A strong addition for football fans, NFL collectors, and set builders thanks to its short-print appeal, and parallel/variation appeal.\nDetails: Set: 2013 Panini Certified; Year: 2013; Player: Peyton Manning; Team: Indianapolis Colts; Sport: Football; League: NFL; Condition: Ungraded; Features: Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Certified Peyton Manning Silver #56 + /2006 Topps Total Red SP #300\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Panini Certified; Season: 2013; Year manufactured: 2013; Player/Athlete: Peyton Manning; Team: Indianapolis Colts; Sport: Football; League: NFL; Parallel/Variety: Red, Silver; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-certified-peyton-manning-silver-56-plus-2006-topps-total-red-sp-300-1.BuanFPR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4922,7 +4922,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Barkevious Mingo Rookie Initiation Autograph 200 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Barkevious Mingo Rookie Initiation Autograph 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. 2013 Panini Momentum football card featuring Barkevious Mingo with connections to the Cleveland Browns. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Season: 2013; Year: 2013; Player: Barkevious Mingo; Team: Cleveland Browns; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Momentum Barkevious Mingo Rookie Initiation Autograph /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Panini Momentum; Season: 2013; Year manufactured: 2013; Player/Athlete: Barkevious Mingo; Team: Cleveland Browns; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-momentum-barkevious-mingo-rookie-initiation-autograph-200-1.BuanYSS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4940,7 +4940,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Barkevious Mingo",
       "excelFields": {
         "Title": "2013 Panini Momentum Barkevious Mingo Rookie Initiation Autograph /200",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -4961,7 +4961,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Giovani Bernard Rookie 49 #137 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Giovani Bernard Rookie 49 #137 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013-14 sports trading card featuring Giovani Bernard and the Cincinnati Bengals Card #137. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Season: 2013-14; Year: 2013; Player: Giovani Bernard; Team: Cincinnati Bengals; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Momentum Giovani Bernard Rookie /49 #137\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Panini Momentum; Season: 2013; Year manufactured: 2013; Player/Athlete: Giovani Bernard; Team: Cincinnati Bengals; Sport: Football; League: NFL; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-momentum-giovani-bernard-rookie-49-137-1.BuaRR8x",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -4998,7 +4998,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Giovani Bernard Rookie Quad Patch 299 + Triple 25 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Momentum Giovani Bernard Rookie Quad Patch 299 + Triple 25 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card featuring Giovani Bernard and the Cincinnati Bengals. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Year: 2013; Player: Giovani Bernard; Team: Cincinnati Bengals; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Momentum Giovani Bernard Rookie Quad Patch /299 + Triple /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Panini Momentum; Season: 2013; Year manufactured: 2013; Player/Athlete: Giovani Bernard; Team: Cincinnati Bengals; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-momentum-giovani-bernard-rookie-quad-patch-299-plus-triple-25-1.Buazbsa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5037,7 +5037,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Prestige Draft Luke Joeckel + Eric Fisher Dual Rookie Patch #3 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Prestige Draft Luke Joeckel + Eric Fisher Dual Rookie Patch #3 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Prestige sports trading card featuring Eric Fisher and the Kansas City Chiefs Card #3. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2013 Prestige; Year: 2013; Player: Eric Fisher; Team: Kansas City Chiefs; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Prestige Draft Luke Joeckel + Eric Fisher Dual Rookie Patch #3\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Prestige; Season: 2013; Year manufactured: 2013; Player/Athlete: Eric Fisher; Team: Kansas City Chiefs; Sport: Football; League: NFL; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-prestige-draft-luke-joeckel-plus-eric-fisher-dual-rookie-patch-3-1.BuaRbcb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5074,7 +5074,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Prestige Eric Fisher Extra Points Rookie Auto #211 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Prestige Eric Fisher Extra Points Rookie Auto #211 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Prestige sports trading card featuring Eric Fisher and the Kansas City Chiefs Card #211. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2013 Prestige; Year: 2013; Player: Eric Fisher; Team: Kansas City Chiefs; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Prestige Eric Fisher Extra Points Rookie Auto #211\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Prestige; Season: 2013; Year manufactured: 2013; Player/Athlete: Eric Fisher; Team: Kansas City Chiefs; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-prestige-eric-fisher-extra-points-rookie-auto-211-1.BuaYMFe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5091,7 +5091,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Eric Fisher",
       "excelFields": {
         "Title": "2013 Panini Prestige Eric Fisher Extra Points Rookie Auto #211",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -5111,7 +5111,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Rookies & Stars Mike Gillislee Dress for Success Rookie Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Rookies & Stars Mike Gillislee Dress for Success Rookie Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Rookies & Stars sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2013 Rookies & Stars; Year: 2013; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Rookies & Stars Mike Gillislee Dress for Success Rookie Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Rookies & Stars; Season: 2013; Year manufactured: 2013; Player/Athlete: Mike Gillislee; Team: Miami Dolphins; Sport: Football; League: NFL; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-rookies-stars-mike-gillislee-dress-for-success-rookie-patch-1.BuaaMWN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5149,7 +5149,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Rookies & Stars Tavarres King Refractor Rookie Auto 25 #188 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Rookies & Stars Tavarres King Refractor Rookie Auto 25 #188 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Rookies & Stars sports trading card highlighted in the title Card #188. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Rookies & Stars; Year: 2013; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Rookies & Stars Tavarres King Refractor Rookie Auto /25 #188\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Rookies & Stars; Season: 2013; Year manufactured: 2013; Player/Athlete: Tavarres King; Team: Denver Broncos; Sport: Football; League: NFL; Parallel/Variety: Refractor; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-rookies-stars-tavarres-king-refractor-rookie-auto-25-188-1.Bua0kmJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5168,7 +5168,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tavarres King",
       "excelFields": {
         "Title": "2013 Panini Rookies & Stars Tavarres King Refractor Rookie Auto /25 #188",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -5188,7 +5188,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Score Montee Ball Rookie Auto + Press Pass Auto 90 + R&S Patch 299 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Score Montee Ball Rookie Auto + Press Pass Auto 90 + R&S Patch 299 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Score sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2013 Score; Year: 2013; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Panini Score Montee Ball Rookie Auto + Press Pass Auto /90 + R&S Patch /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013 Score; Season: 2013; Year manufactured: 2013; Player/Athlete: Montee Ball; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-score-montee-ball-rookie-auto-plus-press-pass-auto-90-plus-r-s-patch-299-1.BuaGnJ1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5207,7 +5207,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Montee Ball",
       "excelFields": {
         "Title": "2013 Panini Score Montee Ball Rookie Auto + Press Pass Auto /90 + R&S Patch /299",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -5228,7 +5228,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Alec Ogletree Rookie Auto #PPS-AO (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Alec Ogletree Rookie Auto #PPS-AO (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card featuring Alec Ogletree and the Los Angeles Rams Card #PPS-AO. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Player: Alec Ogletree; Team: Los Angeles Rams; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Press Pass Alec Ogletree Rookie Auto #PPS-AO\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2013 Press Pass; Season: 2013; Year manufactured: 2013; Player/Athlete: Alec Ogletree; Team: Los Angeles Rams; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-press-pass-alec-ogletree-rookie-auto-pps-ao-1.BuaM5hb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5245,7 +5245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Alec Ogletree",
       "excelFields": {
         "Title": "2013 Press Pass Alec Ogletree Rookie Auto #PPS-AO",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -5265,7 +5265,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Cobi Hamilton Bronze Rookie Auto 199 #PPS-CH (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Cobi Hamilton Bronze Rookie Auto 199 #PPS-CH (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title Card #PPS-CH. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Press Pass Cobi Hamilton Bronze Rookie Auto /199 #PPS-CH\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2013 Press Pass; Season: 2013; Year manufactured: 2013; Player/Athlete: Cobi Hamilton; Sport: Football; League: NCAA; Parallel/Variety: Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-press-pass-cobi-hamilton-bronze-rookie-auto-199-pps-ch-1.BuaVYAX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5284,7 +5284,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Cobi Hamilton",
       "excelFields": {
         "Title": "2013 Press Pass Cobi Hamilton Bronze Rookie Auto /199 #PPS-CH",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -5304,7 +5304,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Sharrif Floyd Rookie Auto #PPS-SF (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Press Pass Sharrif Floyd Rookie Auto #PPS-SF (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title Card #PPS-SF. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Press Pass Sharrif Floyd Rookie Auto #PPS-SF\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2013 Press Pass; Season: 2013; Year manufactured: 2013; Player/Athlete: Sharrif Floyd; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-press-pass-sharrif-floyd-rookie-auto-pps-sf-1.BuahNDX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5321,7 +5321,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Sharrif Floyd",
       "excelFields": {
         "Title": "2013 Press Pass Sharrif Floyd Rookie Auto #PPS-SF",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -5341,7 +5341,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Sage Hit Ryan Swope Rookie Auto #54 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Sage Hit Ryan Swope Rookie Auto #54 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title Card #54. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Sage Hit Ryan Swope Rookie Auto #54\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2013 Sage Hit; Season: 2013; Year manufactured: 2013; Player/Athlete: Ryan Swope; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-sage-hit-ryan-swope-rookie-auto-54-1.BuaNb0G",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5358,7 +5358,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ryan Swope",
       "excelFields": {
         "Title": "2013 Sage Hit Ryan Swope Rookie Auto #54",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -5378,7 +5378,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Topps Triple Threads Montee Ball Rookie Game-Worn Patch Auto 75 Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Topps Triple Threads Montee Ball Rookie Game-Worn Patch Auto 75 Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps Triple Threads sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2013 Topps Triple Threads; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Triple Threads Montee Ball Rookie Game-Worn Patch Auto /75 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps Triple Threads; Season: 2013; Year manufactured: 2013; Player/Athlete: Montee Ball; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-triple-threads-montee-ball-rookie-game-worn-patch-auto-75-set-x2-1.BuaOyEg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5397,7 +5397,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Montee Ball",
       "excelFields": {
         "Title": "2013 Topps Triple Threads Montee Ball Rookie Game-Worn Patch Auto /75 Set (x2)",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -5418,7 +5418,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Topps Triple Threads Montee Ball Transparencies Rookie Auto SP 25 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Topps Triple Threads Montee Ball Transparencies Rookie Auto SP 25 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps Triple Threads sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Topps Triple Threads; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Triple Threads Montee Ball Transparencies Rookie Auto SP /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps Triple Threads; Season: 2013; Year manufactured: 2013; Player/Athlete: Montee Ball; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-triple-threads-montee-ball-transparencies-rookie-auto-sp-25-1.BuavAL7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5437,7 +5437,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Montee Ball",
       "excelFields": {
         "Title": "2013 Topps Triple Threads Montee Ball Transparencies Rookie Auto SP /25",
-        "C:Features": "Rookie|Serial Numbered|Short Print",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Short Print",
         "C:Autographed": "Yes"
       }
     },
@@ -5458,7 +5458,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Leaf Draft Marqueston Huff Yellow Printing Plate Rookie Auto 11 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Leaf Draft Marqueston Huff Yellow Printing Plate Rookie Auto 11 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2014; Condition: Ungraded; Features: Rookie | One of One | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Leaf Draft Marqueston Huff Yellow Printing Plate Rookie Auto 1/1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2014 Leaf Draft; Season: 2014; Year manufactured: 2014; Player/Athlete: Marqueston Huff; Sport: Football; League: NCAA; Parallel/Variety: Yellow; Features: Autograph, Rookie, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-leaf-draft-marqueston-huff-yellow-printing-plate-rookie-auto-11-1.CCxyxGj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5478,7 +5478,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Marqueston Huff",
       "excelFields": {
         "Title": "2014 Leaf Draft Marqueston Huff Yellow Printing Plate Rookie Auto 1/1",
-        "C:Features": "Rookie|Serial Numbered|One of One|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|One of One|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -5499,7 +5499,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Panini Certified Devonta Freeman New Generation Silver Rookie Patch 599 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Panini Certified Devonta Freeman New Generation Silver Rookie Patch 599 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Panini Certified sports trading card featuring Devonta Freeman and the Atlanta Falcons. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Set: 2014 Panini Certified; Year: 2014; Player: Devonta Freeman; Team: Atlanta Falcons; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Panini Certified Devonta Freeman New Generation Silver Rookie Patch /599\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014 Panini Certified; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Devonta Freeman; Team: Atlanta Falcons; Sport: Football; League: NFL; Parallel/Variety: Silver; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-panini-certified-devonta-freeman-new-generation-silver-rookie-patch-599-1.BucRos1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5539,7 +5539,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Panini Rookies & Stars Scott Crichton Longevity Rookie Refractor Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Panini Rookies & Stars Scott Crichton Longevity Rookie Refractor Auto 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Rookies & Stars sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2014 Rookies & Stars; Year: 2014; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Panini Rookies & Stars Scott Crichton Longevity Rookie Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014 Rookies & Stars; Season: 2014; Year manufactured: 2014; Player/Athlete: Scott Crichton; Team: Minnesota Vikings; Sport: Football; League: NFL; Parallel/Variety: Refractor; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-panini-rookies-stars-scott-crichton-longevity-rookie-refractor-auto-99-1.BucA4Vt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5558,7 +5558,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Scott Crichton",
       "excelFields": {
         "Title": "2014 Panini Rookies & Stars Scott Crichton Longevity Rookie Refractor Auto /99",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -5582,7 +5582,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Press Pass Tajh Boyd Bronze Cn-Card Rookie Auto 199 + Base Autos (x2) (4).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Press Pass Tajh Boyd Bronze Cn-Card Rookie Auto 199 + Base Autos (x2) (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2014; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Press Pass Tajh Boyd Bronze On-Card Rookie Auto /199 + Base Autos (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2014 Press Pass; Season: 2014; Year manufactured: 2014; Player/Athlete: Tajh Boyd; Sport: Football; League: NCAA; Parallel/Variety: Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-press-pass-tajh-boyd-bronze-cn-card-rookie-auto-199-plus-base-autos-x2-1.Buc5bM7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5601,7 +5601,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tajh Boyd",
       "excelFields": {
         "Title": "2014 Press Pass Tajh Boyd Bronze On-Card Rookie Auto /199 + Base Autos (x2)",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -5622,7 +5622,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Press Pass Tajh Boyd Gameday Gallery On-Card Rookie Auto 150 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2014 Press Pass Tajh Boyd Gameday Gallery On-Card Rookie Auto 150 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2014; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Press Pass Tajh Boyd Gameday Gallery On-Card Rookie Auto /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Press Pass; Set: 2014 Press Pass; Season: 2014; Year manufactured: 2014; Player/Athlete: Tajh Boyd; Sport: Football; League: NCAA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-press-pass-tajh-boyd-gameday-gallery-on-card-rookie-auto-150-1.BucVzBf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -5640,7 +5640,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tajh Boyd",
       "excelFields": {
         "Title": "2014 Press Pass Tajh Boyd Gameday Gallery On-Card Rookie Auto /150",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -5661,7 +5661,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2015 Leaf Ultimate Draft Melvin Gordon Helmet Die-Cut Auto 40 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2015 Leaf Ultimate Draft Melvin Gordon Helmet Die-Cut Auto 40 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2015 Leaf Ultimate Draft sports trading card featuring Melvin Gordon and the Los Angeles Chargers. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Set: 2015 Leaf Ultimate Draft; Year: 2015; Player: Melvin Gordon; Team: Los Angeles Chargers; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2015 Leaf Ultimate Draft Melvin Gordon Helmet Die-Cut Auto /40\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2015 Leaf Ultimate Draft; Season: 2015; Year manufactured: 2015; Player/Athlete: Melvin Gordon; Team: Los Angeles Chargers; Sport: Football; League: NFL; Parallel/Variety: Die-Cut; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2015-leaf-ultimate-draft-melvin-gordon-helmet-die-cut-auto-40-1.BucWLAP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5679,7 +5679,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Melvin Gordon",
       "excelFields": {
         "Title": "2015 Leaf Ultimate Draft Melvin Gordon Helmet Die-Cut Auto /40",
-        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -5700,7 +5700,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2015 Panini Certified Melvin Gordon III New Generation Rookie Patch Refractor #5 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2015 Panini Certified Melvin Gordon III New Generation Rookie Patch Refractor #5 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2015 Panini Certified sports trading card featuring Melvin Gordon and the Los Angeles Chargers Card #5. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2015 Panini Certified; Year: 2015; Player: Melvin Gordon; Team: Los Angeles Chargers; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2015 Panini Certified Melvin Gordon III New Generation Rookie Patch Refractor #5\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2015 Panini Certified; Season: 2015-16; Year manufactured: 2015; Player/Athlete: Melvin Gordon; Team: Los Angeles Chargers; Sport: Football; League: NFL; Parallel/Variety: Refractor; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2015-panini-certified-melvin-gordon-iii-new-generation-rookie-patch-refractor-5-1.BucNG4a",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5738,7 +5738,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Allen Robinson Light Blue 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Allen Robinson Light Blue 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card featuring Allen Robinson and the Chicago Bears. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Player: Allen Robinson; Team: Chicago Bears; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Allen Robinson Light Blue /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Allen Robinson; Team: Chicago Bears; Sport: Football; League: NFL; Parallel/Variety: Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-allen-robinson-light-blue-99-1.Bu0czRn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5776,7 +5776,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Braxton Miller Red Foil 249 Rookie #91 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Braxton Miller Red Foil 249 Rookie #91 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title Card #91. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Braxton Miller Red Foil /249 Rookie #91\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Braxton Miller; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-braxton-miller-red-foil-249-rookie-91-1.Bu0leEl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5814,7 +5814,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale CJ Prosise Pink Foil Rookie 199 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale CJ Prosise Pink Foil Rookie 199 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale CJ Prosise Pink Foil Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Cj Prosise; Sport: Football; League: NFL; Parallel/Variety: Foil, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-cj-prosise-pink-foil-rookie-199-1.Bu0lhIs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5853,7 +5853,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Le'Veon Bell Blue Foil 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Le'Veon Bell Blue Foil 99 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card featuring Le'Veon Bell and the Pittsburgh Steelers. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Player: Le'Veon Bell; Team: Pittsburgh Steelers; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Le'Veon Bell Blue Foil /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Le'veon Bell; Team: Pittsburgh Steelers; Sport: Football; League: NFL; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-le-and-039veon-bell-blue-foil-99-1.Bu0j0tS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5891,7 +5891,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Michael Thomas Rookie Silhouettes Patch 250 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Michael Thomas Rookie Silhouettes Patch 250 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card featuring Michael Thomas and the Miami Dolphins. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Player: Michael Thomas; Team: Miami Dolphins; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Michael Thomas Rookie Silhouettes Patch /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Michael Thomas; Team: Miami Dolphins; Sport: Football; League: NFL; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-michael-thomas-rookie-silhouettes-patch-250-1.Bu0jlN2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5930,7 +5930,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Orange Foil 249 Rookie #84 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Orange Foil 249 Rookie #84 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title Card #84. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Paxton Lynch Orange Foil /249 Rookie #84\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Paxton Lynch; Sport: Football; League: NFL; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-paxton-lynch-orange-foil-249-rookie-84-1.Bu0NHEF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5968,7 +5968,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Rookie Auto 10 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Rookie Auto 10 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Paxton Lynch Rookie Auto /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Paxton Lynch; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-paxton-lynch-rookie-auto-10-1.Bu0N7Tl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5986,7 +5986,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Paxton Lynch",
       "excelFields": {
         "Title": "2016 Panini Crown Royale Paxton Lynch Rookie Auto /10",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -6007,7 +6007,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Rookie Silhouettes Patch #10 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Rookie Silhouettes Patch #10 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title Card #10. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and memorabilia-card appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Paxton Lynch Rookie Silhouettes Patch #10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Paxton Lynch; Sport: Football; League: NFL; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-paxton-lynch-rookie-silhouettes-patch-10-1.Bu0OMPt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6044,7 +6044,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Su'A Cravens Auto #27 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Su'A Cravens Auto #27 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Panini Crown Royale sports trading card highlighted in the title Card #27. A strong addition for football fans, NFL collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2016 Panini Crown Royale; Year: 2016; Sport: Football; League: NFL; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Panini Crown Royale Su'A Cravens Auto #27\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Su'a Cravens; Sport: Football; League: NFL; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-su-and-039a-cravens-auto-27-1.Bu0ONRf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6060,6 +6060,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Su'a Cravens",
       "excelFields": {
         "Title": "2016 Panini Crown Royale Su'A Cravens Auto #27",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -6078,7 +6079,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Jared Goff All Rookie Team + Next Level Rookie Set (x2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 sports trading card featuring Jared Goff and the Detroit Lions. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Year: 2016; Player: Jared Goff; Team: Detroit Lions; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Sage Hit Jared Goff All Rookie Team + Next Level Rookie Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2016 Sage Hit; Season: 2016; Year manufactured: 2016; Player/Athlete: Jared Goff; Team: Detroit Lions; Sport: Football; League: NFL; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-sage-hit-jared-goff-all-rookie-team-plus-next-level-rookie-set-x2.Bu0v2MN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6116,7 +6117,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Jonathan Williams Rookie Auto #A75 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Jonathan Williams Rookie Auto #A75 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 sports trading card highlighted in the title Card #A75. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2016; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Sage Hit Jonathan Williams Rookie Auto #A75\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2016 Sage Hit; Season: 2016; Year manufactured: 2016; Player/Athlete: Jonathan Williams; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-sage-hit-jonathan-williams-rookie-auto-a75-1.Bu082bj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6133,7 +6134,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jonathan Williams",
       "excelFields": {
         "Title": "2016 Sage Hit Jonathan Williams Rookie Auto #A75",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -6153,7 +6154,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Luke Rhodes Rookie Auto #A63 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Luke Rhodes Rookie Auto #A63 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 sports trading card highlighted in the title Card #A63. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2016; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Sage Hit Luke Rhodes Rookie Auto #A63\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2016 Sage Hit; Season: 2016; Year manufactured: 2016; Player/Athlete: Luke Rhodes; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-sage-hit-luke-rhodes-rookie-auto-a63-1.Bu08a1I",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6170,7 +6171,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Luke Rhodes",
       "excelFields": {
         "Title": "2016 Sage Hit Luke Rhodes Rookie Auto #A63",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -6190,7 +6191,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Maurice Harris Rookie Auto #A92 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Sage Hit Maurice Harris Rookie Auto #A92 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 sports trading card highlighted in the title Card #A92. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2016; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Sage Hit Maurice Harris Rookie Auto #A92\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2016 Sage Hit; Season: 2016; Year manufactured: 2016; Player/Athlete: Maurice Harris; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-sage-hit-maurice-harris-rookie-auto-a92-1.Bu0gYqQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6208,7 +6209,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Maurice Harris",
       "excelFields": {
         "Title": "2016 Sage Hit Maurice Harris Rookie Auto #A92",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6228,7 +6229,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2019 Topps Unrivaled Sydney Rice 499 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2019 Topps Unrivaled Sydney Rice 499 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2019 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2019 Topps; Year: 2019; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2019 Topps Unrivaled Sydney Rice /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2019 Topps; Season: 2019; Year manufactured: 2019; Player/Athlete: Sydney Rice; Sport: Football; League: NFL; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2019-topps-unrivaled-sydney-rice-499-1.Bu0rtFp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6266,7 +6267,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Contenders Kerry Blackshear Prospect Ticket Rookie Auto #24 (1).jpg",
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Contenders Kerry Blackshear Prospect Ticket Rookie Auto #24 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2020-21 Panini Contenders sports trading card highlighted in the title Card #24. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2020-21 Panini Contenders; Year: 2020; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2020-21 Panini Contenders Kerry Blackshear Prospect Ticket Rookie Auto #24\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Kerry Blackshear; Sport: Football; League: NFL; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-contenders-kerry-blackshear-prospect-ticket-rookie-auto-24-1.BuEe6rP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6284,7 +6285,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kerry Blackshear",
       "excelFields": {
         "Title": "2020-21 Panini Contenders Kerry Blackshear Prospect Ticket Rookie Auto #24",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6304,7 +6305,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Donruss Optic Deebo Samuel Blue 179 + Orange Prizm 199 Set of 2 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Donruss Optic Deebo Samuel Blue 179 + Orange Prizm 199 Set of 2 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Donruss Optic sports trading card featuring Deebo Samuel and the San Francisco 49ers. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2021 Donruss Optic; Year: 2021; Player: Deebo Samuel; Team: San Francisco 49ers; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Donruss Optic Deebo Samuel Blue /179 + Orange Prizm /199 Set of 2\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2021 Donruss Optic; Season: 2021; Year manufactured: 2021; Player/Athlete: Deebo Samuel; Team: San Francisco 49ers; Sport: Football; League: NFL; Parallel/Variety: Prizm, Blue, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-donruss-optic-deebo-samuel-blue-179-plus-orange-prizm-199-set-of-2-1.Bu0rRyX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6342,7 +6343,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Prestige Cameron Jordan Xtra Points Gold Refractor Parallel #136 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Prestige Cameron Jordan Xtra Points Gold Refractor Parallel #136 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Prestige sports trading card featuring Cameron Jordan and the New Orleans Saints Card #136. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Set: 2021 Prestige; Year: 2021; Player: Cameron Jordan; Team: New Orleans Saints; Sport: Football; League: NFL; Condition: Ungraded; Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Prestige Cameron Jordan Xtra Points Gold Refractor Parallel #136\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Prestige; Season: 2021; Year manufactured: 2021; Player/Athlete: Cameron Jordan; Team: New Orleans Saints; Sport: Football; League: NFL; Parallel/Variety: Refractor, Gold; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-prestige-cameron-jordan-xtra-points-gold-refractor-parallel-136-1.Bu04tWb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6378,7 +6379,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Prizm Ja'Marr Chase Fireworks Prizm Rookie SP + 2023 Optic Diamond (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Prizm Ja'Marr Chase Fireworks Prizm Rookie SP + 2023 Optic Diamond (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Panini Prizm sports trading card featuring Ja'Marr Chase and the Cincinnati Bengals. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2021 Panini Prizm; Year: 2021; Player: Ja'Marr Chase; Team: Cincinnati Bengals; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Prizm Ja'Marr Chase Fireworks Prizm Rookie SP + 2023 Optic Diamond\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Panini Prizm; Season: 2021; Year manufactured: 2021; Player/Athlete: Ja'marr Chase; Team: Cincinnati Bengals; Sport: Football; League: NFL; Parallel/Variety: Prizm, Optic; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-prizm-ja-and-039marr-chase-fireworks-prizm-rookie-sp-plus-2023-optic-diamond-1.Bu065LG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6417,7 +6418,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Rookies & Stars Justin Fields Silver & Red Prizm Rookie Set (x3) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Rookies & Stars Justin Fields Silver & Red Prizm Rookie Set (x3) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Rookies & Stars sports trading card featuring Justin Fields and the Chicago Bears. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2021 Rookies & Stars; Year: 2021; Player: Justin Fields; Team: Chicago Bears; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Rookies & Stars Justin Fields Silver & Red Prizm Rookie Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Rookies & Stars; Season: 2021; Year manufactured: 2021; Player/Athlete: Justin Fields; Team: Chicago Bears; Sport: Football; League: NFL; Parallel/Variety: Prizm, Red, Silver; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-rookies-stars-justin-fields-silver-red-prizm-rookie-set-x3-1.Bu0PYwF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6455,7 +6456,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Eddie George Red Foil 460 #188 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Eddie George Red Foil 460 #188 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Score sports trading card featuring Eddie George and the Tennessee Titans Card #188. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2021 Score; Year: 2021; Player: Eddie George; Team: Tennessee Titans; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Score Eddie George Red Foil /460 #188\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Score; Season: 2021; Year manufactured: 2021; Player/Athlete: Eddie George; Team: Tennessee Titans; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-score-eddie-george-red-foil-460-188-1.Bu0L23v",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6492,7 +6493,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Geno Atkins Red Foil 460 #281 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Geno Atkins Red Foil 460 #281 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Score sports trading card featuring Geno Atkins and the Cincinnati Bengals Card #281. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2021 Score; Year: 2021; Player: Geno Atkins; Team: Cincinnati Bengals; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Score Geno Atkins Red Foil /460 #281\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Score; Season: 2021; Year manufactured: 2021; Player/Athlete: Geno Atkins; Team: Cincinnati Bengals; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-score-geno-atkins-red-foil-460-281-1.Bu0QN5l",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6529,7 +6530,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Patrick Jones II Red Foil Rookie 460 #348 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Score Patrick Jones II Red Foil Rookie 460 #348 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Score sports trading card highlighted in the title Card #348. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2021 Score; Year: 2021; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Panini Score Patrick Jones II Red Foil Rookie /460 #348\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Score; Season: 2021; Year manufactured: 2021; Player/Athlete: Patrick Jones II; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-panini-score-patrick-jones-ii-red-foil-rookie-460-348-1.Bu0txMF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6567,7 +6568,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft David Moore Red Border Rookie Auto #A199 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft David Moore Red Border Rookie Auto #A199 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 sports trading card highlighted in the title Card #A199. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2021; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Sage Premier Draft David Moore Red Border Rookie Auto #A199\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: David Moore; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-sage-premier-draft-david-moore-red-border-rookie-auto-a199-1.Bu0mxM7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6585,7 +6586,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "David Moore",
       "excelFields": {
         "Title": "2021 Sage Premier Draft David Moore Red Border Rookie Auto #A199",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6605,7 +6606,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Ian Book Red Border Rookie Auto #A193 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Ian Book Red Border Rookie Auto #A193 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 sports trading card highlighted in the title Card #A193. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2021; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Sage Premier Draft Ian Book Red Border Rookie Auto #A193\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Ian Book; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-sage-premier-draft-ian-book-red-border-rookie-auto-a193-1.Bu0yXQp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6623,7 +6624,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ian Book",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Ian Book Red Border Rookie Auto #A193",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6643,7 +6644,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Marlon Tuipulotu Red Border Rookie Auto #A103 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Marlon Tuipulotu Red Border Rookie Auto #A103 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 sports trading card highlighted in the title Card #A103. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2021; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Sage Premier Draft Marlon Tuipulotu Red Border Rookie Auto #A103\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Marlon Tuipulotu; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-sage-premier-draft-marlon-tuipulotu-red-border-rookie-auto-a103-1.Bu0yrZl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6661,7 +6662,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Marlon Tuipulotu",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Marlon Tuipulotu Red Border Rookie Auto #A103",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6681,7 +6682,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Otis Anderson Jr. Red Border Rookie Auto #A143 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Otis Anderson Jr. Red Border Rookie Auto #A143 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 sports trading card highlighted in the title Card #A143. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2021; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Sage Premier Draft Otis Anderson Jr. Red Border Rookie Auto #A143\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Otis Anderson; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-sage-premier-draft-otis-anderson-jr-red-border-rookie-auto-a143-1.Bu1HHbf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6699,7 +6700,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Otis Anderson",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Otis Anderson Jr. Red Border Rookie Auto #A143",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6719,7 +6720,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Akayleb Evans Grey Foil Rookie Auto #BA-AE1 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Akayleb Evans Grey Foil Rookie Auto #BA-AE1 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title. 2022 Leaf Draft football card featuring Akayleb Evans with connections to the Minnesota Vikings. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2022 Leaf Draft; Year: 2022; Player: Akayleb Evans; Team: Minnesota Vikings; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Leaf Draft Akayleb Evans Grey Foil Rookie Auto #BA-AE1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022 Leaf Draft; Season: 2022; Year manufactured: 2022; Player/Athlete: Akayleb Evans; Team: Minnesota Vikings; Sport: Football; League: NFL; Parallel/Variety: Foil; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-leaf-draft-akayleb-evans-grey-foil-rookie-auto-ba-ae1-1.Bu1JRjf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6737,7 +6738,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Akayleb Evans",
       "excelFields": {
         "Title": "2022 Leaf Draft Akayleb Evans Grey Foil Rookie Auto #BA-AE1",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6757,7 +6758,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Cameron Rising Blue Foil Rookie Auto 25 #BA-CR1 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Cameron Rising Blue Foil Rookie Auto 25 #BA-CR1 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title Card #BA-CR1. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Leaf Draft Cameron Rising Blue Foil Rookie Auto /25 #BA-CR1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022 Leaf Draft; Season: 2022; Year manufactured: 2022; Player/Athlete: Cameron Rising; Sport: Football; League: NCAA; Parallel/Variety: Foil, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-leaf-draft-cameron-rising-blue-foil-rookie-auto-25-ba-cr1-1.Bu13x3B",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6776,7 +6777,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Cameron Rising",
       "excelFields": {
         "Title": "2022 Leaf Draft Cameron Rising Blue Foil Rookie Auto /25 #BA-CR1",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6796,7 +6797,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Christian Harris Yellow Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Christian Harris Yellow Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Leaf Draft Christian Harris Yellow Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022 Leaf Draft; Season: 2022; Year manufactured: 2022; Player/Athlete: Christian Harris; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-leaf-draft-christian-harris-yellow-rookie-auto-1.Bu1FVUB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6814,7 +6815,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Christian Harris",
       "excelFields": {
         "Title": "2022 Leaf Draft Christian Harris Yellow Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -6835,7 +6836,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Devin Brown White Foil Rookie Auto 100 #BA-DB1 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Devin Brown White Foil Rookie Auto 100 #BA-DB1 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title Card #BA-DB1. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Leaf Draft Devin Brown White Foil Rookie Auto /100 #BA-DB1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022 Leaf Draft; Season: 2022; Year manufactured: 2022; Player/Athlete: Devin Brown; Sport: Football; League: NCAA; Parallel/Variety: Foil; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-leaf-draft-devin-brown-white-foil-rookie-auto-100-ba-db1-1.Bu1qLWg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6854,7 +6855,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Devin Brown",
       "excelFields": {
         "Title": "2022 Leaf Draft Devin Brown White Foil Rookie Auto /100 #BA-DB1",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6874,7 +6875,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Payton Thorne Yellow Foil Rookie Auto 75 #BA-PT1 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Leaf Draft Payton Thorne Yellow Foil Rookie Auto 75 #BA-PT1 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title Card #BA-PT1. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Leaf Draft Payton Thorne Yellow Foil Rookie Auto /75 #BA-PT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022 Leaf Draft; Season: 2022; Year manufactured: 2022; Player/Athlete: Payton Thorne; Sport: Football; League: NCAA; Parallel/Variety: Foil, Yellow; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-leaf-draft-payton-thorne-yellow-foil-rookie-auto-75-ba-pt1-1.Bu1B0mP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -6893,7 +6894,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Payton Thorne",
       "excelFields": {
         "Title": "2022 Leaf Draft Payton Thorne Yellow Foil Rookie Auto /75 #BA-PT1",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -6913,7 +6914,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Prizm Cooper Kupp Green Prizm #162 Rams (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Prizm Cooper Kupp Green Prizm #162 Rams (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Panini Prizm sports trading card featuring Cooper Kupp and the Los Angeles Rams Card #162. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Set: 2022 Panini Prizm; Year: 2022; Player: Cooper Kupp; Team: Los Angeles Rams; Sport: Football; League: NFL; Condition: Ungraded; Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Prizm Cooper Kupp Green Prizm #162 Rams\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Cooper Kupp; Team: Los Angeles Rams; Sport: Football; League: NFL; Parallel/Variety: Prizm, Green; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-prizm-cooper-kupp-green-prizm-162-rams-1.Bu1CN6b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6949,7 +6950,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Score Khalil Shakir Purple Diamond Rookie SP 299 #394  (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Score Khalil Shakir Purple Diamond Rookie SP 299 #394  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Score sports trading card featuring Khalil Shakir and the Buffalo Bills Card #394. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2022 Score; Year: 2022; Player: Khalil Shakir; Team: Buffalo Bills; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Score Khalil Shakir Purple Diamond Rookie SP /299 #394\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Score; Season: 2022; Year manufactured: 2022; Player/Athlete: Khalil Shakir; Team: Buffalo Bills; Sport: Football; League: NFL; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-score-khalil-shakir-purple-diamond-rookie-sp-299-394-1.Bu1xaMF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6988,7 +6989,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Artistry Canvas Drake London + Kenneth Walker +Kenny Pickett Rookie SP (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Artistry Canvas Drake London + Kenneth Walker +Kenny Pickett Rookie SP (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Drake London and Kenny Pickett with connections to the Atlanta Falcons and Pittsburgh Steelers. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Year: 2022; Player: Drake London | Kenny Pickett; Team: Atlanta Falcons | Pittsburgh Steelers; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Sage Artistry Canvas Drake London + Kenneth Walker +Kenny Pickett Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage Artistry Canvas; Season: 2022; Year manufactured: 2022; Player/Athlete: Drake London, Kenny Pickett; Team: Atlanta Falcons, Pittsburgh Steelers; Sport: Football; League: NFL; Features: Rookie, Short Print; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-sage-artistry-canvas-drake-london-plus-kenneth-walker-plus-kenny-pickett-rookie-sp-1.Bu1Ih4n",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7026,7 +7027,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Artistry Kalon Gervin Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Artistry Kalon Gervin Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Sage Artistry Kalon Gervin Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage; Season: 2022; Year manufactured: 2022; Player/Athlete: Kalon Gervin; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-sage-artistry-kalon-gervin-rookie-auto-1.Bu1A9kJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7043,7 +7044,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kalon Gervin",
       "excelFields": {
         "Title": "2022 Sage Artistry Kalon Gervin Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -7064,7 +7065,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Football Esezi Otomewo Rookie Auto #A-EO (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Football Esezi Otomewo Rookie Auto #A-EO (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title Card #A-EO. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Sage Football Esezi Otomewo Rookie Auto #A-EO\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage Football; Season: 2022; Year manufactured: 2022; Player/Athlete: Esezi Otomewo; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-sage-football-esezi-otomewo-rookie-auto-a-eo-1.Bu1AqrX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7081,7 +7082,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Esezi Otomewo",
       "excelFields": {
         "Title": "2022 Sage Football Esezi Otomewo Rookie Auto #A-EO",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -7101,7 +7102,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Hit Jammie Robinson Rookie Sneak Peek Auto Red SP (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Hit Jammie Robinson Rookie Sneak Peek Auto Red SP (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2022; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Sage Hit Jammie Robinson Rookie Sneak Peek Auto Red SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage Hit; Season: 2022; Year manufactured: 2022; Player/Athlete: Jammie Robinson; Sport: Football; League: NCAA; Features: Autograph, Rookie, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-sage-hit-jammie-robinson-rookie-sneak-peek-auto-red-sp-1.Bu15u07",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7120,7 +7121,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jammie Robinson",
       "excelFields": {
         "Title": "2022 Sage Hit Jammie Robinson Rookie Sneak Peek Auto Red SP",
-        "C:Features": "Rookie|Short Print|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -7141,7 +7142,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Bowman University Best Tanner Morgan Aqua Refractor Rookie 199 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Bowman University Best Tanner Morgan Aqua Refractor Rookie 199 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card highlighted in the title. 2023 Bowman University Best football card featuring Tanner Morgan with connections to the Minnesota Golden Gophers. A strong addition for football fans, NCAA collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Bowman University Best; Year: 2023; Player: Tanner Morgan; Team: Minnesota Golden Gophers; Sport: Football; League: NCAA; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Bowman University Best Tanner Morgan Aqua Refractor Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023 Bowman University Best; Season: 2023; Year manufactured: 2023; Player/Athlete: Tanner Morgan; Team: Minnesota Golden Gophers; Sport: Football; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1a5Jt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7180,7 +7181,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Chronicles XR Draft Picks Ahmad Sauce Gardner + Breece Hall Rookie Jets Set (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Chronicles XR Draft Picks Ahmad Sauce Gardner + Breece Hall Rookie Jets Set (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 sports trading card featuring Breece Hall and Sauce Gardner and the New York Jets. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Season: 2023-24; Year: 2023; Player: Breece Hall | Sauce Gardner; Team: New York Jets; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Chronicles XR Draft Picks Ahmad Sauce Gardner + Breece Hall Rookie Jets Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Chronicles XR Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Breece Hall, Sauce Gardner; Team: New York Jets; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1akLx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7217,7 +7218,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (2).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (3).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Aaron Rodgers and the Green Bay Packers. A strong addition for football fans, NFL collectors, and set builders.\nDetails: Year: 2023; Player: Aaron Rodgers; Team: Green Bay Packers; Sport: Football; League: NFL; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023 Panini Clear Vision; Season: 2023; Year manufactured: 2023; Player/Athlete: Aaron Rodgers; Team: Green Bay Packers; Sport: Football; League: NFL; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1cw3N",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7251,7 +7252,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Panini Gridiron Kings Travis Dye Rookie Auto 199 (x2) + Phoenix Base (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Panini Gridiron Kings Travis Dye Rookie Auto 199 (x2) + Phoenix Base (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card highlighted in the title. 2023 Panini Gridiron Kings football card featuring Travis Dye with connections to the USC Trojans. A strong addition for football fans, NCAA collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Season: 2023; Year: 2023; Player: Travis Dye; Team: USC Trojans; Sport: Football; League: NCAA; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Panini Gridiron Kings Travis Dye Rookie Auto /199 (x2) + Phoenix Base\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini Gridiron Kings; Season: 2023; Year manufactured: 2023; Player/Athlete: Travis Dye; Team: USC Trojans; Sport: Football; League: NCAA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1lWNe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7269,7 +7270,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Travis Dye",
       "excelFields": {
         "Title": "2023 Panini Gridiron Kings Travis Dye Rookie Auto /199 (x2) + Phoenix Base",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -7290,7 +7291,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Broderick Jones Black Border Rookie Auto #ART-BJ (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Broderick Jones Black Border Rookie Auto #ART-BJ (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card highlighted in the title Card #ART-BJ. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2023; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Sage Artistry Broderick Jones Black Border Rookie Auto #ART-BJ\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 Sage; Season: 2023; Year manufactured: 2023; Player/Athlete: Broderick Jones; Sport: Football; League: NCAA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu10ozu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7308,7 +7309,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Broderick Jones",
       "excelFields": {
         "Title": "2023 Sage Artistry Broderick Jones Black Border Rookie Auto #ART-BJ",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -7328,7 +7329,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Vliami Fehoko Swen Manning Auto + Bijan Robinson SP Set (x6) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Vliami Fehoko Swen Manning Auto + Bijan Robinson SP Set (x6) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Bijan Robinson and the Atlanta Falcons. A strong addition for football fans, NFL collectors, and set builders thanks to its autograph appeal.\nDetails: Year: 2023; Player: Bijan Robinson; Team: Atlanta Falcons; Sport: Football; League: NFL; Condition: Ungraded; Features: Short Print | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Sage Artistry Vliami Fehoko Swen Manning Auto + Bijan Robinson SP Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 Sage Artistry; Season: 2023; Year manufactured: 2023; Player/Athlete: Bijan Robinson; Team: Atlanta Falcons; Sport: Football; League: NFL; Features: Autograph, Short Print; Autographed: Yes; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu10DEx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7345,7 +7346,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Bijan Robinson",
       "excelFields": {
         "Title": "2023 Sage Artistry Vliami Fehoko Swen Manning Auto + Bijan Robinson SP Set (x6)",
-        "C:Features": "Short Print",
+        "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
     },
@@ -7366,7 +7367,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Will Anderson Jr. Red Border Rookie Auto #ART-WA (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sage Artistry Will Anderson Jr. Red Border Rookie Auto #ART-WA (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Will Anderson and the Houston Texans Card #ART-WA. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2023; Player: Will Anderson; Team: Houston Texans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Sage Artistry Will Anderson Jr. Red Border Rookie Auto #ART-WA\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 Sage Artistry; Season: 2023; Year manufactured: 2023; Player/Athlete: Will Anderson; Team: Houston Texans; Sport: Football; League: NFL; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu11Hp1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7384,7 +7385,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Will Anderson",
       "excelFields": {
         "Title": "2023 Sage Artistry Will Anderson Jr. Red Border Rookie Auto #ART-WA",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -7404,7 +7405,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/MISC/2023 SportKings Vol No. 4 Ricky Rudd Race Worn Relic Card #LSM-58 (1).jpg",
       "assets/Ebay Listing Photos/MISC/2023 SportKings Vol No. 4 Ricky Rudd Race Worn Relic Card #LSM-58 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card highlighted in the title Card #LSM-58. A strong addition for collectors and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2023; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 SportKings Vol No. 4 Ricky Rudd Race Worn Relic Card #LSM-58\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 SportKings Volume 4; Season: 2023; Year manufactured: 2023; Player/Athlete: Ricky Rudd; Team: Collectibles; Sport: Football; League: NFL; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCIv4t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7440,7 +7441,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sportkings Volume No. 4 Darrell Green Game Worn Relic Patch #LSM-68 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sportkings Volume No. 4 Darrell Green Game Worn Relic Patch #LSM-68 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Darrell Green and the Washington Commanders Card #LSM-68. A strong addition for football fans, NFL collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2023; Player: Darrell Green; Team: Washington Commanders; Sport: Football; League: NFL; Condition: Ungraded; Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Sportkings Volume No. 4 Darrell Green Game Worn Relic Patch #LSM-68\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 SportKings Volume 4; Season: 2023; Year manufactured: 2023; Player/Athlete: Darrell Green; Team: Washington Commanders; Sport: Football; League: NFL; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1eRnV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7477,7 +7478,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sportkings Volume No. 4 Rich Gannon Game Worn Relic Patch #LSM-70 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2023 Sportkings Volume No. 4 Rich Gannon Game Worn Relic Patch #LSM-70 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Rich Gannon and the Las Vegas Raiders Card #LSM-70. A strong addition for football fans, NFL collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2023; Player: Rich Gannon; Team: Las Vegas Raiders; Sport: Football; League: NFL; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Sportkings Volume No. 4 Rich Gannon Game Worn Relic Patch #LSM-70\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2023 SportKings Volume 4; Season: 2023; Year manufactured: 2023; Player/Athlete: Rich Gannon; Team: Las Vegas Raiders; Sport: Football; League: NFL; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu1e3Zl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7513,7 +7514,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Contenders Charles Bediako Game Day Ticket Rookie Auto #155 (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Contenders Charles Bediako Game Day Ticket Rookie Auto #155 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 Panini Contenders sports trading card highlighted in the title Card #155. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2023-24 Panini Contenders; Year: 2023; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 Panini Contenders Charles Bediako Game Day Ticket Rookie Auto #155\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Contenders; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Charles Bediako; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfnWga",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7530,7 +7531,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Charles Bediako",
       "excelFields": {
         "Title": "2023-24 Panini Contenders Charles Bediako Game Day Ticket Rookie Auto #155",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -7549,7 +7550,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Football/2014-2026/2023-24 UD Goodwin Champions CJ Stroud Caleb Williams Young Rookie SP Set (x27).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 sports trading card featuring C.J. Stroud and Caleb Williams with connections to the Houston Texans and Chicago Bears. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal.\nDetails: Season: 2023-24; Year: 2023; Player: C.J. Stroud | Caleb Williams; Team: Houston Texans | Chicago Bears; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 UD Goodwin Champions CJ Stroud Caleb Williams Young Rookie SP Set (x27)\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 UD Goodwin Champions; Season: 2023-24; Year manufactured: 2023; Player/Athlete: C.J. Stroud, Caleb Williams; Team: Houston Texans, Chicago Bears; Sport: Football; League: NFL; Features: Rookie, Short Print; Autographed: No; Cards included: 27; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu18utf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7587,7 +7588,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Panini Absolute Football Derek Carr Orange Mosaic 299 #76 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Panini Absolute Football Derek Carr Orange Mosaic 299 #76 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Panini Absolute sports trading card featuring Derek Carr and the Las Vegas Raiders Card #76. A strong addition for football fans, NFL collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2024 Panini Absolute; Year: 2024; Player: Derek Carr; Team: Las Vegas Raiders; Sport: Football; League: NFL; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2024 Panini Absolute Football Derek Carr Orange Mosaic /299 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024 Panini Absolute; Season: 2024; Year manufactured: 2024; Player/Athlete: Derek Carr; Team: Las Vegas Raiders; Sport: Football; League: NFL; Parallel/Variety: Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu185Ml",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7624,7 +7625,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Kasim Hill + Hasaan Hypolite + Brandon Porter Rookie Auto Set (x3) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Kasim Hill + Hasaan Hypolite + Brandon Porter Rookie Auto Set (x3) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2024; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2024 Sage Kasim Hill + Hasaan Hypolite + Brandon Porter Rookie Auto Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Kasim Hill, Hasaan Hypolite, Brandon Porter; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu183Zv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -7641,7 +7642,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kasim Hill|Hasaan Hypolite|Brandon Porter",
       "excelFields": {
         "Title": "2024 Sage Kasim Hill + Hasaan Hypolite + Brandon Porter Rookie Auto Set (x3)",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -8516,7 +8517,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Topps Marshawn Lynch Rookie #302 (1).JPG",
       "assets/Ebay Listing Photos/Football/1990-2013/2007 Topps Marshawn Lynch Rookie #302 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2007 Football card featuring Marshawn Lynch. A strong addition for NFL collectors and set builders.\nDetails: Set: 2007 Topps; Year: 2007; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie.\nPlease review the photos for the exact card you will receive.",
+    "description": "2007 Topps Marshawn Lynch Rookie #302\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2007 Topps; Season: 2007; Year manufactured: 2007; Player/Athlete: Marshawn Lynch; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OZSrQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -8551,7 +8552,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 + 2022 + 2025 Sage Rookie Auto Lot of 15.jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card. A strong addition for NCAA collectors and set builders.\nDetails: Set: Mixed Sage Rookie Auto Lot; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 + 2022 + 2025 Sage Rookie Auto Lot of 15\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: Mixed Sage Rookie Auto Lot; Season: 2021; Year manufactured: 2021; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Cards included: 15; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OZOhu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8568,7 +8569,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2021 + 2022 + 2025 Sage Rookie Auto Lot of 15",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -8588,7 +8589,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Dyangon Trevor Lawrence Silver Prizm Rookie (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Dyangon Trevor Lawrence Silver Prizm Rookie (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Trevor Lawrence. A strong addition for NFL collectors and set builders.\nDetails: Set: 2021 Panini Chronicles; Year: 2021; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Panini Chronicles Dyangon Trevor Lawrence Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Panini Chronicles; Season: 2021; Year manufactured: 2021; Player/Athlete: Trevor Lawrence; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OZNIe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -8625,7 +8626,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Unparalleled Dak Prescott Impact 199 SP Error Card (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Unparalleled Dak Prescott Impact 199 SP Error Card (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Dak Prescott. A strong addition for NFL collectors and set builders.\nDetails: Set: 2021 Panini Chronicles; Year: 2021; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Short Print | Error.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Panini Chronicles Unparalleled Dak Prescott Impact /199 SP Error Card\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Panini Chronicles; Season: 2021; Year manufactured: 2021; Player/Athlete: Dak Prescott; Sport: Football; League: NFL; Features: Serial Numbered, Short Print, Error; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OZshg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -8663,7 +8664,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Unparalleled Nick Chubb Cosmic 75 SP Error Card (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Panini Chronicles Unparalleled Nick Chubb Cosmic 75 SP Error Card (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Nick Chubb. A strong addition for NFL collectors and set builders.\nDetails: Set: 2021 Panini Chronicles; Year: 2021; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Short Print | Error.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Panini Chronicles Unparalleled Nick Chubb Cosmic /75 SP Error Card\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021 Panini Chronicles; Season: 2021; Year manufactured: 2021; Player/Athlete: Nick Chubb; Sport: Football; League: NFL; Features: Serial Numbered, Short Print, Error; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ot9pt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -8701,7 +8702,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Andre Mintze Red Rookie Auto Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Andre Mintze Red Rookie Auto Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Andre Mintze. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2021 Sage Premier Draft; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Sage Premier Draft Andre Mintze Red Rookie Auto Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Andre Mintze; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtFCG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8719,7 +8720,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Andre Mintze",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Andre Mintze Red Rookie Auto Set (x2)",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -8739,7 +8740,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Feleipe Franks Black Rookie Auto  (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Feleipe Franks Black Rookie Auto  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Feleipe Franks. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2021 Sage Premier Draft; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Sage Premier Draft Feleipe Franks Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Feleipe Franks; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtnvS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8756,8 +8757,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "metadata": {
       "playerAthlete": "Feleipe Franks",
       "excelFields": {
-        "Title": "2021 Sage Premier Draft Feleipe Franks Black Rookie Auto ",
-        "C:Features": "Rookie|Parallel/Variety",
+        "Title": "2021 Sage Premier Draft Feleipe Franks Black Rookie Auto",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -8777,7 +8778,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Levi Onwuzurike Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Levi Onwuzurike Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Levi Onwuzurike. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2021 Sage Premier Draft; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Sage Premier Draft Levi Onwuzurike Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Levi Onwuzurike; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtACb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8795,7 +8796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Levi Onwuzurike",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Levi Onwuzurike Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -8815,7 +8816,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Quinn Meinerz Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Quinn Meinerz Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Quinn Meinerz. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2021 Sage Premier Draft; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Sage Premier Draft Quinn Meinerz Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Quinn Meinerz; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtaaV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8833,7 +8834,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Quinn Meinerz",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Quinn Meinerz Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -8853,7 +8854,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Quintin Morris Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2021 Sage Premier Draft Quintin Morris Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Football card featuring Quintin Morris. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2021 Sage Premier Draft; Year: 2021; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Sage Premier Draft Quintin Morris Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2021 Sage Premier Draft; Season: 2021; Year manufactured: 2021; Player/Athlete: Quintin Morris; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtN8N",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8871,7 +8872,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Quintin Morris",
       "excelFields": {
         "Title": "2021 Sage Premier Draft Quintin Morris Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -8891,7 +8892,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Contenders Optic Mark Andrews Red Prizm 175 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Contenders Optic Mark Andrews Red Prizm 175 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Football card featuring Mark Andrews. A strong addition for NFL collectors and set builders.\nDetails: Set: 2022 Panini Contenders Optic; Year: 2022; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Panini Contenders Optic Mark Andrews Red Prizm /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Contenders Optic; Season: 2022; Year manufactured: 2022; Player/Athlete: Mark Andrews; Sport: Football; League: NFL; Parallel/Variety: Red Prizm, Optic; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Otkut",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -8928,7 +8929,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Esezi Otomewo Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Esezi Otomewo Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Football card featuring Esezi Otomewo. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2022 Sage; Year: 2022; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Sage Esezi Otomewo Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage; Season: 2022; Year manufactured: 2022; Player/Athlete: Esezi Otomewo; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtrPf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8945,7 +8946,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Esezi Otomewo",
       "excelFields": {
         "Title": "2022 Sage Esezi Otomewo Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -8965,7 +8966,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Raheem Blackshear Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Sage Raheem Blackshear Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Football card featuring Raheem Blackshear. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2022 Sage; Year: 2022; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Sage Raheem Blackshear Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2022 Sage; Season: 2022; Year manufactured: 2022; Player/Athlete: Raheem Blackshear; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OtL9S",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -8983,7 +8984,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Raheem Blackshear",
       "excelFields": {
         "Title": "2022 Sage Raheem Blackshear Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9003,7 +9004,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage David Martin-Robinson Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage David Martin-Robinson Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring David Martin-Robinson. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage David Martin-Robinson Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: David Martin-Robinson; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OD9Kx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9021,7 +9022,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "David Martin-Robinson",
       "excelFields": {
         "Title": "2024 Sage David Martin-Robinson Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9041,7 +9042,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Elijah Jones Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Elijah Jones Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Elijah Jones. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage Elijah Jones Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Elijah Jones; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OD3AP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9059,7 +9060,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Elijah Jones",
       "excelFields": {
         "Title": "2024 Sage Elijah Jones Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9079,7 +9080,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Isaiah Major Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Isaiah Major Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Isaiah Major. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage Isaiah Major Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Isaiah Major; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODBVa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9097,7 +9098,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Isaiah Major",
       "excelFields": {
         "Title": "2024 Sage Isaiah Major Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9117,7 +9118,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Jeff Foreman Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Jeff Foreman Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Jeff Foreman. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage Jeff Foreman Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Jeff Foreman; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODzSp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9135,7 +9136,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jeff Foreman",
       "excelFields": {
         "Title": "2024 Sage Jeff Foreman Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9155,7 +9156,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Matthew Jones Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Matthew Jones Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Matthew Jones. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage Matthew Jones Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Matthew Jones; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODRDX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9173,7 +9174,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Matthew Jones",
       "excelFields": {
         "Title": "2024 Sage Matthew Jones Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9193,7 +9194,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Nick Gargiulo Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Nick Gargiulo Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Nick Gargiulo. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2024 Sage; Year: 2024; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Sage Nick Gargiulo Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2024 Sage; Season: 2024; Year manufactured: 2024; Player/Athlete: Nick Gargiulo; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODYVs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9211,7 +9212,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Nick Gargiulo",
       "excelFields": {
         "Title": "2024 Sage Nick Gargiulo Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -9231,7 +9232,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football card featuring Ali Jennings III. A strong addition for NFL collectors and set builders.\nDetails: Set: 2024 Skybox Metal Universe Champions; Year: 2024; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: SkyBox; Set: 2024 Skybox Metal Universe Champions; Season: 2024; Year manufactured: 2024; Player/Athlete: Ali Jennings III; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODMRS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9248,7 +9249,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ali Jennings III",
       "excelFields": {
         "Title": "2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -9268,7 +9269,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Mosaic Travis Hunter Silver Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Mosaic Travis Hunter Silver Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Travis Hunter. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Mosaic; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Mosaic Travis Hunter Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Mosaic; Season: 2025; Year manufactured: 2025; Player/Athlete: Travis Hunter; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm, Mosaic; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODOfj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9305,7 +9306,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Ashton Jeanty Emergent Rookie Insert (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Ashton Jeanty Emergent Rookie Insert (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Ashton Jeanty. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Ashton Jeanty Emergent Rookie Insert\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Ashton Jeanty; Sport: Football; League: NFL; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODQgR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9343,7 +9344,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Bucky Irving Premier Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Bucky Irving Premier Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Bucky Irving. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Bucky Irving Premier Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Bucky Irving; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ODmbt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9380,7 +9381,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm C.J. Stroud Press Proof Prizm SSP #143 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm C.J. Stroud Press Proof Prizm SSP #143 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring C.J. Stroud. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Parallel/Variety | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm C.J. Stroud Press Proof Prizm SSP #143\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: C.J. Stroud; Sport: Football; League: NFL; Parallel/Variety: Prizm; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ob3g4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9417,7 +9418,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Cam Ward Prizmatic Rookie Insert (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Cam Ward Prizmatic Rookie Insert (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Cam Ward. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Cam Ward Prizmatic Rookie Insert\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Cam Ward; Sport: Football; League: NFL; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ObxLu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9434,7 +9435,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "metadata": {
       "playerAthlete": "Cam Ward",
       "excelFields": {
-        "Title": "2025 Panini Prizm Cam Ward Prizmatic Rookie Insert ",
+        "Title": "2025 Panini Prizm Cam Ward Prizmatic Rookie Insert",
         "C:Features": "Rookie|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
@@ -9455,7 +9456,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Colston Loveland Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Colston Loveland Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Colston Loveland. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Colston Loveland Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Colston Loveland; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ob57V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9493,7 +9494,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm De'Von Achane Premier Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm De'Von Achane Premier Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring De'Von Achane. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm De'Von Achane Premier Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: De'Von Achane; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ob0Lg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9530,7 +9531,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Draft Picks Billy Bowman Blue Prizm 249 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Draft Picks Billy Bowman Blue Prizm 249 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Billy Bowman. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Panini Prizm Draft Picks; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Draft Picks Billy Bowman Blue Prizm /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm Draft Picks; Season: 2025; Year manufactured: 2025; Player/Athlete: Billy Bowman; Sport: Football; League: NCAA; Parallel/Variety: Blue Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ObjpI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -9567,7 +9568,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Jaxson Dart Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Jaxson Dart Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jaxson Dart. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Jaxson Dart Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Jaxson Dart; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ob4v2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9605,7 +9606,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Jaydon Blue Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Jaydon Blue Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jaydon Blue. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Jaydon Blue Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Jaydon Blue; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2ObtEb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9643,7 +9644,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Josh Jacobs Premier Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Josh Jacobs Premier Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Josh Jacobs. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Josh Jacobs Premier Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Josh Jacobs; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Om2ZF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9680,7 +9681,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Malaki Starks Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Malaki Starks Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Malaki Starks. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Malaki Starks Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Malaki Starks; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OmzuI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9718,7 +9719,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Mason Graham Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Mason Graham Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Mason Graham. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Mason Graham Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Mason Graham; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Om092",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9756,7 +9757,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Matthew Golden Rookie Gear Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Matthew Golden Rookie Gear Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Matthew Golden. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Matthew Golden Rookie Gear Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Matthew Golden; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OmkAB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9797,7 +9798,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Omarion Hampton  Pink + Select Black & Green Shock Prizm RC (4).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Omarion Hampton  Pink + Select Black & Green Shock Prizm RC (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Omarion Hampton. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Omarion Hampton  Pink + Select Black & Green Shock Prizm RC\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Omarion Hampton; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm, Pink; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OmL9p",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9834,7 +9835,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Quinshon Judkins Pink + Select Black & Green Shock Prizm RC (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Quinshon Judkins Pink + Select Black & Green Shock Prizm RC (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Quinshon Judkins. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Quinshon Judkins Pink + Select Black & Green Shock Prizm RC\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Quinshon Judkins; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm, Pink; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OpTHQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9871,7 +9872,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Saquon Barkley Premier Pink Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Saquon Barkley Premier Pink Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Saquon Barkley. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Saquon Barkley Premier Pink Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Saquon Barkley; Sport: Football; League: NFL; Parallel/Variety: Pink Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ophxt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9908,7 +9909,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Travis Hunter Rookie #301 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Prizm Travis Hunter Rookie #301 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Travis Hunter. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Prizm; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Prizm Travis Hunter Rookie #301\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Prizm; Season: 2025; Year manufactured: 2025; Player/Athlete: Travis Hunter; Sport: Football; League: NFL; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OpS5l",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9945,7 +9946,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select  Josh Simmons Concourse Lime Green Prizm Rookie 699 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select  Josh Simmons Concourse Lime Green Prizm Rookie 699 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Josh Simmons. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select  Josh Simmons Concourse Lime Green Prizm Rookie /699\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Josh Simmons; Sport: Football; League: NFL; Parallel/Variety: Lime Green Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Optdx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -9983,7 +9984,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Adam Thielen Multiverse Red Prizm Dual Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Adam Thielen Multiverse Red Prizm Dual Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Adam Thielen. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Adam Thielen Multiverse Red Prizm Dual Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Adam Thielen; Sport: Football; League: NFL; Parallel/Variety: Red Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Oy3rJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10020,7 +10021,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Ashton Jeanty Black & Green Shock Prizm Club + Premier Level (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Ashton Jeanty Black & Green Shock Prizm Club + Premier Level (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Ashton Jeanty. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Ashton Jeanty Black & Green Shock Prizm Club + Premier Level\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Ashton Jeanty; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OyxLX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10056,7 +10057,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Ashton Jeanty Draft Selections Rookie Swatches Red Prizm (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Ashton Jeanty Draft Selections Rookie Swatches Red Prizm (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Ashton Jeanty. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Ashton Jeanty Draft Selections Rookie Swatches Red Prizm\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Ashton Jeanty; Sport: Football; League: NFL; Parallel/Variety: Red Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Oylh7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10094,7 +10095,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Brian Urlacher Premier Level Orange Prizm 399 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Brian Urlacher Premier Level Orange Prizm 399 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Brian Urlacher. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Brian Urlacher Premier Level Orange Prizm /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Brian Urlacher; Sport: Football; League: NFL; Parallel/Variety: Orange Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OyXYx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10134,7 +10135,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Cam Ward Premier + Futures + Overcharged Rookie Set (x4) (4).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Cam Ward Premier + Futures + Overcharged Rookie Set (x4) (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Cam Ward. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Cam Ward Premier + Futures + Overcharged Rookie Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Cam Ward; Sport: Football; League: NFL; Features: Rookie, Insert; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OyS4a",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10171,7 +10172,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Dillon Gabriel Select Certified Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Dillon Gabriel Select Certified Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Dillon Gabriel Select Certified. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Dillon Gabriel Select Certified Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Dillon Gabriel; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e92Z7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10207,7 +10208,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Dylan Sampson Club Level Black & Green Shock Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Dylan Sampson Club Level Black & Green Shock Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Dylan Sampson. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Dylan Sampson Club Level Black & Green Shock Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Dylan Sampson; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e9oyQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10244,7 +10245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Elic Ayomanor Premier Level Silver Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Elic Ayomanor Premier Level Silver Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Elic Ayomanor. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Elic Ayomanor Premier Level Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Elic Ayomanor; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e9c8v",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10281,7 +10282,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Geno Smith Premier Level Orange Prizm 399 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Geno Smith Premier Level Orange Prizm 399 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Geno Smith. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Geno Smith Premier Level Orange Prizm /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Geno Smith; Sport: Football; League: NFL; Parallel/Variety: Orange Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e9wcG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10318,7 +10319,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jalen Milroe + Elijah Arroyo Black & Green Shock Prizm Rookie (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jalen Milroe + Elijah Arroyo Black & Green Shock Prizm Rookie (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jalen Milroe, Elijah Arroyo. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Jalen Milroe + Elijah Arroyo Black & Green Shock Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Jalen Milroe, Elijah Arroyo; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e9Uo7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10355,7 +10356,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jalen Milroe Concourse Black & Green Shock Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jalen Milroe Concourse Black & Green Shock Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jalen Milroe. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Jalen Milroe Concourse Black & Green Shock Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Jalen Milroe; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e9tDB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10392,7 +10393,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Javonte Williams Multiverse Red Prizm Patch (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Javonte Williams Multiverse Red Prizm Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Javonte Williams. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Javonte Williams Multiverse Red Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Javonte Williams; Sport: Football; League: NFL; Parallel/Variety: Red Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eH9Kg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10429,7 +10430,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jaxson Dart Premier Level Silver Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jaxson Dart Premier Level Silver Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jaxson Dart. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Jaxson Dart Premier Level Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Jaxson Dart; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eHofn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10466,7 +10467,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jaxson Dart Select Certified Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Jaxson Dart Select Certified Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jaxson Dart Select Certified. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Jaxson Dart Select Certified Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Jaxson Dart; Sport: Football; League: NFL; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eHAOl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10502,7 +10503,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Lamar Jackson Premier Level Black & Green Shock Prizm (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Lamar Jackson Premier Level Black & Green Shock Prizm (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Lamar Jackson. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Lamar Jackson Premier Level Black & Green Shock Prizm\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Lamar Jackson; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eH1Ub",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10538,7 +10539,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Nick Emmanwori Concourse Lime Green Prizm Rookie 699 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Nick Emmanwori Concourse Lime Green Prizm Rookie 699 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Nick Emmanwori. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Nick Emmanwori Concourse Lime Green Prizm Rookie /699\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Nick Emmanwori; Sport: Football; League: NFL; Parallel/Variety: Lime Green Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eHkga",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10576,7 +10577,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Nick Martin Club Level Silver Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Nick Martin Club Level Silver Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Nick Martin. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Nick Martin Club Level Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Nick Martin; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eHsqX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10613,7 +10614,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Omarion Hampton Concourse Silver Prizm Rookie #2 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Omarion Hampton Concourse Silver Prizm Rookie #2 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Omarion Hampton. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Omarion Hampton Concourse Silver Prizm Rookie #2\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Omarion Hampton; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJ21e",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10650,7 +10651,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Princely Umanmielen Club Level Black & Green Shock Prizm SP (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Princely Umanmielen Club Level Black & Green Shock Prizm SP (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Princely Umanmielen. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Parallel/Variety | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Princely Umanmielen Club Level Black & Green Shock Prizm SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Princely Umanmielen; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJnIV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10687,7 +10688,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Quinn Ewers Concourse Silver Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Quinn Ewers Concourse Silver Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Quinn Ewers. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Quinn Ewers Concourse Silver Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Quinn Ewers; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJcIp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10724,7 +10725,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Riley Leonard Premier Level Zebra Prizm Rookie SSP (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Riley Leonard Premier Level Zebra Prizm Rookie SSP (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Riley Leonard. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Riley Leonard Premier Level Zebra Prizm Rookie SSP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Riley Leonard; Sport: Football; League: NFL; Parallel/Variety: Zebra Prizm; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJXYG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10762,7 +10763,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Shadeur Sanders Black & Green Shock Prizm Rookie + Base (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Shadeur Sanders Black & Green Shock Prizm Rookie + Base (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Shedeur Sanders. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Shadeur Sanders Black & Green Shock Prizm Rookie + Base\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Shedeur Sanders; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJrYb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10799,7 +10800,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select T.J. Sanders Premier Level Lime Green Prizm Rookie 699 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select T.J. Sanders Premier Level Lime Green Prizm Rookie 699 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring T.J. Sanders. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select T.J. Sanders Premier Level Lime Green Prizm Rookie /699\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: T.J. Sanders; Sport: Football; League: NFL; Parallel/Variety: Lime Green Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eJy8J",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10837,7 +10838,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Black & Green Shock Prizm Rookie + Overcharged (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Black & Green Shock Prizm Rookie + Overcharged (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Travis Hunter. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Travis Hunter Black & Green Shock Prizm Rookie + Overcharged\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Travis Hunter; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2edKGt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10877,7 +10878,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Club + Premier Level + Overcharged Rookie Set (3).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Club + Premier Level + Overcharged Rookie Set (4).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Travis Hunter. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Travis Hunter Club + Premier Level + Overcharged Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Travis Hunter; Sport: Football; League: NFL; Features: Rookie, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2edIwl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10914,7 +10915,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Draft Selections Rookie Swatches Red Prizm (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Travis Hunter Draft Selections Rookie Swatches Red Prizm (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Travis Hunter. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Travis Hunter Draft Selections Rookie Swatches Red Prizm\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Travis Hunter; Sport: Football; League: NFL; Parallel/Variety: Red Prizm; Features: Rookie, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2edNSa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10952,7 +10953,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Trevor Etienne Concourse Black & Green Shock Prizm Rookie (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Panini Select Trevor Etienne Concourse Black & Green Shock Prizm Rookie (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Trevor Etienne. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Trevor Etienne Concourse Black & Green Shock Prizm Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Trevor Etienne; Sport: Football; League: NFL; Parallel/Variety: Black & Green Shock Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2edPln",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -10989,7 +10990,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Alante Brown Red Rookie Auto Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Alante Brown Red Rookie Auto Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Alante Brown. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Alante Brown Red Rookie Auto Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Alante Brown; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2edtDl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11007,7 +11008,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Alante Brown",
       "excelFields": {
         "Title": "2025 Sage Alante Brown Red Rookie Auto Set (x2)",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11027,7 +11028,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Anthony Smith Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Anthony Smith Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Anthony Smith. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Anthony Smith Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Anthony Smith; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2FOx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11045,7 +11046,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Anthony Smith",
       "excelFields": {
         "Title": "2025 Sage Anthony Smith Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11065,7 +11066,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Brashard Smith Blue Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Brashard Smith Blue Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Brashard Smith. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Brashard Smith Blue Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Brashard Smith; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2of1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11083,7 +11084,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brashard Smith",
       "excelFields": {
         "Title": "2025 Sage Brashard Smith Blue Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11103,7 +11104,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Cam Riley Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Cam Riley Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Cam Riley. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Cam Riley Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Cam Riley; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2u5J",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11121,7 +11122,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Cam Riley",
       "excelFields": {
         "Title": "2025 Sage Cam Riley Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11141,7 +11142,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Carson Beck Blue Rookie Auto (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Carson Beck Blue Rookie Auto (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Carson Beck. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Carson Beck Blue Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Carson Beck; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e200X",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11159,7 +11160,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Carson Beck",
       "excelFields": {
         "Title": "2025 Sage Carson Beck Blue Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11179,7 +11180,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Corey Kiner Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Corey Kiner Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Corey Kiner. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Corey Kiner Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Corey Kiner; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2hzl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11197,7 +11198,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Corey Kiner",
       "excelFields": {
         "Title": "2025 Sage Corey Kiner Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11217,7 +11218,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Coulter Cleland Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Coulter Cleland Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Coulter Cleland. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Coulter Cleland Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Coulter Cleland; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2S5b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11235,7 +11236,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Coulter Cleland",
       "excelFields": {
         "Title": "2025 Sage Coulter Cleland Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11255,7 +11256,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Coy Eakin Sneak Peek SP Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Coy Eakin Sneak Peek SP Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Coy Eakin. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Autograph | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Coy Eakin Sneak Peek SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Coy Eakin; Sport: Football; League: NCAA; Features: Autograph, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e26XV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11272,7 +11273,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Coy Eakin",
       "excelFields": {
         "Title": "2025 Sage Coy Eakin Sneak Peek SP Auto",
-        "C:Features": "Short Print",
+        "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
     }
@@ -11292,7 +11293,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Drew Allar Athlete Apparel Rookie Patch SP (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Drew Allar Athlete Apparel Rookie Patch SP (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Drew Allar. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Memorabilia | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Drew Allar Athlete Apparel Rookie Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Drew Allar; Sport: Football; League: NCAA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2bkJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11330,7 +11331,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Isaac Teslaa Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Isaac Teslaa Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Isaac Teslaa. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Isaac Teslaa Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Isaac Teslaa; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e2yIR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11348,7 +11349,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Isaac Teslaa",
       "excelFields": {
         "Title": "2025 Sage Isaac Teslaa Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11368,7 +11369,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jahiem White Peak Performance SP Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jahiem White Peak Performance SP Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jahiem White. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Autograph | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Jahiem White Peak Performance SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Jahiem White; Sport: Football; League: NCAA; Features: Autograph, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3ohl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11385,7 +11386,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jahiem White",
       "excelFields": {
         "Title": "2025 Sage Jahiem White Peak Performance SP Auto",
-        "C:Features": "Short Print",
+        "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
     }
@@ -11405,7 +11406,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jahmal Edrine Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jahmal Edrine Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jahmal Edrine. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Jahmal Edrine Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Jahmal Edrine; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3TE7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11422,7 +11423,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jahmal Edrine",
       "excelFields": {
         "Title": "2025 Sage Jahmal Edrine Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -11442,7 +11443,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jaren Kump Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Jaren Kump Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Jaren Kump. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Jaren Kump Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Jaren Kump; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e37kb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11459,7 +11460,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jaren Kump",
       "excelFields": {
         "Title": "2025 Sage Jaren Kump Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -11479,7 +11480,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Kentrel Bullock Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Kentrel Bullock Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Kentrel Bullock. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Kentrel Bullock Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Kentrel Bullock; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3ECB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11496,7 +11497,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kentrel Bullock",
       "excelFields": {
         "Title": "2025 Sage Kentrel Bullock Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -11516,7 +11517,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Mac Harris Black Rookie (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Mac Harris Black Rookie (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Mac Harris. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Mac Harris Black Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Mac Harris; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3W3F",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11553,7 +11554,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Noah Kim Black Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Noah Kim Black Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Noah Kim. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Noah Kim Black Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Noah Kim; Sport: Football; League: NCAA; Parallel/Variety: Black; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3eQp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11571,7 +11572,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Noah Kim",
       "excelFields": {
         "Title": "2025 Sage Noah Kim Black Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11591,7 +11592,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Nolan Ray Sneak Peek SP Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Nolan Ray Sneak Peek SP Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Nolan Ray. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Autograph | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Nolan Ray Sneak Peek SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Nolan Ray; Sport: Football; League: NCAA; Features: Autograph, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e34vs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11608,7 +11609,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Nolan Ray",
       "excelFields": {
         "Title": "2025 Sage Nolan Ray Sneak Peek SP Auto",
-        "C:Features": "Short Print",
+        "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
     }
@@ -11628,7 +11629,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Preston Stone Rookie Auto #A-PS (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Preston Stone Rookie Auto #A-PS (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Preston Stone. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Preston Stone Rookie Auto #A-PS\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Preston Stone; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3sj4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11645,7 +11646,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Preston Stone",
       "excelFields": {
         "Title": "2025 Sage Preston Stone Rookie Auto #A-PS",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -11665,7 +11666,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Samuel Okunlola Sneak Peek SP Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Samuel Okunlola Sneak Peek SP Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Samuel Okunlola. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Autograph | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Samuel Okunlola Sneak Peek SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Samuel Okunlola; Sport: Football; League: NCAA; Features: Autograph, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2e3mF9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11682,7 +11683,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Samuel Okunlola",
       "excelFields": {
         "Title": "2025 Sage Samuel Okunlola Sneak Peek SP Auto",
-        "C:Features": "Short Print",
+        "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
     }
@@ -11702,7 +11703,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Tanner Arkin Red Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Tanner Arkin Red Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Tanner Arkin. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Tanner Arkin Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Tanner Arkin; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eF2ZQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11720,7 +11721,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tanner Arkin",
       "excelFields": {
         "Title": "2025 Sage Tanner Arkin Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11740,7 +11741,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Vincent Anthony Jr. Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Vincent Anthony Jr. Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Vincent Anthony Jr.. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Vincent Anthony Jr. Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Vincent Anthony Jr.; Sport: Football; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eFCcF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11757,7 +11758,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Vincent Anthony Jr.",
       "excelFields": {
         "Title": "2025 Sage Vincent Anthony Jr. Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -11777,7 +11778,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Zemaiah Vaughn Blue Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Sage Zemaiah Vaughn Blue Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Zemaiah Vaughn. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2025 Sage; Year: 2025; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Sage Zemaiah Vaughn Blue Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2025 Sage; Season: 2025; Year manufactured: 2025; Player/Athlete: Zemaiah Vaughn; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eFAnp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11795,7 +11796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Zemaiah Vaughn",
       "excelFields": {
         "Title": "2025 Sage Zemaiah Vaughn Blue Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11815,7 +11816,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Bucky Irving Pink Refractor 250 (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Bucky Irving Pink Refractor 250 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Bucky Irving. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Topps Chrome; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Topps Chrome Bucky Irving Pink Refractor /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year manufactured: 2025; Player/Athlete: Bucky Irving; Sport: Football; League: NFL; Parallel/Variety: Pink Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eF09s",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -11852,7 +11853,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Malik Nabers Fortune + Base Mega Prizm SP Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Malik Nabers Fortune + Base Mega Prizm SP Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Malik Nabers. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Topps Chrome; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Parallel/Variety | Short Print | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Topps Chrome Malik Nabers Fortune + Base Mega Prizm SP Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year manufactured: 2025; Player/Athlete: Malik Nabers; Sport: Football; League: NFL; Parallel/Variety: Mega Prizm; Features: Short Print, Parallel/Variety, Insert; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eFvNj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -11890,7 +11891,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Tyler Shough Mega Prizm Rookie SP (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Tyler Shough Mega Prizm Rookie SP (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2025 Football card featuring Tyler Shough. A strong addition for NFL collectors and set builders.\nDetails: Set: 2025 Topps Chrome; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Parallel/Variety | Short Print.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Topps Chrome Tyler Shough Mega Prizm Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year manufactured: 2025; Player/Athlete: Tyler Shough; Sport: Football; League: NFL; Parallel/Variety: Mega Prizm; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eFPl1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -11928,7 +11929,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Caleb Douglas Red Rookie Auto (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Caleb Douglas Red Rookie Auto (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2026 Football card featuring Caleb Douglas. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2026 Sage; Year: 2026; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Sage Caleb Douglas Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2026 Sage; Season: 2026; Year manufactured: 2026; Player/Athlete: Caleb Douglas; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eK9fI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11946,7 +11947,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Caleb Douglas",
       "excelFields": {
         "Title": "2026 Sage Caleb Douglas Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -11966,7 +11967,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Joe Pesansky Blue Rookie Auto (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Joe Pesansky Blue Rookie Auto (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2026 Football card featuring Joe Pesansky. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2026 Sage; Year: 2026; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Sage Joe Pesansky Blue Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2026 Sage; Season: 2026; Year manufactured: 2026; Player/Athlete: Joe Pesansky; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eKqx4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11984,7 +11985,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Joe Pesansky",
       "excelFields": {
         "Title": "2026 Sage Joe Pesansky Blue Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -12004,7 +12005,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Logan Fano Red Rookie Auto (1).JPG",
       "assets/Ebay Listing Photos/Football/2014-2026/2026 Sage Logan Fano Red Rookie Auto (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2026 Football card featuring Logan Fano. A strong addition for NCAA collectors and set builders.\nDetails: Set: 2026 Sage; Year: 2026; Sport: Football; League: NCAA; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Sage Logan Fano Red Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Sage; Set: 2026 Sage; Season: 2026; Year manufactured: 2026; Player/Athlete: Logan Fano; Sport: Football; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eKTJe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -12022,7 +12023,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Logan Fano",
       "excelFields": {
         "Title": "2026 Sage Logan Fano Red Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -12042,7 +12043,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/PSA Cards/2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto  (1).jpg",
       "assets/Personal collection/PSA Cards/2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Football trading card featuring Tetairoa McMillan.\nDetails: Set: 2025 Panini Select; Year: 2025; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Tetairoa McMillan; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxPlS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -12060,7 +12061,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tetairoa McMillan",
       "excelFields": {
         "Title": "2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -12081,7 +12082,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/PSA Cards/2024 Panini Select J.J. McCarthy Copper Shock Prizm Rookie 299 PSA 9 Mint (1).jpg",
       "assets/Personal collection/PSA Cards/2024 Panini Select J.J. McCarthy Copper Shock Prizm Rookie 299 PSA 9 Mint (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Football trading card featuring J.J. McCarthy.\nDetails: Set: 2024 Panini Select; Year: 2024; Sport: Football; League: NFL; Condition: See item specifics. Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Panini Select J.J. McCarthy Copper Shock Prizm Rookie /299 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024 Panini Select; Season: 2024; Year manufactured: 2024; Player/Athlete: J.J. McCarthy; Sport: Football; League: NFL; Parallel/Variety: Copper Shock Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-panini-select-jj-mccarthy-copper-shock-prizm-rookie-299-psa-9-mint-1.CCxy3a2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -12120,7 +12121,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Epix Kareem Jackson Crystal Rookie Houston Texans Football #156 250 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Epix Kareem Jackson Crystal Rookie Houston Texans Football #156 250 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010-11 sports trading card featuring Kareem Jackson and the Houston Texans Card #156. A strong addition for football fans, NFL collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Season: 2010-11; Year: 2010; Player: Kareem Jackson; Team: Houston Texans; Sport: Football; League: NFL; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Panini Epix Kareem Jackson Crystal Rookie Houston Texans Football #156 /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2010 Panini Epix; Season: 2010-11; Year manufactured: 2010; Player/Athlete: Kareem Jackson; Team: Houston Texans; Sport: Football; League: NFL; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-panini-epix-kareem-jackson-crystal-rookie-houston-texans-football-156-250-1.Bu7rlOx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",

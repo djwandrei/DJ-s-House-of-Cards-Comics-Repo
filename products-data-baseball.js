@@ -10556,7 +10556,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP (2).jpg"
     ],
-    "description": "Upgrade your collection with this 1997 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 1997; Condition: Ungraded; Features: Rookie | Short Print | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Just Minors; Set: 1997 Just Minors; Season: 1997; Year manufactured: 1997; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1997-just-minors-zach-sorensen-limited-edition-rookie-auto-sp-1.BAn7uGs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10574,7 +10574,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP",
-        "C:Features": "Rookie|Short Print",
+        "C:Features": "Autograph|Rookie|Short Print",
         "C:Autographed": "Yes"
       }
     },
@@ -10595,7 +10595,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2002 Bowman Certified Autograph Issue Jason Lane Auto #BA-JL (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2002 Bowman Certified Autograph Issue Jason Lane Auto #BA-JL (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2002 Bowman sports trading card highlighted in the title Card #BA-JL. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2002 Bowman; Year: 2002; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2002 Bowman Certified Autograph Issue Jason Lane Auto #BA-JL\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2002 Bowman; Season: 2002; Year manufactured: 2002; Player/Athlete: Jason Lane; Team: Houston Astros; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2002-bowman-certified-autograph-issue-jason-lane-auto-ba-jl-1.BAn7Bvp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10611,6 +10611,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jason Lane",
       "excelFields": {
         "Title": "2002 Bowman Certified Autograph Issue Jason Lane Auto #BA-JL",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -10630,7 +10631,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Bowman Chrome Draft Prospects Bill Bray Refractor Rookie Auto #BDP173 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Bowman Chrome Draft Prospects Bill Bray Refractor Rookie Auto #BDP173 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2004 Bowman Chrome sports trading card highlighted in the title Card #BDP173. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2004 Bowman Chrome; Year: 2004; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2004 Bowman Chrome Draft Prospects Bill Bray Refractor Rookie Auto #BDP173\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2004 Bowman Chrome; Season: 2004; Year manufactured: 2004; Player/Athlete: Bill Bray; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2004-bowman-chrome-draft-prospects-bill-bray-refractor-rookie-auto-bdp173-1.BAnaiQt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10648,7 +10649,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Bill Bray",
       "excelFields": {
         "Title": "2004 Bowman Chrome Draft Prospects Bill Bray Refractor Rookie Auto #BDP173",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -10668,7 +10669,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Flair Hot Numbers Nomar Garciaparra Game Used Patch Green SP - Red Sox (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Flair Hot Numbers Nomar Garciaparra Game Used Patch Green SP - Red Sox (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2004 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2004; Condition: Ungraded; Features: Short Print | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2004 Flair Hot Numbers Nomar Garciaparra Game Used Patch Green SP - Red Sox\n\nListing details: Type: Sports Trading Card; Manufacturer: Fleer; Set: 2004 Flair Hot Numbers; Season: 2004; Year manufactured: 2004; Player/Athlete: Nomar Garciaparra; Sport: Baseball; League: MLB; Features: Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2004-flair-hot-numbers-nomar-garciaparra-game-used-patch-green-sp-red-sox-1.BAnabaf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10707,7 +10708,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Topps Clubhouse Collection Ivan Rodriguez #IR Game Worn Jersey (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2004 Topps Clubhouse Collection Ivan Rodriguez #IR Game Worn Jersey (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2004 Topps sports trading card highlighted in the title Card #IR. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2004 Topps; Year: 2004; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2004 Topps Clubhouse Collection Ivan Rodriguez #IR Game Worn Jersey\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2004 Topps; Season: 2004; Year manufactured: 2004; Player/Athlete: Ivan Rodriguez; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2004-topps-clubhouse-collection-ivan-rodriguez-ir-game-worn-jersey-1.BAn1F6X",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10743,7 +10744,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Donruss Champions Raul Mondesi Impressions Game Used Patch #38 Blue Jays (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Donruss Champions Raul Mondesi Impressions Game Used Patch #38 Blue Jays (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2005 sports trading card highlighted in the title Card #38. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Year: 2005; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2005 Donruss Champions Raul Mondesi Impressions Game Used Patch #38 Blue Jays\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2005 Donruss Champions; Season: 2005; Year manufactured: 2005; Player/Athlete: Raul Mondesi; Sport: Baseball; League: MLB; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2005-donruss-champions-raul-mondesi-impressions-game-used-patch-38-blue-jays-1.BAn1qas",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10780,7 +10781,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Upper Deck MVP Miquel Tejada Patch + 2003 Fleer Numbers Game SP Patch 300 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Upper Deck MVP Miquel Tejada Patch + 2003 Fleer Numbers Game SP Patch 300 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2005 Upper Deck sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2005 Upper Deck; Year: 2005; Condition: Ungraded; Features: Short Print | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2005 Upper Deck MVP Miguel Tejada Patch + 2003 Fleer Numbers Game SP Patch /300\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2005 Upper Deck; Season: 2005; Year manufactured: 2005; Player/Athlete: Miguel Tejada; Sport: Baseball; League: MLB; Features: Serial Numbered, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2005-upper-deck-mvp-miquel-tejada-patch-plus-2003-fleer-numbers-game-sp-patch-300-1.BAn1SVI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10819,7 +10820,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Upper Deck Ultimate Collection Jake Westbrook Young Stars Rookie Patch 20 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2005 Upper Deck Ultimate Collection Jake Westbrook Young Stars Rookie Patch 20 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2005 Upper Deck sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Set: 2005 Upper Deck; Year: 2005; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2005 Upper Deck Ultimate Collection Jake Westbrook Young Stars Rookie Patch /20\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2005 Upper Deck; Season: 2005; Year manufactured: 2005; Player/Athlete: Jake Westbrook; Sport: Baseball; League: MLB; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2005-upper-deck-ultimate-collection-jake-westbrook-young-stars-rookie-patch-20-1.BAnEWzl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10858,7 +10859,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2006 Upper Deck Game Materials Carlos Lee Patch + 2007 UD Game Materials Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2006 Upper Deck Game Materials Carlos Lee Patch + 2007 UD Game Materials Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2006 Upper Deck sports trading card featuring Carlos Lee and the Chicago White Sox. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2006 Upper Deck; Year: 2006; Player: Carlos Lee; Team: Chicago White Sox; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2006 Upper Deck Game Materials Carlos Lee Patch + 2007 UD Game Materials Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2006 Upper Deck; Season: 2006; Year manufactured: 2006; Player/Athlete: Carlos Lee; Team: Chicago White Sox; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2006-upper-deck-game-materials-carlos-lee-patch-plus-2007-ud-game-materials-patch-1.BAnE8ej",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10895,7 +10896,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Upper Deck SP Rookie Edition Ichiro Suzuki #87 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Upper Deck SP Rookie Edition Ichiro Suzuki #87 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2007 Upper Deck sports trading card featuring Ichiro Suzuki and the Seattle Mariners Card #87. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2007 Upper Deck; Year: 2007; Player: Ichiro Suzuki; Team: Seattle Mariners; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2007 Upper Deck SP Rookie Edition Ichiro Suzuki #87\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2007 Upper Deck; Season: 2007; Year manufactured: 2007; Player/Athlete: Ichiro Suzuki; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Rookie, Short Print; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-upper-deck-sp-rookie-edition-ichiro-suzuki-87-1.BAnG32n",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10932,7 +10933,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Upper Deck Spectrum Francisco Liriano Red Foil Patch 50 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Upper Deck Spectrum Francisco Liriano Red Foil Patch 50 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2007 Upper Deck sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2007 Upper Deck; Year: 2007; Condition: Ungraded; Features: Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2007 Upper Deck Spectrum Francisco Liriano Red Foil Patch /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2007 Upper Deck; Season: 2007; Year manufactured: 2007; Player/Athlete: Francisco Liriano; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Red; Features: Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-upper-deck-spectrum-francisco-liriano-red-foil-patch-50-1.BAnG0CB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10971,7 +10972,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2009 Topps Triple Threads Adrian Gonzalez Auto Relic 18 #TTAR-106  (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2009 Topps Triple Threads Adrian Gonzalez Auto Relic 18 #TTAR-106  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2009 Topps Triple Threads sports trading card featuring Adrian Gonzalez and the Los Angeles Dodgers Card #TTAR-106. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2009 Topps Triple Threads; Year: 2009; Player: Adrian Gonzalez; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2009 Topps Triple Threads Adrian Gonzalez Auto Relic /18 #TTAR-106\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2009 Topps Triple Threads; Season: 2009; Year manufactured: 2009; Player/Athlete: Adrian Gonzalez; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Features: Autograph, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2009-topps-triple-threads-adrian-gonzalez-auto-relic-18-ttar-106-1.BAnGv4t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -10989,7 +10990,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Adrian Gonzalez",
       "excelFields": {
         "Title": "2009 Topps Triple Threads Adrian Gonzalez Auto Relic /18 #TTAR-106",
-        "C:Features": "Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     }
@@ -11012,7 +11013,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Bowman Chrome Brett Jackson Rookie Refractor Auto Set 500 + Base (x3) (4).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Bowman Chrome Brett Jackson Rookie Refractor Auto Set 500 + Base (x3) (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 Bowman Chrome sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2010 Bowman Chrome; Year: 2010; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Bowman Chrome Brett Jackson Rookie Refractor Auto Set /500 + Base (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2010 Bowman Chrome; Season: 2010; Year manufactured: 2010; Player/Athlete: Brett Jackson; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-bowman-chrome-brett-jackson-rookie-refractor-auto-set-500-plus-base-x3-1.BAnMhl9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11031,7 +11032,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brett Jackson",
       "excelFields": {
         "Title": "2010 Bowman Chrome Brett Jackson Rookie Refractor Auto Set /500 + Base (x3)",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -11052,7 +11053,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Donruss Elite Extra Edition AJ Griffin Aspirations Die-Cut Auto 100 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Donruss Elite Extra Edition AJ Griffin Aspirations Die-Cut Auto 100 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 sports trading card highlighted in the title. 2010 Donruss Elite Extra Edition baseball card featuring A.J. Griffin with connections to the Oakland Athletics. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Set: 2010 Donruss Elite Extra Edition; Year: 2010; Player: A.J. Griffin; Team: Oakland Athletics; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Donruss Elite Extra Edition AJ Griffin Aspirations Die-Cut Auto /100\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2010 Donruss Elite Extra Edition; Season: 2010; Year manufactured: 2010; Player/Athlete: A.J. Griffin; Team: Oakland Athletics; Sport: Baseball; League: MLB; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-donruss-elite-extra-edition-aj-griffin-aspirations-die-cut-auto-100-1.BAnWcQ4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11070,7 +11071,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "A.J. Griffin",
       "excelFields": {
         "Title": "2010 Donruss Elite Extra Edition AJ Griffin Aspirations Die-Cut Auto /100",
-        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -11091,7 +11092,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Topps Stephen Strasburg Rookie #661 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2010 Topps Stephen Strasburg Rookie #661 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2010 Topps sports trading card highlighted in the title Card #661. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2010 Topps; Year: 2010; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2010 Topps Stephen Strasburg Rookie #661\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2010 Topps; Season: 2010; Year manufactured: 2010; Player/Athlete: Stephen Strasburg; Team: Washington Nationals; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-topps-stephen-strasburg-rookie-661-1.BAnWkGV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11127,7 +11128,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2011  Bowman Sterling Jered Weaver + Tyler Chatwood Dual Jersey 99 #DRB-WC (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2011  Bowman Sterling Jered Weaver + Tyler Chatwood Dual Jersey 99 #DRB-WC (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Bowman Sterling sports trading card featuring Jered Weaver and the Los Angeles Angels of Anaheim Card #DRB-WC. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2011 Bowman Sterling; Year: 2011; Player: Jered Weaver; Team: Los Angeles Angels of Anaheim; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Bowman Sterling Jered Weaver + Tyler Chatwood Dual Jersey /99 #DRB-WC\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2011 Bowman Sterling; Season: 2011; Year manufactured: 2011; Player/Athlete: Jered Weaver; Team: Los Angeles Angels of Anaheim; Sport: Baseball; League: MLB; Features: Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-bowman-sterling-jered-weaver-plus-tyler-chatwood-dual-jersey-99-drb-wc-1.BACZq4S",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11165,7 +11166,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2011 Donruss Elite Extra Edition Taylor Jungman Aspirations Die-Cut 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2011 Donruss Elite Extra Edition Taylor Jungman Aspirations Die-Cut 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2011 Donruss Elite Extra Edition; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Donruss Elite Extra Edition Taylor Jungman Aspirations Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2011 Donruss Elite Extra Edition; Season: 2011; Year manufactured: 2011; Player/Athlete: Taylor Jungman; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-donruss-elite-extra-edition-taylor-jungman-aspirations-die-cut-200-1.BAnzU7t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11203,7 +11204,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps 60 Relics Randy Wells #T60R-RWE Cubs Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps 60 Relics Randy Wells #T60R-RWE Cubs Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps sports trading card highlighted in the title Card #T60R-RWE. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2011 Topps; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps 60 Relics Randy Wells #T60R-RWE Cubs Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps; Season: 2011; Year manufactured: 2011; Player/Athlete: Randy Wells; Team: Chicago Cubs; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-60-relics-randy-wells-t60r-rwe-cubs-patch-1.BAnUSFs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11216,7 +11217,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "",
+      "playerAthlete": "Randy Wells",
       "excelFields": {
         "Title": "2011 Topps 60 Relics Randy Wells #T60R-RWE Cubs Patch",
         "C:Features": "Memorabilia",
@@ -11239,7 +11240,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & GinterA.J. Burnett Framed Mini Relic Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & GinterA.J. Burnett Framed Mini Relic Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Allen & Ginter sports trading card featuring A.J. Burnett and the Pittsburgh Pirates. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2011 Topps Allen & Ginter; Year: 2011; Player: A.J. Burnett; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Allen & Ginter A.J. Burnett Framed Mini Relic Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Allen & Ginter; Season: 2011; Year manufactured: 2011; Player/Athlete: A.J. Burnett; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAnrXhN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11276,7 +11277,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & Ginter Aramis Ramirez Framed Mini Relic Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & Ginter Aramis Ramirez Framed Mini Relic Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Allen & Ginter sports trading card featuring Aramis Ramirez and the Chicago Cubs. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2011 Topps Allen & Ginter; Year: 2011; Player: Aramis Ramirez; Team: Chicago Cubs; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Allen & Ginter Aramis Ramirez Framed Mini Relic Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Allen & Ginter; Season: 2011; Year manufactured: 2011; Player/Athlete: Aramis Ramirez; Team: Chicago Cubs; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-allen-ginter-aramis-ramirez-framed-mini-relic-patch-1.BAnUmSj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11313,7 +11314,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & Ginter Derek Jeter Mini + 2013 Topps Inserts + Base Set (x9) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Allen & Ginter Derek Jeter Mini + 2013 Topps Inserts + Base Set (x9) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Allen & Ginter sports trading card featuring Derek Jeter and the New York Yankees. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2011 Topps Allen & Ginter; Year: 2011; Player: Derek Jeter; Team: New York Yankees; Sport: Baseball; League: MLB; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Allen & Ginter Derek Jeter Mini + 2013 Topps Inserts + Base Set (x9)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Allen & Ginter; Season: 2011; Year manufactured: 2011; Player/Athlete: Derek Jeter; Team: New York Yankees; Sport: Baseball; League: MLB; Features: Insert; Autographed: No; Cards included: 9; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-allen-ginter-derek-jeter-mini-plus-2013-topps-inserts-plus-base-set-x9-1.BAnrlrg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11350,7 +11351,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Garrett Jones Blue Foil 2011 #78 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Garrett Jones Blue Foil 2011 #78 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps sports trading card highlighted in the title Card #78. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2011 Topps; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Garrett Jones Blue Foil /2011 #78\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps; Season: 2011; Year manufactured: 2011; Player/Athlete: Garrett Jones; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-garrett-jones-blue-foil-2011-78-1.BAn4d6F",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11387,7 +11388,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Heritage Francisco Liriano Clubhouse Collection SP Patch #CCR-FL (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Heritage Francisco Liriano Clubhouse Collection SP Patch #CCR-FL (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Heritage sports trading card highlighted in the title Card #CCR-FL. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2011 Topps Heritage; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Heritage Francisco Liriano Clubhouse Collection SP Patch #CCR-FL\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Heritage; Season: 2011; Year manufactured: 2011; Player/Athlete: Francisco Liriano; Sport: Baseball; League: MLB; Features: Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-heritage-francisco-liriano-clubhouse-collection-sp-patch-ccr-fl-1.BAn4LoN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11424,7 +11425,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Triple Threads Stephen Drew Unity Relic 36 #TTUSR-251 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2011 Topps Triple Threads Stephen Drew Unity Relic 36 #TTUSR-251 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2011 Topps Triple Threads sports trading card highlighted in the title Card #TTUSR-251. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2011 Topps Triple Threads; Year: 2011; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2011 Topps Triple Threads Stephen Drew Unity Relic /36 #TTUSR-251\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Triple Threads; Season: 2011; Year manufactured: 2011; Player/Athlete: Stephen Drew; Sport: Baseball; League: MLB; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-triple-threads-stephen-drew-unity-relic-36-ttusr-251-1.BAn6Fi7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11461,7 +11462,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Jurickson Profar Top Prospects Rookie Refractor (1).JPG",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Jurickson Profar Top Prospects Rookie Refractor (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman sports trading card featuring Jurickson Profar and the Texas Rangers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2012 Bowman; Year: 2012; Player: Jurickson Profar; Team: Texas Rangers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Platinum Jurickson Profar Top Prospects Rookie Refractor\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman; Season: 2012; Year manufactured: 2012; Player/Athlete: Jurickson Profar; Team: Texas Rangers; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-platinum-jurickson-profar-top-prospects-rookie-refractor-1.BACtmen",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11499,7 +11500,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Oscar Taveras Prospect Purple + Refractor Rookie Set (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Oscar Taveras Prospect Purple + Refractor Rookie Set (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2012 Bowman; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Platinum Oscar Taveras Prospect Purple + Refractor Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman; Season: 2012; Year manufactured: 2012; Player/Athlete: Oscar Taveras; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Purple; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-platinum-oscar-taveras-prospect-purple-plus-refractor-rookie-set-1.BACDQQj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11537,7 +11538,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Wil Myers Prospect Rookie Refractor #BPP80 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Wil Myers Prospect Rookie Refractor #BPP80 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman sports trading card highlighted in the title Card #BPP80. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2012 Bowman; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Platinum Wil Myers Prospect Rookie Refractor #BPP80\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman; Season: 2012; Year manufactured: 2012; Player/Athlete: Wil Myers; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-platinum-wil-myers-prospect-rookie-refractor-bpp80-1.BACbGwu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11573,7 +11574,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Platinum Yu Darvish Refractor #9.jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman sports trading card featuring Yu Darvish and the Texas Rangers Card #9. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2012 Bowman; Year: 2012; Player: Yu Darvish; Team: Texas Rangers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Platinum Yu Darvish Refractor #9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman; Season: 2012; Year manufactured: 2012; Player/Athlete: Yu Darvish; Team: Texas Rangers; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-platinum-yu-darvish-refractor-9.BACb199",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11609,7 +11610,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Sterling Brian Johnson Prospect Auto #BSAP-BJ (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Sterling Brian Johnson Prospect Auto #BSAP-BJ (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman Sterling sports trading card highlighted in the title Card #BSAP-BJ. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2012 Bowman Sterling; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Sterling Brian Johnson Prospect Auto #BSAP-BJ\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman Sterling; Season: 2012; Year manufactured: 2012; Player/Athlete: Brian Johnson; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-sterling-brian-johnson-prospect-auto-bsap-bj-1.BACpMEx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11625,6 +11626,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brian Johnson",
       "excelFields": {
         "Title": "2012 Bowman Sterling Brian Johnson Prospect Auto #BSAP-BJ",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -11644,7 +11646,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Sterling Christian Yelich Rookie Prospect Refractor 199 #BSP50 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Sterling Christian Yelich Rookie Prospect Refractor 199 #BSP50 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman Sterling sports trading card featuring Christian Yelich and the Milwaukee Brewers Card #BSP50. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Bowman Sterling; Year: 2012; Player: Christian Yelich; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Sterling Christian Yelich Rookie Prospect Refractor /199 #BSP50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman Sterling; Season: 2012; Year manufactured: 2012; Player/Athlete: Christian Yelich; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-sterling-christian-yelich-rookie-prospect-refractor-199-bsp50-1.BAndIUv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11682,7 +11684,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Trayce Thompson Prospect Auto Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2012 Bowman Trayce Thompson Prospect Auto Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Bowman sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2012 Bowman; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Bowman Trayce Thompson Prospect Auto Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2012 Bowman; Season: 2012; Year manufactured: 2012; Player/Athlete: Trayce Thompson; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-bowman-trayce-thompson-prospect-auto-set-x2-1.BAn2xh7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11698,6 +11700,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Trayce Thompson",
       "excelFields": {
         "Title": "2012 Bowman Trayce Thompson Prospect Auto Set (x2)",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     },
@@ -11718,7 +11721,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Corey Seager Yearbook Rookie + 2021 Topps Gold Label (x3) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Corey Seager Yearbook Rookie + 2021 Topps Gold Label (x3) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite sports trading card featuring Corey Seager and the Texas Rangers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2012 Donruss Elite; Year: 2012; Player: Corey Seager; Team: Texas Rangers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Corey Seager Yearbook Rookie + 2021 Topps Gold Label (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Donruss Elite; Season: 2012; Year manufactured: 2012; Player/Athlete: Corey Seager; Team: Texas Rangers; Sport: Baseball; League: MLB; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-corey-seager-yearbook-rookie-plus-2021-topps-gold-label-x3-1.BAnzXmg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11756,7 +11759,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Chris Stratton Status Rookie Die-Cut 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Chris Stratton Status Rookie Die-Cut 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card featuring Chris Stratton and the Pittsburgh Pirates. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Player: Chris Stratton; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Chris Stratton Status Rookie Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Chris Stratton; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-chris-stratton-status-rookie-die-cut-200-1.BAnTclV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11795,7 +11798,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Collin Wiles Rookie Prospects Auto 622 #147 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Collin Wiles Rookie Prospects Auto 622 #147 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title Card #147. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Collin Wiles Rookie Prospects Auto /622 #147\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Collin Wiles; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-collin-wiles-rookie-prospects-auto-622-147-1.BAnTMDg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11813,7 +11816,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Collin Wiles",
       "excelFields": {
         "Title": "2012 Donruss Elite Extra Edition Collin Wiles Rookie Prospects Auto /622 #147",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     }
@@ -11833,7 +11836,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Jario Beras Aspirations Rookie Die-Cut 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Jario Beras Aspirations Rookie Die-Cut 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Jario Beras Aspirations Rookie Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Jario Beras; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-jario-beras-aspirations-rookie-die-cut-200-1.BAnTsg2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11872,7 +11875,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Nick Williams Aspirations Prospect Auto 100 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Nick Williams Aspirations Prospect Auto 100 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Nick Williams Aspirations Prospect Auto /100\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Nick Williams; Sport: Baseball; League: MLB; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-nick-williams-aspirations-prospect-auto-100-1.BAnuIgp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11889,7 +11892,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Nick Williams",
       "excelFields": {
         "Title": "2012 Donruss Elite Extra Edition Nick Williams Aspirations Prospect Auto /100",
-        "C:Features": "Serial Numbered",
+        "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -11910,7 +11913,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Patrick Cantwell Rookie Auto 622 Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Patrick Cantwell Rookie Auto 622 Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Patrick Cantwell Rookie Auto /622 Set (x2) .\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Patrick Cantwell; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-patrick-cantwell-rookie-auto-622-set-x2-1.BAnucLG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11928,7 +11931,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Patrick Cantwell",
       "excelFields": {
         "Title": "2012 Donruss Elite Extra Edition Patrick Cantwell Rookie Auto /622 Set (x2) .",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -11949,7 +11952,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Preston Beck Aspirations Rookie Die-Cut 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Preston Beck Aspirations Rookie Die-Cut 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Preston Beck Aspirations Rookie Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Preston Beck; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-preston-beck-aspirations-rookie-die-cut-200-1.BAnuiQa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -11988,7 +11991,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Richie Shaffer Rookie Auto 722 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Richie Shaffer Rookie Auto 722 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Richie Shaffer Rookie Auto /722\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Richie Shaffer; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-richie-shaffer-rookie-auto-722-1.BAnA3Gf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12006,7 +12009,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Richie Shaffer",
       "excelFields": {
         "Title": "2012 Donruss Elite Extra Edition Richie Shaffer Rookie Auto /722",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -12027,7 +12030,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Royce Bolinger Status Rookie Die-Cut 100 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2012 Donruss Elite Extra Edition Royce Bolinger Status Rookie Die-Cut 100 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Donruss Elite Extra Edition; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Donruss Elite Extra Edition Royce Bolinger Status Rookie Die-Cut /100\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2012 Donruss Elite Extra Edition; Season: 2012; Year manufactured: 2012; Player/Athlete: Royce Bolinger; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-donruss-elite-extra-edition-royce-bolinger-status-rookie-die-cut-100-1.BAnAou9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12066,7 +12069,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2012 Goodwin Champions Billy Hamilton Mini Rookie (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Pre-2010/2012 Goodwin Champions Billy Hamilton Mini Rookie (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal.\nDetails: Year: 2012; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Goodwin Champions Billy Hamilton Mini Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2012 Goodwin; Season: 2012; Year manufactured: 2012; Player/Athlete: Billy Hamilton; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-goodwin-champions-billy-hamilton-mini-rookie-1.BAnXcHF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12103,7 +12106,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Chrome Derek Holland Sepia Refractor 75 #92 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Chrome Derek Holland Sepia Refractor 75 #92 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps Chrome sports trading card highlighted in the title Card #92. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2012 Topps Chrome; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Chrome Derek Holland Sepia Refractor /75 #92\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps Chrome; Season: 2012; Year manufactured: 2012; Player/Athlete: Derek Holland; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-chrome-derek-holland-sepia-refractor-75-92-1.BAn6cJa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12140,7 +12143,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Golden Moments Liam Hendricks SP Auto #GMA-LH (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Golden Moments Liam Hendricks SP Auto #GMA-LH (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps sports trading card highlighted in the title Card #GMA-LH. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2012 Topps; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Golden Moments Liam Hendricks SP Auto #GMA-LH\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps; Season: 2012; Year manufactured: 2012; Player/Athlete: Liam Hendricks; Sport: Baseball; League: MLB; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-golden-moments-liam-hendricks-sp-auto-gma-lh-1.BAn6Qmx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12158,7 +12161,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Liam Hendricks",
       "excelFields": {
         "Title": "2012 Topps Golden Moments Liam Hendricks SP Auto #GMA-LH",
-        "C:Features": "Short Print|Parallel/Variety",
+        "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -12178,7 +12181,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Tier One Adan Lind Crowd Pleaser Auto 399 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Tier One Adan Lind Crowd Pleaser Auto 399 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Set: 2012 Topps; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Tier One Adan Lind Crowd Pleaser Auto /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps; Season: 2012; Year manufactured: 2012; Player/Athlete: Adan Lind; Sport: Baseball; League: MLB; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-tier-one-adan-lind-crowd-pleaser-auto-399-1.BAnsJDv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12195,7 +12198,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Adan Lind",
       "excelFields": {
         "Title": "2012 Topps Tier One Adan Lind Crowd Pleaser Auto /399",
-        "C:Features": "Serial Numbered",
+        "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -12216,7 +12219,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Triple Threads Yovani Gallardo Triple Patch 25 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Triple Threads Yovani Gallardo Triple Patch 25 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps Triple Threads sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and memorabilia-card appeal.\nDetails: Set: 2012 Topps Triple Threads; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Triple Threads Yovani Gallardo Triple Patch /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps Triple Threads; Season: 2012; Year manufactured: 2012; Player/Athlete: Yovani Gallardo; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-triple-threads-yovani-gallardo-triple-patch-25-1.BAnsbLl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12254,7 +12257,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Update Series Dan Straily Gold Foil Rookie 2012 #128 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2012 Topps Update Series Dan Straily Gold Foil Rookie 2012 #128 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2012 Topps sports trading card highlighted in the title Card #128. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2012 Topps; Year: 2012; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2012 Topps Update Series Dan Straily Gold Foil Rookie /2012 #128\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2012 Topps; Season: 2012; Year manufactured: 2012; Player/Athlete: Series Dan; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-topps-update-series-dan-straily-gold-foil-rookie-2012-128-1.BAnQPNs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12292,7 +12295,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Chrome Jordan Barnes Mini Refractor Rookie 125 #116 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Chrome Jordan Barnes Mini Refractor Rookie 125 #116 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Chrome sports trading card highlighted in the title Card #116. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2013 Bowman Chrome; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Chrome Jordan Barnes Mini Refractor Rookie /125 #116\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Chrome; Season: 2013; Year manufactured: 2013; Player/Athlete: Jordan Barnes; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-chrome-jordan-barnes-mini-refractor-rookie-125-116-1.BAn2LjS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12330,7 +12333,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Chrome Nik Turley Mini Refractor Rookie 125 #116 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Chrome Nik Turley Mini Refractor Rookie 125 #116 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Chrome sports trading card highlighted in the title Card #116. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2013 Bowman Chrome; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Chrome Nik Turley Mini Refractor Rookie /125 #116\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Chrome; Season: 2013; Year manufactured: 2013; Player/Athlete: Nik Turley; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-chrome-nik-turley-mini-refractor-rookie-125-116-1.BAn3goP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12368,7 +12371,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Inception Addison Russell Rookie Prospect Auto BGS 9.5 Auto 10 (1).JPG",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Inception Addison Russell Rookie Prospect Auto BGS 9.5 Auto 10 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Sport: Baseball; League: MLB; Condition: Graded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Inception Addison Russell Rookie Prospect Auto BGS 9.5 Auto 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Addison Russell; Sport: Baseball; League: MLB; Features: Autograph, Rookie; Autographed: Yes; Condition: BGS 9.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-inception-addison-russell-rookie-prospect-auto-bgs-95-auto-10-1.BAn3ila",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12385,7 +12388,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Addison Russell",
       "excelFields": {
         "Title": "2013 Bowman Inception Addison Russell Rookie Prospect Auto BGS 9.5 Auto 10",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     },
@@ -12406,7 +12409,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Inception Miles Head Auto Relics #AR-MH (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Inception Miles Head Auto Relics #AR-MH (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card highlighted in the title Card #AR-MH. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Inception Miles Head Auto Relics #AR-MH\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Miles Head; Sport: Baseball; League: MLB; Features: Autograph, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-inception-miles-head-auto-relics-ar-mh-1.BAnK1QS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12423,7 +12426,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Miles Head",
       "excelFields": {
         "Title": "2013 Bowman Inception Miles Head Auto Relics #AR-MH",
-        "C:Features": "Memorabilia",
+        "C:Features": "Autograph|Memorabilia",
         "C:Autographed": "Yes"
       }
     }
@@ -12443,7 +12446,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Jake Odorizzi Orange Foil Rookie 250 #127 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Jake Odorizzi Orange Foil Rookie 250 #127 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card highlighted in the title Card #127. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Jake Odorizzi Orange Foil Rookie /250 #127\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Jake Odorizzi; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-jake-odorizzi-orange-foil-rookie-250-127-1.BAnKap4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12481,7 +12484,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Avisail Garcia Red Jumbo Relic Auto 25 Detroit Tigers (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Avisail Garcia Red Jumbo Relic Auto 25 Detroit Tigers (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card highlighted in the title and the Detroit Tigers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Team: Detroit Tigers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Memorabilia | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Platinum Avisail Garcia Red Jumbo Relic Auto /25 Detroit Tigers\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Avisail Garcia; Team: Detroit Tigers; Sport: Baseball; League: MLB; Parallel/Variety: Red; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-platinum-avisail-garcia-red-jumbo-relic-auto-25-detroit-tigers-1.BAnfEAv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12500,7 +12503,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Avisail Garcia",
       "excelFields": {
         "Title": "2013 Bowman Platinum Avisail Garcia Red Jumbo Relic Auto /25 Detroit Tigers",
-        "C:Features": "Serial Numbered|Memorabilia|Parallel/Variety",
+        "C:Features": "Autograph|Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -12522,7 +12525,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Nick Castellanos Top Prospects SP + Base Rookie Set (x8) (2).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Nick Castellanos Top Prospects SP + Base Rookie Set (x8) (3).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card featuring Nick Castellanos and the Detroit Tigers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Player: Nick Castellanos; Team: Detroit Tigers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Platinum Nick Castellanos Top Prospects SP + Base Rookie Set (x8)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Nick Castellanos; Team: Detroit Tigers; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-platinum-nick-castellanos-top-prospects-sp-plus-base-rookie-set-x8-1.BAnfKnS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12559,7 +12562,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Rougned Odor Rookie Refractor Auto #BPAP-RO (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Platinum Rougned Odor Rookie Refractor Auto #BPAP-RO (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman sports trading card highlighted in the title Card #BPAP-RO. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2013 Bowman; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Platinum Rougned Odor Rookie Refractor Auto #BPAP-RO\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman; Season: 2013; Year manufactured: 2013; Player/Athlete: Rougned Odor; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-platinum-rougned-odor-rookie-refractor-auto-bpap-ro-1.BAnqV5b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12577,7 +12580,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Rougned Odor",
       "excelFields": {
         "Title": "2013 Bowman Platinum Rougned Odor Rookie Refractor Auto #BPAP-RO",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -12598,7 +12601,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Austin Wilson RC Refractor Auto 150 + Auto + Die-Cut 200 (2).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Austin Wilson RC Refractor Auto 150 + Auto + Die-Cut 200 (3).JPG"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Austin Wilson RC Refractor Auto /150 + Auto + Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Austin Wilson; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Die-Cut; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-austin-wilson-rc-refractor-auto-150-plus-auto-plus-die-cut-200-1.BAnqmkG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12617,7 +12620,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Austin Wilson",
       "excelFields": {
         "Title": "2013 Bowman Sterling Austin Wilson RC Refractor Auto /150 + Auto + Die-Cut /200",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -12638,7 +12641,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Brad Miller Prospect Auto #BSAP-BMI (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Brad Miller Prospect Auto #BSAP-BMI (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. 2013 Bowman Sterling baseball card featuring Brad Miller with connections to the Seattle Mariners. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Player: Brad Miller; Team: Seattle Mariners; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Brad Miller Prospect Auto #BSAP-BMI\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Brad Miller; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-brad-miller-prospect-auto-bsap-bmi-1.BAnBQZQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12654,6 +12657,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brad Miller",
       "excelFields": {
         "Title": "2013 Bowman Sterling Brad Miller Prospect Auto #BSAP-BMI",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -12680,7 +12684,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Hunter Green Gold RC Auto 50 + Bowman Chrome Auto Set (x6) (8).JPG",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Hunter Green Gold RC Auto 50 + Bowman Chrome Auto Set (x6) (9).JPG"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Hunter Green Gold RC Auto /50 + Bowman Chrome Auto Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Hunter Green; Sport: Baseball; League: MLB; Parallel/Variety: Chrome, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-hunter-green-gold-rc-auto-50-plus-bowman-chrome-auto-set-x6-1.BAnBtnV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12699,7 +12703,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Hunter Green",
       "excelFields": {
         "Title": "2013 Bowman Sterling Hunter Green Gold RC Auto /50 + Bowman Chrome Auto Set (x6)",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -12720,7 +12724,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Julio Morban Prospect Auto #BSAP-JMO (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Julio Morban Prospect Auto #BSAP-JMO (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card highlighted in the title Card #BSAP-JMO. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Julio Morban Prospect Auto #BSAP-JMO\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Julio Morban; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-julio-morban-prospect-auto-bsap-jmo-1.BAnoU6N",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12736,6 +12740,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Julio Morban",
       "excelFields": {
         "Title": "2013 Bowman Sterling Julio Morban Prospect Auto #BSAP-JMO",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -12755,7 +12760,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Taijuan Walker Prospect Auto Set (x2) #BSAP-TW (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Taijuan Walker Prospect Auto Set (x2) #BSAP-TW (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card featuring Taijuan Walker and the Seattle Mariners Card #BSAP-TW. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Player: Taijuan Walker; Team: Seattle Mariners; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Taijuan Walker Prospect Auto Set (x2) #BSAP-TW\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Taijuan Walker; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-taijuan-walker-prospect-auto-set-x2-bsap-tw-1.BAnzErB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12771,6 +12776,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Taijuan Walker",
       "excelFields": {
         "Title": "2013 Bowman Sterling Taijuan Walker Prospect Auto Set (x2) #BSAP-TW",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -12790,7 +12796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Trevor Williams Prospect Auto #BSAP-TWI (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Trevor Williams Prospect Auto #BSAP-TWI (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card featuring Trevor Williams and the Pittsburgh Pirates Card #BSAP-TWI. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Player: Trevor Williams; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Trevor Williams Prospect Auto #BSAP-TWI\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Trevor Williams; Team: Pittsburgh Pirates; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-trevor-williams-prospect-auto-bsap-twi-1.BAnIBv1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12806,6 +12812,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Trevor Williams",
       "excelFields": {
         "Title": "2013 Bowman Sterling Trevor Williams Prospect Auto #BSAP-TWI",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     }
@@ -12825,7 +12832,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Victor Sanchez Prospect Refractor Auto 150 + Base Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2013 Bowman Sterling Victor Sanchez Prospect Refractor Auto 150 + Base Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Bowman Sterling sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Set: 2013 Bowman Sterling; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Bowman Sterling Victor Sanchez Prospect Refractor Auto /150 + Base Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2013 Bowman Sterling; Season: 2013; Year manufactured: 2013; Player/Athlete: Victor Sanchez; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-bowman-sterling-victor-sanchez-prospect-refractor-auto-150-plus-base-auto-1.BAnTGOF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12843,7 +12850,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Victor Sanchez",
       "excelFields": {
         "Title": "2013 Bowman Sterling Victor Sanchez Prospect Refractor Auto /150 + Base Auto",
-        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -12864,7 +12871,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra DJ Peterson Rookie Auto 299 + Leaf Metal Draft RC Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra DJ Peterson Rookie Auto 299 + Leaf Metal Draft RC Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Donruss Elite sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Donruss Elite; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Donruss Elite Extra DJ Peterson Rookie Auto /299 + Leaf Metal Draft RC Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2013 Donruss Elite; Season: 2013; Year manufactured: 2013; Player/Athlete: Dj Peterson; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-donruss-elite-extra-dj-peterson-rookie-auto-299-plus-leaf-metal-draft-rc-auto-1.BAnAktn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12882,7 +12889,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dj Peterson",
       "excelFields": {
         "Title": "2013 Donruss Elite Extra DJ Peterson Rookie Auto /299 + Leaf Metal Draft RC Auto",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -12903,7 +12910,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra Edition Aaron Slegers Aspirations Rookie Die-Cut 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra Edition Aaron Slegers Aspirations Rookie Die-Cut 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2013 Donruss Elite Extra Edition; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Donruss Elite Extra Edition Aaron Slegers Aspirations Rookie Die-Cut /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2013 Donruss Elite Extra Edition; Season: 2013; Year manufactured: 2013; Player/Athlete: Aaron Slegers; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-donruss-elite-extra-edition-aaron-slegers-aspirations-rookie-die-cut-200-1.BAnA6S2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12942,7 +12949,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra Edition Travis Demeritte Aspirations Rookie Auto 200 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2013 Donruss Elite Extra Edition Travis Demeritte Aspirations Rookie Auto 200 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Donruss Elite Extra Edition sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2013 Donruss Elite Extra Edition; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Donruss Elite Extra Edition Travis Demeritte Aspirations Rookie Auto /200\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2013 Donruss Elite Extra Edition; Season: 2013; Year manufactured: 2013; Player/Athlete: Travis Demeritte; Team: Texas Rangers; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-donruss-elite-extra-edition-travis-demeritte-aspirations-rookie-auto-200-1.BAn5rpS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12960,7 +12967,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Travis Demeritte",
       "excelFields": {
         "Title": "2013 Donruss Elite Extra Edition Travis Demeritte Aspirations Rookie Auto /200",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -12981,7 +12988,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Domingo Tapia Rookie Refractor Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Domingo Tapia Rookie Refractor Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Domingo Tapia Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Domingo Tapia; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-domingo-tapia-rookie-refractor-auto-1.BAn22Bn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -12999,7 +13006,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Domingo Tapia",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Domingo Tapia Rookie Refractor Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13020,7 +13027,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Eduardo Rodriquez Rookie Refractor Auto  (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Eduardo Rodriquez Rookie Refractor Auto  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Eduardo Rodriquez Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Eduardo Rodriquez; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-eduardo-rodriquez-rookie-refractor-auto-1.BAn3EAl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13038,7 +13045,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Eduardo Rodriquez",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Eduardo Rodriquez Rookie Refractor Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13062,7 +13069,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Hunter Harvey Purple Refractor Auto 150 + State Pride 25 (4).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Hunter Harvey Purple Refractor Auto 150 + State Pride 25 (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card featuring Hunter Harvey and the Baltimore Orioles. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Year: 2013; Player: Hunter Harvey; Team: Baltimore Orioles; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Hunter Harvey Purple Refractor Auto 1/50 + State Pride /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Hunter Harvey; Team: Baltimore Orioles; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Purple; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAn3Ncb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13080,7 +13087,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Hunter Harvey",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Hunter Harvey Purple Refractor Auto 1/50 + State Pride /25",
-        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13101,7 +13108,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Jonathan Gray Red Rookie Refractor Auto 5 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Jonathan Gray Red Rookie Refractor Auto 5 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Jonathan Gray Red Rookie Refractor Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Jonathan Gray; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-jonathan-gray-red-rookie-refractor-auto-5-1.BAnKQZN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13120,7 +13127,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jonathan Gray",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Jonathan Gray Red Rookie Refractor Auto /5",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13141,7 +13148,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Maikel Franco Purple Rookie Refractor Auto 50 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Maikel Franco Purple Rookie Refractor Auto 50 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Maikel Franco Purple Rookie Refractor Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Maikel Franco; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Purple; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-maikel-franco-purple-rookie-refractor-auto-50-1.BAnfdu4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13160,7 +13167,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Maikel Franco",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Maikel Franco Purple Rookie Refractor Auto /50",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13181,7 +13188,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Phillip Ervin Rookie Refractor Auto  (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Phillip Ervin Rookie Refractor Auto  (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Phillip Ervin Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Phillip Ervin; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-phillip-ervin-rookie-refractor-auto-1.BAnfZRj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13199,7 +13206,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Phillip Ervin",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Phillip Ervin Rookie Refractor Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13220,7 +13227,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Ryan Eades Rookie Refractor Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Ryan Eades Rookie Refractor Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card highlighted in the title. A strong addition for collectors and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Year: 2013; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Ryan Eades Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Ryan Eades; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-ryan-eades-rookie-refractor-auto-1.BACbgoJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13238,7 +13245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ryan Eades",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Ryan Eades Rookie Refractor Auto",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13259,7 +13266,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Taijuan Walker Pride Purple Rookie Refractor Auto 25 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Taijuan Walker Pride Purple Rookie Refractor Auto 25 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card featuring Taijuan Walker and the Seattle Mariners. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2013; Player: Taijuan Walker; Team: Seattle Mariners; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Taijuan Walker Pride Purple Rookie Refractor Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Taijuan Walker; Team: Seattle Mariners; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Purple; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-taijuan-walker-pride-purple-rookie-refractor-auto-25-1.BACbicN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13278,7 +13285,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Taijuan Walker",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Taijuan Walker Pride Purple Rookie Refractor Auto /25",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13299,7 +13306,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Tim Anderson Blue Rookie Refractor Auto 25 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2013 Leaf Metal Draft Tim Anderson Blue Rookie Refractor Auto 25 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 sports trading card featuring Tim Anderson and the Chicago White Sox. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Year: 2013; Player: Tim Anderson; Team: Chicago White Sox; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Leaf Metal Draft Tim Anderson Blue Rookie Refractor Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2013 Leaf Metal Draft; Season: 2013; Year manufactured: 2013; Player/Athlete: Tim Anderson; Team: Chicago White Sox; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-leaf-metal-draft-tim-anderson-blue-rookie-refractor-auto-25-1.BAn2TBe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13318,7 +13325,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Tim Anderson",
       "excelFields": {
         "Title": "2013 Leaf Metal Draft Tim Anderson Blue Rookie Refractor Auto /25",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -13339,7 +13346,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Finest Mike Olt Rookie Refractor Auto #RA-MO (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Finest Mike Olt Rookie Refractor Auto #RA-MO (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps Finest sports trading card highlighted in the title Card #RA-MO. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2013 Topps Finest; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Finest Mike Olt Rookie Refractor Auto #RA-MO\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps Finest; Season: 2013; Year manufactured: 2013; Player/Athlete: Mike Olt; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-finest-mike-olt-rookie-refractor-auto-ra-mo-1.BAntKIs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13357,7 +13364,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Mike Olt",
       "excelFields": {
         "Title": "2013 Topps Finest Mike Olt Rookie Refractor Auto #RA-MO",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -13377,7 +13384,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Manny Machado Rookie #270 + Heritage Rookie Stars #201 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Manny Machado Rookie #270 + Heritage Rookie Stars #201 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card featuring Manny Machado and the San Diego Padres Card #270. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2013 Topps; Year: 2013; Player: Manny Machado; Team: San Diego Padres; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Manny Machado Rookie #270 + Heritage Rookie Stars #201\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Manny Machado; Team: San Diego Padres; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-manny-machado-rookie-270-plus-heritage-rookie-stars-201-1.BAntPnf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13413,7 +13420,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Brennan Boesch Pink Border Parallel 25 #509 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Brennan Boesch Pink Border Parallel 25 #509 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card highlighted in the title Card #509. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Topps; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Mini Brennan Boesch Pink Border Parallel /25 #509\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Brennan Boesch; Sport: Baseball; League: MLB; Parallel/Variety: Pink; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-mini-brennan-boesch-pink-border-parallel-25-509-1.BAnD79t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13450,7 +13457,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Brett Lawrie Gold Foil 62 #13 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Brett Lawrie Gold Foil 62 #13 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card highlighted in the title Card #13. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Topps; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Mini Brett Lawrie Gold Foil /62 #13\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Brett Lawrie; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-mini-brett-lawrie-gold-foil-62-13-1.BAnmqQa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13487,7 +13494,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Drew Storen Gold Border Parallel 62 #611 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Drew Storen Gold Border Parallel 62 #611 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card highlighted in the title Card #611. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Topps; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Mini Drew Storen Gold Border Parallel /62 #611\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Drew Storen; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-mini-drew-storen-gold-border-parallel-62-611-1.BAnml44",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13524,7 +13531,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Jean Segura Gold Foil 62 #387 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Mini Jean Segura Gold Foil 62 #387 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card highlighted in the title Card #387. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Topps; Year: 2013; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Mini Jean Segura Gold Foil /62 #387\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Jean Segura; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-mini-jean-segura-gold-foil-62-387-1.BAnmiMJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13561,7 +13568,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Prince Fielder Gold Border Parallel 2013 #28 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Prince Fielder Gold Border Parallel 2013 #28 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card featuring Prince Fielder and the Milwaukee Brewers Card #28. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2013 Topps; Year: 2013; Player: Prince Fielder; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Prince Fielder Gold Border Parallel /2013 #28\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Prince Fielder; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-prince-fielder-gold-border-parallel-2013-28-1.BAnp3F4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13598,7 +13605,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Tribute Robinson Cano Tribute to the Stars Relic Red 10 #TTSR-RC (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2013 Topps Tribute Robinson Cano Tribute to the Stars Relic Red 10 #TTSR-RC (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2013 Topps sports trading card featuring Robinson Cano and the New York Yankees Card #TTSR-RC. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and memorabilia-card appeal.\nDetails: Set: 2013 Topps; Year: 2013; Player: Robinson Cano; Team: New York Yankees; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2013 Topps Tribute Robinson Cano Tribute to the Stars Relic Red /10 #TTSR-RC\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Topps; Season: 2013; Year manufactured: 2013; Player/Athlete: Robinson Cano; Team: New York Yankees; Sport: Baseball; League: MLB; Parallel/Variety: Red; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-topps-tribute-robinson-cano-tribute-to-the-stars-relic-red-10-ttsr-rc-1.BAnpib9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13637,7 +13644,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2014 Bowman Jamie Westbrook 1st Prospect Auto Autograph (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2014 Bowman Jamie Westbrook 1st Prospect Auto Autograph (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Bowman sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its autograph appeal.\nDetails: Set: 2014 Bowman; Year: 2014; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Bowman Jamie Westbrook 1st Prospect Auto Autograph\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2014 Bowman; Season: 2014; Year manufactured: 2014; Player/Athlete: Jamie Westbrook; Sport: Baseball; League: MLB; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-bowman-jamie-westbrook-1st-prospect-auto-autograph-1.BACQX29",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13653,6 +13660,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Jamie Westbrook",
       "excelFields": {
         "Title": "2014 Bowman Jamie Westbrook 1st Prospect Auto Autograph",
+        "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
     },
@@ -13673,7 +13681,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2014 Donruss Leonys Martin Press Proof SP 99 #346 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2014 Donruss Leonys Martin Press Proof SP 99 #346 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 sports trading card highlighted in the title Card #346. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Year: 2014; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print | Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Donruss Leonys Martin Press Proof SP /99 #346\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2014 Donruss; Season: 2014; Year manufactured: 2014; Player/Athlete: Leonys Martin; Sport: Baseball; League: MLB; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-donruss-leonys-martin-press-proof-sp-99-346-1.BAn70w7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13711,7 +13719,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Archives Christian Yelich Gold 199 + 2023 Topps Series 1 Gold 2023 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Archives Christian Yelich Gold 199 + 2023 Topps Series 1 Gold 2023 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Topps sports trading card featuring Christian Yelich and the Milwaukee Brewers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2014 Topps; Year: 2014; Player: Christian Yelich; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Topps Archives Christian Yelich Gold /199 + 2023 Topps Series 1 Gold /2023\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2014 Topps; Season: 2014; Year manufactured: 2014; Player/Athlete: Christian Yelich; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-topps-archives-christian-yelich-gold-199-plus-2023-topps-series-1-gold-2023-1.BAnyuXn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13749,7 +13757,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Tier One Chris Archer New Guard Rookie Auto 181 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Tier One Chris Archer New Guard Rookie Auto 181 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2014 Topps; Year: 2014; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Topps Tier One Chris Archer New Guard Rookie Auto /181\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2014 Topps; Season: 2014; Year manufactured: 2014; Player/Athlete: Chris Archer; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-topps-tier-one-chris-archer-new-guard-rookie-auto-181-1.BAnyShF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13767,7 +13775,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Chris Archer",
       "excelFields": {
         "Title": "2014 Topps Tier One Chris Archer New Guard Rookie Auto /181",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -13788,7 +13796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Tier One Prince Fielder Relics Dual 50 #DR-PF (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2014 Topps Tier One Prince Fielder Relics Dual 50 #DR-PF (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2014 Topps sports trading card featuring Prince Fielder and the Milwaukee Brewers Card #DR-PF. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2014 Topps; Year: 2014; Player: Prince Fielder; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2014 Topps Tier One Prince Fielder Relics Dual /50 #DR-PF\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2014 Topps; Season: 2014; Year manufactured: 2014; Player/Athlete: Prince Fielder; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-topps-tier-one-prince-fielder-relics-dual-50-dr-pf-1.BAo9fj9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13825,7 +13833,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2015 Topps Allen & Ginter Yasmany Tomas Framed Mini Rookie Auto #AGA-YT (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2015 Topps Allen & Ginter Yasmany Tomas Framed Mini Rookie Auto #AGA-YT (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2015 Topps Allen & Ginter sports trading card highlighted in the title Card #AGA-YT. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2015 Topps Allen & Ginter; Year: 2015; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2015 Topps Allen & Ginter Yasmany Tomas Framed Mini Rookie Auto #AGA-YT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2015 Topps Allen & Ginter; Season: 2015; Year manufactured: 2015; Player/Athlete: Yasmany Tomas; Sport: Baseball; League: MLB; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2015-topps-allen-ginter-yasmany-tomas-framed-mini-rookie-auto-aga-yt-1.BAo9cGa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13842,7 +13850,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Yasmany Tomas",
       "excelFields": {
         "Title": "2015 Topps Allen & Ginter Yasmany Tomas Framed Mini Rookie Auto #AGA-YT",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -13862,7 +13870,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2015 Topps David Ortiz Career High Home Runs SP Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2015 Topps David Ortiz Career High Home Runs SP Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2015 Topps sports trading card featuring David Ortiz and the Boston Red Sox. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2015 Topps; Year: 2015; Player: David Ortiz; Team: Boston Red Sox; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print | Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2015 Topps David Ortiz Career High Home Runs SP Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2015 Topps; Season: 2015; Year manufactured: 2015; Player/Athlete: David Ortiz; Team: Boston Red Sox; Sport: Baseball; League: MLB; Features: Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2015-topps-david-ortiz-career-high-home-runs-sp-patch-1.BAo9kFf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13900,7 +13908,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2016 Bowman Chrome Kevin Kramer Prospect Auto Rookie Set (x2) #CPA-KK (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Bowman/2016 Bowman Chrome Kevin Kramer Prospect Auto Rookie Set (x2) #CPA-KK (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2016 Bowman Chrome sports trading card highlighted in the title Card #CPA-KK. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2016 Bowman Chrome; Year: 2016; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2016 Bowman Chrome Kevin Kramer Prospect Auto Rookie Set (x2) #CPA-KK\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2016 Bowman Chrome; Season: 2016; Year manufactured: 2016; Player/Athlete: Kevin Kramer; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-bowman-chrome-kevin-kramer-prospect-auto-rookie-set-x2-cpa-kk-1.BACQamG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13918,7 +13926,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Kevin Kramer",
       "excelFields": {
         "Title": "2016 Bowman Chrome Kevin Kramer Prospect Auto Rookie Set (x2) #CPA-KK",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -13938,7 +13946,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2019 Topps Update #US62 Vladimir Guerrero Jr RC Blue Jays PSA 9 MINT (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2019 Topps Update #US62 Vladimir Guerrero Jr RC Blue Jays PSA 9 MINT (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2019 Topps sports trading card featuring Vladimir Guerrero and Vladimir Guerrero Jr. with connections to the Montreal Expos and Toronto Blue Jays Card #US62. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2019 Topps; Year: 2019; Player: Vladimir Guerrero | Vladimir Guerrero Jr.; Team: Montreal Expos | Toronto Blue Jays; Sport: Baseball; League: MLB; Condition: Graded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2019 Topps Update #US62 Vladimir Guerrero Jr RC Blue Jays PSA 9 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2019 Topps; Season: 2019; Year manufactured: 2019; Player/Athlete: Vladimir Guerrero, Vladimir Guerrero Jr.; Team: Montreal Expos, Toronto Blue Jays; Sport: Baseball; League: MLB; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2019-topps-update-us62-vladimir-guerrero-jr-rc-blue-jays-psa-9-mint-1.BAo9s6b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -13975,7 +13983,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2021 Topps Heritage Blake Snell Clubhouse Collection Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2021 Topps Heritage Blake Snell Clubhouse Collection Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Topps Heritage sports trading card featuring Blake Snell and the Tampa Bay Rays. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2021 Topps Heritage; Year: 2021; Player: Blake Snell; Team: Tampa Bay Rays; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2021 Topps Heritage Blake Snell Clubhouse Collection Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021 Topps Heritage; Season: 2021; Year manufactured: 2021; Player/Athlete: Blake Snell; Team: Tampa Bay Rays; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-topps-heritage-blake-snell-clubhouse-collection-patch-1.BAoHuKG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14012,7 +14020,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Fernando Tatis Jr Marvels Silver Shimmer Holo + Diamond King Insert (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Fernando Tatis Jr Marvels Silver Shimmer Holo + Diamond King Insert (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Fernando Tatis Jr. and the San Diego Padres. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Year: 2022; Player: Fernando Tatis Jr.; Team: San Diego Padres; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Donruss Fernando Tatis Jr Marvels Silver Shimmer Holo + Diamond King Insert\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022 Donruss; Season: 2022; Year manufactured: 2022; Player/Athlete: Fernando Tatis Jr.; Team: San Diego Padres; Sport: Baseball; League: MLB; Parallel/Variety: Holo, Shimmer, Silver; Features: Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-donruss-fernando-tatis-jr-marvels-silver-shimmer-holo-plus-diamond-king-insert-1.BAnc3Ge",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14065,7 +14073,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2022 Fire Justin Turner 299 + Trea Die-Cut + Gold Kershaw & Dodgers RC Set (16).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2022 Fire Justin Turner 299 + Trea Die-Cut + Gold Kershaw & Dodgers RC Set (17).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Justin Turner and the Los Angeles Dodgers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Year: 2022; Player: Justin Turner; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Fire Justin Turner /299 + Trea Die-Cut + Gold Kershaw & Dodgers RC Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022 Topps Fire; Season: 2022; Year manufactured: 2022; Player/Athlete: Justin Turner; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Parallel/Variety: Die-Cut, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-fire-justin-turner-299-plus-trea-die-cut-plus-gold-kershaw-dodgers-rc-set-1.BAoHZsn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14105,7 +14113,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Aaron Judge Rapture Pete Alonso Xander Bogaerts SP Set (x17) (2).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Aaron Judge Rapture Pete Alonso Xander Bogaerts SP Set (x17) (3).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Aaron Judge, Pete Alonso, and Xander Bogaerts with connections to the New York Yankees, New York Mets, and Boston Red Sox. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Year: 2022; Player: Aaron Judge | Pete Alonso | Xander Bogaerts; Team: New York Yankees | New York Mets | Boston Red Sox; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Donruss Aaron Judge Rapture Pete Alonso Xander Bogaerts SP Set (x17)\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022 Panini Donruss; Season: 2022; Year manufactured: 2022; Player/Athlete: Aaron Judge, Pete Alonso, Xander Bogaerts; Team: New York Yankees, New York Mets, Boston Red Sox; Sport: Baseball; League: MLB; Features: Short Print; Autographed: No; Cards included: 17; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-donruss-aaron-judge-rapture-pete-alonso-xander-bogaerts-sp-set-x17-1.BAncxwB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14142,7 +14150,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Mike Trout Unleashed Red Prizm 149 + Diamond Kings Inset (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Mike Trout Unleashed Red Prizm 149 + Diamond Kings Inset (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Prizm sports trading card featuring Mike Trout and the Los Angeles Angels. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2022 Prizm; Year: 2022; Player: Mike Trout; Team: Los Angeles Angels; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Donruss Mike Trout Unleashed Red Prizm /149 + Diamond Kings Inset\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022 Prizm; Season: 2022; Year manufactured: 2022; Player/Athlete: Mike Trout; Team: Los Angeles Angels; Sport: Baseball; League: MLB; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-donruss-mike-trout-unleashed-red-prizm-149-plus-diamond-kings-inset-1.BAn0D3g",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14180,7 +14188,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Devereaux Harrison Prospect SP 50 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Devereaux Harrison Prospect SP 50 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022-23 sports trading card highlighted in the title. A strong addition for basketball fans, NBA collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Season: 2022-23; Year: 2022; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Serial Numbered.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Stars & Stripes Devereaux Harrison Prospect SP /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Stars & Stripes; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Devereaux Harrison; Sport: Baseball; League: USA Baseball; Features: Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-stars-stripes-devereaux-harrison-prospect-sp-50-1.BAnChiB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -14217,7 +14225,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Landon Stump Prospect Auto 50 #NTDP-LS (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Landon Stump Prospect Auto 50 #NTDP-LS (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022-23 sports trading card highlighted in the title Card #NTDP-LS. A strong addition for basketball fans, NBA collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Season: 2022-23; Year: 2022; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Stars & Stripes Landon Stump Prospect Auto /50 #NTDP-LS\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Stars & Stripes; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Landon Stump; Sport: Baseball; League: USA Baseball; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-stars-stripes-landon-stump-prospect-auto-50-ntdp-ls-1.BAnCEAb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -14234,7 +14242,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Landon Stump",
       "excelFields": {
         "Title": "2022 Panini Stars & Stripes Landon Stump Prospect Auto /50 #NTDP-LS",
-        "C:Features": "Serial Numbered",
+        "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
     }
@@ -14254,7 +14262,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Will Sanders Prospect Auto 399 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars & Stripes Will Sanders Prospect Auto 399 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022-23 sports trading card highlighted in the title. A strong addition for basketball fans, NBA collectors, and set builders thanks to its serial-numbered appeal and autograph appeal.\nDetails: Season: 2022-23; Year: 2022; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Serial Numbered | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Stars & Stripes Will Sanders Prospect Auto /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Stars & Stripes; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Will Sanders; Sport: Baseball; League: USA Baseball; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-stars-stripes-will-sanders-prospect-auto-399-1.BAnnA5g",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -14271,7 +14279,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Will Sanders",
       "excelFields": {
         "Title": "2022 Panini Stars & Stripes Will Sanders Prospect Auto /399",
-        "C:Features": "Serial Numbered",
+        "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
     },
@@ -14295,7 +14303,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars Stripes Christian Rodriguez + Adrian Lopez RC Patch Auto 399 (4).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Stars Stripes Christian Rodriguez + Adrian Lopez RC Patch Auto 399 (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card highlighted in the title. 2022 Panini Stars and Stripes baseball card featuring Christian Rodriguez and Adrian Lopez with connections to USA Baseball. A strong addition for baseball fans, USA Baseball collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, memorabilia-card appeal, and autograph appeal.\nDetails: Season: 2022; Year: 2022; Player: Christian Rodriguez | Adrian Lopez; Team: USA Baseball; Sport: Baseball; League: USA Baseball; Condition: Ungraded; Features: Rookie | Serial Numbered | Memorabilia | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Panini Stars Stripes Christian Rodriguez + Adrian Lopez RC Patch Auto /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Stars Stripes; Season: 2022; Year manufactured: 2022; Player/Athlete: Christian Rodriguez, Adrian Lopez; Team: USA Baseball; Sport: Baseball; League: USA Baseball; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-panini-stars-stripes-christian-rodriguez-plus-adrian-lopez-rc-patch-auto-399-1.BAnncsp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -14314,7 +14322,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Christian Rodriguez|Adrian Lopez",
       "excelFields": {
         "Title": "2022 Panini Stars Stripes Christian Rodriguez + Adrian Lopez RC Patch Auto /399",
-        "C:Features": "Rookie|Serial Numbered|Memorabilia",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
     },
@@ -14338,7 +14346,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Big League Jacob Degrom Black 25 + Corey Seager Refractor + Rangers Rookie (4).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Big League Jacob Degrom Black 25 + Corey Seager Refractor + Rangers Rookie (5).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 sports trading card featuring Corey Seager and Jacob deGrom with connections to the Texas Rangers and New York Mets. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Year: 2023; Player: Corey Seager | Jacob deGrom; Team: Texas Rangers | New York Mets; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Big League Jacob Degrom Black /25 + Corey Seager Refractor + Rangers Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Big League; Season: 2023; Year manufactured: 2023; Player/Athlete: Corey Seager, Jacob deGrom; Team: Texas Rangers, New York Mets; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoxGTu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14378,7 +14386,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Bowman/2023 Bowman Chrome Luis Rodriguez Mojo Refractor + Herrera & Burleson Rookie Set (1).JPG",
       "assets/Ebay Listing Photos/Baseball/Bowman/2023 Bowman Chrome Luis Rodriguez Mojo Refractor + Herrera & Burleson Rookie Set (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2023 Bowman Chrome sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Bowman Chrome; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Bowman Chrome Luis Rodriguez Mojo Refractor + Herrera & Burleson Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023 Bowman Chrome; Season: 2023; Year manufactured: 2023; Player/Athlete: Luis Rodriguez; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACQp2t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14416,7 +14424,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Esteury Ruiz + JJ Bleday Purple Chrome Rookie SP + Insert (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Esteury Ruiz + JJ Bleday Purple Chrome Rookie SP + Insert (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card featuring Esteury Ruiz and JJ Bleday and the Oakland Athletics. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Player: Esteury Ruiz | JJ Bleday; Team: Oakland Athletics; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Heritage Esteury Ruiz + JJ Bleday Purple Chrome Rookie SP + Insert\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: Esteury Ruiz, JJ Bleday; Team: Oakland Athletics; Sport: Baseball; League: MLB; Parallel/Variety: Chrome, Purple; Features: Rookie, Short Print, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoImrl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14456,7 +14464,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage High Number Shintaro Fujinami Chrome Rookie 999 #688 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage High Number Shintaro Fujinami Chrome Rookie 999 #688 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card highlighted in the title Card #688. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Heritage High Number Shintaro Fujinami Chrome Rookie /999 #688\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: High Number Shintaro; Sport: Baseball; League: MLB; Parallel/Variety: Chrome; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAou1Kx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14494,7 +14502,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Jeremy Pena Clubhouse Collection Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Jeremy Pena Clubhouse Collection Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card featuring Jeremy Pena and the Houston Astros. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Player: Jeremy Pena; Team: Houston Astros; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Heritage Jeremy Pena Clubhouse Collection Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: Jeremy Pena; Team: Houston Astros; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAouOiJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14531,7 +14539,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage JJ Bleday Chrome Rookie Refractor 999 #647 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage JJ Bleday Chrome Rookie Refractor 999 #647 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card featuring JJ Bleday and the Oakland Athletics Card #647. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Player: JJ Bleday; Team: Oakland Athletics; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Heritage JJ Bleday Chrome Rookie Refractor /999 #647\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: JJ Bleday; Team: Oakland Athletics; Sport: Baseball; League: MLB; Parallel/Variety: Refractor, Chrome; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoRqEG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14569,7 +14577,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Yu Darvish Clubhouse Collection Patch + Series 1 Refractor (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Heritage Yu Darvish Clubhouse Collection Patch + Series 1 Refractor (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card featuring Yu Darvish and the Texas Rangers. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Player: Yu Darvish; Team: Texas Rangers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Heritage Yu Darvish Clubhouse Collection Patch + Series 1 Refractor\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: Yu Darvish; Team: Texas Rangers; Sport: Baseball; League: MLB; Parallel/Variety: Refractor; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoRn24",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14607,7 +14615,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series 1 Ethan Small 1988 Rookie Auto #88BA-ES (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series 1 Ethan Small 1988 Rookie Auto #88BA-ES (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #88BA-ES. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and autograph appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Series 1 Ethan Small 1988 Rookie Auto #88BA-ES\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Ethan Small; Sport: Baseball; League: MLB; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo5oPa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14624,7 +14632,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Ethan Small",
       "excelFields": {
         "Title": "2023 Topps Series 1 Ethan Small 1988 Rookie Auto #88BA-ES",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -14643,7 +14651,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series 1 Stars of MLB Near Complete Set - 27  30 Cards.jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Series 1 Stars of MLB Near Complete Set - 27 / 30 Cards\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Stars of; Sport: Baseball; League: MLB; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo5iWF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14677,7 +14685,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series 2 Spenser Watkins Blue Foil 999 #393 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series 2 Spenser Watkins Blue Foil 999 #393 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #393. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Series 2 Spenser Watkins Blue Foil /999 #393\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Spenser Watkins; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo5Oiu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14714,7 +14722,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Black Gold Michael Harris II Rookie #BG-6 Atlanta Braves (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Black Gold Michael Harris II Rookie #BG-6 Atlanta Braves (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Michael Harris II and the Atlanta Braves Card #BG-6. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Michael Harris II; Team: Atlanta Braves; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Black Gold Michael Harris II Rookie #BG-6 Atlanta Braves\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Michael Harris II; Team: Atlanta Braves; Sport: Baseball; League: MLB; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoY4MF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14751,7 +14759,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Matthew Batten Red Foil Rookie 199 RC #US38 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Matthew Batten Red Foil Rookie 199 RC #US38 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #US38. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Matthew Batten Red Foil Rookie /199 RC #US38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Matthew Batten; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAol9YG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14789,7 +14797,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Mitch Haniger Blue Foil 999 #US108 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Mitch Haniger Blue Foil 999 #US108 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #US108. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Mitch Haniger Blue Foil /999 #US108\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Mitch Haniger; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAolyMP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14825,7 +14833,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Alan Trejo Halloween SP Ghost Foil Ultra Rare (1).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Alan Trejo and the Colorado Rockies. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2023 Topps; Year: 2023; Player: Alan Trejo; Team: Colorado Rockies; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Alan Trejo Halloween SP Ghost Foil Ultra Rare\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Alan Trejo; Team: Colorado Rockies; Sport: Baseball; League: MLB; Parallel/Variety: Foil; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo0Qft",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14864,7 +14872,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Brett Baty Blue Foil Rookie 999 + Halloween Foil SP (2).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Brett Baty Blue Foil Rookie 999 + Halloween Foil SP (3).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Brett Baty and the New York Mets. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Brett Baty; Team: New York Mets; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Brett Baty Blue Foil Rookie /999 + Halloween Foil SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Brett Baty; Team: New York Mets; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo0ssI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14904,7 +14912,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Eddie Rosario Gold Border 2023 #US95 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Eddie Rosario Gold Border 2023 #US95 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Eddie Rosario and the Minnesota Twins Card #US95. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Eddie Rosario; Team: Minnesota Twins; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Eddie Rosario Gold Border /2023 #US95\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Eddie Rosario; Team: Minnesota Twins; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoGcVp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14941,7 +14949,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Estevan Florial Purple Foil 799 #US211 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Estevan Florial Purple Foil 799 #US211 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #US211. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Estevan Florial Purple Foil /799 #US211\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Series Estevan; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoW5Ou",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -14978,7 +14986,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Gio Urshela Purple Foil 799 #US259 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Gio Urshela Purple Foil 799 #US259 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Gio Urshela and the New York Yankees Card #US259. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Gio Urshela; Team: New York Yankees; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Gio Urshela Purple Foil /799 #US259\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Gio Urshela; Team: New York Yankees; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoWcWx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15015,7 +15023,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Grant Anderson Orange Foil Rookie 299 #US141 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Grant Anderson Orange Foil Rookie 299 #US141 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Grant Anderson and the Texas Rangers Card #US141. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Grant Anderson; Team: Texas Rangers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Grant Anderson Orange Foil Rookie /299 #US141\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Grant Anderson; Team: Texas Rangers; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoWren",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15053,7 +15061,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Hyun-Jin Ryu Blue Foil 999 #US128 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Hyun-Jin Ryu Blue Foil 999 #US128 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #US128. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Hyun-Jin Ryu Blue Foil /999 #US128\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Hyun-Jin; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAohFZG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15090,7 +15098,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jake Bird Pumpkin Foil Rookie #US162 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jake Bird Pumpkin Foil Rookie #US162 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Jake Bird and the Colorado Rockies Card #US162. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Jake Bird; Team: Colorado Rockies; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Jake Bird Pumpkin Foil Rookie #US162\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Jake Bird; Team: Colorado Rockies; Sport: Baseball; League: MLB; Parallel/Variety: Foil; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAohqG4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15127,7 +15135,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ji-Man Choi Gold Border 2023 #US208 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ji-Man Choi Gold Border 2023 #US208 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title Card #US208. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Ji-Man Choi Gold Border /2023 #US208\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Ji-Man; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAojhbe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15164,7 +15172,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series John Brebbia Blue Foil 999 #US157 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series John Brebbia Blue Foil 999 #US157 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring John Brebbia and the St. Louis Cardinals Card #US157. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: John Brebbia; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series John Brebbia Blue Foil /999 #US157\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: John Brebbia; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAojQqv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15201,7 +15209,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jordan Walker Blue Foil Rookie 999 #US122 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jordan Walker Blue Foil Rookie 999 #US122 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Jordan Walker and the St. Louis Cardinals Card #US122. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Jordan Walker; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Jordan Walker Blue Foil Rookie /999 #US122\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Jordan Walker; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoNlcl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15239,7 +15247,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jordan Walker Rookie Debut Gold Border 2023 #US122 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Jordan Walker Rookie Debut Gold Border 2023 #US122 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Jordan Walker and the St. Louis Cardinals Card #US122. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Jordan Walker; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Jordan Walker Rookie Debut Gold Border /2023 #US122\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Jordan Walker; Team: St. Louis Cardinals; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoezhX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15277,7 +15285,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Luis Arraez Blue Foil 999 #US1 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Luis Arraez Blue Foil 999 #US1 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Luis Arraez and the Miami Marlins Card #US1. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Luis Arraez; Team: Miami Marlins; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Luis Arraez Blue Foil /999 #US1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Luis Arraez; Team: Miami Marlins; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAo8MCX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15314,7 +15322,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Mike Clevinger Green Foil 499 #US165 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Mike Clevinger Green Foil 499 #US165 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Mike Clevinger and the Cleveland Indians Card #US165. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Mike Clevinger; Team: Cleveland Indians; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Mike Clevinger Green Foil /499 #US165\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Mike Clevinger; Team: Cleveland Indians; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAoUK5x",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15351,7 +15359,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Oscar Gonzalez Rookie Debut Blue Foil 999 #US275 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Oscar Gonzalez Rookie Debut Blue Foil 999 #US275 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Oscar Gonzalez and the Cleveland Guardians Card #US275. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Oscar Gonzalez; Team: Cleveland Guardians; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Oscar Gonzalez Rookie Debut Blue Foil /999 #US275\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Oscar Gonzalez; Team: Cleveland Guardians; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAogq2s",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15389,7 +15397,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ryan Feltner Advanced Stats Var 300 #US84 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ryan Feltner Advanced Stats Var 300 #US84 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Ryan Feltner and the Colorado Rockies Card #US84. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2023 Topps; Year: 2023; Player: Ryan Feltner; Team: Colorado Rockies; Sport: Baseball; League: MLB; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Ryan Feltner Advanced Stats Var 300 #US84\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Ryan Feltner; Team: Colorado Rockies; Sport: Baseball; League: MLB; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAnvFYQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15422,7 +15430,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ryan Walker Orange Foil Rookie 299 #US58 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Ryan Walker Orange Foil Rookie 299 #US58 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Ryan Walker and the San Francisco Giants Card #US58. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal and serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Ryan Walker; Team: San Francisco Giants; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Ryan Walker Orange Foil Rookie /299 #US58\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Ryan Walker; Team: San Francisco Giants; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAnktv2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15462,7 +15470,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Lot Of 201 Halloween SP + Silver & Blue Foil + Rookies (3).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Lot Of 201 Halloween SP + Silver & Blue Foil + Rookies (4).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Set Of 201 Halloween SP + Silver & Blue Foil + Rookies\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Blue, Silver; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-topps-update-series-lot-of-201-halloween-sp-plus-silver-blue-foil-plus-rookies-1.CCxyRyP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15500,7 +15508,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Lot Of 460 Base Rookie RC Cards.jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Set Of 460 Base Rookie RC Cards\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-topps-update-series-lot-of-460-base-rookie-rc-cards.CCxyz6x",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15537,7 +15545,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Spencer Turnbull Green Foil 499 #US291 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Spencer Turnbull Green Foil 499 #US291 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Spencer Turnbull and the Detroit Tigers Card #US291. A strong addition for baseball fans, MLB collectors, and set builders thanks to its serial-numbered appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Spencer Turnbull; Team: Detroit Tigers; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Spencer Turnbull Green Foil /499 #US291\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Spencer Turnbull; Team: Detroit Tigers; Sport: Baseball; League: MLB; Parallel/Variety: Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAnvg8Q",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15574,7 +15582,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Vladimir Guerrero Major League Material Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Series Vladimir Guerrero Major League Material Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps sports trading card featuring Vladimir Guerrero and the Montreal Expos. A strong addition for baseball fans, MLB collectors, and set builders thanks to its memorabilia-card appeal.\nDetails: Set: 2023 Topps; Year: 2023; Player: Vladimir Guerrero; Team: Montreal Expos; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Memorabilia.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Series Vladimir Guerrero Major League Material Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Vladimir Guerrero; Team: Montreal Expos; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAn8BS4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15611,7 +15619,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Shintaro Fujinami Rookie Auto SP + Topps Heritage Chrome 999 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Update Shintaro Fujinami Rookie Auto SP + Topps Heritage Chrome 999 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Topps Heritage sports trading card highlighted in the title. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal, serial-numbered appeal, and autograph appeal.\nDetails: Set: 2023 Topps Heritage; Year: 2023; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Serial Numbered | Parallel/Variety | Autograph.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023 Topps Update Shintaro Fujinami Rookie Auto SP + Topps Heritage Chrome /999\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Heritage; Season: 2023; Year manufactured: 2023; Player/Athlete: Shintaro Fujinami; Sport: Baseball; League: MLB; Parallel/Variety: Chrome; Features: Autograph, Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAn8zD7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15631,7 +15639,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Shintaro Fujinami",
       "excelFields": {
         "Title": "2023 Topps Update Shintaro Fujinami Rookie Auto SP + Topps Heritage Chrome /999",
-        "C:Features": "Rookie|Serial Numbered|Short Print|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -15652,7 +15660,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023-24 Goodwin Champions Jackson Holliday Druw Jones Brooks Lee RC SP Set (x43) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023-24 Goodwin Champions Jackson Holliday Druw Jones Brooks Lee RC SP Set (x43) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 sports trading card featuring Brooks Lee and Jackson Holliday with connections to the Minnesota Twins and Baltimore Orioles. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Season: 2023-24; Year: 2023; Player: Brooks Lee | Jackson Holliday; Team: Minnesota Twins | Baltimore Orioles; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 Goodwin Champions Jackson Holliday Druw Jones Brooks Lee RC SP Set (x43)\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 Goodwin Champions; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Brooks Lee, Jackson Holliday; Team: Minnesota Twins, Baltimore Orioles; Sport: Baseball; League: MLB; Features: Rookie, Short Print; Autographed: No; Cards included: 43; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAn8DX9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15693,7 +15701,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Marcus Sasser/2023-24 Topps Chrome Marcus Rookie Autos + Bowman Best & Prizm DP Auto Set (x4) (4).JPG",
       "assets/Personal collection/Marcus Sasser/2023-24 Topps Chrome Marcus Rookie Autos + Bowman Best & Prizm DP Auto Set (x4) (5).JPG"
     ],
-    "description": "2023-24 Topps Chrome card featuring Marcus Sasser. A strong addition for baseball fans, NCAA collectors, and set builders thanks to its rookie-card appeal and autograph appeal. Details: Set: 2023-24 Topps Chrome; Year: 2023; Sport: Baseball; League: NCAA; Condition: Ungraded; Features: Rookie | Parallel/Variety | Autograph. Please review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 Topps Chrome Marcus Rookie Autos + Bowman Best & Prizm DP Auto Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Marcus Sasser; Sport: Baseball; League: NCAA; Parallel/Variety: Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAVCej9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -15711,7 +15719,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Marcus Sasser",
       "excelFields": {
         "Title": "2023-24 Topps Chrome Marcus Rookie Autos + Bowman Best & Prizm DP Auto Set (x4)",
-        "C:Features": "Rookie|Parallel/Variety",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     },
@@ -15731,7 +15739,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Topps/2023-24 UD Goodwin Champions Dylan Crews Platinum + Turquoise SP Rookie Set (x8).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 sports trading card featuring Dylan Crews and the Washington Nationals. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Season: 2023-24; Year: 2023; Player: Dylan Crews; Team: Washington Nationals; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Rookie | Short Print | Parallel/Variety.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 UD Goodwin Champions Dylan Crews Platinum + Turquoise SP Rookie Set (x8)\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 UD Goodwin Champions; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Dylan Crews; Team: Washington Nationals; Sport: Baseball; League: MLB; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAn8pqu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15770,7 +15778,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023-24 Upper Deck sports trading card featuring Ken Griffey Jr. and the Seattle Mariners. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Set: 2023-24 Upper Deck; Year: 2023; Player: Ken Griffey Jr.; Team: Seattle Mariners; Sport: Baseball; League: MLB; Condition: Ungraded.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 Upper Deck; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Ken Griffey Jr.; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfDkNf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15807,7 +15815,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Heritage Jordan Westburg Rookie #229 PSA 9 Mint (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Heritage Jordan Westburg Rookie #229 PSA 9 Mint (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Topps Heritage sports trading card featuring Jordan Westburg and the Baltimore Orioles Card #229. A strong addition for baseball fans, MLB collectors, and set builders thanks to its rookie-card appeal.\nDetails: Set: 2024 Topps Heritage; Year: 2024; Player: Jordan Westburg; Team: Baltimore Orioles; Sport: Baseball; League: MLB; Condition: Graded; Features: Rookie.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2024 Topps Heritage Jordan Westburg Rookie #229 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Heritage; Season: 2024; Year manufactured: 2024; Player/Athlete: Jordan Westburg; Team: Baltimore Orioles; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAnUVcJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15842,7 +15850,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Fernando Tatis + Ken Griffey Jr. + Mike Trout Rapture SP Set (x14).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Ken Griffey Jr. and Mike Trout with connections to the Seattle Mariners and Los Angeles Angels. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Year: 2022; Player: Ken Griffey Jr. | Mike Trout; Team: Seattle Mariners | Los Angeles Angels; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Donruss Fernando Tatis + Ken Griffey Jr. + Mike Trout Rapture SP Set (x14)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022 Donruss Fernando Tatis; Season: 2022; Year manufactured: 2022; Player/Athlete: Ken Griffey Jr., Mike Trout; Team: Seattle Mariners, Los Angeles Angels; Sport: Baseball; League: MLB; Features: Short Print; Autographed: No; Cards included: 14; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-donruss-fernando-tatis-plus-ken-griffey-jr-plus-mike-trout-rapture-sp-set-x14.BAnY5WF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -15878,7 +15886,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Ichiro + Bryce Harper + Fernando Tatis Name Variation SP Set (x9).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 sports trading card featuring Bryce Harper and the Philadelphia Phillies. A strong addition for baseball fans, MLB collectors, and set builders.\nDetails: Year: 2022; Player: Bryce Harper; Team: Philadelphia Phillies; Sport: Baseball; League: MLB; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "description": "2022 Donruss Ichiro + Bryce Harper + Fernando Tatis Name Variation SP Set (x9)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022 Donruss Ichiro; Season: 2022; Year manufactured: 2022; Player/Athlete: Bryce Harper; Team: Philadelphia Phillies; Sport: Baseball; League: MLB; Features: Short Print, Parallel/Variety; Autographed: No; Cards included: 9; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-donruss-ichiro-plus-bryce-harper-plus-fernando-tatis-name-variation-sp-set-x9.BAna5p2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23612,7 +23620,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps James Marvel On-Card Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps James Marvel On-Card Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2020 Baseball card featuring James Marvel. A strong addition for MLB collectors and set builders.\nDetails: Set: 2020 Topps; Year: 2020; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2020 Topps James Marvel On-Card Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2020 Topps; Season: 2020; Year manufactured: 2020; Player/Athlete: James Marvel; Sport: Baseball; League: MLB; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eq5PV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23629,7 +23637,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "James Marvel",
       "excelFields": {
         "Title": "2020 Topps James Marvel On-Card Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -23649,7 +23657,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2021 Topps Update Series Gerrit Cole Major League Material Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2021 Topps Update Series Gerrit Cole Major League Material Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2021 Baseball card featuring Gerrit Cole Major League. A strong addition for MLB collectors and set builders.\nDetails: Set: 2021 Topps Update Series; Year: 2021; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Memorabilia.\nPlease review the photos for the exact card you will receive.",
+    "description": "2021 Topps Update Series Gerrit Cole Major League Material Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021 Topps Update Series; Season: 2021; Year manufactured: 2021; Player/Athlete: Gerrit Cole; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eqXPp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23685,7 +23693,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Carlos Correa Silver Foil 500 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Donruss Carlos Correa Silver Foil 500 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Baseball card featuring Carlos Correa. A strong addition for MLB collectors and set builders.\nDetails: Set: 2022 Donruss; Year: 2022; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Donruss Carlos Correa Silver Foil /500\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022 Donruss; Season: 2022; Year manufactured: 2022; Player/Athlete: Carlos Correa; Sport: Baseball; League: MLB; Parallel/Variety: Silver Foil; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eqkRn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23722,7 +23730,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Brandon Woodruff 1988 Retro Patch Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Brandon Woodruff 1988 Retro Patch Set (x2) (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Baseball card featuring Brandon Woodruff. A strong addition for MLB collectors and set builders.\nDetails: Set: 2022 Panini Donruss; Year: 2022; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Memorabilia.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Panini Donruss Brandon Woodruff 1988 Retro Patch Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Donruss; Season: 2022; Year manufactured: 2022; Player/Athlete: Brandon Woodruff; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eqril",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23758,7 +23766,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Kolten Wong 1988 Retro Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini Donruss Kolten Wong 1988 Retro Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Baseball card featuring Kolten Wong 1988 Retro. A strong addition for MLB collectors and set builders.\nDetails: Set: 2022 Panini Donruss; Year: 2022; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Memorabilia.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Panini Donruss Kolten Wong 1988 Retro Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Donruss; Season: 2022; Year manufactured: 2022; Player/Athlete: Kolten Wong; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eqZOu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23794,7 +23802,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini USA Stars & Stripes Steven Milam + Miles Scott Patch Set (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2022 Panini USA Stars & Stripes Steven Milam + Miles Scott Patch Set (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Baseball card featuring Steven Milam, Miles Scott. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2022 Panini USA Stars & Stripes; Year: 2022; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Panini USA Stars & Stripes Steven Milam + Miles Scott Patch Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini USA Stars & Stripes; Season: 2022; Year manufactured: 2022; Player/Athlete: Steven Milam, Miles Scott; Sport: Baseball; League: USA Baseball; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eB9fV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -23830,7 +23838,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2022 Topps Seth Beer 1987 Throwback Rookie 75 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2022 Topps Seth Beer 1987 Throwback Rookie 75 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2022 Baseball card featuring Seth Beer 1987 Throwback. A strong addition for MLB collectors and set builders.\nDetails: Set: 2022 Topps; Year: 2022; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Rookie | Serial Numbered.\nPlease review the photos for the exact card you will receive.",
+    "description": "2022 Topps Seth Beer 1987 Throwback Rookie /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022 Topps; Season: 2022; Year manufactured: 2022; Player/Athlete: Seth Beer; Sport: Baseball; League: MLB; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eB35F",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -23867,7 +23875,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Chih-Yu Chen U-18 World Cup Prizm Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Chih-Yu Chen U-18 World Cup Prizm Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball card featuring Chih-Yu Chen U-18 World Cup. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2023 Panini USA Stars & Stripes; Year: 2023; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Panini USA Stars & Stripes Chih-Yu Chen U-18 World Cup Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini USA Stars & Stripes; Season: 2023; Year manufactured: 2023; Player/Athlete: Chih-Yu Chen; Sport: Baseball; League: USA Baseball; Parallel/Variety: Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBBWv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -23904,7 +23912,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Dane Perry Rookie Auto (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Dane Perry Rookie Auto (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball card featuring Dane Perry. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2023 Panini USA Stars & Stripes; Year: 2023; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Rookie | Autograph.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Panini USA Stars & Stripes Dane Perry Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini USA Stars & Stripes; Season: 2023; Year manufactured: 2023; Player/Athlete: Dane Perry; Sport: Baseball; League: USA Baseball; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBzgI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -23921,7 +23929,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dane Perry",
       "excelFields": {
         "Title": "2023 Panini USA Stars & Stripes Dane Perry Rookie Auto",
-        "C:Features": "Rookie",
+        "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
     }
@@ -23941,7 +23949,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Declan Speirs U-18 World Cup Prizm Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Declan Speirs U-18 World Cup Prizm Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball card featuring Declan Speirs U-18 World Cup. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2023 Panini USA Stars & Stripes; Year: 2023; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Panini USA Stars & Stripes Declan Speirs U-18 World Cup Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini USA Stars & Stripes; Season: 2023; Year manufactured: 2023; Player/Athlete: Declan Speirs; Sport: Baseball; League: USA Baseball; Parallel/Variety: Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBRbs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -23978,7 +23986,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Dylan Cupp U-18 World Cup Prizm Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2023 Panini USA Stars & Stripes Dylan Cupp U-18 World Cup Prizm Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball card featuring Dylan Cupp U-18 World Cup. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2023 Panini USA Stars & Stripes; Year: 2023; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Panini USA Stars & Stripes Dylan Cupp U-18 World Cup Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini USA Stars & Stripes; Season: 2023; Year manufactured: 2023; Player/Athlete: Dylan Cupp; Sport: Baseball; League: USA Baseball; Parallel/Variety: Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eB1gS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -24015,7 +24023,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series Two Mike Yastrzemski Father's Day Commemorative Team Patch (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2023 Topps Series Two Mike Yastrzemski Father's Day Commemorative Team Patch (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball card featuring Mike Yastrzemski. A strong addition for MLB collectors and set builders.\nDetails: Set: 2023 Topps Series Two; Year: 2023; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Memorabilia.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Topps Series Two Mike Yastrzemski Father's Day Commemorative Team Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps Series Two; Season: 2023; Year manufactured: 2023; Player/Athlete: Mike Yastrzemski; Sport: Baseball; League: MLB; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBM79",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24051,7 +24059,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Leaf/2024 Leaf Futures Brady Ebel Rookie Auto 149 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Leaf/2024 Leaf Futures Brady Ebel Rookie Auto 149 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Baseball card featuring Brady Ebel. A strong addition for MLB collectors and set builders.\nDetails: Set: 2024 Leaf Futures; Year: 2024; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Rookie | Autograph | Serial Numbered.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Leaf Futures Brady Ebel Rookie Auto /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2024 Leaf Futures; Season: 2024; Year manufactured: 2024; Player/Athlete: Brady Ebel; Sport: Baseball; League: MLB; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBWmu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24069,7 +24077,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brady Ebel",
       "excelFields": {
         "Title": "2024 Leaf Futures Brady Ebel Rookie Auto /149",
-        "C:Features": "Rookie|Serial Numbered",
+        "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
     }
@@ -24089,7 +24097,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Stadium Club Xander Bogaerts Green Parallel 199 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Stadium Club Xander Bogaerts Green Parallel 199 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Baseball card featuring Xander Bogaerts. A strong addition for MLB collectors and set builders.\nDetails: Set: 2024 Topps Stadium Club; Year: 2024; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Topps Stadium Club Xander Bogaerts Green Parallel /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Stadium Club; Season: 2024; Year manufactured: 2024; Player/Athlete: Xander Bogaerts; Sport: Baseball; League: MLB; Parallel/Variety: Parallel, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBe1V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24126,7 +24134,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange 25 #06 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange 25 #06 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2024 Baseball card featuring Hank Aaron. A strong addition for MLB collectors and set builders.\nDetails: Set: 2024 Topps Transcendent; Year: 2024; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2024 Topps Transcendent Icons Hank Aaron Orange /25 #06\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Transcendent; Season: 2024; Year manufactured: 2024; Player/Athlete: Hank Aaron; Sport: Baseball; League: MLB; Parallel/Variety: Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBS71",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24163,7 +24171,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2025 Donruss Elite Series Bobby Witt Jr. Red Prizm 149 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2025 Donruss Elite Series Bobby Witt Jr. Red Prizm 149 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Baseball card featuring Bobby Witt Jr.. A strong addition for MLB collectors and set builders.\nDetails: Set: 2025 Donruss Elite Series; Year: 2025; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Donruss Elite Series Bobby Witt Jr. Red Prizm /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2025 Donruss Elite Series; Season: 2025; Year manufactured: 2025; Player/Athlete: Bobby Witt Jr.; Sport: Baseball; League: MLB; Parallel/Variety: Red Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eB6hJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24200,7 +24208,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Chrome Angel Chivilli Purple Refractor Rookie 250 (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Chrome Angel Chivilli Purple Refractor Rookie 250 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2025 Baseball card featuring Angel Chivilli. A strong addition for MLB collectors and set builders.\nDetails: Set: 2025 Topps Chrome; Year: 2025; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Rookie | Serial Numbered | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2025 Topps Chrome Angel Chivilli Purple Refractor Rookie /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year manufactured: 2025; Player/Athlete: Angel Chivilli; Sport: Baseball; League: MLB; Parallel/Variety: Purple Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eBt2I",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24238,7 +24246,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Andres Jimenez Green Prizm Auto + Silver Prizm (1).jpg",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Andres Jimenez Green Prizm Auto + Silver Prizm (2).jpg"
     ],
-    "description": "Upgrade your collection with this 2026 Baseball card featuring Andres Jimenez. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2026 Panini USA Stars & Stripes; Year: 2026; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Autograph | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Panini USA Stars & Stripes Andres Jimenez Green Prizm Auto + Silver Prizm\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2026 Panini USA Stars & Stripes; Season: 2026; Year manufactured: 2026; Player/Athlete: Andres Jimenez; Sport: Baseball; League: USA Baseball; Parallel/Variety: Silver Prizm, Green Prizm; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eCHQf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -24255,7 +24263,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Andres Jimenez",
       "excelFields": {
         "Title": "2026 Panini USA Stars & Stripes Andres Jimenez Green Prizm Auto + Silver Prizm",
-        "C:Features": "Parallel/Variety",
+        "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
     }
@@ -24275,7 +24283,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Cam Kozeal Silver Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Cam Kozeal Silver Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2026 Baseball card featuring Cam Kozeal. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2026 Panini USA Stars & Stripes; Year: 2026; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Panini USA Stars & Stripes Cam Kozeal Silver Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2026 Panini USA Stars & Stripes; Season: 2026; Year manufactured: 2026; Player/Athlete: Cam Kozeal; Sport: Baseball; League: USA Baseball; Parallel/Variety: Silver Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eCBpe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -24312,7 +24320,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Evan Dempsey Silver Prizm Patch (1).JPG",
       "assets/Ebay Listing Photos/Baseball/Panini + Donruss/2026 Panini USA Stars & Stripes Evan Dempsey Silver Prizm Patch (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2026 Baseball card featuring Evan Dempsey. A strong addition for USA Baseball collectors and set builders.\nDetails: Set: 2026 Panini USA Stars & Stripes; Year: 2026; Sport: Baseball; League: USA Baseball; Condition: See item specifics. Features: Memorabilia | Parallel/Variety.\nPlease review the photos for the exact card you will receive.",
+    "description": "2026 Panini USA Stars & Stripes Evan Dempsey Silver Prizm Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2026 Panini USA Stars & Stripes; Season: 2026; Year manufactured: 2026; Player/Athlete: Evan Dempsey; Sport: Baseball; League: USA Baseball; Parallel/Variety: Silver Prizm; Features: Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2eCTEQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "USA Baseball",
@@ -24349,7 +24357,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/PSA Cards/1973 Topps Carl Yastrzemski #245 PSA 4 (1).jpg",
       "assets/Personal collection/PSA Cards/1973 Topps Carl Yastrzemski #245 PSA 4 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 1973 Baseball trading card featuring Carl Yastrzemski.\nDetails: Set: 1973 Topps; Year: 1973; Sport: Baseball; League: MLB; Condition: See item specifics.\nPlease review the photos for the exact card you will receive.",
+    "description": "1973 Topps Carl Yastrzemski #245 PSA 4\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 1973 Topps; Season: 1973; Year manufactured: 1973; Player/Athlete: Carl Yastrzemski; Sport: Baseball; League: MLB; Autographed: No; Condition: PSA 4.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PBOjR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24382,7 +24390,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/PSA Cards/1973 Topps Brooks Robinson #90 PSA 4 (1).jpg",
       "assets/Personal collection/PSA Cards/1973 Topps Brooks Robinson #90 PSA 4 (2).jpg"
     ],
-    "description": "Upgrade your collection with this 1973 Baseball trading card featuring Brooks Robinson.\nDetails: Set: 1973 Topps; Year: 1973; Sport: Baseball; League: MLB; Condition: See item specifics.\nPlease review the photos for the exact card you will receive.",
+    "description": "1973 Topps Brooks Robinson #90 PSA 4 \n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 1973 Topps; Season: 1973; Year manufactured: 1973; Player/Athlete: Brooks Robinson; Sport: Baseball; League: MLB; Autographed: No; Condition: PSA 4.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PBNTv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24415,7 +24423,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/PSA Cards/2023 Topps Nolan Ryan All Aces SSP Auto 25 PSA 8 (1).JPG",
       "assets/Personal collection/PSA Cards/2023 Topps Nolan Ryan All Aces SSP Auto 25 PSA 8 (2).JPG"
     ],
-    "description": "Upgrade your collection with this 2023 Baseball trading card featuring Nolan Ryan.\nDetails: Set: 2023 Topps; Year: 2023; Sport: Baseball; League: MLB; Condition: See item specifics. Features: Autograph | Serial Numbered | Short Print | Insert.\nPlease review the photos for the exact card you will receive.",
+    "description": "2023 Topps Nolan Ryan All Aces SSP Auto /25 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023 Topps; Season: 2023; Year manufactured: 2023; Player/Athlete: Nolan Ryan; Sport: Baseball; League: MLB; Features: Autograph, Serial Numbered, Short Print, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoNTb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "MLB",
@@ -24434,7 +24442,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Nolan Ryan",
       "excelFields": {
         "Title": "2023 Topps Nolan Ryan All Aces SSP Auto /25 PSA 8",
-        "C:Features": "Serial Numbered|Short Print|Insert",
+        "C:Features": "Autograph|Serial Numbered|Short Print|Insert",
         "C:Autographed": "Yes"
       }
     },

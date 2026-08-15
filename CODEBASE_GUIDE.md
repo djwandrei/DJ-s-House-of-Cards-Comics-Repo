@@ -13,12 +13,19 @@ This site is a static storefront with Supabase-backed catalog administration and
 
 ## Sources Of Truth
 
-- Non-legacy listings: the authoritative workbook `Listings` sheet.
+- Non-legacy listings: the `Listings` sheet in
+  `C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx`.
+  The workbook's other sheets are review/staging material, not catalog inputs.
 - Live catalog: Supabase `products`.
 - Deployable static fallback: `products.json` and generated category catalog files.
 - Product display media: local files under `assets/`.
 
 The static catalog and Supabase should always contain the same product IDs and media paths after a release.
+
+The historical `fix_nonlegacy_product_attributes.py` and
+`improve_ebay_bulk_upload.py` helpers write older workbooks from site data.
+Do not repoint either helper at the authoritative workbook; reconciliation must
+flow from its `Listings` sheet into reviewed local catalog outputs.
 
 Listings are never intentionally hidden as a substitute for deletion. Use
 `scripts/hard-delete-supabase-products-not-in-catalog.mjs` to audit and,

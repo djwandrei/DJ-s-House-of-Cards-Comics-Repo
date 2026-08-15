@@ -21,14 +21,17 @@ ROOT = Path(__file__).resolve().parents[1]
 PRODUCTS_PATH = ROOT / "products.json"
 OUTPUT_DIR = ROOT / "outputs" / "nonlegacy-workbook-audit"
 
-WORKBOOKS = [
-    Path(r"C:\Users\djwan\Documents\eBay Docs\Card names - photo links populated.xlsx"),
-    Path(r"C:\Users\djwan\Documents\eBay Docs\Personal Collection Card Names - photo links and attributes populated.xlsx"),
-    Path(r"C:\Users\djwan\Documents\eBay Docs\Listing Automation\Ebay Bulk Upload with HTML.xlsx"),
-]
+AUTHORITATIVE_WORKBOOK = Path(
+    r"C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx"
+)
+SOURCE_SHEET = "Listings"
+WORKBOOKS = [AUTHORITATIVE_WORKBOOK]
 
-BULK_CANONICAL = "Ebay Bulk Upload with HTML.xlsx"
+BULK_CANONICAL = AUTHORITATIVE_WORKBOOK.name
 SOURCE_ALIASES = {
+    "Ebay Bulk Upload (Final).xlsx": BULK_CANONICAL,
+    "Ebay Bulk Upload (Final) - Photo Links Updated.xlsx": BULK_CANONICAL,
+    "Ebay Bulk Upload with HTML.xlsx": BULK_CANONICAL,
     "Ebay Bulk Upload with HTML_league_fixed.xlsx": BULK_CANONICAL,
     BULK_CANONICAL: BULK_CANONICAL,
 }
@@ -344,31 +347,30 @@ def read_workbooks() -> list[WorkbookRow]:
             raise FileNotFoundError(path)
         wb = load_workbook(path, read_only=True, data_only=True)
         source = normalize_source(path.name)
-        for sheet_name in wb.sheetnames:
-            if sheet_name.strip().lower() == "pricing audit":
+        if SOURCE_SHEET not in wb.sheetnames:
+            raise RuntimeError(f"{path} has no {SOURCE_SHEET!r} sheet")
+        ws = wb[SOURCE_SHEET]
+        header_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
+        headers = [clean_text(value) for value in header_row]
+        for row_number, values in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            fields = {
+                header: values[index] if index < len(values) else None
+                for index, header in enumerate(headers)
+                if header
+            }
+            title = clean_text(fields.get("Title"))
+            if not title:
                 continue
-            ws = wb[sheet_name]
-            header_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
-            headers = [clean_text(value) for value in header_row]
-            for row_number, values in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                fields = {
-                    header: values[index] if index < len(values) else None
-                    for index, header in enumerate(headers)
-                    if header
-                }
-                title = clean_text(fields.get("Title"))
-                if not title:
-                    continue
-                rows.append(
-                    WorkbookRow(
-                        source=source,
-                        sheet=sheet_name,
-                        row_number=row_number,
-                        title=title,
-                        key=normalize_title(title),
-                        fields=fields,
-                    )
+            rows.append(
+                WorkbookRow(
+                    source=source,
+                    sheet=SOURCE_SHEET,
+                    row_number=row_number,
+                    title=title,
+                    key=normalize_title(title),
+                    fields=fields,
                 )
+            )
         wb.close()
     return rows
 

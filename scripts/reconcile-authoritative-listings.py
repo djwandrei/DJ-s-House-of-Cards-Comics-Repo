@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import html
 import json
 import re
@@ -21,10 +22,34 @@ from urllib.parse import urlsplit, urlunsplit
 from openpyxl import load_workbook
 
 
-SOURCE_WORKBOOK = "Ebay Bulk Upload (Final).xlsx"
-SOURCE_PAGE = "Ebay Bulk Upload (Final)"
+DEFAULT_WORKBOOK = Path(
+    r"C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx"
+)
+SOURCE_WORKBOOK = DEFAULT_WORKBOOK.name
+SOURCE_PAGE = "Non-Legacy Listings"
 SOURCE_SHEET = "Listings"
-URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
+EXPECTED_HEADER_COUNT = 45
+REQUIRED_HEADERS = {
+    "Category ID",
+    "Category Name",
+    "Title",
+    "Start price",
+    "Quantity",
+    "Item photo URL",
+    "HTML Full Link",
+    "Condition ID",
+    "Description",
+    "C:Manufacturer",
+    "C:Set",
+    "C:Year Manufactured",
+    "C:Player/Athlete",
+    "C:Sport",
+    "C:League",
+    "C:Team",
+    "C:Autographed",
+    "C:Type",
+}
+URL_RE = re.compile(r"https?://[^\s\"'<>|,]+", re.IGNORECASE)
 HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
 YEAR_RE = re.compile(r"\b(18\d{2}|19\d{2}|20\d{2})\b")
 CONDITION_SUFFIX_RE = re.compile(r"\s*-\s*\(ID:\s*[^)]+\)\s*$", re.IGNORECASE)
@@ -35,7 +60,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--workbook",
-        default=r"C:\Users\djwan\Downloads\Ebay Bulk Upload (Final).xlsx",
+        default=str(DEFAULT_WORKBOOK),
     )
     parser.add_argument("--products", default="products.json")
     parser.add_argument("--output-dir", default="outputs")
@@ -103,6 +128,15 @@ def read_listings(workbook_path: Path) -> tuple[list[str], list[dict[str, Any]]]
     sheet = workbook[SOURCE_SHEET]
     rows = sheet.iter_rows(values_only=True)
     headers = [text(value) for value in next(rows)]
+    if len(headers) != EXPECTED_HEADER_COUNT:
+        raise RuntimeError(
+            f"Expected {EXPECTED_HEADER_COUNT} {SOURCE_SHEET!r} headers; found {len(headers)}"
+        )
+    missing_headers = sorted(REQUIRED_HEADERS - set(headers))
+    if missing_headers:
+        raise RuntimeError(
+            f"{SOURCE_SHEET!r} is missing required headers: {', '.join(missing_headers)}"
+        )
     listings: list[dict[str, Any]] = []
     for row_number, row in enumerate(rows, start=2):
         fields = {
@@ -111,6 +145,10 @@ def read_listings(workbook_path: Path) -> tuple[list[str], list[dict[str, Any]]]
         }
         if not text(fields.get("Title")):
             continue
+        if not text(fields.get("Category ID")):
+            raise RuntimeError(f"{SOURCE_SHEET}!{row_number} has no Category ID")
+        if not text(fields.get("Condition ID")):
+            raise RuntimeError(f"{SOURCE_SHEET}!{row_number} has no Condition ID")
         listings.append(
             {
                 "row": row_number,
@@ -356,9 +394,23 @@ def feature_attributes(fields: dict[str, Any]) -> list[str]:
 
 def price_value(value: Any) -> float:
     try:
-        return round(float(value), 2)
-    except (TypeError, ValueError):
-        return 0.0
+        price = round(float(value), 2)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"Invalid non-legacy Start price: {value!r}") from exc
+    if price <= 0:
+        raise RuntimeError(f"Non-legacy Start price must be positive: {value!r}")
+    return price
+
+
+def quantity_value(value: Any) -> int:
+    try:
+        number = float(value)
+        quantity = int(number)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"Invalid non-legacy Quantity: {value!r}") from exc
+    if quantity <= 0 or number != quantity:
+        raise RuntimeError(f"Non-legacy Quantity must be a positive integer: {value!r}")
+    return quantity
 
 
 def build_product(
@@ -373,6 +425,7 @@ def build_product(
     local_media = existing_local_media(old_product)
     display_media = local_media or photos
     price = price_value(fields.get("Start price"))
+    quantity = quantity_value(fields.get("Quantity"))
     price_label = f"${price:,.2f}"
     product = {
         "id": product_id,
@@ -394,7 +447,7 @@ def build_product(
         "itemPhotoUrl": photos[0] if photos else "",
         "htmlImageUrls": photos,
         "photoHostPageUrl": first_href(fields.get("HTML Full Link")),
-        "sourcePage": SOURCE_PAGE,
+        "sourcePage": text((old_product or {}).get("sourcePage")) or SOURCE_PAGE,
         "metadata": {
             "sport": text(fields.get("C:Sport")),
             "league": text(fields.get("C:League")),
@@ -416,6 +469,11 @@ def build_product(
         "priceLabel": price_label,
         "displayPrice": price_label,
     }
+    if quantity > 1:
+        product["copyCount"] = quantity
+    for field in ("featured", "featuredRank", "featuredSortRank"):
+        if old_product and field in old_product:
+            product[field] = copy.deepcopy(old_product[field])
     if product["year"] is None:
         product.pop("year")
     return product
@@ -468,11 +526,10 @@ def write_json(path: Path, value: Any, compact: bool = False) -> None:
 
 
 def main() -> int:
-    global SOURCE_WORKBOOK, SOURCE_PAGE
+    global SOURCE_WORKBOOK
     args = parse_args()
     workbook_path = Path(args.workbook).resolve()
     SOURCE_WORKBOOK = workbook_path.name
-    SOURCE_PAGE = workbook_path.stem
     products_path = Path(args.products).resolve()
     output_dir = Path(args.output_dir).resolve()
     headers, listings = read_listings(workbook_path)
@@ -544,6 +601,7 @@ def main() -> int:
     report = {
         "generatedAt": datetime.now().astimezone().isoformat(),
         "workbook": str(workbook_path),
+        "workbookSha256": hashlib.sha256(workbook_path.read_bytes()).hexdigest(),
         "sheet": SOURCE_SHEET,
         "headerCount": len(headers),
         "before": {
