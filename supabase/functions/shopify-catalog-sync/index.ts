@@ -18,7 +18,7 @@ const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession
 const PAGE_SIZE = 250;
 const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
 const FEATURED_COLLECTION_TITLE = 'Featured Picks';
-const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 3529, 2463, 3253, 3209, 3478, 2029];
+const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 1441, 1449, 1480, 1473, 1649, 1650, 1550];
 const DEFAULT_CORS_ORIGINS = [
   'https://www.djshouseofcards-comics.com',
   'https://djshouseofcards-comics.com'

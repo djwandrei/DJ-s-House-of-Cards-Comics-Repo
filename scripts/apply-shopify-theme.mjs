@@ -151,28 +151,47 @@ function makeRestClient({ shopDomain, token }) {
 }
 
 function djhcCss() {
+  const displayFont = fs.readFileSync(path.join(repoRoot, 'assets', 'fonts', 'bebas-neue-400.woff2')).toString('base64');
+  const scriptFont = fs.readFileSync(path.join(repoRoot, 'assets', 'fonts', 'lobster-two-700.woff2')).toString('base64');
   return `/*
  * DJHC Shopify storefront layer.
  * Applied by scripts/apply-shopify-theme.mjs so the Shopify storefront tracks
  * the same brand system as the primary DJ's House of Cards website.
  * Curated sports cards, comics, collectibles, and trusted hobby finds.
  */
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("data:font/woff2;base64,${displayFont}") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lobster Two";
+  src: url("data:font/woff2;base64,${scriptFont}") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
-  --djhc-blue: #20356f;
-  --djhc-blue-dark: #111d3d;
-  --djhc-red: #c81f2d;
-  --djhc-red-dark: #8e1721;
-  --djhc-gold: #c69736;
-  --djhc-green: #1b7a42;
-  --djhc-bg: #f6f7fb;
+  --djhc-blue: #1f2fa3;
+  --djhc-blue-dark: #030611;
+  --djhc-red: #ef1823;
+  --djhc-red-dark: #b40f18;
+  --djhc-gold: #e4b141;
+  --djhc-green: #1b8d3d;
+  --djhc-bg: #eef3fb;
   --djhc-surface: #ffffff;
-  --djhc-text: #141925;
-  --djhc-muted: #5e6676;
+  --djhc-text: #172033;
+  --djhc-muted: #4b566f;
   --djhc-border: rgba(24, 37, 73, .12);
-  --djhc-shadow: 0 8px 20px rgba(16, 27, 57, .10);
-  --djhc-radius: 8px;
+  --djhc-shadow: 0 14px 34px rgba(16, 27, 57, .14);
+  --djhc-radius: 22px;
   --djhc-font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --djhc-font-display: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --djhc-font-display: "Bebas Neue", "Arial Narrow", sans-serif;
+  --djhc-font-script: "Lobster Two", Georgia, serif;
 }
 
 html {
@@ -182,7 +201,10 @@ html {
 body {
   color: var(--djhc-text);
   font-family: var(--djhc-font-body);
-  background: var(--djhc-bg);
+  background:
+    radial-gradient(circle at top left, rgba(31, 47, 163, .09), transparent 34%),
+    radial-gradient(circle at top right, rgba(239, 24, 35, .08), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, var(--djhc-bg) 100%);
 }
 
 .shopify-section,
@@ -1170,7 +1192,8 @@ cart-icon path {
   padding: clamp(2.4rem, 5vw, 4rem) 0 clamp(2rem, 4vw, 3rem);
 }
 
-.djhc-hero h1 {
+.djhc-hero h1,
+.djhc-hero h2 {
   max-width: 17ch;
   margin: 0;
   color: #fff !important;
@@ -1411,7 +1434,8 @@ slideshow-container {
     padding-block: 2rem 1.45rem;
   }
 
-  .djhc-hero h1 {
+  .djhc-hero h1,
+  .djhc-hero h2 {
     max-width: 12ch;
     font-size: clamp(2.35rem, 11vw, 3.25rem);
     line-height: .96;
@@ -1510,6 +1534,518 @@ slideshow-container {
 
   .djhc-shop-card {
     min-height: 96px;
+  }
+}
+
+/*
+ * Website-alignment pass.
+ * This final layer mirrors the primary DJHC site without changing Horizon's
+ * product, cart, search, account, or checkout behavior.
+ */
+.shopify-section-group-header-group,
+.header-section,
+.header,
+header.header {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(31, 47, 163, .26), transparent 32%),
+    linear-gradient(135deg, #030611 0%, #08152f 62%, #101b38 100%) !important;
+}
+
+.header,
+header.header {
+  min-height: 76px !important;
+  padding-block: .38rem !important;
+}
+
+.header-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: .8rem !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: max-content !important;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.header-logo__image,
+.header-logo__image-container img {
+  width: clamp(52px, 4.5vw, 64px) !important;
+  height: auto !important;
+  max-width: none !important;
+  transform: none !important;
+}
+
+.header-logo::after {
+  content: "DJ's House of Cards";
+  display: block;
+  color: #fff;
+  font-family: var(--djhc-font-script);
+  font-size: clamp(1.3rem, 1.8vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: .01em;
+  line-height: .95;
+  white-space: nowrap;
+  text-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+}
+
+.menu-list {
+  gap: .28rem !important;
+}
+
+.menu-list__link,
+.header__menu-item {
+  min-height: 38px !important;
+  padding-inline: .76rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  font-weight: 850 !important;
+}
+
+.menu-list__link:hover,
+.menu-list__link--active,
+.header__menu-item:hover {
+  border-color: rgba(255, 255, 255, .18) !important;
+  background: rgba(255, 255, 255, .12) !important;
+}
+
+.header-actions__action,
+.header-actions__action[aria-label="Cart"],
+.header-actions__cart-icon,
+cart-icon,
+.account-button.header-actions__action,
+.header-actions__action[aria-label="Search"] {
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border: 1px solid rgba(255, 255, 255, .18) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, .08) !important;
+}
+
+.announcement-bar,
+.announcement-bar.color-scheme-5 {
+  min-height: 28px;
+  background: linear-gradient(90deg, var(--djhc-blue), #55258f 50%, var(--djhc-red-dark)) !important;
+  letter-spacing: .015em !important;
+}
+
+.djhc-hero {
+  min-height: clamp(420px, 54vh, 560px);
+  border-radius: 0 0 24px 24px;
+  border-bottom: 4px solid transparent;
+  border-image: linear-gradient(90deg, var(--djhc-blue), var(--djhc-red), var(--djhc-gold)) 1;
+}
+
+.djhc-hero__media {
+  opacity: .4;
+}
+
+.djhc-hero__shade {
+  background:
+    radial-gradient(circle at 76% 30%, rgba(31, 47, 163, .2), transparent 34%),
+    linear-gradient(90deg, rgba(7, 17, 38, .98) 0%, rgba(7, 17, 38, .88) 48%, rgba(7, 17, 38, .48) 100%),
+    linear-gradient(180deg, rgba(7, 17, 38, .16), rgba(7, 17, 38, .86));
+}
+
+.djhc-hero__content {
+  gap: .82rem;
+  width: min(1200px, calc(100% - 2rem));
+}
+
+.djhc-hero h1,
+.djhc-hero h2 {
+  max-width: 20ch;
+  font-size: clamp(2.75rem, 4.7vw, 4.45rem);
+  font-weight: 400;
+  letter-spacing: .015em !important;
+  line-height: .94;
+  text-transform: uppercase;
+}
+
+.djhc-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  min-height: 30px;
+  padding: .42rem .72rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--djhc-blue), var(--djhc-red-dark));
+  color: #fff !important;
+  font-family: var(--djhc-font-display);
+  font-size: .86rem;
+  font-weight: 400;
+  letter-spacing: .14em;
+}
+
+.djhc-hero__content > p:not(.djhc-eyebrow) {
+  max-width: 50rem;
+  color: #f3f6ff !important;
+  font-size: clamp(1rem, 1.35vw, 1.18rem);
+}
+
+.djhc-hero__button,
+.button,
+.button-primary,
+.button.button,
+.shopify-payment-button__button,
+.product-form__submit,
+.add-to-cart-button,
+.quick-add__button,
+.cart__checkout-button,
+.facets__see-results,
+.email-signup__button,
+.djhc-inventory-search button {
+  min-height: 46px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, var(--djhc-blue), var(--djhc-red-dark)) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 26px rgba(31, 47, 163, .22) !important;
+}
+
+.djhc-hero__button {
+  min-height: 50px !important;
+  padding-inline: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, .26) !important;
+}
+
+.djhc-hero__button--secondary {
+  background: rgba(255, 255, 255, .12) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(10px);
+}
+
+.button-secondary,
+.clear-filter.button,
+.facets__clear-all,
+.facets__clear-all-link {
+  min-height: 44px !important;
+  border-radius: 999px !important;
+}
+
+.djhc-hero__facts div {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.djhc-shop-tools,
+.djhc-spotlight,
+.djhc-storefront-proof {
+  width: min(1200px, calc(100% - 2rem));
+}
+
+.shopify-section:has(.djhc-shop-tools),
+.shopify-section:has(.djhc-spotlight) {
+  background: transparent !important;
+}
+
+.djhc-shop-tools__intro h2,
+.djhc-spotlight__copy h2,
+.shopify-section:has(.product-list) h2,
+.shopify-section:has(.product-list) h3,
+.shopify-section:has(.product-grid) h2,
+.shopify-section:has(.product-grid) h3 {
+  font-family: var(--djhc-font-display) !important;
+  font-weight: 400 !important;
+  letter-spacing: .025em !important;
+  text-transform: uppercase;
+}
+
+.djhc-shop-tools__intro h2,
+.djhc-spotlight__copy h2 {
+  font-size: clamp(2.45rem, 4.2vw, 3.85rem);
+  line-height: .94;
+}
+
+.djhc-shop-card,
+.djhc-spotlight-card,
+.djhc-storefront-proof article,
+.collection-wrapper,
+.main-collection-grid,
+.facets-container,
+.product-information,
+.product__info-container,
+.cart-drawer,
+.drawer,
+.predictive-search-results__card,
+.product-grid__card,
+.product-card,
+.card-gallery,
+.card,
+.card-wrapper,
+.product-media-container,
+.predictive-search-results__card--product {
+  border-radius: 18px !important;
+}
+
+.djhc-shop-card,
+.djhc-spotlight-card,
+.product-grid__card,
+.product-card,
+.card,
+.card-wrapper {
+  box-shadow: var(--djhc-shadow) !important;
+}
+
+.djhc-shop-card--primary {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(239, 24, 35, .26), transparent 42%),
+    linear-gradient(145deg, #071126, #15206b) !important;
+}
+
+.djhc-shop-card:hover,
+.djhc-spotlight-card:hover,
+.product-grid__card:hover,
+.product-card:hover,
+.card-wrapper:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(31, 47, 163, .36) !important;
+  box-shadow: 0 20px 40px rgba(16, 27, 57, .18) !important;
+}
+
+.djhc-quick-actions a {
+  border-radius: 999px;
+  background: rgba(31, 47, 163, .07);
+}
+
+.djhc-spotlight-card img,
+.product-media,
+.product-media-container,
+.card-gallery,
+.card__media,
+.media {
+  border-radius: 18px !important;
+}
+
+.djhc-inventory-search input[type="search"] {
+  min-height: 50px;
+  border-radius: 999px;
+  padding-inline: 1.05rem;
+  box-shadow: inset 0 1px 2px rgba(16, 27, 57, .05);
+}
+
+.djhc-storefront-proof article {
+  border-top: 4px solid var(--djhc-gold);
+  background: rgba(255, 255, 255, .92);
+}
+
+.product-badges .badge,
+.badge,
+.product-form__inventory,
+.inventory-status {
+  border-radius: 999px !important;
+}
+
+.footer,
+.shopify-section-group-footer-group,
+.footer-content {
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(90deg, var(--djhc-blue), var(--djhc-red), var(--djhc-gold)) 1;
+}
+
+.shopify-section:has(.djhc-global-nav) {
+  z-index: 4;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: #0a1430 !important;
+}
+
+.djhc-global-nav {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  border-bottom: 1px solid rgba(255, 255, 255, .14);
+  background: #0a1430;
+}
+
+.djhc-global-nav__inner {
+  display: flex;
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: .48rem 0;
+  gap: .35rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.djhc-global-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.djhc-global-nav a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: .45rem .78rem;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  color: #f7f9ff !important;
+  font-family: var(--djhc-font-body);
+  font-size: .82rem;
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.djhc-global-nav a:hover,
+.djhc-global-nav a:focus-visible {
+  border-color: rgba(255, 255, 255, .28);
+  background: rgba(255, 255, 255, .12);
+}
+
+.product-card__content,
+.product-card__title,
+.product-card__link,
+.product-price,
+.price {
+  color: var(--djhc-text);
+}
+
+.product-card__title,
+.product-card__link {
+  font-family: var(--djhc-font-body) !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--djhc-gold) !important;
+  outline-offset: 3px !important;
+}
+
+@media screen and (max-width: 989px) {
+  .header-logo::after {
+    font-size: clamp(1.08rem, 2.8vw, 1.42rem);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .header,
+  header.header {
+    min-height: 68px !important;
+    padding-block: .28rem !important;
+  }
+
+  .header-logo {
+    gap: .55rem !important;
+    min-width: 0 !important;
+  }
+
+  .header-logo__image,
+  .header-logo__image-container img {
+    width: clamp(44px, 12vw, 54px) !important;
+  }
+
+  .header-logo::after {
+    max-width: none;
+    font-size: clamp(.98rem, 4.7vw, 1.22rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .djhc-hero {
+    min-height: auto;
+  }
+
+  .djhc-hero h1,
+  .djhc-hero h2 {
+    max-width: 15ch;
+    font-size: clamp(2.55rem, 12vw, 3.45rem);
+    line-height: .94;
+  }
+
+  .djhc-hero__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
+  }
+
+  .djhc-hero__button:first-child {
+    grid-column: auto;
+  }
+
+  .djhc-hero__facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .4rem;
+  }
+
+  .djhc-hero__facts div {
+    display: block;
+    min-width: 0;
+    padding: .52rem .45rem;
+  }
+
+  .djhc-hero__facts dd {
+    margin-top: .16rem;
+    font-size: .66rem;
+    line-height: 1.28;
+  }
+
+  .djhc-global-nav__inner {
+    width: 100%;
+    padding: .4rem .65rem;
+    scroll-padding-inline: .65rem;
+  }
+
+  .djhc-global-nav a {
+    min-height: 34px;
+    padding: .4rem .68rem;
+    font-size: .76rem;
+  }
+
+  .djhc-shop-tools,
+  .djhc-spotlight {
+    padding-block: 1.5rem;
+  }
+
+  .djhc-shop-card,
+  .djhc-spotlight-card,
+  .djhc-storefront-proof article,
+  .product-grid__card,
+  .product-card,
+  .card,
+  .card-wrapper {
+    border-radius: 18px !important;
+  }
+
+  .djhc-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .djhc-quick-actions a {
+    justify-content: center;
+    min-width: 0;
+    text-align: center;
+  }
+
+  /* Touch devices do not have a hover state, so keep Horizon's native
+     single-variant quick-add action visible over the product photo. */
+  product-card .quick-add__button,
+  .product-card .quick-add__button {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    min-height: 38px !important;
+    padding: .46rem .66rem !important;
+    font-size: .76rem !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .djhc-shop-card,
+  .djhc-spotlight-card,
+  .product-grid__card,
+  .product-card,
+  .card-wrapper,
+  .djhc-hero__button {
+    transition: none !important;
   }
 }
 

@@ -13,28 +13,28 @@ const WHATNOT_URL = 'https://www.whatnot.com/user/djshouseofcards';
 const TIKTOK_SHOP_URL = 'https://www.tiktok.com/@djshouseofcards/shop';
 const PRODUCT_SPOTLIGHTS = [
   {
-    label: 'Baseball auto',
-    title: '1997 Just Minors Zach Sorensen Limited Edition Rookie Auto SP',
-    href: '/search?q=Zach+Sorensen&type=product',
-    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Baseball/Pre-2010/1997%20Just%20Minors%20Zach%20Sorensen%20Limited%20Edition%20Rookie%20Auto%20SP%20(1).jpg`
+    label: 'One-of-one · PSA 10',
+    title: "2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 1/1 PSA 10",
+    href: '/products/djhc-1607',
+    image: `${MAIN_SITE_URL}assets/Personal%20collection/PSA%20Cards/2022-23%20Leaf%20Trinity%20Clear%20Kel%27El%20Ware%20Black%20Holo%20Platinum%20Auto%2011%20PSA%2010%20MINT%20(1).jpg`
   },
   {
-    label: 'Basketball icons',
-    title: '1991-92 Upper Deck Michael Jordan / Magic Johnson Set',
-    href: '/search?q=Michael+Jordan+Magic+Johnson&type=product',
-    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/1900-2000/1991-92%20Upper%20Deck%20Confrontation%20Michael%20Jordan%20Magic%20Johnson%20%2B%201990%20Hoops%20Set%20(1).jpg`
+    label: 'Gold refractor auto',
+    title: "2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto /50 PSA 10",
+    href: '/products/djhc-1441',
+    image: `${MAIN_SITE_URL}assets/Personal%20collection/PSA%20Cards/2022-23%20Bowman%20University%20Best%20Kel%27El%20Ware%20Gold%20Refractor%20Auto%2050%20PSA%2010%20(1).jpg`
   },
   {
-    label: 'Football rookies',
-    title: '2001 Pacific Dynagon Chad Johnson + Reggie Wayne Rookie Set',
-    href: '/search?q=Chad+Johnson+Reggie+Wayne&type=product',
-    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/Football/1990-2013/2001%20Pacific%20Dynagon%20Chad%20Johnson%20%23118%20%2B%20Reggie%20Wayne%20%23126%20Rookie%20Set%20(1).jpg`
+    label: 'Green refractor auto',
+    title: "2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto /99 PSA 10",
+    href: '/products/djhc-1473',
+    image: `${MAIN_SITE_URL}assets/Personal%20collection/PSA%20Cards/2022-23%20Bowman%20University%20Chrome%20Kel%27El%20Ware%20Green%20Refractor%20Auto%2099%20PSA%2010%20(1).jpg`
   },
   {
-    label: 'Pop culture',
-    title: '2008 Donruss Celebrity Cuts Carrie Fisher /499',
-    href: '/search?q=Carrie+Fisher&type=product',
-    image: `${MAIN_SITE_URL}assets/Ebay%20Listing%20Photos/MISC/2008%20Donruss%20Celebrity%20Cuts%20Carrie%20Fisher%20Silver%20Foil%20499%20%2312%20Star%20Wars%20(1).jpg`
+    label: 'One-of-one rookie auto',
+    title: '2022-23 Leaf Vivid Dylan Harper Blue Pre-Production Proof Rookie Auto 1/1',
+    href: '/products/djhc-1649',
+    image: `${MAIN_SITE_URL}assets/Personal%20collection/Dylan%20Harper/2022-23%20Leaf%20Vivid%20Dylan%20Harper%2011%20Pre-Production%20Proof%20Blue%20Rookie%20Auto%20(1).jpg`
   }
 ];
 
@@ -155,18 +155,17 @@ function storefrontHeroMarkup() {
   </div>
   <div class="djhc-hero__shade" aria-hidden="true"></div>
   <div class="djhc-hero__content">
-    <p class="djhc-eyebrow">Collector-run shop</p>
-    <h1 id="djhc-hero-heading">DJ's House of Cards & Comics</h1>
-    <p>Sports cards, comics, autographs, memorabilia, and oddball hobby finds with clear photos and Shopify checkout.</p>
+    <p class="djhc-eyebrow">Sports cards · Comics · Collectibles</p>
+    <h2 id="djhc-hero-heading">Standout cards, comics, and collector finds.</h2>
+    <p>Explore a collector-run catalog of graded cards, rookies, autographs, memorabilia, comics, and one-of-a-kind finds using the actual item photos shown.</p>
     <div class="djhc-hero__actions" aria-label="Primary shopping actions">
-      <a class="djhc-hero__button" href="/collections/all">Shop all inventory</a>
-      <a class="djhc-hero__button djhc-hero__button--secondary" href="#djhc-inventory-search">Search inventory</a>
-      <a class="djhc-hero__button djhc-hero__button--secondary" href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
+      <a class="djhc-hero__button" href="/collections/${FEATURED_COLLECTION_HANDLE}">Shop featured picks</a>
+      <a class="djhc-hero__button djhc-hero__button--secondary" href="/collections/all">Browse all inventory</a>
     </div>
     <dl class="djhc-hero__facts">
-      <div><dt>Inventory</dt><dd>Thousands of one-of-a-kind listings</dd></div>
-      <div><dt>Details</dt><dd>Actual item photos and condition notes</dd></div>
-      <div><dt>Checkout</dt><dd>Secure Shopify purchasing</dd></div>
+      <div><dt>Inventory</dt><dd>Thousands of collector listings</dd></div>
+      <div><dt>Item details</dt><dd>Actual photos and condition notes</dd></div>
+      <div><dt>Checkout</dt><dd>Secure purchasing through Shopify</dd></div>
     </dl>
   </div>
 </section>
@@ -178,8 +177,8 @@ function storefrontToolsMarkup() {
 <section class="djhc-shop-tools" aria-labelledby="djhc-shop-tools-heading">
   <div class="djhc-shop-tools__intro">
     <p class="djhc-eyebrow">Shop by department</p>
-    <h2 id="djhc-shop-tools-heading">Cards, comics, and collectible finds.</h2>
-    <p>Start with the full Shopify catalog or narrow the browse by the areas collectors ask for most.</p>
+    <h2 id="djhc-shop-tools-heading">Browse the collection your way.</h2>
+    <p>Start with the full catalog or jump into the sport, format, or collectible lane that matches the hunt.</p>
   </div>
   <div class="djhc-shop-tools__grid" aria-label="Shop by lane">
     <a class="djhc-shop-card djhc-shop-card--primary" href="/collections/all">
@@ -212,10 +211,12 @@ function storefrontToolsMarkup() {
     </a>
   </div>
   <nav class="djhc-quick-actions" aria-label="Buyer shortcuts">
+    <a href="/collections/all">All inventory</a>
     <a href="/search">Search</a>
     <a href="/cart">Cart</a>
     <a href="/account">Account</a>
-    <a href="${MAIN_SITE_URL}wishlist.html" target="_blank" rel="noopener noreferrer">Wishlist</a>
+    <a href="${MAIN_SITE_URL}" target="_blank" rel="noopener noreferrer">Main website</a>
+    <a href="${MAIN_SITE_URL}wishlist.html" target="_blank" rel="noopener noreferrer">Website wishlist</a>
     <a href="${MAIN_SITE_URL}sell-trade-want-list.html" target="_blank" rel="noopener noreferrer">Sell / Trade</a>
     <a href="${FACEBOOK_URL}" target="_blank" rel="noopener noreferrer">Facebook</a>
     <a href="${WHATNOT_URL}" target="_blank" rel="noopener noreferrer">Whatnot</a>
@@ -238,7 +239,7 @@ function storefrontSpotlightMarkup() {
 <section class="djhc-spotlight" id="djhc-inventory-search" aria-labelledby="djhc-spotlight-heading">
   <div class="djhc-spotlight__copy">
     <div>
-      <p class="djhc-eyebrow">Inventory search</p>
+      <p class="djhc-eyebrow">High-value highlights</p>
       <h2 id="djhc-spotlight-heading">Find the player, set, title, or team you collect.</h2>
     </div>
     <form class="djhc-inventory-search" action="/search" method="get" role="search">
@@ -250,11 +251,28 @@ function storefrontSpotlightMarkup() {
       </div>
     </form>
   </div>
-  <p class="djhc-spotlight__hint">A few examples from the catalog. Select one to search for the matching listing without leaving Shopify.</p>
-  <div class="djhc-spotlight__rail" aria-label="Representative DJHC inventory">
+  <p class="djhc-spotlight__hint">Start with a premium collector highlight, or search the full Shopify catalog for something specific.</p>
+  <div class="djhc-spotlight__rail" aria-label="High-value DJHC inventory highlights">
     ${cards}
   </div>
 </section>
+`;
+}
+
+function globalShopNavigationMarkup() {
+  return `
+<nav class="djhc-global-nav" aria-label="Shop departments">
+  <div class="djhc-global-nav__inner">
+    <a href="/collections/all">Shop all</a>
+    <a href="/collections/${FEATURED_COLLECTION_HANDLE}">Featured</a>
+    <a href="/search?q=baseball&type=product">Baseball</a>
+    <a href="/search?q=basketball&type=product">Basketball</a>
+    <a href="/search?q=football&type=product">Football</a>
+    <a href="/collections/comics">Comics</a>
+    <a href="/collections/collectibles">Collectibles</a>
+    <a href="/pages/contact">Contact</a>
+  </div>
+</nav>
 `;
 }
 
@@ -266,12 +284,12 @@ function storefrontProofMarkup() {
     <span>Listings use the product photos and details available for the item being sold.</span>
   </article>
   <article>
-    <strong>Collector-run selection</strong>
-    <span>The catalog is built around recognizable players, teams, eras, characters, and hobby categories.</span>
+    <strong>Collector-run inventory</strong>
+    <span>Cards, comics, memorabilia, and hobby finds are organized so strong pieces are easier to discover.</span>
   </article>
   <article>
-    <strong>Review before purchase</strong>
-    <span>Sales are final, so review the photos, description, condition, and shipping details before checkout.</span>
+    <strong>DJ's guarantee</strong>
+    <span>Authentic items, careful packing, and responsive follow-up remain core promises behind every sale.</span>
   </article>
 </section>
 `;
@@ -285,6 +303,9 @@ function updateHomepage(rawJson) {
     ? Object.keys(template.sections || {}).find((id) => template.sections[id] === hero)
     : null;
   const productList = findSectionByType(template, 'product-list');
+  const productListSectionId = productList
+    ? Object.keys(template.sections || {}).find((id) => template.sections[id] === productList)
+    : null;
 
   if (hero) {
     const heroText = firstBlockByType(hero, 'text');
@@ -337,7 +358,6 @@ function updateHomepage(rawJson) {
     paddingStart: 24,
     paddingEnd: 18
   });
-  placeSectionAfter(template, 'djhc_spotlight', 'djhc_hero');
   changes.push('homepage product spotlight');
 
   template.sections.djhc_shop_tools = customLiquidSection(storefrontToolsMarkup(), {
@@ -345,7 +365,8 @@ function updateHomepage(rawJson) {
     paddingStart: 28,
     paddingEnd: 20
   });
-  placeSectionAfter(template, 'djhc_shop_tools', 'djhc_spotlight');
+  placeSectionAfter(template, 'djhc_shop_tools', productListSectionId || 'djhc_hero');
+  placeSectionAfter(template, 'djhc_spotlight', 'djhc_shop_tools');
   changes.push('homepage shop lane shortcuts');
 
   template.sections.djhc_storefront_proof = customLiquidSection(storefrontProofMarkup(), {
@@ -353,7 +374,7 @@ function updateHomepage(rawJson) {
     paddingStart: 0,
     paddingEnd: 28
   });
-  placeSectionAfter(template, 'djhc_storefront_proof', 'djhc_shop_tools');
+  placeSectionAfter(template, 'djhc_storefront_proof', 'djhc_spotlight');
   changes.push('homepage buyer proof strip');
 
   if (productList) {
@@ -382,6 +403,11 @@ function updateHomepage(rawJson) {
       button.settings.style_class = 'button-secondary';
       changes.push('featured collection button');
     }
+    if (productListSectionId) {
+      placeSectionAfter(template, productListSectionId, 'djhc_hero');
+      placeSectionAfter(template, 'djhc_shop_tools', productListSectionId);
+      changes.push('featured collection placement');
+    }
   }
 
   return { value: JSON.stringify(template, null, 2), changes };
@@ -394,12 +420,17 @@ function updateHeader(rawJson) {
   const announcements = Object.values(sections).find((section) => section?.type === 'header-announcements');
   const announcement = Object.values(announcements?.blocks || {}).find((block) => block?.type === '_announcement');
   if (announcement?.settings) {
-    announcement.settings.text = 'Actual item photos | Secure Shopify checkout | Collector-run inventory';
-    announcement.settings.font_size = '0.82rem';
+    announcement.settings.text = 'Actual item photos • Secure checkout • Collector-run';
+    announcement.settings.font_size = '0.78rem';
     announcement.settings.weight = '700';
     announcement.settings.letter_spacing = '0';
     announcement.settings.case = 'none';
     changes.push('announcement text');
+  }
+  if (announcements?.settings) {
+    announcements.settings['padding-block-start'] = 8;
+    announcements.settings['padding-block-end'] = 8;
+    changes.push('announcement spacing');
   }
 
   const headerSection = Object.values(sections).find((section) => section?.type === 'header');
@@ -407,9 +438,30 @@ function updateHeader(rawJson) {
     headerSection.settings.show_country = false;
     headerSection.settings.show_language = false;
     headerSection.settings.enable_transparent_header_home = false;
-    headerSection.settings.color_scheme_top = 'scheme-djhc';
+    headerSection.settings.enable_sticky_header = 'always';
+    headerSection.settings.background_color_top = '#030611';
     changes.push('header settings');
   }
+
+  const headerMenu = Object.values(headerSection?.blocks || {}).find((block) => block?.type === '_header-menu');
+  if (headerMenu?.settings) {
+    headerMenu.settings.type_font_primary_size = '0.9rem';
+    headerMenu.settings.type_font_primary_link = 'body';
+    headerMenu.settings.type_case_primary_link = 'none';
+    headerMenu.settings.menu_style = 'text';
+    headerMenu.settings.drawer_accordion = true;
+    headerMenu.settings.drawer_dividers = true;
+    changes.push('header navigation typography');
+  }
+
+  sections.djhc_global_nav = customLiquidSection(globalShopNavigationMarkup(), {
+    colorScheme: 'scheme-djhc',
+    paddingStart: 0,
+    paddingEnd: 0
+  });
+  const currentOrder = Array.isArray(header.order) ? header.order : Object.keys(sections);
+  header.order = [...currentOrder.filter((id) => id !== 'djhc_global_nav'), 'djhc_global_nav'];
+  changes.push('global department navigation');
 
   return { value: JSON.stringify(header, null, 2), changes };
 }
