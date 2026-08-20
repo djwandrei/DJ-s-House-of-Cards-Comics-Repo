@@ -2411,7 +2411,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -2419,6 +2421,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dwight Clark|Kellen Winslow",
       "excelFields": {
         "Title": "1982 Topps Receiving Leaders Kellen Winslow + Dwight Clark #258",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -2445,7 +2448,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Peyton Manning",
-    "attributes": [],
+    "attributes": [
+      "Insert"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -2453,6 +2458,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Peyton Manning",
       "excelFields": {
         "Title": "1999 Collector's Edge Peyton Manning Supreme T3 #T3-07",
+        "C:Features": "Insert",
         "C:Autographed": "No"
       }
     }
@@ -2934,7 +2940,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Football",
-    "playerAthlete": "",
+    "playerAthlete": "Anthony McCoy",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -2944,7 +2950,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "",
+      "playerAthlete": "Anthony McCoy",
       "excelFields": {
         "Title": "2010 Upper Deck NCAA Sweet Spot Anthony McCoy Rookie Helmet Auto /200",
         "C:Features": "Autograph|Rookie|Serial Numbered",
@@ -2956,7 +2962,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 904,
     "name": "2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto /50 USC",
     "category": "Football",
-    "team": "",
+    "team": "USC Trojans",
     "year": 2010,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -2972,7 +2978,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Football",
-    "playerAthlete": "",
+    "playerAthlete": "Joe McKnight",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -2983,7 +2989,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "",
+      "playerAthlete": "Joe McKnight",
       "excelFields": {
         "Title": "2010 Upper Deck NCAA Sweet Spot Joe McKnight Blue Rookie Helmet Auto /50 USC",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -4782,7 +4788,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -4790,6 +4798,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
       "excelFields": {
         "Title": "2013 Bowman JJ Watt DeAndre Hopkins Arian Foster Andre Johnson Texans Set (x36)",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -7224,7 +7233,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Aaron Rodgers",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -7232,6 +7243,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Aaron Rodgers",
       "excelFields": {
         "Title": "2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (2)",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -12140,6 +12152,157 @@ window.DJ_PRELOADED_PRODUCTS = [
         "Title": "2010 Panini Epix Kareem Jackson Crystal Rookie Houston Texans Football #156 /250",
         "C:Features": "Rookie|Serial Numbered",
         "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3623,
+    "name": "2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387",
+    "category": "Football",
+    "team": "Washington Commanders",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 3.95,
+    "priceLabel": "$3.95",
+    "displayPrice": "$3.95",
+    "image": "https://iili.io/CL9ow4n.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9ow4n.jpg",
+      "https://iili.io/CL9oeYG.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-topps-chrome-jacoby-croskey-merritt-yellow-x-fractor-rookie-387-1.CL9ow4n",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NFL",
+    "sport": "Football",
+    "playerAthlete": "Jacory Croskey-Merritt",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Jacory Croskey-Merritt",
+      "excelFields": {
+        "Title": "2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3624,
+    "name": "2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2",
+    "category": "Football",
+    "team": "Oregon State Beavers",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 3.95,
+    "priceLabel": "$3.95",
+    "displayPrice": "$3.95",
+    "image": "https://iili.io/CL9ol2a.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9ol2a.jpg",
+      "https://iili.io/CL9o0YJ.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-deshaun-fenwick-blue-rookie-auto-a-df2-1.CL9ol2a",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Football",
+    "playerAthlete": "Deshaun Fenwick",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deshaun Fenwick",
+      "excelFields": {
+        "Title": "2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3625,
+    "name": "2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5",
+    "category": "Football",
+    "team": "Louisville Cardinals",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 4.95,
+    "priceLabel": "$4.95",
+    "displayPrice": "$4.95",
+    "image": "https://iili.io/CL9o1kv.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9o1kv.jpg",
+      "https://iili.io/CL9oMIp.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-juwan-mitchell-blue-rookie-auto-a-jm5-1.CL9o1kv",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Football",
+    "playerAthlete": "Juwan Mitchell",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Juwan Mitchell",
+      "excelFields": {
+        "Title": "2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3626,
+    "name": "2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG",
+    "category": "Football",
+    "team": "South Carolina Gamecocks",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 2.95,
+    "priceLabel": "$2.95",
+    "displayPrice": "$2.95",
+    "image": "https://iili.io/CL9oWQI.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9oWQI.jpg",
+      "https://iili.io/CL9ojEX.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-nick-gargiulo-blue-rookie-auto-a-ng-1.CL9oWQI",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Football",
+    "playerAthlete": "Nick Gargiulo",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Nick Gargiulo",
+      "excelFields": {
+        "Title": "2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
       }
     }
   }

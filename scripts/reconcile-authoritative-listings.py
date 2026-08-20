@@ -23,7 +23,7 @@ from openpyxl import load_workbook
 
 
 DEFAULT_WORKBOOK = Path(
-    r"C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx"
+    r"C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx"
 )
 SOURCE_WORKBOOK = DEFAULT_WORKBOOK.name
 SOURCE_PAGE = "Non-Legacy Listings"
@@ -52,6 +52,13 @@ REQUIRED_HEADERS = {
 URL_RE = re.compile(r"https?://[^\s\"'<>|,]+", re.IGNORECASE)
 HREF_RE = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
 YEAR_RE = re.compile(r"\b(18\d{2}|19\d{2}|20\d{2})\b")
+PRINT_RUN_RE = re.compile(r"(?<!\w)/(\d{1,6})(?!\w)")
+GRADE_SUFFIX_RE = re.compile(
+    r"\b(?:psa|sgc|bgs|csg|hga)\s*\d+(?:\.\d+)?"
+    r"(?:\s*(?:gem\s*mint|mint))?(?:\s*auto\s*\d+(?:\.\d+)?)?\b",
+    re.IGNORECASE,
+)
+CARD_CODE_SUFFIX_RE = re.compile(r"\s+#\S+\s*$", re.IGNORECASE)
 CONDITION_SUFFIX_RE = re.compile(r"\s*-\s*\(ID:\s*[^)]+\)\s*$", re.IGNORECASE)
 NON_WORD_RE = re.compile(r"[^a-z0-9]+")
 
@@ -84,6 +91,14 @@ def text(value: Any) -> str:
 
 def normalized(value: Any) -> str:
     return NON_WORD_RE.sub(" ", text(value).lower()).strip()
+
+
+def core_title(value: Any) -> str:
+    """Normalize stable card identity while ignoring grading and trailing card codes."""
+    title = CARD_CODE_SUFFIX_RE.sub("", text(value))
+    title = GRADE_SUFFIX_RE.sub("", title)
+    title = normalized(title)
+    return re.sub(r"\bdraft picks\b", "draft", title)
 
 
 def normalize_url(url: Any) -> str:
@@ -216,6 +231,7 @@ def product_identity(product: dict[str, Any]) -> dict[str, str]:
         "price": normalized(product.get("price") or fields.get("Start price")),
         "cert": normalized(fields.get("CDA:Certification Number - (ID: 27503)")),
         "set": normalized(fields.get("C:Set")),
+        "printRun": "|".join(sorted(set(PRINT_RUN_RE.findall(text(product.get("name")))))),
     }
 
 
@@ -231,6 +247,7 @@ def listing_identity(listing: dict[str, Any]) -> dict[str, str]:
         "price": normalized(fields.get("Start price")),
         "cert": normalized(fields.get("CDA:Certification Number - (ID: 27503)")),
         "set": normalized(fields.get("C:Set")),
+        "printRun": "|".join(sorted(set(PRINT_RUN_RE.findall(listing["title"])))),
     }
 
 
@@ -238,21 +255,32 @@ def pair_score(listing: dict[str, Any], product: dict[str, Any]) -> tuple[float,
     left = listing_identity(listing)
     right = product_identity(product)
     title_ratio = SequenceMatcher(None, left["title"], right["title"]).ratio()
+    core_title_ratio = SequenceMatcher(
+        None, core_title(listing["title"]), core_title(product.get("name"))
+    ).ratio()
     shared = [
         key
-        for key in ("sport", "player", "team", "league", "year", "price", "cert", "set")
+        for key in ("sport", "player", "team", "league", "year", "price", "cert", "set", "printRun")
         if left[key] and left[key] == right[key]
     ]
     differing = [
         key
-        for key in ("sport", "player", "team", "league", "year", "cert", "set")
+        for key in ("sport", "player", "team", "league", "year", "cert", "set", "printRun")
         if left[key] and right[key] and left[key] != right[key]
     ]
     score = title_ratio * 100 + len(shared) * 12 - len(differing) * 8
     if left["cert"] and left["cert"] == right["cert"]:
         score += 80
+    player_similarity = (
+        SequenceMatcher(None, left["player"], right["player"]).ratio()
+        if left["player"] and right["player"]
+        else None
+    )
     return score, {
         "titleRatio": round(title_ratio, 4),
+        "coreTitleRatio": round(core_title_ratio, 4),
+        "playerSimilarity": round(player_similarity, 4) if player_similarity is not None else None,
+        "printRunPresenceMismatch": bool(left["printRun"]) != bool(right["printRun"]),
         "sharedFields": shared,
         "differingFields": differing,
     }
@@ -326,16 +354,23 @@ def match_rows(
         listing = listing_by_row[row]
         for product_id in unmatched_ids:
             score, evidence = pair_score(listing, product_by_id[product_id])
-            strong_identity = (
-                evidence["titleRatio"] >= 0.82
+            hard_identity_conflict = (
+                "printRun" in evidence["differingFields"]
+                or "cert" in evidence["differingFields"]
+                or evidence["printRunPresenceMismatch"]
                 or (
-                    evidence["titleRatio"] >= 0.62
-                    and len(evidence["sharedFields"]) >= 3
-                    and len(evidence["differingFields"]) <= 1
+                    evidence["playerSimilarity"] is not None
+                    and evidence["playerSimilarity"] < 0.55
                 )
-                or (
-                    "cert" in evidence["sharedFields"]
-                    and evidence["titleRatio"] >= 0.45
+            )
+            strong_identity = (
+                not hard_identity_conflict
+                and (
+                    evidence["coreTitleRatio"] >= 0.925
+                    or (
+                        "cert" in evidence["sharedFields"]
+                        and evidence["titleRatio"] >= 0.45
+                    )
                 )
             )
             if strong_identity:
@@ -422,7 +457,11 @@ def build_product(
 ) -> dict[str, Any]:
     fields = copy.deepcopy(listing["fields"])
     photos = listing["photos"]
-    local_media = existing_local_media(old_product)
+    local_media = (
+        existing_local_media(old_product)
+        if match_method == "exact-photo-tuple"
+        else []
+    )
     display_media = local_media or photos
     price = price_value(fields.get("Start price"))
     quantity = quantity_value(fields.get("Quantity"))

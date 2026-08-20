@@ -880,7 +880,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Magic Johnson|Michael Jordan",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -888,6 +890,7 @@
       "playerAthlete": "Magic Johnson|Michael Jordan",
       "excelFields": {
         "Title": "1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + /1990 Hoops Set",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -2135,7 +2138,7 @@
     "id": 1004,
     "name": "2012-13 Panini Past & Present Darius Morris Rookie Auto #189 Lakers",
     "category": "Basketball",
-    "team": "",
+    "team": "Los Angeles Lakers",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -3431,7 +3434,10 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Karl-Anthony Towns",
-    "attributes": [],
+    "attributes": [
+      "Base Set",
+      "Insert"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -3439,6 +3445,7 @@
       "playerAthlete": "Karl-Anthony Towns",
       "excelFields": {
         "Title": "2016-17 Panini Contenders Karl-Anthony Towns Old School Colors + Base",
+        "C:Features": "Base Set|Insert",
         "C:Autographed": "No"
       }
     },
@@ -3616,7 +3623,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -3624,6 +3633,7 @@
       "playerAthlete": "LeBron James",
       "excelFields": {
         "Title": "2018 Upper Deck Goodwin Champions #50 LeBron James CSG 9.5 Mint",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -10082,12 +10092,12 @@
     "price": 31.95,
     "priceLabel": "$31.95",
     "displayPrice": "$31.95",
-    "image": "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (1).jpg",
+    "image": "https://iili.io/BAV3771.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (2).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (3).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (4).jpg"
+      "https://iili.io/BAV3771.md.jpg",
+      "https://iili.io/BAVFdTg.md.jpg",
+      "https://iili.io/BAVFxyX.md.jpg",
+      "https://iili.io/BAVF199.md.jpg"
     ],
     "description": "2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto /99 #BA-JF1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Pro Set Power; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Johnuel Fland; Team: Arkansas Razorbacks; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAV3771",
@@ -10123,12 +10133,12 @@
     "price": 31.95,
     "priceLabel": "$31.95",
     "displayPrice": "$31.95",
-    "image": "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (1).jpg",
+    "image": "https://iili.io/BAV3771.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (2).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (3).jpg",
-      "assets/Personal collection/Johnuel Fland/2021-22/2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto 99 #PM-JF1 (4).jpg"
+      "https://iili.io/BAV3771.md.jpg",
+      "https://iili.io/BAVFdTg.md.jpg",
+      "https://iili.io/BAVFxyX.md.jpg",
+      "https://iili.io/BAVF199.md.jpg"
     ],
     "description": "2021-22 Leaf Pro Set Power Johnuel Fland Aqua Rookie Auto /99 #PM-JF1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Pro Set Power; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Johnuel Fland; Team: Arkansas Razorbacks; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-leaf-pro-set-power-johnuel-fland-aqua-rookie-auto-99-pm-jf1-1.BAV3771",
@@ -12634,10 +12644,10 @@
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman U Best Cam Whitmore Neon Lava 50 Green 99 Pink 100 Set (x5) (1).jpg",
+    "image": "https://iili.io/BuwlojR.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman U Best Cam Whitmore Neon Lava 50 Green 99 Pink 100 Set (x5) (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman U Best Cam Whitmore Neon Lava 50 Green 99 Pink 100 Set (x5) (2).jpg"
+      "https://iili.io/BuwlojR.md.jpg",
+      "https://iili.io/BuwlR3X.md.jpg"
     ],
     "description": "2022-23 Bowman University Best Cam Whitmore Green Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Cam Whitmore; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BuwlojR",
@@ -12660,8 +12670,7 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1421,
@@ -13760,7 +13769,7 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Kel'el Ware",
-    "copyCount": 12,
+    "copyCount": 13,
     "attributes": [
       "Autograph",
       "Rookie"
@@ -14141,10 +14150,10 @@
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Cam Whitmore Invicta Refractor Rookie Auto 99 (1).jpg",
+    "image": "https://iili.io/BuwlojR.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Cam Whitmore Invicta Refractor Rookie Auto 99 (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Cam Whitmore Invicta Refractor Rookie Auto 99 (2).jpg"
+      "https://iili.io/BuwlojR.md.jpg",
+      "https://iili.io/BuwlR3X.md.jpg"
     ],
     "description": "2022-23 Bowman University Chrome Cam Whitmore Invicta Refractor Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Cam Whitmore; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-cam-whitmore-invicta-refractor-rookie-auto-99-1.BuwlojR",
@@ -14168,8 +14177,7 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1461,
@@ -21537,7 +21545,6 @@
     "league": "NCAA",
     "sport": "Basketball",
     "playerAthlete": "Dylan Harper",
-    "copyCount": 2,
     "attributes": [
       "Autograph",
       "Rookie",
@@ -24696,25 +24703,25 @@
   },
   {
     "id": 1732,
-    "name": "2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL",
+    "name": "2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10",
     "category": "Basketball",
-    "team": "Miami Heat",
+    "team": "Oregon Ducks",
     "year": 2022,
-    "condition": "Near mint or better",
-    "price": 49.95,
-    "priceLabel": "$49.95",
-    "displayPrice": "$49.95",
-    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL (1).jpg",
+    "condition": "PSA 10",
+    "price": 249.95,
+    "priceLabel": "$249.95",
+    "displayPrice": "$249.95",
+    "image": "https://iili.io/CLu7tz7.jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL (1).jpg",
-      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL (2).jpg"
+      "https://iili.io/CLu7tz7.jpg",
+      "https://iili.io/CLu7QbS.jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/CCCBF7R",
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-kel-and-039el-ware-hyper-prizm-rookie-auto-psa-10-1.CLu7tz7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
-    "league": "NBA",
+    "league": "NCAA",
     "sport": "Basketball",
-    "playerAthlete": "Kel'el Ware",
+    "playerAthlete": "Kel'El Ware",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -24724,9 +24731,9 @@
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Kel'el Ware",
+      "playerAthlete": "Kel'El Ware",
       "excelFields": {
-        "Title": "2022-23 Panini Prizm Draft Picks Kel'El Ware Hyper Prizm Rookie Auto #FS-KEL",
+        "Title": "2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10",
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
@@ -33415,7 +33422,7 @@
     "id": 1951,
     "name": "2022-23 Topps OTE Overtime Elite Chrome Eli Ellis Aqua Refractor Rookie /199 #30",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -33455,7 +33462,7 @@
     "id": 1952,
     "name": "2022-23 Topps OTE Overtime Elite Chrome Eli Ellis Aqua Refractor Rookie /199 #56",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -33494,7 +33501,7 @@
     "id": 1953,
     "name": "2022-23 Topps OTE Overtime Elite Chrome Eli Ellis Aqua Refractor Rookie /199 #63",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -33533,7 +33540,7 @@
     "id": 1954,
     "name": "2022-23 Topps OTE Overtime Elite Inception Izan Almansa Rookie Patch Auto /149 #IARC-IA2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -33573,7 +33580,7 @@
     "id": 1955,
     "name": "2022-23 Topps OTE Overtime Elite Inception Izan Almansa Rookie Patch Auto /149 #IARC-IA1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -33613,7 +33620,7 @@
     "id": 1956,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Aqua Refractor Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 30,
@@ -33652,7 +33659,7 @@
     "id": 1957,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Green Refractor Auto /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -33691,7 +33698,7 @@
     "id": 1958,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Pink Refractor Rookie /150",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -33730,7 +33737,7 @@
     "id": 1959,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Rookie Refractor Auto #CA-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -33774,7 +33781,7 @@
     "id": 1960,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Rookie Refractor Auto #CA-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -33818,7 +33825,7 @@
     "id": 1961,
     "name": "2022-23 Topps Overtime Elite OTE Chrome Bryson Tiller Rookie Refractor Auto #CA-BT3",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -34026,7 +34033,7 @@
     "id": 1966,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Base Rookie Auto /199 #IA-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -34067,7 +34074,7 @@
     "id": 1967,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Base Rookie Auto /199 #IA-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -34108,7 +34115,7 @@
     "id": 1968,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Base Rookie Auto /199 #IA-BT3",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -34148,7 +34155,7 @@
     "id": 1969,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Base Rookie Auto /199 #IA-BT4",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -34188,7 +34195,7 @@
     "id": 1970,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Rookie Patch Auto /149 #IARC-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 39.95,
@@ -34231,7 +34238,7 @@
     "id": 1971,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Rookie Patch Auto /149 #IARC-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 39.95,
@@ -34273,7 +34280,7 @@
     "id": 1972,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Rookie Patch Auto /149 #IARC-BT3",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 39.95,
@@ -34315,7 +34322,7 @@
     "id": 1973,
     "name": "2022-23 Topps Overtime Elite OTE Inception Bryson Tiller Teal Rookie Auto /10",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 65,
@@ -34355,7 +34362,7 @@
     "id": 1974,
     "name": "2022-23 Topps Overtime Elite OTE Inception Eli Ellis Base Rookie Auto /199",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -34406,7 +34413,7 @@
     "id": 1975,
     "name": "2022-23 Topps Overtime Elite OTE Inception Eli Ellis Rookie Patch Auto /149",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -47293,7 +47300,7 @@
     "id": 2364,
     "name": "2023-24 Topps Overtime Elite Chrome Bryson Tiller OTE Refractor Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 29.95,
@@ -49793,28 +49800,29 @@
   },
   {
     "id": 2440,
-    "name": "2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor /25",
+    "name": "2024-25 Bowman University Best Dylan Harper Making Grade Orange /25 PSA 10",
     "category": "Basketball",
     "team": "Rutgers Scarlet Knights",
     "year": 2024,
-    "condition": "Near mint or better",
-    "price": 39.95,
-    "priceLabel": "$39.95",
-    "displayPrice": "$39.95",
-    "image": "assets/Personal collection/Dylan Harper/2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor 25 (1).jpg",
+    "condition": "PSA 10",
+    "price": 149.95,
+    "priceLabel": "$149.95",
+    "displayPrice": "$149.95",
+    "image": "https://iili.io/CLuYn1a.jpg",
     "imageGallery": [
-      "assets/Personal collection/Dylan Harper/2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor 25 (1).jpg",
-      "assets/Personal collection/Dylan Harper/2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor 25 (2).jpg"
+      "https://iili.io/CLuYn1a.jpg",
+      "https://iili.io/CLuYqLF.jpg"
     ],
     "description": "2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/CCCz2Ox",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-dylan-harper-making-grade-orange-25-psa-10-1.CLuYn1a",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
     "playerAthlete": "Dylan Harper",
     "attributes": [
       "Serial Numbered",
-      "Parallel/Variety"
+      "Parallel/Variety",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -49822,12 +49830,11 @@
     "metadata": {
       "playerAthlete": "Dylan Harper",
       "excelFields": {
-        "Title": "2024-25 Bowman University Best Dylan Harper Making Grade Orange Refractor /25",
-        "C:Features": "Serial Numbered|Parallel/Variety",
+        "Title": "2024-25 Bowman University Best Dylan Harper Making Grade Orange /25 PSA 10",
+        "C:Features": "Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2441,
@@ -52227,41 +52234,41 @@
   },
   {
     "id": 2509,
-    "name": "2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto /25",
+    "name": "2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto /25 PSA 9",
     "category": "Basketball",
     "team": "Houston Rockets",
     "year": 2024,
-    "condition": "Near mint or better",
-    "price": 34.95,
-    "priceLabel": "$34.95",
-    "displayPrice": "$34.95",
-    "image": "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto 25 (1).jpg",
+    "condition": "PSA 9",
+    "price": 69.95,
+    "priceLabel": "$69.95",
+    "displayPrice": "$69.95",
+    "image": "https://iili.io/CLuYorJ.jpg",
     "imageGallery": [
-      "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto 25 (1).jpg",
-      "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto 25 (2).jpg"
+      "https://iili.io/CLuYorJ.jpg",
+      "https://iili.io/CLuYI7R.jpg"
     ],
     "description": "2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAGFuTb",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-jabari-smith-jr-hot-signatures-auto-25-psa-9-1.CLuYorJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
-      "Serial Numbered"
+      "Serial Numbered",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
-        "Title": "2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto /25",
-        "C:Features": "Autograph|Serial Numbered",
+        "Title": "2024-25 Panini NBA Hoops Jabari Smith Jr. Hot Signatures Auto /25 PSA 9",
+        "C:Features": "Autograph|Serial Numbered|Insert",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2510,
@@ -55204,21 +55211,21 @@
   },
   {
     "id": 2591,
-    "name": "2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie /18",
+    "name": "2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie /18 PSA 9",
     "category": "Basketball",
     "team": "Minnesota Timberwolves",
     "year": 2024,
-    "condition": "Near mint or better",
-    "price": 69.95,
-    "priceLabel": "$69.95",
-    "displayPrice": "$69.95",
-    "image": "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie 18 (1).jpg",
+    "condition": "PSA 9",
+    "price": 129.95,
+    "priceLabel": "$129.95",
+    "displayPrice": "$129.95",
+    "image": "https://iili.io/CLuYaBn.jpg",
     "imageGallery": [
-      "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie 18 (1).jpg",
-      "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie 18 (2).jpg"
+      "https://iili.io/CLuYaBn.jpg",
+      "https://iili.io/CLuYlrG.jpg"
     ],
     "description": "2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie /18\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Select; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Rob Dillingham; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pulsar, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAXIVmx",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-select-rob-dillingham-premier-orange-pulsar-prizm-rookie-18-psa-9-1.CLuYaBn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -55234,12 +55241,11 @@
     "metadata": {
       "playerAthlete": "Rob Dillingham",
       "excelFields": {
-        "Title": "2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie /18",
+        "Title": "2024-25 Panini Select Rob Dillingham Premier Orange Pulsar Prizm Rookie /18 PSA 9",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2592,
@@ -57823,44 +57829,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 2658,
-    "name": "2024-25 Topps McDonald's Chrome Liv McGill Purple /99 Blue /75 Red /125 (x20)",
-    "category": "Basketball",
-    "team": "",
-    "year": 2024,
-    "condition": "Near mint or better",
-    "price": 179.95,
-    "priceLabel": "$179.95",
-    "displayPrice": "$179.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Purple 99 Blue 75 Red 125 (x20) (1).jpg",
-    "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Purple 99 Blue 75 Red 125 (x20) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Purple 99 Blue 75 Red 125 (x20) (2).jpg"
-    ],
-    "description": "2024-25 Topps McDonald's Chrome Liv McGill Purple /99 Blue /75 Red /125 (x20)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Blue, Red, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 20; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BABeAoG",
-    "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
-    "league": "NCAA",
-    "sport": "Basketball",
-    "playerAthlete": "Liv McGill",
-    "attributes": [
-      "Serial Numbered",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "playerAthlete": "Liv McGill",
-      "excelFields": {
-        "Title": "2024-25 Topps McDonald's Chrome Liv McGill Purple /99 Blue /75 Red /125 (x20)",
-        "C:Features": "Serial Numbered|Parallel/Variety",
-        "C:Autographed": "No"
-      }
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 2659,
     "name": "2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor /50",
     "category": "Basketball",
@@ -59905,7 +59873,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Michael Jordan",
-    "attributes": [],
+    "attributes": [
+      "Insert"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -59913,6 +59883,7 @@
       "playerAthlete": "Michael Jordan",
       "excelFields": {
         "Title": "1995-96 Upper Deck Michael Jordan Then and Now #359",
+        "C:Features": "Insert",
         "C:Autographed": "No"
       }
     }
@@ -61159,7 +61130,7 @@
     "id": 3069,
     "name": "2014-15 Panini NBA Hoops Jusuf Nurkic + Gary Harris Denver Nuggets Rookie Set",
     "category": "Basketball",
-    "team": "",
+    "team": "Denver Nuggets",
     "year": 2014,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -61432,7 +61403,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Hassan Whiteside",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -61440,6 +61413,7 @@
       "playerAthlete": "Hassan Whiteside",
       "excelFields": {
         "Title": "2015-16 Panini Prestige Hassan Whiteside #125",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -64839,7 +64813,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Cameron Brink",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -64847,6 +64823,7 @@
       "playerAthlete": "Cameron Brink",
       "excelFields": {
         "Title": "2025 Upper Deck Goodwin Champions Cameron Brink Set (x2)",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -67922,7 +67899,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Giannis Antetokounmpo",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -67930,6 +67909,7 @@
       "playerAthlete": "Giannis Antetokounmpo",
       "excelFields": {
         "Title": "2014-15 Panini NBA Hoops Giannis Antetokounmpo #62",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -68105,7 +68085,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -68113,6 +68095,7 @@
       "playerAthlete": "LeBron James",
       "excelFields": {
         "Title": "2004-05 Upper Deck Lebron James #26",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -69504,6 +69487,7 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Kel'El Ware",
+    "copyCount": 3,
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -69565,9 +69549,9 @@
     "team": "",
     "year": 2022,
     "condition": "Near mint or better",
-    "price": 59.95,
-    "priceLabel": "$59.95",
-    "displayPrice": "$59.95",
+    "price": 79.95,
+    "priceLabel": "$79.95",
+    "displayPrice": "$79.95",
     "image": "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
@@ -72373,86 +72357,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 3489,
-    "name": "2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie /175 #BCV-2",
-    "category": "Basketball",
-    "team": "",
-    "year": 2025,
-    "condition": "Near mint or better",
-    "price": 69.95,
-    "priceLabel": "$69.95",
-    "displayPrice": "$69.95",
-    "image": "assets/Personal collection/PSA Cards/2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie 175 #BCV-2 (1).JPG",
-    "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie 175 #BCV-2 (1).JPG",
-      "assets/Personal collection/PSA Cards/2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie 175 #BCV-2 (2).JPG"
-    ],
-    "description": "2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie /175 #BCV-2\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Navy Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2PxQRe",
-    "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "Dylan Harper",
-    "attributes": [
-      "Rookie",
-      "Serial Numbered",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "playerAthlete": "Dylan Harper",
-      "excelFields": {
-        "Title": "2025-26 Bowman Chrome Dylan Harper Navy Blue Rookie /175 #BCV-2",
-        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
-        "C:Autographed": "No"
-      }
-    }
-  },
-  {
-    "id": 3490,
-    "name": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75",
-    "category": "Basketball",
-    "team": "",
-    "year": 2022,
-    "condition": "Near mint or better",
-    "price": 59.95,
-    "priceLabel": "$59.95",
-    "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 (1).JPG",
-    "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 (2).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 (3).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 (4).JPG"
-    ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Lava Refractor, Gold Lava; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2PCUoQ",
-    "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
-    "league": "NCAA",
-    "sport": "Basketball",
-    "playerAthlete": "Kel'El Ware",
-    "copyCount": 2,
-    "attributes": [
-      "Autograph",
-      "Serial Numbered",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "playerAthlete": "Kel'El Ware",
-      "excelFields": {
-        "Title": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75",
-        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
-        "C:Autographed": "Yes"
-      }
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 3492,
     "name": "2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 1/1 PSA 9 Mint",
     "category": "Basketball",
@@ -72858,9 +72762,9 @@
     "team": "",
     "year": 2020,
     "condition": "PSA 9",
-    "price": 79.95,
-    "priceLabel": "$79.95",
-    "displayPrice": "$79.95",
+    "price": 89.95,
+    "priceLabel": "$89.95",
+    "displayPrice": "$89.95",
     "image": "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
     "imageGallery": [
       "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
@@ -73156,7 +73060,7 @@
     "league": "NCAA",
     "sport": "Basketball",
     "playerAthlete": "Kel'El Ware",
-    "copyCount": 4,
+    "copyCount": 5,
     "attributes": [
       "Autograph",
       "Serial Numbered",
@@ -73411,46 +73315,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 3525,
-    "name": "2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto /99 PSA 9",
-    "category": "Basketball",
-    "team": "",
-    "year": 2022,
-    "condition": "PSA 9",
-    "price": 199.95,
-    "priceLabel": "$199.95",
-    "displayPrice": "$199.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto 99 PSA 9 (1).jpg",
-    "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto 99 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto 99 PSA 9 (2).jpg"
-    ],
-    "description": "2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto /99 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Purple Ice, Prizm; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2PoECl",
-    "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
-    "league": "NCAA",
-    "sport": "Basketball",
-    "playerAthlete": "Kel'El Ware",
-    "attributes": [
-      "Autograph",
-      "Rookie",
-      "Serial Numbered",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "playerAthlete": "Kel'El Ware",
-      "excelFields": {
-        "Title": "2022-23 Panini Prizm Draft Picks Kel'El Ware Purple Ice Rookie Auto /99 PSA 9",
-        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
-        "C:Autographed": "Yes"
-      }
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 3526,
     "name": "2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie /15 PSA 10",
     "category": "Basketball",
@@ -73488,5 +73352,3138 @@
       }
     },
     "hasThumbnail": true
+  },
+  {
+    "id": 3532,
+    "name": "2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233)",
+    "category": "Basketball",
+    "team": "Golden State Warriors",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 89.95,
+    "priceLabel": "$89.95",
+    "displayPrice": "$89.95",
+    "image": "https://iili.io/CoywEBV.jpg",
+    "imageGallery": [
+      "https://iili.io/CoywEBV.jpg",
+      "https://iili.io/CQEQeZ7.jpg",
+      "https://iili.io/CoywMrP.jpg",
+      "https://iili.io/CQEQNu2.jpg",
+      "https://iili.io/Coywlhx.jpg",
+      "https://iili.io/CQEQ8Ge.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CoywEBV",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3533,
+    "name": "2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237)",
+    "category": "Basketball",
+    "team": "Los Angeles Lakers",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 84.95,
+    "priceLabel": "$84.95",
+    "displayPrice": "$84.95",
+    "image": "https://iili.io/CoywGEB.jpg",
+    "imageGallery": [
+      "https://iili.io/CoywGEB.jpg",
+      "https://iili.io/CoywXYF.jpg",
+      "https://iili.io/Coywhkg.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-los-angeles-lakers-base-plus-sp-plus-insert-lot-x237-1.CoywGEB",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3534,
+    "name": "2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269)",
+    "category": "Basketball",
+    "team": "Memphis Grizzlies",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 91.95,
+    "priceLabel": "$91.95",
+    "displayPrice": "$91.95",
+    "image": "https://iili.io/CoywNTJ.jpg",
+    "imageGallery": [
+      "https://iili.io/CoywNTJ.jpg",
+      "https://iili.io/CQEQZn1.jpg",
+      "https://iili.io/CoyweQR.jpg",
+      "https://iili.io/CQEQtMF.jpg",
+      "https://iili.io/CoywvBp.jpg",
+      "https://iili.io/CQEQS6u.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CoywNTJ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3535,
+    "name": "2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258)",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 84.95,
+    "priceLabel": "$84.95",
+    "displayPrice": "$84.95",
+    "image": "https://iili.io/Coyw8EN.jpg",
+    "imageGallery": [
+      "https://iili.io/Coyw8EN.jpg",
+      "https://iili.io/CQEQYpp.jpg",
+      "https://iili.io/CoywrYX.jpg",
+      "https://iili.io/CQEQECX.jpg",
+      "https://iili.io/Coyw4vn.jpg",
+      "https://iili.io/CQEQGGn.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.Coyw8EN",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3536,
+    "name": "2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184)",
+    "category": "Basketball",
+    "team": "Milwaukee Bucks",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 64.95,
+    "priceLabel": "$64.95",
+    "displayPrice": "$64.95",
+    "image": "https://iili.io/Coyw6ps.jpg",
+    "imageGallery": [
+      "https://iili.io/Coyw6ps.jpg",
+      "https://iili.io/CoywiTG.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-milwaukee-bucks-base-plus-sp-plus-insert-lot-x184-1.Coyw6ps",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3537,
+    "name": "2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210)",
+    "category": "Basketball",
+    "team": "New York Knicks",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 73.95,
+    "priceLabel": "$73.95",
+    "displayPrice": "$73.95",
+    "image": "https://iili.io/CoyNRGp.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyNRGp.jpg",
+      "https://iili.io/CoyN09n.jpg",
+      "https://iili.io/CoyNaat.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-new-york-knicks-base-plus-sp-plus-insert-lot-x210-1.CoyNRGp",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3538,
+    "name": "2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225)",
+    "category": "Basketball",
+    "team": "New Orleans Pelicans",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 77.95,
+    "priceLabel": "$77.95",
+    "displayPrice": "$77.95",
+    "image": "https://iili.io/Coywsjf.jpg",
+    "imageGallery": [
+      "https://iili.io/Coywsjf.jpg",
+      "https://iili.io/CQEQy8v.jpg",
+      "https://iili.io/CoywZCl.jpg",
+      "https://iili.io/CQEQLZP.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.Coywsjf",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3539,
+    "name": "2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224)",
+    "category": "Basketball",
+    "team": "Oklahoma City Thunder",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CoyNjFS.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyNjFS.jpg",
+      "https://iili.io/CQEQljI.jpg",
+      "https://iili.io/CoyNLHF.jpg",
+      "https://iili.io/CQEQ5Yv.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CoyNjFS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3540,
+    "name": "2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184)",
+    "category": "Basketball",
+    "team": "Orlando Magic",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 64.95,
+    "priceLabel": "$64.95",
+    "displayPrice": "$64.95",
+    "image": "https://iili.io/CoyO3Rn.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyO3Rn.jpg",
+      "https://iili.io/CoyOHlI.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-orlando-magic-base-plus-sp-plus-insert-lot-x184-1.CoyO3Rn",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3541,
+    "name": "2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325)",
+    "category": "Basketball",
+    "team": "Philadelphia 76ers",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 124.95,
+    "priceLabel": "$124.95",
+    "displayPrice": "$124.95",
+    "image": "https://iili.io/CoyOKDG.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOKDG.jpg",
+      "https://iili.io/CQEQOjS.jpg",
+      "https://iili.io/CoyOqxf.jpg",
+      "https://iili.io/CQEQraj.jpg",
+      "https://iili.io/CoyOBV4.jpg",
+      "https://iili.io/CQEQW3G.jpg",
+      "https://iili.io/CoyOCil.jpg",
+      "https://iili.io/CQEQhv4.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CoyOKDG",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3542,
+    "name": "2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217)",
+    "category": "Basketball",
+    "team": "Phoenix Suns",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 74.95,
+    "priceLabel": "$74.95",
+    "displayPrice": "$74.95",
+    "image": "https://iili.io/CoyOxlS.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOxlS.jpg",
+      "https://iili.io/CoyOzU7.jpg",
+      "https://iili.io/CoyOTJ9.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-phoenix-suns-base-plus-sp-plus-insert-lot-x217-1.CoyOxlS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3543,
+    "name": "2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232)",
+    "category": "Basketball",
+    "team": "Portland Trail Blazers",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 79.95,
+    "priceLabel": "$79.95",
+    "displayPrice": "$79.95",
+    "image": "https://iili.io/CoyORDb.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyORDb.jpg",
+      "https://iili.io/CQEQjyl.jpg",
+      "https://iili.io/CoyOYWx.jpg",
+      "https://iili.io/CQEQ0Qt.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CoyORDb",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3544,
+    "name": "2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193)",
+    "category": "Basketball",
+    "team": "Sacramento Kings",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 63.95,
+    "priceLabel": "$63.95",
+    "displayPrice": "$63.95",
+    "image": "https://iili.io/CoyOlfV.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOlfV.jpg",
+      "https://iili.io/CoyO00B.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-sacramento-kings-base-plus-sp-plus-insert-lot-x193-1.CoyOlfV",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3545,
+    "name": "2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154)",
+    "category": "Basketball",
+    "team": "San Antonio Spurs",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 57.95,
+    "priceLabel": "$57.95",
+    "displayPrice": "$57.95",
+    "image": "https://iili.io/CoyOGJ1.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOGJ1.jpg",
+      "https://iili.io/CoyOM5F.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-san-antonio-spurs-base-plus-sp-plus-insert-lot-x154-1.CoyOGJ1",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3546,
+    "name": "2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203)",
+    "category": "Basketball",
+    "team": "Toronto Raptors",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 69.95,
+    "priceLabel": "$69.95",
+    "displayPrice": "$69.95",
+    "image": "https://iili.io/CoyOhzJ.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOhzJ.jpg",
+      "https://iili.io/CQEZFnt.jpg",
+      "https://iili.io/CoyOwsR.jpg",
+      "https://iili.io/CQEZBFs.jpg",
+      "https://iili.io/CoyOjWv.jpg",
+      "https://iili.io/CQEZ2tI.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CoyOhzJ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3547,
+    "name": "2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147)",
+    "category": "Basketball",
+    "team": "Utah Jazz",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 57.95,
+    "priceLabel": "$57.95",
+    "displayPrice": "$57.95",
+    "image": "https://iili.io/CoyOOfp.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOOfp.jpg",
+      "https://iili.io/CQEZnSf.jpg",
+      "https://iili.io/CoyO8Jt.jpg",
+      "https://iili.io/CQEZCcG.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CoyOOfp",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3548,
+    "name": "2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171)",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 62.95,
+    "priceLabel": "$62.95",
+    "displayPrice": "$62.95",
+    "image": "https://iili.io/CoyOPs4.jpg",
+    "imageGallery": [
+      "https://iili.io/CoyOPs4.jpg",
+      "https://iili.io/CQEZdwN.jpg",
+      "https://iili.io/CoyOsql.jpg",
+      "https://iili.io/CQEQiuV.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CoyOPs4",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "",
+    "attributes": [
+      "Base Set",
+      "Insert",
+      "Short Print"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "",
+      "excelFields": {
+        "Title": "2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171)",
+        "C:Features": "Base Set|Insert|Short Print",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3549,
+    "name": "2024-25 Topps Inception Zach Lavine Grail Chasing Auto 1/1 PSA 7",
+    "category": "Basketball",
+    "team": "",
+    "year": 2024,
+    "condition": "PSA 7",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLuYE74.jpg",
+    "imageGallery": [
+      "https://iili.io/CLuYE74.jpg",
+      "https://iili.io/CLuY12f.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-inception-zach-lavine-grail-chasing-auto-11-psa-7-1.CLuYE74",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Zach LaVine",
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "One of One",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Zach LaVine",
+      "excelFields": {
+        "Title": "2024-25 Topps Inception Zach Lavine Grail Chasing Auto 1/1 PSA 7",
+        "C:Features": "Autograph|Serial Numbered|One of One|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3550,
+    "name": "2025-26 Topps Finest Kel'El Ware Finest Black Refractor Auto /10 PSA 9",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2025,
+    "condition": "PSA 9",
+    "price": 199.95,
+    "priceLabel": "$199.95",
+    "displayPrice": "$199.95",
+    "image": "https://iili.io/CLuYhQ9.jpg",
+    "imageGallery": [
+      "https://iili.io/CLuYhQ9.jpg",
+      "https://iili.io/CLuYwBe.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-finest-kel-and-039el-ware-finest-black-refractor-auto-10-psa-9-1.CLuYhQ9",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2025-26 Topps Finest Kel'El Ware Finest Black Refractor Auto /10 PSA 9",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3551,
+    "name": "2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2025,
+    "condition": "PSA 9",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLuYNEu.jpg",
+    "imageGallery": [
+      "https://iili.io/CLuYNEu.jpg",
+      "https://iili.io/CLuYOrb.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-holiday-kel-and-039el-ware-holiday-mega-auto-h59-psa-9-1.CLuYNEu",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9",
+        "C:Features": "Autograph|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3552,
+    "name": "2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto /99 PSA 9",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "PSA 9",
+    "price": 229.95,
+    "priceLabel": "$229.95",
+    "displayPrice": "$229.95",
+    "image": "https://iili.io/CLu7h0J.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu7h0J.jpg",
+      "https://iili.io/CLu7Xfa.jpg"
+    ],
+    "description": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Lava Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-kel-and-039el-ware-neon-neophytes-auto-99-psa-9-1.CLu7h0J",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto /99 PSA 9",
+        "C:Features": "Autograph|Serial Numbered|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3553,
+    "name": "2025-26 Topps Sapphire Kel'El Ware Black Refractor /10 PSA 10 Gem Mint",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2025,
+    "condition": "PSA 10",
+    "price": 399.95,
+    "priceLabel": "$399.95",
+    "displayPrice": "$399.95",
+    "image": "https://iili.io/CLu5juS.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu5juS.jpg",
+      "https://iili.io/CLu5h92.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-sapphire-kel-and-039el-ware-black-refractor-10-psa-10-gem-mint-1.CLu5juS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2025-26 Topps Sapphire Kel'El Ware Black Refractor /10 PSA 10 Gem Mint",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3554,
+    "name": "2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto /20 PSA 9",
+    "category": "Basketball",
+    "team": "",
+    "year": 2022,
+    "condition": "PSA 9",
+    "price": 249.95,
+    "priceLabel": "$249.95",
+    "displayPrice": "$249.95",
+    "image": "https://iili.io/CLu7rfs.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu7rfs.jpg",
+      "https://iili.io/CLu76gf.jpg"
+    ],
+    "description": "2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto /20\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Vivid; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Prizm, Black; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-vivid-dylan-harper-black-prizm-rookie-auto-20-psa-9-1.CLu7rfs",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Dylan Harper",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Dylan Harper",
+      "excelFields": {
+        "Title": "2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto /20 PSA 9",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3555,
+    "name": "2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto /5 PSA 9",
+    "category": "Basketball",
+    "team": "Arkansas Razorbacks",
+    "year": 2024,
+    "condition": "PSA 9",
+    "price": 199.95,
+    "priceLabel": "$199.95",
+    "displayPrice": "$199.95",
+    "image": "https://iili.io/CLu7bse.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu7bse.jpg",
+      "https://iili.io/CLu7y0b.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-boogie-fland-iso-signatures-white-auto-5-psa-9-1.CLu7bse",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Boogie Fland",
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Boogie Fland",
+      "excelFields": {
+        "Title": "2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto /5 PSA 9 ",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3556,
+    "name": "2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 1/1 PSA 7",
+    "category": "Basketball",
+    "team": "",
+    "year": 2022,
+    "condition": "PSA 7",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLu7SWX.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu7SWX.jpg",
+      "https://iili.io/CLu78xt.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-trinity-clear-ian-jackson-black-gold-rookie-auto-11-psa-7-1.CLu7SWX",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Ian Jackson",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "One of One",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Ian Jackson",
+      "excelFields": {
+        "Title": "2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 1/1 PSA 7",
+        "C:Features": "Autograph|Rookie|Serial Numbered|One of One|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3557,
+    "name": "1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8",
+    "category": "Basketball",
+    "team": "Boston Celtics|Seattle SuperSonics|Chicago Bulls",
+    "year": 1980,
+    "condition": "PSA 8",
+    "price": 149.95,
+    "priceLabel": "$149.95",
+    "displayPrice": "$149.95",
+    "image": "https://iili.io/CLu5Nt9.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu5Nt9.jpg",
+      "https://iili.io/CLu5ww7.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/1980-topps-larry-bird-scoring-leader-rookie-30-plus-jack-sikma-scott-may-psa-8-1.CLu5Nt9",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Larry Bird|Jack Sikma|Scott May",
+    "attributes": [
+      "Rookie"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Larry Bird|Jack Sikma|Scott May",
+      "excelFields": {
+        "Title": "1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8",
+        "C:Features": "Rookie",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3558,
+    "name": "2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8",
+    "category": "Basketball",
+    "team": "Cleveland Cavaliers",
+    "year": 2003,
+    "condition": "PSA 8",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLu5bcv.jpg",
+    "imageGallery": [
+      "https://iili.io/CLu5bcv.jpg",
+      "https://iili.io/CLu5QMg.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2003-04-upper-deck-lebron-james-city-heights-redemption-sp-rookie-psa-8-1.CLu5bcv",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "LeBron James",
+    "attributes": [
+      "Rookie",
+      "Short Print",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "LeBron James",
+      "excelFields": {
+        "Title": "2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8",
+        "C:Features": "Rookie|Short Print|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3559,
+    "name": "2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79",
+    "category": "Basketball",
+    "team": "",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 21.95,
+    "priceLabel": "$21.95",
+    "displayPrice": "$21.95",
+    "image": "https://iili.io/CLhaBQp.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhaBQp.jpg",
+      "https://iili.io/CLhanCN.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonald-and-039s-chrome-boogie-fland-purple-lava-refractor-99-79-1.CLhaBQp",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Boogie Fland",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Boogie Fland",
+      "excelFields": {
+        "Title": "2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79 ",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3560,
+    "name": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81",
+    "category": "Basketball",
+    "team": "Georgia Bulldogs",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 29.95,
+    "priceLabel": "$29.95",
+    "displayPrice": "$29.95",
+    "image": "https://iili.io/CLh7iOv.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7iOv.jpg",
+      "https://iili.io/CLh7ZWN.jpg",
+      "https://iili.io/CLh7m0X.jpg",
+      "https://iili.io/CLhYH5G.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-crusade-rwb-prizm-rookie-81-1.CLh7iOv",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "copyCount": 2,
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3561,
+    "name": "2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1",
+    "category": "Basketball",
+    "team": "Georgia Bulldogs",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 29.95,
+    "priceLabel": "$29.95",
+    "displayPrice": "$29.95",
+    "image": "https://iili.io/CLhYJef.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYJef.jpg",
+      "https://iili.io/CLhYdb4.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-red-white-blue-prizm-rookie-1-1.CLhYJef",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3562,
+    "name": "2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10",
+    "category": "Basketball",
+    "team": "Georgia Bulldogs",
+    "year": 2020,
+    "condition": "PSA 10",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLh7g0F.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7g0F.jpg",
+      "https://iili.io/CLh7rUg.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-dp-anthony-edwards-crusade-green-prizm-rookie-psa-10-1.CLh7g0F",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3563,
+    "name": "2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9",
+    "category": "Basketball",
+    "team": "Minnesota Timberwolves",
+    "year": 2020,
+    "condition": "PSA 9",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLh78iP.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh78iP.jpg",
+      "https://iili.io/CLh7Uf1.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-mosaic-anthony-edwards-debut-pink-camo-prizm-rookie-261-psa-9-1.CLh78iP",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3564,
+    "name": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81",
+    "category": "Basketball",
+    "team": "Georgia Bulldogs",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 29.95,
+    "priceLabel": "$29.95",
+    "displayPrice": "$29.95",
+    "image": "https://iili.io/CLh7P5J.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7P5J.jpg",
+      "https://iili.io/CLh76Ja.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-crusade-pink-prizm-rookie-81-1.CLh7P5J",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3565,
+    "name": "2022-23 Panini Chronicles Revolution Anthony Edwards Impact /149 #91",
+    "category": "Basketball",
+    "team": "Minnesota Timberwolves",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 27.95,
+    "priceLabel": "$27.95",
+    "displayPrice": "$27.95",
+    "image": "https://iili.io/CLhY4BS.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhY4BS.jpg",
+      "https://iili.io/CLhYgQ2.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-revolution-anthony-edwards-impact-149-91-1.CLhY4BS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2022-23 Panini Chronicles Revolution Anthony Edwards Impact /149 #91",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3566,
+    "name": "2025-26 Topps Holiday Anthony Edwards Glitter #H84",
+    "category": "Basketball",
+    "team": "Minnesota Timberwolves",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 7.95,
+    "priceLabel": "$7.95",
+    "displayPrice": "$7.95",
+    "image": "https://iili.io/CLha5uf.jpg",
+    "imageGallery": [
+      "https://iili.io/CLha5uf.jpg",
+      "https://iili.io/CLha7j4.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-holiday-anthony-edwards-glitter-h84-1.CLha5uf",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2025-26 Topps Holiday Anthony Edwards Glitter #H84",
+        "C:Features": "Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3567,
+    "name": "2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588",
+    "category": "Basketball",
+    "team": "Minnesota Timberwolves",
+    "year": 2020,
+    "condition": "PSA 10",
+    "price": 119.95,
+    "priceLabel": "$119.95",
+    "displayPrice": "$119.95",
+    "image": "https://iili.io/CLh71x2.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh71x2.jpg",
+      "https://iili.io/CLh7lDl.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-chronicles-anthony-edwards-honors-rookie-psa-10-588-1.CLh71x2",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Rookie",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588",
+        "C:Features": "Rookie|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3568,
+    "name": "2025-26 Topps Anthony Edwards Protect Home Court Black Parallel /68 #287",
+    "category": "Basketball",
+    "team": "Minnesota Timberwolves",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLhauvs.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhauvs.jpg",
+      "https://iili.io/CLhaAyG.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-anthony-edwards-protect-home-court-black-parallel-68-287-1.CLhauvs",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Anthony Edwards",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Anthony Edwards",
+      "excelFields": {
+        "Title": "2025-26 Topps Anthony Edwards Protect Home Court Black Parallel /68 #287",
+        "C:Features": "Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3569,
+    "name": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6",
+    "category": "Basketball",
+    "team": "",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 27.95,
+    "priceLabel": "$27.95",
+    "displayPrice": "$27.95",
+    "image": "https://iili.io/CLhYs2e.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYs2e.jpg",
+      "https://iili.io/CLhYLYu.jpg",
+      "https://iili.io/CLhYQkb.jpg",
+      "https://iili.io/CLhYDTx.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-super-fly-refractor-rookie-sp-sf-6-1.CLhYs2e",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "OTE",
+    "sport": "Basketball",
+    "playerAthlete": "Bryson Tiller",
+    "copyCount": 2,
+    "attributes": [
+      "Rookie",
+      "Short Print",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Bryson Tiller",
+      "excelFields": {
+        "Title": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6",
+        "C:Features": "Rookie|Short Print|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3570,
+    "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)",
+    "category": "Basketball",
+    "team": "",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 47.95,
+    "priceLabel": "$47.95",
+    "displayPrice": "$47.95",
+    "image": "https://iili.io/CLhYbhQ.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYbhQ.jpg",
+      "https://iili.io/CLhYmQV.jpg",
+      "https://iili.io/CLha9EP.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-set-x8-1.CLhYbhQ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "OTE",
+    "sport": "Basketball",
+    "playerAthlete": "Bryson Tiller",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Bryson Tiller",
+      "excelFields": {
+        "Title": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3571,
+    "name": "2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLh56t2.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh56t2.jpg",
+      "https://iili.io/CLh7EVS.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-donruss-optic-deni-avdija-signature-series-purple-prizm-rookie-auto-1.CLh56t2",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3572,
+    "name": "2020-21 Panini Impeccable Deni Avdija Illustrious Ink On-Card Rookie Auto /88",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLh7Vf9.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7Vf9.jpg",
+      "https://iili.io/CLh7Wle.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-impeccable-deni-avdija-illustrious-ink-on-card-rookie-auto-88-1.CLh7Vf9",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Impeccable Deni Avdija Illustrious Ink On-Card Rookie Auto /88",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3573,
+    "name": "2020-21 Panini Impeccable Deni Avdija Indelible Ink On-Card Rookie Auto /99",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 79.95,
+    "priceLabel": "$79.95",
+    "displayPrice": "$79.95",
+    "image": "https://iili.io/CLh7XUu.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7XUu.jpg",
+      "https://iili.io/CLh7kxV.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-impeccable-deni-avdija-indelible-ink-on-card-rookie-auto-99-1.CLh7XUu",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Impeccable Deni Avdija Indelible Ink On-Card Rookie Auto /99",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3574,
+    "name": "2020-21 Panini Prizm Draft Picks Deni Avdija Prospect Rookie Auto #PA-DA",
+    "category": "Basketball",
+    "team": "",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 34.95,
+    "priceLabel": "$34.95",
+    "displayPrice": "$34.95",
+    "image": "https://iili.io/CLhYqq7.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYqq7.jpg",
+      "https://iili.io/CLhYB19.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-deni-avdija-prospect-rookie-auto-pa-da-1.CLhYqq7",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm Draft Picks Deni Avdija Prospect Rookie Auto #PA-DA",
+        "C:Features": "Autograph|Rookie",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3575,
+    "name": "2020-21 Panini Prizm Draft Picks Deni Avdija Green Prizm Rookie Auto #PA-DA",
+    "category": "Basketball",
+    "team": "",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 44.95,
+    "priceLabel": "$44.95",
+    "displayPrice": "$44.95",
+    "image": "https://iili.io/CLhY3zl.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhY3zl.jpg",
+      "https://iili.io/CLhYFX2.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-deni-avdija-green-prizm-rookie-auto-pa-da-1.CLhY3zl",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Prizm Draft Picks Deni Avdija Green Prizm Rookie Auto #PA-DA",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3576,
+    "name": "2020-21 Panini Spectra Deni Avdija Catalysts Meta Prizm Rookie Auto /25",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 124.95,
+    "priceLabel": "$124.95",
+    "displayPrice": "$124.95",
+    "image": "https://iili.io/CLhYCge.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYCge.jpg",
+      "https://iili.io/CLhYx5b.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-spectra-deni-avdija-catalysts-meta-prizm-rookie-auto-25-1.CLhYCge",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Spectra Deni Avdija Catalysts Meta Prizm Rookie Auto /25",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3577,
+    "name": "2020-21 Panini Contenders Deni Avdija Rookie Ticket Prizm Auto #137",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2020,
+    "condition": "Near mint or better",
+    "price": 44.95,
+    "priceLabel": "$44.95",
+    "displayPrice": "$44.95",
+    "image": "https://iili.io/CLh7cN4.jpg",
+    "imageGallery": [
+      "https://iili.io/CLh7cN4.jpg",
+      "https://iili.io/CLh7Gi7.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-contenders-deni-avdija-rookie-ticket-prizm-auto-137-1.CLh7cN4",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2020-21 Panini Contenders Deni Avdija Rookie Ticket Prizm Auto #137",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3578,
+    "name": "2024-25 Topps McDonald's Chrome Boogie Fland Liam McNeeley Combo Red Refractor /5",
+    "category": "Basketball",
+    "team": "",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLhaFyJ.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhaFyJ.jpg",
+      "https://iili.io/CLhafTv.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonald-and-039s-chrome-boogie-fland-liam-mcneeley-combo-red-refractor-5-1.CLhaFyJ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Boogie Fland|Liam McNeeley",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Boogie Fland|Liam McNeeley",
+      "excelFields": {
+        "Title": "2024-25 Topps McDonald's Chrome Boogie Fland Liam McNeeley Combo Red Refractor /5",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3579,
+    "name": "2022-23 Bowman University Best Kel'El Ware Rookie Auto SGC 9.5 Auto 10",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "SGC 9.5",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLhYVXp.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYVXp.jpg",
+      "https://iili.io/CLhYWLN.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-kel-and-039el-ware-rookie-auto-sgc-95-auto-10-1.CLhYVXp",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Best Kel'El Ware Rookie Auto SGC 9.5 Auto 10",
+        "C:Features": "Autograph|Rookie",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3580,
+    "name": "2022-23 Bowman University Chrome Kel'El Ware Rookie Auto SGC 10 Auto 10",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "SGC 10",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLhYwrX.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYwrX.jpg",
+      "https://iili.io/CLhYO2n.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-kel-and-039el-ware-rookie-auto-sgc-10-auto-10-1.CLhYwrX",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Chrome Kel'El Ware Rookie Auto SGC 10 Auto 10",
+        "C:Features": "Autograph|Rookie",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3581,
+    "name": "2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto /99 SGC 8.5 Auto 10",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "SGC 8.5",
+    "price": 64.95,
+    "priceLabel": "$64.95",
+    "displayPrice": "$64.95",
+    "image": "https://iili.io/CLhYEmv.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYEmv.jpg",
+      "https://iili.io/CLhYMIR.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-kel-and-039el-ware-neon-neophytes-auto-99-sgc-85-auto-10-1.CLhYEmv",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto /99 SGC 8.5 Auto 10",
+        "C:Features": "Autograph|Serial Numbered|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3582,
+    "name": "2025-26 Topps Kel'El Ware Blackout SP /99 #74",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 17.95,
+    "priceLabel": "$17.95",
+    "displayPrice": "$17.95",
+    "image": "https://iili.io/CLhaYZl.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhaYZl.jpg",
+      "https://iili.io/CLhacn2.jpg",
+      "https://iili.io/CLhalGS.jpg",
+      "https://iili.io/CLha067.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-kel-and-039el-ware-blackout-sp-99-74-1.CLhaYZl",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "copyCount": 2,
+    "attributes": [
+      "Serial Numbered",
+      "Short Print",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2025-26 Topps Kel'El Ware Blackout SP /99 #74",
+        "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3583,
+    "name": "2021-22 Leaf Metal Portrait Jamari Phillips Black Prizm Rookie Auto /10",
+    "category": "Basketball",
+    "team": "",
+    "year": 2021,
+    "condition": "Near mint or better",
+    "price": 34.95,
+    "priceLabel": "$34.95",
+    "displayPrice": "$34.95",
+    "image": "https://iili.io/CLhYzej.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYzej.jpg",
+      "https://iili.io/CLhYImx.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2021-22-leaf-metal-portrait-jamari-phillips-black-prizm-rookie-auto-10-1.CLhYzej",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Jamari Phillips",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Jamari Phillips",
+      "excelFields": {
+        "Title": "2021-22 Leaf Metal Portrait Jamari Phillips Black Prizm Rookie Auto /10",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3584,
+    "name": "2021-22 Leaf Pro Set Power Jamari Phillips Bronze Auto #PA-JP1",
+    "category": "Basketball",
+    "team": "",
+    "year": 2021,
+    "condition": "Near mint or better",
+    "price": 14.95,
+    "priceLabel": "$14.95",
+    "displayPrice": "$14.95",
+    "image": "https://iili.io/CLhYuzQ.jpg",
+    "imageGallery": [
+      "https://iili.io/CLhYuzQ.jpg",
+      "https://iili.io/CLhYAXV.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2021-22-leaf-pro-set-power-jamari-phillips-bronze-auto-pa-jp1-1.CLhYuzQ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Jamari Phillips",
+    "attributes": [
+      "Autograph",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Jamari Phillips",
+      "excelFields": {
+        "Title": "2021-22 Leaf Pro Set Power Jamari Phillips Bronze Auto #PA-JP1",
+        "C:Features": "Autograph|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3585,
+    "name": "2022-23 Bowman University Inception Kel'El Ware Top Of Class Rookie Auto /100",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjNgWP.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjNgWP.jpg",
+      "https://iili.io/CLjNrs1.jpg",
+      "https://iili.io/CLjkfi7.jpg",
+      "https://iili.io/CLjkBf9.jpg",
+      "https://iili.io/CLjO6j2.jpg",
+      "https://iili.io/CLjO4Tl.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-inception-kel-and-039el-ware-top-of-class-rookie-auto-100-1.CLjNgWP",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "copyCount": 3,
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Inception Kel'El Ware Top Of Class Rookie Auto /100",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3586,
+    "name": "2022-23 Panini Prizm Draft Picks Kel'El Ware Red Prizm Rookie Auto /199",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjNP0g.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjNP0g.jpg",
+      "https://iili.io/CLjNiga.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-picks-kel-and-039el-ware-red-prizm-rookie-auto-199-1.CLjNP0g",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Panini Prizm Draft Picks Kel'El Ware Red Prizm Rookie Auto /199",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3587,
+    "name": "2022-23 Leaf Optichrome Kel'El Ware Black Prizm Rookie Auto /7",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLjNLdJ.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjNLdJ.jpg",
+      "https://iili.io/CLjNZeR.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-optichrome-kel-and-039el-ware-black-prizm-rookie-auto-7-1.CLjNLdJ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Leaf Optichrome Kel'El Ware Black Prizm Rookie Auto /7",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3588,
+    "name": "2022-23 Leaf Optichrome Kel'El Ware Draft Odyssey Red White Blue Prizm Rookie Auto /2",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjNpst.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjNpst.jpg",
+      "https://iili.io/CLjO9qX.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-optichrome-kel-and-039el-ware-draft-odyssey-red-white-blue-prizm-rookie-auto-2-1.CLjNpst",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Leaf Optichrome Kel'El Ware Draft Odyssey Red White Blue Prizm Rookie Auto /2",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3589,
+    "name": "2024-25 Topps Chrome Kel'El Ware Next Stop Purple Refractor Rookie Auto #NSS-KW",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLjO2dG.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjO2dG.jpg",
+      "https://iili.io/CLjO37f.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-chrome-kel-and-039el-ware-next-stop-purple-refractor-rookie-auto-nss-kw-1.CLjO2dG",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Topps Chrome Kel'El Ware Next Stop Purple Refractor Rookie Auto #NSS-KW",
+        "C:Features": "Autograph|Rookie|Parallel/Variety|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3590,
+    "name": "2024-25 Topps Chrome Kel'El Ware Destiny Gold Refractor Rookie /50 #D-11",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 19.95,
+    "priceLabel": "$19.95",
+    "displayPrice": "$19.95",
+    "image": "https://iili.io/CLjOBXS.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjOBXS.jpg",
+      "https://iili.io/CLjOzru.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-chrome-kel-and-039el-ware-destiny-gold-refractor-rookie-50-d-11-1.CLjOBXS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Topps Chrome Kel'El Ware Destiny Gold Refractor Rookie /50 #D-11",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3591,
+    "name": "2024-25 Topps Finest Kel'El Ware Purple Refractor Rookie /200 #52",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 11.95,
+    "priceLabel": "$11.95",
+    "displayPrice": "$11.95",
+    "image": "https://iili.io/CLjO7IV.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjO7IV.jpg",
+      "https://iili.io/CLjORmQ.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-finest-kel-and-039el-ware-purple-refractor-rookie-200-52-1.CLjO7IV",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Topps Finest Kel'El Ware Purple Refractor Rookie /200 #52",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3592,
+    "name": "2024-25 Panini Select Kel'el Ware Jumbo Rookie Swatches Copper Prizm /49",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLjOG2a.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjOG2a.jpg",
+      "https://iili.io/CLjOMYJ.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-select-kel-and-039el-ware-jumbo-rookie-swatches-copper-prizm-49-1.CLjOG2a",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Memorabilia",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Panini Select Kel'el Ware Jumbo Rookie Swatches Copper Prizm /49",
+        "C:Features": "Rookie|Serial Numbered|Memorabilia|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3593,
+    "name": "2025-26 Topps Notch Signatures Kel'El Ware Auto #TNS-AR",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLjO82s.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjO82s.jpg",
+      "https://iili.io/CLjOgp4.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-notch-signatures-kel-and-039el-ware-auto-tns-ar-1.CLjO82s",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2025-26 Topps Notch Signatures Kel'El Ware Auto #TNS-AR",
+        "C:Features": "Autograph|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3594,
+    "name": "2024-25 Panini Select Kel'el Ware Draft Selections Prizm Patch Rookie #DSM-KEW",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 24.95,
+    "priceLabel": "$24.95",
+    "displayPrice": "$24.95",
+    "image": "https://iili.io/CLjOt3u.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjOt3u.jpg",
+      "https://iili.io/CLjObvj.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-select-kel-and-039el-ware-draft-selections-prizm-patch-rookie-dsm-kew-1.CLjOt3u",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Memorabilia",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Panini Select Kel'el Ware Draft Selections Prizm Patch Rookie #DSM-KEW",
+        "C:Features": "Rookie|Memorabilia|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3595,
+    "name": "2024-25 Donruss Optic Kel'El Ware My House Blue Prizm Rookie /175 #11",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 19.95,
+    "priceLabel": "$19.95",
+    "displayPrice": "$19.95",
+    "image": "https://iili.io/CLjOyTQ.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjOyTQ.jpg",
+      "https://iili.io/CLjeHZB.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-donruss-optic-kel-and-039el-ware-my-house-blue-prizm-rookie-175-11-1.CLjOyTQ",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Donruss Optic Kel'El Ware My House Blue Prizm Rookie /175 #11",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3596,
+    "name": "2024-25 Panini Prizm Kel'El Ware Pink Ice Prizm Rookie #248",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 19.95,
+    "priceLabel": "$19.95",
+    "displayPrice": "$19.95",
+    "image": "https://iili.io/CLje2G1.jpg",
+    "imageGallery": [
+      "https://iili.io/CLje2G1.jpg",
+      "https://iili.io/CLje36F.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-kel-and-039el-ware-pink-ice-prizm-rookie-248-1.CLje2G1",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Panini Prizm Kel'El Ware Pink Ice Prizm Rookie #248",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3597,
+    "name": "2024-25 Panini Prizm Kel'El Ware Green Prizm Rookie #248",
+    "category": "Basketball",
+    "team": "Miami Heat",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 19.95,
+    "priceLabel": "$19.95",
+    "displayPrice": "$19.95",
+    "image": "https://iili.io/CLjeByv.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjeByv.jpg",
+      "https://iili.io/CLje5as.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-kel-and-039el-ware-green-prizm-rookie-248-1.CLjeByv",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2024-25 Panini Prizm Kel'El Ware Green Prizm Rookie #248",
+        "C:Features": "Rookie|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3598,
+    "name": "2022-23 Bowman University Inception Kel'El Ware Blue Foil Rookie Auto /99",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjea9f.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjea9f.jpg",
+      "https://iili.io/CLje0t2.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-inception-kel-and-039el-ware-blue-foil-rookie-auto-99-1.CLjea9f",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Inception Kel'El Ware Blue Foil Rookie Auto /99",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3599,
+    "name": "2022-23 Bowman University Inception Kel'El Ware Fuchsia Foil Rookie Auto /75",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 69.95,
+    "priceLabel": "$69.95",
+    "displayPrice": "$69.95",
+    "image": "https://iili.io/CLjeMP9.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjeMP9.jpg",
+      "https://iili.io/CLjeGM7.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-inception-kel-and-039el-ware-fuchsia-foil-rookie-auto-75-1.CLjeMP9",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Inception Kel'El Ware Fuchsia Foil Rookie Auto /75",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3600,
+    "name": "2022-23 Bowman University Inception Kel'El Ware Primordial Blue Rookie Auto /75",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 69.95,
+    "priceLabel": "$69.95",
+    "displayPrice": "$69.95",
+    "image": "https://iili.io/CLjeh8b.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjeh8b.jpg",
+      "https://iili.io/CLjeNAx.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-inception-kel-and-039el-ware-primordial-blue-rookie-auto-75-1.CLjeh8b",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Inception Kel'El Ware Primordial Blue Rookie Auto /75",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3601,
+    "name": "2022-23 Leaf Trinity Kel'El Ware Red Rookie Auto /5",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjevoB.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjevoB.jpg",
+      "https://iili.io/CLje8MP.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-trinity-kel-and-039el-ware-red-rookie-auto-5-1.CLjevoB",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Leaf Trinity Kel'El Ware Red Rookie Auto /5",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3602,
+    "name": "2022-23 Topps McDonald's Chrome Kel'El Ware Refractor Rookie Auto #CA-KW",
+    "category": "Basketball",
+    "team": "",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 39.95,
+    "priceLabel": "$39.95",
+    "displayPrice": "$39.95",
+    "image": "https://iili.io/CLjegKF.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjegKF.jpg",
+      "https://iili.io/CLjesNR.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-mcdonald-and-039s-chrome-kel-and-039el-ware-refractor-rookie-auto-ca-kw-1.CLjegKF",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Topps McDonald's Chrome Kel'El Ware Refractor Rookie Auto #CA-KW",
+        "C:Features": "Autograph|Rookie|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3603,
+    "name": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 #NN-16",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 59.95,
+    "priceLabel": "$59.95",
+    "displayPrice": "$59.95",
+    "image": "https://iili.io/CLjetVI.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjetVI.jpg",
+      "https://iili.io/CLjeDPt.jpg",
+      "https://iili.io/CLjemKX.jpg",
+      "https://iili.io/CLjepln.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-kel-and-039el-ware-neon-lava-refractor-auto-50-nn-16-1.CLjetVI",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "copyCount": 2,
+    "attributes": [
+      "Autograph",
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 #NN-16",
+        "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3604,
+    "name": "2022-23 Bowman U Inception Kel'El Ware Red Foil Rookie /5",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 124.95,
+    "priceLabel": "$124.95",
+    "displayPrice": "$124.95",
+    "image": "https://iili.io/CLjNVxS.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjNVxS.jpg",
+      "https://iili.io/CLjN0Jf.jpg",
+      "https://iili.io/CLjNGb2.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-u-inception-kel-and-039el-ware-red-foil-rookie-5-1.CLjNVxS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "copyCount": 2,
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman U Inception Kel'El Ware Red Foil Rookie /5",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3605,
+    "name": "2022-23 Bowman U Inception Kel'El Ware Black Foil Rookie /10",
+    "category": "Basketball",
+    "team": "Oregon Ducks",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 79.95,
+    "priceLabel": "$79.95",
+    "displayPrice": "$79.95",
+    "image": "https://iili.io/CLjkCle.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjkCle.jpg",
+      "https://iili.io/CLjk2Dl.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-u-inception-kel-and-039el-ware-black-foil-rookie-10-1.CLjkCle",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware",
+    "attributes": [
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware",
+      "excelFields": {
+        "Title": "2022-23 Bowman U Inception Kel'El Ware Black Foil Rookie /10",
+        "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3606,
+    "name": "2022-23 Leaf MultiGraphics Kel'El Ware Zach Edey Filipowski Blue Ice Rookie Auto 1/40",
+    "category": "Basketball",
+    "team": "Oregon Ducks|Purdue Boilermakers|Duke Blue Devils",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 99.95,
+    "priceLabel": "$99.95",
+    "displayPrice": "$99.95",
+    "image": "https://iili.io/CLjN8bV.jpg",
+    "imageGallery": [
+      "https://iili.io/CLjN8bV.jpg",
+      "https://iili.io/CLjNUzB.jpg"
+    ],
+    "description": "2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto /15\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf MultiGraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kyle Filipowski, Kel'El Ware; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-multigraphics-kel-and-039el-ware-zach-edey-filipowski-blue-ice-rookie-auto-140-1.CLjN8bV",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Kel'El Ware|Zach Edey|Kyle Filipowski",
+    "attributes": [
+      "Autograph",
+      "Rookie",
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Kel'El Ware|Zach Edey|Kyle Filipowski",
+      "excelFields": {
+        "Title": "2022-23 Leaf MultiGraphics Kel'El Ware Zach Edey Filipowski Blue Ice Rookie Auto 1/40",
+        "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
+        "C:Autographed": "Yes"
+      }
+    }
+  },
+  {
+    "id": 3627,
+    "name": "2023-24 Bowman U Best DJ Wagner Greatness Awaits Gold Refractor /50",
+    "category": "Basketball",
+    "team": "Kentucky Wildcats",
+    "year": 2023,
+    "condition": "Near mint or better",
+    "price": 11.95,
+    "priceLabel": "$11.95",
+    "displayPrice": "$11.95",
+    "image": "https://iili.io/CL9VhOl.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9VhOl.jpg",
+      "https://iili.io/CL9VWJf.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-best-dj-wagner-greatness-awaits-gold-refractor-50-1.CL9VhOl",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "DJ Wagner",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety",
+      "Insert"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "DJ Wagner",
+      "excelFields": {
+        "Title": "2023-24 Bowman U Best DJ Wagner Greatness Awaits Gold Refractor /50",
+        "C:Features": "Serial Numbered|Parallel/Variety|Insert",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3628,
+    "name": "2024-25 Topps McDonald's Chrome Drake Powell Gold Refractor /50",
+    "category": "Basketball",
+    "team": "",
+    "year": 2024,
+    "condition": "Near mint or better",
+    "price": 14.95,
+    "priceLabel": "$14.95",
+    "displayPrice": "$14.95",
+    "image": "https://iili.io/CL9okvf.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9okvf.jpg",
+      "https://iili.io/CL9oSTl.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonald-and-039s-chrome-drake-powell-gold-refractor-50-1.CL9okvf",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "",
+    "sport": "Basketball",
+    "playerAthlete": "Drake Powell",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Drake Powell",
+      "excelFields": {
+        "Title": "2024-25 Topps McDonald's Chrome Drake Powell Gold Refractor /50",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3629,
+    "name": "2025-26 Bowman Chrome Chet Holmgren Blue Shimmer /150 #108",
+    "category": "Basketball",
+    "team": "Oklahoma City Thunder",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 9.95,
+    "priceLabel": "$9.95",
+    "displayPrice": "$9.95",
+    "image": "https://iili.io/CL9WK1n.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9WK1n.jpg",
+      "https://iili.io/CL9WBdG.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-bowman-chrome-chet-holmgren-blue-shimmer-150-108-1.CL9WK1n",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Chet Holmgren",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Chet Holmgren",
+      "excelFields": {
+        "Title": "2025-26 Bowman Chrome Chet Holmgren Blue Shimmer /150 #108",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3630,
+    "name": "2025-26 Bowman Chrome Deni Avdija Blue Shimmer /150 #187",
+    "category": "Basketball",
+    "team": "Portland Trail Blazers",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 7.95,
+    "priceLabel": "$7.95",
+    "displayPrice": "$7.95",
+    "image": "https://iili.io/CL9VNxS.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9VNxS.jpg",
+      "https://iili.io/CL9VXR4.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-bowman-chrome-deni-avdija-blue-shimmer-150-187-1.CL9VNxS",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Deni Avdija",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Deni Avdija",
+      "excelFields": {
+        "Title": "2025-26 Bowman Chrome Deni Avdija Blue Shimmer /150 #187",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3631,
+    "name": "2025-26 Donruss Optic Gilbert Arenas Pink Prizm /275 #144",
+    "category": "Basketball",
+    "team": "Washington Wizards",
+    "year": 2025,
+    "condition": "Near mint or better",
+    "price": 2.95,
+    "priceLabel": "$2.95",
+    "displayPrice": "$2.95",
+    "image": "https://iili.io/CL9WTL7.jpg",
+    "imageGallery": [
+      "https://iili.io/CL9WTL7.jpg",
+      "https://iili.io/CL9Wa7j.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-donruss-optic-gilbert-arenas-pink-prizm-275-144-1.CL9WTL7",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NBA",
+    "sport": "Basketball",
+    "playerAthlete": "Gilbert Arenas",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Gilbert Arenas",
+      "excelFields": {
+        "Title": "2025-26 Donruss Optic Gilbert Arenas Pink Prizm /275 #144",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
+  },
+  {
+    "id": 3632,
+    "name": "2022-23 Topps OTE Chrome Naasir Cunningham Pink Refractor /150",
+    "category": "Basketball",
+    "team": "Alabama Crimson Tide",
+    "year": 2022,
+    "condition": "Near mint or better",
+    "price": 5.95,
+    "priceLabel": "$5.95",
+    "displayPrice": "$5.95",
+    "image": "https://iili.io/BAWMpON.jpg",
+    "imageGallery": [
+      "https://iili.io/BAWMpON.jpg",
+      "https://iili.io/BAWV3fs.jpg"
+    ],
+    "description": "Upgrade your collection with this 2020-20 sports trading card featuring Trae Young and the Atlanta Hawks. A strong addition for basketball fans, NBA collectors, and set builders.\nDetails: Season: 2020-20; Year: 2020; Player: Trae Young; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Condition: Ungraded; Features: Short Print.\nPlease review the photos for the exact card you will receive. Great for player, team, and vintage or modern card collections.",
+    "photoHostPageUrl": "https://freeimage.host/i/BAWMpON",
+    "sourcePage": "Non-Legacy Listings",
+    "league": "NCAA",
+    "sport": "Basketball",
+    "playerAthlete": "Naasir Cunningham",
+    "attributes": [
+      "Serial Numbered",
+      "Parallel/Variety"
+    ],
+    "isFeatured": false,
+    "isDeleted": false,
+    "sortRank": 0,
+    "metadata": {
+      "playerAthlete": "Naasir Cunningham",
+      "excelFields": {
+        "Title": "2022-23 Topps OTE Chrome Naasir Cunningham Pink Refractor /150",
+        "C:Features": "Serial Numbered|Parallel/Variety",
+        "C:Autographed": "No"
+      }
+    }
   }
 ]

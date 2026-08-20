@@ -22,7 +22,7 @@ non-legacy workbook listings may be activated or published to TikTok and
 Whatnot.
 
 The authoritative non-legacy marketplace input is the `Listings` sheet in
-`C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx`.
+`C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx`.
 The workbook's other sheets remain review/staging material and are not catalog
 inputs.
 
@@ -83,7 +83,7 @@ Do not activate or publish the generated catalog until:
 6. Facebook catalog imports should use the generated feed and preserve the
    `id` column exactly. Do not allow Meta to regenerate item IDs from titles.
 
-The current catalog has 2,232 non-legacy listings with prices. The 948 legacy
+The current catalog has 2,329 non-legacy listings with prices. The 948 legacy
 listings, including all 20 zero-price/contact-for-price rows, must remain draft.
 
 The generator's weight suggestions are review values, not measured package

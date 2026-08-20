@@ -1,6 +1,6 @@
 {
   "source": "products-basketball.json",
-  "total": 1878,
+  "total": 1955,
   "products": [
     {
       "id": 416,
@@ -883,7 +883,9 @@
       "league": "NBA",
       "sport": "Basketball",
       "playerAthlete": "Magic Johnson|Michael Jordan",
-      "attributes": [],
+      "attributes": [
+        "Base Set"
+      ],
       "isFeatured": false,
       "isDeleted": false,
       "sortRank": 0,
@@ -891,6 +893,7 @@
         "playerAthlete": "Magic Johnson|Michael Jordan",
         "excelFields": {
           "Title": "1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + /1990 Hoops Set",
+          "C:Features": "Base Set",
           "C:Autographed": "No"
         }
       },

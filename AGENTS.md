@@ -40,7 +40,7 @@ Ownership:
 Sources of truth:
 
 - Non-legacy listings: `Listings` sheet in
-  `C:\Users\djwan\Downloads\Ebay Bulk Upload (Final) - Photo Links Updated 8-15-25 2.xlsx`
+  `C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx`
 - Live catalog: Supabase `products`
 - Deployable static catalog/generation source: `products.json`
 - Product media: `assets/`

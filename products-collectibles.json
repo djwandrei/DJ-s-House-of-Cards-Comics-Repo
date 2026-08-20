@@ -435,7 +435,9 @@
     "sport": "Boxing",
     "playerAthlete": "Manny Pacquiao",
     "copyCount": 2,
-    "attributes": [],
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -443,6 +445,7 @@
       "playerAthlete": "Manny Pacquiao",
       "excelFields": {
         "Title": "2011 Topps Allen & Ginter Manny Pacquiao #262",
+        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
