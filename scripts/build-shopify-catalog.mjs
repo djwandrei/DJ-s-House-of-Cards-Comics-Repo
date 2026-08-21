@@ -77,7 +77,9 @@ function htmlEscape(value = '') {
 }
 
 function publicAssetUrl(relativePath = '') {
-  const encodedPath = String(relativePath || '')
+  const value = String(relativePath || '').trim();
+  if (/^https:\/\//i.test(value)) return new URL(value).href;
+  const encodedPath = value
     .replaceAll('\\', '/')
     .split('/')
     .filter(Boolean)
@@ -99,6 +101,13 @@ function numberOfCards(product = {}) {
 function shippingTierForEstimate(estimatedGrams) {
   const tier = SHOPIFY_SHIPPING_WEIGHT_TIERS.find((item) => estimatedGrams <= item.grams)
     || SHOPIFY_SHIPPING_WEIGHT_TIERS[SHOPIFY_SHIPPING_WEIGHT_TIERS.length - 1];
+  if (estimatedGrams > tier.grams) {
+    return {
+      label: `${Math.ceil(estimatedGrams)} g estimated lot weight`,
+      grams: Math.ceil(estimatedGrams),
+      needsReview: true
+    };
+  }
   return {
     ...tier,
     needsReview: estimatedGrams > tier.grams
@@ -154,6 +163,12 @@ function productType(product = {}) {
     return `${category} Cards`;
   }
   return category || 'Collectibles';
+}
+
+function productCategory(product = {}) {
+  return ['Baseball', 'Basketball', 'Football'].includes(cleanText(product.category))
+    ? 'ae-2-2-3-4'
+    : '';
 }
 
 function productTags(product = {}) {
@@ -220,7 +235,9 @@ const rows = [];
 const review = [];
 for (const product of products) {
   const quantity = quantityFor(product);
-  const price = Number(product.price);
+  const price = product.price === null || product.price === undefined || product.price === ''
+    ? Number.NaN
+    : Number(product.price);
   const images = productImages(product);
   const weight = suggestedWeight(product);
   const handle = `djhc-${product.id}`;
@@ -233,6 +250,7 @@ for (const product of products) {
     Title: cleanText(product.name),
     Description: productDescription(product),
     Vendor: "DJ's House of Cards & Comics",
+    'Product category': productCategory(product),
     Type: productType(product),
     Tags: productTags(product),
     'Published on online store': publish ? 'true' : 'false',

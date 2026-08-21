@@ -19,6 +19,18 @@ const PAGE_SIZE = 250;
 const FEATURED_COLLECTION_HANDLE = 'djhc-featured-showcase';
 const FEATURED_COLLECTION_TITLE = 'Featured Picks';
 const SHOPIFY_SHOWCASE_PRODUCT_IDS = [1607, 1441, 1449, 1480, 1473, 1649, 1650, 1550];
+const SHOPIFY_PUBLICATION_CHANNELS = [
+  'Online Store',
+  'Shop',
+  'Point of Sale',
+  'Google & YouTube',
+  'Facebook & Instagram',
+  'Whatnot',
+  'TikTok'
+];
+const PRODUCT_PUBLICATION_LIMIT = 10;
+const PRODUCT_MEDIA_SNAPSHOT_LIMIT = 100;
+const INVENTORY_LEVEL_SNAPSHOT_LIMIT = 10;
 const DEFAULT_CORS_ORIGINS = [
   'https://www.djshouseofcards-comics.com',
   'https://djshouseofcards-comics.com'
@@ -77,6 +89,36 @@ type PublicationsPage = {
     nodes: PublicationNode[];
     pageInfo: { hasNextPage: boolean; endCursor?: string | null };
   };
+};
+
+type ResourcePublicationNode = {
+  isPublished: boolean;
+  publishDate?: string | null;
+  publication: PublicationNode;
+};
+
+type ShopifyPublicationState = {
+  __typename?: string;
+  id: string;
+  status?: string;
+  resourcePublicationsV2?: {
+    nodes: ResourcePublicationNode[];
+    pageInfo: { hasNextPage: boolean; endCursor?: string | null };
+  };
+};
+
+type ShopifyPublicationStatesResponse = {
+  nodes: Array<ShopifyPublicationState | null>;
+};
+
+type ShopifySnapshotNode = {
+  __typename: string;
+  id: string;
+  [key: string]: unknown;
+};
+
+type ShopifySnapshotResponse = {
+  nodes: Array<ShopifySnapshotNode | null>;
 };
 
 type CustomCollectionPayload = {
@@ -214,6 +256,37 @@ function cleanTag(value: unknown) {
   return String(value || '').replaceAll(',', ' ').replace(/\s+/g, ' ').trim();
 }
 
+function uniqueTags(values: unknown[]) {
+  const tags: string[] = [];
+  const seen = new Set<string>();
+  for (const value of values) {
+    const tag = cleanTag(value);
+    if (!tag) continue;
+    const key = tag.normalize('NFKC').toLocaleLowerCase('en-US');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    tags.push(tag);
+  }
+  return tags;
+}
+
+function workbookProductTags(product: Record<string, unknown>) {
+  const metadata = product.metadata as { excelFields?: Record<string, unknown> } | null;
+  const excelFields = metadata?.excelFields;
+  if (!excelFields || typeof excelFields !== 'object') return [];
+
+  const features = String(excelFields['C:Features'] || '')
+    .split('|')
+    .map(cleanTag)
+    .filter(Boolean);
+  const isAutographed = normalizedName(excelFields['C:Autographed']) === 'yes';
+  const hasAutographFeature = features.some((feature) => normalizedName(feature) === 'autograph');
+  if (isAutographed !== hasAutographFeature) {
+    throw new Error(`Workbook autograph fields disagree for DJHC-${product.id}.`);
+  }
+  return uniqueTags(features);
+}
+
 function productTags(product: Record<string, unknown>, classification: string) {
   const tags = [
     'DJHC',
@@ -226,9 +299,10 @@ function productTags(product: Record<string, unknown>, classification: string) {
     product.league,
     product.team,
     product.player_athlete,
-    product.year
+    product.year,
+    ...workbookProductTags(product)
   ];
-  return [...new Set(tags.map(cleanTag).filter(Boolean))];
+  return uniqueTags(tags);
 }
 
 function productDescriptionHtml(product: Record<string, unknown>) {
@@ -276,18 +350,14 @@ function directCheckoutPrice(product: Record<string, unknown>) {
 function shouldActivate(product: Record<string, unknown>, mapping: Record<string, unknown>) {
   return mapping.source_class === 'nonlegacy'
     && mapping.publish_enabled === true
-    && product.is_deleted !== true
-    && product.checkout_enabled !== false
-    && product.sale_status === 'available'
-    && Number(product.quantity_available) > 0
-    && directCheckoutPrice(product) !== null;
+    && isActivationEligible(product);
 }
 
 function isActivationEligible(product?: Record<string, unknown>) {
   return Boolean(
     product
-    && product.is_deleted !== true
-    && product.checkout_enabled !== false
+    && product.is_deleted === false
+    && product.checkout_enabled === true
     && product.sale_status === 'available'
     && Number(product.quantity_available) > 0
     && directCheckoutPrice(product) !== null
@@ -537,6 +607,7 @@ async function verifyCatalogState() {
   const sourceClassMismatches: number[] = [];
   const legacyPublishEnabled: number[] = [];
   const nonlegacyPublishDisabled: number[] = [];
+  const ineligiblePublishEnabled: number[] = [];
   const nonlegacyNotActive: Array<{ productId: number; status: string }> = [];
   const malformedSkus: Array<{ productId: number; sku: string }> = [];
   const quantityMismatches: Array<{ productId: number; website: number; shopify: number | null }> = [];
@@ -544,6 +615,7 @@ async function verifyCatalogState() {
   const missingShopifyItems: number[] = [];
   const missingShopifyImages: number[] = [];
   const legacyNotDraft: Array<{ productId: number; status: string }> = [];
+  const ineligibleNotDraft: Array<{ productId: number; status: string }> = [];
 
   for (const product of products) {
     const productId = Number(product.id);
@@ -561,11 +633,14 @@ async function verifyCatalogState() {
     const productId = Number(mapping.product_id);
     const product = productsById.get(productId);
     const classification = String(mapping.source_class) === 'nonlegacy' ? 'nonlegacy' : 'legacy';
+    const websiteClassification = product ? sourceClass(product) : classification;
+    const eligible = websiteClassification === 'nonlegacy' && isActivationEligible(product);
     mappingSourceCounts[classification] += 1;
 
     if (!product) extraMappings.push(productId);
     if (classification === 'legacy' && mapping.publish_enabled === true) legacyPublishEnabled.push(productId);
-    if (classification === 'nonlegacy' && mapping.publish_enabled !== true) nonlegacyPublishDisabled.push(productId);
+    if (eligible && mapping.publish_enabled !== true) nonlegacyPublishDisabled.push(productId);
+    if (!eligible && mapping.publish_enabled === true) ineligiblePublishEnabled.push(productId);
     if (String(mapping.sku || '') !== `DJHC-${productId}`) {
       malformedSkus.push({ productId, sku: String(mapping.sku || '') });
     }
@@ -593,8 +668,11 @@ async function verifyCatalogState() {
     if (classification === 'legacy' && variant?.product?.status !== 'DRAFT') {
       legacyNotDraft.push({ productId, status: String(variant?.product?.status || 'UNKNOWN') });
     }
-    if (classification === 'nonlegacy' && mapping.publish_enabled === true && variant?.product?.status !== 'ACTIVE') {
+    if (eligible && variant?.product?.status !== 'ACTIVE') {
       nonlegacyNotActive.push({ productId, status: String(variant?.product?.status || 'UNKNOWN') });
+    }
+    if (!eligible && variant?.product?.status !== 'DRAFT') {
+      ineligibleNotDraft.push({ productId, status: String(variant?.product?.status || 'UNKNOWN') });
     }
   }
 
@@ -604,13 +682,15 @@ async function verifyCatalogState() {
     sourceClassMismatches,
     legacyPublishEnabled,
     nonlegacyPublishDisabled,
+    ineligiblePublishEnabled,
     nonlegacyNotActive,
     malformedSkus,
     missingShopifyItems,
     quantityMismatches,
     priceMismatches,
     missingShopifyImages,
-    legacyNotDraft
+    legacyNotDraft,
+    ineligibleNotDraft
   };
   const blockerCounts = Object.fromEntries(
     Object.entries(blockers).map(([key, value]) => [key, value.length])
@@ -632,13 +712,15 @@ async function verifyCatalogState() {
       sourceCounts: mappingSourceCounts,
       publishEnabled: mappings.filter((mapping) => mapping.publish_enabled === true).length,
       legacyPublishEnabled: legacyPublishEnabled.length,
-      nonlegacyPublishDisabled: nonlegacyPublishDisabled.length
+      nonlegacyPublishDisabled: nonlegacyPublishDisabled.length,
+      ineligiblePublishEnabled: ineligiblePublishEnabled.length
     },
     shopify: {
       checked: Boolean(shopifyItems.length),
       skuCount: shopifyItems.length,
       nonlegacyNotActive: nonlegacyNotActive.length,
       legacyNotDraft: legacyNotDraft.length,
+      ineligibleNotDraft: ineligibleNotDraft.length,
       missingPrimaryImages: missingShopifyImages.length,
       quantityMismatches: quantityMismatches.length,
       priceMismatches: priceMismatches.length
@@ -859,6 +941,139 @@ async function loadPublications() {
   return publications;
 }
 
+function resolveExactPublications(publications: PublicationNode[], channels?: string[]) {
+  const requestedChannels = [...new Set(
+    (Array.isArray(channels) && channels.length ? channels : SHOPIFY_PUBLICATION_CHANNELS)
+      .map((channel) => String(channel || '').trim())
+      .filter(Boolean)
+  )];
+  const selectedPublications: PublicationNode[] = [];
+  const missingChannels: string[] = [];
+  const ambiguousChannels: Array<{ channel: string; matches: string[] }> = [];
+
+  for (const channel of requestedChannels) {
+    const requested = normalizedName(channel);
+    const matches = publications.filter((publication) => (
+      normalizedName(publicationLabel(publication)) === requested
+      || normalizedName(publication.catalog?.title) === requested
+    ));
+    if (!matches.length) {
+      missingChannels.push(channel);
+      continue;
+    }
+    if (matches.length > 1) {
+      ambiguousChannels.push({ channel, matches: matches.map((publication) => publicationLabel(publication)) });
+      continue;
+    }
+    selectedPublications.push(matches[0]);
+  }
+
+  const duplicatePublicationIds = selectedPublications
+    .map((publication) => publication.id)
+    .filter((id, index, ids) => ids.indexOf(id) !== index);
+  const blocker = missingChannels.length || ambiguousChannels.length || duplicatePublicationIds.length
+    ? 'Every requested Shopify channel must resolve to one unique publication before reconciliation can run.'
+    : null;
+
+  return {
+    requestedChannels,
+    selectedPublications,
+    missingChannels,
+    ambiguousChannels,
+    duplicatePublicationIds: [...new Set(duplicatePublicationIds)],
+    blocker
+  };
+}
+
+function publicationSummary(publications: PublicationNode[], selectedPublications: PublicationNode[]) {
+  const selectedIds = new Set(selectedPublications.map((publication) => publication.id));
+  return publications.map((publication) => ({
+    id: publication.id,
+    label: publicationLabel(publication),
+    catalogTitle: publication.catalog?.title || null,
+    catalogStatus: publication.catalog?.status || null,
+    autoPublish: publication.autoPublish ?? null,
+    supportsFuturePublishing: publication.supportsFuturePublishing ?? null,
+    selected: selectedIds.has(publication.id)
+  }));
+}
+
+async function loadShopifyMappingBatch(options: { limit?: number; afterProductId?: number } = {}, maxLimit = 50) {
+  const limit = Math.min(maxLimit, Math.max(1, Math.floor(Number(options.limit) || 25)));
+  const afterProductId = Math.max(0, Math.floor(Number(options.afterProductId) || 0));
+  const { data, error } = await admin
+    .from('shopify_product_mappings')
+    .select(
+      'product_id,sku,source_class,publish_enabled,shop_domain,shopify_product_id,shopify_variant_id,shopify_inventory_item_id,shopify_location_id,shopify_handle,last_shopify_quantity,last_synced_at'
+    )
+    .gt('product_id', afterProductId)
+    .order('product_id', { ascending: true })
+    .limit(limit);
+  if (error) throw error;
+  const mappings = (data || []) as Record<string, unknown>[];
+  const nextAfterProductId = mappings.length
+    ? Number(mappings[mappings.length - 1].product_id)
+    : afterProductId;
+  return { limit, afterProductId, nextAfterProductId, mappings };
+}
+
+async function loadProductsForMappings(mappings: Record<string, unknown>[]) {
+  if (!mappings.length) return new Map<number, Record<string, unknown>>();
+  const { data, error } = await admin
+    .from('products')
+    .select('id,metadata,is_deleted,sale_status,checkout_enabled,quantity_available,checkout_price,price')
+    .in('id', mappings.map((mapping) => Number(mapping.product_id)));
+  if (error) throw error;
+  return new Map(
+    ((data || []) as Record<string, unknown>[]).map((product) => [Number(product.id), product])
+  );
+}
+
+async function loadShopifyPublicationStates(mappings: Record<string, unknown>[]) {
+  if (!mappings.length) return new Map<string, ShopifyPublicationState>();
+  const ids = mappings.map((mapping) => (
+    shopifyGid('Product', mapping.shopify_product_id as number | string)
+  ));
+  const data = await shopifyGraphql<ShopifyPublicationStatesResponse>(
+    `query ShopifyProductPublicationStates($ids: [ID!]!, $publicationFirst: Int!) {
+      nodes(ids: $ids) {
+        __typename
+        id
+        ... on Product {
+          status
+          resourcePublicationsV2(first: $publicationFirst, onlyPublished: false) {
+            nodes {
+              isPublished
+              publishDate
+              publication {
+                id
+                name
+                autoPublish
+                supportsFuturePublishing
+                catalog {
+                  id
+                  title
+                  status
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    }`,
+    { ids, publicationFirst: PRODUCT_PUBLICATION_LIMIT }
+  );
+  const states = new Map<string, ShopifyPublicationState>();
+  for (const node of data.nodes || []) {
+    if (node?.id) states.set(node.id, node);
+  }
+  return states;
+}
+
 async function publishShopifyProduct(shopifyProductId: unknown, publications: PublicationNode[]) {
   const publicationInput = publications.map((publication) => ({ publicationId: publication.id }));
   if (!publicationInput.length) throw new Error('No Shopify publications were selected.');
@@ -900,6 +1115,524 @@ async function publishShopifyProduct(shopifyProductId: unknown, publications: Pu
   return {
     availablePublications: result.publishable?.availablePublicationsCount?.count ?? null,
     resourcePublications: result.publishable?.resourcePublicationsCount?.count ?? null
+  };
+}
+
+async function unpublishShopifyProduct(shopifyProductId: unknown, publications: PublicationNode[]) {
+  const publicationInput = publications.map((publication) => ({ publicationId: publication.id }));
+  if (!publicationInput.length) return { availablePublications: null, resourcePublications: null };
+
+  const data = await shopifyGraphql<{
+    publishableUnpublish: {
+      publishable?: {
+        availablePublicationsCount?: { count?: number | null } | null;
+        resourcePublicationsCount?: { count?: number | null } | null;
+      } | null;
+      userErrors?: Array<{ field?: string[]; message?: string }> | null;
+    };
+  }>(
+    `mutation UnpublishProduct($id: ID!, $input: [PublicationInput!]!) {
+      publishableUnpublish(id: $id, input: $input) {
+        publishable {
+          availablePublicationsCount {
+            count
+          }
+          resourcePublicationsCount {
+            count
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }`,
+    {
+      id: shopifyGid('Product', shopifyProductId as number | string),
+      input: publicationInput
+    }
+  );
+  const result = data.publishableUnpublish;
+  if (result.userErrors?.length) {
+    throw new Error(result.userErrors.map((error) => error.message || 'Unknown unpublication error').join('; '));
+  }
+  return {
+    availablePublications: result.publishable?.availablePublicationsCount?.count ?? null,
+    resourcePublications: result.publishable?.resourcePublicationsCount?.count ?? null
+  };
+}
+
+function publicationEligibility(product?: Record<string, unknown>) {
+  if (!product) {
+    return { classification: 'missing', eligible: false, reasons: ['missing_website_product'] };
+  }
+  const classification = sourceClass(product);
+  const reasons: string[] = [];
+  if (classification !== 'nonlegacy') reasons.push('legacy');
+  if (product.is_deleted !== false) reasons.push('deleted');
+  if (product.checkout_enabled !== true) reasons.push('checkout_disabled');
+  if (product.sale_status !== 'available') reasons.push(`sale_status_${String(product.sale_status || 'missing')}`);
+  if (!(Number(product.quantity_available) > 0)) reasons.push('out_of_stock');
+  if (directCheckoutPrice(product) === null) reasons.push('missing_price');
+  return { classification, eligible: reasons.length === 0, reasons };
+}
+
+function buildPublicationReconciliationPlan(
+  mapping: Record<string, unknown>,
+  product: Record<string, unknown> | undefined,
+  state: ShopifyPublicationState | undefined,
+  selectedPublications: PublicationNode[]
+) {
+  const productId = Number(mapping.product_id);
+  const eligibility = publicationEligibility(product);
+  const desiredStatus: 'ACTIVE' | 'DRAFT' = eligibility.eligible ? 'ACTIVE' : 'DRAFT';
+  const desiredPublishEnabled = eligibility.eligible;
+  const desiredSourceClass = eligibility.classification === 'missing'
+    ? String(mapping.source_class || 'nonlegacy')
+    : eligibility.classification;
+  const selectedIds = new Set(selectedPublications.map((publication) => publication.id));
+  const memberships = state?.resourcePublicationsV2?.nodes || [];
+  const selectedMemberships = memberships.filter((membership) => selectedIds.has(membership.publication.id));
+  const activeMemberships = selectedMemberships.filter((membership) => (
+    membership.isPublished || Boolean(membership.publishDate)
+  ));
+  const publishedIds = new Set(
+    selectedMemberships.filter((membership) => membership.isPublished).map((membership) => membership.publication.id)
+  );
+  const missingPublicationIds = eligibility.eligible
+    ? selectedPublications.filter((publication) => !publishedIds.has(publication.id)).map((publication) => publication.id)
+    : [];
+  const scheduledPublicationIds = selectedMemberships
+    .filter((membership) => !membership.isPublished && Boolean(membership.publishDate))
+    .map((membership) => membership.publication.id);
+  const publicationIdsToRemove = eligibility.eligible
+    ? scheduledPublicationIds
+    : activeMemberships.map((membership) => membership.publication.id);
+  const publicationStateTruncated = state?.resourcePublicationsV2?.pageInfo?.hasNextPage === true;
+  const actualStatus = state?.status || null;
+  const missingShopifyProduct = !state || state.__typename !== 'Product';
+  const statusMismatch = actualStatus !== desiredStatus;
+  const mappingMismatch = mapping.publish_enabled !== desiredPublishEnabled
+    || String(mapping.source_class || '') !== desiredSourceClass;
+  const publicationMismatch = eligibility.eligible
+    ? missingPublicationIds.length > 0 || scheduledPublicationIds.length > 0
+    : activeMemberships.length > 0;
+  const clean = !missingShopifyProduct
+    && !publicationStateTruncated
+    && !statusMismatch
+    && !mappingMismatch
+    && !publicationMismatch;
+
+  return {
+    productId,
+    shopifyProductId: Number(mapping.shopify_product_id),
+    classification: eligibility.classification,
+    eligibilityReasons: eligibility.reasons,
+    desiredStatus,
+    actualStatus,
+    desiredPublishEnabled,
+    actualPublishEnabled: mapping.publish_enabled === true,
+    desiredSourceClass,
+    actualSourceClass: String(mapping.source_class || ''),
+    missingShopifyProduct,
+    publicationStateTruncated,
+    statusMismatch,
+    mappingMismatch,
+    publicationMismatch,
+    missingPublicationIds,
+    scheduledPublicationIds,
+    publicationIdsToRemove: [...new Set(publicationIdsToRemove)],
+    memberships: selectedMemberships.map((membership) => ({
+      publicationId: membership.publication.id,
+      label: publicationLabel(membership.publication),
+      isPublished: membership.isPublished,
+      publishDate: membership.publishDate || null
+    })),
+    clean
+  };
+}
+
+async function reconcilePublications(options: {
+  dryRun?: boolean;
+  limit?: number;
+  afterProductId?: number;
+} = {}) {
+  const dryRun = options.dryRun !== false;
+  const [batch, publications] = await Promise.all([
+    loadShopifyMappingBatch(options, 50),
+    loadPublications()
+  ]);
+  const resolution = resolveExactPublications(publications, SHOPIFY_PUBLICATION_CHANNELS);
+  const availablePublications = publicationSummary(publications, resolution.selectedPublications);
+  const baseResult = {
+    dryRun,
+    selectedCount: batch.mappings.length,
+    nextAfterProductId: batch.nextAfterProductId,
+    requestedChannels: resolution.requestedChannels,
+    selectedPublications: resolution.selectedPublications.map((publication) => ({
+      id: publication.id,
+      label: publicationLabel(publication),
+      catalogTitle: publication.catalog?.title || null
+    })),
+    availablePublications,
+    missingChannels: resolution.missingChannels,
+    ambiguousChannels: resolution.ambiguousChannels,
+    duplicatePublicationIds: resolution.duplicatePublicationIds
+  };
+
+  if (resolution.blocker) {
+    return { ...baseResult, blocker: resolution.blocker, mismatchCount: 0, candidates: [] };
+  }
+  if (!batch.mappings.length) {
+    return {
+      ...baseResult,
+      desiredActiveCount: 0,
+      desiredDraftCount: 0,
+      cleanCount: 0,
+      mismatchCount: 0,
+      candidates: [],
+      ...(dryRun ? {} : { appliedCount: 0, failedCount: 0, applied: [], failed: [] })
+    };
+  }
+
+  const [productsById, statesByGid] = await Promise.all([
+    loadProductsForMappings(batch.mappings),
+    loadShopifyPublicationStates(batch.mappings)
+  ]);
+  const entries = batch.mappings.map((mapping) => {
+    const productId = Number(mapping.product_id);
+    const product = productsById.get(productId);
+    const gid = shopifyGid('Product', mapping.shopify_product_id as number | string);
+    return {
+      mapping,
+      product,
+      plan: buildPublicationReconciliationPlan(
+        mapping,
+        product,
+        statesByGid.get(gid),
+        resolution.selectedPublications
+      )
+    };
+  });
+  const candidates = entries.filter((entry) => !entry.plan.clean);
+  const counts = {
+    desiredActiveCount: entries.filter((entry) => entry.plan.desiredStatus === 'ACTIVE').length,
+    desiredDraftCount: entries.filter((entry) => entry.plan.desiredStatus === 'DRAFT').length,
+    cleanCount: entries.length - candidates.length,
+    mismatchCount: candidates.length
+  };
+
+  if (dryRun) {
+    return { ...baseResult, ...counts, candidates: candidates.map((entry) => entry.plan) };
+  }
+
+  const publicationsById = new Map(
+    resolution.selectedPublications.map((publication) => [publication.id, publication])
+  );
+  const applied = [];
+  const failed = [];
+  for (const entry of candidates) {
+    const { mapping, product, plan } = entry;
+    const productId = Number(mapping.product_id);
+    try {
+      if (plan.missingShopifyProduct) throw new Error('Mapped Shopify product was not found.');
+      if (plan.publicationStateTruncated) {
+        throw new Error('Shopify publication state exceeded the reconciliation query limit.');
+      }
+
+      const actions: string[] = [];
+      if (!plan.desiredPublishEnabled && mapping.publish_enabled === true) {
+        const { error } = await admin
+          .from('shopify_product_mappings')
+          .update({ publish_enabled: false, source_class: plan.desiredSourceClass })
+          .eq('product_id', productId);
+        if (error) throw error;
+        mapping.publish_enabled = false;
+        mapping.source_class = plan.desiredSourceClass;
+        actions.push('closed_publish_gate');
+      }
+
+      if (plan.statusMismatch) {
+        await setShopifyProductStatus(productId, mapping.shopify_product_id, plan.desiredStatus);
+        actions.push(`set_status_${plan.desiredStatus.toLowerCase()}`);
+      }
+
+      const publicationsToRemove = plan.publicationIdsToRemove
+        .map((id) => publicationsById.get(id))
+        .filter((publication): publication is PublicationNode => Boolean(publication));
+      if (publicationsToRemove.length) {
+        await unpublishShopifyProduct(mapping.shopify_product_id, publicationsToRemove);
+        actions.push(`unpublished_${publicationsToRemove.length}`);
+      }
+
+      if (plan.desiredPublishEnabled && plan.missingPublicationIds.length) {
+        const publicationsToPublish = plan.missingPublicationIds
+          .map((id) => publicationsById.get(id))
+          .filter((publication): publication is PublicationNode => Boolean(publication));
+        if (publicationsToPublish.length !== plan.missingPublicationIds.length) {
+          throw new Error('A required Shopify publication could not be resolved during apply.');
+        }
+        await publishShopifyProduct(mapping.shopify_product_id, publicationsToPublish);
+        actions.push(`published_${publicationsToPublish.length}`);
+      }
+
+      const refreshedStates = await loadShopifyPublicationStates([mapping]);
+      const expectedMapping = {
+        ...mapping,
+        source_class: plan.desiredSourceClass,
+        publish_enabled: plan.desiredPublishEnabled
+      };
+      const refreshedPlan = buildPublicationReconciliationPlan(
+        expectedMapping,
+        product,
+        refreshedStates.get(shopifyGid('Product', mapping.shopify_product_id as number | string)),
+        resolution.selectedPublications
+      );
+      if (!refreshedPlan.clean) {
+        throw new Error('Shopify status or publication state did not match the requested state after apply.');
+      }
+
+      const { error: updateError } = await admin
+        .from('shopify_product_mappings')
+        .update({
+          source_class: plan.desiredSourceClass,
+          publish_enabled: plan.desiredPublishEnabled,
+          last_synced_at: new Date().toISOString()
+        })
+        .eq('product_id', productId);
+      if (updateError) throw updateError;
+      applied.push({ productId, actions, finalStatus: refreshedPlan.actualStatus });
+    } catch (error) {
+      failed.push({ productId, error: errorMessage(error) });
+    }
+  }
+
+  return {
+    ...baseResult,
+    ...counts,
+    candidateCount: candidates.length,
+    appliedCount: applied.length,
+    failedCount: failed.length,
+    applied,
+    failed
+  };
+}
+
+function snapshotConnectionHasNextPage(node: ShopifySnapshotNode | null, field: string) {
+  const connection = node?.[field] as { pageInfo?: { hasNextPage?: boolean } } | undefined;
+  return connection?.pageInfo?.hasNextPage === true;
+}
+
+async function snapshotCatalog(options: { limit?: number; afterProductId?: number } = {}) {
+  const batch = await loadShopifyMappingBatch(options, 20);
+  if (!batch.mappings.length) {
+    return {
+      generatedAt: new Date().toISOString(),
+      selectedCount: 0,
+      nextAfterProductId: batch.nextAfterProductId,
+      snapshotCount: 0,
+      missingNodeCount: 0,
+      truncatedConnectionCount: 0,
+      snapshots: [],
+      missingNodes: [],
+      truncatedConnections: []
+    };
+  }
+
+  const ids = [...new Set(batch.mappings.flatMap((mapping) => [
+    shopifyGid('Product', mapping.shopify_product_id as number | string),
+    shopifyGid('ProductVariant', mapping.shopify_variant_id as number | string),
+    shopifyGid('InventoryItem', mapping.shopify_inventory_item_id as number | string)
+  ]))];
+  const data = await shopifyGraphql<ShopifySnapshotResponse>(
+    `query ShopifyCatalogSnapshot(
+      $ids: [ID!]!,
+      $inventoryLevelFirst: Int!,
+      $mediaFirst: Int!,
+      $publicationFirst: Int!
+    ) {
+      nodes(ids: $ids) {
+        __typename
+        id
+        ... on Product {
+          legacyResourceId
+          title
+          handle
+          status
+          productType
+          vendor
+          tags
+          descriptionHtml
+          updatedAt
+          featuredMedia {
+            id
+            alt
+            mediaContentType
+            status
+            preview {
+              status
+              image {
+                id
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+          media(first: $mediaFirst) {
+            nodes {
+              id
+              alt
+              mediaContentType
+              status
+              preview {
+                status
+                image {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+              ... on MediaImage {
+                image {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+          resourcePublicationsV2(first: $publicationFirst, onlyPublished: false) {
+            nodes {
+              isPublished
+              publishDate
+              publication {
+                id
+                name
+                autoPublish
+                supportsFuturePublishing
+                catalog {
+                  id
+                  title
+                  status
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+        ... on ProductVariant {
+          legacyResourceId
+          title
+          sku
+          price
+          compareAtPrice
+          barcode
+          inventoryPolicy
+          taxable
+          selectedOptions {
+            name
+            value
+          }
+          product {
+            id
+            legacyResourceId
+          }
+          inventoryItem {
+            id
+            legacyResourceId
+            tracked
+          }
+        }
+        ... on InventoryItem {
+          legacyResourceId
+          sku
+          tracked
+          inventoryLevels(first: $inventoryLevelFirst) {
+            nodes {
+              location {
+                id
+                legacyResourceId
+                name
+              }
+              quantities(names: ["available"]) {
+                name
+                quantity
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    }`,
+    {
+      ids,
+      inventoryLevelFirst: INVENTORY_LEVEL_SNAPSHOT_LIMIT,
+      mediaFirst: PRODUCT_MEDIA_SNAPSHOT_LIMIT,
+      publicationFirst: PRODUCT_PUBLICATION_LIMIT
+    }
+  );
+
+  const nodesById = new Map<string, ShopifySnapshotNode>();
+  for (const node of data.nodes || []) {
+    if (node?.id) nodesById.set(node.id, node);
+  }
+  const missingNodes: Array<{ productId: number; resource: string; gid: string }> = [];
+  const truncatedConnections: Array<{ productId: number; connection: string }> = [];
+  const snapshots = batch.mappings.map((mapping) => {
+    const productId = Number(mapping.product_id);
+    const productGid = shopifyGid('Product', mapping.shopify_product_id as number | string);
+    const variantGid = shopifyGid('ProductVariant', mapping.shopify_variant_id as number | string);
+    const inventoryItemGid = shopifyGid('InventoryItem', mapping.shopify_inventory_item_id as number | string);
+    const product = nodesById.get(productGid) || null;
+    const variant = nodesById.get(variantGid) || null;
+    const inventoryItem = nodesById.get(inventoryItemGid) || null;
+
+    if (!product) missingNodes.push({ productId, resource: 'product', gid: productGid });
+    if (!variant) missingNodes.push({ productId, resource: 'variant', gid: variantGid });
+    if (!inventoryItem) missingNodes.push({ productId, resource: 'inventory_item', gid: inventoryItemGid });
+    if (snapshotConnectionHasNextPage(product, 'media')) {
+      truncatedConnections.push({ productId, connection: 'media' });
+    }
+    if (snapshotConnectionHasNextPage(product, 'resourcePublicationsV2')) {
+      truncatedConnections.push({ productId, connection: 'resourcePublicationsV2' });
+    }
+    if (snapshotConnectionHasNextPage(inventoryItem, 'inventoryLevels')) {
+      truncatedConnections.push({ productId, connection: 'inventoryLevels' });
+    }
+
+    return {
+      websiteProductId: productId,
+      mapping,
+      shopify: { product, variant, inventoryItem }
+    };
+  });
+
+  return {
+    generatedAt: new Date().toISOString(),
+    selectedCount: batch.mappings.length,
+    nextAfterProductId: batch.nextAfterProductId,
+    snapshotCount: snapshots.length,
+    missingNodeCount: missingNodes.length,
+    truncatedConnectionCount: truncatedConnections.length,
+    snapshots,
+    missingNodes,
+    truncatedConnections
   };
 }
 
@@ -1612,6 +2345,32 @@ Deno.serve(async (request) => {
       case 'verify-catalog':
       case 'verify-import':
         return respond({ ok: true, result: await verifyCatalogState() });
+      case 'snapshot-catalog':
+        return respond({
+          ok: true,
+          result: await snapshotCatalog({
+            limit: payload.limit,
+            afterProductId: payload.afterProductId
+          })
+        });
+      case 'verify-publications':
+        return respond({
+          ok: true,
+          result: await reconcilePublications({
+            dryRun: true,
+            limit: payload.limit,
+            afterProductId: payload.afterProductId
+          })
+        });
+      case 'reconcile-publications':
+        return respond({
+          ok: true,
+          result: await reconcilePublications({
+            dryRun: payload.dryRun !== false,
+            limit: payload.limit,
+            afterProductId: payload.afterProductId
+          })
+        });
       case 'repair-missing-images':
         return respond({
           ok: true,
