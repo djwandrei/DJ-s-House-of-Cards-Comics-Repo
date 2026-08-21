@@ -210,7 +210,13 @@ function Get-DeployCredential {
   }
 
   if ($environmentUsername -and $environmentPassword) {
-    $securePassword = ConvertTo-SecureString $environmentPassword -AsPlainText -Force
+    # Avoid relying on Security-module autoloading: background PowerShell
+    # sessions can have the cmdlet module available but not loadable.
+    $securePassword = New-Object System.Security.SecureString
+    foreach ($character in $environmentPassword.ToCharArray()) {
+      [void]$securePassword.AppendChar($character)
+    }
+    $securePassword.MakeReadOnly()
     $script:ResolvedDeployCredential = [PSCredential]::new($environmentUsername, $securePassword)
     return $script:ResolvedDeployCredential
   }
