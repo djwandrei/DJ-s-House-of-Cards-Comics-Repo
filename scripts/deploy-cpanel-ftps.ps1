@@ -764,7 +764,9 @@ function Get-PathListUploadSet {
   }
 
   $uploads = New-Object System.Collections.Generic.HashSet[string]
-  foreach ($line in (Get-Content -LiteralPath $resolvedListPath)) {
+  # Path lists can contain Unicode asset names. Explicit UTF-8 avoids the
+  # Windows PowerShell ANSI fallback turning valid filenames into mojibake.
+  foreach ($line in (Get-Content -LiteralPath $resolvedListPath -Encoding UTF8)) {
     $path = ($line -replace "\\", "/").Trim()
     if (-not $path -or $path.StartsWith("#")) {
       continue
@@ -795,7 +797,7 @@ function Get-DeletePathListSet {
   }
 
   $deletes = New-Object System.Collections.Generic.HashSet[string]
-  foreach ($line in (Get-Content -LiteralPath $resolvedListPath)) {
+  foreach ($line in (Get-Content -LiteralPath $resolvedListPath -Encoding UTF8)) {
     $path = ($line -replace "\\", "/").Trim()
     if (-not $path -or $path.StartsWith("#")) {
       continue
