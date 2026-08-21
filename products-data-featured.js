@@ -76,10 +76,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 399.95,
     "priceLabel": "$399.95",
     "displayPrice": "$399.95",
-    "image": "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
-      "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (2).jpg"
+      "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
+      "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor /50 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Cooper Flagg; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAV0XWJ",

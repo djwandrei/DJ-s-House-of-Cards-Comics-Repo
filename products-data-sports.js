@@ -10938,10 +10938,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 40,
     "priceLabel": "$15.00-$40.00",
     "displayPrice": "$15.00-$40.00",
-    "image": "assets/Personal collection/Unlisted/Deni Avdija (7).jpg",
+    "image": "assets/Personal collection/Deni Avdija/2020-21 Panini Prizm Draft Picks Deni Avdija Prospect Rookie Auto #PA-DA (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Unlisted/Deni Avdija (7).jpg",
-      "assets/Personal collection/Unlisted/Deni Avdija (8).jpg"
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Prizm Draft Picks Deni Avdija Prospect Rookie Auto #PA-DA (1).jpg",
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Prizm Draft Picks Deni Avdija Prospect Rookie Auto #PA-DA (2).jpg"
     ],
     "description": "",
     "legacyImageLabel": "AvdijaPrizmAuto",
@@ -15108,10 +15108,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CZ0AXUl.md.jpg",
+    "image": "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ0AXUl.md.jpg",
-      "https://iili.io/CZ0AwRS.md.jpg"
+      "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (1).jpg",
+      "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (2).jpg"
     ],
     "description": "2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2008-09 Upper Deck; Season: 2008-09; Year manufactured: 2008; Player/Athlete: Elton Brand; Team: Los Angeles Clippers; Sport: Basketball; League: NBA; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2008-09-upper-deck-spx-elton-brand-winning-materials-numbers-patch-wmj-eb-1.CZ0AXUl",
@@ -23786,11 +23786,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "assets/Ebay Listing Photos/2019-20/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2019-20/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (1).jpg",
-      "assets/Ebay Listing Photos/2019-20/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (2).jpg"
+      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto 199 (2).jpg"
     ],
     "description": "2018-19 Panini Crown Royale Josh Okogie Rookie Patch Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Crown Royale; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Josh Okogie; Team: Phoenix Suns; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-crown-royale-josh-okogie-rookie-patch-auto-199-1.BuExiEF",
@@ -24277,10 +24276,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CZ0Asb1.md.jpg",
+    "image": "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ0Asb1.md.jpg",
-      "https://iili.io/CZ0AQzF.md.jpg"
+      "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (1).jpg",
+      "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (2).jpg"
     ],
     "description": "2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2019-20 Panini Hoops; Season: 2019-20; Year manufactured: 2019; Player/Athlete: Ja Morant; Team: Memphis Grizzlies; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2019-20-panini-hoops-premium-stock-ja-morant-rookie-plus-contenders-prospect-ticket-1.CZ0Asb1",
@@ -24301,7 +24300,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1152,
@@ -25473,10 +25473,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (1).jpg",
-      "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1 (2).jpg"
     ],
     "description": "2020-21 Panini Instant Anthony Edwards My City Rookie SP 2390 CSG 9.5 POP 1\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Instant; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Features: Rookie, Short Print; Autographed: No; Condition: CSG 9.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-instant-anthony-edwards-my-city-rookie-sp-2390-csg-95-pop-1-1.CCxyBje",
@@ -25511,10 +25511,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (1).jpg",
-      "assets/Personal collection/Anthony Edwards/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1 (2).jpg"
     ],
     "description": "2020-21 Panini Instant Anthony Edwards Rookie Impulse SP 1740 CSG 9.5 POP 1\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Instant; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Features: Rookie, Short Print; Autographed: No; Condition: CSG 9.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-instant-anthony-edwards-rookie-impulse-sp-1740-csg-95-pop-1-1.CCxyqu9",
@@ -31925,9 +31925,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (6).jpg",
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (7).jpg",
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (8).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (9).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (10).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (11).jpg"
+      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Herbert Jones Orange 49 + RWB + Red 149 Rookie Set (x8) (9).jpg"
     ],
     "description": "2021-22 Panini Prizm Herbert Jones Orange /49 + RWB + Red /149 Rookie Set (x8)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Panini Prizm; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Herbert Jones; Team: New Orleans Pelicans; Sport: Basketball; League: NBA; Parallel/Variety: Red, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-herbert-jones-orange-49-plus-rwb-plus-red-149-rookie-set-x8-1.BujGRQR",
@@ -32009,9 +32007,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (3).jpg",
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (4).jpg",
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (5).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (6).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (7).jpg",
-      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (8).jpg"
+      "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16) (6).jpg"
     ],
     "description": "2021-22 Panini Prizm Johnathan Kuminga RWB + Select Orange + Rookie SP Set (x16)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Panini Prizm; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Johnathan Kuminga; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Cards included: 16; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-johnathan-kuminga-rwb-plus-select-orange-plus-rookie-sp-set-x16-1.BujOgt9",
@@ -33846,9 +33842,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman U Inception Chris Livingston Orange Rookie Patch Auto 25 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman U Inception Chris Livingston Orange Rookie Patch Auto 25 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman U Inception Chris Livingston Orange Rookie Patch Auto 25 (1).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman U Inception Chris Livingston Orange Rookie Patch Auto 25 (1).jpg"
     ],
     "description": "2022-23 Bowman U Inception Chris Livingston Orange Rookie Patch Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-u-inception-chris-livingston-orange-rookie-patch-auto-25-2.BA7clUl",
@@ -34163,10 +34159,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto 50 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Chris Livingston Die-Cut Lava Refractor Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Lava, Die-Cut; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-chris-livingston-die-cut-lava-refractor-auto-50-1.BA7czHN",
@@ -34202,10 +34198,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto 99 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Chris Livingston Invicta Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-chris-livingston-invicta-refractor-auto-99-1.BA7cMb9",
@@ -34241,10 +34237,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor 50 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Chris Livingston Masterpieces Lava Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Lava; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-chris-livingston-masterpieces-lava-refractor-50-1.BA7l5mP",
@@ -34279,10 +34275,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Refractor Auto (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Refractor Auto (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Refractor Auto (1).jpg",
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Best Chris Livingston Refractor Auto (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Refractor Auto (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Chris Livingston Refractor Auto (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Chris Livingston Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-chris-livingston-refractor-auto-1.BA7leBs",
@@ -34910,10 +34906,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 499.95,
     "priceLabel": "$499.95",
     "displayPrice": "$499.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto /50 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnrMoF",
@@ -34949,10 +34945,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 349.95,
     "priceLabel": "$349.95",
     "displayPrice": "$349.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto 50 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Gold Refractor Auto /50 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnrVMg",
@@ -34994,8 +34990,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (2).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (3).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (4).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (5).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (6).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (5).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Green Refractor 99 (6).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCxlAx",
@@ -35018,7 +35014,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1444,
@@ -35205,7 +35202,9 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (19).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (20).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (21).jpg",
-      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (22).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (22).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (23).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW (24).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Rookie Auto #BOA-KW\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCoAYJ",
@@ -35240,12 +35239,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 499.95,
     "priceLabel": "$499.95",
     "displayPrice": "$499.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (2).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (3).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (4).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (2).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (3).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto 25 PSA 9 MINT (4).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Speckle Refractor Auto /25 PSA 9 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Speckle; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnrO9p",
@@ -35673,10 +35672,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Personal collection/Chris Livingston/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto 99 (2).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Chris Livingston 09 Throwback Insert Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-chris-livingston-09-throwback-insert-auto-99-1.BA70JZF",
@@ -36035,8 +36034,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (6).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (7).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (8).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (9).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (10).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (9).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Blue Refractor 199 (10).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Blue Refractor /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCx5Fe",
@@ -36059,7 +36058,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1472,
@@ -36115,12 +36115,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 399.95,
     "priceLabel": "$399.95",
     "displayPrice": "$399.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (2).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (3).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (4).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (2).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (3).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 10 (4).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto /99 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnr4KG",
@@ -36156,10 +36156,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor 150 (2).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Invicta Lava Refractor /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Lava; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCxAP9",
@@ -36181,7 +36181,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1476,
@@ -36230,10 +36231,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 37.95,
     "priceLabel": "$37.95",
     "displayPrice": "$37.95",
-    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (1).jpg",
-      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint (2).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Invicta Rookie Insert PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Rookie, Parallel/Variety, Insert; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCnoUG",
@@ -36256,7 +36257,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1478,
@@ -36342,10 +36344,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 160,
     "priceLabel": "$160.00",
     "displayPrice": "$160.00",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 55 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Red Refractor Rookie 5/5 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnrPS4",
@@ -37320,8 +37322,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (2).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (3).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (4).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (5).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (6).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (5).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Green Foil 299 (6).jpg"
     ],
     "description": "2022-23 Bowman University Inception Kel'El Ware Green Foil /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCxzt2",
@@ -37344,7 +37346,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1506,
@@ -38632,7 +38635,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Boogie Fland Blue Sparkle Dual Auto 10 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Boogie Fland Blue Sparkle Dual Auto 10 (1).jpg",
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Boogie Fland Blue Sparkle Dual Auto 10 (2).jpg",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Boogie Fland Blue Sparkle Dual Auto 10 (3).jpg",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Boogie Fland Blue Sparkle Dual Auto 10 (4).jpg"
     ],
@@ -38751,8 +38753,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "displayPrice": "$165.00",
     "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Blue Diamond Auto 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Blue Diamond Auto 10 (1).jpg",
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Blue Diamond Auto 10 (2).jpg"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Blue Diamond Auto 10 (1).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Blue Diamond Auto /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper, Naasir Cunningham; Team: Rutgers Scarlet Knights, Alabama Crimson Tide; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-multigraphics-dylan-harper-naasir-cunningham-blue-diamond-auto-10-1.BAVRGCN",
@@ -38829,10 +38830,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 250,
     "priceLabel": "$250.00",
     "displayPrice": "$250.00",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (2).jpg"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Gold Dual Auto /3 PSA\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper, Naasir Cunningham; Team: Rutgers Scarlet Knights, Alabama Crimson Tide; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCq3D7",
@@ -38907,9 +38908,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 165,
     "priceLabel": "$165.00",
     "displayPrice": "$165.00",
-    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Pink Dual Auto 15 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Pink Dual Auto 15 (2).JPG",
     "imageGallery": [
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Pink Dual Auto 15 (1).jpg",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Pink Dual Auto 15 (2).JPG"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper Naasir Cunningham Pink Dual Auto /15\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper, Naasir Cunningham; Team: Rutgers Scarlet Knights, Alabama Crimson Tide; Sport: Basketball; League: NCAA; Parallel/Variety: Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
@@ -38988,7 +38988,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Pettiford Fland Blue Crystal Auto 35 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Pettiford Fland Blue Crystal Auto 35 (1).jpg",
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Pettiford Fland Blue Crystal Auto 35 (2).jpg",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Pettiford Fland Blue Crystal Auto 35 (3).JPG",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Pettiford Fland Blue Crystal Auto 35 (4).JPG"
     ],
@@ -39105,9 +39104,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Ian Jackson Jamari Phillips Blue Dual Auto 35 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Ian Jackson Jamari Phillips Blue Dual Auto 35 (2).jpg",
     "imageGallery": [
-      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Ian Jackson Jamari Phillips Blue Dual Auto 35 (1).jpg",
       "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Ian Jackson Jamari Phillips Blue Dual Auto 35 (2).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Ian Jackson Jamari Phillips Blue Dual Auto /35\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ian Jackson, Jamari Phillips; Team: North Carolina Tar Heels, Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
@@ -39456,9 +39454,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Leaf Optichrome AJ Griffin Rookie Auto Optimal Effort 4 + Lunarity 10 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Optichrome AJ Griffin Rookie Auto Optimal Effort 4 + Lunarity 10 (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Optichrome AJ Griffin Rookie Auto Optimal Effort 4 + Lunarity 10 (1).jpg"
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Optichrome AJ Griffin Rookie Auto Optimal Effort 4 + Lunarity 10 (1).JPEG"
     ],
     "description": "2022-23 Leaf Optichrome AJ Griffin Rookie Auto Optimal Effort /4 + Lunarity /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-optichrome-aj-griffin-rookie-auto-optimal-effort-4-plus-lunarity-10-2.BAoikBV",
@@ -40336,10 +40334,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (1).JPEG",
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 11 (2).JPEG"
     ],
     "description": "2022-23 Leaf Signature Series AJ Griffin Winter Rookie Auto 1/1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Signature Series; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, One of One; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAosEZv",
@@ -40494,10 +40492,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (1).JPEG",
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity 10 SP + 2021 So Money 25 (2).JPEG"
     ],
     "description": "2022-23 Leaf Trinity AJ Griffin Rookie Auto Divinity /10 SP + 2021 So Money /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-trinity-aj-griffin-rookie-auto-divinity-10-sp-plus-2021-so-money-25-1.BAosVGp",
@@ -41189,10 +41187,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 999.95,
     "priceLabel": "$999.95",
     "displayPrice": "$999.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 11 PSA 10 MINT (2).jpg"
     ],
     "description": "2022-23 Leaf Trinity Clear Kel'El Ware Black Holo Platinum Auto 1/1 PSA 10 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Black; Features: Autograph, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCnrQNS",
@@ -41605,10 +41603,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 125,
     "priceLabel": "$125.00",
     "displayPrice": "$125.00",
-    "image": "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Platinum Rookie Auto 25 (1).jpg",
+    "image": "https://iili.io/CCCzmIR.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Platinum Rookie Auto 25 (1).jpg",
-      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Platinum Rookie Auto 25 (2).jpg"
+      "https://iili.io/CCCzmIR.md.jpg",
+      "https://iili.io/CCCzDmv.md.jpg"
     ],
     "description": "2022-23 Leaf Trinity Dylan Harper Holo Platinum Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Holo; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCzmIR",
@@ -42736,10 +42734,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (1).JPEG",
+      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation 10 White 25 + 35 (2).JPEG"
     ],
     "description": "2022-23 Leaf Vivid AJ Griffin Rookie Auto Set (x3) Animation /10 White /25 + /35\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Vivid; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-vivid-aj-griffin-rookie-auto-set-x3-animation-10-white-25-plus-35-1.BAoQmYP",
@@ -44559,10 +44557,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (1).jpg",
+    "image": "assets/Personal collection/Dillon Mitchell/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (2).jpg"
+      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (1).jpg",
+      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto (2).jpg"
     ],
     "description": "2022-23 Panini Chronicles Draft Dillon Mitchell College Roll Call Pink SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dillon Mitchell; Team: Cincinatti Bearcats; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-dillon-mitchell-college-roll-call-pink-sp-auto-1.Buw6tFS",
@@ -45603,10 +45601,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (1).JPEG",
+      "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Photogenic AJ Griffin 999 Rookie SP Set (X2) (2).JPEG"
     ],
     "description": "2022-23 Panini Photogenic AJ Griffin /999 Rookie SP Set (X2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Photogenic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Short Print; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-photogenic-aj-griffin-999-rookie-sp-set-x2-1.BAoDNhg",
@@ -45645,9 +45643,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (1).jpg",
-      "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (2).jpg",
-      "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (3).jpg",
-      "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (4).jpg"
+      "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (2).jpg"
     ],
     "description": "2022-23 Panini Photogenic Jabari Smith Rookie /999 #171\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Photogenic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-photogenic-jabari-smith-rookie-999-171-1.BAELMTF",
@@ -45876,9 +45872,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (1).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (2).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (3).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (4).jpg"
+      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto 88 (2).jpg"
     ],
     "description": "2022-23 Panini Prizm Draft Picks Dillon Mitchell Choice Red Prizm Auto /88\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dillon Mitchell; Team: Cincinatti Bearcats; Sport: Basketball; League: NCAA; Parallel/Variety: Choice Red Prizm; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pw0ts",
@@ -45918,9 +45912,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (1).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (2).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (3).jpg",
-      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (4).jpg"
+      "assets/Personal collection/Dillon Mitchell/2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto (2).jpg"
     ],
     "description": "2022-23 Panini Prizm Draft Picks Dillon Mitchell Freshman Green Prizm Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dillon Mitchell; Team: Cincinatti Bearcats; Sport: Basketball; League: NCAA; Parallel/Variety: Prizm, Green; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-picks-dillon-mitchell-freshman-green-prizm-auto-1.BA7ZiGI",
@@ -46153,10 +46145,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "https://iili.io/CLu7tz7.jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu7tz7.jpg",
-      "https://iili.io/CLu7QbS.jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10 (2).JPG"
     ],
     "description": "2022-23 Panini Prizm Draft Kel'El Ware Hyper Prizm Rookie Auto PSA 10\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm Draft Picks; Season: 2022-23; Year: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Hyper Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-kel-and-039el-ware-hyper-prizm-rookie-auto-psa-10-1.CLu7tz7",
@@ -46179,7 +46171,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1733,
@@ -46508,10 +46501,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/SELECT/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (1).JPEG",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/SELECT/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (1).JPEG",
+      "assets/Ebay Listing Photos/2022-23/SELECT/2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch 75 (2).JPEG"
     ],
     "description": "2022-23 Panini Select AJ Griffin Draft Selections Rookie Prizm Patch /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-aj-griffin-draft-selections-rookie-prizm-patch-75-1.BAxHd1s",
@@ -46790,10 +46783,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (1).jpg",
-      "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (2).jpg"
+      "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (1).jpg",
+      "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC 99 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Panini Select Jabari Smith Selections Purple Prizm Patch RC /99 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-selections-purple-prizm-patch-rc-99-psa-10-1.BAEmbwB",
@@ -49658,9 +49651,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 25.95,
     "priceLabel": "$25.95",
     "displayPrice": "$25.95",
-    "image": "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (1).jpg",
+    "image": "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (5).jpg",
     "imageGallery": [
-      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (1).jpg",
+      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (5).jpg",
       "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (6).jpg",
       "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (7).jpg",
       "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Green Refractor 75 Blue 99 150 (8).jpg",
@@ -49901,10 +49894,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38) (1).jpg",
+    "image": "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38).jpg",
     "imageGallery": [
-      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38) (1).jpg",
-      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38) (2).jpg"
+      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38).jpg"
     ],
     "description": "2022-23 Topps OTE Chrome Naasir Cunningham Rookie Base Set (x38)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Naasir Cunningham; Team: Alabama Crimson Tide; Sport: Basketball; League: NCAA; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 38; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-naasir-cunningham-rookie-base-set-x38.BAWhCeR",
@@ -58545,10 +58537,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 124.95,
     "priceLabel": "$124.95",
     "displayPrice": "$124.95",
-    "image": "assets/Personal collection/KJ Evans/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (1).jpg",
+    "image": "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/KJ Evans/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (1).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (2).jpg"
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (1).jpg",
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman U Best Kwame Evans White Refractor Auto 25 BGS 8.5 Number Match (2).jpg"
     ],
     "description": "2023-24 Bowman U Best Kwame Evans White Refractor Auto 2/5 BGS 8.5 Number Match\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: BGS 8.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA04HCB",
@@ -58784,9 +58776,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 45.95,
     "priceLabel": "$45.95",
     "displayPrice": "$45.95",
-    "image": "assets/Personal collection/Simeon Wilcher/2023-24 Bowman U Best Simeon Wilcher Yellow Refractor 75 Green 99 100 Set (9 (1).jpg",
+    "image": "assets/Personal collection/Simeon Wilcher/2023-24 Bowman U Best Simeon Wilcher Yellow Refractor 75 Green 99 100 Set (9 (3).jpg",
     "imageGallery": [
-      "assets/Personal collection/Simeon Wilcher/2023-24 Bowman U Best Simeon Wilcher Yellow Refractor 75 Green 99 100 Set (9 (1).jpg",
+      "assets/Personal collection/Simeon Wilcher/2023-24 Bowman U Best Simeon Wilcher Yellow Refractor 75 Green 99 100 Set (9 (3).jpg",
       "assets/Personal collection/Simeon Wilcher/2023-24 Bowman U Best Simeon Wilcher Yellow Refractor 75 Green 99 100 Set (9 (4).jpg"
     ],
     "description": "2023-24 Bowman U Best Simeon Wilcher Yellow Refractor /75 Green /99 /100 Set (9)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Simeon Wilcher; Team: St.Johns Red Storm; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
@@ -60647,9 +60639,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (3).jpg",
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (4).jpg",
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (5).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (6).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (7).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (8).jpg"
+      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor 50 (6).jpg"
     ],
     "description": "2023-24 Bowman University Best Kwame KJ Evans Gold Refractor /50 #68\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2POOCb",
@@ -60692,9 +60682,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (3).jpg",
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (4).jpg",
       "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (5).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (6).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (7).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (8).jpg"
+      "assets/Personal collection/KJ Evans/2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto 50 (6).jpg"
     ],
     "description": "2023-24 Bowman University Best Kwame KJ Evans Gold Refractor Auto /50 #B23-KE\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PO83Q",
@@ -61141,10 +61129,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Bowman University Best Rob Dillingham Pink Refractor 100 (2).jpg"
     ],
     "description": "2023-24 Bowman University Best Rob Dillingham Pink Refractor /100\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Rob Dillingham; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Pink; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-rob-dillingham-pink-refractor-100-1.BAKbXj4",
@@ -61179,10 +61167,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "https://iili.io/CZ05vFj.md.jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ05vFj.md.jpg",
-      "https://iili.io/CZ05S8Q.md.jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (2).jpg"
     ],
     "description": "2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Scotty Middleton; Team: Seton Hall Pirates; Sport: Basketball; League: NCAA; Features: Autograph, Memorabilia; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-scotty-middleton-jumbo-relic-auto-set-x2-1.CZ05vFj",
@@ -61204,7 +61192,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Memorabilia",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2117,
@@ -61652,10 +61641,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 13.95,
     "priceLabel": "$13.95",
     "displayPrice": "$13.95",
-    "image": "assets/Personal collection/Chris Livingston/2023-24 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2023-24 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (2).jpg"
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (2).jpg"
     ],
     "description": "2023-24 Bowman University Chrome Chris Livingston Gold Refractor Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA70luS",
@@ -62905,10 +62894,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie 399 (2).jpg"
     ],
     "description": "2023-24 Bowman University Chrome Rob Dillingham Purple Refractor Rookie /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Rob Dillingham; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfVoiX",
@@ -63213,10 +63202,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 69.95,
     "priceLabel": "$69.95",
     "displayPrice": "$69.95",
-    "image": "assets/Personal collection/Kel’El Ware/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 33 (2).jpg"
     ],
     "description": "2023-24 Leaf Exotic Kel'El Ware Peacock Crystal Rookie Auto 3/3\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2023-24 Leaf Exotic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kel'el Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCxxwl",
@@ -63239,7 +63228,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2175,
@@ -63555,12 +63545,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (1).jpg",
+    "image": "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (4).jpg"
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (1).jpg",
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (2).jpg",
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (3).jpg",
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3) (4).jpg"
     ],
     "description": "2023-24 Panini Hoops Winter Victor Wembanyama Tribute + Base Rookie Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Hoops; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Victor Wembanyama; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfoQyv",
@@ -63882,10 +63872,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (1).jpg",
+    "image": "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (2).jpg"
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (1).jpg",
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP (2).jpg"
     ],
     "description": "2023-24 Panini NBA Hoops Asia Victor Wembanyama We Got Next Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini NBA Hoops Asia; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Victor Wembanyama; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Features: Rookie, Short Print; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfIn2e",
@@ -64186,10 +64176,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 21.95,
     "priceLabel": "$21.95",
     "displayPrice": "$21.95",
-    "image": "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (2).jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Chris Livingston Purple Ice  99 + Blue 75 + Red Auto 149 (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Chris Livingston Purple Ice /99 + Blue /75 + Red Auto /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Blue, Red, Purple; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA70OAB",
@@ -64985,10 +64975,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 124.95,
     "priceLabel": "$124.95",
     "displayPrice": "$124.95",
-    "image": "assets/Personal collection/KJ Evans/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/KJ Evans/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (1).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (2).jpg"
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (1).jpg",
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 15 PSA 10 (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Kwame KJ Evans Penmanship Black Gold Auto 1/5 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Gold, Black; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA17iml",
@@ -65101,10 +65091,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Leonard Miller Signatures Green Prizm Rookie Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Green; Features: Autograph, Rookie, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfPnX1",
@@ -65375,10 +65365,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (2).jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto 40 (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Chris Livingston Choice Red Prizm Auto /40\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA71Kx9",
@@ -65609,13 +65599,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (1).jpg",
+    "image": "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (5).jpg"
+      "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (1).jpg",
+      "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (2).jpg",
+      "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (3).jpg",
+      "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (4).jpg",
+      "assets/Personal collection/Dillon Mitchell/2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4) (5).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Dillon Mitchell Penmanship Prizm Auto Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Dillon Mitchell; Team: Cincinatti Bearcats; Sport: Basketball; League: NCAA; Parallel/Variety: Prizm; Features: Autograph, Parallel/Variety; Autographed: Yes; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAftwTx",
@@ -66608,10 +66598,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Leonard Miller Sensational Prizm Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfmRYF",
@@ -67243,10 +67233,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto 249 (2).jpg"
     ],
     "description": "2023-24 Panini Select Leonard Miller Silver Prizm Rookie Signatures Auto /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Select; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfuwes",
@@ -67439,11 +67429,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Personal collection/Chris Livingston/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (1).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (2).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (3).jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (2).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3) (3).jpg"
     ],
     "description": "2023-24 Topps Chrome Chris Livingston Certified Rookie Auto + Throwback Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA71qiu",
@@ -67682,10 +67672,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto (2).jpg"
     ],
     "description": "2023-24 Topps Chrome Leonard Miller 1972 Throwback Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfv0Tg",
@@ -68862,10 +68852,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 37.95,
     "priceLabel": "$37.95",
     "displayPrice": "$37.95",
-    "image": "assets/Personal collection/KJ Evans/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/KJ Evans/PSA/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/KJ Evans/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (1).jpg",
-      "assets/Personal collection/KJ Evans/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (2).jpg"
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (1).jpg",
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor 199 PSA 10 (2).jpg"
     ],
     "description": "2023-24 Topps Mcdonald's Chrome Kwame KJ Evans Aqua Refractor /199 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA1iW79",
@@ -70201,10 +70191,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (2).jpg"
+      "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (1).jpg",
+      "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (2).jpg"
     ],
     "description": "2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfgLUQ",
@@ -70594,10 +70584,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 13.95,
     "priceLabel": "$13.95",
     "displayPrice": "$13.95",
-    "image": "assets/Personal collection/Chris Livingston/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Chris Livingston/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (1).jpg",
-      "assets/Personal collection/Chris Livingston/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (2).jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto 25 (2).jpg"
     ],
     "description": "2023-24 Topps Royalty Chris Livingston Pursuit of Greatness Blue Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA71DmB",
@@ -71058,10 +71048,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (1).jpg",
+    "image": "https://iili.io/BAfDkNf.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (2).jpg"
+      "https://iili.io/BAfDkNf.md.jpg",
+      "https://iili.io/BAfD6l9.md.jpg"
     ],
     "description": "2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 Upper Deck; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Ken Griffey Jr.; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfDkNf",
@@ -71082,8 +71072,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2379,
@@ -71528,10 +71517,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor 25 (2).jpg"
     ],
     "description": "2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Orange Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqJT57",
@@ -71566,10 +71555,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor 75 (2).jpg"
     ],
     "description": "2024-25 Bowman U Best Jaloni Cambridge Breaking Barriers Yellow Refractor /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqJo0l",
@@ -72235,10 +72224,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Blue Refractor 150 + Yellow Lazer 75 (2).jpg"
     ],
     "description": "2024-25 Bowman U Chrome Joyce Edwards Blue Refractor /150 + Yellow Lazer /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Joyce Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqYFp9",
@@ -72273,10 +72262,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 8.95,
     "priceLabel": "$8.95",
     "displayPrice": "$8.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor 150 (2).jpg"
     ],
     "description": "2024-25 Bowman U Chrome Joyce Edwards Boundless Potential Blue Refractor /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Joyce Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqYGYN",
@@ -72775,9 +72764,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (2).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (3).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (4).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie 25 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Ballers Orange Refractor Rookie /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Johnuel Fland; Sport: Basketball; League: NCAA; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAMfuPR",
@@ -73546,10 +73533,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 27.95,
     "priceLabel": "$27.95",
     "displayPrice": "$27.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto 99 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Joyce Edwards Green Diamond Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Joyce Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqAOJt",
@@ -74062,10 +74049,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 399.95,
     "priceLabel": "$399.95",
     "displayPrice": "$399.95",
-    "image": "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
-      "assets/Personal collection/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (2).jpg"
+      "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (1).jpg",
+      "assets/Personal collection/Cooper Flagg/2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor 50 PSA 10 (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Cooper Flagg Warriors Gold Refractor /50 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Cooper Flagg; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAV0XWJ",
@@ -74636,10 +74623,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Jaloni Cambridge Black Refractor SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Black; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqwB1I",
@@ -74675,10 +74662,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (2).jpg"
+      "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (1).jpg",
+      "assets/Personal collection/Women/2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Jaloni Cambridge Campus Visits On-Card Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqwdmJ",
@@ -75899,10 +75886,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (2).jpg"
+      "assets/Personal collection/Women/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (1).jpg",
+      "assets/Personal collection/Women/2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State (2).jpg"
     ],
     "description": "2024-25 Panini NIL Prizm Jaloni Cambridge Silver Prizm SP Auto Ohio State\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACTUTg",
@@ -76208,10 +76195,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (2).jpg"
+      "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (1).jpg",
+      "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm 99 (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Deca Donte DiVincenzo Purple Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Donte DiVincenzo; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACRjCG",
@@ -76284,10 +76271,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (1).jpg",
+    "image": "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Prizm/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (2).jpg"
+      "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (1).jpg",
+      "assets/Personal collection/Wolves/2024-25 Panini Prizm Deca Kevin Garnett Red Prizm 199 Set (x2) (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Deca Kevin Garnett Red Prizm /199 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kevin Garnett; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAC5xMG",
@@ -78650,10 +78637,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Level Purple Prizm Rookie 249 (1).jpg",
+    "image": "https://iili.io/BAXIYsS.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Level Purple Prizm Rookie 249 (1).jpg",
-      "assets/Personal collection/Wolves/2024-25 Panini Select Rob Dillingham Premier Level Purple Prizm Rookie 249 (2).jpg"
+      "https://iili.io/BAXIYsS.md.jpg",
+      "https://iili.io/BAXIxgn.md.jpg"
     ],
     "description": "2024-25 Panini Select Rob Dillingham Premier Level Purple Prizm Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Select; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Rob Dillingham; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAXIYsS",
@@ -78676,8 +78663,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2591,
@@ -78843,10 +78829,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (1).jpg",
+    "image": "assets/Personal collection/Wolves/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (2).jpg",
+      "assets/Personal collection/Wolves/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (1).jpg",
+      "assets/Personal collection/Wolves/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (2).jpg",
       "assets/Personal collection/Wolves/2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto (3).jpg"
     ],
     "description": "2024-25 Topps Chrome Leonard Miller 1973 Throwback Purple Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
@@ -79351,8 +79337,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor 99 +Aqua 199 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor 99 +Aqua 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor 99 +Aqua 199 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor 99 +Aqua 199 (3).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor 99 +Aqua 199 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Arianna Roberson Purple Refractor /99 +Aqua /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Arianna Roberson; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABdX5B",
@@ -79392,10 +79377,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (2).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (6).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (7).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor 99 150 Set (x4) (4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Avery Howell Purple Refractor /99 /150 Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Avery Howell; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABdDg4",
@@ -79430,22 +79412,16 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 27.95,
     "priceLabel": "$27.95",
     "displayPrice": "$27.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (6).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (7).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (8).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (9).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (10).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (11).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (12).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (13).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (14).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (2).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (3).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (4).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (5).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (6).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (7).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW (8).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Berry Wallace Gameday Event Auto #EA-BW\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Berry Wallace; Sport: Basketball; League: NCAA; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAB28Qe",
@@ -79480,12 +79456,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (4).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor 5 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Berry Wallace Red Refractor /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Berry Wallace; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABFmdv",
@@ -79792,11 +79766,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 #79 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 (2).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 (3).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 #79 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 #79 (3).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor 150 #79 (4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Boogie Fland Purple Refractor /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Johnuel Fland; Sport: Basketball; League: NCAA; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAMRui7",
@@ -79819,8 +79793,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2621,
@@ -79872,9 +79845,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Bradley Beal; Team: Phoenix Suns; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABKkTN",
@@ -79912,9 +79883,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto 75 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Bryson Tucker Half-Court Logo Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Bryson Tucker; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABKp6u",
@@ -79953,9 +79922,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye 25 Purple 99 Set (x5) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Bryson Tucker Tie-Dye /25 Purple /99 Set (x5)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Bryson Tucker; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 5; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABfoFa",
@@ -79993,8 +79960,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor 75 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor 75 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor 75 (3).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor 75 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Carmelo Anthony Blue Refractor /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Carmelo Anthony; Team: Denver Nuggets; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABfUNV",
@@ -80032,8 +79998,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor 99 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor 99 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor 99 (3).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Collin Sexton Purple Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Collin Sexton; Team: Utah Jazz; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABBOyx",
@@ -80071,8 +80036,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto 75 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto 75 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto 75 (3).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto 75 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Derrion Reid Half-Court Logo Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Derrion Reid; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABC7oB",
@@ -80111,9 +80075,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye 25 Purple 150 Set (x6) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Derrion Reid Tie-Dye /25 Purple /150 Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Derrion Reid; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABoEjR",
@@ -80151,9 +80113,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Donavan Freeman; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABogGS",
@@ -80193,11 +80153,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (2).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (6).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (7).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (8).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Drake Powell  Blue 75 Purple 99 SP Set (x4) (4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Drake Powell Blue /75 Purple /99 SP Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Drake Powell; Sport: Basketball; League: NCAA; Parallel/Variety: Blue, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABxANf",
@@ -80310,9 +80266,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Flory Bidunga Blue 75 Purple 99 150 Set (x9) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Flory Bidunga Blue /75 Purple /99 /150 Set (x9)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Flory Bidunga; Sport: Basketball; League: NCAA; Parallel/Variety: Blue, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 9; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABIRG2",
@@ -80350,9 +80304,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Isaiah Evans Purple 99 + Logo SP Set (x6) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Isaiah Evans Purple /99 + Logo SP Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Isaiah Evans; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABIgGp",
@@ -80579,11 +80531,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 54.95,
     "priceLabel": "$54.95",
     "displayPrice": "$54.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (3).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue 75 Red 125 SP Set (x11) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Jaloni Cambridge Blue /75 Red /125 SP Set (x11)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NCAA; Parallel/Variety: Blue, Red; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 11; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABuiIs",
@@ -80619,12 +80570,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (4).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie 50 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Jaloni Cambridge Gold Refractor Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaloni Cambridge; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABR4xs",
@@ -80663,9 +80612,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple 99 + Aqua 199 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Jaren Jackson Jr. Purple /99 + Aqua /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaren Jackson Jr.; Team: Memphis Grizzlies; Sport: Basketball; League: NBA; Parallel/Variety: Aqua, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAB5SrQ",
@@ -80703,8 +80650,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome John Bol Purple 99 Aqua 199 Blue 150 Set (x8) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome John Bol Purple 99 Aqua 199 Blue 150 Set (x8) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome John Bol Purple 99 Aqua 199 Blue 150 Set (x8) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome John Bol Purple 99 Aqua 199 Blue 150 Set (x8) (3).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome John Bol Purple 99 Aqua 199 Blue 150 Set (x8) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome John Bol Purple /99 Aqua /199 Blue /150 Set (x8)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: John Bol; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua, Blue, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAB7EwF",
@@ -80739,12 +80685,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (4).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Joyce Edwards Purple 99 Aqua 199 SP Set (x9) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Joyce Edwards Purple /99 Aqua /199 SP Set (x9)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Joyce Edwards; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 9; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABaLQe",
@@ -80783,9 +80727,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Jrue Holliday Purple Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Jrue Holiday Purple Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jrue Holiday; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABcGt9",
@@ -80824,10 +80766,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (6).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Justice Carlton Red 125 Aqua 199 SP Set (x4) (3).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Justice Carlton Red /125 Aqua /199 SP Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Justice Carlton; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua, Red; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABcPcv",
@@ -80868,10 +80807,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (2).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (6).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (7).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor 75 + Purple 99 (x4) (4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Karter Knox Blue Refractor /75 + Purple /99 (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Karter Knox; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABlFNS",
@@ -80909,9 +80845,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Karter Knox On-Card Event Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Karter Knox; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAB1ZNV",
@@ -80950,9 +80884,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kate Koval Blue 75 + Aqua 199 + SP Set (x3) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Kate Koval Blue /75 + Aqua /199 + SP Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kate Koval; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua, Blue; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABEbe4",
@@ -80991,9 +80923,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kendall Dudley; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABG7kv",
@@ -81031,9 +80961,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kennedy Smith Aqua 199 + Logo SP Set (x5) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Kennedy Smith Aqua /199 + Logo SP Set (x5)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kennedy Smith; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 5; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABG8G9",
@@ -81072,9 +81000,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor 99 Set (x2) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Kevin Love Purple Refractor /99 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kevin Love; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABM1Ax",
@@ -81112,9 +81038,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liam McNeeley Purple 99 150 Set (x6) (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liam McNeeley Purple /99 /150 Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liam McNeeley; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABMLHG",
@@ -81227,12 +81151,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (1).jpg",
+    "image": "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (4).jpg"
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (1).jpg",
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie 35 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Orange Refractor Rookie /35\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABW4vs",
@@ -81268,11 +81190,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (1).jpg",
+    "image": "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (3).jpg"
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (1).jpg",
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Paper Game Day Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABh00P",
@@ -81308,14 +81229,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (1).jpg",
+    "image": "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (6).jpg"
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (1).jpg",
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (2).jpg",
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (3).jpg",
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor 50 (4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Zam Jones Combo Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABiWFe",
@@ -81351,10 +81270,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mackenly Randolph Purple 99 150 Set (x6) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mackenly Randolph Purple 99 150 Set (x6).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mackenly Randolph Purple 99 150 Set (x6) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mackenly Randolph Purple 99 150 Set (x6) (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mackenly Randolph Purple 99 150 Set (x6).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Mackenly Randolph Purple /99 /150 Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Mackenly Randolph; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABZRWl",
@@ -81389,10 +81307,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 13.95,
     "priceLabel": "$13.95",
     "displayPrice": "$13.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Maddy McDaniel Purple 99 150 Set (x4) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Maddy McDaniel Purple 99 150 Set (x4).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Maddy McDaniel Purple 99 150 Set (x4) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Maddy McDaniel Purple 99 150 Set (x4) (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Maddy McDaniel Purple 99 150 Set (x4).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Maddy McDaniel Purple /99 /150 Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Maddy McDaniel; Sport: Basketball; League: NCAA; Parallel/Variety: Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABLDan",
@@ -81430,9 +81347,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor 150 + Aqua 199 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Malik Monk Purple Refractor /150 + Aqua /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Malik Monk; Team: Sacramento Kings; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABZBfI",
@@ -81471,10 +81386,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (6).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua 199 McFlurry SP Set (x4) (3).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Me'Arrah O'Neal Aqua /199 McFlurry SP Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Me'arrah O'Neal; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABDMPV",
@@ -81513,9 +81425,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (1).jpg",
     "imageGallery": [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (2).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (3).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (4).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Michael Porter Jr. Purple Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Michael Porter Jr.; Team: Denver Nuggets; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABbed7",
@@ -81556,8 +81466,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (2).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (3).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (4).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (5).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (6).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Mikayla Blakes Purple 99 Aqua 199 Set (x4) (5).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Mikayla Blakes Purple /99 Aqua /199 Set (x4)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Mikayla Blakes; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 4; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BABmLG4",
@@ -81823,10 +81732,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (1).jpg",
+    "image": "assets/Personal collection/Wolves/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (2).jpg"
+      "assets/Personal collection/Wolves/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (1).jpg",
+      "assets/Personal collection/Wolves/2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch 49 (2).jpg"
     ],
     "description": "2024-25 Topps Motif Jaylen Clark Motif Rookie Relics Patch /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaylen Clark; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACVD9s",
@@ -93737,10 +93646,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Devonte' Graham Silver Prizm Rookie PSA 9 Mint (1).JPG",
+    "image": "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Devonte' Graham Silver Prizm Rookie PSA 9 Mint (1).JPG",
-      "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Devonte' Graham Silver Prizm Rookie PSA 9 Mint (2).JPG"
+      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint (1).jpg",
+      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint (2).jpg"
     ],
     "description": "2018 Panini Prizm Devonte' Graham Silver Prizm Rookie PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018 Panini Prizm; Season: 2018; Year manufactured: 2018; Player/Athlete: Devonte' Graham; Sport: Basketball; League: NBA; Parallel/Variety: Silver Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O9wrJ",
@@ -93774,10 +93683,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie PSA 9 Mint (1).JPG",
+    "image": "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie #80 PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie PSA 9 Mint (1).JPG",
-      "assets/Ebay Listing Photos/2011-2018/2018 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie PSA 9 Mint (2).JPG"
+      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie #80 PSA 9 Mint (1).jpg",
+      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie #80 PSA 9 Mint (2).jpg"
     ],
     "description": "2018 Panini Prizm Wendell Carter Jr. Pink Ice Prizm Rookie PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018 Panini Prizm; Season: 2018; Year manufactured: 2018; Player/Athlete: Wendell Carter Jr.; Sport: Basketball; League: NBA; Parallel/Variety: Pink Ice Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O9kep",
@@ -93836,7 +93745,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3087,
@@ -94260,10 +94170,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "https://iili.io/CZ0RH5N.md.jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ0RH5N.md.jpg",
-      "https://iili.io/CZ0RJeI.md.jpg"
+      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (2).jpg"
     ],
     "description": "2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles Draft; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Javon Freeman-Liberty; Sport: Basketball; League: NCAA; Parallel/Variety: Pink; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-javon-freeman-liberty-illusions-pink-rookie-auto-1.CZ0RH5N",
@@ -94286,7 +94196,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3099,
@@ -94298,10 +94209,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "https://iili.io/CZ0R3zX.md.jpg",
+    "image": "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ0R3zX.md.jpg",
-      "https://iili.io/CZ0RqqG.md.jpg"
+      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (1).jpg",
+      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (2).jpg"
     ],
     "description": "2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Davis; Sport: Basketball; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-picks-ryan-davis-college-ticket-rookie-auto-1.CZ0R3zX",
@@ -94323,7 +94234,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3100,
@@ -94984,10 +94896,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "https://iili.io/CZ05g9V.md.jpg",
+    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CZ05g9V.md.jpg",
-      "https://iili.io/CZ05rAB.md.jpg"
+      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (1).jpg",
+      "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (2).jpg"
     ],
     "description": "2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Contenders; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Sir'Jabari Rice; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-contenders-sir-and-039jabari-rice-rookie-ticket-auto-ultimate-tease-2.CZ05g9V",
@@ -95009,7 +94921,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3118,
@@ -95021,10 +94934,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (1).jpg",
+    "image": "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (2).jpg"
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (1).jpg",
+      "assets/Personal collection/Legends (Lebron KD Stepch etc)/2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie (2).jpg"
     ],
     "description": "2023-24 Panini Contenders Victor Wembanyama Game Ticket Green SP Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Contenders; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Victor Wembanyama; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OJ8iX",
@@ -95047,7 +94960,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3119,
@@ -95775,10 +95689,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto (2).jpg"
     ],
     "description": "2024-25 Panini Contenders NIL UConn Allie Ziebell Private Signings Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Allie Ziebell; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OdOdb",
@@ -95800,7 +95714,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3139,
@@ -95812,10 +95727,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm 199 (2).jpg"
     ],
     "description": "2024-25 Panini Contenders NIL UConn Jim Calhoun Legendary Wave Prizm /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jim Calhoun; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Odkkx",
@@ -95837,7 +95752,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3140,
@@ -95849,10 +95765,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 8.95,
     "priceLabel": "$8.95",
     "displayPrice": "$8.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm 99 (2).jpg"
     ],
     "description": "2024-25 Panini Contenders NIL UConn Richard Hamilton Campus Legends Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Richard Hamilton; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OdSIV",
@@ -95874,7 +95790,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3141,
@@ -95886,10 +95803,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto 199 (2).jpg"
     ],
     "description": "2024-25 Panini Contenders UConn Isaiah Abraham Private Signings Prizm Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Isaiah Abraham; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OdgLP",
@@ -95912,7 +95829,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3142,
@@ -95924,10 +95842,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set (2).jpg"
     ],
     "description": "2024-25 Panini Contenders UConn Paige Bueckers Red White Blue Prizm SP Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Paige Bueckers; Sport: Basketball; League: NBA; Parallel/Variety: Blue Prizm, Red; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Od6EF",
@@ -95949,7 +95867,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3143,
@@ -95961,10 +95880,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (2).jpg"
     ],
     "description": "2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Youssouf Singare; Sport: Basketball; League: NBA; Parallel/Variety: Red Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Ods2a",
@@ -95986,7 +95905,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3144,
@@ -96258,10 +96178,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL Uconn SP Set (x6) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini NIL Uconn SP Set (x6) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL Uconn SP Set (x6) (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL Uconn SP Set (x6) (2).jpg"
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini NIL Uconn SP Set (x6) (1).jpg",
+      "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini NIL Uconn SP Set (x6) (2).jpg"
     ],
     "description": "2024-25 Panini NIL Uconn SP Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NIL; Season: 2024-25; Year manufactured: 2024; Team: UConn Huskies; Sport: Basketball; League: NCAA; Features: Short Print; Autographed: No; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O2oG9",
@@ -96282,7 +96202,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3152,
@@ -96596,10 +96517,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (2).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor 50 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Berry Wallace Gold Lava Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Berry Wallace; Sport: Basketball; League: NCAA; Parallel/Variety: Lava Refractor, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O24wl",
@@ -96621,7 +96542,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3161,
@@ -96633,10 +96555,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (1).jpg",
+    "image": "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (2).jpg"
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (1).jpg",
+      "assets/Personal collection/Women/2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Berry Wallace Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Berry Wallace; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O2LP9",
@@ -96658,7 +96580,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3162,
@@ -96855,10 +96778,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (1).jpg",
+    "image": "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (1).jpg",
-      "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (2).jpg"
+      "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (1).jpg",
+      "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (2).jpg"
     ],
     "description": "2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2025 Upper Deck Goodwin Champions; Season: 2025; Year manufactured: 2025; Player/Athlete: Bianca Bustamante; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O3otp",
@@ -96880,7 +96803,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3168,
@@ -96892,10 +96816,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (1).jpg",
+    "image": "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (1).jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (1).jpg",
-      "assets/Ebay Listing Photos/2025-26/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (2).jpg"
+      "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Cameron Brink Set (x2) (2).jpg"
     ],
     "description": "2025 Upper Deck Goodwin Champions Cameron Brink Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2025 Upper Deck Goodwin Champions; Season: 2025; Year manufactured: 2025; Player/Athlete: Cameron Brink; Sport: Basketball; League: NBA; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2O3TPt",
@@ -96913,7 +96837,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3169,
@@ -98304,10 +98229,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Ebay Listing Photos/2025-26/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (1).JPG",
+    "image": "assets/Ebay Listing Photos/2025-26/2025-26 Hoops/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (1).JPG",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2025-26/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (1).JPG",
-      "assets/Ebay Listing Photos/2025-26/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (2).JPG"
+      "assets/Ebay Listing Photos/2025-26/2025-26 Hoops/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (1).JPG",
+      "assets/Ebay Listing Photos/2025-26/2025-26 Hoops/2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor 199 (2).JPG"
     ],
     "description": "2025-26 Topps NBA Hoops Jaden Ivey Aqua Holo Refractor /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Jaden Ivey; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Refractor, Aqua; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Oqs2t",
@@ -98329,7 +98254,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3207,
@@ -102871,10 +102797,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Green Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Green Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkUI1",
@@ -102896,7 +102822,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3330,
@@ -102908,10 +102835,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto 99 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Possesion Arrow Green Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Green; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PktpI",
@@ -102936,7 +102863,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3332,
@@ -102948,10 +102876,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Orange Refractor Auto 25 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Orange Refractor Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkPEJ",
@@ -102974,7 +102902,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3333,
@@ -102986,10 +102915,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Greatness Awaits Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Features: Autograph, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkvkB",
@@ -103011,7 +102940,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3334,
@@ -103023,10 +102953,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Yellow Refractor 75 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Yellow Refractor /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Yellow Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PvJ4f",
@@ -103048,7 +102978,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3335,
@@ -103060,10 +102991,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor 399 (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Boogie Fland 1st Purple Refractor /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Purple Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PvPt9",
@@ -103086,7 +103017,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3337,
@@ -103098,10 +103030,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor 50 (2).jpg"
     ],
     "description": "2024-25 Topps Chrome McDonald's Boogie Fland Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Chrome McDonald's; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSKX9",
@@ -103123,7 +103055,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3338,
@@ -103135,10 +103068,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 44.95,
     "priceLabel": "$44.95",
     "displayPrice": "$44.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor 50 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Iso Signatures Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pk6Ba",
@@ -103162,7 +103095,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3339,
@@ -103174,10 +103108,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 44.95,
     "priceLabel": "$44.95",
     "displayPrice": "$44.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Field Day Red Refractor 10 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Field Day Red Refractor /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Red Refractor; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pkw1j",
@@ -103200,7 +103134,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3340,
@@ -103212,10 +103147,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 34.95,
     "priceLabel": "$34.95",
     "displayPrice": "$34.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto 75 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Possesion Arrow Yellow Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Yellow; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pv9Bs",
@@ -103239,7 +103174,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3341,
@@ -103251,10 +103187,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 69.95,
     "priceLabel": "$69.95",
     "displayPrice": "$69.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto 25 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Possesion Arrow Orange Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkmhX",
@@ -103278,7 +103214,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3342,
@@ -103290,10 +103227,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (1).jpg",
-      "assets/Personal collection/Johnuel Fland/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Bowman University Best Boogie Fland Gold Refractor 50 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkedQ",
@@ -103315,7 +103252,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3343,
@@ -103749,10 +103687,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 54.95,
     "priceLabel": "$54.95",
     "displayPrice": "$54.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint (2).jpg"
     ],
     "description": "2024-25 Bowman University Sapphire Dylan Harper Rookie #22 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Sapphire; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCqfVe",
@@ -104087,10 +104025,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps Inception Zach Lavine Grail Chasing Signatures Auto 11 (1).jpg",
+    "image": "https://iili.io/CCCqJHl.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps Inception Zach Lavine Grail Chasing Signatures Auto 11 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps Inception Zach Lavine Grail Chasing Signatures Auto 11 (2).jpg"
+      "https://iili.io/CCCqJHl.md.jpg",
+      "https://iili.io/CCCq9S4.md.jpg"
     ],
     "description": "2024-25 Topps Inception Zach Lavine Grail Chasing Signatures Auto 1/1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Inception; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Zach LaVine; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered, One of One; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCqJHl",
@@ -104113,8 +104051,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|One of One",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 3364,
@@ -104526,10 +104463,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Verified Rookie Insert (1).JPG",
+    "image": "https://iili.io/C2PSUIS.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Verified Rookie Insert (1).JPG",
-      "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Verified Rookie Insert (2).JPG"
+      "https://iili.io/C2PSUIS.md.jpg",
+      "https://iili.io/C2PSgh7.md.jpg"
     ],
     "description": "2025-26 Bowman University Chrome AJ Dybantsa Verified Rookie Insert\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman University Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: AJ Dybantsa; Sport: Basketball; League: NCAA; Features: Rookie, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSUIS",
@@ -104600,10 +104537,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Mega Prospects Refractor SP (1).JPG",
+    "image": "https://iili.io/C2PSk74.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Mega Prospects Refractor SP (1).JPG",
-      "assets/Personal collection/2025-26 Bowman University Chrome AJ Dybantsa Mega Prospects Refractor SP (2).JPG"
+      "https://iili.io/C2PSk74.md.jpg",
+      "https://iili.io/C2PSvkl.md.jpg"
     ],
     "description": "2025-26 Bowman University Chrome AJ Dybantsa Mega Prospects Refractor SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman University Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: AJ Dybantsa; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Short Print, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSk74",
@@ -104638,10 +104575,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (1).JPG",
+    "image": "assets/Personal collection/Cooper Flagg/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (1).JPG",
-      "assets/Personal collection/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (2).JPG"
+      "assets/Personal collection/Cooper Flagg/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (1).JPG",
+      "assets/Personal collection/Cooper Flagg/2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP (2).JPG"
     ],
     "description": "2025-26 Bowman Chrome Cooper Flagg Greatness Loading Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Cooper Flagg; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSXLX",
@@ -104664,7 +104601,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3379,
@@ -104825,10 +104763,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (2).jpg"
+      "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (1).jpg",
+      "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie 49 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Panini Court Kings Jabari Smith Jr. Maestros Violet Rookie /49 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Court Kings; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Sport: Basketball; League: NBA; Parallel/Variety: Violet; Features: Rookie, Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCfpKG",
@@ -105676,7 +105614,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "image": "assets/Personal collection/Jabari smith/2022-23 Topps McDonald's Chrome Kel'El Ware Aqua Refractor 199 (1).jpg",
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2022-23 Topps McDonald's Chrome Kel'El Ware Aqua Refractor 199 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Topps McDonald's Chrome Kel'El Ware Aqua Refractor 199 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Topps McDonald's Chrome Kel'El Ware Aqua Refractor 199 (2).jpg"
     ],
     "description": "2022-23 Topps McDonald's Chrome Kel'El Ware Aqua Refractor /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps McDonald's Chrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Aqua Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PNpLb",
@@ -105698,7 +105636,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3406,
@@ -105710,10 +105649,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/Kel’El Ware/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto 15 (2).jpg"
     ],
     "description": "2022-23 Leaf MultiGraphics Kel'El Ware + Kyle Filipowski Meteor Showers Auto /15\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf MultiGraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kyle Filipowski, Kel'El Ware; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PwfcB",
@@ -105735,7 +105674,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3407,
@@ -105747,10 +105687,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/PSA Cards/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 (1).jpg",
+    "image": "https://iili.io/CCCqnlj.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 (1).jpg",
-      "assets/Personal collection/PSA Cards/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 (2).jpg"
+      "https://iili.io/CCCqnlj.md.jpg",
+      "https://iili.io/CCCqCKb.md.jpg"
     ],
     "description": "2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps Holiday; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCqnlj",
@@ -105783,10 +105723,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (2).jpg"
     ],
     "description": "2025-26 Topps Kel'El Ware Blue Refractor /150 #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Blue Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSPEu",
@@ -105820,10 +105760,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 14.95,
     "priceLabel": "$14.95",
     "displayPrice": "$14.95",
-    "image": "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (2).jpg"
     ],
     "description": "2025-26 Topps Kel'El Ware Gold Border /2025  #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Gold Border; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSL2j",
@@ -105858,10 +105798,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Kel’El Ware/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (2).jpg"
     ],
     "description": "2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Select; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Purple Ice, Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2P8vx1",
@@ -105884,7 +105824,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3411,
@@ -105896,10 +105837,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
-      "assets/Personal collection/Kel’El Ware/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (2).jpg"
     ],
     "description": "2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Inception; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pjyue",
@@ -105922,7 +105863,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3412,
@@ -105934,10 +105876,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2025-26 Topps Finest Kel'El Ware Finest Autographs Black Refractor Auto 10 (1).jpg",
+    "image": "https://iili.io/CCCfDVn.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025-26 Topps Finest Kel'El Ware Finest Autographs Black Refractor Auto 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2025-26 Topps Finest Kel'El Ware Finest Autographs Black Refractor Auto 10 (2).jpg"
+      "https://iili.io/CCCfDVn.md.jpg",
+      "https://iili.io/CCCfbPs.md.jpg"
     ],
     "description": "2025-26 Topps Finest Kel'El Ware Finest Autographs Black Refractor Auto /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps Finest; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Black Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCfDVn",
@@ -105960,8 +105902,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 3413,
@@ -106582,9 +106523,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 225,
     "priceLabel": "$225.00",
     "displayPrice": "$225.00",
-    "image": "assets/Personal collection/Women/2023-24 Topps McDonald's Chrome Liv McGill Purple 99 Red 125 Blue 75 Set (28).jpg",
+    "image": "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Gold 50 Blue 75 Purple 99 (x23) (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Women/2023-24 Topps McDonald's Chrome Liv McGill Purple 99 Red 125 Blue 75 Set (28).jpg"
+      "assets/Personal collection/Liv McGill/2024-25 Topps McDonald's Chrome Liv McGill Gold 50 Blue 75 Purple 99 (x23) (1).jpg"
     ],
     "description": "2023-24 Topps McDonald's Chrome Liv McGill Purple /99 Red /125 Blue /75 Set (28)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps McDonald's Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Red, Blue, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PkKWg",
@@ -106606,7 +106547,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3434,
@@ -106850,10 +106792,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 24.95,
     "priceLabel": "$24.95",
     "displayPrice": "$24.95",
-    "image": "assets/Personal collection/Naasir Cunningham/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (1).jpg",
+    "image": "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/Naasir Cunningham/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (1).jpg",
-      "assets/Personal collection/Naasir Cunningham/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (2).jpg"
+      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (1).jpg",
+      "assets/Personal collection/Naasir Cunningham/2022-23/2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto 99 (2).jpg"
     ],
     "description": "2022-23 Topps OTE Finest Naasir Cunningham Green Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Finest; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Naasir Cunningham; Team: Alabama Crimson tide; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PO22V",
@@ -106876,7 +106818,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3441,
@@ -107469,10 +107412,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (1).jpg",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT (2).jpg"
     ],
     "description": "2020-21 Panini Mosaic Anthony Edwards Elevate Green Prizm Rookie PSA 10 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Mosaic; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Green Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PC9yb",
@@ -107507,10 +107450,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint (2).jpg"
     ],
     "description": "2020-21 Panini Flux Anthony Edwards + Dwyane Wade Deja Vu Rookie PSA 10 GEM Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Flux; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards, Dwyane Wade; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PB4vs",
@@ -107544,10 +107487,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (1).jpg",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT (2).jpg"
     ],
     "description": "2020-21 Panini Mosaic Anthony Edwards Camo Pink Prizm Rookie PSA 9 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Mosaic; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Pink, Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PBtGS",
@@ -107582,10 +107525,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 69.95,
     "priceLabel": "$69.95",
     "displayPrice": "$69.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint (2).jpg"
     ],
     "description": "2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 10 Gem Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCKMB",
@@ -107620,10 +107563,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 69.95,
     "priceLabel": "$69.95",
     "displayPrice": "$69.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (1).jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (2).jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (1).jpg",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint (2).jpg"
     ],
     "description": "2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 10 Gem Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCzAJ",
@@ -107658,10 +107601,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 124.95,
     "priceLabel": "$124.95",
     "displayPrice": "$124.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (2).jpg"
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (1).jpg",
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto 50 PSA 10 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Boogie Fland Half-Court Gold Auto /50 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxAox",
@@ -107698,10 +107641,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 179.95,
     "priceLabel": "$179.95",
     "displayPrice": "$179.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (1).jpg",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (2).jpg"
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (1).jpg",
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor 10 PSA 10 GEM (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Boogie Fland Black Refractor /10 PSA 10 GEM\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Black Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxIwb",
@@ -107736,10 +107679,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9 (2).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Dylan Harper Black Wave Refractor SGC 9.5\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Black Wave Refractor; Features: Parallel/Variety; Autographed: No; Condition: SGC 9.5.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/CCCqdR2",
@@ -107773,10 +107716,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (2).jpg"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (1).jpg",
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto 3 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper + Naasir Cunningham Gold Auto /3 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Naasir Cunningham, Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn4If",
@@ -107812,10 +107755,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (2).jpg"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (1).jpg",
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto 7 PSA 8 (2).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper + Boogie Fland Green Wave Auto /7 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnUes",
@@ -107851,10 +107794,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor 5 PSA  8 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Red Refractor /5 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Red Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxacP",
@@ -107889,10 +107832,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 199.95,
     "priceLabel": "$199.95",
     "displayPrice": "$199.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto 10 PSA 9 MINT (2).jpg"
     ],
     "description": "2022-23 Leaf Trinity Dylan Harper Holo Gold Rookie Auto /10 PSA 9 MINT\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Gold, Holo; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PonTJ",
@@ -107929,10 +107872,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 299.95,
     "priceLabel": "$299.95",
     "displayPrice": "$299.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (2).jpg"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (1).jpg",
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto 15 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Pink Auto /15 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Scoot Henderson, Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnD7e",
@@ -107968,10 +107911,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold 50 PSA 10 Mint (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Dylan Harper Drive Through Gold /50 PSA 10 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxENa",
@@ -108007,10 +107950,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (2).jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (1).jpg",
+      "assets/Personal collection/Dylan Harper/Graded/2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor 50 PSA 9 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Dylan Harper + Bidunga Gold Refractor /50 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Px5PV",
@@ -108045,10 +107988,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (1).JPG",
+    "image": "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (2).JPG"
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (1).JPG",
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 15 PSA 10 (2).JPG"
     ],
     "description": "2023-24 Bowman University Best Kwame KJ Evans White Refractor Auto 1/5 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: White Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoeZx",
@@ -108084,10 +108027,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "assets/Personal collection/PSA Cards/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (1).JPG",
+    "image": "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (2).JPG"
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (1).JPG",
+      "assets/Personal collection/KJ Evans/PSA/2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto 5 # Match PSA 9 (2).JPG"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Kwame KJ Evans Black Gold Auto /5 # Match PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Black Gold, Prizm; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pog3P",
@@ -108122,10 +108065,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 139.95,
     "priceLabel": "$139.95",
     "displayPrice": "$139.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Naasir Cunningham/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (2).JPG"
+      "assets/Personal collection/Naasir Cunningham/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (1).JPG",
+      "assets/Personal collection/Naasir Cunningham/2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 11 PSA 8 (2).JPG"
     ],
     "description": "2022-23 Leaf Trinity Naasir Cunningham Black Gold Auto 1/1 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Naasir Cunningham; Sport: Basketball; League: NBA; Parallel/Variety: Black Gold; Features: Autograph, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoR2t",
@@ -108162,10 +108105,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Wolves/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (2).JPG"
+      "assets/Personal collection/Wolves/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (1).JPG",
+      "assets/Personal collection/Wolves/2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 11 Rookie Auto PSA 9 (2).JPG"
     ],
     "description": "2022-23 Leaf Trinity Terrence Shannon Jr Black Holo Silver 1/1 Rookie Auto PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Terrence Shannon Jr.; Sport: Basketball; League: NBA; Parallel/Variety: Black Holo Silver; Features: Autograph, Rookie, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PocTG",
@@ -108203,10 +108146,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (2).JPG"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm Anthony Edwards Emergent Rookie PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PC2ZQ",
@@ -108241,10 +108184,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (2).JPG"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm Anthony Edwards Instant Impact Rookie PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCCcF",
@@ -108279,10 +108222,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 44.95,
     "priceLabel": "$44.95",
     "displayPrice": "$44.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (1).JPG",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (1).JPG",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (2).JPG"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm Anthony Edwards Rookie PSA 8 #258\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Anthony Edwards; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCYFt",
@@ -108396,10 +108339,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 199.95,
     "priceLabel": "$199.95",
     "displayPrice": "$199.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (2).JPG"
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (1).JPG",
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto 5 # Match PSA 9 (2).JPG"
     ],
     "description": "2022-23 Leaf Optichrome Dylan Harper RWB Prismatic Rookie Auto /5 # Match PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Optichrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Po2EB",
@@ -108434,10 +108377,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (1).JPG",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (2).JPG"
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (1).JPG",
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 17 PSA 10 Pop 1 (2).JPG"
     ],
     "description": "2022-23 Leaf Optichrome Dylan Harper Purple Crystal Rookie Auto 1/7 PSA 10 Pop 1\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Optichrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Purple Crystal; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PodBV",
@@ -108474,10 +108417,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (1).JPG",
+    "image": "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (2).JPG"
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (1).JPG",
+      "assets/Personal collection/Multiple Players/2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto 40 PSA 10 (2).JPG"
     ],
     "description": "2022-23 Leaf Multigraphics Dylan Harper Scoot Henderson Blue Auto /40 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Scoot Henderson, Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnL1S",
@@ -108513,10 +108456,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 499.95,
     "priceLabel": "$499.95",
     "displayPrice": "$499.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (2).JPG"
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (1).JPG",
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 11 PSA 8 (2).JPG"
     ],
     "description": "2024-25 Bowman U Chrome Boogie Fland Course Load Superfractor Auto 1/1 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman U Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Course Load Superfractor; Features: Autograph, Serial Numbered, One of One, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Po6yg",
@@ -108554,10 +108497,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (1).JPG",
+    "image": "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (2).JPG"
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (1).JPG",
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint (2).JPG"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Event Auto Inscribed SSP PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxVov",
@@ -108593,10 +108536,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (2).JPG"
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (1).JPG",
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 9 (2).JPG"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto /25 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Tye-Dye Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxkRn",
@@ -108632,10 +108575,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (1).JPG",
+    "image": "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (2).JPG"
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (1).JPG",
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto 25 PSA 10 (2).JPG"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Tye-Dye Refractor Auto /25 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Tye-Dye Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Px8DG",
@@ -108671,10 +108614,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (2).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (2).JPG"
     ],
     "description": "2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie /100 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Red Fast Break Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxfP2",
@@ -108710,10 +108653,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "assets/Personal collection/PSA Cards/2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto  (1).jpg",
+    "image": "https://iili.io/C2PxPlS.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto  (1).jpg",
-      "assets/Personal collection/PSA Cards/2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto  (2).jpg"
+      "https://iili.io/C2PxPlS.md.jpg",
+      "https://iili.io/C2PxiU7.md.jpg"
     ],
     "description": "2025 Panini Select Tetairoa McMillan Silver Prizm Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2025 Panini Select; Season: 2025; Year manufactured: 2025; Player/Athlete: Tetairoa McMillan; Sport: Football; League: NFL; Parallel/Variety: Silver Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxPlS",
@@ -108736,8 +108679,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 3492,
@@ -108749,10 +108691,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 229.95,
     "priceLabel": "$229.95",
     "displayPrice": "$229.95",
-    "image": "assets/Personal collection/PSA Cards/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (1).JPG",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (1).JPG",
-      "assets/Personal collection/PSA Cards/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (2).JPG"
+      "assets/Personal collection/Dylan Harper/Graded/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (1).JPG",
+      "assets/Personal collection/Dylan Harper/Graded/2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 11 PSA 9 Mint (2).JPG"
     ],
     "description": "2025 Leaf Signature Series Dylan Harper Pink Lava Rookie Auto 1/1 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2025 Leaf Signature Series; Season: 2025; Year manufactured: 2025; Player/Athlete: Dylan Harper; Sport: Basketball; League: NBA; Parallel/Variety: Pink Lava; Features: Autograph, Rookie, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxgV4",
@@ -108790,10 +108732,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 34.95,
     "priceLabel": "$34.95",
     "displayPrice": "$34.95",
-    "image": "assets/Personal collection/PSA Cards/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (2).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (2).JPG"
     ],
     "description": "2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Green Foil; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PzJUP",
@@ -108830,12 +108772,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (2).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (3).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (4).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (2).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (3).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 8 (4).JPG"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto /499 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Chrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnWmJ",
@@ -108872,10 +108814,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (2).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto 499 PSA 9 (2).JPG"
     ],
     "description": "2022-23 Bowman University Chrome Kel'El Ware Propsect Refractor Auto /499 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Chrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pnwsp",
@@ -108911,10 +108853,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 299.95,
     "priceLabel": "$299.95",
     "displayPrice": "$299.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (2).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie 5 PSA 10 (2).JPG"
     ],
     "description": "2024-25 Donruss Optic Kel'El Ware My House Green Glitter Prizm Rookie /5 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss Optic; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Green Glitter Prizm; Features: Rookie, Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Poy8X",
@@ -108951,10 +108893,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (1).JPG",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (2).JPG"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10 (2).JPG"
     ],
     "description": "2022-23 Topps McDonald's Chrome Kel'El Ware Gameday Paper Rookie Auto PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps McDonald's Chrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Insert; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoM4S",
@@ -108990,10 +108932,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (1).JPG",
+    "image": "assets/Personal collection/KJ Evans/PSA/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (2).JPG"
+      "assets/Personal collection/KJ Evans/PSA/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (1).JPG",
+      "assets/Personal collection/KJ Evans/PSA/2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto 10 PSA 10 (2).JPG"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Kwame KJ Evans Gold Prizm Auto /10 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kwame KJ Evans; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Prizm; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxFn4",
@@ -109029,10 +108971,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (2).JPG"
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (1).JPG",
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor 5 PSA 9 (2).JPG"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Best Ballers Red Refractor /5 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; League: NCAA; Parallel/Variety: Red Refractor; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoLZv",
@@ -109068,10 +109010,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (1).JPG",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (1).JPG",
-      "assets/Personal collection/PSA Cards/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (2).JPG"
+      "assets/Personal collection/Johnuel Fland/PSA/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (1).JPG",
+      "assets/Personal collection/Johnuel Fland/PSA/2022-23 Leaf Trinity Boogie Fland Black Red Auto 11 PSA 8 (2).JPG"
     ],
     "description": "2022-23 Leaf Trinity Boogie Fland Black Red Auto 1/1 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Boogie Fland; Sport: Basketball; League: NBA; Parallel/Variety: Black Red; Features: Autograph, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Poqkg",
@@ -109108,10 +109050,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (2).JPG"
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (1).JPG",
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9 (2).JPG"
     ],
     "description": "2020-21 Panini Contenders Deni Avdija Campus ID On-Card SP Rookie Auto PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Deni Avdija; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Short Print, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PBg3X",
@@ -109148,10 +109090,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 89.95,
     "priceLabel": "$89.95",
     "displayPrice": "$89.95",
-    "image": "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
+    "image": "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
-      "assets/Personal collection/PSA Cards/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (2).JPG"
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (1).JPG",
+      "assets/Personal collection/Deni Avdija/2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto 23 PSA 9 (2).JPG"
     ],
     "description": "2020-21 Panini Contenders Deni Avdija Game Day Cracked Ice Rookie Auto /23 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Deni Avdija; Sport: Basketball; League: NBA; Parallel/Variety: Cracked Ice; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PBsj4",
@@ -109228,10 +109170,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (1).jpg",
+    "image": "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (2).jpg"
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (1).jpg",
+      "assets/Personal collection/Liv McGill/PSA/2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto 5 PSA 9 Mint (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Liv McGill Red Refractor Auto /5 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Liv McGill; Sport: Basketball; League: NCAA; Parallel/Variety: Red Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxXPp",
@@ -109267,10 +109209,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 349.95,
     "priceLabel": "$349.95",
     "displayPrice": "$349.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Lava Refractor, Gold Lava; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCPl1",
@@ -109307,10 +109249,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 349.95,
     "priceLabel": "$349.95",
     "displayPrice": "$349.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnFOG",
@@ -109346,10 +109288,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 299.95,
     "priceLabel": "$299.95",
     "displayPrice": "$299.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 9 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 9 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn2Jn",
@@ -109386,12 +109328,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 199.95,
     "priceLabel": "$199.95",
     "displayPrice": "$199.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (2).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (5).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (6).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (2).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (5).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (6).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCtDv",
@@ -109428,14 +109370,14 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 279.95,
     "priceLabel": "$279.95",
     "displayPrice": "$279.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (2).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (5).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (6).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (7).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (8).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (2).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (5).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (6).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (7).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (8).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto /150 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Blue Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PC1AG",
@@ -109472,10 +109414,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 499.95,
     "priceLabel": "$499.95",
     "displayPrice": "$499.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto /25 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Ref; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn7zx",
@@ -109511,10 +109453,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 299.95,
     "priceLabel": "$299.95",
     "displayPrice": "$299.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn00P",
@@ -109550,10 +109492,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 229.95,
     "priceLabel": "$229.95",
     "displayPrice": "$229.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnasV",
@@ -109589,10 +109531,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 229.95,
     "priceLabel": "$229.95",
     "displayPrice": "$229.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Lava Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pnzg9",
@@ -109629,10 +109571,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 299.95,
     "priceLabel": "$299.95",
     "displayPrice": "$299.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto /25 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Speckle Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnAOb",
@@ -109668,10 +109610,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 179.95,
     "priceLabel": "$179.95",
     "displayPrice": "$179.95",
-    "image": "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (1).jpg",
-      "assets/Personal collection/PSA Cards/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto 75 PSA 9 Mint (2).jpg"
     ],
     "description": "2022-23 Topps McDonald's Chrome Kel'El Ware Yellow Refractor Auto /75 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps McDonald's Chrome; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Yellow Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PoXa9",
@@ -109707,10 +109649,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 499.95,
     "priceLabel": "$499.95",
     "displayPrice": "$499.95",
-    "image": "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (1).jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (1).jpg",
     "imageGallery": [
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (1).jpg",
-      "assets/Personal collection/PSA Cards/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (2).jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (1).jpg",
+      "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie 15 PSA 10 (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Monopoly Kel'El Ware Boardwalk Blue Prizm Rookie /15 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm Monopoly; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Boardwalk Blue Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxBFS",
@@ -109928,11 +109870,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 89.95,
     "priceLabel": "$89.95",
     "displayPrice": "$89.95",
-    "image": "https://iili.io/CoywEBV.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoywEBV.jpg",
-      "https://iili.io/CQEQeZ7.jpg",
-      "https://iili.io/CoywMrP.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233) (3).jpg",
       "https://iili.io/CQEQNu2.jpg",
       "https://iili.io/Coywlhx.jpg",
       "https://iili.io/CQEQ8Ge.jpg"
@@ -109957,7 +109899,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3533,
@@ -109969,11 +109912,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 84.95,
     "priceLabel": "$84.95",
     "displayPrice": "$84.95",
-    "image": "https://iili.io/CoywGEB.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoywGEB.jpg",
-      "https://iili.io/CoywXYF.jpg",
-      "https://iili.io/Coywhkg.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237) (3).jpg"
     ],
     "description": "2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: Los Angeles Lakers; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 237; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-los-angeles-lakers-base-plus-sp-plus-insert-lot-x237-1.CoywGEB",
@@ -109995,7 +109938,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3534,
@@ -110007,11 +109951,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 91.95,
     "priceLabel": "$91.95",
     "displayPrice": "$91.95",
-    "image": "https://iili.io/CoywNTJ.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoywNTJ.jpg",
-      "https://iili.io/CQEQZn1.jpg",
-      "https://iili.io/CoyweQR.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269) (3).jpg",
       "https://iili.io/CQEQtMF.jpg",
       "https://iili.io/CoywvBp.jpg",
       "https://iili.io/CQEQS6u.jpg"
@@ -110036,7 +109980,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3535,
@@ -110048,11 +109993,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 84.95,
     "priceLabel": "$84.95",
     "displayPrice": "$84.95",
-    "image": "https://iili.io/Coyw8EN.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258) (1).jpg",
     "imageGallery": [
-      "https://iili.io/Coyw8EN.jpg",
-      "https://iili.io/CQEQYpp.jpg",
-      "https://iili.io/CoywrYX.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258) (3).jpg",
       "https://iili.io/CQEQECX.jpg",
       "https://iili.io/Coyw4vn.jpg",
       "https://iili.io/CQEQGGn.jpg"
@@ -110077,7 +110022,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3536,
@@ -110089,10 +110035,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 64.95,
     "priceLabel": "$64.95",
     "displayPrice": "$64.95",
-    "image": "https://iili.io/Coyw6ps.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184) (1).jpg",
     "imageGallery": [
-      "https://iili.io/Coyw6ps.jpg",
-      "https://iili.io/CoywiTG.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184) (2).jpg"
     ],
     "description": "2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 184; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-milwaukee-bucks-base-plus-sp-plus-insert-lot-x184-1.Coyw6ps",
@@ -110114,7 +110060,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3537,
@@ -110126,11 +110073,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 73.95,
     "priceLabel": "$73.95",
     "displayPrice": "$73.95",
-    "image": "https://iili.io/CoyNRGp.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyNRGp.jpg",
-      "https://iili.io/CoyN09n.jpg",
-      "https://iili.io/CoyNaat.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210) (3).jpg"
     ],
     "description": "2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: New York Knicks; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 210; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-new-york-knicks-base-plus-sp-plus-insert-lot-x210-1.CoyNRGp",
@@ -110152,7 +110099,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3538,
@@ -110164,10 +110112,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 77.95,
     "priceLabel": "$77.95",
     "displayPrice": "$77.95",
-    "image": "https://iili.io/Coywsjf.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225) (1).jpg",
     "imageGallery": [
-      "https://iili.io/Coywsjf.jpg",
-      "https://iili.io/CQEQy8v.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225) (2).jpg",
       "https://iili.io/CoywZCl.jpg",
       "https://iili.io/CQEQLZP.jpg"
     ],
@@ -110191,7 +110139,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3539,
@@ -110203,10 +110152,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "https://iili.io/CoyNjFS.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyNjFS.jpg",
-      "https://iili.io/CQEQljI.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224) (2).jpg",
       "https://iili.io/CoyNLHF.jpg",
       "https://iili.io/CQEQ5Yv.jpg"
     ],
@@ -110230,7 +110179,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3540,
@@ -110242,10 +110192,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 64.95,
     "priceLabel": "$64.95",
     "displayPrice": "$64.95",
-    "image": "https://iili.io/CoyO3Rn.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyO3Rn.jpg",
-      "https://iili.io/CoyOHlI.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184) (2).jpg"
     ],
     "description": "2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: Orlando Magic; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 184; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-orlando-magic-base-plus-sp-plus-insert-lot-x184-1.CoyO3Rn",
@@ -110267,7 +110217,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3541,
@@ -110279,12 +110230,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 124.95,
     "priceLabel": "$124.95",
     "displayPrice": "$124.95",
-    "image": "https://iili.io/CoyOKDG.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOKDG.jpg",
-      "https://iili.io/CQEQOjS.jpg",
-      "https://iili.io/CoyOqxf.jpg",
-      "https://iili.io/CQEQraj.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325) (3).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325) (4).jpg",
       "https://iili.io/CoyOBV4.jpg",
       "https://iili.io/CQEQW3G.jpg",
       "https://iili.io/CoyOCil.jpg",
@@ -110310,7 +110261,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3542,
@@ -110322,11 +110274,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 74.95,
     "priceLabel": "$74.95",
     "displayPrice": "$74.95",
-    "image": "https://iili.io/CoyOxlS.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOxlS.jpg",
-      "https://iili.io/CoyOzU7.jpg",
-      "https://iili.io/CoyOTJ9.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217) (3).jpg"
     ],
     "description": "2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: Phoenix Suns; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 217; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-phoenix-suns-base-plus-sp-plus-insert-lot-x217-1.CoyOxlS",
@@ -110348,7 +110300,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3543,
@@ -110360,10 +110313,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 79.95,
     "priceLabel": "$79.95",
     "displayPrice": "$79.95",
-    "image": "https://iili.io/CoyORDb.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyORDb.jpg",
-      "https://iili.io/CQEQjyl.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232) (2).jpg",
       "https://iili.io/CoyOYWx.jpg",
       "https://iili.io/CQEQ0Qt.jpg"
     ],
@@ -110387,7 +110340,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3544,
@@ -110399,10 +110353,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 63.95,
     "priceLabel": "$63.95",
     "displayPrice": "$63.95",
-    "image": "https://iili.io/CoyOlfV.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOlfV.jpg",
-      "https://iili.io/CoyO00B.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193) (2).jpg"
     ],
     "description": "2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: Sacramento Kings; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 193; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-sacramento-kings-base-plus-sp-plus-insert-lot-x193-1.CoyOlfV",
@@ -110424,7 +110378,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3545,
@@ -110436,10 +110391,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 57.95,
     "priceLabel": "$57.95",
     "displayPrice": "$57.95",
-    "image": "https://iili.io/CoyOGJ1.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOGJ1.jpg",
-      "https://iili.io/CoyOM5F.jpg"
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154) (2).jpg"
     ],
     "description": "2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154)\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Season: 2020-25; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Features: Base Set, Insert, Short Print; Autographed: No; Cards included: 154; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-san-antonio-spurs-base-plus-sp-plus-insert-lot-x154-1.CoyOGJ1",
@@ -110461,7 +110416,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3546,
@@ -110473,11 +110429,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 69.95,
     "priceLabel": "$69.95",
     "displayPrice": "$69.95",
-    "image": "https://iili.io/CoyOhzJ.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOhzJ.jpg",
-      "https://iili.io/CQEZFnt.jpg",
-      "https://iili.io/CoyOwsR.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203) (2).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203) (3).jpg",
       "https://iili.io/CQEZBFs.jpg",
       "https://iili.io/CoyOjWv.jpg",
       "https://iili.io/CQEZ2tI.jpg"
@@ -110502,7 +110458,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3547,
@@ -110514,10 +110471,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 57.95,
     "priceLabel": "$57.95",
     "displayPrice": "$57.95",
-    "image": "https://iili.io/CoyOOfp.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOOfp.jpg",
-      "https://iili.io/CQEZnSf.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147) (2).jpg",
       "https://iili.io/CoyO8Jt.jpg",
       "https://iili.io/CQEZCcG.jpg"
     ],
@@ -110541,7 +110498,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3548,
@@ -110553,10 +110511,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 62.95,
     "priceLabel": "$62.95",
     "displayPrice": "$62.95",
-    "image": "https://iili.io/CoyOPs4.jpg",
+    "image": "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CoyOPs4.jpg",
-      "https://iili.io/CQEZdwN.jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171) (1).jpg",
+      "assets/Ebay Listing Photos/Team Lots/2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171) (2).jpg",
       "https://iili.io/CoyOsql.jpg",
       "https://iili.io/CQEQiuV.jpg"
     ],
@@ -110580,7 +110538,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set|Insert|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3549,
@@ -110669,10 +110628,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "https://iili.io/CLuYNEu.jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLuYNEu.jpg",
-      "https://iili.io/CLuYOrb.jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9 (2).JPG"
     ],
     "description": "2025-26 Topps Holiday Kel'El Ware Holiday Mega Auto #H59 PSA 9\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps Holiday; Season: 2025-26; Year: 2025; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Autograph, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-holiday-kel-and-039el-ware-holiday-mega-auto-h59-psa-9-1.CLuYNEu",
@@ -110706,10 +110665,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 229.95,
     "priceLabel": "$229.95",
     "displayPrice": "$229.95",
-    "image": "https://iili.io/CLu7h0J.jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto 99 PSA 9 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu7h0J.jpg",
-      "https://iili.io/CLu7Xfa.jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto 99 PSA 9 (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Neophytes Auto 99 PSA 9 (2).JPG"
     ],
     "description": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Lava Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-kel-and-039el-ware-neon-neophytes-auto-99-psa-9-1.CLu7h0J",
@@ -110732,7 +110691,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3553,
@@ -110744,10 +110704,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 399.95,
     "priceLabel": "$399.95",
     "displayPrice": "$399.95",
-    "image": "https://iili.io/CLu5juS.jpg",
+    "image": "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Sapphire Kel'El Ware Black Refractor 10 PSA 10 Gem Mint (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu5juS.jpg",
-      "https://iili.io/CLu5h92.jpg"
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Sapphire Kel'El Ware Black Refractor 10 PSA 10 Gem Mint (1).JPG",
+      "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Sapphire Kel'El Ware Black Refractor 10 PSA 10 Gem Mint (2).JPG"
     ],
     "description": "2025-26 Topps Sapphire Kel'El Ware Black Refractor /10 PSA 10 Gem Mint\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps Sapphire; Season: 2025-26; Year: 2025; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Black Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-sapphire-kel-and-039el-ware-black-refractor-10-psa-10-gem-mint-1.CLu5juS",
@@ -110769,7 +110729,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3554,
@@ -110781,10 +110742,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 249.95,
     "priceLabel": "$249.95",
     "displayPrice": "$249.95",
-    "image": "https://iili.io/CLu7rfs.jpg",
+    "image": "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto 20 PSA 9 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu7rfs.jpg",
-      "https://iili.io/CLu76gf.jpg"
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto 20 PSA 9 (1).JPG",
+      "assets/Personal collection/Dylan Harper/Graded/2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto 20 PSA 9 (2).JPG"
     ],
     "description": "2022-23 Leaf Vivid Dylan Harper Black Prizm Rookie Auto /20\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Vivid; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dylan Harper; Team: Rutgers Scarlet Knights; Sport: Basketball; League: NCAA; Parallel/Variety: Prizm, Black; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-vivid-dylan-harper-black-prizm-rookie-auto-20-psa-9-1.CLu7rfs",
@@ -110808,7 +110769,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3555,
@@ -110820,10 +110782,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 199.95,
     "priceLabel": "$199.95",
     "displayPrice": "$199.95",
-    "image": "https://iili.io/CLu7bse.jpg",
+    "image": "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto 5 PSA 9  (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu7bse.jpg",
-      "https://iili.io/CLu7y0b.jpg"
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto 5 PSA 9  (1).JPG",
+      "assets/Personal collection/Johnuel Fland/PSA/2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto 5 PSA 9  (2).JPG"
     ],
     "description": "2024-25 Bowman University Best Boogie Fland Iso Signatures White Auto /5 PSA 9\n\nDetails: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year: 2024; Player/Athlete: Boogie Fland; Team: Arkansas Razorbacks; Sport: Basketball; League: NCAA; Parallel/Variety: White Refractor; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-boogie-fland-iso-signatures-white-auto-5-psa-9-1.CLu7bse",
@@ -110847,7 +110809,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3556,
@@ -110859,10 +110822,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "https://iili.io/CLu7SWX.jpg",
+    "image": "assets/Personal collection/Ian Jackson/2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 11 PSA 7 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu7SWX.jpg",
-      "https://iili.io/CLu78xt.jpg"
+      "assets/Personal collection/Ian Jackson/2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 11 PSA 7 (1).JPG",
+      "assets/Personal collection/Ian Jackson/2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 11 PSA 7 (2).JPG"
     ],
     "description": "2022-23 Leaf Trinity Clear Ian Jackson Black Gold Rookie Auto 1/1 PSA 7\n\nDetails: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Trinity Clear; Season: 2022-23; Year: 2022; Player/Athlete: Ian Jackson; Sport: Basketball; Parallel/Variety: Black Gold; Features: Autograph, Rookie, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: PSA 7.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-trinity-clear-ian-jackson-black-gold-rookie-auto-11-psa-7-1.CLu7SWX",
@@ -110887,7 +110850,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3557,
@@ -110899,10 +110863,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 149.95,
     "priceLabel": "$149.95",
     "displayPrice": "$149.95",
-    "image": "https://iili.io/CLu5Nt9.jpg",
+    "image": "assets/Personal collection/PSA Cards/1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu5Nt9.jpg",
-      "https://iili.io/CLu5ww7.jpg"
+      "assets/Personal collection/PSA Cards/1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8 (1).JPG",
+      "assets/Personal collection/PSA Cards/1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8 (2).JPG"
     ],
     "description": "1980 Topps Larry Bird Scoring Leader Rookie #30 + Jack Sikma & Scott May PSA 8\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 1980-81 Topps; Season: 1980-81; Year: 1980; Player/Athlete: Larry Bird, Jack Sikma, Scott May; Team: Boston Celtics, Seattle SuperSonics, Chicago Bulls; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1980-topps-larry-bird-scoring-leader-rookie-30-plus-jack-sikma-scott-may-psa-8-1.CLu5Nt9",
@@ -110935,10 +110899,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "https://iili.io/CLu5bcv.jpg",
+    "image": "assets/Personal collection/PSA Cards/2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLu5bcv.jpg",
-      "https://iili.io/CLu5QMg.jpg"
+      "assets/Personal collection/PSA Cards/2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8 (1).JPG",
+      "assets/Personal collection/PSA Cards/2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8 (2).JPG"
     ],
     "description": "2003-04 Upper Deck Lebron James City Heights Redemption SP Rookie PSA 8\n\nDetails: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2003-04 Upper Deck; Season: 2003-04; Year: 2003; Player/Athlete: LeBron James; Team: Cleveland Cavaliers; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Insert; Autographed: No; Condition: PSA 8.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2003-04-upper-deck-lebron-james-city-heights-redemption-sp-rookie-psa-8-1.CLu5bcv",
@@ -110961,7 +110925,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3559,
@@ -110973,10 +110938,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 21.95,
     "priceLabel": "$21.95",
     "displayPrice": "$21.95",
-    "image": "https://iili.io/CLhaBQp.jpg",
+    "image": "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLhaBQp.jpg",
-      "https://iili.io/CLhanCN.jpg"
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79 (1).JPG",
+      "assets/Personal collection/Johnuel Fland/2024-25/2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79 (2).JPG"
     ],
     "description": "2024-25 Topps McDonald's Chrome Boogie Fland Purple Lava Refractor 99 #79\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps McDonald's All American Chrome; Season: 2024-25; Year: 2024; Player/Athlete: Boogie Fland; Sport: Basketball; Parallel/Variety: Purple Lava Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonald-and-039s-chrome-boogie-fland-purple-lava-refractor-99-79-1.CLhaBQp",
@@ -111010,12 +110975,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "https://iili.io/CLh7iOv.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLh7iOv.jpg",
-      "https://iili.io/CLh7ZWN.jpg",
-      "https://iili.io/CLh7m0X.jpg",
-      "https://iili.io/CLhYH5G.jpg"
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81 (2).JPG",
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81 (3).JPG",
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81 (4).JPG"
     ],
     "description": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade RWB Prizm Rookie #81\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm Draft Picks; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Georgia Bulldogs; Sport: Basketball; League: NCAA; Parallel/Variety: Red White & Blue Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-crusade-rwb-prizm-rookie-81-1.CLh7iOv",
@@ -111050,10 +111015,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "https://iili.io/CLhYJef.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLhYJef.jpg",
-      "https://iili.io/CLhYdb4.jpg"
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm Draft Picks Anthony Edwards Red White Blue Prizm Rookie #1\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm Draft Picks; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Georgia Bulldogs; Sport: Basketball; League: NCAA; Parallel/Variety: Red White & Blue Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-red-white-blue-prizm-rookie-1-1.CLhYJef",
@@ -111087,10 +111052,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 99.95,
     "priceLabel": "$99.95",
     "displayPrice": "$99.95",
-    "image": "https://iili.io/CLh7g0F.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLh7g0F.jpg",
-      "https://iili.io/CLh7rUg.jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm DP Anthony Edwards Crusade Green Prizm Rookie PSA 10\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm Draft Picks; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Georgia Bulldogs; Sport: Basketball; League: NCAA; Parallel/Variety: Green Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-dp-anthony-edwards-crusade-green-prizm-rookie-psa-10-1.CLh7g0F",
@@ -111112,7 +111077,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3563,
@@ -111124,10 +111090,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 59.95,
     "priceLabel": "$59.95",
     "displayPrice": "$59.95",
-    "image": "https://iili.io/CLh78iP.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLh78iP.jpg",
-      "https://iili.io/CLh7Uf1.jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9 (2).JPG"
     ],
     "description": "2020-21 Panini Mosaic Anthony Edwards Debut Pink Camo Prizm Rookie #261 PSA 9\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Mosaic; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Pink Camo Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-mosaic-anthony-edwards-debut-pink-camo-prizm-rookie-261-psa-9-1.CLh78iP",
@@ -111161,10 +111127,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "https://iili.io/CLh7P5J.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLh7P5J.jpg",
-      "https://iili.io/CLh76Ja.jpg"
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81 (2).JPG"
     ],
     "description": "2020-21 Panini Prizm Draft Picks Anthony Edwards Crusade Pink Prizm Rookie #81\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Prizm Draft Picks; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Georgia Bulldogs; Sport: Basketball; League: NCAA; Parallel/Variety: Pink Prizm; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-prizm-draft-picks-anthony-edwards-crusade-pink-prizm-rookie-81-1.CLh7P5J",
@@ -111198,10 +111164,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 27.95,
     "priceLabel": "$27.95",
     "displayPrice": "$27.95",
-    "image": "https://iili.io/CLhY4BS.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2022-23 Panini Chronicles Revolution Anthony Edwards Impact 149 #91 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLhY4BS.jpg",
-      "https://iili.io/CLhYgQ2.jpg"
+      "assets/Personal collection/Anthony Edwards/2022-23 Panini Chronicles Revolution Anthony Edwards Impact 149 #91 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/2022-23 Panini Chronicles Revolution Anthony Edwards Impact 149 #91 (2).JPG"
     ],
     "description": "2022-23 Panini Chronicles Revolution Anthony Edwards Impact /149 #91\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles Revolution; Season: 2022-23; Year: 2022; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Impact; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-revolution-anthony-edwards-impact-149-91-1.CLhY4BS",
@@ -111235,10 +111201,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "https://iili.io/CLha5uf.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2025-26 Topps Holiday Anthony Edwards Glitter #H84 (1).jpg",
     "imageGallery": [
-      "https://iili.io/CLha5uf.jpg",
-      "https://iili.io/CLha7j4.jpg"
+      "assets/Personal collection/Anthony Edwards/2025-26 Topps Holiday Anthony Edwards Glitter #H84 (1).jpg",
+      "assets/Personal collection/Anthony Edwards/2025-26 Topps Holiday Anthony Edwards Glitter #H84 (2).jpg"
     ],
     "description": "2025-26 Topps Holiday Anthony Edwards Glitter #H84\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps Holiday; Season: 2025-26; Year: 2025; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Glitter; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-holiday-anthony-edwards-glitter-h84-1.CLha5uf",
@@ -111271,10 +111237,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 119.95,
     "priceLabel": "$119.95",
     "displayPrice": "$119.95",
-    "image": "https://iili.io/CLh71x2.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLh71x2.jpg",
-      "https://iili.io/CLh7lDl.jpg"
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/PSA/2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588 (2).JPG"
     ],
     "description": "2020-21 Panini Chronicles Anthony Edwards Honors Rookie PSA 10 #588\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Chronicles; Season: 2020-21; Year: 2020; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Features: Rookie, Insert; Autographed: No; Condition: PSA 10.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-chronicles-anthony-edwards-honors-rookie-psa-10-588-1.CLh71x2",
@@ -111308,10 +111274,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "https://iili.io/CLhauvs.jpg",
+    "image": "assets/Personal collection/Anthony Edwards/2025-26 Topps Anthony Edwards Protect Home Court Black Parallel 68 #287 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CLhauvs.jpg",
-      "https://iili.io/CLhaAyG.jpg"
+      "assets/Personal collection/Anthony Edwards/2025-26 Topps Anthony Edwards Protect Home Court Black Parallel 68 #287 (1).JPG",
+      "assets/Personal collection/Anthony Edwards/2025-26 Topps Anthony Edwards Protect Home Court Black Parallel 68 #287 (2).JPG"
     ],
     "description": "2025-26 Topps Anthony Edwards Protect Home Court Black Parallel /68 #287\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year: 2025; Player/Athlete: Anthony Edwards; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Black; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-anthony-edwards-protect-home-court-black-parallel-68-287-1.CLhauvs",
@@ -111346,12 +111312,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 27.95,
     "priceLabel": "$27.95",
     "displayPrice": "$27.95",
-    "image": "https://iili.io/CLhYs2e.jpg",
+    "image": "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (1).jpg",
     "imageGallery": [
-      "https://iili.io/CLhYs2e.jpg",
-      "https://iili.io/CLhYLYu.jpg",
-      "https://iili.io/CLhYQkb.jpg",
-      "https://iili.io/CLhYDTx.jpg"
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (1).jpg",
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (2).jpg",
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (3).jpg",
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (4).JPG"
     ],
     "description": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Chrome; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: OTE; Parallel/Variety: Refractor; Features: Rookie, Short Print, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-super-fly-refractor-rookie-sp-sf-6-1.CLhYs2e",
@@ -111388,11 +111354,11 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 47.95,
     "priceLabel": "$47.95",
     "displayPrice": "$47.95",
-    "image": "https://iili.io/CLhYbhQ.jpg",
+    "image": "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CLhYbhQ.jpg",
-      "https://iili.io/CLhYmQV.jpg",
-      "https://iili.io/CLha9EP.jpg"
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (1).jpg",
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (2).jpg",
+      "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (3).jpg"
     ],
     "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Finest; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: OTE; Parallel/Variety: Purple Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-set-x8-1.CLhYbhQ",
@@ -111415,7 +111381,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3571,
@@ -111427,10 +111394,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "https://iili.io/CLh56t2.jpg",
+    "image": "assets/Personal collection/Deni Avdija/2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto (1).jpg",
     "imageGallery": [
-      "https://iili.io/CLh56t2.jpg",
-      "https://iili.io/CLh7EVS.jpg"
+      "assets/Personal collection/Deni Avdija/2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto (1).jpg",
+      "assets/Personal collection/Deni Avdija/2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto (2).jpg"
     ],
     "description": "2020-21 Donruss Optic Deni Avdija Signature Series Purple Prizm Rookie Auto\n\nDetails: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Donruss Optic; Season: 2020-21; Year: 2020; Player/Athlete: Deni Avdija; Team: Washington Wizards; Sport: Basketball; League: NBA; Parallel/Variety: Purple Prizm; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-donruss-optic-deni-avdija-signature-series-purple-prizm-rookie-auto-1.CLh56t2",
@@ -111453,7 +111420,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3572,
@@ -112858,10 +112826,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nTiX.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nTiX.jpg",
-      "https://iili.io/CL9nAfn.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (2).JPG"
     ],
     "description": "1991 Score Chipper Jones Rookie #671\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1991 Score; Season: 1991; Year: 1991; Player/Athlete: Chipper Jones; Team: Atlanta Braves; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1991-score-chipper-jones-rookie-671-1.CL9nTiX",
@@ -112894,10 +112862,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "https://iili.io/CL9nieR.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nieR.jpg",
-      "https://iili.io/CL9nsbp.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (2).JPG"
     ],
     "description": "2008 Topps Heritage Ichiro Suzuki Mini #HTCP11\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2008 Topps Heritage; Season: 2008; Year: 2008; Player/Athlete: Ichiro Suzuki; Team: Seattle Mariners; Sport: Baseball; League: MLB; Parallel/Variety: Mini; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2008-topps-heritage-ichiro-suzuki-mini-htcp11-1.CL9nieR",
@@ -112930,10 +112898,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CL9nZXI.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nZXI.jpg",
-      "https://iili.io/CL9nbqX.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (2).JPG"
     ],
     "description": "2020 Topps Marcus Semien 1985 Throback Gold /50 #85TB-33\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2020 Topps; Season: 2020; Year: 2020; Player/Athlete: Marcus Semien; Team: Oakland Athletics; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-topps-marcus-semien-1985-throback-gold-50-85tb-33-1.CL9nZXI",
@@ -112968,10 +112936,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "https://iili.io/CL9nkzB.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CL9nkzB.jpg",
-      "https://iili.io/CL9nUqF.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (2).jpg"
     ],
     "description": "2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2007 Topps Home Run History; Season: 2007; Year: 2007; Player/Athlete: Mickey Mantle; Team: New York Yankees; Sport: Baseball; League: MLB; Features: Insert; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-topps-mickey-mantle-home-run-history-415-plus-418-set-x2-1.CL9nkzB",
@@ -113004,10 +112972,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nzxI.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nzxI.jpg",
-      "https://iili.io/CL9nCRR.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (2).JPG"
     ],
     "description": "1989 Score Rising Star Randy Johnson Rookie #63\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1989 Score; Season: 1989; Year: 1989; Player/Athlete: Randy Johnson; Team: Montreal Expos; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1989-score-rising-star-randy-johnson-rookie-63-1.CL9nzxI",
@@ -113040,10 +113008,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9oCru.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oCru.jpg",
-      "https://iili.io/CL9ox7j.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (2).JPG"
     ],
     "description": "2025 Topps Heritage Roki Sasaki Rookie #224\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Heritage; Season: 2025; Year: 2025; Player/Athlete: Roki Sasaki; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-topps-heritage-roki-sasaki-rookie-224-1.CL9oCru",
@@ -113076,10 +113044,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nrga.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nrga.jpg",
-      "https://iili.io/CL9nP5v.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (2).JPG"
     ],
     "description": "2007 Topps Ryan Braun Rookie #UH150\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2007 Topps Update; Season: 2007; Year: 2007; Player/Athlete: Ryan Braun; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-topps-ryan-braun-rookie-uh150-1.CL9nrga",
@@ -113112,10 +113080,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9oYEF.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oYEF.jpg",
-      "https://iili.io/CL9oarg.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (2).JPG"
     ],
     "description": "2026 Topps Series One Yu Darvish Gold Parallel /2026 #94\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2026 Topps Series 1; Season: 2026; Year: 2026; Player/Athlete: Yu Darvish; Team: San Diego Padres; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2026-topps-series-one-yu-darvish-gold-parallel-2026-94-1.CL9oYEF",
@@ -113149,10 +113117,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nObV.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nObV.jpg",
-      "https://iili.io/CL9nNOQ.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (2).JPG"
     ],
     "description": "1993 Fleer Excel Andy Pettitte Rookie Propect #111\n\nDetails: Type: Sports Trading Card; Manufacturer: Fleer; Set: 1993 Fleer Excel; Season: 1993; Year: 1993; Player/Athlete: Andy Pettitte; Team: Greensboro Hornets; Sport: Baseball; League: Minor League Baseball; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1993-fleer-excel-andy-pettitte-rookie-propect-111-1.CL9nObV",
@@ -113185,10 +113153,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nYJf.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nYJf.jpg",
-      "https://iili.io/CL9naR4.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (2).JPG"
     ],
     "description": "1992 Topps Top Prospects Chipper Jones Rookie #551\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 1992 Topps; Season: 1992; Year: 1992; Player/Athlete: Chipper Jones; Team: Atlanta Braves; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1992-topps-top-prospects-chipper-jones-rookie-551-1.CL9nYJf",
@@ -113221,10 +113189,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nfUJ.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nfUJ.jpg",
-      "https://iili.io/CL9noDN.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (2).JPG"
     ],
     "description": "1990 Score 1st Round Pick Frank Thomas Rookie #663\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1990 Score; Season: 1990; Year: 1990; Player/Athlete: Frank Thomas; Team: Chicago White Sox; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1990-score-1st-round-pick-frank-thomas-rookie-663-1.CL9nfUJ",
@@ -113257,10 +113225,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "https://iili.io/CL9n5UG.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CL9n5UG.jpg",
-      "https://iili.io/CL9nRls.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (2).jpg"
     ],
     "description": "1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 1992 Topps; Season: 1992; Year: 1992; Player/Athlete: Manny Ramirez; Team: Cleveland Indians; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1992-topps-manny-ramirez-rookie-prospect-156-set-x2-1.CL9n5UG",
@@ -113293,10 +113261,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "https://iili.io/CL9oKL7.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oKL7.jpg",
-      "https://iili.io/CL9oqB9.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (2).JPG"
     ],
     "description": "2024 Topps Transcendent Icons Hank Aaron Orange Refractor /25 #86\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Transcendent Collection; Season: 2024; Year: 2024; Player/Athlete: Hank Aaron; Team: Atlanta Braves; Sport: Baseball; League: MLB; Parallel/Variety: Orange Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-transcendent-icons-hank-aaron-orange-refractor-25-86-1.CL9oKL7",
@@ -113330,10 +113298,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "https://iili.io/CL9oJe4.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oJe4.jpg",
-      "https://iili.io/CL9o3I2.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (2).JPG"
     ],
     "description": "2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Holiday; Season: 2024; Year: 2024; Player/Athlete: Shohei Ohtani; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Parallel/Variety: Blue Metallic Glitter; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-holiday-shohei-ohtani-blue-metallic-glitter-sp-h1-1.CL9oJe4",
@@ -113367,10 +113335,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "https://iili.io/CL9npgs.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9npgs.jpg",
-      "https://iili.io/CL9o9dG.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (2).JPG"
     ],
     "description": "2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Holiday; Season: 2024; Year: 2024; Player/Athlete: Elly De La Cruz; Team: Cincinnati Reds; Sport: Baseball; League: MLB; Parallel/Variety: Santa Hat SP; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-holiday-elly-de-la-cruz-santa-hat-sp-rookie-h102-1.CL9npgs",
@@ -113405,10 +113373,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CL9ow4n.jpg",
+    "image": "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9ow4n.jpg",
-      "https://iili.io/CL9oeYG.jpg"
+      "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (2).JPG"
     ],
     "description": "2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year: 2025; Player/Athlete: Jacory Croskey-Merritt; Team: Washington Commanders; Sport: Football; League: NFL; Parallel/Variety: Yellow X-Fractor; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-topps-chrome-jacoby-croskey-merritt-yellow-x-fractor-rookie-387-1.CL9ow4n",
@@ -113442,10 +113410,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CL9ol2a.jpg",
+    "image": "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9ol2a.jpg",
-      "https://iili.io/CL9o0YJ.jpg"
+      "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (2).JPG"
     ],
     "description": "2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Deshaun Fenwick; Team: Oregon State Beavers; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-sage-deshaun-fenwick-blue-rookie-auto-a-df2-1.CL9ol2a",
@@ -113480,10 +113448,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "https://iili.io/CL9o1kv.jpg",
+    "image": "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9o1kv.jpg",
-      "https://iili.io/CL9oMIp.jpg"
+      "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (2).JPG"
     ],
     "description": "2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Juwan Mitchell; Team: Louisville Cardinals; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-sage-juwan-mitchell-blue-rookie-auto-a-jm5-1.CL9o1kv",
@@ -113518,10 +113486,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9oWQI.jpg",
+    "image": "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oWQI.jpg",
-      "https://iili.io/CL9ojEX.jpg"
+      "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
+      "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (2).JPG"
     ],
     "description": "2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Nick Gargiulo; Team: South Carolina Gamecocks; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-sage-nick-gargiulo-blue-rookie-auto-a-ng-1.CL9oWQI",

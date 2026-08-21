@@ -15777,10 +15777,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (1).jpg",
+    "image": "https://iili.io/BAfDkNf.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Upper Deck/2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation (2).jpg"
+      "https://iili.io/BAfDkNf.md.jpg",
+      "https://iili.io/BAfD6l9.md.jpg"
     ],
     "description": "2023-24 Upper Deck Goodwin Champions Ken Griffey Jr. Splash of Color + Variation\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2023-24 Upper Deck; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Ken Griffey Jr.; Team: Seattle Mariners; Sport: Baseball; League: MLB; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfDkNf",
@@ -15801,8 +15801,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2385,
@@ -24499,10 +24498,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nTiX.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nTiX.jpg",
-      "https://iili.io/CL9nAfn.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1991 Score Chipper Jones Rookie #671 (2).JPG"
     ],
     "description": "1991 Score Chipper Jones Rookie #671\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1991 Score; Season: 1991; Year: 1991; Player/Athlete: Chipper Jones; Team: Atlanta Braves; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1991-score-chipper-jones-rookie-671-1.CL9nTiX",
@@ -24535,10 +24534,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "https://iili.io/CL9nieR.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nieR.jpg",
-      "https://iili.io/CL9nsbp.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2008 Topps Heritage Ichiro Suzuki Mini #HTCP11 (2).JPG"
     ],
     "description": "2008 Topps Heritage Ichiro Suzuki Mini #HTCP11\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2008 Topps Heritage; Season: 2008; Year: 2008; Player/Athlete: Ichiro Suzuki; Team: Seattle Mariners; Sport: Baseball; League: MLB; Parallel/Variety: Mini; Features: Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2008-topps-heritage-ichiro-suzuki-mini-htcp11-1.CL9nieR",
@@ -24571,10 +24570,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "https://iili.io/CL9nZXI.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nZXI.jpg",
-      "https://iili.io/CL9nbqX.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2020 Topps Marcus Semien 1985 Throback Gold 50 #85TB-33 (2).JPG"
     ],
     "description": "2020 Topps Marcus Semien 1985 Throback Gold /50 #85TB-33\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2020 Topps; Season: 2020; Year: 2020; Player/Athlete: Marcus Semien; Team: Oakland Athletics; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-topps-marcus-semien-1985-throback-gold-50-85tb-33-1.CL9nZXI",
@@ -24609,10 +24608,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "https://iili.io/CL9nkzB.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CL9nkzB.jpg",
-      "https://iili.io/CL9nUqF.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2) (2).jpg"
     ],
     "description": "2007 Topps Mickey Mantle Home Run History #415 + #418 Set (x2)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2007 Topps Home Run History; Season: 2007; Year: 2007; Player/Athlete: Mickey Mantle; Team: New York Yankees; Sport: Baseball; League: MLB; Features: Insert; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-topps-mickey-mantle-home-run-history-415-plus-418-set-x2-1.CL9nkzB",
@@ -24645,10 +24644,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nzxI.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nzxI.jpg",
-      "https://iili.io/CL9nCRR.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1989 Score Rising Star Randy Johnson Rookie #63 (2).JPG"
     ],
     "description": "1989 Score Rising Star Randy Johnson Rookie #63\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1989 Score; Season: 1989; Year: 1989; Player/Athlete: Randy Johnson; Team: Montreal Expos; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1989-score-rising-star-randy-johnson-rookie-63-1.CL9nzxI",
@@ -24681,10 +24680,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9oCru.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oCru.jpg",
-      "https://iili.io/CL9ox7j.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2025 Topps Heritage Roki Sasaki Rookie #224 (2).JPG"
     ],
     "description": "2025 Topps Heritage Roki Sasaki Rookie #224\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Heritage; Season: 2025; Year: 2025; Player/Athlete: Roki Sasaki; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-topps-heritage-roki-sasaki-rookie-224-1.CL9oCru",
@@ -24717,10 +24716,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nrga.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nrga.jpg",
-      "https://iili.io/CL9nP5v.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/2007 Topps Ryan Braun Rookie #UH150 (2).JPG"
     ],
     "description": "2007 Topps Ryan Braun Rookie #UH150\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2007 Topps Update; Season: 2007; Year: 2007; Player/Athlete: Ryan Braun; Team: Milwaukee Brewers; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2007-topps-ryan-braun-rookie-uh150-1.CL9nrga",
@@ -24753,10 +24752,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9oYEF.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oYEF.jpg",
-      "https://iili.io/CL9oarg.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2026 Topps Series One Yu Darvish Gold Parallel 2026 #94 (2).JPG"
     ],
     "description": "2026 Topps Series One Yu Darvish Gold Parallel /2026 #94\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2026 Topps Series 1; Season: 2026; Year: 2026; Player/Athlete: Yu Darvish; Team: San Diego Padres; Sport: Baseball; League: MLB; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2026-topps-series-one-yu-darvish-gold-parallel-2026-94-1.CL9oYEF",
@@ -24790,10 +24789,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nObV.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nObV.jpg",
-      "https://iili.io/CL9nNOQ.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1993 Fleer Excel Andy Pettitte Rookie Propect #111 (2).JPG"
     ],
     "description": "1993 Fleer Excel Andy Pettitte Rookie Propect #111\n\nDetails: Type: Sports Trading Card; Manufacturer: Fleer; Set: 1993 Fleer Excel; Season: 1993; Year: 1993; Player/Athlete: Andy Pettitte; Team: Greensboro Hornets; Sport: Baseball; League: Minor League Baseball; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1993-fleer-excel-andy-pettitte-rookie-propect-111-1.CL9nObV",
@@ -24826,10 +24825,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nYJf.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nYJf.jpg",
-      "https://iili.io/CL9naR4.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Top Prospects Chipper Jones Rookie #551 (2).JPG"
     ],
     "description": "1992 Topps Top Prospects Chipper Jones Rookie #551\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 1992 Topps; Season: 1992; Year: 1992; Player/Athlete: Chipper Jones; Team: Atlanta Braves; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1992-topps-top-prospects-chipper-jones-rookie-551-1.CL9nYJf",
@@ -24862,10 +24861,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "https://iili.io/CL9nfUJ.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9nfUJ.jpg",
-      "https://iili.io/CL9noDN.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1990 Score 1st Round Pick Frank Thomas Rookie #663 (2).JPG"
     ],
     "description": "1990 Score 1st Round Pick Frank Thomas Rookie #663\n\nDetails: Type: Sports Trading Card; Manufacturer: Score; Set: 1990 Score; Season: 1990; Year: 1990; Player/Athlete: Frank Thomas; Team: Chicago White Sox; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1990-score-1st-round-pick-frank-thomas-rookie-663-1.CL9nfUJ",
@@ -24898,10 +24897,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "https://iili.io/CL9n5UG.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (1).jpg",
     "imageGallery": [
-      "https://iili.io/CL9n5UG.jpg",
-      "https://iili.io/CL9nRls.jpg"
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (1).jpg",
+      "assets/Ebay Listing Photos/Baseball/Pre-2010/1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2) (2).jpg"
     ],
     "description": "1992 Topps Manny Ramirez Rookie Prospect #156 Set (x2)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 1992 Topps; Season: 1992; Year: 1992; Player/Athlete: Manny Ramirez; Team: Cleveland Indians; Sport: Baseball; League: MLB; Features: Rookie; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1992-topps-manny-ramirez-rookie-prospect-156-set-x2-1.CL9n5UG",
@@ -24934,10 +24933,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "https://iili.io/CL9oKL7.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oKL7.jpg",
-      "https://iili.io/CL9oqB9.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Transcendent Icons Hank Aaron Orange Refractor 25 #86 (2).JPG"
     ],
     "description": "2024 Topps Transcendent Icons Hank Aaron Orange Refractor /25 #86\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Transcendent Collection; Season: 2024; Year: 2024; Player/Athlete: Hank Aaron; Team: Atlanta Braves; Sport: Baseball; League: MLB; Parallel/Variety: Orange Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-transcendent-icons-hank-aaron-orange-refractor-25-86-1.CL9oKL7",
@@ -24971,10 +24970,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "https://iili.io/CL9oJe4.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9oJe4.jpg",
-      "https://iili.io/CL9o3I2.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1 (2).JPG"
     ],
     "description": "2024 Topps Holiday Shohei Ohtani Blue Metallic Glitter SP #H1\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Holiday; Season: 2024; Year: 2024; Player/Athlete: Shohei Ohtani; Team: Los Angeles Dodgers; Sport: Baseball; League: MLB; Parallel/Variety: Blue Metallic Glitter; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-holiday-shohei-ohtani-blue-metallic-glitter-sp-h1-1.CL9oJe4",
@@ -25008,10 +25007,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 9.95,
     "priceLabel": "$9.95",
     "displayPrice": "$9.95",
-    "image": "https://iili.io/CL9npgs.jpg",
+    "image": "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (1).JPG",
     "imageGallery": [
-      "https://iili.io/CL9npgs.jpg",
-      "https://iili.io/CL9o9dG.jpg"
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (1).JPG",
+      "assets/Ebay Listing Photos/Baseball/Topps/2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102 (2).JPG"
     ],
     "description": "2024 Topps Holiday Elly De La Cruz Santa Hat SP Rookie #H102\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024 Topps Holiday; Season: 2024; Year: 2024; Player/Athlete: Elly De La Cruz; Team: Cincinnati Reds; Sport: Baseball; League: MLB; Parallel/Variety: Santa Hat SP; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-topps-holiday-elly-de-la-cruz-santa-hat-sp-rookie-h102-1.CL9npgs",
