@@ -870,13 +870,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "assets/Ebay Listing Photos/1900-2000/1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + 1990 Hoops Set (1).jpg",
+    "image": "https://iili.io/CZ0AWl4.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/1900-2000/1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + 1990 Hoops Set (1).jpg",
-      "assets/Ebay Listing Photos/1900-2000/1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + 1990 Hoops Set (2).jpg"
+      "https://iili.io/CZ0AWl4.md.jpg",
+      "https://iili.io/CZ0AjJ2.md.jpg"
     ],
     "description": "1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + /1990 Hoops Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 1991-92 Upper Deck; Season: 1991-92; Year manufactured: 1991; Player/Athlete: Magic Johnson, Michael Jordan; Team: Los Angeles Lakers, Chicago Bulls; Sport: Basketball; League: NBA; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/1991-92-upper-deck-confrontation-michael-jordan-magic-johnson-plus-1990-hoops-set-1.Buc66Qf",
+    "photoHostPageUrl": "https://freeimage.host/i/1991-92-upper-deck-confrontation-michael-jordan-magic-johnson-plus-1990-hoops-set-1.CZ0AWl4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -891,8 +891,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 855,
@@ -1315,13 +1314,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (1).jpg",
+    "image": "https://iili.io/CZ0AXUl.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (1).jpg",
-      "assets/Ebay Listing Photos/2000-2010/2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB (2).jpg"
+      "https://iili.io/CZ0AXUl.md.jpg",
+      "https://iili.io/CZ0AwRS.md.jpg"
     ],
     "description": "2008-09 Upper Deck SPx Elton Brand Winning Materials Numbers Patch #WMJ-EB\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2008-09 Upper Deck; Season: 2008-09; Year manufactured: 2008; Player/Athlete: Elton Brand; Team: Los Angeles Clippers; Sport: Basketball; League: NBA; Features: Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2008-09-upper-deck-spx-elton-brand-winning-materials-numbers-patch-wmj-eb-1.BuEdWv9",
+    "photoHostPageUrl": "https://freeimage.host/i/2008-09-upper-deck-spx-elton-brand-winning-materials-numbers-patch-wmj-eb-1.CZ0AXUl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -3683,13 +3682,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Encased Marvin Bagley Swatches Rookie Patch 99 + Fathers Day 99 (1).jpg",
+    "image": "https://iili.io/CZ0Akxe.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Encased Marvin Bagley Swatches Rookie Patch 99 + Fathers Day 99 (1).jpg",
-      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Encased Marvin Bagley Swatches Rookie Patch 99 + Fathers Day 99 (2).jpg"
+      "https://iili.io/CZ0Akxe.md.jpg",
+      "https://iili.io/CZ0A8ib.md.jpg"
     ],
     "description": "2018-19 Panini Encased Marvin Bagley Swatches Rookie Patch /99 + Fathers Day /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Encased; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Marvin Bagley; Team: Sacramento Kings; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-encased-marvin-bagley-swatches-rookie-patch-99-plus-fathers-day-99-1.BuET3b4",
+    "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-encased-marvin-bagley-swatches-rookie-patch-99-plus-fathers-day-99-1.CZ0Akxe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -3709,8 +3708,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1139,
@@ -3798,13 +3796,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 15.95,
     "priceLabel": "$15.95",
     "displayPrice": "$15.95",
-    "image": "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto 99 (1).jpg",
+    "image": "https://iili.io/CZ0AUfj.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto 99 (1).jpg",
-      "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto 99 (2).jpg"
+      "https://iili.io/CZ0AUfj.md.jpg",
+      "https://iili.io/CZ0Ag0x.md.jpg"
     ],
     "description": "2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Immaculate; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Malcolm Brogdon; Team: Washington Wizards; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-immaculate-malcolm-brogdon-modern-marks-auto-99-1.BuERc1S",
+    "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-immaculate-malcolm-brogdon-modern-marks-auto-99-1.CZ0AUfj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -3823,8 +3821,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1142,
@@ -4060,13 +4057,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (1).jpg",
+    "image": "https://iili.io/CZ0Asb1.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (1).jpg",
-      "assets/Ebay Listing Photos/2019-20/2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket (2).jpg"
+      "https://iili.io/CZ0Asb1.md.jpg",
+      "https://iili.io/CZ0AQzF.md.jpg"
     ],
     "description": "2019-20 Panini Hoops Premium Stock Ja Morant Rookie + Contenders Prospect Ticket\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2019-20 Panini Hoops; Season: 2019-20; Year manufactured: 2019; Player/Athlete: Ja Morant; Team: Memphis Grizzlies; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2019-20-panini-hoops-premium-stock-ja-morant-rookie-plus-contenders-prospect-ticket-1.BuEqPjt",
+    "photoHostPageUrl": "https://freeimage.host/i/2019-20-panini-hoops-premium-stock-ja-morant-rookie-plus-contenders-prospect-ticket-1.CZ0Asb1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -4084,8 +4081,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1152,
@@ -5103,13 +5099,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2020-21/2020-21 Panini Court Kings Cole Anthony Fresh Paint Sapphire Rookie Auto 25 (1).jpg",
+    "image": "https://iili.io/CZ0Atsa.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2020-21/2020-21 Panini Court Kings Cole Anthony Fresh Paint Sapphire Rookie Auto 25 (1).jpg",
-      "assets/Ebay Listing Photos/2020-21/2020-21 Panini Court Kings Cole Anthony Fresh Paint Sapphire Rookie Auto 25 (2).jpg"
+      "https://iili.io/CZ0Atsa.md.jpg",
+      "https://iili.io/CZ0AbqJ.md.jpg"
     ],
     "description": "2020-21 Panini Court Kings Cole Anthony Fresh Paint Sapphire Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Court Kings; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Cole Anthony; Team: Orlando Magic; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BuEQiml",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-court-kings-cole-anthony-fresh-paint-sapphire-rookie-auto-25-1.CZ0Atsa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -5130,8 +5126,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1186,
@@ -17928,13 +17923,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Multigraphics Peyton Watson + Vince Williams Blue Sparkle Auto 10 (1).jpg",
+    "image": "https://iili.io/CZ0ApgR.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Multigraphics Peyton Watson + Vince Williams Blue Sparkle Auto 10 (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/LEAF/2022-23 Leaf Multigraphics Peyton Watson + Vince Williams Blue Sparkle Auto 10 (2).jpg"
+      "https://iili.io/CZ0ApgR.md.jpg",
+      "https://iili.io/CZ0R9Jp.md.jpg"
     ],
     "description": "2022-23 Leaf Multigraphics Peyton Watson + Vince Williams Blue Sparkle Auto /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2022-23 Leaf Multigraphics; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Peyton Watson, Vince Williams Jr.; Team: Denver Nuggets, Memphis Grizzlies; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-multigraphics-peyton-watson-plus-vince-williams-blue-sparkle-auto-10-1.BuwDHdl",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-leaf-multigraphics-peyton-watson-plus-vince-williams-blue-sparkle-auto-10-1.CZ0ApgR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -17954,8 +17949,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1561,
@@ -23226,13 +23220,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 5.95,
     "priceLabel": "$5.95",
     "displayPrice": "$5.95",
-    "image": "assets/Personal collection/AJ Griffin/2022-23 Panini Chronicles Hoops AJ Griffin Orange Rookie 75 + Luminance SP 149 (1).jpg",
+    "image": "https://iili.io/CZ0RCg4.md.jpg",
     "imageGallery": [
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Chronicles Hoops AJ Griffin Orange Rookie 75 + Luminance SP 149 (1).jpg",
-      "assets/Personal collection/AJ Griffin/2022-23 Panini Chronicles Hoops AJ Griffin Orange Rookie 75 + Luminance SP 149 (2).jpg"
+      "https://iili.io/CZ0RCg4.md.jpg",
+      "https://iili.io/CZ0Rodl.md.jpg"
     ],
     "description": "2022-23 Panini Chronicles Hoops AJ Griffin Orange Rookie /75 + Luminance SP /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Aj Griffin; Team: Atlanta Hawks; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-hoops-aj-griffin-orange-rookie-75-plus-luminance-sp-149-1.BAobSou",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-hoops-aj-griffin-orange-rookie-75-plus-luminance-sp-149-1.CZ0RCg4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -23253,8 +23247,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1694,
@@ -28042,14 +28035,14 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue 50 Green 75 + Set (x28) (1).jpg",
+    "image": "https://iili.io/CZ0Rx72.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue 50 Green 75 + Set (x28) (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue 50 Green 75 + Set (x28) (2).jpg",
-      "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue 50 Green 75 + Set (x28) (3).jpg"
+      "https://iili.io/CZ0Rx72.md.jpg",
+      "https://iili.io/CZ0RIm7.md.jpg",
+      "https://iili.io/CZ0RAXe.md.jpg"
     ],
     "description": "2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue /50 Green /75 + Set (x28)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Malik Bowman; Sport: Basketball; League: NBA; Parallel/Variety: Blue, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-malik-bowman-auto-x2-plus-blue-50-green-75-plus-set-x28-1.BueBY6x",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-malik-bowman-auto-x2-plus-blue-50-green-75-11-insert-2.CZ0Rx72",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -28069,8 +28062,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 1819,
@@ -34978,16 +34970,16 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 34.95,
     "priceLabel": "$34.95",
     "displayPrice": "$34.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (1).jpg",
+    "image": "https://iili.io/CZ0RRLu.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (4).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman U Best Chris Johnson Refractor Auto 125 (3) Yellow 75 Blue 150 (5).jpg"
+      "https://iili.io/CZ0RRLu.md.jpg",
+      "https://iili.io/CZ0Rarx.md.jpg",
+      "https://iili.io/CZ0R07V.md.jpg",
+      "https://iili.io/CZ0R1kB.md.jpg",
+      "https://iili.io/CZ0REmP.md.jpg"
     ],
     "description": "2023-24 Bowman U Best Chris Johnson Refractor Auto /125 + Chrome Auto /250 (x7)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Johnson; Team: Stephen F. Austin Lumberjacks; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Chrome; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 7; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/CCCIDF9",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-best-chris-johnson-refractor-auto-125-3-yellow-75-blue-150-1.CZ0RRLu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -35007,8 +34999,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2038,
@@ -35718,26 +35709,26 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 49.95,
     "priceLabel": "$49.95",
     "displayPrice": "$49.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (1).jpg",
+    "image": "https://iili.io/CZ0RVhF.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (4).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (5).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (6).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (7).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (8).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (9).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (10).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (11).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (12).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (13).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (14).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome + Best Aaron Bradshaw Green 99 + Wave 100 Set (x12) (15).jpg"
+      "https://iili.io/CZ0RVhF.md.jpg",
+      "https://iili.io/CZ0RhBa.md.jpg",
+      "https://iili.io/CZ0RjEJ.md.jpg",
+      "https://iili.io/CZ0Rwrv.md.jpg",
+      "https://iili.io/CZ0Re7p.md.jpg",
+      "https://iili.io/CZ0RkkN.md.jpg",
+      "https://iili.io/CZ0RvpI.md.jpg",
+      "https://iili.io/CZ0RSIt.md.jpg",
+      "https://iili.io/CZ0R4Bs.md.jpg",
+      "https://iili.io/CZ0Rs24.md.jpg",
+      "https://iili.io/CZ0RP4f.md.jpg",
+      "https://iili.io/CZ0RLYl.md.jpg",
+      "https://iili.io/CZ0RZpS.md.jpg",
+      "https://iili.io/CZ0Rbj9.md.jpg",
+      "https://iili.io/CZ0RmQe.md.jpg"
     ],
     "description": "2023-24 Bowman U Chrome + Best Aaron Bradshaw Green /99 + Wave /100 Set (x12)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Aaron Bradshaw; Team: Ohio State Buckeyes; Sport: Basketball; League: NCAA; Parallel/Variety: Wave, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 12; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-plus-best-aaron-bradshaw-green-99-plus-wave-100-set-x12-1.BAKyEa1",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-plus-best-aaron-bradshaw-green-99-plus-wave-100-set-x12-1.CZ0RVhF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -35756,8 +35747,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2058,
@@ -35916,18 +35906,18 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 39.95,
     "priceLabel": "$39.95",
     "displayPrice": "$39.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (1).jpg",
+    "image": "https://iili.io/CZ0RyCu.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (4).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (5).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (6).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire 50 + Green 99 Set (x8) (7).jpg"
+      "https://iili.io/CZ0RyCu.md.jpg",
+      "https://iili.io/CZ05H4j.md.jpg",
+      "https://iili.io/CZ052YQ.md.jpg",
+      "https://iili.io/CZ053vV.md.jpg",
+      "https://iili.io/CZ05FyB.md.jpg",
+      "https://iili.io/CZ05qj1.md.jpg",
+      "https://iili.io/CZ05BZF.md.jpg"
     ],
     "description": "2023-24 Bowman U Chrome Brandon Garrison Gold Sapphire /50 + Green /99 Set (x8)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Brandon Garrison; Team: Kentucky Wildcats; Sport: Basketball; League: NCAA; Parallel/Variety: Green, Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-brandon-garrison-gold-sapphire-50-plus-green-99-set-x8-1.BAfJhZb",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-brandon-garrison-gold-sapphire-50-plus-green-99-set-x8-1.CZ0RyCu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -35946,8 +35936,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2064,
@@ -36382,27 +36371,27 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 64.95,
     "priceLabel": "$64.95",
     "displayPrice": "$64.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (1).jpg",
+    "image": "https://iili.io/CZ05nCg.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (2).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (3).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (4).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (5).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (6).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (7).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (8).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (9).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (10).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (11).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (12).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (13).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (14).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (15).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman U Chrome Justin Edwards Pink 100 Aqua 150 Wave 150 Set (x12) (16).jpg"
+      "https://iili.io/CZ05nCg.md.jpg",
+      "https://iili.io/CZ05oGa.md.jpg",
+      "https://iili.io/CZ05TaR.md.jpg",
+      "https://iili.io/CZ055uI.md.jpg",
+      "https://iili.io/CZ057jt.md.jpg",
+      "https://iili.io/CZ05YZX.md.jpg",
+      "https://iili.io/CZ05lGs.md.jpg",
+      "https://iili.io/CZ0506G.md.jpg",
+      "https://iili.io/CZ05EFf.md.jpg",
+      "https://iili.io/CZ05Ga4.md.jpg",
+      "https://iili.io/CZ05W92.md.jpg",
+      "https://iili.io/CZ05XuS.md.jpg",
+      "https://iili.io/CZ05hw7.md.jpg",
+      "https://iili.io/CZ05jt9.md.jpg",
+      "https://iili.io/CZ05OMu.md.jpg",
+      "https://iili.io/CZ05e6b.md.jpg"
     ],
     "description": "2023-24 Bowman U Chrome Justin Edwards Pink /100 Aqua /150 Wave /150 Set (x12)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Justin Edwards; Team: Philadelphia 76ers; Sport: Basketball; League: NBA; Parallel/Variety: Wave, Aqua, Pink; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 12; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-justin-edwards-pink-100-aqua-150-wave-150-set-x12-1.BAfBJmN",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-chrome-justin-edwards-pink-100-aqua-150-wave-150-set-x12-1.CZ05nCg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -36421,8 +36410,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2076,
@@ -38040,13 +38028,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (1).jpg",
+    "image": "https://iili.io/CZ05vFj.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2) (2).jpg"
+      "https://iili.io/CZ05vFj.md.jpg",
+      "https://iili.io/CZ05S8Q.md.jpg"
     ],
     "description": "2023-24 Bowman University Best Scotty Middleton Jumbo Relic Auto Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Scotty Middleton; Team: Seton Hall Pirates; Sport: Basketball; League: NCAA; Features: Autograph, Memorabilia; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-scotty-middleton-jumbo-relic-auto-set-x2-1.BAKbt8g",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-scotty-middleton-jumbo-relic-auto-set-x2-1.CZ05vFj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -38065,8 +38053,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Memorabilia",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2117,
@@ -41334,13 +41321,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 17.95,
     "priceLabel": "$17.95",
     "displayPrice": "$17.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Brice Sensabaugh Widescreen Prizm 19 + Red Auto 40 (1).jpg",
+    "image": "https://iili.io/CZ056t1.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Brice Sensabaugh Widescreen Prizm 19 + Red Auto 40 (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Brice Sensabaugh Widescreen Prizm 19 + Red Auto 40 (2).jpg"
+      "https://iili.io/CZ056t1.md.jpg",
+      "https://iili.io/CZ05ioF.md.jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Brice Sensabaugh Widescreen Prizm /19 + Red Auto /40\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Brice Sensabaugh; Team: Utah Jazz; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAfSpkP",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-prizm-draft-brice-sensabaugh-widescreen-prizm-19-plus-red-auto-40-2.CZ056t1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -41360,8 +41347,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2210,
@@ -42518,13 +42504,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 6.95,
     "priceLabel": "$6.95",
     "displayPrice": "$6.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Kendric Davis Blue Prizm Auto 125 + GYB SP (1).jpg",
+    "image": "https://iili.io/CZ05sMg.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Kendric Davis Blue Prizm Auto 125 + GYB SP (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Kendric Davis Blue Prizm Auto 125 + GYB SP (2).jpg"
+      "https://iili.io/CZ05sMg.md.jpg",
+      "https://iili.io/CZ05LPa.md.jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Kendric Davis Blue Prizm Auto /125 + GYB SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kendric Davis; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Autograph, Serial Numbered, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAfbrzv",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-prizm-draft-picks-kendric-davis-blue-prizm-auto-125-plus-gyb-sp-1.CZ05sMg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -42545,8 +42531,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    },
-    "hasThumbnail": true
+    }
   },
   {
     "id": 2241,
@@ -62161,13 +62146,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (1).jpg",
+    "image": "https://iili.io/CZ0RH5N.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto (2).jpg"
+      "https://iili.io/CZ0RH5N.md.jpg",
+      "https://iili.io/CZ0RJeI.md.jpg"
     ],
     "description": "2022-23 Panini Chronicles Draft Javon Freeman-Liberty Illusions Pink Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles Draft; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Javon Freeman-Liberty; Sport: Basketball; League: NCAA; Parallel/Variety: Pink; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OHApp",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-javon-freeman-liberty-illusions-pink-rookie-auto-1.CZ0RH5N",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -62199,13 +62184,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (1).jpg",
+    "image": "https://iili.io/CZ0R3zX.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (1).jpg",
-      "assets/Ebay Listing Photos/2022-23/Chronicles/2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto (2).jpg"
+      "https://iili.io/CZ0R3zX.md.jpg",
+      "https://iili.io/CZ0RqqG.md.jpg"
     ],
     "description": "2022-23 Panini Chronicles Draft Picks Ryan Davis College Ticket Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Davis; Sport: Basketball; League: NCAA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OH7jI",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-picks-ryan-davis-college-ticket-rookie-auto-1.CZ0R3zX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -62885,13 +62870,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 7.95,
     "priceLabel": "$7.95",
     "displayPrice": "$7.95",
-    "image": "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (1).jpg",
+    "image": "https://iili.io/CZ05g9V.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (1).jpg",
-      "assets/Ebay Listing Photos/2023-24/2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease) (2).jpg"
+      "https://iili.io/CZ05g9V.md.jpg",
+      "https://iili.io/CZ05rAB.md.jpg"
     ],
     "description": "2023-24 Panini Contenders Sir'Jabari Rice Rookie Ticket Auto (Ultimate Tease)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Contenders; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Sir'Jabari Rice; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJkxI",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-contenders-sir-and-039jabari-rice-rookie-ticket-auto-ultimate-tease-2.CZ05g9V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -63450,13 +63435,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 19.95,
     "priceLabel": "$19.95",
     "displayPrice": "$19.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Drake Powell Masterpieces Orange 25 + Yellow 75 (1).jpg",
+    "image": "https://iili.io/CZ05tcv.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Drake Powell Masterpieces Orange 25 + Yellow 75 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Drake Powell Masterpieces Orange 25 + Yellow 75 (2).jpg"
+      "https://iili.io/CZ05tcv.md.jpg",
+      "https://iili.io/CZ05DSR.md.jpg"
     ],
     "description": "2024-25 Bowman University Best Drake Powell Masterpieces Orange /25 + Yellow /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Drake Powell; Sport: Basketball; League: NCAA; Parallel/Variety: Orange, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OdY1n",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-drake-powell-masterpieces-orange-25-plus-yellow-75-1.CZ05tcv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -63526,13 +63511,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 29.95,
     "priceLabel": "$29.95",
     "displayPrice": "$29.95",
-    "image": "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Nolan Traore Best Ballers Orange Prizm 25 Set x2 (1).jpg",
+    "image": "https://iili.io/CZ05m9p.md.jpg",
     "imageGallery": [
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Nolan Traore Best Ballers Orange Prizm 25 Set x2 (1).jpg",
-      "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Nolan Traore Best Ballers Orange Prizm 25 Set x2 (2).jpg"
+      "https://iili.io/CZ05m9p.md.jpg",
+      "https://iili.io/CZ05pAN.md.jpg"
     ],
     "description": "2024-25 Bowman University Best Nolan Traore Best Ballers Orange Prizm /25 Set x2\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman University Best; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Nolan Traore; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2Od1e4",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-nolan-traore-best-ballers-orange-prizm-25-set-x2-2.CZ05m9p",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
