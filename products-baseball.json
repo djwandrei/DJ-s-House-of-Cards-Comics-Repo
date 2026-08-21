@@ -4742,9 +4742,6 @@
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Mark Teixeira",
-    "attributes": [
-      "Autograph"
-    ],
     "isFeatured": false,
     "sortRank": 0,
     "metadata": {
@@ -24369,9 +24366,6 @@
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Carl Yastrzemski",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -24405,9 +24399,6 @@
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Brooks Robinson",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,

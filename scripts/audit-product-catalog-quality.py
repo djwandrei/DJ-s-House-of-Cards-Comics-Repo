@@ -329,9 +329,14 @@ def expected_attributes(product: dict[str, Any]) -> list[str]:
 
     features = split_features(fields.get("C:Features"))
     values = [feature for feature in features if feature in ATTRIBUTE_INDEX]
+    if fields:
+        if text(fields.get("C:Autographed")).lower() == "yes":
+            values.append("Autograph")
+        return ordered_unique(values)
+
     if ROOKIE_RE.search(full_blob):
         values.append("Rookie")
-    if AUTOGRAPH_RE.search(full_blob) or text(fields.get("C:Autographed")).lower() == "yes":
+    if text(fields.get("C:Autographed")).lower() == "yes" or AUTOGRAPH_RE.search(title_blob):
         values.append("Autograph")
     if has_serial_numbered_signal(title_blob):
         values.append("Serial Numbered")
@@ -351,7 +356,7 @@ def expected_attributes(product: dict[str, Any]) -> list[str]:
         existing = [value for value in product.get("attributes") if value in ATTRIBUTE_INDEX]
         if "Serial Numbered" in existing and hasSerialNumberingContextCompat(title_blob):
             values.append("Serial Numbered")
-        if "Autograph" in existing and AUTOGRAPH_RE.search(full_blob):
+        if "Autograph" in existing and AUTOGRAPH_RE.search(title_blob):
             values.append("Autograph")
         if "Memorabilia" in existing and has_memorabilia_signal(full_blob, title_blob):
             values.append("Memorabilia")

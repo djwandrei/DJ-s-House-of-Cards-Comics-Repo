@@ -436,9 +436,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Boxing",
     "playerAthlete": "Manny Pacquiao",
     "copyCount": 2,
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,

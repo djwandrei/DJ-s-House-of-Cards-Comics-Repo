@@ -883,9 +883,6 @@
       "league": "NBA",
       "sport": "Basketball",
       "playerAthlete": "Magic Johnson|Michael Jordan",
-      "attributes": [
-        "Base Set"
-      ],
       "isFeatured": false,
       "isDeleted": false,
       "sortRank": 0,

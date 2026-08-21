@@ -881,9 +881,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Magic Johnson|Michael Jordan",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -3436,7 +3433,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "Karl-Anthony Towns",
     "attributes": [
-      "Base Set",
       "Insert"
     ],
     "isFeatured": false,
@@ -3624,9 +3620,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -61404,9 +61397,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Hassan Whiteside",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -64814,9 +64804,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Cameron Brink",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -67900,9 +67887,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Giannis Antetokounmpo",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -68086,9 +68070,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -73380,9 +73361,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73419,9 +73399,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73461,9 +73440,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73503,9 +73481,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73541,9 +73518,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73580,9 +73556,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73620,9 +73595,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73660,9 +73634,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73698,9 +73671,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73742,9 +73714,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73781,9 +73752,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73821,9 +73791,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73859,9 +73828,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73897,9 +73865,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73939,9 +73906,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73979,9 +73945,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74019,9 +73984,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
-      "Insert",
-      "Short Print"
+      "Short Print",
+      "Insert"
     ],
     "isFeatured": false,
     "isDeleted": false,

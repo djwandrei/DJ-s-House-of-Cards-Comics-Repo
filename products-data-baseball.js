@@ -4743,9 +4743,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Mark Teixeira",
-    "attributes": [
-      "Autograph"
-    ],
     "isFeatured": false,
     "sortRank": 0,
     "metadata": {
@@ -24370,9 +24367,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Carl Yastrzemski",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -24406,9 +24400,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Brooks Robinson",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,

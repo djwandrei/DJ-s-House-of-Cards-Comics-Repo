@@ -2411,9 +2411,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -4788,9 +4785,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -7233,9 +7227,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Aaron Rodgers",
-    "attributes": [
-      "Base Set"
-    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
