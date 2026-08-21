@@ -361,10 +361,24 @@ window.DJ = window.DJ || {};
   function deriveProductAttributes(item = {}) {
     const metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
     const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object' ? metadata.excelFields : {};
+    const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
+    const isWorkbookBackedListing = Object.keys(excelFields).length > 0;
+    // Workbook listings define their own attributes. Keep the reconciled
+    // array authoritative so wording such as "Autographed: No" in a
+    // description cannot manufacture an Autograph tag at render time. A small
+    // field-derived fallback supports older source rows that lack the array.
+    if (isWorkbookBackedListing) {
+      const attributes = [];
+      const sourceAttributes = Array.isArray(item.attributes)
+        ? item.attributes
+        : splitProductAttributeValue(excelFields['C:Features']);
+      sourceAttributes.forEach((attribute) => pushProductAttribute(attributes, attribute));
+      if (autographedValue === 'yes') pushProductAttribute(attributes, 'Autograph');
+      return sortProductAttributes(attributes);
+    }
     const conditionNotes = Array.isArray(metadata.conditionNotes)
       ? metadata.conditionNotes.join(' ')
       : (metadata.conditionNotes || '');
-    const autographedValue = String(excelFields['C:Autographed'] || '').trim().toLowerCase();
     const featuresText = String(excelFields['C:Features'] || '').toLowerCase();
     const featureSet = new Set(featuresText.split('|').map((value) => value.trim()).filter(Boolean));
     const text = [

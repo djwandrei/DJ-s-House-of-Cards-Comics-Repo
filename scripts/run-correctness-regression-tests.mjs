@@ -377,7 +377,8 @@ function testCatalogSearchUtilities() {
     category: 'Basketball',
     team: 'Basketball',
     price: 3,
-    metadata: { excelFields: { 'C:Features': 'Autograph' } }
+    attributes: ['Autograph', 'Rookie'],
+    metadata: { excelFields: { 'C:Features': 'Autograph|Rookie', 'C:Autographed': 'Yes' } }
   }]);
   equal(
     normalizedProducts.map((product) => ({ team: product.team, attributes: product.attributes, price: product._price })),
