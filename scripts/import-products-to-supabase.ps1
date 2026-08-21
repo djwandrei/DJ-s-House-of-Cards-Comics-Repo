@@ -506,7 +506,9 @@ function Merge-RemoteOperationalMetadata {
 
   $ids = @($metadataRows | ForEach-Object { [int](Get-PropertyValue $_ 'id') })
   $uri = $ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?select=id,metadata&id=in.($($ids -join ','))"
-  $actualRows = @(Invoke-RestMethod -Uri $uri -Method Get -Headers $Headers -UserAgent $ServerUserAgent)
+  # Force the returned JSON array into individual product rows. Without the
+  # cast, Invoke-RestMethod can preserve the full response as one nested item.
+  $actualRows = [object[]](Invoke-RestMethod -Uri $uri -Method Get -Headers $Headers -UserAgent $ServerUserAgent)
   $actualById = @{}
   foreach ($actual in $actualRows) { $actualById[[int](Get-PropertyValue $actual 'id')] = $actual }
 
@@ -537,7 +539,7 @@ function Get-ComparablePropertyNames {
     return @($Value.Keys | ForEach-Object { [string]$_ } | Sort-Object)
   }
   if ($Value -is [pscustomobject]) {
-    return @($Value.PSObject.Properties.Name | Sort-Object)
+    return @($Value.PSObject.Properties | ForEach-Object { [string]$_.Name } | Sort-Object)
   }
   return @()
 }
@@ -550,9 +552,12 @@ function Test-DeepEquivalent {
   }
   if ($Left -is [bool] -or $Right -is [bool]) { return [bool]$Left -eq [bool]$Right }
 
-  $leftKeys = @(Get-ComparablePropertyNames $Left)
-  $rightKeys = @(Get-ComparablePropertyNames $Right)
-  if ($leftKeys.Count -or $rightKeys.Count) {
+  $leftIsObject = $Left -is [System.Collections.IDictionary] -or $Left -is [pscustomobject]
+  $rightIsObject = $Right -is [System.Collections.IDictionary] -or $Right -is [pscustomobject]
+  if ($leftIsObject -or $rightIsObject) {
+    if (-not ($leftIsObject -and $rightIsObject)) { return $false }
+    $leftKeys = @(Get-ComparablePropertyNames $Left)
+    $rightKeys = @(Get-ComparablePropertyNames $Right)
     if (($leftKeys -join "`n") -ne ($rightKeys -join "`n")) { return $false }
     foreach ($key in $leftKeys) {
       if (-not (Test-DeepEquivalent (Get-PropertyValue $Left $key) (Get-PropertyValue $Right $key))) { return $false }
@@ -585,10 +590,11 @@ function Assert-RemoteRowsMatch {
   if (-not $Rows.Count) { return }
   $fields = @($Rows[0].Keys | ForEach-Object { [string]$_ })
   $ids = @($Rows | ForEach-Object { [int](Get-PropertyValue $_ 'id') })
-  $select = [uri]::EscapeDataString(($fields -join ','))
+  # Keep PostgREST's select-list delimiters readable in the request URI.
+  $select = $fields -join ','
   $idFilter = $ids -join ','
   $uri = $ProjectUrl.TrimEnd('/') + "/rest/v1/${Table}?select=${select}&id=in.(${idFilter})"
-  $actualRows = @(Invoke-RestMethod -Uri $uri -Method Get -Headers $Headers -UserAgent $ServerUserAgent)
+  $actualRows = [object[]](Invoke-RestMethod -Uri $uri -Method Get -Headers $Headers -UserAgent $ServerUserAgent)
   $actualById = @{}
   foreach ($actual in $actualRows) { $actualById[[int](Get-PropertyValue $actual 'id')] = $actual }
 
