@@ -6,7 +6,7 @@
  * bypass caches so signed-in edits are immediately visible.
  */
 
-const CACHE_VERSION = 'dj-house-v2026-08-21-06';
+const CACHE_VERSION = 'dj-house-v2026-08-21-07';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const CATALOG_CACHE = `${CACHE_VERSION}-catalog`;
@@ -34,12 +34,12 @@ const CACHE_BYPASS_PATHS = new Set([
 // images are collected by runtime caching only after a shopper actually sees them.
 const APP_SHELL_ASSETS = [
   '/offline.html',
-  '/styles.css?v=20260821f',
-  '/styles-mobile-overrides.css?v=20260821f',
-  '/core.js?v=20260821f',
-  '/seo.js?v=20260821f',
-  '/site.webmanifest?v=20260821f',
-  '/offline.js?v=20260821f',
+  '/styles.css?v=20260821g',
+  '/styles-mobile-overrides.css?v=20260821g',
+  '/core.js?v=20260821g',
+  '/seo.js?v=20260821g',
+  '/site.webmanifest?v=20260821g',
+  '/offline.js?v=20260821g',
   '/assets/dj-logo.png',
   '/assets/icons/favicon-32.png',
   '/assets/icons/icon-192.png'

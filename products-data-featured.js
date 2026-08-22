@@ -64,7 +64,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "Rookie"
     ],
     "isFeatured": true,
-    "sortRank": 2
+    "sortRank": 2,
+    "hasThumbnail": true
   },
   {
     "id": 2463,
@@ -135,7 +136,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 779,
@@ -156,7 +158,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
     "isFeatured": true,
-    "sortRank": 5
+    "sortRank": 5,
+    "hasThumbnail": true
   },
   {
     "id": 829,
@@ -214,6 +217,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Baseball",
     "playerAthlete": "Hank Aaron",
     "isFeatured": true,
-    "sortRank": 7
+    "sortRank": 7,
+    "hasThumbnail": true
   }
 ];

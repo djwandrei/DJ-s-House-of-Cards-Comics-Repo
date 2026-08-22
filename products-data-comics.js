@@ -24,7 +24,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 663,
@@ -50,7 +51,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 664,
@@ -76,7 +78,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 665,
@@ -102,7 +105,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 666,
@@ -128,7 +132,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 667,
@@ -154,7 +159,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 668,
@@ -180,7 +186,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 669,
@@ -231,7 +238,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 671,
@@ -257,7 +265,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 672,
@@ -378,7 +387,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 677,
@@ -403,7 +413,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 678,
@@ -453,7 +464,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 680,
@@ -579,7 +591,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 685,
@@ -730,7 +743,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 691,
@@ -756,7 +770,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 692,
@@ -782,7 +797,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 693,
@@ -808,7 +824,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 694,
@@ -834,7 +851,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 695,
@@ -860,7 +878,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 696,
@@ -1006,7 +1025,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 702,
@@ -1082,7 +1102,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 705,
@@ -1157,7 +1178,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 708,
@@ -1283,7 +1305,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 713,
@@ -1434,7 +1457,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 719,
@@ -1485,7 +1509,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 721,
@@ -1511,7 +1536,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 722,
@@ -1537,7 +1563,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 723,
@@ -1662,7 +1689,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 728,
@@ -1714,7 +1742,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 730,
@@ -2204,7 +2233,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 750,
@@ -2280,7 +2310,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 753,
@@ -2306,7 +2337,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 754,
@@ -2332,7 +2364,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 755,
@@ -2483,7 +2516,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 761,
@@ -2509,7 +2543,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 762,
@@ -2880,7 +2915,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 777,
@@ -2946,7 +2982,8 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Marvel Comics",
     "copyCount": 1,
     "isFeatured": true,
-    "sortRank": 5
+    "sortRank": 5,
+    "hasThumbnail": true
   },
   {
     "id": 780,
@@ -3021,7 +3058,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 783,
@@ -3092,7 +3130,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 786,
@@ -3118,7 +3157,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 787,
@@ -3169,7 +3209,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 789,
@@ -3385,7 +3426,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 798,
@@ -3530,7 +3572,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 804,
@@ -3555,7 +3598,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 805,
@@ -3631,7 +3675,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 808,
@@ -3992,7 +4037,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Price guide range shown"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 823,

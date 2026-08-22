@@ -133,7 +133,10 @@ function pickStorefrontMetadata(metadata) {
 }
 
 function normalizedAssetPath(reference = '') {
-  return String(reference || '').trim().replace(/\\/g, '/').replace(/^\/+/, '').split(/[?#]/)[0];
+  // A card number commonly contains "#" in the actual filename, so only a
+  // query string is removable here. Fragment handling belongs to real URLs,
+  // not local asset filenames.
+  return String(reference || '').trim().replace(/\\/g, '/').replace(/^\/+/, '').split('?', 1)[0];
 }
 
 function thumbnailPathForAsset(reference = '') {

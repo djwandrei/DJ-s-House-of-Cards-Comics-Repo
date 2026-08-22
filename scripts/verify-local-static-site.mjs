@@ -101,7 +101,9 @@ function pickStorefrontMetadata(metadata) {
 }
 
 function normalizedAssetPath(reference = '') {
-  return String(reference || '').trim().replace(/\\/g, '/').replace(/^\/+/, '').split(/[?#]/)[0];
+  // Keep card-number hashes in local filenames so parity checks derive the
+  // same thumbnail targets as the public-catalog generator.
+  return String(reference || '').trim().replace(/\\/g, '/').replace(/^\/+/, '').split('?', 1)[0];
 }
 
 function thumbnailPathForAsset(reference = '') {

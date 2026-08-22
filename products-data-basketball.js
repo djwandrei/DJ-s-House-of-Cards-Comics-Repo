@@ -26,7 +26,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 417,
@@ -55,7 +56,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 418,
@@ -87,7 +89,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 419,
@@ -118,7 +121,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 420,
@@ -146,7 +150,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 421,
@@ -174,7 +179,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 422,
@@ -202,7 +208,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 425,
@@ -230,7 +237,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 430,
@@ -262,7 +270,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 435,
@@ -293,7 +302,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 438,
@@ -325,7 +335,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 443,
@@ -357,7 +368,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 447,
@@ -419,7 +431,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 465,
@@ -451,7 +464,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 466,
@@ -484,7 +498,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 473,
@@ -515,7 +530,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 475,
@@ -546,7 +562,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 476,
@@ -578,7 +595,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 479,
@@ -604,7 +622,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "Autograph"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 482,
@@ -636,7 +655,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 484,
@@ -667,7 +687,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 486,
@@ -699,7 +720,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 493,
@@ -730,7 +752,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 498,
@@ -761,7 +784,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 506,
@@ -793,7 +817,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 507,
@@ -826,7 +851,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 508,
@@ -858,7 +884,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 854,
@@ -930,7 +957,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 857,
@@ -966,7 +994,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 858,
@@ -1003,7 +1032,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 860,
@@ -1039,7 +1069,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 864,
@@ -1074,7 +1105,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 869,
@@ -1189,7 +1221,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 880,
@@ -1226,7 +1259,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 887,
@@ -1338,7 +1372,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 895,
@@ -1454,7 +1489,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 984,
@@ -1527,7 +1563,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 986,
@@ -1565,7 +1602,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 988,
@@ -1602,7 +1640,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 989,
@@ -1682,7 +1721,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 991,
@@ -1719,7 +1759,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 992,
@@ -1756,7 +1797,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 993,
@@ -1793,7 +1835,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 994,
@@ -1831,7 +1874,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 995,
@@ -1868,7 +1912,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 996,
@@ -1904,7 +1949,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 997,
@@ -1941,7 +1987,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 998,
@@ -1977,7 +2024,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 999,
@@ -2053,7 +2101,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1002,
@@ -2090,7 +2139,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1003,
@@ -2166,7 +2216,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1005,
@@ -2239,7 +2290,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1008,
@@ -2276,7 +2328,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1009,
@@ -2313,7 +2366,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1068,
@@ -2503,7 +2557,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1073,
@@ -2734,7 +2789,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1080,
@@ -2848,7 +2904,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1083,
@@ -2886,7 +2943,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1084,
@@ -2924,7 +2982,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1097,
@@ -2961,7 +3020,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1098,
@@ -3036,7 +3096,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1100,
@@ -3073,7 +3134,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1101,
@@ -3110,7 +3172,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1102,
@@ -3147,7 +3210,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1103,
@@ -3184,7 +3248,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1110,
@@ -3221,7 +3286,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1125,
@@ -3629,7 +3695,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1137,
@@ -3858,7 +3925,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1143,
@@ -3895,7 +3963,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1144,
@@ -3932,7 +4001,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1145,
@@ -4044,7 +4114,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1151,
@@ -4706,7 +4777,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1174,
@@ -4897,7 +4969,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1179,
@@ -5012,7 +5085,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1183,
@@ -5049,7 +5123,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1184,
@@ -5164,7 +5239,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1187,
@@ -5354,7 +5430,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1192,
@@ -5583,7 +5660,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1212,
@@ -5816,7 +5894,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1218,
@@ -6292,7 +6371,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1230,
@@ -7057,7 +7137,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1249,
@@ -7652,7 +7733,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1264,
@@ -7810,7 +7892,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1272,
@@ -8489,7 +8572,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1289,
@@ -8692,7 +8776,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1294,
@@ -8735,7 +8820,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1295,
@@ -9055,7 +9141,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1303,
@@ -10192,7 +10279,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1332,
@@ -10231,7 +10319,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1333,
@@ -10392,7 +10481,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1338,
@@ -10443,7 +10533,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1339,
@@ -11037,7 +11128,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1354,
@@ -13772,7 +13864,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1449,
@@ -16021,7 +16114,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1509,
@@ -16058,7 +16152,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1510,
@@ -18946,7 +19041,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1588,
@@ -18985,7 +19081,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1589,
@@ -19025,7 +19122,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1590,
@@ -22837,7 +22935,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1684,
@@ -23672,7 +23771,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1705,
@@ -24095,7 +24195,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1716,
@@ -24210,7 +24311,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1719,
@@ -24287,7 +24389,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1721,
@@ -24557,7 +24660,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1729,
@@ -24595,7 +24699,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1730,
@@ -24919,7 +25024,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1738,
@@ -24957,7 +25063,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1739,
@@ -25661,7 +25768,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1758,
@@ -26165,7 +26273,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1771,
@@ -26604,7 +26713,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1782,
@@ -26645,7 +26755,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1783,
@@ -26692,7 +26803,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1784,
@@ -26730,7 +26842,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1785,
@@ -26768,7 +26881,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1786,
@@ -26806,7 +26920,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1787,
@@ -26883,7 +26998,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1789,
@@ -26963,7 +27079,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1791,
@@ -27001,7 +27118,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1792,
@@ -27039,7 +27157,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1793,
@@ -27116,7 +27235,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1795,
@@ -27306,7 +27426,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1800,
@@ -28902,7 +29023,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1840,
@@ -29252,7 +29374,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1849,
@@ -29293,7 +29416,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1850,
@@ -29331,7 +29455,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1851,
@@ -29492,7 +29617,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1855,
@@ -29533,7 +29659,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1856,
@@ -29571,7 +29698,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1857,
@@ -29609,7 +29737,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1858,
@@ -29694,7 +29823,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1860,
@@ -29732,7 +29862,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1861,
@@ -29770,7 +29901,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1862,
@@ -29813,7 +29945,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1863,
@@ -29894,7 +30027,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1865,
@@ -29935,7 +30069,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1866,
@@ -29976,7 +30111,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1867,
@@ -30017,7 +30153,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1868,
@@ -30094,7 +30231,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1870,
@@ -30135,7 +30273,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1871,
@@ -30178,7 +30317,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1872,
@@ -30219,7 +30359,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1873,
@@ -30258,7 +30399,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1874,
@@ -30296,7 +30438,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1875,
@@ -30337,7 +30480,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1876,
@@ -30376,7 +30520,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1877,
@@ -30689,7 +30834,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1885,
@@ -30766,7 +30912,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1887,
@@ -39123,7 +39270,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2148,
@@ -40270,7 +40418,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2182,
@@ -40460,7 +40609,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2187,
@@ -40709,7 +40859,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2193,
@@ -40747,7 +40898,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2194,
@@ -40823,7 +40975,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2196,
@@ -40861,7 +41014,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2197,
@@ -43360,7 +43514,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2260,
@@ -44310,7 +44465,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2286,
@@ -44863,7 +45019,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2302,
@@ -45343,7 +45500,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2314,
@@ -45535,7 +45693,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2319,
@@ -45572,7 +45731,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2320,
@@ -45647,7 +45807,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2322,
@@ -45686,7 +45847,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2323,
@@ -45725,7 +45887,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2324,
@@ -45762,7 +45925,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2325,
@@ -45799,7 +45963,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2326,
@@ -45956,7 +46121,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2331,
@@ -45993,7 +46159,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2332,
@@ -46155,7 +46322,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2336,
@@ -46255,7 +46423,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2338,
@@ -46410,7 +46579,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2342,
@@ -46447,7 +46617,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2343,
@@ -46757,7 +46928,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2351,
@@ -46872,7 +47044,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2354,
@@ -46989,7 +47162,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2357,
@@ -47026,7 +47200,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2358,
@@ -47063,7 +47238,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2359,
@@ -47106,7 +47282,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2360,
@@ -47147,7 +47324,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2361,
@@ -47263,7 +47441,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2364,
@@ -47422,7 +47601,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2368,
@@ -49145,7 +49325,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2423,
@@ -50662,7 +50843,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2468,
@@ -51044,7 +51226,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2478,
@@ -51775,7 +51958,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2498,
@@ -52007,7 +52191,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2504,
@@ -52044,7 +52229,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2505,
@@ -52272,7 +52458,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2511,
@@ -52309,7 +52496,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2512,
@@ -52654,7 +52842,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2522,
@@ -52693,7 +52882,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2523,
@@ -54747,7 +54937,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2579,
@@ -54907,7 +55098,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2584,
@@ -54944,7 +55136,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2585,
@@ -55675,7 +55868,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2604,
@@ -55954,7 +56148,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2612,
@@ -56030,7 +56225,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2614,
@@ -56069,7 +56265,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2615,
@@ -56303,7 +56500,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2621,
@@ -56340,7 +56538,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2622,
@@ -56646,7 +56845,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2630,
@@ -56724,7 +56924,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2632,
@@ -56761,7 +56962,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2633,
@@ -56875,7 +57077,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2636,
@@ -56990,7 +57193,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2639,
@@ -58384,7 +58588,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2676,
@@ -58846,7 +59051,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2697,
@@ -58883,7 +59089,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2930,
@@ -58914,7 +59121,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2931,
@@ -58945,7 +59153,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2932,
@@ -58976,7 +59185,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2933,
@@ -59007,7 +59217,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2934,
@@ -59038,7 +59249,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2935,
@@ -59069,7 +59281,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2936,
@@ -59103,7 +59316,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2937,
@@ -59134,7 +59348,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2938,
@@ -59168,7 +59383,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2939,
@@ -59202,7 +59418,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2940,
@@ -59236,7 +59453,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2941,
@@ -59267,7 +59485,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2943,
@@ -59298,7 +59517,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2944,
@@ -59329,7 +59549,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2945,
@@ -59360,7 +59581,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2946,
@@ -59394,7 +59616,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2947,
@@ -59425,7 +59648,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2948,
@@ -59461,7 +59685,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2949,
@@ -59496,7 +59721,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2950,
@@ -59531,7 +59757,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2951,
@@ -59566,7 +59793,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2973,
@@ -59601,7 +59829,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "On-card autograph"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2974,
@@ -59635,7 +59864,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2975,
@@ -59670,7 +59900,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2976,
@@ -59705,7 +59936,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2977,
@@ -59739,7 +59971,8 @@ window.DJ_PRELOADED_PRODUCTS = [
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3033,
@@ -60101,7 +60334,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3043,
@@ -60318,7 +60552,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3049,
@@ -61560,7 +61795,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3084,
@@ -61597,7 +61833,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3085,
@@ -67359,7 +67596,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3355,
@@ -69395,7 +69633,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3409,
@@ -69433,7 +69672,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3410,
@@ -71700,7 +71940,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3473,
@@ -71894,7 +72135,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3478,
@@ -72012,7 +72254,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3481,
@@ -74080,7 +74323,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Autograph|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3552,
@@ -74314,7 +74558,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3558,
@@ -74390,7 +74635,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3560,
@@ -74430,7 +74676,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3561,
@@ -74467,7 +74714,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3562,
@@ -74542,7 +74790,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3564,
@@ -74579,7 +74828,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3565,
@@ -74616,7 +74866,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3566,
@@ -74652,7 +74903,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3567,
@@ -74689,7 +74941,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3568,
@@ -74727,7 +74980,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3569,
@@ -74769,7 +75023,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Rookie|Short Print|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3570,

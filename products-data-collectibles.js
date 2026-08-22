@@ -145,7 +145,8 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1108,
@@ -446,6 +447,7 @@ window.DJ_PRELOADED_PRODUCTS = [
         "C:Features": "Base Set",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   }
 ];

@@ -186,7 +186,7 @@ function fallbackCard(product, index) {
         <img src="${image.src}" data-asset-candidates="${escapeDataAttribute(image.candidates.join('\n'))}" data-fallback-src="${image.fallback}" alt="${escapeHtml(product.name)} product photo" width="320" height="320" loading="${index < 2 ? 'eager' : 'lazy'}" decoding="async">
       </div>
       <div class="product-content">
-        <h3>${escapeHtml(product.name)}</h3>
+        <h2>${escapeHtml(product.name)}</h2>
         ${attributes.length ? `<div class="product-card-chip-rail"><div class="product-attribute-list">${attributes.map((attribute) => `<span class="product-attribute-pill">${escapeHtml(attribute)}</span>`).join('')}</div></div>` : ''}
         <div class="product-card-footer">
           <div class="product-pricing">
@@ -204,7 +204,7 @@ function fallbackCard(product, index) {
 
 function replaceProductGrid(file, cards) {
   const html = fs.readFileSync(file, 'utf8');
-  const pattern = /(<div aria-live="polite" class="products-grid" id="productContainer">\r?\n)[\s\S]*(\r?\n     <\/div>\r?\n    <\/div>\r?\n   <\/section>\r?\n  <div aria-hidden)/;
+  const pattern = /(<div(?: aria-live="polite")? class="products-grid" id="productContainer">\r?\n)[\s\S]*?(\r?\n     <\/div>\r?\n    <\/div>\r?\n   <\/section>\r?\n  <div aria-hidden)/;
   if (!pattern.test(html)) throw new Error(`Could not find productContainer in ${file}.`);
   const next = html.replace(
     pattern,

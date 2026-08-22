@@ -25,7 +25,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 417,
@@ -54,7 +55,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 418,
@@ -86,7 +88,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 419,
@@ -117,7 +120,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 420,
@@ -145,7 +149,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 421,
@@ -173,7 +178,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 422,
@@ -201,7 +207,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 425,
@@ -229,7 +236,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 430,
@@ -261,7 +269,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 435,
@@ -292,7 +301,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 438,
@@ -324,7 +334,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 443,
@@ -356,7 +367,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 447,
@@ -418,7 +430,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 465,
@@ -450,7 +463,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 466,
@@ -483,7 +497,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 473,
@@ -514,7 +529,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 475,
@@ -545,7 +561,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 476,
@@ -577,7 +594,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 479,
@@ -603,7 +621,8 @@
       "Autograph"
     ],
     "isFeatured": false,
-    "sortRank": 0
+    "sortRank": 0,
+    "hasThumbnail": true
   },
   {
     "id": 482,
@@ -635,7 +654,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 484,
@@ -666,7 +686,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 486,
@@ -698,7 +719,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 493,
@@ -729,7 +751,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 498,
@@ -760,7 +783,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 506,
@@ -792,7 +816,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 507,
@@ -825,7 +850,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 508,
@@ -857,7 +883,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 854,
@@ -929,7 +956,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 857,
@@ -965,7 +993,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 858,
@@ -1002,7 +1031,8 @@
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 860,
@@ -1038,7 +1068,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 864,
@@ -1073,7 +1104,8 @@
         "C:Features": "Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 869,
@@ -1188,7 +1220,8 @@
         "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 880,
@@ -1225,7 +1258,8 @@
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 887,
@@ -1337,7 +1371,8 @@
         "C:Features": "Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 895,
@@ -1453,7 +1488,8 @@
         "C:Features": "Autograph|Rookie|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 984,
@@ -1526,7 +1562,8 @@
         "C:Features": "Short Print|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 986,
@@ -1564,7 +1601,8 @@
         "C:Features": "Autograph|Serial Numbered|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 988,
@@ -1601,7 +1639,8 @@
         "C:Features": "Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 989,
@@ -1681,7 +1720,8 @@
         "C:Features": "Autograph|Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 991,
@@ -1718,7 +1758,8 @@
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 992,
@@ -1755,7 +1796,8 @@
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 993,
@@ -1792,7 +1834,8 @@
         "C:Features": "Short Print|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 994,
@@ -1830,7 +1873,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 995,
@@ -1867,7 +1911,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 996,
@@ -1903,7 +1948,8 @@
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 997,
@@ -1940,7 +1986,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 998,
@@ -1976,7 +2023,8 @@
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 999,
@@ -2052,7 +2100,8 @@
         "C:Features": "Autograph|Serial Numbered|Memorabilia",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1002,
@@ -2089,7 +2138,8 @@
         "C:Features": "Autograph|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1003,
@@ -2165,7 +2215,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1005,
@@ -2238,7 +2289,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1008,
@@ -2275,7 +2327,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1009,
@@ -2312,7 +2365,8 @@
         "C:Features": "Rookie|Short Print",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1068,
@@ -2502,7 +2556,8 @@
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1073,
@@ -2733,7 +2788,8 @@
         "C:Features": "Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1080,
@@ -2847,7 +2903,8 @@
         "C:Features": "Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1083,
@@ -2885,7 +2942,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1084,
@@ -2923,7 +2981,8 @@
         "C:Features": "Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1097,
@@ -2960,7 +3019,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1098,
@@ -3035,7 +3095,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1100,
@@ -3072,7 +3133,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1101,
@@ -3109,7 +3171,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1102,
@@ -3146,7 +3209,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1103,
@@ -3183,7 +3247,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1110,
@@ -3220,7 +3285,8 @@
         "C:Features": "Serial Numbered|Memorabilia|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1125,
@@ -3628,7 +3694,8 @@
         "C:Features": "Base Set",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1137,
@@ -3857,7 +3924,8 @@
         "C:Features": "Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1143,
@@ -3894,7 +3962,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1144,
@@ -3931,7 +4000,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1145,
@@ -4043,7 +4113,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1151,
@@ -4705,7 +4776,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1174,
@@ -4896,7 +4968,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1179,
@@ -5011,7 +5084,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1183,
@@ -5048,7 +5122,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1184,
@@ -5163,7 +5238,8 @@
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1187,
@@ -5353,7 +5429,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1192,
@@ -5582,7 +5659,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1212,
@@ -5815,7 +5893,8 @@
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1218,
@@ -6291,7 +6370,8 @@
         "C:Features": "Autograph|Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1230,
@@ -7056,7 +7136,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1249,
@@ -7651,7 +7732,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1264,
@@ -7809,7 +7891,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1272,
@@ -8488,7 +8571,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1289,
@@ -8691,7 +8775,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1294,
@@ -8734,7 +8819,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1295,
@@ -9054,7 +9140,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1303,
@@ -10191,7 +10278,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1332,
@@ -10230,7 +10318,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1333,
@@ -10391,7 +10480,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1338,
@@ -10442,7 +10532,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1339,
@@ -11036,7 +11127,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1354,
@@ -13771,7 +13863,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1449,
@@ -16020,7 +16113,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1509,
@@ -16057,7 +16151,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1510,
@@ -18945,7 +19040,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1588,
@@ -18984,7 +19080,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1589,
@@ -19024,7 +19121,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|One of One|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1590,
@@ -22836,7 +22934,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1684,
@@ -23671,7 +23770,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1705,
@@ -24094,7 +24194,8 @@
         "C:Features": "Rookie|Serial Numbered|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1716,
@@ -24209,7 +24310,8 @@
         "C:Features": "Rookie|Serial Numbered",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1719,
@@ -24286,7 +24388,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1721,
@@ -24556,7 +24659,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1729,
@@ -24594,7 +24698,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1730,
@@ -24918,7 +25023,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1738,
@@ -24956,7 +25062,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1739,
@@ -25660,7 +25767,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1758,
@@ -26164,7 +26272,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1771,
@@ -26603,7 +26712,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1782,
@@ -26644,7 +26754,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1783,
@@ -26691,7 +26802,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1784,
@@ -26729,7 +26841,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1785,
@@ -26767,7 +26880,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1786,
@@ -26805,7 +26919,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1787,
@@ -26882,7 +26997,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1789,
@@ -26962,7 +27078,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1791,
@@ -27000,7 +27117,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1792,
@@ -27038,7 +27156,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1793,
@@ -27115,7 +27234,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1795,
@@ -27305,7 +27425,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1800,
@@ -28901,7 +29022,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1840,
@@ -29251,7 +29373,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1849,
@@ -29292,7 +29415,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1850,
@@ -29330,7 +29454,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1851,
@@ -29491,7 +29616,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1855,
@@ -29532,7 +29658,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1856,
@@ -29570,7 +29697,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1857,
@@ -29608,7 +29736,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1858,
@@ -29693,7 +29822,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1860,
@@ -29731,7 +29861,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1861,
@@ -29769,7 +29900,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1862,
@@ -29812,7 +29944,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1863,
@@ -29893,7 +30026,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1865,
@@ -29934,7 +30068,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1866,
@@ -29975,7 +30110,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1867,
@@ -30016,7 +30152,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1868,
@@ -30093,7 +30230,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1870,
@@ -30134,7 +30272,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1871,
@@ -30177,7 +30316,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1872,
@@ -30218,7 +30358,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1873,
@@ -30257,7 +30398,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1874,
@@ -30295,7 +30437,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1875,
@@ -30336,7 +30479,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1876,
@@ -30375,7 +30519,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1877,
@@ -30688,7 +30833,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1885,
@@ -30765,7 +30911,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 1887,
@@ -39122,7 +39269,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2148,
@@ -40269,7 +40417,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2182,
@@ -40459,7 +40608,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2187,
@@ -40708,7 +40858,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2193,
@@ -40746,7 +40897,8 @@
         "C:Features": "Rookie|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2194,
@@ -40822,7 +40974,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2196,
@@ -40860,7 +41013,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2197,
@@ -43359,7 +43513,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2260,
@@ -44309,7 +44464,8 @@
         "C:Features": "Rookie|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2286,
@@ -44862,7 +45018,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2302,
@@ -45342,7 +45499,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2314,
@@ -45534,7 +45692,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2319,
@@ -45571,7 +45730,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2320,
@@ -45646,7 +45806,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2322,
@@ -45685,7 +45846,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2323,
@@ -45724,7 +45886,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2324,
@@ -45761,7 +45924,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2325,
@@ -45798,7 +45962,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2326,
@@ -45955,7 +46120,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2331,
@@ -45992,7 +46158,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2332,
@@ -46154,7 +46321,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2336,
@@ -46254,7 +46422,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2338,
@@ -46409,7 +46578,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2342,
@@ -46446,7 +46616,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2343,
@@ -46756,7 +46927,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2351,
@@ -46871,7 +47043,8 @@
         "C:Features": "Autograph|Rookie",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2354,
@@ -46988,7 +47161,8 @@
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2357,
@@ -47025,7 +47199,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2358,
@@ -47062,7 +47237,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2359,
@@ -47105,7 +47281,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2360,
@@ -47146,7 +47323,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2361,
@@ -47262,7 +47440,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2364,
@@ -47421,7 +47600,8 @@
         "C:Features": "Rookie|Serial Numbered|Memorabilia",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2368,
@@ -49144,7 +49324,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2423,
@@ -50661,7 +50842,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2468,
@@ -51043,7 +51225,8 @@
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2478,
@@ -51774,7 +51957,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2498,
@@ -52006,7 +52190,8 @@
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2504,
@@ -52043,7 +52228,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2505,
@@ -52271,7 +52457,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2511,
@@ -52308,7 +52495,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2512,
@@ -52653,7 +52841,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2522,
@@ -52692,7 +52881,8 @@
         "C:Features": "Autograph|Rookie|Memorabilia|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2523,
@@ -54746,7 +54936,8 @@
         "C:Features": "Autograph|Rookie|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2579,
@@ -54906,7 +55097,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2584,
@@ -54943,7 +55135,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2585,
@@ -55674,7 +55867,8 @@
         "C:Features": "Autograph",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2604,
@@ -55953,7 +56147,8 @@
         "C:Features": "Autograph|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2612,
@@ -56029,7 +56224,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2614,
@@ -56068,7 +56264,8 @@
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2615,
@@ -56302,7 +56499,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2621,
@@ -56339,7 +56537,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2622,
@@ -56645,7 +56844,8 @@
         "C:Features": "Autograph|Short Print|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2630,
@@ -56723,7 +56923,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2632,
@@ -56760,7 +56961,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2633,
@@ -56874,7 +57076,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2636,
@@ -56989,7 +57192,8 @@
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2639,
@@ -58383,7 +58587,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2676,
@@ -58845,7 +59050,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2697,
@@ -58882,7 +59088,8 @@
         "C:Features": "Autograph|Short Print",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2930,
@@ -58913,7 +59120,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2931,
@@ -58944,7 +59152,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2932,
@@ -58975,7 +59184,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2933,
@@ -59006,7 +59216,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2934,
@@ -59037,7 +59248,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2935,
@@ -59068,7 +59280,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2936,
@@ -59102,7 +59315,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2937,
@@ -59133,7 +59347,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2938,
@@ -59167,7 +59382,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2939,
@@ -59201,7 +59417,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2940,
@@ -59235,7 +59452,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2941,
@@ -59266,7 +59484,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2943,
@@ -59297,7 +59516,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2944,
@@ -59328,7 +59548,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2945,
@@ -59359,7 +59580,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2946,
@@ -59393,7 +59615,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2947,
@@ -59424,7 +59647,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2948,
@@ -59460,7 +59684,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2949,
@@ -59495,7 +59720,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2950,
@@ -59530,7 +59756,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2951,
@@ -59565,7 +59792,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2973,
@@ -59600,7 +59828,8 @@
       "conditionNotes": [
         "On-card autograph"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2974,
@@ -59634,7 +59863,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2975,
@@ -59669,7 +59899,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2976,
@@ -59704,7 +59935,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 2977,
@@ -59738,7 +59970,8 @@
       "conditionNotes": [
         "Guide range listed"
       ]
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3033,
@@ -60100,7 +60333,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3043,
@@ -60317,7 +60551,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3049,
@@ -61559,7 +61794,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3084,
@@ -61596,7 +61832,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3085,
@@ -67358,7 +67595,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3355,
@@ -69394,7 +69632,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3409,
@@ -69432,7 +69671,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3410,
@@ -71699,7 +71939,8 @@
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3473,
@@ -71893,7 +72134,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3478,
@@ -72011,7 +72253,8 @@
         "C:Features": "Autograph|Rookie|Serial Numbered",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3481,
@@ -74079,7 +74322,8 @@
         "C:Features": "Autograph|Insert",
         "C:Autographed": "Yes"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3552,
@@ -74313,7 +74557,8 @@
         "C:Features": "Rookie",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3558,
@@ -74389,7 +74634,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3560,
@@ -74429,7 +74675,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3561,
@@ -74466,7 +74713,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3562,
@@ -74541,7 +74789,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3564,
@@ -74578,7 +74827,8 @@
         "C:Features": "Rookie|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3565,
@@ -74615,7 +74865,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3566,
@@ -74651,7 +74902,8 @@
         "C:Features": "Parallel/Variety",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3567,
@@ -74688,7 +74940,8 @@
         "C:Features": "Rookie|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3568,
@@ -74726,7 +74979,8 @@
         "C:Features": "Serial Numbered|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3569,
@@ -74768,7 +75022,8 @@
         "C:Features": "Rookie|Short Print|Parallel/Variety|Insert",
         "C:Autographed": "No"
       }
-    }
+    },
+    "hasThumbnail": true
   },
   {
     "id": 3570,

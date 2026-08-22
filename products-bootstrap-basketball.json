@@ -28,7 +28,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 417,
@@ -57,7 +58,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 418,
@@ -89,7 +91,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 419,
@@ -120,7 +123,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 420,
@@ -148,7 +152,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 421,
@@ -176,7 +181,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 422,
@@ -204,7 +210,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 425,
@@ -232,7 +239,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 430,
@@ -264,7 +272,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 435,
@@ -295,7 +304,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 438,
@@ -327,7 +337,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 443,
@@ -359,7 +370,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 447,
@@ -421,7 +433,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 465,
@@ -453,7 +466,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 466,
@@ -486,7 +500,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 473,
@@ -517,7 +532,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 475,
@@ -548,7 +564,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 476,
@@ -580,7 +597,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 479,
@@ -606,7 +624,8 @@
         "Autograph"
       ],
       "isFeatured": false,
-      "sortRank": 0
+      "sortRank": 0,
+      "hasThumbnail": true
     },
     {
       "id": 482,
@@ -638,7 +657,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 484,
@@ -669,7 +689,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 486,
@@ -701,7 +722,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 493,
@@ -732,7 +754,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 498,
@@ -763,7 +786,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 506,
@@ -795,7 +819,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 507,
@@ -828,7 +853,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 508,
@@ -860,7 +886,8 @@
         "conditionNotes": [
           "Guide range listed"
         ]
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 854,
@@ -932,7 +959,8 @@
           "C:Features": "Rookie",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 857,
@@ -968,7 +996,8 @@
           "C:Features": "Rookie",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 858,
@@ -1005,7 +1034,8 @@
           "C:Features": "Rookie|Short Print",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 860,
@@ -1041,7 +1071,8 @@
           "C:Features": "Rookie",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 864,
@@ -1076,7 +1107,8 @@
           "C:Features": "Short Print",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 869,
@@ -1191,7 +1223,8 @@
           "C:Features": "Autograph|Short Print",
           "C:Autographed": "Yes"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 880,
@@ -1228,7 +1261,8 @@
           "C:Features": "Rookie|Short Print",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 887,
@@ -1340,7 +1374,8 @@
           "C:Features": "Memorabilia",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 895,
@@ -1456,7 +1491,8 @@
           "C:Features": "Autograph|Rookie|Memorabilia|Parallel/Variety",
           "C:Autographed": "Yes"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 984,
@@ -1529,7 +1565,8 @@
           "C:Features": "Short Print|Insert",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 986,
@@ -1567,7 +1604,8 @@
           "C:Features": "Autograph|Serial Numbered|Short Print",
           "C:Autographed": "Yes"
         }
-      }
+      },
+      "hasThumbnail": true
     },
     {
       "id": 988,
@@ -1604,7 +1642,8 @@
           "C:Features": "Serial Numbered|Memorabilia",
           "C:Autographed": "No"
         }
-      }
+      },
+      "hasThumbnail": true
     }
   ]
 }

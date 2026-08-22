@@ -1736,7 +1736,7 @@ window.DJ = window.DJ || {};
           ${renderProductCardGalleryControls(product, cardGalleryCount)}
         </div>
         <div class="product-content">
-          <h3 id="${titleId}">${DJ.escapeHtml(product.name)}</h3>
+          <h2 id="${titleId}">${DJ.escapeHtml(product.name)}</h2>
           <span class="sr-only" id="${summaryId}">${accessibilitySummary || 'Catalog listing'}</span>
           ${cardAttributes.length ? `<div class="product-card-chip-rail">${renderAttributeTags(cardAttributes)}</div>` : ''}
           <div class="product-card-footer">
@@ -1747,7 +1747,7 @@ window.DJ = window.DJ || {};
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
-              ${isDirectCheckout ? `<button type="button" class="button-secondary add-cart-button" data-product-cart aria-label="${DJ.escapeHtml(`Add ${product.name} to cart`)}" aria-describedby="${summaryId}">Add to Cart</button>` : ''}
+              ${isDirectCheckout ? `<button type="button" class="button-secondary add-cart-button" data-product-cart aria-label="${DJ.escapeHtml(`Add to Cart: ${product.name}`)}" aria-describedby="${summaryId}">Add to Cart</button>` : ''}
               <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}" aria-describedby="${summaryId}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
