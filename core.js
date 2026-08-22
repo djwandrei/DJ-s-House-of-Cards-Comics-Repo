@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260821e';
+  const PRODUCT_ASSET_VERSION = '20260821f';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves out of the header to preserve the
   // logo/menu lockup on narrow mobile screens.
@@ -104,6 +104,13 @@ window.DJ = window.DJ || {};
 
   function versionedProductAsset(path) {
     return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
+  }
+
+  function versionedLocalProductImage(path) {
+    if (!/^assets\//i.test(path) || /(?:[?&])v=/.test(path)) {
+      return path;
+    }
+    return versionedProductAsset(path);
   }
 
   function loadScript(src) {
@@ -1468,7 +1475,7 @@ window.DJ = window.DJ || {};
         safeUrl,
         DJ.safeAssetUrl(lowerVariant),
         DJ.safeAssetUrl(upperVariant)
-      ].filter(Boolean))];
+      ].filter(Boolean).map(versionedLocalProductImage))];
     });
   };
 
