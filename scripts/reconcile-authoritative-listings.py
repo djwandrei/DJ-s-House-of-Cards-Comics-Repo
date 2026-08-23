@@ -23,7 +23,7 @@ from openpyxl import load_workbook
 
 
 DEFAULT_WORKBOOK = Path(
-    r"C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx"
+    r"C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx"
 )
 SOURCE_WORKBOOK = DEFAULT_WORKBOOK.name
 SOURCE_PAGE = "Non-Legacy Listings"
@@ -219,6 +219,27 @@ def existing_local_media(product: dict[str, Any] | None) -> list[str]:
     return output
 
 
+def existing_display_media(product: dict[str, Any] | None) -> list[str]:
+    """Preserve an established local-primary gallery, including supplemental remote views."""
+    if not product:
+        return []
+    gallery = product.get("imageGallery")
+    values = gallery if isinstance(gallery, list) else []
+    output: list[str] = []
+    seen: set[str] = set()
+    for value in [product.get("image"), *values]:
+        reference = text(value).replace("\\", "/")
+        if not reference or reference in seen:
+            continue
+        if reference.lower().startswith("assets/") and not Path(reference).is_file():
+            continue
+        if not reference.lower().startswith(("assets/", "http://", "https://")):
+            continue
+        seen.add(reference)
+        output.append(reference)
+    return output
+
+
 def product_identity(product: dict[str, Any]) -> dict[str, str]:
     fields = (product.get("metadata") or {}).get("excelFields") or {}
     return {
@@ -303,6 +324,27 @@ def match_rows(
         matches[row] = (product_id, method, evidence)
         unmatched_rows.remove(row)
         unmatched_ids.remove(product_id)
+
+    rows_by_metadata: dict[int, list[int]] = defaultdict(list)
+    for product_id in unmatched_ids:
+        metadata = product_by_id[product_id].get("metadata") or {}
+        if text(metadata.get("sourceSheet")) != SOURCE_SHEET:
+            continue
+        try:
+            row_number = int(metadata.get("excelRowNumber"))
+        except (TypeError, ValueError):
+            continue
+        rows_by_metadata[row_number].append(product_id)
+    for row in sorted(unmatched_rows):
+        candidate_ids = rows_by_metadata.get(row, [])
+        if len(candidate_ids) != 1:
+            continue
+        product_id = candidate_ids[0]
+        listing = listing_by_row[row]
+        product = product_by_id[product_id]
+        if listing["title_norm"] != normalized(product.get("name")):
+            continue
+        accept(row, product_id, "exact-row-title", {"excelRowNumber": row})
 
     tuple_rows: dict[tuple[str, ...], list[int]] = defaultdict(list)
     tuple_ids: dict[tuple[str, ...], list[int]] = defaultdict(list)
@@ -457,12 +499,16 @@ def build_product(
 ) -> dict[str, Any]:
     fields = copy.deepcopy(listing["fields"])
     photos = listing["photos"]
-    local_media = (
-        existing_local_media(old_product)
-        if match_method == "exact-photo-tuple"
-        else []
+    old_primary = text((old_product or {}).get("image")).replace("\\", "/")
+    has_local_primary = (
+        old_primary.lower().startswith("assets/") and Path(old_primary).is_file()
     )
-    display_media = local_media or photos
+    if match_method == "exact-row-title" and has_local_primary:
+        display_media = existing_display_media(old_product) or photos
+    elif match_method == "exact-photo-tuple":
+        display_media = existing_local_media(old_product) or photos
+    else:
+        display_media = photos
     price = price_value(fields.get("Start price"))
     quantity = quantity_value(fields.get("Quantity"))
     price_label = f"${price:,.2f}"

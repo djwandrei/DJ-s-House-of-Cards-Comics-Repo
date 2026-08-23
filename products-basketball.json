@@ -59,39 +59,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 418,
-    "name": "1980-81 Topps #98 47 Scott May/30 Larry Bird TL/232 Jack Sikma",
-    "category": "Basketball",
-    "team": "Boston Celtics",
-    "year": 1980,
-    "condition": "Ungraded",
-    "price": 40,
-    "priceLabel": "$15.00-$40.00",
-    "displayPrice": "$15.00-$40.00",
-    "image": "assets/basketball-cards/1980-81 Topps #98 47 Scott May - 30 Larry Bird TL - 232 Jack Sikma.jpeg",
-    "imageGallery": [
-      "assets/basketball-cards/1980-81 Topps #98 47 Scott May - 30 Larry Bird TL - 232 Jack Sikma.jpeg"
-    ],
-    "description": "",
-    "legacyImageLabel": "Bird30",
-    "sourcePage": "Basketball Cards",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "Larry Bird",
-    "attributes": [
-      "Serial Numbered"
-    ],
-    "isFeatured": false,
-    "sortRank": 0,
-    "metadata": {
-      "playerAthlete": "Larry Bird",
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 419,
     "name": "1980-81 Topps #111 88 John Long/18 Magic Johnson AS/237 Ron Boone",
     "category": "Basketball",
@@ -787,39 +754,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 506,
-    "name": "2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija",
-    "category": "Basketball",
-    "team": "Washington Wizards",
-    "year": 2020,
-    "condition": "Ungraded",
-    "price": 80,
-    "priceLabel": "$30.00-$80.00",
-    "displayPrice": "$30.00-$80.00",
-    "image": "assets/basketball-cards/2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija.jpg",
-    "imageGallery": [
-      "assets/basketball-cards/2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija.jpg"
-    ],
-    "description": "",
-    "legacyImageLabel": "AvdijaGPDA",
-    "sourcePage": "Basketball Cards",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "Deni Avdija",
-    "attributes": [
-      "Autograph",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "sortRank": 0,
-    "metadata": {
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 507,
     "name": "2020-21 Panini Prizm Draft Picks Prospect Autographs #6 Deni Avdija",
     "category": "Basketball",
@@ -836,39 +770,6 @@
     ],
     "description": "",
     "legacyImageLabel": "AvdijaPrizmAuto",
-    "sourcePage": "Basketball Cards",
-    "league": "NCAA",
-    "sport": "Basketball",
-    "playerAthlete": "Deni Avdija",
-    "attributes": [
-      "Autograph",
-      "Parallel/Variety"
-    ],
-    "isFeatured": false,
-    "sortRank": 0,
-    "metadata": {
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
-    "id": 508,
-    "name": "2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija",
-    "category": "Basketball",
-    "team": "Washington Wizards",
-    "year": 2020,
-    "condition": "Ungraded",
-    "price": 50,
-    "priceLabel": "$20.00-$50.00",
-    "displayPrice": "$20.00-$50.00",
-    "image": "assets/basketball-cards/2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija.jpg",
-    "imageGallery": [
-      "assets/basketball-cards/2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija.jpg"
-    ],
-    "description": "",
-    "legacyImageLabel": "AvdijaGreenPrizm",
     "sourcePage": "Basketball Cards",
     "league": "NCAA",
     "sport": "Basketball",
@@ -907,6 +808,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Magic Johnson|Michael Jordan",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -3497,6 +3401,7 @@
     "sport": "Basketball",
     "playerAthlete": "Karl-Anthony Towns",
     "attributes": [
+      "Base Set",
       "Insert"
     ],
     "isFeatured": false,
@@ -3684,6 +3589,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -11224,7 +11132,7 @@
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Draft Picks Jordan Burns Penmanship Orange Ice Rookie Auto (2).jpg"
     ],
     "description": "2021-22 Panini Prizm Draft Picks Jordan Burns Penmanship Orange Ice Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Prizm Draft Picks; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Picks Jordan; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Orange; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-draft-picks-jordan-burns-penmanship-orange-ice-rookie-auto-1.BujEYJe",
+    "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-draft-picks-jordan-burns-penmanship-orange-ice-rookie-auto-1.CtJ0yrb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -11263,7 +11171,7 @@
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Draft Picks Scottie Barnes Blue Prizm Rookie 199 (2).jpg"
     ],
     "description": "2021-22 Panini Prizm Draft Picks Scottie Barnes Blue Prizm Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Prizm Draft Picks; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Scottie Barnes; Team: Toronto Raptors; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-draft-picks-scottie-barnes-blue-prizm-rookie-199-1.BujGo21",
+    "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-draft-picks-scottie-barnes-blue-prizm-rookie-199-1.CtJ0th7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -12955,7 +12863,7 @@
       "assets/Ebay Listing Photos/2022-23/Bowman Best/BEST/2022-23 Bowman University Best Ernest Udeh Jr. Green Refractor Rookie Auto 99 (2).jpg"
     ],
     "description": "2022-23 Bowman University Best Ernest Udeh Jr. Green Refractor Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ernest Udeh; Team: TCU Horned Frogs; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-ernest-udeh-jr-green-refractor-rookie-auto-99-1.Buw9KEg",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-best-ernest-udeh-jr-green-refractor-rookie-auto-99-1.CtJ1JYx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -14513,7 +14421,7 @@
       "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Jared McCain Purple Refractor Rookie 399 (2).jpg"
     ],
     "description": "2022-23 Bowman University Chrome Jared McCain Purple Refractor Rookie /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jared McCain; Team: Philadelphia 76ers; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-jared-mccain-purple-refractor-rookie-399-1.BuwELtj",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-jared-mccain-purple-refractor-rookie-399-1.CtJE9nt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -30891,7 +30799,7 @@
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Finest Tyler Smith Refractor Rookie Auto #FA-TS (2).jpg"
     ],
     "description": "2022-23 Topps OTE Finest Tyler Smith Refractor Rookie Auto #FA-TS\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tyler Smith; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-tyler-smith-refractor-rookie-auto-fa-ts-1.Bue1yWG",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-tyler-smith-refractor-rookie-auto-fa-ts-1.CtJ1Z8v",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -38642,7 +38550,7 @@
       "assets/Ebay Listing Photos/2022-23/Bowman Best/Chrome/2022-23 Bowman University Chrome Chris Livingston Gold Refractor Auto 50 (2).jpg"
     ],
     "description": "2023-24 Bowman University Chrome Chris Livingston Gold Refractor Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Livingston; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BA70luS",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-23-bowman-university-chrome-chris-livingston-gold-refractor-auto-50-1.CtJ1FTB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -38681,7 +38589,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Chrome/2023-24 Bowman University Chrome Dalton Knecht Aqua Refractor Rookie 299 (2).jpg"
     ],
     "description": "2023-24 Bowman University Chrome Dalton Knecht Aqua Refractor Rookie /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Dalton Knecht; Team: Los Angeles Lakers; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAfavLb",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-chrome-dalton-knecht-aqua-refractor-rookie-299-1.CtJEFSf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -40763,7 +40671,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Panini NBA Hoops Asia Tari Eason Hyper Red Prizm 99 (2).jpg"
     ],
     "description": "2023-24 Panini NBA Hoops Asia Tari Eason Hyper Red Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Tari Eason; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAfzZLN",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-nba-hoops-asia-tari-eason-hyper-red-prizm-99-1.CtJEqAl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -42573,7 +42481,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Prizm Draft/2023-24 Panini Prizm Draft Picks Jared McCain Blue Prizm Rookie 199 (2).jpg"
     ],
     "description": "2023-24 Panini Prizm Draft Picks Jared McCain Blue Prizm Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm Draft Picks; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jared McCain; Team: Philadelphia 76ers; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAfb2Ra",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-panini-prizm-draft-picks-jared-mccain-blue-prizm-rookie-199-1.CtJGiYJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -44881,7 +44789,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Chrome Olivier-Maxence Prosper Gold Refractor Rookie Auto 50 (2).jpg"
     ],
     "description": "2023-24 Topps Chrome Olivier-Maxence Prosper Gold Refractor Rookie Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Olivier-Maxence Prosper; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAf8foJ",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-topps-chrome-olivier-maxence-prosper-gold-refractor-rookie-auto-50-1.CtJGP2a",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -49229,7 +49137,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Syla Swords Social Studies Black & White Refractor 48 (2).jpg"
     ],
     "description": "2024-25 Bowman U Chrome Syla Swords Social Studies Black & White Refractor /48\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Syla Swords; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Black; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAqW9tV",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-u-chrome-syla-swords-social-studies-black-and-white-refractor-48-1.CtJMbAx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -49381,7 +49289,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Aneesah Morrow Blue Refractor Rookie 150 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Aneesah Morrow Blue Refractor Rookie /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Aneesah Morrow; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAqxsEP",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-aneesah-morrow-blue-refractor-rookie-150-1.CtJGZIp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -49809,7 +49717,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Diamond Johnson Orange Refractor Auto 25 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Diamond Johnson Orange Refractor Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Diamond Johnson; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAqIe5u",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-diamond-johnson-orange-refractor-auto-25-1.CtJGDQI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -50036,7 +49944,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Jaden Akins Green Diamond Refractor Auto 99 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Jaden Akins Green Diamond Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jaden Akins; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAqTddX",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-jaden-akins-green-diamond-refractor-auto-99-1.CtJMPM7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -50268,7 +50176,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Kiki Iriafen Purple Refractor Rookie 250 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Kiki Iriafen Purple Refractor Rookie /250\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kiki Iriafen; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAqRqhJ",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-kiki-iriafen-purple-refractor-rookie-250-1.CtJM6nS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -50307,7 +50215,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Raven Johnson Field Day Red Refractor 10 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Raven Johnson Field Day Red Refractor /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Raven Johnson; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAq5cwg",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-raven-johnson-field-day-red-refractor-10-1.CtJMiP9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -50345,7 +50253,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto 99 (2).jpg"
     ],
     "description": "2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAq5UKl",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-robert-wright-iii-iso-green-refractor-auto-99-1.CtJMQcu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -51709,7 +51617,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Tyler Hendricks Black Wave Auto SP (1).jpg"
     ],
     "description": "2024-25 Bowman University Chrome Tyler Hendricks Black Wave Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Tyler Hendricks; Sport: Basketball; League: NCAA; Parallel/Variety: Wave, Black; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAq8uIe",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-chrome-tyler-hendricks-black-wave-auto-sp-1.CtJVGf9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -51862,7 +51770,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Donruss Keshad Johnson Signature Series Rookie Auto (2).jpg"
     ],
     "description": "2024-25 Donruss Keshad Johnson Signature Series Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Keshad Johnson; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAq1j1a",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-donruss-keshad-johnson-signature-series-rookie-auto-1.CtJV0VS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -53296,7 +53204,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Adem Bona Rookie Draft Picks Autographs DPA-ABN (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Adem Bona Rookie Draft Picks Autographs DPA-ABN\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Adem Bona; Team: Philadelphia 76ers; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BACEx3u",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-draft-picks-adem-bona-rookie-draft-picks-autographs-dpa-abn-1.CtJWTXV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -54792,7 +54700,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Tidjane Salaun Sensational Purple Ice Auto 99 (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Tidjane Salaun Sensational Purple Ice Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Tidjane Salaun; Team: Charlotte Hornets; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Purple; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BACwdzb",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-draft-picks-tidjane-salaun-sensational-purple-ice-auto-99-1.CtJWIzQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -54916,7 +54824,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Yves Missi Silver Prizm Rookie Auto #DPA-YMS (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Yves Missi Silver Prizm Rookie Auto #DPA-YMS\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Yves Missi; Team: New Orleans Pelicans; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BACru94",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-draft-picks-yves-missi-silver-prizm-rookie-auto-dpa-yms-1.CtJWn5b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -55577,7 +55485,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Chrome Oso Ighodaro Certified Purple Refractor Rookie Auto (2).jpg"
     ],
     "description": "2024-25 Topps Chrome Oso Ighodaro Certified Purple Refractor Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Chrome; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Oso Ighodaro; Team: Phoenix Suns; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Purple; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BAC1xbp",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-chrome-oso-ighodaro-certified-purple-refractor-rookie-auto-1.CtJW7rF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -56556,7 +56464,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor 199 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Bradley Beal Aqua Refractor /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Bradley Beal; Team: Phoenix Suns; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BABKkTN",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonalds-chrome-bradley-beal-aqua-refractor-199-1.CtJVVUu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -56824,7 +56732,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Donavan Freeman Gameday Event Auto SP #EA-DF\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Donavan Freeman; Sport: Basketball; League: NCAA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BABogGS",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonalds-chrome-donavan-freeman-gameday-event-auto-sp-ea-df-1.CtJVXHb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -57639,7 +57547,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 McDonalds/2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor 99 (2).jpg"
     ],
     "description": "2024-25 Topps McDonald's Chrome Kendall Dudley Purple Refractor /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kendall Dudley; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/BABG7kv",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-topps-mcdonalds-chrome-kendall-dudley-purple-refractor-99-1.CtJVhRj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -59619,111 +59527,6 @@
     "hasThumbnail": true
   },
   {
-    "id": 2947,
-    "name": "2012-13 Panini Brilliance Team Tomorrow #9 Damian Lillard",
-    "category": "Basketball",
-    "team": "Portland Trail Blazers",
-    "year": 2012,
-    "condition": "Ungraded",
-    "price": 30,
-    "priceLabel": "$12.00-$30.00",
-    "displayPrice": "$12.00-$30.00",
-    "image": "assets/basketball-cards/2012-13 Panini Brilliance Team Tomorrow #9 Damian Lillard.jpg",
-    "imageGallery": [
-      "assets/basketball-cards/2012-13 Panini Brilliance Team Tomorrow #9 Damian Lillard.jpg"
-    ],
-    "description": "",
-    "photoHostPageUrl": "https://www.beckett.com/basketball/2012-13/panini-brilliance-team-tomorrow/9-damian-lillard-9200356",
-    "legacyImageLabel": "2012-2013 Panini Brilliance Team Tomorrow 9 Damian Lillard",
-    "sourcePage": "Basketball 2010s",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "Damian Lillard",
-    "copyCount": 1,
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
-    "id": 2948,
-    "name": "2012-13 Panini Gold Standard #252 Iman Shumpert JSY AU RC EXCH",
-    "category": "Basketball",
-    "team": "New York Knicks",
-    "year": 2012,
-    "condition": "Ungraded",
-    "price": 12,
-    "priceLabel": "$5.00-$12.00",
-    "displayPrice": "$5.00-$12.00",
-    "image": "assets/basketball-cards/2012-13 Panini Gold Standard #252 Iman Shumpert JSY AU RC EXCH.jpg",
-    "imageGallery": [
-      "assets/basketball-cards/2012-13 Panini Gold Standard #252 Iman Shumpert JSY AU RC EXCH.jpg"
-    ],
-    "description": "",
-    "photoHostPageUrl": "https://www.beckett.com/basketball/2012-13/panini-gold-standard/252-iman-shumpert-jsy-au-rc-exch-9266184",
-    "legacyImageLabel": "2012-13 Panini Gold Standard 252 Iman Shumpert JSY AU RC EXCH",
-    "sourcePage": "Basketball 2010s",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "Iman Shumpert",
-    "copyCount": 1,
-    "attributes": [
-      "Autograph",
-      "Rookie",
-      "Memorabilia"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
-    "id": 2949,
-    "name": "2012-13 Panini Gold Standard Black Gold Threads #7 J.R. Smith/99",
-    "category": "Basketball",
-    "team": "New York Knicks",
-    "year": 2012,
-    "condition": "Ungraded",
-    "price": 12,
-    "priceLabel": "$5.00-$12.00",
-    "displayPrice": "$5.00-$12.00",
-    "image": "assets/basketball-cards/2012-13 Panini Gold Standard Black Gold Threads #7 J.R. Smith - 99.jpg",
-    "imageGallery": [
-      "assets/basketball-cards/2012-13 Panini Gold Standard Black Gold Threads #7 J.R. Smith - 99.jpg"
-    ],
-    "description": "",
-    "photoHostPageUrl": "https://www.beckett.com/basketball/2012-13/panini-gold-standard-black-gold-threads/7-jr-smith99-9267206",
-    "legacyImageLabel": "2012-2013 Panini Gold Standard Black Gold Threads 7 J.R. Smith 99",
-    "sourcePage": "Basketball 2010s",
-    "league": "NBA",
-    "sport": "Basketball",
-    "playerAthlete": "J.R. Smith",
-    "copyCount": 1,
-    "attributes": [
-      "Serial Numbered",
-      "Memorabilia"
-    ],
-    "isFeatured": false,
-    "isDeleted": false,
-    "sortRank": 0,
-    "metadata": {
-      "conditionNotes": [
-        "Guide range listed"
-      ]
-    },
-    "hasThumbnail": true
-  },
-  {
     "id": 2950,
     "name": "2012-13 Panini Gold Standard Black Gold Threads #56 Amar'e Stoudemire/149",
     "category": "Basketball",
@@ -60315,7 +60118,7 @@
       "assets/Ebay Listing Photos/2000-2010/2009-10 Panini Prestige Jeff Teague Rookie #169 (2).JPG"
     ],
     "description": "2009-10 Panini Prestige Jeff Teague Rookie #169\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2009-10 Panini Prestige; Season: 2009-10; Year manufactured: 2009; Player/Athlete: Jeff Teague; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2NpBQn",
+    "photoHostPageUrl": "https://freeimage.host/i/2009-10-panini-prestige-jeff-teague-rookie-169-1.CZU5ubR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -60533,7 +60336,7 @@
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Brilliance Andre Drummond Team Tommorow Rookie #7 (2).JPG"
     ],
     "description": "2012-13 Panini Brilliance Andre Drummond Team Tommorow Rookie #7\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Brilliance; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Andre Drummond; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2NpE3x",
+    "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-brilliance-andre-drummond-team-tommorow-rookie-7-1.CZUErfR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -61447,7 +61250,7 @@
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Zach Randolph Road to the Finals 2015 (2).JPG"
     ],
     "description": "2014-15 Panini NBA Hoops Zach Randolph Road to the Finals /2015\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini NBA Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Zach Randolph; Sport: Basketball; League: NBA; Features: Serial Numbered, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2NypUv",
+    "photoHostPageUrl": "https://freeimage.host/i/2014-15-panini-nba-hoops-zach-randolph-road-to-the-finals-2015-1.CZUhbse",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -61527,6 +61330,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Hassan Whiteside",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -61591,7 +61397,7 @@
       "assets/Ebay Listing Photos/2011-2018/2016 Panini North Carolina J.P. Tokoto Rookie Patch (2).jpg"
     ],
     "description": "2016 Panini North Carolina J.P. Tokoto Rookie Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini North Carolina; Season: 2016; Year manufactured: 2016; Player/Athlete: J.P. Tokoto; Team: North Carolina Tar Heels; Sport: Basketball; League: NCAA; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O9Cgf",
+    "photoHostPageUrl": "https://freeimage.host/i/2016-panini-north-carolina-jp-tokoto-rookie-patch-1.CZUhtz7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -61889,7 +61695,7 @@
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Contenders Dakota Mathias Rookie Ticket Auto (2).jpg"
     ],
     "description": "2020-21 Panini Contenders Dakota Mathias Rookie Ticket Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Dakota Mathias; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O961s",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-contenders-dakota-mathias-rookie-ticket-auto-1.CZUhpqu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -61964,7 +61770,7 @@
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Flux Kendriuck Nunn Gold Lazer Prizm 10 (2).jpg"
     ],
     "description": "2020-21 Panini Flux Kendriuck Nunn Gold Lazer Prizm /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Flux; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Kendrick Nunn; Sport: Basketball; League: NBA; Parallel/Variety: Gold Lazer Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O9Qkl",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-flux-kendriuck-nunn-gold-lazer-prizm-10-1.CZUhy0b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -62002,7 +61808,7 @@
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Flux Lonnie Walker Blue Prizm 99 (2).jpg"
     ],
     "description": "2020-21 Panini Flux Lonnie Walker Blue Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Flux; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Lonnie Walker; Sport: Basketball; League: NBA; Parallel/Variety: Blue Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O9DIS",
+    "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-flux-lonnie-walker-blue-prizm-99-1.CZUj9gj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -62879,7 +62685,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Chris Johnson Teal Refractor Auto 15 (2).jpg"
     ],
     "description": "2023-24 Bowman University Best Chris Johnson Teal Refractor Auto /15\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Chris Johnson; Team: Stephen F. Austin Lumberjacks; Sport: Basketball; League: NCAA; Parallel/Variety: Teal Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJ1oP",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-chris-johnson-teal-refractor-auto-15-1.CZUwent",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -62918,7 +62724,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Mookie Cook Masterpieces Refractor Auto 75 (2).jpg"
     ],
     "description": "2023-24 Bowman University Best Mookie Cook Masterpieces Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Mookie Cook; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJGiF",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-mookie-cook-masterpieces-refractor-auto-75-1.CZUwkMX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -62957,7 +62763,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Bowman Best/2023-24 Bowman University Best Mookie Cook Red Geometric Refractor 10 (2).jpg"
     ],
     "description": "2023-24 Bowman University Best Mookie Cook Red Geometric Refractor /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Mookie Cook; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Red Geometric Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJXUJ",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-university-best-mookie-cook-red-geometric-refractor-10-1.CZUwUcG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -63110,7 +62916,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Mcdonalds/2023-24 Topps McDonald's Chrome Isaiah Collier Pink Refractor Rookie 150 (2).jpg"
     ],
     "description": "2023-24 Topps McDonald's Chrome Isaiah Collier Pink Refractor Rookie /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps McDonald's Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Isaiah Collier; Sport: Basketball; League: NCAA; Parallel/Variety: Pink Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJgls",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-topps-mcdonalds-chrome-isaiah-collier-pink-refractor-rookie-150-1.CZUOSp4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -63187,7 +62993,7 @@
       "assets/Ebay Listing Photos/2023-24/2023-24 Mcdonalds/2023-24 Topps McDonald's Chrome Mookie Cook Refractor Auto (3).jpg"
     ],
     "description": "2023-24 Topps McDonald's Chrome Mookie Cook Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps McDonald's Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Mookie Cook; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OJiOl",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-topps-mcdonalds-chrome-mookie-cook-refractor-auto-1.CZUOrj2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -64019,7 +63825,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Panini NIL/2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm 50 (2).jpg"
     ],
     "description": "2024-25 Panini Contenders UConn Youssouf Singare College Ticket Red Prizm /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Contenders; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Youssouf Singare; Sport: Basketball; League: NBA; Parallel/Variety: Red Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2Ods2a",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-contenders-uconn-youssouf-singare-college-ticket-red-prizm-50-1.CtJYDl4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64057,7 +63863,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Panini NBA Hoops Devin Carter Rise N' Shine Rookie Patch (2).jpg"
     ],
     "description": "2024-25 Panini NBA Hoops Devin Carter Rise N' Shine Rookie Patch\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Devin Carter; Sport: Basketball; League: NBA; Features: Rookie, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OdQkv",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-devin-carter-rise-n-and-039-shine-rookie-patch-1.CZUOgTl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64095,7 +63901,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Panini NBA Hoops Halloween Ivica Zubac Green Bats 399 (2).jpg"
     ],
     "description": "2024-25 Panini NBA Hoops Halloween Ivica Zubac Green Bats /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Ivica Zubac; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OdDIp",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-halloween-ivica-zubac-green-bats-399-1.CZUO4QS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64133,7 +63939,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Panini NBA Hoops Halloween Stephon Castle Orange Pumpkin Rookie (2).JPG"
     ],
     "description": "2024-25 Panini NBA Hoops Halloween Stephon Castle Orange Pumpkin Rookie\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Stephon Castle; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OdmQI",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-halloween-stephon-castle-orange-pumpkin-rookie-1.CZUOQ3u",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64171,7 +63977,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Panini NBA Hoops Reed Sheppard Tribute Blue Rookie 175 (2).jpg"
     ],
     "description": "2024-25 Panini NBA Hoops Reed Sheppard Tribute Blue Rookie /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Reed Sheppard; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O29EX",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-reed-sheppard-tribute-blue-rookie-175-1.CZUOZYb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64210,7 +64016,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Hoops + Donruss/2024-25 Panini NBA Hoops Reggie Jackson Blue Prizm 99 (2).jpg"
     ],
     "description": "2024-25 Panini NBA Hoops Reggie Jackson Blue Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini NBA Hoops; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Reggie Jackson; Sport: Basketball; League: NBA; Parallel/Variety: Blue Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O2d2s",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-nba-hoops-reggie-jackson-blue-prizm-99-1.CZUOtvj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64359,7 +64165,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Mark Mitchell Sensational Orange Prizm Auto 49 (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Mark Mitchell Sensational Orange Prizm Auto /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Mark Mitchell; Team: Duke Blue Devils; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Prizm; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O2TYb",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-draft-picks-mark-mitchell-sensational-orange-prizm-auto-49-1.CtJa9O7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -64436,7 +64242,7 @@
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Zoom Diallo Rated Prospect Blue Prizm 199 (2).jpg"
     ],
     "description": "2024-25 Panini Prizm Draft Picks Zoom Diallo Rated Prospect Blue Prizm /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Zoom Diallo; Sport: Basketball; League: NCAA; Parallel/Variety: Blue Prizm; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O2YZB",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-25-panini-prizm-draft-picks-zoom-diallo-rated-prospect-blue-prizm-199-1.CtJadxe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
@@ -64924,7 +64730,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Panini + UD/2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green 499 (2).jpg"
     ],
     "description": "2025 Upper Deck Goodwin Champions Bianca Bustamante All-World Green /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Upper Deck; Set: 2025 Upper Deck Goodwin Champions; Season: 2025; Year manufactured: 2025; Player/Athlete: Bianca Bustamante; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O3otp",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-upper-deck-goodwin-champions-bianca-bustamante-all-world-green-499-1.CtJlooF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -64967,6 +64773,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Cameron Brink",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -65033,7 +64842,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Bowman/2025-26 Bowman Chrome Alijah Martin Yellow Refractor Rookie Auto 75 (2).JPG"
     ],
     "description": "2025-26 Bowman Chrome Alijah Martin Yellow Refractor Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Alijah Martin; Sport: Basketball; League: NBA; Parallel/Variety: Yellow Refractor; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O3YHG",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-bowman-chrome-alijah-martin-yellow-refractor-rookie-auto-75-1.CtJlJ6b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -65222,7 +65031,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Bowman/2025-26 Bowman Chrome Isaiah Collier Black Refractor 10 (2).JPG"
     ],
     "description": "2025-26 Bowman Chrome Isaiah Collier Black Refractor /10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2025-26 Bowman Chrome; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Isaiah Collier; Sport: Basketball; League: NBA; Parallel/Variety: Black Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2O3vWB",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-bowman-chrome-isaiah-collier-black-refractor-10-1.CtJlHMu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -66155,7 +65964,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Topps/2025-26 Topps Dirk Nowitzki Gold 2025 (2).jpg"
     ],
     "description": "2025-26 Topps Dirk Nowitzki Gold /2025\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Dirk Nowitzki; Sport: Basketball; League: NBA; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OqdmJ",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-dirk-nowitzki-gold-2025-1.CtJ050b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -66230,7 +66039,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Topps/2025-26 Topps Isaiah Joe Gold Border 2025 (2).jpg"
     ],
     "description": "2025-26 Topps Isaiah Joe Gold Border /2025\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Isaiah Joe; Sport: Basketball; League: NBA; Parallel/Variety: Gold Border; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OqImG",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-isaiah-joe-gold-border-2025-1.CtJ0use",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -66268,7 +66077,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Topps/2025-26 Topps Keldon Johnson Gold 2025 (2).jpg"
     ],
     "description": "2025-26 Topps Keldon Johnson Gold /2025\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Keldon Johnson; Sport: Basketball; League: NBA; Parallel/Variety: Gold; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2OqAX4",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-keldon-johnson-gold-2025-1.CtJ0Iz7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -66306,7 +66115,7 @@
       "assets/Ebay Listing Photos/2025-26/2025-26 Topps/2025-26 Topps Klay Thompson 8-Bit Ballers Holo Foil 150 (2).jpg"
     ],
     "description": "2025-26 Topps Klay Thompson 8-Bit Ballers Holo Foil /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Klay Thompson; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Foil; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2Oql29",
+    "photoHostPageUrl": "https://freeimage.host/i/2025-26-topps-klay-thompson-8-bit-ballers-holo-foil-150-1.CtJ0TX9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
@@ -68070,6 +67879,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Giannis Antetokounmpo",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -68253,6 +68065,9 @@
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -73555,8 +73370,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73594,8 +73410,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73636,8 +73453,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73678,8 +73496,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73716,8 +73535,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73755,8 +73575,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73795,8 +73616,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73835,8 +73657,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73873,8 +73696,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73917,8 +73741,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73956,8 +73781,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -73996,8 +73822,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74034,8 +73861,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74072,8 +73900,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74114,8 +73943,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74154,8 +73984,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -74194,8 +74025,9 @@
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Short Print",
-      "Insert"
+      "Base Set",
+      "Insert",
+      "Short Print"
     ],
     "isFeatured": false,
     "isDeleted": false,
@@ -76470,13 +76302,13 @@
     "price": 11.95,
     "priceLabel": "$11.95",
     "displayPrice": "$11.95",
-    "image": "https://iili.io/CL9VhOl.jpg",
+    "image": "https://iili.io/CtJOHmu.jpg",
     "imageGallery": [
-      "https://iili.io/CL9VhOl.jpg",
+      "https://iili.io/CtJOHmu.jpg",
       "https://iili.io/CL9VWJf.jpg"
     ],
     "description": "2023-24 Bowman U Best DJ Wagner Greatness Awaits Gold Refractor /50\n\nDetails: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2023-24 Bowman University Best; Season: 2023-24; Year: 2023; Player/Athlete: DJ Wagner; Team: Kentucky Wildcats; Sport: Basketball; League: NCAA; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-best-dj-wagner-greatness-awaits-gold-refractor-50-1.CL9VhOl",
+    "photoHostPageUrl": "https://freeimage.host/i/2023-24-bowman-u-best-dj-wagner-greatness-awaits-gold-refractor-50-1.CtJOHmu",
     "sourcePage": "Non-Legacy Listings",
     "league": "NCAA",
     "sport": "Basketball",

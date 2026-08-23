@@ -22,7 +22,7 @@ PRODUCTS_PATH = ROOT / "products.json"
 OUTPUT_DIR = ROOT / "outputs" / "nonlegacy-workbook-audit"
 
 AUTHORITATIVE_WORKBOOK = Path(
-    r"C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx"
+    r"C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx"
 )
 SOURCE_SHEET = "Listings"
 WORKBOOKS = [AUTHORITATIVE_WORKBOOK]
@@ -260,26 +260,23 @@ def derive_expected_attributes(fields: dict[str, Any]) -> list[str]:
         clean_text(fields.get(name))
         for name in [
             "Title",
-            "Description",
             "C:Features",
-            "C:Autographed",
-            "C:Player/Athlete",
-            "C:Team",
-            "CD:Professional Grader - (ID: 27501)",
-            "CD:Grade - (ID: 27502)",
+            "C:Parallel/Variety",
         ]
     ).lower()
     title_text = clean_text(fields.get("Title")).lower()
     autographed = clean_text(fields.get("C:Autographed")).lower()
     if re.search(r"\brookies?\b|\brc\b|\brookie related\b|\brated rookie\b|\bpre[- ]rookie\b", text):
         add_attribute(attributes, "Rookie")
-    if (
-        re.search(
-            r"\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bsigs?\b|\bink\b|\bscript(?:s)?\b|\binscriptions?\b|\bpenmanship\b|\bsignature(?!\s+rookies)\b|\bpsa/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b",
-            text,
+    if autographed == "yes" or (
+        not autographed
+        and (
+            re.search(
+                r"\bauto(?:s|graph(?:ed|s)?|graphed|s)?\b|\bau\b|\bsigned\b|\bsignatures\b|\bsigs?\b|\bink\b|\bscript(?:s)?\b|\binscriptions?\b|\bpenmanship\b|\bsignature(?!\s+rookies)\b|\bpsa/dna certified authentic\b|\b(?:sticker|on-card|hard-signed)\s+auto\b",
+                text,
+            )
+            or re.search(r"\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b", text)
         )
-        or re.search(r"\bsignature\s+(?:series|shots|marks|materials|patch|jersey|memorabilia|autographs?)\b", text)
-        or autographed == "yes"
     ):
         add_attribute(attributes, "Autograph")
     if has_serial_signal(title_text):
@@ -301,7 +298,7 @@ def derive_expected_attributes(fields: dict[str, Any]) -> list[str]:
         add_attribute(attributes, "Memorabilia")
     if (
         re.search(
-            r"\bparallel\b|\bvariation\b|\bvariety\b|\brefractors?\b|\bprizms?\b|\bfoils?\b|\bholo(?:foil)?\b|\bshimmer\b|\bwave\b|\blava\b|\bpulsar\b|\bspeckle\b|\bmojo\b|\bice\b|\bglitter\b|\bsapphire\b|\bx-?fractor\b|\bdie[- ]cut\b|\bpress proof\b",
+            r"\bparallel\b|\bvariation\b|\bvariety\b|\brefractors?\b|\bfoils?\b|\bholo(?:foil)?\b|\bshimmer\b|\bwave\b|\blava\b|\bpulsar\b|\bspeckle\b|\bmojo\b|\bice\b|\bglitter\b|\bsapphire\b|\bx-?fractor\b|\bdie[- ]cut\b|\bpress proof\b",
             text,
         )
         or re.search(

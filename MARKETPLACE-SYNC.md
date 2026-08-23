@@ -22,7 +22,7 @@ non-legacy workbook listings may be activated or published to TikTok and
 Whatnot.
 
 The authoritative non-legacy marketplace input is the `Listings` sheet in
-`C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx`.
+`C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx`.
 The workbook's other sheets remain review/staging material and are not catalog
 inputs.
 

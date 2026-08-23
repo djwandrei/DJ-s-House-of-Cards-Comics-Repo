@@ -513,7 +513,621 @@ function productImageUrls(product: Record<string, unknown>) {
   const candidates = [product.image, ...gallery]
     .map((item) => absoluteImageUrl(String(item || '')))
     .filter(Boolean);
-  return [...new Set(candidates)].slice(0, 10);
+  return [...new Set(candidates)].slice(0, PRODUCT_MEDIA_SNAPSHOT_LIMIT);
+}
+
+async function currentShopifyProductMedia(shopifyProductId: unknown) {
+  const productGid = shopifyGid('Product', numericId(shopifyProductId, 'product id'));
+  const data = await shopifyGraphql<{
+    product?: {
+      id: string;
+      media?: {
+        nodes?: Array<{
+          id: string;
+          alt?: string | null;
+          mediaContentType?: string | null;
+          status?: string | null;
+          preview?: { image?: { url?: string | null } | null } | null;
+          image?: { url?: string | null; width?: number | null; height?: number | null } | null;
+        }>;
+        pageInfo?: { hasNextPage?: boolean };
+      } | null;
+    } | null;
+  }>(
+    `query CurrentProductMedia($id: ID!, $first: Int!) {
+      product(id: $id) {
+        id
+        media(first: $first) {
+          nodes {
+            id
+            alt
+            mediaContentType
+            status
+            preview {
+              image {
+                url
+              }
+            }
+            ... on MediaImage {
+              image {
+                url
+                width
+                height
+              }
+            }
+          }
+          pageInfo {
+            hasNextPage
+          }
+        }
+      }
+    }`,
+    { id: productGid, first: PRODUCT_MEDIA_SNAPSHOT_LIMIT }
+  );
+  if (!data.product) throw new Error('The mapped Shopify product was not found.');
+  if (data.product.media?.pageInfo?.hasNextPage) {
+    throw new Error('The Shopify product media connection exceeded the supported audit limit.');
+  }
+  return data.product.media?.nodes || [];
+}
+
+async function waitForShopifyProductMediaCount(shopifyProductId: unknown, expectedCount: number) {
+  let media = await currentShopifyProductMedia(shopifyProductId);
+  for (let attempt = 1; media.length !== expectedCount && attempt < 8; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 750));
+    media = await currentShopifyProductMedia(shopifyProductId);
+  }
+  return media;
+}
+
+type ProductMediaReplacement = {
+  id?: string;
+  originalSource?: string;
+  expectedPosition?: number;
+  expectedWidth?: number;
+  expectedHeight?: number;
+  expectedNewWidth?: number;
+  expectedNewHeight?: number;
+};
+
+type ProductMediaAddition = {
+  originalSource?: string;
+  alt?: string;
+  desiredPosition?: number;
+};
+
+type ProductMediaDetachment = {
+  id?: string;
+  expectedPosition?: number;
+  expectedWidth?: number;
+  expectedHeight?: number;
+};
+
+type ProductMediaMove = {
+  id?: string;
+  newPosition?: number;
+};
+
+function mediaImageId(value: unknown) {
+  const id = String(value || '').trim();
+  if (!/^gid:\/\/shopify\/MediaImage\/\d+$/.test(id)) {
+    throw new Error('A valid Shopify MediaImage ID is required.');
+  }
+  return id;
+}
+
+function mediaSourceUrl(value: unknown) {
+  const source = String(value || '').trim();
+  try {
+    const url = new URL(source);
+    if (url.protocol !== 'https:') throw new Error('Only HTTPS media sources are supported.');
+    return url.href;
+  } catch {
+    throw new Error('A valid HTTPS media source URL is required.');
+  }
+}
+
+function mediaSourceKey(value: unknown) {
+  const url = new URL(mediaSourceUrl(value));
+  if (url.username || url.password || url.port) {
+    throw new Error('Media source URLs cannot include credentials or a custom port.');
+  }
+  const hostname = url.hostname.toLowerCase();
+  let pathname = url.pathname;
+  if (hostname === 'iili.io') pathname = pathname.replace(/\.md(?=\.[a-z0-9]+$)/i, '');
+  return `${hostname}${pathname}`;
+}
+
+function authorizedProductMediaSourceKeysByPosition(product: Record<string, unknown>) {
+  const websiteSources = productImageUrls(product);
+  const sourcesByPosition = websiteSources.map((source) => [source]);
+  const metadata = product.metadata && typeof product.metadata === 'object'
+    ? product.metadata as Record<string, unknown>
+    : {};
+  const excelFields = metadata.excelFields && typeof metadata.excelFields === 'object'
+    ? metadata.excelFields as Record<string, unknown>
+    : {};
+  for (const [key, value] of Object.entries(excelFields)) {
+    if (!/(?:photo|picture|image).*url|url.*(?:photo|picture|image)/i.test(key) || typeof value !== 'string') continue;
+    const workbookSources = value.split(/[|\r\n]+/).map((item) => item.trim()).filter(Boolean);
+    workbookSources.forEach((source, index) => {
+      if (sourcesByPosition[index]) sourcesByPosition[index].push(source);
+    });
+  }
+  return sourcesByPosition.map((sources) => new Set(sources.flatMap((source) => {
+    try { return [mediaSourceKey(source)]; } catch { return []; }
+  })));
+}
+
+function positiveIntegerOrNull(value: unknown) {
+  const numeric = Number(value);
+  return Number.isSafeInteger(numeric) && numeric > 0 ? numeric : null;
+}
+
+async function repairProductMedia(
+  productId: number,
+  options: {
+    dryRun?: boolean;
+    confirmProductId?: number;
+    replacements?: ProductMediaReplacement[];
+    additions?: ProductMediaAddition[];
+    detachments?: ProductMediaDetachment[];
+    expectedCurrentMediaIds?: string[];
+  } = {}
+) {
+  const [{ data: product, error: productError }, { data: mapping, error: mappingError }] = await Promise.all([
+    admin.from('products').select('*').eq('id', productId).single(),
+    admin.from('shopify_product_mappings').select('*').eq('product_id', productId).single()
+  ]);
+  if (productError) throw productError;
+  if (mappingError) throw mappingError;
+  if (sourceClass(product) !== 'nonlegacy') {
+    throw new Error(`Product ${productId} is not a non-legacy listing.`);
+  }
+  if (product.is_deleted !== false) throw new Error(`Product ${productId} is deleted.`);
+
+  const replacements = (Array.isArray(options.replacements) ? options.replacements : []).map((item) => ({
+    id: mediaImageId(item?.id),
+    originalSource: mediaSourceUrl(item?.originalSource),
+    expectedPosition: positiveIntegerOrNull(item?.expectedPosition),
+    expectedWidth: positiveIntegerOrNull(item?.expectedWidth),
+    expectedHeight: positiveIntegerOrNull(item?.expectedHeight),
+    expectedNewWidth: positiveIntegerOrNull(item?.expectedNewWidth),
+    expectedNewHeight: positiveIntegerOrNull(item?.expectedNewHeight)
+  }));
+  const additions = (Array.isArray(options.additions) ? options.additions : []).map((item) => {
+    const desiredPosition = Number(item?.desiredPosition);
+    return {
+      originalSource: mediaSourceUrl(item?.originalSource),
+      alt: String(item?.alt || product.name || `Listing #${productId}`).trim().slice(0, 512),
+      desiredPosition: Number.isSafeInteger(desiredPosition) && desiredPosition > 0 ? desiredPosition : null
+    };
+  });
+  const detachments = (Array.isArray(options.detachments) ? options.detachments : []).map((item) => ({
+    id: mediaImageId(item?.id),
+    expectedPosition: positiveIntegerOrNull(item?.expectedPosition),
+    expectedWidth: positiveIntegerOrNull(item?.expectedWidth),
+    expectedHeight: positiveIntegerOrNull(item?.expectedHeight)
+  }));
+  if (!replacements.length && !additions.length && !detachments.length) {
+    throw new Error('At least one Shopify media repair operation is required.');
+  }
+
+  const operationCount = Number(replacements.length > 0) + Number(additions.length > 0) + Number(detachments.length > 0);
+  if (operationCount !== 1) {
+    throw new Error('Each repair request must contain exactly one media operation type.');
+  }
+  if (additions.length > 1) {
+    throw new Error('Media additions must be submitted one at a time for deterministic ID tracking.');
+  }
+
+  const replacementIds = new Set(replacements.map((item) => item.id));
+  const detachmentIds = new Set(detachments.map((item) => item.id));
+  if (replacementIds.size !== replacements.length || detachmentIds.size !== detachments.length) {
+    throw new Error('Duplicate Shopify media IDs are not allowed in a repair request.');
+  }
+  if ([...replacementIds].some((id) => detachmentIds.has(id))) {
+    throw new Error('A Shopify media item cannot be replaced and detached in the same repair request.');
+  }
+
+  const desiredSources = productImageUrls(product);
+  if (!desiredSources.length) throw new Error(`Product ${productId} has no website media to sync.`);
+  const authorizedSourcesByPosition = authorizedProductMediaSourceKeysByPosition(product);
+  for (const item of replacements) {
+    if (item.expectedPosition === null
+      || !authorizedSourcesByPosition[item.expectedPosition - 1]?.has(mediaSourceKey(item.originalSource))) {
+      throw new Error(`The requested replacement source does not match website product ${productId} at its audited position.`);
+    }
+  }
+  for (const item of additions) {
+    if (item.desiredPosition === null
+      || !authorizedSourcesByPosition[item.desiredPosition - 1]?.has(mediaSourceKey(item.originalSource))) {
+      throw new Error(`The requested addition source does not match website product ${productId} at its desired position.`);
+    }
+  }
+  const currentMedia = await currentShopifyProductMedia(mapping.shopify_product_id);
+  const currentMediaIds = currentMedia.map((item) => mediaImageId(item.id));
+  const expectedCurrentMediaIds = (Array.isArray(options.expectedCurrentMediaIds)
+    ? options.expectedCurrentMediaIds
+    : []).map(mediaImageId);
+  if (options.dryRun === false && !expectedCurrentMediaIds.length) {
+    throw new Error('The ordered expectedCurrentMediaIds snapshot is required to apply a media repair.');
+  }
+  if (expectedCurrentMediaIds.length && (
+    expectedCurrentMediaIds.length !== currentMediaIds.length
+    || expectedCurrentMediaIds.some((id, index) => id !== currentMediaIds[index])
+  )) {
+    throw new Error(`The ordered media snapshot for product ${productId} is stale.`);
+  }
+  const currentIds = new Set(currentMedia.map((item) => item.id));
+  const missingIds = [...replacementIds, ...detachmentIds].filter((id) => !currentIds.has(id));
+  if (missingIds.length) {
+    throw new Error(`The repair plan is stale; ${missingIds.length} media item(s) are no longer attached to product ${productId}.`);
+  }
+  for (const item of [...replacements, ...detachments]) {
+    const index = currentMedia.findIndex((media) => media.id === item.id);
+    const media = currentMedia[index];
+    if (item.expectedPosition !== null && item.expectedPosition !== index + 1) {
+      throw new Error(`Media ${item.id} is no longer at audited position ${item.expectedPosition}.`);
+    }
+    if (item.expectedWidth !== null && item.expectedWidth !== Number(media?.image?.width || 0)) {
+      throw new Error(`Media ${item.id} no longer has audited width ${item.expectedWidth}.`);
+    }
+    if (item.expectedHeight !== null && item.expectedHeight !== Number(media?.image?.height || 0)) {
+      throw new Error(`Media ${item.id} no longer has audited height ${item.expectedHeight}.`);
+    }
+  }
+
+  const plannedFinalCount = currentMedia.length + additions.length - detachments.length;
+  if (additions.length && plannedFinalCount > desiredSources.length) {
+    throw new Error(
+      `The repair plan would leave ${plannedFinalCount} media item(s), but website product ${productId} has ${desiredSources.length}.`
+    );
+  }
+  if (detachments.length && plannedFinalCount < desiredSources.length) {
+    throw new Error(
+      `The detachment plan would leave fewer than the ${desiredSources.length} media item(s) on website product ${productId}.`
+    );
+  }
+
+  const shopifyProductGid = shopifyGid('Product', numericId(mapping.shopify_product_id, 'product id'));
+  const plan = {
+    productId,
+    shopifyProductId: Number(mapping.shopify_product_id),
+    title: String(product.name || `Listing #${productId}`),
+    currentCount: currentMedia.length,
+    desiredCount: desiredSources.length,
+    currentMedia: currentMedia.map((item) => ({
+      id: item.id,
+      url: item.image?.url || item.preview?.image?.url || null,
+      width: item.image?.width || null,
+      height: item.image?.height || null,
+      status: item.status || null
+    })),
+    replacements,
+    additions,
+    detachments
+  };
+  if (options.dryRun !== false) return { dryRun: true, ...plan };
+  if (Number(options.confirmProductId) !== productId) {
+    throw new Error('A matching productId and confirmProductId are required to repair Shopify media.');
+  }
+  if (replacements.some((item) => (
+    item.expectedPosition === null
+    || item.expectedWidth === null
+    || item.expectedHeight === null
+    || item.expectedNewWidth === null
+    || item.expectedNewHeight === null
+  ))) {
+    throw new Error('Audited old/new position and dimension evidence is required for every media replacement.');
+  }
+  if (detachments.some((item) => (
+    item.expectedPosition === null || item.expectedWidth === null || item.expectedHeight === null
+  ))) {
+    throw new Error('Audited position and dimension evidence is required for every media detachment.');
+  }
+
+  const replacementResults = [];
+  if (replacements.length) {
+    const data = await shopifyGraphql<{
+      fileUpdate: {
+        files?: Array<{
+          id: string;
+          fileStatus?: string | null;
+          image?: { width?: number | null; height?: number | null } | null;
+        } | null>;
+        userErrors?: Array<{ code?: string; field?: string[]; message?: string }>;
+      };
+    }>(
+      `mutation ReplaceProductMediaFiles($files: [FileUpdateInput!]!) {
+        fileUpdate(files: $files) {
+          files {
+            id
+            fileStatus
+            ... on MediaImage {
+              image {
+                width
+                height
+              }
+            }
+          }
+          userErrors {
+            code
+            field
+            message
+          }
+        }
+      }`,
+      {
+        files: replacements.map((item) => ({
+          id: item.id,
+          originalSource: item.originalSource
+        }))
+      },
+      60_000
+    );
+    if (data.fileUpdate.userErrors?.length) {
+      throw new Error(data.fileUpdate.userErrors
+        .map((error) => `${error.field?.join('.') || 'media'}: ${error.message || 'Unknown media replacement error'}`)
+        .join('; '));
+    }
+    replacementResults.push(...(data.fileUpdate.files || []).filter(Boolean));
+    if (replacementResults.length !== replacements.length) {
+      throw new Error(`Shopify confirmed ${replacementResults.length} of ${replacements.length} media replacement(s).`);
+    }
+  }
+
+  let addedMedia: Array<{ id: string; alt?: string | null; status?: string | null }> = [];
+  if (additions.length) {
+    const data = await shopifyGraphql<{
+      productUpdate: {
+        product?: {
+          id: string;
+          media?: { nodes?: Array<{ id: string; alt?: string | null; status?: string | null }> } | null;
+        } | null;
+        userErrors?: Array<{ field?: string[]; message?: string }>;
+      };
+    }>(
+      `mutation AddProductMedia($product: ProductUpdateInput!, $media: [CreateMediaInput!]) {
+        productUpdate(product: $product, media: $media) {
+          product {
+            id
+            media(first: 100) {
+              nodes {
+                id
+                alt
+                status
+              }
+            }
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }`,
+      {
+        product: { id: shopifyProductGid },
+        media: additions.map((item) => ({
+          originalSource: item.originalSource,
+          alt: item.alt,
+          mediaContentType: 'IMAGE'
+        }))
+      },
+      60_000
+    );
+    if (data.productUpdate.userErrors?.length) {
+      throw new Error(data.productUpdate.userErrors
+        .map((error) => `${error.field?.join('.') || 'media'}: ${error.message || 'Unknown media addition error'}`)
+        .join('; '));
+    }
+    const returnedMedia = data.productUpdate.product?.media?.nodes || [];
+    addedMedia = returnedMedia.filter((item) => !currentIds.has(item.id));
+    if (addedMedia.length !== additions.length) {
+      const refreshedMedia = await waitForShopifyProductMediaCount(
+        mapping.shopify_product_id,
+        currentMedia.length + additions.length
+      );
+      addedMedia = refreshedMedia.filter((item) => !currentIds.has(item.id));
+    }
+    if (addedMedia.length !== additions.length) {
+      throw new Error(`Shopify returned ${addedMedia.length} of ${additions.length} newly added media item(s).`);
+    }
+  }
+
+  const detachmentResults = [];
+  if (detachments.length) {
+    const data = await shopifyGraphql<{
+      fileUpdate: {
+        files?: Array<{ id: string; fileStatus?: string | null } | null>;
+        userErrors?: Array<{ code?: string; field?: string[]; message?: string }>;
+      };
+    }>(
+      `mutation DetachStaleProductMedia($files: [FileUpdateInput!]!) {
+        fileUpdate(files: $files) {
+          files {
+            id
+            fileStatus
+          }
+          userErrors {
+            code
+            field
+            message
+          }
+        }
+      }`,
+      {
+        files: detachments.map((item) => ({ id: item.id, referencesToRemove: [shopifyProductGid] }))
+      },
+      60_000
+    );
+    if (data.fileUpdate.userErrors?.length) {
+      throw new Error(data.fileUpdate.userErrors
+        .map((error) => `${error.field?.join('.') || 'media'}: ${error.message || 'Unknown media detachment error'}`)
+        .join('; '));
+    }
+    detachmentResults.push(...(data.fileUpdate.files || []).filter(Boolean));
+    if (detachmentResults.length !== detachments.length) {
+      throw new Error(`Shopify confirmed ${detachmentResults.length} of ${detachments.length} media detachment(s).`);
+    }
+  }
+
+  const finalMedia = await waitForShopifyProductMediaCount(mapping.shopify_product_id, plannedFinalCount);
+  if (finalMedia.length !== plannedFinalCount) {
+    throw new Error(
+      `Shopify currently reports ${finalMedia.length} media item(s), but the reviewed operation expected ${plannedFinalCount}.`
+    );
+  }
+  const replacementsVerified = replacements.every((replacement) => {
+    const media = finalMedia.find((item) => item.id === replacement.id);
+    return media?.status === 'READY'
+      && Number(media.image?.width || 0) === replacement.expectedNewWidth
+      && Number(media.image?.height || 0) === replacement.expectedNewHeight;
+  });
+  return {
+    dryRun: false,
+    ...plan,
+    replacementResults,
+    addedMedia,
+    detachmentResults,
+    finalCount: finalMedia.length,
+    replacementsVerified
+  };
+}
+
+async function inspectProductMedia(productId: number) {
+  const [{ data: product, error: productError }, { data: mapping, error: mappingError }] = await Promise.all([
+    admin.from('products').select('*').eq('id', productId).single(),
+    admin.from('shopify_product_mappings').select('*').eq('product_id', productId).single()
+  ]);
+  if (productError) throw productError;
+  if (mappingError) throw mappingError;
+  const media = await currentShopifyProductMedia(mapping.shopify_product_id);
+  return {
+    productId,
+    shopifyProductId: Number(mapping.shopify_product_id),
+    title: String(product.name || `Listing #${productId}`),
+    desiredCount: productImageUrls(product).length,
+    media: media.map((item, index) => ({
+      position: index + 1,
+      id: item.id,
+      alt: item.alt || null,
+      status: item.status || null,
+      url: item.image?.url || item.preview?.image?.url || null,
+      width: item.image?.width || null,
+      height: item.image?.height || null
+    }))
+  };
+}
+
+async function reorderProductMedia(
+  productId: number,
+  options: {
+    dryRun?: boolean;
+    confirmProductId?: number;
+    moves?: ProductMediaMove[];
+    expectedCurrentMediaIds?: string[];
+  } = {}
+) {
+  const [{ data: product, error: productError }, { data: mapping, error: mappingError }] = await Promise.all([
+    admin.from('products').select('*').eq('id', productId).single(),
+    admin.from('shopify_product_mappings').select('*').eq('product_id', productId).single()
+  ]);
+  if (productError) throw productError;
+  if (mappingError) throw mappingError;
+  if (sourceClass(product) !== 'nonlegacy' || product.is_deleted !== false) {
+    throw new Error(`Product ${productId} is not an active non-legacy listing.`);
+  }
+
+  const currentMedia = await currentShopifyProductMedia(mapping.shopify_product_id);
+  const currentMediaIds = currentMedia.map((item) => mediaImageId(item.id));
+  const desiredCount = productImageUrls(product).length;
+  if (currentMedia.length !== desiredCount) {
+    throw new Error(`Product ${productId} must have its final media count before reordering.`);
+  }
+  const expectedCurrentMediaIds = (Array.isArray(options.expectedCurrentMediaIds)
+    ? options.expectedCurrentMediaIds
+    : []).map(mediaImageId);
+  if (options.dryRun === false && !expectedCurrentMediaIds.length) {
+    throw new Error('The ordered expectedCurrentMediaIds snapshot is required to apply a media reorder.');
+  }
+  if (expectedCurrentMediaIds.length && (
+    expectedCurrentMediaIds.length !== currentMediaIds.length
+    || expectedCurrentMediaIds.some((id, index) => id !== currentMediaIds[index])
+  )) {
+    throw new Error(`The ordered media snapshot for product ${productId} is stale.`);
+  }
+
+  const moves = (Array.isArray(options.moves) ? options.moves : []).map((item) => {
+    const id = mediaImageId(item?.id);
+    const newPosition = Number(item?.newPosition);
+    if (!Number.isSafeInteger(newPosition) || newPosition < 0 || newPosition >= currentMedia.length) {
+      throw new Error(`A valid zero-based media position is required for ${id}.`);
+    }
+    if (!currentMediaIds.includes(id)) throw new Error(`Media ${id} is not attached to product ${productId}.`);
+    return { id, newPosition };
+  }).sort((left, right) => left.newPosition - right.newPosition);
+  if (!moves.length) throw new Error('At least one media move is required.');
+  if (new Set(moves.map((item) => item.id)).size !== moves.length
+    || new Set(moves.map((item) => item.newPosition)).size !== moves.length) {
+    throw new Error('Media reorder IDs and positions must be unique.');
+  }
+  const plan = { productId, currentMediaIds, moves };
+  if (options.dryRun !== false) return { dryRun: true, ...plan };
+  if (Number(options.confirmProductId) !== productId) {
+    throw new Error('A matching productId and confirmProductId are required to reorder Shopify media.');
+  }
+
+  const shopifyProductGid = shopifyGid('Product', numericId(mapping.shopify_product_id, 'product id'));
+  const result = await shopifyGraphql<{
+    productReorderMedia: {
+      job?: { id: string; done: boolean } | null;
+      mediaUserErrors?: Array<{ code?: string; field?: string[]; message?: string }>;
+    };
+  }>(
+    `mutation ReorderProductMedia($id: ID!, $moves: [MoveInput!]!) {
+      productReorderMedia(id: $id, moves: $moves) {
+        job {
+          id
+          done
+        }
+        mediaUserErrors {
+          code
+          field
+          message
+        }
+      }
+    }`,
+    {
+      id: shopifyProductGid,
+      moves: moves.map((item) => ({ id: item.id, newPosition: String(item.newPosition) }))
+    }
+  );
+  if (result.productReorderMedia.mediaUserErrors?.length) {
+    throw new Error(result.productReorderMedia.mediaUserErrors
+      .map((error) => `${error.field?.join('.') || 'media'}: ${error.message || 'Unknown media reorder error'}`)
+      .join('; '));
+  }
+
+  let job = result.productReorderMedia.job || null;
+  for (let attempt = 1; job && !job.done && attempt < 12; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const status = await shopifyGraphql<{ job?: { id: string; done: boolean } | null }>(
+      `query ReorderMediaJob($id: ID!) { job(id: $id) { id done } }`,
+      { id: job.id }
+    );
+    job = status.job || job;
+  }
+
+  const finalMedia = await currentShopifyProductMedia(mapping.shopify_product_id);
+  const orderVerified = Boolean(job?.done) && moves.every((move) => finalMedia[move.newPosition]?.id === move.id);
+  return {
+    dryRun: false,
+    ...plan,
+    job,
+    orderVerified,
+    finalMediaIds: finalMedia.map((item) => item.id)
+  };
 }
 
 async function loadInventoryItems() {
@@ -1846,6 +2460,255 @@ async function bootstrapMappings() {
   return { mapped: rows.length, skipped: skipped.length, skippedItems: skipped.slice(0, 50) };
 }
 
+async function preferredShopifyLocationId() {
+  const { data, error } = await admin
+    .from('shopify_product_mappings')
+    .select('shopify_location_id')
+    .not('shopify_location_id', 'is', null)
+    .order('product_id', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  const locationId = numericId(data?.shopify_location_id, 'location id');
+  const location = await shopifyGraphql<{
+    location?: { id: string; legacyResourceId: string; name: string; isActive: boolean } | null;
+  }>(
+    `query PreferredInventoryLocation($id: ID!) {
+      location(id: $id) {
+        id
+        legacyResourceId
+        name
+        isActive
+      }
+    }`,
+    { id: shopifyGid('Location', locationId) }
+  );
+  if (!location.location?.isActive || Number(location.location.legacyResourceId) !== locationId) {
+    throw new Error('The mapped Shopify inventory location is unavailable or inactive.');
+  }
+  return locationId;
+}
+
+async function importMissingShopifyProduct(
+  productId: number,
+  options: { dryRun?: boolean; confirmProductId?: number } = {}
+) {
+  const [{ data: product, error: productError }, { data: existingMapping, error: mappingError }] = await Promise.all([
+    admin.from('products').select('*').eq('id', productId).single(),
+    admin.from('shopify_product_mappings').select('*').eq('product_id', productId).maybeSingle()
+  ]);
+  if (productError) throw productError;
+  if (mappingError) throw mappingError;
+  if (existingMapping) {
+    return { dryRun: options.dryRun !== false, productId, alreadyMapped: true, mapping: existingMapping };
+  }
+  if (sourceClass(product) !== 'nonlegacy') {
+    throw new Error(`Product ${productId} is not a non-legacy listing.`);
+  }
+  if (product.is_deleted !== false) throw new Error(`Product ${productId} is deleted.`);
+
+  const price = directCheckoutPrice(product);
+  if (price === null) throw new Error(`Product ${productId} does not have a direct checkout price.`);
+  const quantity = Math.max(0, Math.floor(Number(product.quantity_available) || 0));
+  const desiredSources = productImageUrls(product);
+  if (!desiredSources.length) throw new Error(`Product ${productId} has no website media to import.`);
+  const locationId = await preferredShopifyLocationId();
+  const plan = {
+    productId,
+    sku: `DJHC-${productId}`,
+    title: String(product.name || `Listing #${productId}`),
+    price: price.toFixed(2),
+    quantity,
+    locationId,
+    desiredSources
+  };
+  const existingHandle = await shopifyGraphql<{
+    product?: {
+      legacyResourceId: string;
+      handle: string;
+      variants?: { nodes?: Array<{ sku?: string | null }> } | null;
+    } | null;
+  }>(
+    `query ExistingImportHandle($identifier: ProductIdentifierInput!) {
+      product: productByIdentifier(identifier: $identifier) {
+        legacyResourceId
+        handle
+        variants(first: 2) {
+          nodes {
+            sku
+          }
+        }
+      }
+    }`,
+    { identifier: { handle: `djhc-${productId}` } }
+  );
+  const existingHandleSkus = existingHandle.product?.variants?.nodes?.map((variant) => String(variant.sku || '')) || [];
+  if (existingHandle.product && (
+    existingHandleSkus.length !== 1 || existingHandleSkus[0] !== plan.sku
+  )) {
+    throw new Error(`Shopify handle djhc-${productId} already belongs to a different SKU configuration.`);
+  }
+  if (options.dryRun !== false) return { dryRun: true, ...plan };
+  if (Number(options.confirmProductId) !== productId) {
+    throw new Error('A matching productId and confirmProductId are required to import a Shopify product.');
+  }
+
+  const existingItem = (await loadInventoryItems()).find((item) => item.sku === plan.sku);
+  if (existingItem) {
+    const variant = existingItem.variants?.nodes?.[0];
+    const level = existingItem.inventoryLevels?.nodes?.find((item) => (
+      Number(item.location.legacyResourceId) === locationId
+    )) || existingItem.inventoryLevels?.nodes?.[0];
+    if (!variant || !level) {
+      throw new Error(`Shopify SKU ${plan.sku} exists without a usable variant or inventory location.`);
+    }
+    const recoveredMapping = {
+      product_id: productId,
+      sku: plan.sku,
+      source_class: 'nonlegacy',
+      publish_enabled: false,
+      shop_domain: shopifyShopDomain(),
+      shopify_product_id: numericId(variant.product.legacyResourceId, 'product id'),
+      shopify_variant_id: numericId(variant.legacyResourceId, 'variant id'),
+      shopify_inventory_item_id: numericId(existingItem.legacyResourceId, 'inventory item id'),
+      shopify_location_id: numericId(level.location.legacyResourceId, 'location id'),
+      shopify_handle: variant.product.handle || `djhc-${productId}`,
+      last_shopify_quantity: availableQuantity(level),
+      last_synced_at: new Date().toISOString()
+    };
+    const { error } = await admin
+      .from('shopify_product_mappings')
+      .upsert(recoveredMapping, { onConflict: 'product_id' });
+    if (error) throw error;
+    return { dryRun: false, productId, recoveredExistingSku: true, mapping: recoveredMapping };
+  }
+
+  const data = await shopifyGraphql<{
+    productSet: {
+      product?: {
+        legacyResourceId: string;
+        handle: string;
+        status: string;
+        variants?: {
+          nodes?: Array<{
+            legacyResourceId: string;
+            sku?: string | null;
+            inventoryItem: { legacyResourceId: string };
+          }>;
+        } | null;
+        media?: { nodes?: Array<{ id: string; status?: string | null }> } | null;
+      } | null;
+      userErrors?: Array<{ code?: string; field?: string[]; message?: string }>;
+    };
+  }>(
+    `mutation ImportCatalogProduct($identifier: ProductSetIdentifiers, $input: ProductSetInput!) {
+      productSet(identifier: $identifier, input: $input, synchronous: true) {
+        product {
+          legacyResourceId
+          handle
+          status
+          variants(first: 1) {
+            nodes {
+              legacyResourceId
+              sku
+              inventoryItem {
+                legacyResourceId
+              }
+            }
+          }
+          media(first: 250) {
+            nodes {
+              id
+              status
+            }
+          }
+        }
+        userErrors {
+          code
+          field
+          message
+        }
+      }
+    }`,
+    {
+      identifier: { handle: `djhc-${productId}` },
+      input: {
+        title: plan.title,
+        descriptionHtml: productDescriptionHtml(product),
+        handle: `djhc-${productId}`,
+        productType: shopifyProductType(product.category),
+        vendor: "DJ's House of Cards & Comics",
+        tags: productTags(product, 'nonlegacy'),
+        status: 'DRAFT',
+        files: desiredSources.map((originalSource) => ({
+          alt: plan.title.slice(0, 512),
+          contentType: 'IMAGE',
+          originalSource
+        })),
+        productOptions: [{
+          name: 'Title',
+          position: 1,
+          values: [{ name: 'Default Title' }]
+        }],
+        variants: [{
+          inventoryItem: { tracked: true },
+          inventoryPolicy: 'DENY',
+          inventoryQuantities: [{
+            locationId: shopifyGid('Location', locationId),
+            name: 'available',
+            quantity
+          }],
+          optionValues: [{ optionName: 'Title', name: 'Default Title' }],
+          price: plan.price,
+          sku: plan.sku,
+          taxable: true
+        }]
+      }
+    },
+    60_000
+  );
+  const result = data.productSet;
+  if (result.userErrors?.length) {
+    throw new Error(
+      result.userErrors
+        .map((error) => `${error.field?.join('.') || 'product'}: ${error.message || 'Unknown import error'}`)
+        .join('; ')
+    );
+  }
+  const createdProduct = result.product;
+  const createdVariant = createdProduct?.variants?.nodes?.[0];
+  if (!createdProduct || !createdVariant?.inventoryItem) {
+    throw new Error(`Shopify did not return the created product resources for ${productId}.`);
+  }
+
+  const mapping = {
+    product_id: productId,
+    sku: plan.sku,
+    source_class: 'nonlegacy',
+    publish_enabled: false,
+    shop_domain: shopifyShopDomain(),
+    shopify_product_id: numericId(createdProduct.legacyResourceId, 'product id'),
+    shopify_variant_id: numericId(createdVariant.legacyResourceId, 'variant id'),
+    shopify_inventory_item_id: numericId(createdVariant.inventoryItem.legacyResourceId, 'inventory item id'),
+    shopify_location_id: locationId,
+    shopify_handle: createdProduct.handle || `djhc-${productId}`,
+    last_shopify_quantity: quantity,
+    last_synced_at: new Date().toISOString()
+  };
+  const { error: upsertError } = await admin
+    .from('shopify_product_mappings')
+    .upsert(mapping, { onConflict: 'product_id' });
+  if (upsertError) throw upsertError;
+  return {
+    dryRun: false,
+    ...plan,
+    created: true,
+    status: createdProduct.status,
+    syncedMediaCount: createdProduct.media?.nodes?.length || 0,
+    mapping
+  };
+}
+
 async function syncProduct(productId: number) {
   const [{ data: product, error: productError }, { data: mapping, error: mappingError }] = await Promise.all([
     admin.from('products').select('*').eq('id', productId).single(),
@@ -2310,6 +3173,11 @@ Deno.serve(async (request) => {
     channels?: string[];
     confirmProductId?: number;
     reason?: string;
+    mediaReplacements?: ProductMediaReplacement[];
+    mediaAdditions?: ProductMediaAddition[];
+    mediaDetachments?: ProductMediaDetachment[];
+    mediaMoves?: ProductMediaMove[];
+    expectedCurrentMediaIds?: string[];
   } = {};
   try {
     payload = await readJsonBody(request, 64 * 1024);
@@ -2321,6 +3189,58 @@ Deno.serve(async (request) => {
     switch (payload.action) {
       case 'bootstrap-mappings':
         return respond({ ok: true, result: await bootstrapMappings() });
+      case 'import-missing-product': {
+        const productId = Number(payload.productId);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
+          return respond({ error: 'A valid productId is required.' }, 400);
+        }
+        return respond({
+          ok: true,
+          result: await importMissingShopifyProduct(productId, {
+            dryRun: payload.dryRun !== false,
+            confirmProductId: payload.confirmProductId
+          })
+        });
+      }
+      case 'repair-product-media': {
+        const productId = Number(payload.productId);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
+          return respond({ error: 'A valid productId is required.' }, 400);
+        }
+        return respond({
+          ok: true,
+          result: await repairProductMedia(productId, {
+            dryRun: payload.dryRun !== false,
+            confirmProductId: payload.confirmProductId,
+            replacements: payload.mediaReplacements,
+            additions: payload.mediaAdditions,
+            detachments: payload.mediaDetachments,
+            expectedCurrentMediaIds: payload.expectedCurrentMediaIds
+          })
+        });
+      }
+      case 'inspect-product-media': {
+        const productId = Number(payload.productId);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
+          return respond({ error: 'A valid productId is required.' }, 400);
+        }
+        return respond({ ok: true, result: await inspectProductMedia(productId) });
+      }
+      case 'reorder-product-media': {
+        const productId = Number(payload.productId);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
+          return respond({ error: 'A valid productId is required.' }, 400);
+        }
+        return respond({
+          ok: true,
+          result: await reorderProductMedia(productId, {
+            dryRun: payload.dryRun !== false,
+            confirmProductId: payload.confirmProductId,
+            moves: payload.mediaMoves,
+            expectedCurrentMediaIds: payload.expectedCurrentMediaIds
+          })
+        });
+      }
       case 'sync-product': {
         const productId = Number(payload.productId);
         if (!Number.isSafeInteger(productId) || productId <= 0) {

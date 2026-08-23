@@ -2484,6 +2484,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -4884,6 +4887,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -7360,6 +7366,9 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Aaron Rodgers",
+    "attributes": [
+      "Base Set"
+    ],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -9062,7 +9071,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2022 Panini Contenders Optic Mark Andrews Red Prizm 175 (2).jpg"
     ],
     "description": "2022 Panini Contenders Optic Mark Andrews Red Prizm /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022 Panini Contenders Optic; Season: 2022; Year manufactured: 2022; Player/Athlete: Mark Andrews; Sport: Football; League: NFL; Parallel/Variety: Red Prizm, Optic; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2Otkut",
+    "photoHostPageUrl": "https://freeimage.host/i/2022-panini-contenders-optic-mark-andrews-red-prizm-175-1.CtJOEIs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
     "sport": "Football",
@@ -9403,7 +9412,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto (2).jpg"
     ],
     "description": "2024 Skybox Metal Universe Champions Ali Jennings III Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: SkyBox; Set: 2024 Skybox Metal Universe Champions; Season: 2024; Year manufactured: 2024; Player/Athlete: Ali Jennings III; Sport: Football; League: NFL; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/C2ODMRS",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-skybox-metal-universe-champions-ali-jennings-iii-rookie-auto-1.CtJOGhG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
     "sport": "Football",
@@ -12324,10 +12333,10 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
+    "image": "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
     "imageGallery": [
-      "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
-      "assets/Ebay Listing Photos/Football/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (2).JPG"
+      "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2014-2026/2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387 (2).JPG"
     ],
     "description": "2025 Topps Chrome Jacoby Croskey-Merritt Yellow X-Fractor Rookie #387\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025 Topps Chrome; Season: 2025; Year: 2025; Player/Athlete: Jacory Croskey-Merritt; Team: Washington Commanders; Sport: Football; League: NFL; Parallel/Variety: Yellow X-Fractor; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2025-topps-chrome-jacoby-croskey-merritt-yellow-x-fractor-rookie-387-1.CL9ow4n",
@@ -12362,13 +12371,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 3.95,
     "priceLabel": "$3.95",
     "displayPrice": "$3.95",
-    "image": "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
+    "image": "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
     "imageGallery": [
-      "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
-      "assets/Ebay Listing Photos/Football/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (2).JPG"
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2 (2).JPG"
     ],
     "description": "2024 Sage Deshaun Fenwick Blue Rookie Auto #A-DF2\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Deshaun Fenwick; Team: Oregon State Beavers; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-deshaun-fenwick-blue-rookie-auto-a-df2-1.CL9ol2a",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-deshaun-fenwick-blue-rookie-auto-a-df2-1.CtJwiPV",
     "sourcePage": "Non-Legacy Listings",
     "league": "NCAA",
     "sport": "Football",
@@ -12401,13 +12410,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 4.95,
     "priceLabel": "$4.95",
     "displayPrice": "$4.95",
-    "image": "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
+    "image": "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
     "imageGallery": [
-      "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
-      "assets/Ebay Listing Photos/Football/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (2).JPG"
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (1).JPG",
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5 (2).JPG"
     ],
     "description": "2024 Sage Juwan Mitchell Blue Rookie Auto #A-JM5\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Juwan Mitchell; Team: Louisville Cardinals; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-juwan-mitchell-blue-rookie-auto-a-jm5-1.CL9o1kv",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-juwan-mitchell-blue-rookie-auto-a-jm5-1.CtJwQcP",
     "sourcePage": "Non-Legacy Listings",
     "league": "NCAA",
     "sport": "Football",
@@ -12440,13 +12449,13 @@ window.DJ_PRELOADED_PRODUCTS = [
     "price": 2.95,
     "priceLabel": "$2.95",
     "displayPrice": "$2.95",
-    "image": "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
+    "image": "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
     "imageGallery": [
-      "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
-      "assets/Ebay Listing Photos/Football/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (2).JPG"
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (1).JPG",
+      "assets/Ebay Listing Photos/Football/2014-2026/2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG (2).JPG"
     ],
     "description": "2024 Sage Nick Gargiulo Blue Rookie Auto #A-NG\n\nDetails: Type: Sports Trading Card; Manufacturer: SAGE; Set: 2024 SAGE; Season: 2024; Year: 2024; Player/Athlete: Nick Gargiulo; Team: South Carolina Gamecocks; Sport: Football; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
-    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-nick-gargiulo-blue-rookie-auto-a-ng-1.CL9oWQI",
+    "photoHostPageUrl": "https://freeimage.host/i/2024-sage-nick-gargiulo-blue-rookie-auto-a-ng-1.CtJOdzb",
     "sourcePage": "Non-Legacy Listings",
     "league": "NCAA",
     "sport": "Football",

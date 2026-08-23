@@ -14,7 +14,7 @@ This site is a static storefront with Supabase-backed catalog administration and
 ## Sources Of Truth
 
 - Non-legacy listings: the `Listings` sheet in
-  `C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-20-2026.xlsx`.
+  `C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx`.
   The workbook's other sheets are review/staging material, not catalog inputs.
 - Live catalog: Supabase `products`.
 - Deployable static fallback: `products.json` and generated category catalog files.

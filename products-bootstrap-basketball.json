@@ -1,6 +1,6 @@
 {
   "source": "products-basketball.json",
-  "total": 1955,
+  "total": 1949,
   "products": [
     {
       "id": 416,
@@ -51,39 +51,6 @@
       "league": "NBA",
       "sport": "Basketball",
       "playerAthlete": "Larry Bird",
-      "isFeatured": false,
-      "sortRank": 0,
-      "metadata": {
-        "playerAthlete": "Larry Bird",
-        "conditionNotes": [
-          "Guide range listed"
-        ]
-      },
-      "hasThumbnail": true
-    },
-    {
-      "id": 418,
-      "name": "1980-81 Topps #98 47 Scott May/30 Larry Bird TL/232 Jack Sikma",
-      "category": "Basketball",
-      "team": "Boston Celtics",
-      "year": 1980,
-      "condition": "Ungraded",
-      "price": 40,
-      "priceLabel": "$15.00-$40.00",
-      "displayPrice": "$15.00-$40.00",
-      "image": "assets/basketball-cards/1980-81 Topps #98 47 Scott May - 30 Larry Bird TL - 232 Jack Sikma.jpeg",
-      "imageGallery": [
-        "assets/basketball-cards/1980-81 Topps #98 47 Scott May - 30 Larry Bird TL - 232 Jack Sikma.jpeg"
-      ],
-      "description": "",
-      "legacyImageLabel": "Bird30",
-      "sourcePage": "Basketball Cards",
-      "league": "NBA",
-      "sport": "Basketball",
-      "playerAthlete": "Larry Bird",
-      "attributes": [
-        "Serial Numbered"
-      ],
       "isFeatured": false,
       "sortRank": 0,
       "metadata": {
@@ -790,39 +757,6 @@
       "hasThumbnail": true
     },
     {
-      "id": 506,
-      "name": "2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija",
-      "category": "Basketball",
-      "team": "Washington Wizards",
-      "year": 2020,
-      "condition": "Ungraded",
-      "price": 80,
-      "priceLabel": "$30.00-$80.00",
-      "displayPrice": "$30.00-$80.00",
-      "image": "assets/basketball-cards/2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija.jpg",
-      "imageGallery": [
-        "assets/basketball-cards/2020-21 Panini Contenders Draft Picks Game Day Prospect Ticket Autographs Cracked Ice #7 Deni Avdija.jpg"
-      ],
-      "description": "",
-      "legacyImageLabel": "AvdijaGPDA",
-      "sourcePage": "Basketball Cards",
-      "league": "NBA",
-      "sport": "Basketball",
-      "playerAthlete": "Deni Avdija",
-      "attributes": [
-        "Autograph",
-        "Parallel/Variety"
-      ],
-      "isFeatured": false,
-      "sortRank": 0,
-      "metadata": {
-        "conditionNotes": [
-          "Guide range listed"
-        ]
-      },
-      "hasThumbnail": true
-    },
-    {
       "id": 507,
       "name": "2020-21 Panini Prizm Draft Picks Prospect Autographs #6 Deni Avdija",
       "category": "Basketball",
@@ -839,39 +773,6 @@
       ],
       "description": "",
       "legacyImageLabel": "AvdijaPrizmAuto",
-      "sourcePage": "Basketball Cards",
-      "league": "NCAA",
-      "sport": "Basketball",
-      "playerAthlete": "Deni Avdija",
-      "attributes": [
-        "Autograph",
-        "Parallel/Variety"
-      ],
-      "isFeatured": false,
-      "sortRank": 0,
-      "metadata": {
-        "conditionNotes": [
-          "Guide range listed"
-        ]
-      },
-      "hasThumbnail": true
-    },
-    {
-      "id": 508,
-      "name": "2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija",
-      "category": "Basketball",
-      "team": "Washington Wizards",
-      "year": 2020,
-      "condition": "Ungraded",
-      "price": 50,
-      "priceLabel": "$20.00-$50.00",
-      "displayPrice": "$20.00-$50.00",
-      "image": "assets/basketball-cards/2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija.jpg",
-      "imageGallery": [
-        "assets/basketball-cards/2020-21 Panini Prizm Draft Picks Prospect Autographs Green #6 Deni Avdija.jpg"
-      ],
-      "description": "",
-      "legacyImageLabel": "AvdijaGreenPrizm",
       "sourcePage": "Basketball Cards",
       "league": "NCAA",
       "sport": "Basketball",
@@ -910,6 +811,9 @@
       "league": "NBA",
       "sport": "Basketball",
       "playerAthlete": "Magic Johnson|Michael Jordan",
+      "attributes": [
+        "Base Set"
+      ],
       "isFeatured": false,
       "isDeleted": false,
       "sortRank": 0,
@@ -1640,6 +1544,125 @@
         "excelFields": {
           "Title": "2012-13 Panini Contenders Thaddeus Young Contenders Materials Patch /79 #44",
           "C:Features": "Serial Numbered|Memorabilia",
+          "C:Autographed": "No"
+        }
+      },
+      "hasThumbnail": true
+    },
+    {
+      "id": 989,
+      "name": "2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP /49",
+      "category": "Basketball",
+      "team": "San Antonio Spurs",
+      "year": 2012,
+      "condition": "Near mint or better",
+      "price": 9.95,
+      "priceLabel": "$9.95",
+      "displayPrice": "$9.95",
+      "image": "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP 49 (1).jpg",
+      "imageGallery": [
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP 49 (1).jpg",
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP 49 (2).jpg"
+      ],
+      "description": "2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crown Royale; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Corey Joseph; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+      "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crown-royale-corey-joseph-rookie-on-card-auto-die-cut-sp-49-1.BuEPJ3v",
+      "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
+      "league": "NBA",
+      "sport": "Basketball",
+      "playerAthlete": "Corey Joseph",
+      "attributes": [
+        "Autograph",
+        "Rookie",
+        "Serial Numbered",
+        "Short Print",
+        "Parallel/Variety"
+      ],
+      "isFeatured": false,
+      "isDeleted": false,
+      "sortRank": 0,
+      "metadata": {
+        "playerAthlete": "Corey Joseph",
+        "excelFields": {
+          "Title": "2012-13 Panini Crown Royale Corey Joseph Rookie On-Card Auto Die Cut SP /49",
+          "C:Features": "Autograph|Rookie|Serial Numbered|Short Print|Parallel/Variety",
+          "C:Autographed": "Yes"
+        }
+      },
+      "hasThumbnail": true
+    },
+    {
+      "id": 990,
+      "name": "2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP /25 #86",
+      "category": "Basketball",
+      "team": "Seattle SuperSonics",
+      "year": 2012,
+      "condition": "Near mint or better",
+      "price": 15.95,
+      "priceLabel": "$15.95",
+      "displayPrice": "$15.95",
+      "image": "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP 25 #86 (1).jpg",
+      "imageGallery": [
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP 25 #86 (1).jpg",
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP 25 #86 (2).jpg"
+      ],
+      "description": "2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP /25 #86\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crown Royale; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Sam Perkins; Team: Seattle SuperSonics; Sport: Basketball; League: NBA; Parallel/Variety: Die-Cut; Features: Autograph, Serial Numbered, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+      "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crown-royale-sam-perkins-choice-award-die-cut-auto-sp-25-86-1.BuELGSf",
+      "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
+      "league": "NBA",
+      "sport": "Basketball",
+      "playerAthlete": "Sam Perkins",
+      "attributes": [
+        "Autograph",
+        "Serial Numbered",
+        "Short Print",
+        "Parallel/Variety"
+      ],
+      "isFeatured": false,
+      "isDeleted": false,
+      "sortRank": 0,
+      "metadata": {
+        "playerAthlete": "Sam Perkins",
+        "excelFields": {
+          "Title": "2012-13 Panini Crown Royale Sam Perkins Choice Award Die-Cut Auto SP /25 #86",
+          "C:Features": "Autograph|Serial Numbered|Short Print|Parallel/Variety",
+          "C:Autographed": "Yes"
+        }
+      },
+      "hasThumbnail": true
+    },
+    {
+      "id": 991,
+      "name": "2012-13 Panini Crusade Brook Lopez Quest SP Patch #17",
+      "category": "Basketball",
+      "team": "Brooklyn Nets",
+      "year": 2012,
+      "condition": "Near mint or better",
+      "price": 4.95,
+      "priceLabel": "$4.95",
+      "displayPrice": "$4.95",
+      "image": "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Brook Lopez Quest SP Patch #17 (1).jpg",
+      "imageGallery": [
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Brook Lopez Quest SP Patch #17 (1).jpg",
+        "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Brook Lopez Quest SP Patch #17 (2).jpg"
+      ],
+      "description": "2012-13 Panini Crusade Brook Lopez Quest SP Patch #17\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Brook Lopez; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+      "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crusade-brook-lopez-quest-sp-patch-17-1.BuEQZL7",
+      "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
+      "league": "NBA",
+      "sport": "Basketball",
+      "playerAthlete": "Brook Lopez",
+      "attributes": [
+        "Short Print",
+        "Memorabilia"
+      ],
+      "isFeatured": false,
+      "isDeleted": false,
+      "sortRank": 0,
+      "metadata": {
+        "playerAthlete": "Brook Lopez",
+        "excelFields": {
+          "Title": "2012-13 Panini Crusade Brook Lopez Quest SP Patch #17",
+          "C:Features": "Short Print|Memorabilia",
           "C:Autographed": "No"
         }
       },
