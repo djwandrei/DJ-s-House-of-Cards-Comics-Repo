@@ -26,7 +26,9 @@ const MIME_TYPES = new Map([
 ]);
 
 function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 function edgePath() {
@@ -549,7 +551,9 @@ async function main() {
     if (!summary.ok) process.exitCode = 1;
   } finally {
     browser.kill();
-    await new Promise((resolve) => server.close(resolve));
+    await new Promise((resolve) => {
+      server.close(resolve);
+    });
   }
 }
 

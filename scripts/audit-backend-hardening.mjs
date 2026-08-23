@@ -28,10 +28,6 @@ function containsAll(...needles) {
   return (content) => needles.every((needle) => content.includes(needle));
 }
 
-function excludesAll(...needles) {
-  return (content) => needles.every((needle) => !content.includes(needle));
-}
-
 const requiredBaseMigrations = [
   '20260810000000_catalog_base.sql',
   '20260810010000_account_base.sql',

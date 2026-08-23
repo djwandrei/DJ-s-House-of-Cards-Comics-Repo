@@ -296,7 +296,7 @@ function localTargetForReference(rawReference, sourceFile) {
   if (!value || value.startsWith('#')) return null;
   if (/^(?:mailto|tel|sms|javascript|data|blob):/i.test(value)) return null;
   if (/^\/\//.test(value)) return null;
-  let targetPath = value;
+  let targetPath;
   try {
     const url = /^https?:\/\//i.test(value)
       ? new URL(value)

@@ -1218,7 +1218,7 @@ window.DJ = window.DJ || {};
       };
     }
 
-    let client = null;
+    let client;
     try {
       client = getClient();
       steps.push({ name: 'client', ok: true, message: 'Supabase client created.' });

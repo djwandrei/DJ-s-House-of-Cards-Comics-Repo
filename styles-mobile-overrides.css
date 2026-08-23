@@ -791,6 +791,20 @@
    These rules live in the override sheet so the broad visual polish is easy to
    review: fewer accidental overflows, clearer controls, and less off-screen
    rendering work while preserving the existing design language. */
+@media (max-width:860px) {
+  @supports (content-visibility:auto) {
+    .hero-brand {
+      content-visibility:auto;
+      contain-intrinsic-size:auto 1125px;
+    }
+
+    .trust-band {
+      content-visibility:auto;
+      contain-intrinsic-size:auto 465px;
+    }
+  }
+}
+
 .product-card {
   contain:paint style;
   /* Match the current mobile card height more closely so deep scrolling stays steady. */

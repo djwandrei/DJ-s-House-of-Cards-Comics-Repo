@@ -467,8 +467,8 @@ window.DJ = window.DJ || {};
       if (/^(ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(raw)) return raw.toUpperCase();
       if (/^(jr|sr)\.?$/i.test(raw)) return `${raw.charAt(0).toUpperCase()}${raw.charAt(1).toLowerCase()}.`;
 
-      return raw.split(/([-'\/])/).map((segment) => {
-        if (!segment || /^[-'\/]$/.test(segment)) return segment;
+      return raw.split(/([-'/])/).map((segment) => {
+        if (!segment || /^[-'/]$/.test(segment)) return segment;
         if (/^([A-Z]\.){1,4}$/.test(segment)) return segment.toUpperCase();
         if (/^[A-Z]{2,3}$/.test(segment)) return segment;
         if (/^(ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(segment)) return segment.toUpperCase();
@@ -711,7 +711,7 @@ window.DJ = window.DJ || {};
   }
 
   function getCheckedFacetValues(name) {
-    return Array.from(document.querySelectorAll(`input[name=\"${name}\"]:checked`)).map((input) => input.value);
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map((input) => input.value);
   }
 
   function getRenderBatchSize(page = document.body.dataset.page || '') {
@@ -3678,7 +3678,7 @@ Thank you.`
     if (!productContainer) return false;
 
     const source = getProductSource();
-    let payload = null;
+    let payload;
     try {
       payload = await fetchCatalogBootstrap(source);
     } catch (error) {
@@ -3945,7 +3945,7 @@ Thank you.`
     });
 
     filterPanel.addEventListener('change', (event) => {
-      if (event.target.matches('input[type=\"checkbox\"], select')) syncTrigger();
+      if (event.target.matches('input[type="checkbox"], select')) syncTrigger();
     });
 
     const searchInput = document.getElementById('searchInput');
@@ -4023,7 +4023,7 @@ Thank you.`
           });
 
           filterPanel.addEventListener('change', (event) => {
-            if (event.target.matches('input[type=\"checkbox\"], select')) {
+            if (event.target.matches('input[type="checkbox"], select')) {
               rerender();
             }
           });

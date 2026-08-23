@@ -77,7 +77,9 @@ async function writeTextFile(fullPath, content, attempts = 6) {
     } catch (error) {
       if (!RETRYABLE_WRITE_CODES.has(error?.code) || attempt === attempts) throw error;
       // Windows can briefly lock a large bundle while a browser or sync client reads it.
-      await new Promise((resolve) => setTimeout(resolve, attempt * 150));
+      await new Promise((resolve) => {
+        setTimeout(resolve, attempt * 150);
+      });
     }
   }
 }

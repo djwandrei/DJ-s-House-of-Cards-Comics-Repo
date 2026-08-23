@@ -287,7 +287,9 @@ function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {}, 
 }
 
 function wait(milliseconds) {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 }
 
 function staticResponse(products = []) {

@@ -398,7 +398,7 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    let orders = [];
+    let orders;
     try {
       orders = await DJ.remoteCatalog.listOrders();
     } catch (error) {

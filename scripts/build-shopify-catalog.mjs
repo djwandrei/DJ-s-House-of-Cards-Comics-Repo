@@ -117,8 +117,8 @@ function shippingTierForEstimate(estimatedGrams) {
 function suggestedWeight(product = {}) {
   const category = cleanText(product.category).toLowerCase();
   const cardCount = numberOfCards(product);
-  let estimatedGrams = 85;
-  let basis = 'Shopify 3 oz or under card tier';
+  let estimatedGrams;
+  let basis;
 
   if (category === 'comics') {
     estimatedGrams = 454;
