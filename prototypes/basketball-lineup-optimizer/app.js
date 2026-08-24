@@ -1,33 +1,34 @@
 import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-core.js?v=20260823d";
+} from "./optimizer-core.js?v=20260823e";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260823d";
+} from "./player-data.js?v=20260823e";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260823d";
+} from "./supabase-nba-data.js?v=20260823e";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260823d";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260823d", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260823e";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260823e", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 // Bump this when the normalized live payload changes materially. In this
-// release, cached team stints can be missing the newly imported headshot and
-// logo URLs, so a new prefix makes the browser read the enriched Supabase view
-// immediately instead of waiting for the old 24-hour entry to expire.
-const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v2";
+// release, cached team stints can be missing newly imported media and the
+// reconstructed team-average/rotation summary. A new prefix makes the browser
+// rebuild that source context immediately instead of waiting for the old
+// 24-hour entry to expire.
+const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v4";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
@@ -40,10 +41,10 @@ const UI_TO_ENGINE_PRESET = Object.freeze({
 });
 const PRESET_LABELS = Object.freeze({
   balanced: "Balanced",
-  defense: "Protect the lead",
-  offense: "Need a bucket",
-  shooting: "Space the floor",
-  playmaking: "Move the ball",
+  defense: "Protect the Lead",
+  offense: "Need a Bucket",
+  shooting: "Space the Floor",
+  playmaking: "Move the Ball",
   custom: "Custom mix",
 });
 const METRIC_LABELS = Object.freeze({
@@ -129,6 +130,7 @@ const elements = {
   csvFile: $("#csvFileInput"),
   optimize: $("#optimizeButton"),
   mobileOptimize: $("#mobileOptimizeButton"),
+  mobileSolveLabel: $("#mobileSolveLabel"),
   resetScenario: $("#resetScenarioButton"),
   copyResult: $("#copyResultButton"),
   downloadResult: $("#downloadResultButton"),
@@ -145,6 +147,11 @@ const elements = {
   runExcludedSummary: $("#runExcludedSummary"),
   toast: $("#toast"),
   watchlistTab: $("#watchlistTab"),
+  opponentTeam: $("#opponentTeamInput"),
+  loadOpponent: $("#loadOpponentButton"),
+  opponentScout: $("#opponentScout"),
+  opponentScoutStatus: $("#opponentScoutStatus"),
+  opponentScoutSummary: $("#opponentScoutSummary"),
 };
 
 const state = {
@@ -161,6 +168,11 @@ const state = {
   liveDataLoading: false,
   liveTeamOptions: [],
   loadedLiveSelection: null,
+  opponentDataset: null,
+  opponentStrategy: null,
+  opponentLoading: false,
+  playerMediaStatus: new Map(),
+  teamLogoStatus: "unavailable",
   scenarioVersion: 0,
   optimizationWorker: null,
   optimizationReject: null,
@@ -446,8 +458,14 @@ function setLiveDataLoading(loading, loadingLabel = "Loading stats...") {
   elements.liveSeason.disabled = loading;
   elements.liveSeasonPhase.disabled = loading;
   elements.loadLiveData.disabled = loading;
-  if (loading) elements.loadLiveData.textContent = loadingLabel;
-  else updateLiveSelectionState({ preserveStatus: true });
+  if (loading) {
+    elements.loadLiveData.textContent = loadingLabel;
+    elements.opponentTeam.disabled = true;
+    elements.loadOpponent.disabled = true;
+  } else {
+    updateLiveSelectionState({ preserveStatus: true });
+    populateOpponentTeamOptions({ preferredTeam: state.opponentDataset?.source?.team });
+  }
 }
 
 function selectedLiveTeam() {
@@ -459,7 +477,7 @@ function selectedLiveTeamName() {
 }
 
 function selectedLivePhaseLabel() {
-  return elements.liveSeasonPhase.value === "playoffs" ? "playoff" : "regular-season";
+  return elements.liveSeasonPhase.value === "playoffs" ? "playoff" : "regular season";
 }
 
 function normalizeCachedLiveDataset(rawDataset) {
@@ -516,6 +534,50 @@ async function populateLiveTeamOptions({ preferredTeam = DEFAULT_TEAM_CODE, forc
   const preferredCode = [selectedCode, preferredTeam]
     .find((code) => teams.some((team) => team.team_code === code));
   elements.liveTeam.value = preferredCode || teams[0].team_code;
+  populateOpponentTeamOptions();
+}
+
+function teamNameForCode(teamCode) {
+  return state.liveTeamOptions.find((team) => team.team_code === teamCode)?.team_name || teamCode;
+}
+
+function setOpponentScoutStatus(message, tone = "") {
+  elements.opponentScoutStatus.textContent = message;
+  if (tone) elements.opponentScoutStatus.dataset.tone = tone;
+  else delete elements.opponentScoutStatus.dataset.tone;
+}
+
+function loadedPoolMatchesCurrentSeasonPhase() {
+  const selected = selectionFromControls();
+  return Boolean(state.loadedLiveSelection)
+    && Number(state.loadedLiveSelection.season) === Number(selected.season)
+    && state.loadedLiveSelection.seasonPhase === selected.seasonPhase;
+}
+
+function populateOpponentTeamOptions({ preferredTeam = "" } = {}) {
+  const priorValue = elements.opponentTeam.value;
+  const ownTeam = loadedPoolMatchesCurrentSeasonPhase()
+    ? state.loadedLiveSelection.team
+    : elements.liveTeam.value;
+  const opponents = state.liveTeamOptions.filter((team) => team.team_code !== ownTeam);
+  const fragment = document.createDocumentFragment();
+  for (const team of opponents) {
+    const option = document.createElement("option");
+    option.value = team.team_code;
+    option.textContent = `${team.team_name} (${team.team_code})`;
+    fragment.append(option);
+  }
+  elements.opponentTeam.replaceChildren(fragment);
+  const selectedCode = [priorValue, preferredTeam, opponents[0]?.team_code]
+    .find((code) => code && opponents.some((team) => team.team_code === code));
+  if (selectedCode) elements.opponentTeam.value = selectedCode;
+
+  const canScout = opponents.length > 0 && liveSelectionMatches(state.loadedLiveSelection, selectionFromControls());
+  elements.opponentTeam.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
+  elements.loadOpponent.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
+  if (!canScout && !state.opponentLoading) {
+    setOpponentScoutStatus("Apply the team, season, and phase above before loading an opponent scout.");
+  }
 }
 
 async function refreshLiveTeamOptions() {
@@ -652,6 +714,273 @@ async function loadLiveDataset({ force = false } = {}) {
   }
 }
 
+function setOpponentLoading(loading) {
+  state.opponentLoading = loading;
+  elements.opponentScout.setAttribute("aria-busy", String(loading));
+  elements.opponentTeam.disabled = loading;
+  elements.loadOpponent.disabled = loading;
+  elements.loadOpponent.textContent = loading ? "Loading scout..." : "Load opponent scout";
+  if (!loading) populateOpponentTeamOptions({ preferredTeam: state.opponentDataset?.source?.team });
+}
+
+function clearOpponentScout(message = "Choose an opponent to compare historical rotations and team averages.") {
+  state.opponentDataset = null;
+  state.opponentStrategy = null;
+  elements.opponentScoutSummary.hidden = true;
+  elements.opponentScoutSummary.replaceChildren();
+  setOpponentScoutStatus(message);
+}
+
+function normalizedDisplayWeights(rawWeights) {
+  const total = Object.values(rawWeights).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
+  if (!(total > 0)) return { ...state.weights };
+  return Object.fromEntries(
+    Object.entries(rawWeights).map(([metric, value]) => [metric, Math.round((Math.max(0, Number(value) || 0) / total) * 100)]),
+  );
+}
+
+function deriveHistoricalCounterStrategy(ownAverages, opponentAverages) {
+  // This suggestion deliberately uses only same-season team totals already
+  // shown to the user. It is a transparent heuristic—not a hidden prediction
+  // model—and it never changes settings until the user presses Apply.
+  const weights = { ...DEFAULT_PRESETS.balanced };
+  const reasons = [];
+  const own = ownAverages || {};
+  const opponent = opponentAverages || {};
+  const finite = (value) => Number.isFinite(Number(value));
+  const leadsByRatio = (metric, ratio) => finite(own[metric])
+    && finite(opponent[metric])
+    && Number(opponent[metric]) > Number(own[metric]) * ratio;
+  const leadsByAmount = (metric, amount) => finite(own[metric])
+    && finite(opponent[metric])
+    && Number(opponent[metric]) > Number(own[metric]) + amount;
+
+  if (leadsByRatio("rebounds", 1.02)) {
+    weights.rebounds += 1.2;
+    weights.blocks += 0.2;
+    reasons.push("The opponent held a rebounding edge, so the suggestion raises rebounding and interior size.");
+  }
+  if (leadsByAmount("efgPct", 0.008)) {
+    weights.steals += 0.8;
+    weights.blocks += 0.8;
+    reasons.push("The opponent posted the higher effective field-goal rate, so disruption and rim protection receive more weight.");
+  }
+  if (leadsByAmount("threePct", 0.01)) {
+    weights.steals += 0.6;
+    weights.efgPct += 0.35;
+    reasons.push("The opponent shot better from three, so perimeter disruption and efficient answering offense rise.");
+  }
+  if (leadsByRatio("assists", 1.03)) {
+    weights.steals += 0.7;
+    reasons.push("The opponent created more assists, so the suggestion favors active passing-lane defenders.");
+  }
+  if (finite(own.turnovers) && finite(opponent.turnovers) && Number(own.turnovers) > Number(opponent.turnovers) + 0.5) {
+    weights.ballSecurity += 1;
+    reasons.push("The current team committed more turnovers, so ball security becomes a larger priority.");
+  }
+  if (leadsByRatio("points", 1.02)) {
+    weights.points += 0.7;
+    weights.efgPct += 0.7;
+    reasons.push("The opponent scored more per team game, so the counter adds scoring and shot efficiency.");
+  }
+  if (reasons.length === 0) {
+    reasons.push("No large same-season statistical gap crossed the scout thresholds, so a balanced mix remains the suggestion.");
+  }
+  return { weights: normalizedDisplayWeights(weights), reasons };
+}
+
+function createOpponentTeamMark(source) {
+  const mark = document.createElement("span");
+  mark.className = "opponent-scout__logo";
+  mark.setAttribute("aria-hidden", "true");
+  mark.textContent = source.team || "NBA";
+  const logoUrl = safeExternalImageUrl(source.teamLogoUrl);
+  if (!logoUrl) return mark;
+
+  const image = document.createElement("img");
+  image.className = "opponent-scout__logo-image";
+  image.alt = "";
+  image.width = 58;
+  image.height = 58;
+  image.decoding = "async";
+  image.addEventListener("load", () => image.classList.add("is-loaded"), { once: true });
+  image.addEventListener("error", () => image.remove(), { once: true });
+  image.src = logoUrl;
+  mark.append(image);
+  return mark;
+}
+
+function renderOpponentScout() {
+  const source = state.opponentDataset?.source || {};
+  const averages = source.teamAverages;
+  const rotation = Array.isArray(source.rotation) ? source.rotation : [];
+  if (!averages || rotation.length === 0) {
+    throw new Error("This saved team-season does not include the totals needed for a matchup scout yet.");
+  }
+
+  const fragment = document.createDocumentFragment();
+  const teamHeader = document.createElement("div");
+  teamHeader.className = "opponent-scout__team";
+  teamHeader.append(createOpponentTeamMark(source));
+  const teamCopy = document.createElement("div");
+  const teamTitle = document.createElement("h4");
+  teamTitle.textContent = `${source.teamName || teamNameForCode(source.team)} ${source.season}`;
+  const teamNote = document.createElement("p");
+  const phase = source.seasonPhase === "playoffs" ? "playoffs" : "regular season";
+  teamNote.textContent = `${source.teamGames}-game denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages are reconstructed from stored team-stint totals.`;
+  teamCopy.append(teamTitle, teamNote);
+  teamHeader.append(teamCopy);
+  fragment.append(teamHeader);
+
+  const stats = document.createElement("dl");
+  stats.className = "opponent-scout__stats";
+  const statRows = [
+    ["PTS", formatNumber(averages.points)],
+    ["REB", formatNumber(averages.rebounds)],
+    ["AST", formatNumber(averages.assists)],
+    ["STL", formatNumber(averages.steals)],
+    ["BLK", formatNumber(averages.blocks)],
+    ["TOV", formatNumber(averages.turnovers)],
+    ["eFG%", formatPercent(averages.efgPct)],
+    ["3P%", formatPercent(averages.threePct)],
+  ];
+  for (const [label, value] of statRows) {
+    const item = document.createElement("div");
+    const term = document.createElement("dt");
+    term.textContent = label;
+    const detail = document.createElement("dd");
+    detail.textContent = value;
+    item.append(term, detail);
+    stats.append(item);
+  }
+  fragment.append(stats);
+
+  const rotationSection = document.createElement("section");
+  rotationSection.className = "opponent-scout__section";
+  const rotationHeading = document.createElement("h4");
+  rotationHeading.textContent = "Minutes-based historical rotation";
+  const rotationNote = document.createElement("p");
+  rotationNote.textContent = "The nine largest minute shares from this team-season—not a live depth chart or injury report.";
+  const rotationGrid = document.createElement("div");
+  rotationGrid.className = "opponent-scout__rotation";
+  for (const player of rotation) {
+    const item = document.createElement("article");
+    item.className = "opponent-player";
+    item.append(createPlayerAvatar(player, "opponent-player__avatar"));
+    const copy = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = player.name;
+    const context = document.createElement("small");
+    const positions = Array.isArray(player.positions) ? player.positions.join("/") : String(player.positions || "-");
+    context.textContent = `${positions} · ${formatNumber(player.minutesPerTeamGame)} minutes per team game`;
+    copy.append(name, context);
+    item.append(copy);
+    rotationGrid.append(item);
+  }
+  rotationSection.append(rotationHeading, rotationNote, rotationGrid);
+  fragment.append(rotationSection);
+
+  const counter = document.createElement("section");
+  counter.className = "opponent-scout__counter opponent-scout__section";
+  const counterHeading = document.createElement("h4");
+  counterHeading.textContent = "Suggested counter-strategy";
+  const counterNote = document.createElement("p");
+  counterNote.textContent = "Based on gaps between the two stored team-season averages. Loading this scout does not change your optimizer settings.";
+  const strategy = deriveHistoricalCounterStrategy(state.dataset?.source?.teamAverages, averages);
+  state.opponentStrategy = strategy;
+  const reasonList = document.createElement("ul");
+  for (const reason of strategy.reasons) {
+    const item = document.createElement("li");
+    item.textContent = reason;
+    reasonList.append(item);
+  }
+  const applyButton = document.createElement("button");
+  applyButton.className = "button button--quiet";
+  applyButton.type = "button";
+  applyButton.textContent = "Apply suggested weights";
+  applyButton.addEventListener("click", () => {
+    state.weights = { ...strategy.weights };
+    state.activePreset = "custom";
+    renderPresetState();
+    renderWeightControls();
+    updateRunSummary();
+    markScenarioChanged();
+    showToast(`Counter-strategy weights applied for ${source.teamName || source.team}.`);
+  });
+  counter.append(counterHeading, counterNote, reasonList, applyButton);
+  fragment.append(counter);
+
+  elements.opponentScoutSummary.replaceChildren(fragment);
+  elements.opponentScoutSummary.hidden = false;
+  setOpponentScoutStatus(
+    `${source.teamName || source.team} ${source.season} scout loaded. Review the sourced averages and optional suggestion below.`,
+    "success",
+  );
+}
+
+async function loadOpponentScout() {
+  if (state.opponentLoading || state.liveDataLoading) return;
+  const selection = selectionFromControls();
+  if (!liveSelectionMatches(state.loadedLiveSelection, selection)) {
+    clearOpponentScout("Apply the selected team-season above before scouting an opponent.");
+    return;
+  }
+  const team = elements.opponentTeam.value;
+  if (!team || team === selection.team) {
+    setOpponentScoutStatus("Choose a different team from the same season and phase.", "error");
+    return;
+  }
+
+  const teamName = teamNameForCode(team);
+  let staleResponseMessage = "";
+  setOpponentLoading(true);
+  setOpponentScoutStatus(`Loading ${teamName} ${nbaSeasonLabel(selection.season)} historical averages and rotation...`);
+  try {
+    const cached = readCachedLiveDataset(team, selection.season, selection.seasonPhase);
+    const dataset = cached?.fresh
+      ? cached.dataset
+      : await fetchSupabaseNbaTeamDataset({
+        team,
+        season: selection.season,
+        seasonPhase: selection.seasonPhase,
+      });
+    if (!cached?.fresh) cacheLiveDataset(team, selection.season, selection.seasonPhase, dataset);
+
+    // The primary team, season, phase, or opponent can change while Supabase is
+    // responding. Accept the result only when it still belongs to both the
+    // loaded player pool and the controls that launched this request; otherwise
+    // an older scout could be displayed (and its weights applied) to a newer
+    // scenario.
+    const currentSelection = selectionFromControls();
+    const requestStillMatches = liveSelectionMatches(currentSelection, selection)
+      && liveSelectionMatches(state.loadedLiveSelection, selection)
+      && elements.opponentTeam.value === team;
+    if (!requestStillMatches) {
+      state.opponentDataset = null;
+      state.opponentStrategy = null;
+      elements.opponentScoutSummary.hidden = true;
+      elements.opponentScoutSummary.replaceChildren();
+      staleResponseMessage = "The team, season, phase, or opponent changed while the scout was loading. Apply the current player pool, then load the opponent scout again.";
+      return;
+    }
+
+    state.opponentDataset = dataset;
+    renderOpponentScout();
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "The opponent scout could not be loaded.";
+    state.opponentDataset = null;
+    state.opponentStrategy = null;
+    elements.opponentScoutSummary.hidden = true;
+    setOpponentScoutStatus(detail, "error");
+  } finally {
+    setOpponentLoading(false);
+    // setOpponentLoading repopulates the opponent control and may publish its
+    // generic pending-selection hint. Restore the more useful race explanation
+    // after that housekeeping finishes.
+    if (staleResponseMessage) setOpponentScoutStatus(staleResponseMessage, "warning");
+  }
+}
+
 function teamValues() {
   return [...new Set((state.dataset?.players || []).map((player) => player.team).filter(Boolean))];
 }
@@ -693,9 +1022,10 @@ function renderWeightControls() {
 
 function updateRunSummary() {
   const modeLabel = elements.mode.value === "rotation"
-    ? `${numberFromInput(elements.size, 9)}-player rotation roster`
-    : `${numberFromInput(elements.size, 5)}-player lineup`;
+    ? `${numberFromInput(elements.size, 9)}-player rotation · 240 total minutes`
+    : "Best 5-player group";
   elements.runModeSummary.textContent = modeLabel;
+  elements.mobileSolveLabel.textContent = modeLabel;
   elements.runPresetSummary.textContent = PRESET_LABELS[state.activePreset] || "Custom mix";
   elements.runLockedSummary.textContent = String(state.lockedIds.size);
   elements.runExcludedSummary.textContent = String(state.excludedIds.size);
@@ -797,6 +1127,43 @@ function initialsForDisplay(value, fallback = "NBA") {
   return initials || fallback;
 }
 
+function updateDatasetMediaSummary() {
+  const source = state.dataset?.source || {};
+  const headshotPlayers = state.dataset?.players.filter((player) => safeExternalImageUrl(player.headshotUrl)) || [];
+  const failedHeadshots = headshotPlayers.filter((player) => state.playerMediaStatus.get(player.id) === "failed").length;
+  const usableHeadshots = Math.max(0, headshotPlayers.length - failedHeadshots);
+  const hasLogoUrl = Boolean(safeExternalImageUrl(source.teamLogoUrl));
+  const usableLogo = hasLogoUrl && state.teamLogoStatus !== "failed";
+  const mediaParts = [];
+  if (usableHeadshots) mediaParts.push(`${usableHeadshots} player headshot${usableHeadshots === 1 ? "" : "s"}`);
+  if (usableLogo) mediaParts.push("team logo");
+
+  if (mediaParts.length === 0) {
+    elements.datasetMedia.textContent = "Player initials and the team mark are shown; no confirmed photos or logo is available for this pool.";
+    return;
+  }
+  const availability = `${mediaParts.join(" and ")} available.`;
+  const fallbacks = [];
+  if (failedHeadshots) {
+    fallbacks.push(`initials substituted for ${failedHeadshots} headshot${failedHeadshots === 1 ? "" : "s"} that could not load`);
+  }
+  if (hasLogoUrl && !usableLogo) fallbacks.push("team mark substituted for the logo that could not load");
+  elements.datasetMedia.textContent = fallbacks.length
+    ? `${availability} ${fallbacks.join("; ")}.`
+    : `${availability} Initials stay in place until each remote image loads.`;
+}
+
+function recordPlayerMediaStatus(player, imageUrl, status) {
+  // Lazy images from an old team can finish after the player pool changes.
+  // Accept a result only when both the player ID and confirmed URL still match
+  // the current dataset, preventing stale events from changing the new summary.
+  const current = currentPlayer(String(player?.id || ""));
+  if (!current || safeExternalImageUrl(current.headshotUrl) !== imageUrl) return;
+  if (status === "failed" && state.playerMediaStatus.get(current.id) === "loaded") return;
+  state.playerMediaStatus.set(current.id, status);
+  updateDatasetMediaSummary();
+}
+
 function createPlayerAvatar(player, className = "player-avatar") {
   // Every player gets a stable visual footprint. A confirmed headshot overlays
   // the initials when it loads; a network failure simply leaves the useful
@@ -815,13 +1182,20 @@ function createPlayerAvatar(player, className = "player-avatar") {
 
   const image = document.createElement("img");
   image.className = `${className}__image`;
-  image.src = imageUrl;
   image.alt = "";
   image.width = 80;
   image.height = 80;
   image.loading = "lazy";
   image.decoding = "async";
-  image.addEventListener("error", () => image.remove(), { once: true });
+  image.addEventListener("load", () => {
+    image.classList.add("is-loaded");
+    recordPlayerMediaStatus(player, imageUrl, "loaded");
+  }, { once: true });
+  image.addEventListener("error", () => {
+    recordPlayerMediaStatus(player, imageUrl, "failed");
+    image.remove();
+  }, { once: true });
+  image.src = imageUrl;
   visual.append(image);
   return visual;
 }
@@ -969,6 +1343,11 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   state.scenarioVersion += 1;
   state.dataset = dataset;
   state.loadedLiveSelection = liveSelection;
+  state.playerMediaStatus.clear();
+  state.teamLogoStatus = "unavailable";
+  clearOpponentScout(liveSelection
+    ? "Choose another team from this season and phase to load its averages and historical rotation."
+    : "Load a database team-season above before scouting an opponent.");
   if (clearScenario) {
     state.lockedIds.clear();
     state.excludedIds.clear();
@@ -991,6 +1370,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   renderCompare();
   renderWatchlist();
   updateLiveSelectionState({ preserveStatus: true });
+  populateOpponentTeamOptions();
   setSolverStatus("Ready to solve");
   setOptimizeButtons({ label: elements.mode.value === "rotation" ? "Optimize rotation" : "Optimize lineup" });
   if (notice) showToast(notice);
@@ -1005,34 +1385,44 @@ function renderDatasetMeta() {
   elements.datasetTeam.textContent = teams.length === 1 ? teams[0] : `${teams.length} teams`;
   elements.datasetCount.textContent = String(state.dataset?.players.length || 0);
   const teamLogoUrl = safeExternalImageUrl(source.teamLogoUrl);
-  const headshotCount = state.dataset?.players.filter((player) => safeExternalImageUrl(player.headshotUrl)).length || 0;
-  const describeMedia = (hasTeamLogo) => {
-    const profileLabel = headshotCount === 1 ? "1 player photo" : `${headshotCount} player photos`;
-    elements.datasetMedia.textContent = hasTeamLogo
-      ? `Verified media: team logo + ${profileLabel}`
-      : headshotCount
-        ? `Verified media: ${profileLabel}`
-        : "Team mark shown; verified player photos appear when available.";
-  };
+  elements.teamLogo.onload = null;
+  elements.teamLogo.onerror = null;
+  elements.teamLogo.classList.remove("is-loaded");
   const showLogoFallback = () => {
+    state.teamLogoStatus = teamLogoUrl ? "failed" : "unavailable";
+    elements.teamLogo.classList.remove("is-loaded");
     elements.teamLogo.hidden = true;
     elements.teamLogo.removeAttribute("src");
     elements.teamLogo.alt = "";
     elements.teamLogoFallback.textContent = teamCode;
     elements.teamLogoFallback.hidden = false;
-    describeMedia(false);
+    updateDatasetMediaSummary();
   };
 
   // A historical logo is useful context, but it is never required for the
   // optimizer. Preserve the team-code mark if a remote image expires or is
   // blocked so choosing a season never creates a broken visual control.
   if (teamLogoUrl) {
-    elements.teamLogo.src = teamLogoUrl;
-    elements.teamLogo.alt = `${source.label || "Selected team"} logo`;
+    state.teamLogoStatus = "pending";
+    elements.teamLogo.classList.remove("is-loaded");
+    elements.teamLogo.onload = () => {
+      // Ignore a late response belonging to a player pool that has since been
+      // replaced, just as the player-headshot status tracker does.
+      if (safeExternalImageUrl(state.dataset?.source?.teamLogoUrl) !== teamLogoUrl) return;
+      state.teamLogoStatus = "loaded";
+      elements.teamLogo.classList.add("is-loaded");
+      elements.teamLogoFallback.hidden = true;
+      updateDatasetMediaSummary();
+    };
+    elements.teamLogo.onerror = () => {
+      if (safeExternalImageUrl(state.dataset?.source?.teamLogoUrl) === teamLogoUrl) showLogoFallback();
+    };
+    elements.teamLogo.alt = `${source.teamName || source.team || teamCode} logo`;
     elements.teamLogo.hidden = false;
-    elements.teamLogoFallback.hidden = true;
-    elements.teamLogo.onerror = showLogoFallback;
-    describeMedia(true);
+    elements.teamLogoFallback.textContent = teamCode;
+    elements.teamLogoFallback.hidden = false;
+    elements.teamLogo.src = teamLogoUrl;
+    updateDatasetMediaSummary();
   } else {
     showLogoFallback();
   }
@@ -2004,9 +2394,27 @@ function bindEvents() {
       showToast(error instanceof Error ? `Team data stopped: ${error.message}` : "Team data could not be loaded.");
     });
   });
-  elements.liveSeason.addEventListener("change", refreshLiveTeamOptions);
-  elements.liveSeasonPhase.addEventListener("change", refreshLiveTeamOptions);
-  elements.liveTeam.addEventListener("change", () => updateLiveSelectionState());
+  const handleSeasonOrPhaseChange = () => {
+    clearOpponentScout("Apply the updated team-season before loading an opponent scout.");
+    refreshLiveTeamOptions();
+  };
+  elements.liveSeason.addEventListener("change", handleSeasonOrPhaseChange);
+  elements.liveSeasonPhase.addEventListener("change", handleSeasonOrPhaseChange);
+  elements.liveTeam.addEventListener("change", () => {
+    updateLiveSelectionState();
+    clearOpponentScout("Apply this team as the player pool before loading an opponent scout.");
+    populateOpponentTeamOptions();
+  });
+  elements.loadOpponent.addEventListener("click", loadOpponentScout);
+  elements.opponentTeam.addEventListener("change", () => {
+    if (state.opponentDataset?.source?.team !== elements.opponentTeam.value) {
+      state.opponentDataset = null;
+      state.opponentStrategy = null;
+      elements.opponentScoutSummary.hidden = true;
+      elements.opponentScoutSummary.replaceChildren();
+      setOpponentScoutStatus(`Load ${teamNameForCode(elements.opponentTeam.value)} to view its historical averages and rotation.`);
+    }
+  });
   elements.importCsv.addEventListener("click", () => elements.csvFile.click());
   elements.csvFile.addEventListener("change", async () => {
     const [file] = elements.csvFile.files;

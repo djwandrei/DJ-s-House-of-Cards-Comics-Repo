@@ -10,6 +10,15 @@ window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
+  const adapterScriptUrl = (() => {
+    if (document.currentScript?.src) return document.currentScript.src;
+    const adapterScript = Array.from(document.scripts || [])
+      .find((script) => /\/supabase-client\.js(?:[?#]|$)/i.test(script.src));
+    const pageUrl = window.location.href
+      || (window.location.origin ? `${window.location.origin}/` : 'http://localhost/');
+    return adapterScript?.src || new URL('/supabase-client.js', pageUrl).href;
+  })();
+  const localSupabaseLibraryUrl = new URL('vendor/supabase.min.js', adapterScriptUrl).href;
 
   // Read user-editable backend settings from backend-config.js and merge them
   // with safe defaults so the site can still run in static-only mode.
@@ -390,7 +399,7 @@ window.DJ = window.DJ || {};
 
     const sdkVersion = '2.49.4';
     const candidateUrls = [
-      'vendor/supabase.min.js',
+      localSupabaseLibraryUrl,
       `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@${sdkVersion}/dist/umd/supabase.min.js`,
       `https://unpkg.com/@supabase/supabase-js@${sdkVersion}/dist/umd/supabase.min.js`
     ];

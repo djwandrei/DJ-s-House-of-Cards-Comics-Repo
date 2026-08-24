@@ -20,10 +20,9 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import {
   BASKETBALL_REFERENCE_SOURCE,
-  basketballReferencePlayerPageUrl,
-  basketballReferenceTeamPageUrl,
   extractHeadshotAsset,
   extractTeamLogoAsset,
   leaguePageUrl,
@@ -42,6 +41,22 @@ import {
   parseRobotsTxt,
   sourcePathsForSeason,
 } from './update-nba-basketball-reference-weekly.mjs';
+import {
+  MediaRequestLimitReachedError,
+  basketballReferenceMediaPageUrl,
+  blankMediaCheckpoint,
+  buildMediaCandidateQuery,
+  createMediaRequestBudget,
+  hasConfirmedExistingMedia,
+  isExactBasketballReferenceMediaPageUrl,
+  isMatchingMediaCheckpoint,
+  mediaCacheRelativePath,
+  normalizeMediaCandidateRows,
+  normalizedMediaAltText,
+  recordMediaCandidateStatus,
+  shouldAttemptMediaCandidate,
+  validatedBasketballReferenceMediaUrl,
+} from './lib/nba-media-backfill.mjs';
 
 const ROOT = process.cwd();
 // Basketball Reference currently declares Crawl-delay: 3 and Sports Reference
@@ -117,8 +132,10 @@ Options:
   --skip-advanced             Import traditional totals only
   --skip-raw                  Skip private raw-source audit rows (not recommended for production)
   --new-run                   Do not reuse a matching incomplete local checkpoint
-  --media-limit <count>       After stats, attempt this many verified headshots and team logos (default: 0)
-  --media-only                Import only a bounded, verified media sample; do not touch stat rows
+  --media-request-limit <n>   Maximum actual uncached media HTTP attempts (default: 0)
+  --media-limit <count>       Deprecated alias for --media-request-limit
+  --media-batch-size <count>  Idempotent Supabase media write batch size (default: 25; max: 100)
+  --media-only                Backfill only verified media; do not touch stat rows
   --media-team-code <code>    Limit media collection to one historical team code
   --help                      Show this help
 
@@ -133,6 +150,9 @@ Notes:
   * A full run requests about five source pages per season and is rate-limited.
   * Resume the same range with --apply after interruption; the checkpoint and
     source cache make data writes idempotent.
+  * Media-only checkpoints skip found/no-image candidates and retry temporary
+    failures. Use --new-run with --refresh-cache to intentionally recheck
+    previously confirmed no-image pages.
 `);
 }
 
@@ -197,9 +217,24 @@ function optionsFromArgs(argv) {
     min: MINIMUM_DELAY_MS,
     max: 120000
   });
-  const mediaLimit = readInteger(options.get('media-limit') ?? 0, '--media-limit', { min: 0, max: 100000 });
+  const legacyMediaLimit = options.get('media-limit');
+  const mediaRequestLimit = readInteger(
+    options.get('media-request-limit') ?? legacyMediaLimit ?? 0,
+    '--media-request-limit',
+    { min: 0, max: 100000 }
+  );
+  if (options.has('media-request-limit') && legacyMediaLimit !== undefined) {
+    throw new Error('Use either --media-request-limit or the deprecated --media-limit alias, not both.');
+  }
+  const mediaBatchSize = readInteger(options.get('media-batch-size') ?? 25, '--media-batch-size', { min: 1, max: 100 });
+  const apply = flags.has('apply');
+  const mediaOnly = flags.has('media-only');
+  if (mediaOnly && !apply) throw new Error('--media-only requires --apply because it writes confirmed media rows.');
+  if (mediaOnly && mediaRequestLimit < 1) {
+    throw new Error('--media-only requires a positive --media-request-limit (or deprecated --media-limit alias).');
+  }
   return {
-    apply: flags.has('apply'),
+    apply,
     start,
     end,
     phases: [...new Set(phases)],
@@ -209,8 +244,9 @@ function optionsFromArgs(argv) {
     skipAdvanced: flags.has('skip-advanced'),
     skipRaw: flags.has('skip-raw'),
     newRun: flags.has('new-run'),
-    mediaLimit,
-    mediaOnly: flags.has('media-only'),
+    mediaRequestLimit,
+    mediaBatchSize,
+    mediaOnly,
     mediaTeamCode: readOptionalTeamCode(options.get('media-team-code')),
   };
 }
@@ -295,8 +331,13 @@ async function verifySourceAutomation(options) {
   }
   const sourcePhase = options.phases.length === 2 ? 'both' : options.phases[0];
   const checkedPaths = new Set();
-  for (let seasonEndYear = options.start; seasonEndYear <= options.end; seasonEndYear += 1) {
-    for (const pathname of sourcePathsForSeason(seasonEndYear, sourcePhase)) checkedPaths.add(pathname);
+  // A media-only run discovers its exact player/team URLs from the linked
+  // database after this initial policy check. Each of those dynamic paths is
+  // still checked immediately before fetch by createPageFetcher().
+  if (!options.mediaOnly) {
+    for (let seasonEndYear = options.start; seasonEndYear <= options.end; seasonEndYear += 1) {
+      for (const pathname of sourcePathsForSeason(seasonEndYear, sourcePhase)) checkedPaths.add(pathname);
+    }
   }
   const blocked = [...checkedPaths].filter((pathname) => !isPathAllowedByRobots(pathname, robots, USER_AGENT));
   if (blocked.length) {
@@ -1028,27 +1069,46 @@ function saveCheckpoint(filePath, checkpoint) {
   writeJson(filePath, checkpoint);
 }
 
-function createPageFetcher({ cacheDirectory, requestDelayMs, refreshCache, robots }) {
+function createPageFetcher({
+  cacheDirectory,
+  requestDelayMs,
+  refreshCache,
+  robots,
+  mediaRequestBudget = null,
+  fetchImplementation = globalThis.fetch,
+  sleepImplementation = sleep,
+}) {
   let lastNetworkRequestAt = 0;
-  return async function fetchPage({ url, cacheFile }) {
+  return async function fetchPage({ url, cacheFile, requestKind = 'stats' }) {
+    const pathname = new URL(url).pathname;
+    // Apply the current policy even to cache reads. That keeps a resumed run
+    // from using a page whose path became disallowed after the cache was made.
+    if (!isPathAllowedByRobots(pathname, robots, USER_AGENT)) {
+      throw new Error(`Basketball Reference robots.txt disallows ${pathname}.`);
+    }
     if (!refreshCache && fs.existsSync(cacheFile)) {
       logSourceEvent('source_cache_hit', { url, cacheFile: path.relative(ROOT, cacheFile) });
       return fs.readFileSync(cacheFile, 'utf8');
     }
-    const pathname = new URL(url).pathname;
-    // Team and player media pages are discovered only after parsing a season,
-    // so enforce the same robots policy at request time for every dynamic URL.
-    if (!isPathAllowedByRobots(pathname, robots, USER_AGENT)) {
-      throw new Error(`Basketball Reference robots.txt disallows ${pathname}.`);
-    }
     const waitTime = requestDelayMs - (Date.now() - lastNetworkRequestAt);
-    if (waitTime > 0) await sleep(waitTime);
+    if (waitTime > 0) await sleepImplementation(waitTime);
     for (let attempt = 1; attempt <= 3; attempt += 1) {
+      // Count every real HTTP attempt, including retries. Cache hits return
+      // above and therefore never consume the operator's media request budget.
+      const mediaRequestNumber = requestKind === 'media' && mediaRequestBudget
+        ? mediaRequestBudget.consume()
+        : null;
       lastNetworkRequestAt = Date.now();
-      logSourceEvent('source_request_started', { url, attempt, maximumAttempts: 3 });
+      logSourceEvent('source_request_started', {
+        url,
+        attempt,
+        maximumAttempts: 3,
+        requestKind,
+        mediaRequestNumber,
+      });
       let response;
       try {
-        response = await fetch(url, {
+        response = await fetchImplementation(url, {
           headers: { 'User-Agent': USER_AGENT, Accept: 'text/html,application/xhtml+xml' },
           signal: AbortSignal.timeout(45000)
         });
@@ -1061,7 +1121,7 @@ function createPageFetcher({ cacheDirectory, requestDelayMs, refreshCache, robot
           retryDelayMs,
           reason: String(error?.message ?? error).slice(0, 240)
         });
-        await sleep(retryDelayMs);
+        await sleepImplementation(retryDelayMs);
         continue;
       }
       if (response.ok) {
@@ -1082,7 +1142,7 @@ function createPageFetcher({ cacheDirectory, requestDelayMs, refreshCache, robot
         retryAfterMilliseconds(response.headers.get('retry-after'))
       ));
       logSourceEvent('source_request_retry', { url, attempt, status: response.status, retryDelayMs });
-      await sleep(retryDelayMs);
+      await sleepImplementation(retryDelayMs);
     }
     throw new Error(`Source request failed for ${url}.`);
   };
@@ -1124,7 +1184,7 @@ async function loadTeamNames({ seasonEndYear, fetchPage, cacheDirectory }) {
 }
 
 async function fetchMediaAsset(url, cacheFile, fetchPage) {
-  const html = await fetchPage({ url, cacheFile });
+  const html = await fetchPage({ url, cacheFile, requestKind: 'media' });
   return html;
 }
 
@@ -1175,6 +1235,9 @@ left join public.nba_team_seasons as team_seasons
  and team_seasons.team_code = stage.team_code
 where media.is_primary
   and media.asset_kind = stage.asset_kind
+  -- Never take ownership of a primary asset supplied by another provider.
+  -- Such rows are also protected by the provider-agnostic NOT EXISTS below.
+  and media.source_name = ${sqlLiteral(BASKETBALL_REFERENCE_SOURCE)}
   and (
     (stage.subject_type = 'player' and media.player_id = external_ids.player_id)
     or (stage.subject_type = 'team' and media.team_season_id = team_seasons.id)
@@ -1211,6 +1274,8 @@ where (
 and not exists (
   select 1
   from public.nba_media_assets as existing_media
+  -- Deliberately do not filter source_name here: any provider's primary row
+  -- blocks insertion, preventing both overwrite-by-conflict and duplicates.
   where existing_media.is_primary
     and existing_media.asset_kind = stage.asset_kind
     and (
@@ -1223,113 +1288,225 @@ commit;
 `;
 }
 
-async function collectSmallMediaSample({
-  seasonEndYear,
-  totals,
-  teamNames,
-  fetchPage,
-  cacheDirectory,
-  limit,
-  teamCode = '',
-}) {
-  if (!limit) return [];
-  const mediaRows = [];
-  const seenPlayers = new Set();
-  const seenTeams = new Set();
-  for (const row of totals.rows) {
-    // A focused batch makes the default live team visually rich without
-    // crawling a whole league's profile pages. Stats are never filtered by
-    // this option; it changes only optional media discovery.
-    if (teamCode && row.teamCode !== teamCode) continue;
-    if (mediaRows.length >= limit) break;
-    if (!seenPlayers.has(row.externalId)) {
-      seenPlayers.add(row.externalId);
-      const profileUrl = basketballReferencePlayerPageUrl(row.externalId);
-      try {
-        const profileHtml = await fetchMediaAsset(
-          profileUrl,
-          sourceCacheFile(cacheDirectory, seasonEndYear, 'media', `player-${row.externalId}`),
-          fetchPage
-        );
-        const assetUrl = extractHeadshotAsset(profileHtml, row.externalId);
-        if (assetUrl) {
-          mediaRows.push({
-            subject_type: 'player',
-            external_id: row.externalId,
-            season_end_year: null,
-            team_code: null,
-            asset_kind: 'headshot',
-            asset_url: assetUrl,
-            alt_text: `${row.fullName} headshot`,
-            source_url: profileUrl
-          });
-        }
-      } catch (error) {
-        console.warn(`Skipping unavailable headshot source for ${row.externalId}: ${String(error?.message ?? error).slice(0, 160)}`);
-      }
-    }
-    if (mediaRows.length >= limit || row.isMultiTeamAggregate || seenTeams.has(row.teamCode)) continue;
-    seenTeams.add(row.teamCode);
-    const teamUrl = basketballReferenceTeamPageUrl(row.teamCode, seasonEndYear);
-    try {
-      const teamHtml = await fetchMediaAsset(
-        teamUrl,
-        sourceCacheFile(cacheDirectory, seasonEndYear, 'media', `team-${row.teamCode}`),
-        fetchPage
-      );
-      const assetUrl = extractTeamLogoAsset(teamHtml, row.teamCode, seasonEndYear);
-      if (assetUrl) {
-        mediaRows.push({
-          subject_type: 'team',
-          external_id: null,
-          season_end_year: seasonEndYear,
-          team_code: row.teamCode,
-          asset_kind: 'team_logo',
-          asset_url: assetUrl,
-          alt_text: `${teamNames.get(row.teamCode) || row.teamCode} logo`,
-          source_url: teamUrl
-        });
-      }
-    } catch (error) {
-      console.warn(`Skipping unavailable team-logo source for ${row.teamCode} ${seasonEndYear}: ${String(error?.message ?? error).slice(0, 160)}`);
-    }
-  }
-  return mediaRows;
+function mediaCheckpointPath(options) {
+  const checkpointDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-import-checkpoints'));
+  const phaseKey = options.phases.join('-');
+  const teamKey = options.mediaTeamCode || 'all-teams';
+  return path.join(checkpointDirectory, `media-bref-${options.start}-${options.end}-${phaseKey}-${teamKey}.json`);
 }
 
-async function runMediaOnly({ options, fetchPage, cacheDirectory }) {
+function saveMediaCheckpoint(filePath, checkpoint) {
+  checkpoint.updatedAt = new Date().toISOString();
+  writeJson(filePath, checkpoint);
+}
+
+function mediaRowForCandidate(candidate, assetUrl, sourceUrl) {
+  if (candidate.subjectType === 'player') {
+    return {
+      subject_type: 'player',
+      external_id: candidate.externalId,
+      season_end_year: null,
+      team_code: null,
+      asset_kind: 'headshot',
+      asset_url: assetUrl,
+      alt_text: normalizedMediaAltText('player', candidate.fullName, candidate.externalId),
+      source_url: sourceUrl,
+    };
+  }
+  return {
+    subject_type: 'team',
+    external_id: null,
+    season_end_year: candidate.seasonEndYear,
+    team_code: candidate.teamCode,
+    asset_kind: 'team_logo',
+    asset_url: assetUrl,
+    alt_text: normalizedMediaAltText('team', candidate.teamName, candidate.teamCode),
+    source_url: sourceUrl,
+  };
+}
+
+function mediaCheckpointCounts(checkpoint) {
+  const counts = { found: 0, 'no-image': 0, retry: 0 };
+  for (const entry of Object.values(checkpoint.candidates ?? {})) {
+    if (Object.hasOwn(counts, entry.status)) counts[entry.status] += 1;
+  }
+  return counts;
+}
+
+/**
+ * Backfill media from one globally de-duplicated linked-database queue. The
+ * queue query is read-only; each successful source page is then persisted in
+ * a small transaction. A candidate is marked `found` only after its batch
+ * commits, so a crash between source fetch and database write safely retries
+ * from the global page cache.
+ */
+async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget }) {
   if (!options.apply) throw new Error('--media-only requires --apply because it writes confirmed media rows.');
-  if (!options.mediaLimit) throw new Error('--media-only requires a positive --media-limit.');
-  let imported = 0;
-  for (let seasonEndYear = options.start; seasonEndYear <= options.end && imported < options.mediaLimit; seasonEndYear += 1) {
-    const teamNames = await loadTeamNames({ seasonEndYear, fetchPage, cacheDirectory });
-    const { totals } = await loadSeasonPhase({
-      seasonEndYear,
-      seasonPhase: 'regular',
-      fetchPage,
-      cacheDirectory,
-      skipAdvanced: true
-    });
-    const mediaRows = await collectSmallMediaSample({
-      seasonEndYear,
-      totals,
-      teamNames,
-      fetchPage,
-      cacheDirectory,
-      limit: options.mediaLimit - imported,
+  if (!options.mediaRequestLimit || !mediaRequestBudget) {
+    throw new Error('--media-only requires a positive --media-request-limit (or deprecated --media-limit alias).');
+  }
+
+  const candidateRows = await executeLinkedSql(buildMediaCandidateQuery({
+    start: options.start,
+    end: options.end,
+    phases: options.phases,
+    teamCode: options.mediaTeamCode,
+  }), `media-candidates-${options.start}-${options.end}-${options.mediaTeamCode || 'all'}`);
+  const candidates = normalizeMediaCandidateRows(candidateRows);
+  if (!candidates.length) {
+    throw new Error(`No media candidates exist for ${options.start}-${options.end}${options.mediaTeamCode ? ` and ${options.mediaTeamCode}` : ''}.`);
+  }
+
+  const checkpointFile = mediaCheckpointPath(options);
+  const existingCheckpoint = options.newRun ? null : readJson(checkpointFile);
+  const checkpointOptions = { ...options, teamCode: options.mediaTeamCode };
+  const checkpoint = isMatchingMediaCheckpoint(existingCheckpoint, checkpointOptions)
+    ? existingCheckpoint
+    : blankMediaCheckpoint({
+      start: options.start,
+      end: options.end,
+      phases: options.phases,
       teamCode: options.mediaTeamCode,
     });
-    if (!mediaRows.length) {
-      if (options.mediaTeamCode) {
-        throw new Error(`No verified media candidates were found for ${options.mediaTeamCode} in ${seasonEndYear}.`);
+  checkpoint.status = 'running';
+  checkpoint.error = '';
+
+  let existingSkipped = 0;
+  let sourceFound = 0;
+  let noImage = 0;
+  let retry = 0;
+  let requestLimitReached = false;
+  const pendingBatch = [];
+
+  async function flushBatch() {
+    if (!pendingBatch.length) return;
+    const batch = pendingBatch.splice(0, options.mediaBatchSize);
+    try {
+      await executeLinkedSql(buildMediaSql({ mediaRows: batch.map((item) => item.mediaRow) }),
+        `media-batch-${options.start}-${options.end}-${Date.now()}`);
+    } catch (error) {
+      for (const item of batch) {
+        recordMediaCandidateStatus(checkpoint, item.candidate, 'retry', {
+          reason: 'supabase-write-failed',
+          error: String(error?.message ?? error).slice(0, 400),
+        });
       }
+      saveMediaCheckpoint(checkpointFile, checkpoint);
+      throw error;
+    }
+    for (const item of batch) {
+      recordMediaCandidateStatus(checkpoint, item.candidate, 'found', {
+        assetUrl: item.mediaRow.asset_url,
+        source: 'source',
+      });
+      sourceFound += 1;
+    }
+    saveMediaCheckpoint(checkpointFile, checkpoint);
+  }
+
+  for (const candidate of candidates) {
+    // The linked read-only query returns any confirmed primary media. Preserve
+    // another provider's row unconditionally; Basketball Reference-owned rows
+    // must also pass exact host/path validation before suppressing a request.
+    if (hasConfirmedExistingMedia(candidate)) {
+      recordMediaCandidateStatus(checkpoint, candidate, 'found', {
+        assetUrl: candidate.existingAssetUrl,
+        source: 'existing',
+        attempted: false,
+      });
+      existingSkipped += 1;
       continue;
     }
-    await executeLinkedSql(buildMediaSql({ mediaRows }), `media-only-${seasonEndYear}`);
-    imported += mediaRows.length;
-    console.log(JSON.stringify({ seasonEndYear, mediaImported: mediaRows.length, mediaImportedTotal: imported }, null, 2));
+
+    const previous = checkpoint.candidates?.[candidate.key];
+    // A formerly successful checkpoint is not authoritative if the current
+    // linked read shows no longer-confirmed media. Convert it to retry instead
+    // of silently leaving a database hole.
+    if (previous?.status === 'found') {
+      recordMediaCandidateStatus(checkpoint, candidate, 'retry', {
+        reason: 'confirmed-media-no-longer-present',
+        attempted: false,
+      });
+    }
+    if (!shouldAttemptMediaCandidate(checkpoint, candidate)) continue;
+
+    const sourceUrl = basketballReferenceMediaPageUrl(candidate);
+    if (!isExactBasketballReferenceMediaPageUrl(candidate, sourceUrl)) {
+      throw new Error(`Internal safety check rejected the generated source URL for ${candidate.key}.`);
+    }
+    const cacheFile = path.join(cacheDirectory, ...mediaCacheRelativePath(candidate).split('/'));
+    const requestsBefore = mediaRequestBudget.snapshot().used;
+    let html;
+    try {
+      html = await fetchMediaAsset(sourceUrl, cacheFile, fetchPage);
+    } catch (error) {
+      const requestsAfter = mediaRequestBudget.snapshot().used;
+      const attempted = requestsAfter > requestsBefore;
+      if (error instanceof MediaRequestLimitReachedError || error?.code === 'MEDIA_REQUEST_LIMIT_REACHED') {
+        recordMediaCandidateStatus(checkpoint, candidate, 'retry', {
+          reason: 'request-limit-reached',
+          attempted,
+        });
+        requestLimitReached = true;
+        retry += 1;
+        saveMediaCheckpoint(checkpointFile, checkpoint);
+        break;
+      }
+      const terminalMissingPage = error?.status === 404 || error?.status === 410;
+      recordMediaCandidateStatus(checkpoint, candidate, terminalMissingPage ? 'no-image' : 'retry', {
+        reason: terminalMissingPage ? 'source-page-unavailable' : 'source-request-failed',
+        error: String(error?.message ?? error).slice(0, 400),
+        attempted,
+      });
+      if (terminalMissingPage) noImage += 1;
+      else retry += 1;
+      saveMediaCheckpoint(checkpointFile, checkpoint);
+      continue;
+    }
+
+    const extractedUrl = candidate.subjectType === 'player'
+      ? extractHeadshotAsset(html, candidate.externalId)
+      : extractTeamLogoAsset(html, candidate.teamCode, candidate.seasonEndYear);
+    if (!extractedUrl) {
+      recordMediaCandidateStatus(checkpoint, candidate, 'no-image', { reason: 'no-matching-image-in-source' });
+      noImage += 1;
+      saveMediaCheckpoint(checkpointFile, checkpoint);
+      continue;
+    }
+    const assetUrl = validatedBasketballReferenceMediaUrl(candidate, extractedUrl);
+    if (!assetUrl) {
+      recordMediaCandidateStatus(checkpoint, candidate, 'retry', {
+        reason: 'untrusted-or-mismatched-asset-url',
+        rejectedAssetUrl: String(extractedUrl).slice(0, 300),
+      });
+      retry += 1;
+      saveMediaCheckpoint(checkpointFile, checkpoint);
+      continue;
+    }
+
+    pendingBatch.push({ candidate, mediaRow: mediaRowForCandidate(candidate, assetUrl, sourceUrl) });
+    if (pendingBatch.length >= options.mediaBatchSize) await flushBatch();
   }
-  console.log(JSON.stringify({ mode: 'media-only', requested: options.mediaLimit, imported }, null, 2));
+  await flushBatch();
+
+  const remaining = candidates.filter((candidate) => !hasConfirmedExistingMedia(candidate)
+    && shouldAttemptMediaCandidate(checkpoint, candidate)).length;
+  checkpoint.status = remaining > 0 ? 'paused' : 'completed';
+  checkpoint.error = '';
+  saveMediaCheckpoint(checkpointFile, checkpoint);
+  console.log(JSON.stringify({
+    mode: 'media-only',
+    checkpoint: checkpointFile,
+    candidates: candidates.length,
+    existingSkipped,
+    sourceFound,
+    noImage,
+    retry,
+    remaining,
+    requestLimitReached,
+    mediaRequests: mediaRequestBudget.snapshot(),
+    checkpointCounts: mediaCheckpointCounts(checkpoint),
+  }, null, 2));
 }
 
 async function run() {
@@ -1337,14 +1514,18 @@ async function run() {
   const sourcePolicy = await verifySourceAutomation(options);
   options.requestDelayMs = sourcePolicy.effectiveDelayMs;
   const cacheDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-cache'));
+  const mediaRequestBudget = options.mediaRequestLimit > 0
+    ? createMediaRequestBudget(options.mediaRequestLimit)
+    : null;
   const fetchPage = createPageFetcher({
     cacheDirectory,
     requestDelayMs: options.requestDelayMs,
     refreshCache: options.refreshCache,
     robots: sourcePolicy.robots,
+    mediaRequestBudget,
   });
   if (options.mediaOnly) {
-    await runMediaOnly({ options, fetchPage, cacheDirectory });
+    await runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget });
     return;
   }
   const checkpointFile = checkpointPath(options);
@@ -1455,27 +1636,13 @@ async function run() {
         }), `update-run-${checkpoint.runId}`);
         console.log(JSON.stringify({ seasonEndYear, seasonPhase, ...checkpoint.completed[completedKey], importRun: runRows[0] ?? null }, null, 2));
 
-        if (options.mediaLimit > 0) {
-          const remaining = Math.max(0, options.mediaLimit - (checkpoint.mediaImported ?? 0));
-          if (remaining > 0) {
-            const mediaRows = await collectSmallMediaSample({
-              seasonEndYear,
-              totals,
-              teamNames,
-              fetchPage,
-              cacheDirectory,
-              limit: remaining,
-              teamCode: options.mediaTeamCode,
-            });
-            if (mediaRows.length) {
-              await executeLinkedSql(buildMediaSql({ runId: checkpoint.runId, mediaRows }), `media-${checkpoint.runId}-${seasonEndYear}-${seasonPhase}`);
-              checkpoint.mediaImported = (checkpoint.mediaImported ?? 0) + mediaRows.length;
-              saveCheckpoint(checkpointFile, checkpoint);
-              console.log(`Imported ${mediaRows.length} verified media record(s) for ${seasonEndYear} ${seasonPhase}.`);
-            }
-          }
-        }
       }
+    }
+    // Optional media collection runs once after every selected phase has been
+    // written, allowing its linked read-only query to globally de-duplicate
+    // players across the complete regular/playoff range.
+    if (options.apply && options.mediaRequestLimit > 0) {
+      await runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget });
     }
     if (options.apply) {
       checkpoint.status = 'completed';
@@ -1511,7 +1678,14 @@ async function run() {
   }
 }
 
-run().catch((error) => {
-  console.error(`NBA Basketball Reference import failed: ${String(error?.stack ?? error)}`);
-  process.exitCode = 1;
-});
+const invokedModuleUrl = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : '';
+if (import.meta.url === invokedModuleUrl) {
+  run().catch((error) => {
+    console.error(`NBA Basketball Reference import failed: ${String(error?.stack ?? error)}`);
+    process.exitCode = 1;
+  });
+}
+
+// Export the smallest useful seam for offline tests. Importing this module no
+// longer launches a crawl because the entrypoint above is guarded explicitly.
+export { buildMediaSql, createPageFetcher, optionsFromArgs };

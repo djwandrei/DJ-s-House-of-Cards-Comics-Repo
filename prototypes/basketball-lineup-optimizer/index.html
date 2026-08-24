@@ -12,7 +12,7 @@
   <link rel="preload" href="../../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260823d">
+  <link rel="stylesheet" href="styles.css?v=20260823e">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -68,9 +68,9 @@
       <div class="shell">
         <nav class="tool-nav" aria-label="Lineup Lab tools" role="tablist">
           <button class="tool-nav__button is-active" id="optimizerTab" type="button" role="tab" data-view-target="optimizer" aria-controls="optimizerView" aria-selected="true">Optimizer</button>
-          <button class="tool-nav__button" id="compareTab" type="button" role="tab" data-view-target="compare" aria-controls="compareView" aria-selected="false" tabindex="-1">Player compare <span id="compareCount">0</span></button>
+          <button class="tool-nav__button" id="compareTab" type="button" role="tab" data-view-target="compare" aria-controls="compareView" aria-selected="false" tabindex="-1">Compare players <span id="compareCount">0</span></button>
           <button class="tool-nav__button" id="watchlistTab" type="button" role="tab" data-view-target="watchlist" aria-controls="watchlistView" aria-selected="false" tabindex="-1">Collector watchlist <span id="watchlistCount">0</span></button>
-          <button class="tool-nav__button" id="modelTab" type="button" role="tab" data-view-target="model" aria-controls="modelView" aria-selected="false" tabindex="-1">Data &amp; model</button>
+          <button class="tool-nav__button" id="modelTab" type="button" role="tab" data-view-target="model" aria-controls="modelView" aria-selected="false" tabindex="-1">Data and model</button>
         </nav>
 
         <section class="panel live-data-panel" id="liveDataPanel" aria-labelledby="liveDataHeading" aria-busy="false">
@@ -117,7 +117,7 @@
           </dl>
           <div class="dataset-strip__actions">
             <button class="text-button" id="importCsvButton" type="button">Import player CSV</button>
-            <button class="text-button" id="resetDatasetButton" type="button">Use course demo</button>
+            <button class="text-button" id="resetDatasetButton" type="button">Load course demo</button>
             <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden>
           </div>
         </div>
@@ -130,7 +130,7 @@
                   <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to solve</p>
                   <h2>Your best group is one click away.</h2>
                   <dl class="run-card__summary">
-                    <div><dt>Mode</dt><dd id="runModeSummary">5-player lineup</dd></div>
+                    <div><dt>Plan</dt><dd id="runModeSummary">Best 5-player group</dd></div>
                     <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
                     <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
                     <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
@@ -156,38 +156,41 @@
                   </div>
 
                   <div class="preset-grid" id="presetGrid">
-                    <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Two-way mix</span></button>
-                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Protect the lead</strong><span>Rebounds, steals, blocks</span></button>
-                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a bucket</strong><span>Scoring efficiency</span></button>
-                    <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the floor</strong><span>Shooting first</span></button>
-                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the ball</strong><span>Creation and control</span></button>
+                    <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Blend scoring, playmaking, and defense</span></button>
+                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Protect the Lead</strong><span>Prioritize rebounds, steals, and rim protection</span></button>
+                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a Bucket</strong><span>Maximize scoring and efficient shot-making</span></button>
+                    <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the Floor</strong><span>Favor eFG% and three-point shooting</span></button>
+                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the Ball</strong><span>Prioritize assists, creation, and control</span></button>
                   </div>
 
                   <div class="field-row field-row--three">
                     <label class="field">
-                      <span>Build type</span>
-                      <select id="modeInput" name="mode">
+                      <span>Plan format</span>
+                      <select id="modeInput" name="mode" aria-describedby="modeInputHelp">
                         <option value="lineup">Five-player lineup</option>
                         <option value="rotation">Rotation roster + minutes plan</option>
                       </select>
+                      <small class="field__help" id="modeInputHelp">Choose one five-player group or a larger roster with an exact 240-minute plan.</small>
                     </label>
                     <label class="field">
-                      <span>Players selected</span>
-                      <input id="sizeInput" name="size" type="number" min="5" max="12" step="1" value="5" inputmode="numeric">
+                      <span>Players in plan</span>
+                      <input id="sizeInput" name="size" type="number" min="5" max="12" step="1" value="5" inputmode="numeric" aria-describedby="sizeInputHelp">
+                      <small class="field__help" id="sizeInputHelp">Five in lineup mode; eight to twelve in rotation mode.</small>
                     </label>
                     <label class="field">
-                      <span>Show alternatives</span>
-                      <select id="alternativesInput" name="alternatives">
+                      <span>Results to compare</span>
+                      <select id="alternativesInput" name="alternatives" aria-describedby="alternativesInputHelp">
                         <option value="3">Top 3</option>
                         <option value="5" selected>Top 5</option>
                         <option value="10">Top 10</option>
                       </select>
+                      <small class="field__help" id="alternativesInputHelp">Show the best result plus the next-best feasible groups.</small>
                     </label>
                   </div>
 
                   <details class="weights-panel">
-                    <summary>Fine-tune objective weights</summary>
-                    <p class="helper">The optimizer percentile-normalizes each stat, so points and percentages can be combined without one unit overpowering another.</p>
+                    <summary>Adjust strategy weights</summary>
+                    <p class="helper"><strong>Weights do not need to add to 100.</strong> Only their proportions matter. The optimizer percentile-normalizes each stat so points and percentages can be combined fairly.</p>
                     <div class="weight-grid" id="weightGrid">
                       <label class="range-field">Scoring <input type="range" min="0" max="100" step="1" data-weight="points"><output>0</output></label>
                       <label class="range-field">Effective FG% <input type="range" min="0" max="100" step="1" data-weight="efgPct"><output>0</output></label>
@@ -199,6 +202,25 @@
                       <label class="range-field">Ball security <input type="range" min="0" max="100" step="1" data-weight="ballSecurity"><output>0</output></label>
                     </div>
                   </details>
+
+                  <section class="opponent-scout" id="opponentScout" aria-labelledby="opponentScoutHeading">
+                    <div class="opponent-scout__heading">
+                      <div>
+                        <p class="eyebrow">Optional matchup scout</p>
+                        <h3 id="opponentScoutHeading">Gameplan against a real team-season</h3>
+                        <p>Compare the current player pool with another team from the same season and phase. The scout reconstructs team averages from stored player totals and shows the nine players with the largest historical minute shares.</p>
+                      </div>
+                      <div class="opponent-scout__controls">
+                        <label class="field">
+                          <span>Opponent</span>
+                          <select id="opponentTeamInput" aria-describedby="opponentScoutStatus"></select>
+                        </label>
+                        <button class="button button--quiet" id="loadOpponentButton" type="button">Load opponent scout</button>
+                      </div>
+                    </div>
+                    <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above to compare an opponent.</p>
+                    <div class="opponent-scout__summary" id="opponentScoutSummary" hidden></div>
+                  </section>
                 </section>
 
                 <section class="panel step-panel" aria-labelledby="constraintsHeading">
@@ -212,13 +234,13 @@
 
                   <div class="constraint-groups">
                     <fieldset>
-                      <legend>Position slots</legend>
+                      <legend>Position coverage</legend>
                       <div class="compact-fields">
                         <label class="field"><span>Guards</span><input id="minGuardsInput" type="number" min="0" max="12" step="1" value="2"></label>
                         <label class="field"><span>Forwards</span><input id="minForwardsInput" type="number" min="0" max="12" step="1" value="2"></label>
                         <label class="field"><span>Centers</span><input id="minCentersInput" type="number" min="0" max="12" step="1" value="1"></label>
                       </div>
-                      <p class="helper">A flex player can fill one slot, not two.</p>
+                      <p class="helper">Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required slot.</p>
                     </fieldset>
 
                     <fieldset>
@@ -297,7 +319,7 @@
 
             </div>
             <div class="mobile-solve-bar">
-              <span>Exact lineup search</span>
+              <span id="mobileSolveLabel">Best 5-player group</span>
               <button class="button button--solve" id="mobileOptimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Optimize lineup</button>
             </div>
           </form>
@@ -402,6 +424,6 @@
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
   <script defer src="../../backend-config.js?v=20260823b"></script>
   <script defer src="../../supabase-client.js?v=20260823d"></script>
-  <script type="module" src="app.js?v=20260823d"></script>
+  <script type="module" src="app.js?v=20260823e"></script>
 </body>
 </html>

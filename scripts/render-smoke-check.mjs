@@ -10,6 +10,37 @@ const EDGE_PATHS = [
   'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe'
 ];
+const PUBLIC_PAGE_PATHS = [
+  '/index.html',
+  '/shop.html',
+  '/sports-cards.html',
+  '/baseball-cards.html',
+  '/basketball-cards.html',
+  '/football-cards.html',
+  '/comics.html',
+  '/collectibles.html',
+  '/about.html',
+  '/contact.html',
+  '/sell-trade-want-list.html',
+  '/wishlist.html',
+  '/cart.html',
+  '/checkout-success.html',
+  '/account.html',
+  '/admin.html',
+  '/inbox.html',
+  '/metrics.html',
+  '/offer.html',
+  '/policies.html',
+  '/shipping.html',
+  '/returns.html',
+  '/offline.html',
+  '/lineup-lab/index.html'
+];
+const VISUAL_MATRIX_VIEWPORTS = [
+  { label: 'mobile', width: 390, height: 844 },
+  { label: 'tablet', width: 900, height: 900 },
+  { label: 'desktop', width: 1280, height: 900 }
+];
 const MIME_TYPES = new Map([
   ['.css', 'text/css; charset=utf-8'],
   ['.csv', 'text/csv; charset=utf-8'],
@@ -159,6 +190,7 @@ async function connectBrowser(debugUrl) {
   await client.send('Page.enable');
   await client.send('Runtime.enable');
   await client.send('Log.enable');
+  await client.send('Network.enable');
   return client;
 }
 
@@ -176,8 +208,14 @@ function eventFailures(events) {
     .filter((event) => (
       event.method === 'Runtime.exceptionThrown'
       || (event.method === 'Log.entryAdded' && event.params?.entry?.level === 'error')
+      || (event.method === 'Network.responseReceived' && event.params?.response?.status >= 400)
     ))
-    .map((event) => event.params?.entry?.text || event.params?.exceptionDetails?.text || event.method)
+    .map((event) => {
+      if (event.method === 'Network.responseReceived') {
+        return `${event.params.response.status} ${event.params.response.url}`;
+      }
+      return event.params?.entry?.text || event.params?.exceptionDetails?.text || event.method;
+    })
     .slice(0, 10);
 }
 
@@ -489,6 +527,140 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
   return results;
 }
 
+async function setPreferredColorScheme(client, value) {
+  await client.send('Emulation.setEmulatedMedia', {
+    media: 'screen',
+    features: [{ name: 'prefers-color-scheme', value }]
+  });
+}
+
+async function setStorefrontTheme(client, dark) {
+  const state = await client.evaluate(`(() => {
+    const toggle = document.getElementById('themeToggle');
+    return {
+      supported: !!toggle,
+      dark: document.body.classList.contains('dark-mode')
+    };
+  })()`);
+  if (!state.supported || state.dark === dark) return state.supported;
+  await client.evaluate(`document.getElementById('themeToggle')?.click()`);
+  await delay(100);
+  return true;
+}
+
+async function inspectVisualMatrixState(client) {
+  return await client.evaluate(`(() => {
+    const visibleControlSelector = [
+      '.nav-toggle',
+      '.theme-toggle',
+      '.back-to-top',
+      '.mobile-filter-trigger',
+      '.filter-panel-dismiss',
+      '.modal-close',
+      '.product-card-gallery-button',
+      '[data-product-wishlist]'
+    ].join(',');
+    const visibleControlsOutOfBounds = Array.from(document.querySelectorAll(visibleControlSelector))
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const pinnedToViewport = style.position === 'fixed' || style.position === 'sticky';
+        const horizontallyClipped = rect.left < -2 || rect.right > window.innerWidth + 2;
+        const pinnedVerticallyClipped = pinnedToViewport && (rect.top < -2 || rect.bottom > window.innerHeight + 2);
+        return style.display !== 'none'
+          && style.visibility !== 'hidden'
+          && rect.width > 0
+          && rect.height > 0
+          && (horizontallyClipped || pinnedVerticallyClipped);
+      })
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          selector: String(element.className || element.id || element.tagName),
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          top: Math.round(rect.top),
+          bottom: Math.round(rect.bottom)
+        };
+      })
+      .slice(0, 8);
+    return {
+      title: document.title.trim(),
+      h1: document.querySelector('h1')?.textContent?.trim() || '',
+      header: !!document.querySelector('header'),
+      footer: !!document.querySelector('footer'),
+      visibleMain: (document.querySelector('main')?.getBoundingClientRect().height || 0) > 0,
+      themeToggle: !!document.getElementById('themeToggle'),
+      dark: document.body.classList.contains('dark-mode'),
+      overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+      brokenImages: Array.from(document.images)
+        .filter((image) => (image.currentSrc || image.getAttribute('src')) && image.complete && image.naturalWidth === 0)
+        .map((image) => image.currentSrc || image.src)
+        .slice(0, 8),
+      visibleControlsOutOfBounds
+    };
+  })()`);
+}
+
+function visualMatrixFailures(label, pagePath, state, expectedDark) {
+  const failures = [];
+  if (!state.title) failures.push(`${label}: missing document title`);
+  if (!state.h1) failures.push(`${label}: missing h1`);
+  if (pagePath !== '/offline.html' && !state.header) failures.push(`${label}: missing header`);
+  if (pagePath !== '/offline.html' && !state.footer) failures.push(`${label}: missing footer`);
+  if (!state.visibleMain) failures.push(`${label}: main content is not visibly rendered`);
+  if (state.overflow > 2) failures.push(`${label}: horizontal overflow ${state.overflow}px`);
+  if (state.brokenImages.length) failures.push(`${label}: broken images ${state.brokenImages.join(', ')}`);
+  if (state.visibleControlsOutOfBounds.length) {
+    failures.push(`${label}: visible controls outside viewport ${JSON.stringify(state.visibleControlsOutOfBounds)}`);
+  }
+  if (state.themeToggle && state.dark !== expectedDark) {
+    failures.push(`${label}: ${expectedDark ? 'dark' : 'light'} theme did not apply`);
+  }
+  return failures;
+}
+
+async function inspectEveryPageVisualMatrix(client, baseUrl) {
+  const failures = [];
+  let combinations = 0;
+  for (const viewport of VISUAL_MATRIX_VIEWPORTS) {
+    await setViewport(client, viewport.width);
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width: viewport.width,
+      height: viewport.height,
+      deviceScaleFactor: viewport.width <= 900 ? 2 : 1,
+      mobile: viewport.width <= 900,
+      screenWidth: viewport.width,
+      screenHeight: viewport.height
+    });
+    for (const pagePath of PUBLIC_PAGE_PATHS) {
+      client.consumeEvents();
+      await setPreferredColorScheme(client, 'light');
+      await navigate(client, `${baseUrl}${pagePath}?visualMatrix=${viewport.width}`);
+      for (const colorScheme of ['light', 'dark']) {
+        const expectedDark = colorScheme === 'dark';
+        await setPreferredColorScheme(client, colorScheme);
+        await setStorefrontTheme(client, expectedDark);
+        await delay(120);
+        const state = await inspectVisualMatrixState(client);
+        const label = `${pagePath} at ${viewport.width}px in ${colorScheme} mode`;
+        failures.push(...visualMatrixFailures(label, pagePath, state, expectedDark));
+        combinations += 1;
+      }
+      await setStorefrontTheme(client, false);
+      failures.push(...eventFailures(client.consumeEvents()).map((event) => `${pagePath} at ${viewport.width}px: ${event}`));
+    }
+  }
+  await setPreferredColorScheme(client, 'light');
+  return {
+    pages: PUBLIC_PAGE_PATHS.length,
+    widths: VISUAL_MATRIX_VIEWPORTS.map(({ width }) => width),
+    themes: ['light', 'dark'],
+    combinations,
+    failures
+  };
+}
+
 async function main() {
   const server = await startStaticServer();
   const port = server.address().port;
@@ -530,6 +702,7 @@ async function main() {
     }
     const mobile = await inspectMobileFlow(client, baseUrl);
     const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
+    const visualMatrix = await inspectEveryPageVisualMatrix(client, baseUrl);
     client.websocket.close();
 
     const allFailures = [
@@ -537,7 +710,8 @@ async function main() {
       ...desktop.flatMap((item) => item.badEvents.map((event) => `${item.label}: ${event}`)),
       ...mobile.failures.map((failure) => `${mobile.label}: ${failure}`),
       ...mobile.badEvents.map((event) => `${mobile.label}: ${event}`),
-      ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`))
+      ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
+      ...visualMatrix.failures
     ];
     const summary = {
       ok: allFailures.length === 0,
@@ -545,6 +719,7 @@ async function main() {
       desktop,
       mobile,
       responsive,
+      visualMatrix,
       failures: allFailures
     };
     console.log(JSON.stringify(summary, null, 2));
