@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260823e";
+import { normalizeDataset } from "./player-data.js?v=20260824a";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -185,11 +185,13 @@ export function mapSupabaseNbaPlayer(row, options = {}) {
  * Summarize saved team-stint totals for an opponent-scouting snapshot.
  *
  * The database view contains player totals rather than a separate team-total
- * row. We therefore use the largest games-played value as the requested team
- * game count, add the roster's counting totals, and divide those totals by the
- * shared game count. Shooting percentages are deliberately recomputed from
- * aggregate makes and attempts; averaging player percentages would give a
- * low-volume shooter the same influence as a high-volume shooter.
+ * row. We reconstruct the shared schedule from aggregate player-minutes (240
+ * per regulation game), retain the largest player games-played value as a
+ * lower bound, and cap known regular-season formats. We then divide the
+ * roster's counting totals by that estimate. Shooting percentages are
+ * deliberately recomputed from aggregate makes and attempts; averaging player
+ * percentages would give a low-volume shooter the same influence as a
+ * high-volume shooter.
  *
  * The function is pure: it does not access Supabase, mutate a source row, or
  * depend on today's date. That makes the historical summary deterministic and

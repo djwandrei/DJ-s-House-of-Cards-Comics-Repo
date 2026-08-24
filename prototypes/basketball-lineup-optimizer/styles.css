@@ -133,8 +133,19 @@ img {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid #ffd978;
   outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--navy);
+}
+
+/* Form controls sit mostly on light surfaces, where a navy inner ring keeps
+ * the keyboard focus indicator distinct even when the gold outline overlaps a
+ * pale border. The combination also remains visible on the dark hero/header. */
+input:focus-visible,
+select:focus-visible,
+.table-wrap:focus-visible {
+  outline-color: var(--blue);
+  box-shadow: 0 0 0 2px #fff;
 }
 
 .lab-header {
@@ -178,7 +189,7 @@ img {
 .brand small {
   margin-top: 0.2rem;
   color: #c6d1ec;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -190,7 +201,7 @@ img {
   background: rgba(232, 184, 76, 0.14);
   border: 1px solid rgba(232, 184, 76, 0.44);
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -535,7 +546,7 @@ img {
   color: var(--blue);
   background: #e8ecff;
   border-radius: 999px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .tool-nav__button:hover {
@@ -670,7 +681,7 @@ img {
 .dataset-strip__label {
   display: block;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -702,7 +713,7 @@ img {
 
 .dataset-strip dt {
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -955,7 +966,25 @@ img {
 
 .range-field input {
   width: 100%;
+  min-height: 44px;
   accent-color: var(--blue);
+}
+
+.weight-validation {
+  margin: 0.65rem 0 0;
+  padding: 0.65rem 0.75rem;
+  color: #7a1822;
+  background: #fff1f2;
+  border: 1px solid #e7aeb4;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.weights-panel[data-validation="error"] {
+  background: #fff8f8;
+  border-color: #d66b76;
+  box-shadow: 0 0 0 2px rgba(181, 21, 36, 0.1);
 }
 
 .range-field output {
@@ -1078,10 +1107,27 @@ img {
   color: var(--danger);
 }
 
+.opponent-scout__status[data-tone="warning"] {
+  color: var(--warning);
+}
+
 .opponent-scout__summary {
   display: grid;
+  /*
+   * Use a zero-minimum grid track so long player names, the three-column
+   * signed-delta rows, and the scrollable weight table shrink inside a phone
+   * card. A plain implicit `auto` track adopts the widest descendant's
+   * min-content width and can push the entire optimizer off-screen.
+   */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.85rem;
   margin-top: 0.9rem;
+}
+
+.opponent-scout__summary > *,
+.opponent-scout__team > div {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .opponent-scout__team {
@@ -1127,30 +1173,56 @@ img {
 
 .opponent-scout__stats {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0;
 }
 
 .opponent-scout__stats div {
   min-width: 0;
-  padding: 0.55rem 0.35rem;
+  padding: 0.65rem;
   background: var(--surface-soft);
   border: 1px solid #e5e9f3;
-  border-radius: 9px;
-  text-align: center;
+  border-radius: 10px;
 }
 
 .opponent-scout__stats dt {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
 .opponent-scout__stats dd {
-  margin: 0.08rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0.45rem 0 0;
+}
+
+.opponent-scout__stats dd span,
+.opponent-scout__stats dd small,
+.opponent-scout__stats dd strong {
+  min-width: 0;
+  display: block;
+}
+
+.opponent-scout__stats dd small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.opponent-scout__stats dd strong {
+  margin-top: 0.14rem;
   color: var(--navy);
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+.opponent-scout__delta-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .opponent-scout__rotation {
@@ -1195,7 +1267,7 @@ img {
 .opponent-player small {
   margin-top: 0.1rem;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   line-height: 1.3;
 }
 
@@ -1213,6 +1285,51 @@ img {
   font-size: 0.76rem;
 }
 
+.counter-weight-preview {
+  margin-top: 0.7rem;
+  background: #fff;
+}
+
+.counter-weight-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.counter-weight-table caption {
+  padding: 0.6rem 0.7rem;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: left;
+}
+
+.counter-weight-table th,
+.counter-weight-table td {
+  padding: 0.48rem 0.7rem;
+  border-top: 1px solid var(--line);
+  text-align: right;
+}
+
+.counter-weight-table th:first-child,
+.counter-weight-table td:first-child {
+  text-align: left;
+}
+
+.counter-weight-table th {
+  color: var(--muted);
+  background: #fafbfe;
+  font-size: 0.75rem;
+}
+
+.opponent-scout__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
 .search-field {
   display: block;
 }
@@ -1224,6 +1341,10 @@ img {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 13px;
+}
+
+.table-wrap[tabindex="0"] {
+  scroll-margin: 1rem;
 }
 
 .player-table,
@@ -1259,7 +1380,7 @@ img {
 .compare-table th {
   color: #4e5b78;
   background: #f4f6fa;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   letter-spacing: 0.025em;
 }
 
@@ -1371,6 +1492,29 @@ img {
   accent-color: var(--blue);
 }
 
+.table-check-target {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.table-check-target:hover {
+  background: #eef1ff;
+}
+
+.table-check-target:has(.table-check:focus-visible) {
+  outline: 3px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.table-check-target:has(.table-check:disabled) {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
 .watch-toggle {
   width: 44px;
   height: 44px;
@@ -1464,7 +1608,7 @@ img {
 
 .search-scope span {
   color: currentColor;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -1595,7 +1739,7 @@ img {
 .score-card span {
   display: block;
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -1647,7 +1791,7 @@ img {
   color: var(--blue);
   background: #e9edff;
   border-radius: 999px;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -1692,7 +1836,7 @@ img {
 
 .lineup-player dt {
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -1700,6 +1844,15 @@ img {
   margin: 0.04rem 0 0;
   font-size: 0.84rem;
   font-weight: 700;
+}
+
+.card-search-link {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  justify-content: center;
+  text-align: center;
 }
 
 .result-detail-grid {
@@ -1756,7 +1909,7 @@ img {
   grid-template-columns: 92px 1fr 38px;
   align-items: center;
   gap: 0.55rem;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .metric-bar__track {
@@ -1774,14 +1927,56 @@ img {
 
 .minutes-list li {
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) 2fr 40px;
+  grid-template-columns: minmax(135px, 1fr) 2fr 54px;
   align-items: center;
   gap: 0.55rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
+}
+
+.rotation-plan-note {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.minutes-list__player,
+.minutes-list__player strong,
+.minutes-list__player small {
+  min-width: 0;
+  display: block;
+}
+
+.minutes-list__player strong {
+  overflow: hidden;
+  color: var(--navy);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minutes-list__player small {
+  margin-top: 0.12rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.alternatives-section {
+  margin-top: 1rem;
+}
+
+.alternatives-section h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1rem;
+}
+
+.alternatives-section > p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .alternatives-wrap {
-  margin-top: 1rem;
+  margin-top: 0.7rem;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -1811,6 +2006,16 @@ img {
 .compare-content {
   min-height: 240px;
   padding: 1.25rem;
+}
+
+.compare-pool-note {
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 0.8rem;
+  color: #33405f;
+  background: #f0f3ff;
+  border: 1px solid #cfd7f2;
+  border-radius: 10px;
+  font-size: 0.8rem;
 }
 
 .compare-legend {
@@ -1860,7 +2065,7 @@ img {
 
 .compare-row > strong {
   color: var(--navy);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .compare-row__bars {
@@ -1892,7 +2097,7 @@ img {
 
 .compare-player-value {
   color: var(--ink);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-align: right;
 }
@@ -1944,7 +2149,7 @@ img {
 .watch-card p {
   margin: 0.3rem 0 0;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .watchlist-migration-note {
@@ -1975,7 +2180,7 @@ img {
 .watch-card__stats span {
   display: block;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -2185,21 +2390,37 @@ img {
 
   .builder-main {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1;
   }
 
   .builder-sidebar {
     grid-column: 1;
     position: static;
-    grid-row: 1;
+    grid-row: 2;
   }
 
+  /* The fixed solve bar already carries the primary action on tablets and
+   * phones. Move the main workflow first and reduce the desktop summary card
+   * to structural feedback plus Reset, avoiding a duplicate wall of controls
+   * before Step 1. */
   .run-card {
-    display: block;
+    display: grid;
+    gap: 0.6rem;
+    padding: 0.8rem;
+    box-shadow: none;
   }
 
+  .run-card h2,
+  .run-card__summary,
+  .run-card__note,
   .run-card .button--solve {
     display: none;
+  }
+
+  .run-card .eyebrow,
+  .run-card .search-scope,
+  .run-card .text-button {
+    margin: 0;
   }
 
   .result-detail-grid {
@@ -2275,7 +2496,7 @@ img {
   }
 
   .prototype-badge {
-    font-size: 0.62rem;
+    font-size: 0.75rem;
   }
 
   .hero h1 {
@@ -2337,7 +2558,7 @@ img {
   }
 
   .opponent-scout__stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .opponent-scout__rotation {
@@ -2440,7 +2661,7 @@ img {
   .player-table td:not(:first-child)::before {
     content: attr(data-label);
     color: var(--muted);
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -2469,7 +2690,7 @@ img {
   }
 
   .run-card {
-    display: block;
+    display: grid;
   }
 
   .lineup-grid {
@@ -2542,7 +2763,7 @@ img {
   }
 
   .opponent-scout__stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .preset-card:last-child,

@@ -18,6 +18,12 @@ const OBJECTIVE_METRICS = Object.freeze([
 ]);
 
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
+// A regulation NBA game contains five simultaneous court roles for 48 minutes:
+// two guard roles, two forward roles, and one center role. Rotation roster
+// minimums answer "how many players of each type must I select?"; these minute
+// requirements answer the separate and stricter question "can those players
+// actually cover every role for the entire game within their minute limits?"
+export const STANDARD_POSITION_MINUTES = Object.freeze({ G: 96, F: 96, C: 48 });
 const STAT_MINIMUM_KEYS = Object.freeze([
   "points",
   "rebounds",
@@ -45,6 +51,19 @@ const PLAYER_NUMERIC_FIELDS = Object.freeze([
 // pools. This guard prevents an accidental broad rotation request from tying up
 // the browser with millions of synchronous combinations.
 export const DEFAULT_MAX_EXACT_COMBINATIONS = 200000;
+// Rotation candidates are substantially more expensive than five-player
+// lineups because each one also solves an integer G/F/C minute-flow problem.
+// A separate default keeps accepted browser work below the Worker's 30-second
+// timeout on realistic mixed-position pools. Browser benchmarking put 24,310
+// all-flex candidates beyond that watchdog, while 6,435 stayed comfortably
+// below it; 10,000 leaves a practical margin. Callers may still choose a lower
+// explicit cap for constrained devices.
+export const DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS = 10000;
+// A constrained minute state costs roughly 0.4 ms on the slow path observed in
+// browser QA. This solve-wide ceiling leaves substantial room below the
+// Worker's 30-second watchdog even when several candidate rosters are hard.
+export const DEFAULT_MAX_CONSTRAINED_SOLVE_STATES = 10000;
+export const MAX_CONSTRAINED_SOLVE_STATES = 15000;
 // The browser only needs a handful of alternatives. Capping this protects the
 // exact enumerator from retaining an unbounded number of otherwise feasible
 // groups when this module is called outside the visible UI.
@@ -305,12 +324,29 @@ function normalizeConfig(config = {}) {
 
   const maxCombinations = normalizeNonNegativeNumber(
     config.maxCombinations,
-    DEFAULT_MAX_EXACT_COMBINATIONS,
+    mode === "rotation"
+      ? DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS
+      : DEFAULT_MAX_EXACT_COMBINATIONS,
     "maxCombinations",
     reasons,
     true,
   );
   if (maxCombinations < 1) reasons.push("maxCombinations must be at least 1.");
+  const maxConstraintSearchStates = normalizeNonNegativeNumber(
+    config.maxConstraintSearchStates,
+    DEFAULT_MAX_CONSTRAINED_SOLVE_STATES,
+    "maxConstraintSearchStates",
+    reasons,
+    true,
+  );
+  if (maxConstraintSearchStates < 1) {
+    reasons.push("maxConstraintSearchStates must be at least 1.");
+  }
+  if (maxConstraintSearchStates > MAX_CONSTRAINED_SOLVE_STATES) {
+    reasons.push(
+      `maxConstraintSearchStates cannot exceed the browser-safe limit of ${MAX_CONSTRAINED_SOLVE_STATES}.`,
+    );
+  }
 
   const minGames = normalizeNonNegativeNumber(config.minGames, 0, "minGames", reasons);
   const minMinutes = normalizeNonNegativeNumber(config.minMinutes, 0, "minMinutes", reasons);
@@ -358,12 +394,16 @@ function normalizeConfig(config = {}) {
           reasons.push(`statMinimums contains an unsupported statistic: ${key}.`);
           continue;
         }
-        statMinimums[key] = normalizeNonNegativeNumber(
+        const minimum = normalizeNonNegativeNumber(
           config.statMinimums[key],
           0,
           `statMinimums.${key}`,
           reasons,
         );
+        // Player box-score values are validated non-negative, so a zero lower
+        // bound is mathematically vacuous. Dropping it avoids activating the
+        // expensive constrained-minute path for a no-op UI field.
+        if (minimum > 0) statMinimums[key] = minimum;
       }
     }
   }
@@ -422,6 +462,7 @@ function normalizeConfig(config = {}) {
       size,
       alternatives,
       maxCombinations,
+      maxConstraintSearchStates,
       minGames,
       minMinutes,
       lockedIds,
@@ -574,20 +615,78 @@ function calculateLineupTotals(players) {
   return totals;
 }
 
-function calculateObjective(players, normalizedMetrics, rawWeights, normalizedWeights) {
+/**
+ * Project full-team box-score totals from a 240-minute rotation plan.
+ *
+ * Basketball Reference supplies per-game production and minutes per game. A
+ * player's historical per-minute rate is therefore `stat / minutes`; applying
+ * that rate to the proposed allocation makes rotation thresholds describe the
+ * minutes that will actually be played. A zero-minute source row contributes
+ * zero rather than manufacturing an undefined rate.
+ */
+function calculateRotationTotals(players, rotationAllocation) {
+  const totals = {
+    points: 0,
+    rebounds: 0,
+    assists: 0,
+    steals: 0,
+    blocks: 0,
+    turnovers: 0,
+  };
+
+  for (const player of players) {
+    const sourceMinutes = Number(player.minutes);
+    const allocatedMinutes = Number(rotationAllocation.byId[player.id] ?? 0);
+    const scale = sourceMinutes > 0 ? allocatedMinutes / sourceMinutes : 0;
+    for (const field of Object.keys(totals)) totals[field] += player[field] * scale;
+  }
+  for (const field of Object.keys(totals)) totals[field] = round(totals[field]);
+  return totals;
+}
+
+function objectiveShare(playerId, players, rotationAllocation) {
+  if (!rotationAllocation) return 1 / players.length;
+  // All successful rotation plans contain exactly 240 minutes. Dividing by the
+  // returned total keeps this helper defensive if it is used with a diagnostic
+  // allocation in the future.
+  return Number(rotationAllocation.byId[playerId] ?? 0) / rotationAllocation.totalMinutes;
+}
+
+function calculateObjective(
+  players,
+  normalizedMetrics,
+  rawWeights,
+  normalizedWeights,
+  rotationAllocation = null,
+) {
   const contributionBreakdown = {};
   let rawScore = 0;
 
   for (const metric of OBJECTIVE_METRICS) {
-    const averagePercentile =
-      players.reduce((total, player) => total + normalizedMetrics.get(player.id)[metric], 0) /
-      players.length;
+    const averagePercentile = rotationAllocation
+      ? players.reduce(
+          (total, player) =>
+            total +
+            normalizedMetrics.get(player.id)[metric] *
+              objectiveShare(player.id, players, rotationAllocation),
+          0,
+        )
+      : players.reduce(
+          (total, player) => total + normalizedMetrics.get(player.id)[metric],
+          0,
+        ) / players.length;
     const scoreContribution = averagePercentile * normalizedWeights[metric] * 100;
     rawScore += scoreContribution;
     contributionBreakdown[metric] = {
       weight: rawWeights[metric],
       normalizedWeight: round(normalizedWeights[metric]),
+      // Keep the established key for browser compatibility. In rotation mode
+      // it is now a minute-weighted percentile, while lineup mode remains the
+      // original equal-player average.
       averagePercentile: round(averagePercentile),
+      ...(rotationAllocation
+        ? { minuteWeightedPercentile: round(averagePercentile) }
+        : {}),
       scoreContribution: round(scoreContribution),
     };
   }
@@ -599,14 +698,23 @@ function calculateObjective(players, normalizedMetrics, rawWeights, normalizedWe
   };
 }
 
-function calculateObjectiveScore(players, playerObjectiveScores) {
+function calculateObjectiveScore(players, playerObjectiveScores, rotationAllocation = null) {
   // Each player's weighted percentile contribution is independent of the rest
-  // of the candidate. Summing the precomputed values preserves the exact score
-  // ordering while removing repeated metric-by-metric reductions in the hot
-  // combination loop.
+  // of the candidate. Lineup mode keeps the original equal-player average;
+  // rotation mode weights that same pool-relative fit by the minutes the player
+  // will actually be on the court.
+  if (!rotationAllocation) {
+    let scoreTotal = 0;
+    for (const player of players) scoreTotal += playerObjectiveScores.get(player.id);
+    return (scoreTotal / players.length) * 100;
+  }
   let scoreTotal = 0;
-  for (const player of players) scoreTotal += playerObjectiveScores.get(player.id);
-  return (scoreTotal / players.length) * 100;
+  for (const player of players) {
+    scoreTotal +=
+      playerObjectiveScores.get(player.id) *
+      objectiveShare(player.id, players, rotationAllocation);
+  }
+  return scoreTotal * 100;
 }
 
 function buildConstraintAudit(
@@ -656,56 +764,61 @@ function buildConstraintAudit(
             actual: rotationAllocation.totalMinutes,
             passed: rotationAllocation.ok && rotationAllocation.totalMinutes === 240,
           },
+          ...(rotationAllocation.positionMinutes?.enforced
+            ? {
+                rotationPositionMinutes: {
+                  required: { ...rotationAllocation.positionMinutes.required },
+                  actual: { ...rotationAllocation.positionMinutes.actual },
+                  byPlayer: rotationAllocation.positionMinutes.byPlayer,
+                  passed: rotationAllocation.positionMinutes.passed,
+                },
+              }
+            : {}),
         }
       : {}),
   };
 }
 
-function getMapLikeValue(source, id) {
-  if (source instanceof Map) return source.get(id);
+function getMapLikeValue(source, id, label = "Map option", reasons = null) {
+  if (source instanceof Map) {
+    const canonical = canonicalId(id);
+    let found = false;
+    let value;
+
+    // Public callers are allowed to use the same numeric ids present in their
+    // player objects as Map keys. Internal player ids are canonical strings,
+    // however, so first honor an exact canonical-string key and then look for
+    // one equivalent raw key (for example, numeric 8 matching string "8").
+    // Two equivalent keys would make precedence data-dependent, so reject that
+    // input instead of silently choosing one and optimizing the wrong bounds.
+    if (source.has(canonical)) {
+      found = true;
+      value = source.get(canonical);
+    }
+    for (const [rawKey, candidate] of source.entries()) {
+      if (rawKey === canonical || canonicalId(rawKey) !== canonical) continue;
+      if (found) {
+        if (Array.isArray(reasons)) {
+          reasons.push(
+            `${label} contains multiple Map keys that normalize to player id "${canonical}".`,
+          );
+        }
+        return undefined;
+      }
+      found = true;
+      value = candidate;
+    }
+    return found ? value : undefined;
+  }
   if (isPlainObject(source) && hasOwn(source, id)) return source[id];
   return undefined;
 }
 
-function getBoundValue(setting, id, fallback) {
+function getBoundValue(setting, id, fallback, label, reasons) {
   if (setting === undefined || setting === null) return fallback;
   if (typeof setting === "number" || typeof setting === "string") return Number(setting);
-  const value = getMapLikeValue(setting, id);
+  const value = getMapLikeValue(setting, id, label, reasons);
   return value === undefined ? fallback : Number(value);
-}
-
-function isEmptyMapLike(value) {
-  if (value === undefined || value === null) return true;
-  if (value instanceof Map) return value.size === 0;
-  return isPlainObject(value) && Object.keys(value).length === 0;
-}
-
-function isUniformBoundSetting(value) {
-  return value === undefined || value === null || typeof value === "number" || typeof value === "string" || isEmptyMapLike(value);
-}
-
-function hasValidSuppliedScores(value) {
-  if (value === undefined || value === null) return true;
-  const entries = value instanceof Map
-    ? [...value.values()]
-    : isPlainObject(value)
-      ? Object.values(value)
-      : [];
-  return entries.every((entry) => Number.isFinite(Number(entry)) && Number(entry) >= 0);
-}
-
-function canDeferRotationAllocation(options) {
-  // Uniform minute bounds have the same 240-minute feasibility for every
-  // candidate with the same roster size. Validate that once, rank all groups,
-  // then allocate only the finalists. Per-player bounds remain candidate
-  // specific and deliberately stay on the slower but exact path.
-  const scoreSource = options.scores ?? options.playerScores ?? options.weights;
-  return (
-    isEmptyMapLike(options.playerBounds) &&
-    isUniformBoundSetting(options.minMinutes) &&
-    isUniformBoundSetting(options.maxMinutes) &&
-    hasValidSuppliedScores(scoreSource)
-  );
 }
 
 function rotationFailure(reasons, diagnostics = {}) {
@@ -722,12 +835,776 @@ function rotationFailure(reasons, diagnostics = {}) {
 }
 
 /**
+ * A compact Dinic max-flow implementation used only for rotation role minutes.
+ * Capacities are tiny integers (at most 240), so this gives us a transparent,
+ * dependency-free feasibility proof instead of position heuristics that can
+ * double-count flex players.
+ */
+function createFlowNetwork(nodeCount) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+
+  function addEdge(from, to, capacity) {
+    const forward = {
+      to,
+      reverseIndex: graph[to].length,
+      capacity,
+      initialCapacity: capacity,
+    };
+    const reverse = {
+      to: from,
+      reverseIndex: graph[from].length,
+      capacity: 0,
+      initialCapacity: 0,
+    };
+    graph[from].push(forward);
+    graph[to].push(reverse);
+    return forward;
+  }
+
+  function maxFlow(source, sink) {
+    let total = 0;
+    while (true) {
+      const level = Array(nodeCount).fill(-1);
+      const queue = [source];
+      level[source] = 0;
+      for (let index = 0; index < queue.length; index += 1) {
+        const node = queue[index];
+        for (const edge of graph[node]) {
+          if (edge.capacity <= 0 || level[edge.to] !== -1) continue;
+          level[edge.to] = level[node] + 1;
+          queue.push(edge.to);
+        }
+      }
+      if (level[sink] === -1) break;
+
+      const nextEdge = Array(nodeCount).fill(0);
+      function send(node, available) {
+        if (node === sink) return available;
+        for (; nextEdge[node] < graph[node].length; nextEdge[node] += 1) {
+          const edge = graph[node][nextEdge[node]];
+          if (edge.capacity <= 0 || level[edge.to] !== level[node] + 1) continue;
+          const delivered = send(edge.to, Math.min(available, edge.capacity));
+          if (delivered <= 0) continue;
+          edge.capacity -= delivered;
+          graph[edge.to][edge.reverseIndex].capacity += delivered;
+          return delivered;
+        }
+        return 0;
+      }
+
+      while (true) {
+        const delivered = send(source, Number.POSITIVE_INFINITY);
+        if (delivered <= 0) break;
+        total += delivered;
+      }
+    }
+    return total;
+  }
+
+  return { addEdge, maxFlow };
+}
+
+/**
+ * Solve the integer b-matching between players and G/F/C role minutes.
+ *
+ * The source-to-player lower and upper bounds enforce each player's total
+ * minute range. Player-to-role edges allow only source-listed positions, and
+ * each role has an exact demand. Lower bounds are converted to an ordinary
+ * circulation with a super-source/super-sink; integral capacities guarantee an
+ * integral result, so no rounding can create a fake feasible plan.
+ */
+function everyPlayerCoversRequiredPositions(players, requirements) {
+  const requiredPositions = POSITION_KEYS.filter((position) => requirements[position] > 0);
+  return players.every(
+    (player) =>
+      Array.isArray(player.positions) &&
+      requiredPositions.every((position) => player.positions.includes(position)),
+  );
+}
+
+function buildUniversalPositionFlow(players, bounds, requirements) {
+  const sortedPlayers = players.slice().sort(comparePlayersById);
+  const totalRequired = POSITION_KEYS.reduce(
+    (total, position) => total + requirements[position],
+    0,
+  );
+  const minimumTotal = sortedPlayers.reduce(
+    (total, player) => total + bounds.get(player.id).min,
+    0,
+  );
+  const maximumTotal = sortedPlayers.reduce(
+    (total, player) => total + bounds.get(player.id).max,
+    0,
+  );
+  if (minimumTotal > totalRequired || maximumTotal < totalRequired) {
+    return { feasible: false, required: { ...requirements }, delivered: 0, balanceDemand: totalRequired };
+  }
+
+  const totalsByPlayer = Object.fromEntries(
+    sortedPlayers.map((player) => [player.id, bounds.get(player.id).min]),
+  );
+  let remaining = totalRequired - minimumTotal;
+  for (const player of sortedPlayers) {
+    const capacity = bounds.get(player.id).max - totalsByPlayer[player.id];
+    const addition = Math.min(capacity, remaining);
+    totalsByPlayer[player.id] += addition;
+    remaining -= addition;
+    if (remaining === 0) break;
+  }
+
+  const remainingByPosition = { ...requirements };
+  const byPlayer = {};
+  for (const player of sortedPlayers) {
+    let playerMinutes = totalsByPlayer[player.id];
+    const roleMinutes = { G: 0, F: 0, C: 0 };
+    for (const position of POSITION_KEYS) {
+      const assigned = Math.min(playerMinutes, remainingByPosition[position]);
+      roleMinutes[position] = assigned;
+      remainingByPosition[position] -= assigned;
+      playerMinutes -= assigned;
+    }
+    byPlayer[player.id] = roleMinutes;
+  }
+  const actual = Object.fromEntries(
+    POSITION_KEYS.map((position) => [position, requirements[position] - remainingByPosition[position]]),
+  );
+  return {
+    feasible:
+      remaining === 0 &&
+      POSITION_KEYS.every((position) => remainingByPosition[position] === 0),
+    required: { ...requirements },
+    actual,
+    byPlayer,
+    totalsByPlayer,
+    delivered: totalRequired,
+    balanceDemand: totalRequired,
+  };
+}
+
+function findPositionMinuteFlow(players, bounds, requirements) {
+  // All-flex test pools and real multi-position groups need no augmenting-path
+  // work: every feasible total-minute vector can be split across every role.
+  // This exact shortcut is important because the combination solver may invoke
+  // this oracle thousands of times.
+  if (everyPlayerCoversRequiredPositions(players, requirements)) {
+    return buildUniversalPositionFlow(players, bounds, requirements);
+  }
+  const sortedPlayers = players.slice().sort(comparePlayersById);
+  const playerStart = 1;
+  const positionStart = playerStart + sortedPlayers.length;
+  const source = 0;
+  const sink = positionStart + POSITION_KEYS.length;
+  const superSource = sink + 1;
+  const superSink = sink + 2;
+  const nodeCount = superSink + 1;
+  const network = createFlowNetwork(nodeCount);
+  const balances = Array(nodeCount).fill(0);
+  const roleEdges = new Map();
+  const totalRequired = POSITION_KEYS.reduce(
+    (total, position) => total + requirements[position],
+    0,
+  );
+
+  function addBoundedEdge(from, to, lower, upper) {
+    const edge = network.addEdge(from, to, upper - lower);
+    balances[from] -= lower;
+    balances[to] += lower;
+    return { edge, lower };
+  }
+
+  sortedPlayers.forEach((player, index) => {
+    const playerNode = playerStart + index;
+    const playerBounds = bounds.get(player.id);
+    addBoundedEdge(source, playerNode, playerBounds.min, playerBounds.max);
+    const edges = new Map();
+    // optimizeLineups supplies normalized position arrays, while the exported
+    // minute allocator can also be called directly. Treat a missing/malformed
+    // standalone position list as no eligible roles so the allocator returns a
+    // structured infeasibility result instead of throwing inside the flow.
+    const eligiblePositions = Array.isArray(player.positions) ? player.positions : [];
+    for (const position of POSITION_KEYS) {
+      if (!eligiblePositions.includes(position)) continue;
+      const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+      edges.set(position, addBoundedEdge(playerNode, positionNode, 0, playerBounds.max));
+    }
+    roleEdges.set(player.id, edges);
+  });
+
+  for (const position of POSITION_KEYS) {
+    const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+    addBoundedEdge(positionNode, sink, requirements[position], requirements[position]);
+  }
+  // Closing sink back to source turns the bounded source/sink problem into a
+  // circulation. Exact role demands force this edge to carry all 240 minutes.
+  addBoundedEdge(sink, source, 0, totalRequired);
+
+  let balanceDemand = 0;
+  for (let node = 0; node <= sink; node += 1) {
+    if (balances[node] > 0) {
+      network.addEdge(superSource, node, balances[node]);
+      balanceDemand += balances[node];
+    } else if (balances[node] < 0) {
+      network.addEdge(node, superSink, -balances[node]);
+    }
+  }
+
+  const delivered = network.maxFlow(superSource, superSink);
+  if (delivered !== balanceDemand) {
+    return {
+      feasible: false,
+      required: { ...requirements },
+      delivered,
+      balanceDemand,
+    };
+  }
+
+  const byPlayer = {};
+  const totalsByPlayer = {};
+  const actual = { G: 0, F: 0, C: 0 };
+  for (const player of sortedPlayers) {
+    const roleMinutes = { G: 0, F: 0, C: 0 };
+    for (const [position, boundedEdge] of roleEdges.get(player.id)) {
+      const residualFlow =
+        boundedEdge.edge.initialCapacity - boundedEdge.edge.capacity;
+      roleMinutes[position] = boundedEdge.lower + residualFlow;
+      actual[position] += roleMinutes[position];
+    }
+    byPlayer[player.id] = roleMinutes;
+    totalsByPlayer[player.id] = POSITION_KEYS.reduce(
+      (total, position) => total + roleMinutes[position],
+      0,
+    );
+  }
+
+  return {
+    feasible: POSITION_KEYS.every((position) => actual[position] === requirements[position]),
+    required: { ...requirements },
+    actual,
+    byPlayer,
+    totalsByPlayer,
+    delivered,
+    balanceDemand,
+  };
+}
+
+function proportionalMinuteTargets(sortedIds, bounds, scores) {
+  const minutes = new Map(sortedIds.map((id) => [id, bounds.get(id).min]));
+  const remainingCapacity = new Map(
+    sortedIds.map((id) => [id, bounds.get(id).max - bounds.get(id).min]),
+  );
+  let remaining = 240 - [...minutes.values()].reduce((total, value) => total + value, 0);
+
+  // This is a balanced, proportional allocator—not an objective optimizer. It
+  // intentionally spreads remaining minutes by the supplied workload scores,
+  // caps players at their limits, and resolves integer remainders
+  // deterministically.
+  while (remaining > 0) {
+    const active = sortedIds.filter((id) => remainingCapacity.get(id) > 0);
+    if (active.length === 0) return null;
+    const positiveScoreTotal = active.reduce(
+      (total, id) => total + (scores.get(id) > 0 ? scores.get(id) : 0),
+      0,
+    );
+    const effectiveScore = (id) => (positiveScoreTotal > 0 ? Math.max(0, scores.get(id)) : 1);
+    const effectiveTotal = positiveScoreTotal > 0 ? positiveScoreTotal : active.length;
+    const capped = active.filter(
+      (id) => (remaining * effectiveScore(id)) / effectiveTotal >= remainingCapacity.get(id),
+    );
+
+    if (capped.length > 0) {
+      for (const id of capped) {
+        const addition = remainingCapacity.get(id);
+        minutes.set(id, minutes.get(id) + addition);
+        remainingCapacity.set(id, 0);
+        remaining -= addition;
+      }
+      continue;
+    }
+
+    const shares = active.map((id) => {
+      const raw = (remaining * effectiveScore(id)) / effectiveTotal;
+      const whole = Math.floor(raw);
+      return { id, whole, fraction: raw - whole };
+    });
+    let distributed = 0;
+    for (const share of shares) {
+      if (share.whole <= 0) continue;
+      minutes.set(share.id, minutes.get(share.id) + share.whole);
+      remainingCapacity.set(share.id, remainingCapacity.get(share.id) - share.whole);
+      distributed += share.whole;
+    }
+    remaining -= distributed;
+    shares.sort((left, right) => {
+      if (left.fraction !== right.fraction) return right.fraction - left.fraction;
+      const scoreDifference = effectiveScore(right.id) - effectiveScore(left.id);
+      if (scoreDifference !== 0) return scoreDifference;
+      return compareIds(left.id, right.id);
+    });
+    for (const share of shares) {
+      if (remaining === 0) break;
+      if (remainingCapacity.get(share.id) <= 0) continue;
+      minutes.set(share.id, minutes.get(share.id) + 1);
+      remainingCapacity.set(share.id, remainingCapacity.get(share.id) - 1);
+      remaining -= 1;
+    }
+  }
+  return minutes;
+}
+
+function fixedBoundsFrom(minutes) {
+  return new Map([...minutes].map(([id, value]) => [id, { min: value, max: value }]));
+}
+
+function objectivePositionAllocation(players, bounds, scores, requirements) {
+  if (everyPlayerCoversRequiredPositions(players, requirements)) {
+    const minutes = new Map(
+      players.map((player) => [player.id, bounds.get(player.id).min]),
+    );
+    let remaining =
+      POSITION_KEYS.reduce((total, position) => total + requirements[position], 0) -
+      [...minutes.values()].reduce((total, value) => total + value, 0);
+    const priority = players.slice().sort((left, right) => {
+      const scoreDifference = scores.get(right.id) - scores.get(left.id);
+      return scoreDifference !== 0 ? scoreDifference : compareIds(left.id, right.id);
+    });
+    for (const player of priority) {
+      const capacity = bounds.get(player.id).max - minutes.get(player.id);
+      const addition = Math.min(capacity, remaining);
+      minutes.set(player.id, minutes.get(player.id) + addition);
+      remaining -= addition;
+      if (remaining === 0) break;
+    }
+    return buildUniversalPositionFlow(players, fixedBoundsFrom(minutes), requirements);
+  }
+  let workingBounds = new Map(
+    [...bounds].map(([id, bound]) => [id, { ...bound }]),
+  );
+  let feasibleFlow = findPositionMinuteFlow(players, workingBounds, requirements);
+  if (!feasibleFlow.feasible) return feasibleFlow;
+
+  // With a fixed 240-minute total and player-only score coefficients, giving
+  // one more minute to a higher-scored player necessarily removes one minute
+  // from an equal/lower-scored player. Maximizing each player in descending
+  // score order is therefore an exact linear-objective solution. The flow
+  // oracle protects all role requirements after every choice.
+  const priority = players.slice().sort((left, right) => {
+    const scoreDifference = scores.get(right.id) - scores.get(left.id);
+    return scoreDifference !== 0 ? scoreDifference : compareIds(left.id, right.id);
+  });
+  for (const player of priority) {
+    const id = player.id;
+    let feasibleMinutes = feasibleFlow.totalsByPlayer[id];
+    let low = feasibleMinutes;
+    let high = workingBounds.get(id).max;
+    let bestFlow = feasibleFlow;
+    while (low <= high) {
+      const candidate = Math.floor((low + high) / 2);
+      const trialBounds = new Map(
+        [...workingBounds].map(([playerId, bound]) => [playerId, { ...bound }]),
+      );
+      trialBounds.set(id, { min: candidate, max: candidate });
+      const trialFlow = findPositionMinuteFlow(players, trialBounds, requirements);
+      if (trialFlow.feasible) {
+        feasibleMinutes = candidate;
+        bestFlow = trialFlow;
+        low = candidate + 1;
+      } else {
+        high = candidate - 1;
+      }
+    }
+    workingBounds.set(id, { min: feasibleMinutes, max: feasibleMinutes });
+    feasibleFlow = bestFlow;
+  }
+  return feasibleFlow;
+}
+
+function balancedPositionAllocation(players, bounds, targetMinutes, requirements) {
+  const exactTarget = findPositionMinuteFlow(players, fixedBoundsFrom(targetMinutes), requirements);
+  if (exactTarget.feasible) return { ...exactTarget, adjusted: false };
+
+  let workingBounds = new Map(
+    [...bounds].map(([id, bound]) => [id, { ...bound }]),
+  );
+  let feasibleFlow = findPositionMinuteFlow(players, workingBounds, requirements);
+  if (!feasibleFlow.feasible) return feasibleFlow;
+
+  // If the pure proportional totals cannot cover the roles, pin each player to
+  // the closest still-feasible integer total. This preserves the balanced
+  // target as closely as the positional model permits without claiming that it
+  // optimizes the user's basketball objective.
+  for (const player of players.slice().sort(comparePlayersById)) {
+    const id = player.id;
+    const target = targetMinutes.get(id);
+    const bound = workingBounds.get(id);
+    const candidates = [];
+    for (let delta = 0; delta <= Math.max(target - bound.min, bound.max - target); delta += 1) {
+      if (target - delta >= bound.min) candidates.push(target - delta);
+      if (delta > 0 && target + delta <= bound.max) candidates.push(target + delta);
+    }
+    for (const candidate of candidates) {
+      const trialBounds = new Map(
+        [...workingBounds].map(([playerId, item]) => [playerId, { ...item }]),
+      );
+      trialBounds.set(id, { min: candidate, max: candidate });
+      const trialFlow = findPositionMinuteFlow(players, trialBounds, requirements);
+      if (!trialFlow.feasible) continue;
+      workingBounds = trialBounds;
+      feasibleFlow = trialFlow;
+      break;
+    }
+  }
+  return { ...feasibleFlow, adjusted: true };
+}
+
+const ROTATION_CONSTRAINT_TOLERANCE = 1e-9;
+// Side constraints are normally resolved in the first few exchanges (often a
+// single minute). Mixed-role states are much more expensive than all-flex
+// states because every neighbor requires another role-flow proof. Browser/Node
+// QA observed one 10,000-state mixed-role roster take more than 21 seconds, so
+// the per-roster ceiling is deliberately lower than the solve-wide allowance.
+// Reaching either limit remains a truthful exact-search abort, never a heuristic
+// answer mislabeled as optimal.
+const MAX_CONSTRAINED_ALLOCATION_STATES = 5000;
+
+function playerPerMinuteRate(player, field) {
+  const sourceMinutes = Number(player.minutes);
+  return sourceMinutes > 0 ? Number(player[field]) / sourceMinutes : 0;
+}
+
+function projectedTotalsForMinutes(players, minutes) {
+  const totals = {
+    points: 0,
+    rebounds: 0,
+    assists: 0,
+    steals: 0,
+    blocks: 0,
+    turnovers: 0,
+  };
+  for (const player of players) {
+    const allocatedMinutes = Number(minutes.get(player.id) ?? 0);
+    for (const field of Object.keys(totals)) {
+      totals[field] += playerPerMinuteRate(player, field) * allocatedMinutes;
+    }
+  }
+  return totals;
+}
+
+function projectedConstraintStatus(totals, constraints) {
+  const failedStatMinimums = [];
+  let normalizedViolation = 0;
+  for (const [stat, required] of Object.entries(constraints.statMinimums)) {
+    const deficit = required - totals[stat];
+    if (deficit > ROTATION_CONSTRAINT_TOLERANCE) {
+      failedStatMinimums.push(stat);
+      normalizedViolation += deficit / Math.max(1, Math.abs(required));
+    }
+  }
+  const turnoverExcess = Number.isFinite(constraints.maxTurnovers)
+    ? totals.turnovers - constraints.maxTurnovers
+    : 0;
+  const failedMaxTurnovers = turnoverExcess > ROTATION_CONSTRAINT_TOLERANCE;
+  if (failedMaxTurnovers) {
+    normalizedViolation +=
+      turnoverExcess / Math.max(1, Math.abs(constraints.maxTurnovers));
+  }
+  return {
+    passed: failedStatMinimums.length === 0 && !failedMaxTurnovers,
+    failedStatMinimums,
+    failedMaxTurnovers,
+    normalizedViolation,
+  };
+}
+
+/**
+ * Prove the easy forms of projected-constraint infeasibility without entering
+ * the combinatorial minute-exchange search. Each bound is itself an exact
+ * role-feasible linear optimization: maximize each requested production rate
+ * independently, and minimize turnovers by maximizing its inverted rate.
+ *
+ * These single-constraint proofs cannot certify joint feasibility. A roster
+ * that passes every bound must therefore remain unresolved until the exact
+ * constrained search (or a ranking upper-bound prune) handles it.
+ */
+function proveProjectedConstraintInfeasibility(
+  players,
+  bounds,
+  requirements,
+  constraints,
+  failedStatus = null,
+) {
+  const sortedIds = players.map((player) => player.id).sort(compareIds);
+  const impossibleStats = [];
+  for (const [stat, required] of Object.entries(constraints.statMinimums)) {
+    if (failedStatus && !failedStatus.failedStatMinimums.includes(stat)) continue;
+    const rateScores = new Map(
+      players.map((player) => [player.id, playerPerMinuteRate(player, stat)]),
+    );
+    const maximumFlow = objectivePositionAllocation(players, bounds, rateScores, requirements);
+    const maximumMinutes = new Map(
+      sortedIds.map((id) => [id, maximumFlow.totalsByPlayer[id]]),
+    );
+    const maximum = projectedTotalsForMinutes(players, maximumMinutes)[stat];
+    if (maximum + ROTATION_CONSTRAINT_TOLERANCE < required) impossibleStats.push(stat);
+  }
+
+  let impossibleTurnovers = false;
+  if (
+    Number.isFinite(constraints.maxTurnovers) &&
+    (!failedStatus || failedStatus.failedMaxTurnovers)
+  ) {
+    const turnoverRates = new Map(
+      players.map((player) => [player.id, playerPerMinuteRate(player, "turnovers")]),
+    );
+    const highestRate = Math.max(...turnoverRates.values(), 0);
+    const inverseScores = new Map(
+      sortedIds.map((id) => [id, highestRate - turnoverRates.get(id)]),
+    );
+    const minimumFlow = objectivePositionAllocation(players, bounds, inverseScores, requirements);
+    const minimumMinutes = new Map(
+      sortedIds.map((id) => [id, minimumFlow.totalsByPlayer[id]]),
+    );
+    const minimum = projectedTotalsForMinutes(players, minimumMinutes).turnovers;
+    impossibleTurnovers =
+      minimum - ROTATION_CONSTRAINT_TOLERANCE > constraints.maxTurnovers;
+  }
+
+  return { impossibleStats, impossibleTurnovers };
+}
+
+function allocationObjective(minutes, scores) {
+  let value = 0;
+  for (const [id, minuteTotal] of minutes) value += scores.get(id) * minuteTotal;
+  return value;
+}
+
+function minuteStateKey(sortedIds, minutes) {
+  return sortedIds.map((id) => minutes.get(id)).join(",");
+}
+
+function createAllocationMaxHeap() {
+  const entries = [];
+  const comesFirst = (left, right) => {
+    if (Math.abs(left.objective - right.objective) > 1e-12) {
+      return left.objective > right.objective;
+    }
+    return compareIds(left.key, right.key) < 0;
+  };
+  return {
+    get size() {
+      return entries.length;
+    },
+    push(value) {
+      entries.push(value);
+      let index = entries.length - 1;
+      while (index > 0) {
+        const parent = Math.floor((index - 1) / 2);
+        if (comesFirst(entries[parent], entries[index])) break;
+        [entries[parent], entries[index]] = [entries[index], entries[parent]];
+        index = parent;
+      }
+    },
+    pop() {
+      if (entries.length === 0) return null;
+      const first = entries[0];
+      const last = entries.pop();
+      if (entries.length > 0) {
+        entries[0] = last;
+        let index = 0;
+        while (true) {
+          const left = index * 2 + 1;
+          const right = left + 1;
+          let best = index;
+          if (left < entries.length && comesFirst(entries[left], entries[best])) best = left;
+          if (right < entries.length && comesFirst(entries[right], entries[best])) best = right;
+          if (best === index) break;
+          [entries[index], entries[best]] = [entries[best], entries[index]];
+          index = best;
+        }
+      }
+      return first;
+    },
+  };
+}
+
+/**
+ * Find the highest-objective role-feasible minute vector that also satisfies
+ * the requested projected box-score constraints.
+ *
+ * `objectivePositionAllocation` supplies the unconstrained optimum. Feasible
+ * integer b-matching totals have the exchange property: another feasible total
+ * vector can be reached by moving one minute at a time between players while
+ * preserving a role assignment. Starting from the optimum, we enumerate only
+ * non-increasing-objective exchanges and pop states in objective order. The
+ * first constraint-feasible state is therefore the constrained optimum, not an
+ * arbitrary repair added after ranking. Equal-score exchanges remain available,
+ * which is crucial when a lexicographic tie initially gives all minutes to the
+ * wrong statistical profile.
+ */
+function constrainedPositionAllocation(
+  players,
+  bounds,
+  scores,
+  requirements,
+  initialFlow,
+  constraints,
+  sharedBudget = null,
+) {
+  const sortedIds = players.map((player) => player.id).sort(compareIds);
+  const initialMinutes = new Map(
+    sortedIds.map((id) => [id, initialFlow.totalsByPlayer[id]]),
+  );
+  const initialTotals = projectedTotalsForMinutes(players, initialMinutes);
+  const initialStatus = projectedConstraintStatus(initialTotals, constraints);
+  let statesExamined = 0;
+  const sharedLimitReached = () =>
+    sharedBudget && sharedBudget.used >= sharedBudget.limit;
+  const consumeState = () => {
+    if (statesExamined >= MAX_CONSTRAINED_ALLOCATION_STATES || sharedLimitReached()) {
+      return false;
+    }
+    statesExamined += 1;
+    if (sharedBudget) sharedBudget.used += 1;
+    return true;
+  };
+  const searchLimitFailure = (closestStatus = initialStatus, closestTotals = initialTotals) => ({
+    feasible: false,
+    constraintInfeasible: false,
+    constraintSearchLimitReached: true,
+    solveWideConstraintSearchLimitReached: Boolean(sharedLimitReached()),
+    failedStatMinimums: closestStatus.failedStatMinimums,
+    failedMaxTurnovers: closestStatus.failedMaxTurnovers,
+    projectedTotals: closestTotals,
+    constraintSearchStates: statesExamined,
+    solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+    solveConstraintSearchStateLimit: sharedBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+  });
+
+  // The unconstrained allocation and its first constraint check are required
+  // for every rotation candidate anyway. They consume no constrained-search
+  // budget. This distinction prevents a vacuous threshold (for example,
+  // points >= 0) from spending one state for every otherwise-easy roster.
+  if (initialStatus.passed) {
+    return {
+      ...initialFlow,
+      projectedTotals: initialTotals,
+      constraintSearchStates: 0,
+      solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+      constraintsAdjusted: false,
+    };
+  }
+
+  // Cheap exact single-constraint bounds avoid searching obviously impossible
+  // requests. The same proof is reused by the solve-wide first pass so a
+  // provably impossible roster never enters the expensive contender queue.
+  const { impossibleStats, impossibleTurnovers } =
+    proveProjectedConstraintInfeasibility(
+      players,
+      bounds,
+      requirements,
+      constraints,
+      initialStatus,
+    );
+  if (impossibleStats.length > 0 || impossibleTurnovers) {
+    return {
+      feasible: false,
+      constraintInfeasible: true,
+      failedStatMinimums: impossibleStats,
+      failedMaxTurnovers: impossibleTurnovers,
+      projectedTotals: initialTotals,
+      constraintSearchStates: 0,
+      solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+    };
+  }
+
+  const heap = createAllocationMaxHeap();
+  const initialKey = minuteStateKey(sortedIds, initialMinutes);
+  heap.push({
+    key: initialKey,
+    minutes: initialMinutes,
+    flow: initialFlow,
+    objective: allocationObjective(initialMinutes, scores),
+  });
+  const visited = new Set([initialKey]);
+  let closest = {
+    status: initialStatus,
+    totals: initialTotals,
+  };
+
+  while (heap.size > 0) {
+    const state = heap.pop();
+    if (
+      (state.key === initialKey && sharedLimitReached()) ||
+      (state.key !== initialKey && !consumeState())
+    ) {
+      return searchLimitFailure(closest.status, closest.totals);
+    }
+    const totals = projectedTotalsForMinutes(players, state.minutes);
+    const status = projectedConstraintStatus(totals, constraints);
+    if (status.passed) {
+      return {
+        ...state.flow,
+        projectedTotals: totals,
+        constraintSearchStates: statesExamined,
+        solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+        constraintsAdjusted: state.key !== initialKey,
+      };
+    }
+    if (status.normalizedViolation < closest.status.normalizedViolation) {
+      closest = { status, totals };
+    }
+
+    for (const donorId of sortedIds) {
+      if (state.minutes.get(donorId) <= bounds.get(donorId).min) continue;
+      for (const receiverId of sortedIds) {
+        if (donorId === receiverId) continue;
+        if (state.minutes.get(receiverId) >= bounds.get(receiverId).max) continue;
+        // Moving a minute uphill cannot be part of a path away from a proven
+        // unconstrained maximum; skipping it prevents cycles and preserves the
+        // objective-ordered search invariant.
+        if (scores.get(donorId) + 1e-12 < scores.get(receiverId)) continue;
+        const minutes = new Map(state.minutes);
+        minutes.set(donorId, minutes.get(donorId) - 1);
+        minutes.set(receiverId, minutes.get(receiverId) + 1);
+        const key = minuteStateKey(sortedIds, minutes);
+        if (visited.has(key)) continue;
+        visited.add(key);
+        const flow = findPositionMinuteFlow(players, fixedBoundsFrom(minutes), requirements);
+        if (!flow.feasible) continue;
+        heap.push({
+          key,
+          minutes,
+          flow,
+          objective: allocationObjective(minutes, scores),
+        });
+      }
+    }
+  }
+
+  return {
+    feasible: false,
+    constraintInfeasible: true,
+    constraintSearchLimitReached: false,
+    solveWideConstraintSearchLimitReached: false,
+    failedStatMinimums: closest.status.failedStatMinimums,
+    failedMaxTurnovers: closest.status.failedMaxTurnovers,
+    projectedTotals: closest.totals,
+    constraintSearchStates: statesExamined,
+    solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+  };
+}
+
+/**
  * Allocate exactly 240 integer minutes among 8-12 selected players.
  *
  * Options:
  * - minMinutes / maxMinutes: a scalar or an object/Map keyed by player id
  * - playerBounds: { [id]: { min, max } }, overriding the general bounds
- * - scores (alias playerScores/weights): object/Map used for proportional extras
+ * - scores (alias playerScores/weights): object/Map used for allocation priority
+ * - strategy: "balanced" (proportional workload) or "objective" (maximum score)
+ * - positionMinuteRequirements: optional exact G/F/C role-minute requirements
+ * - projectedStatMinimums / projectedMaxTurnovers: optional constraints applied
+ *   while choosing minutes, using each player's source per-minute rates; these
+ *   require positionMinuteRequirements so a complete role-feasible plan exists
  */
 export function allocateRotationMinutes(players, options = {}) {
   const reasons = [];
@@ -755,46 +1632,163 @@ export function allocateRotationMinutes(players, options = {}) {
       ids.push(id);
     }
   }
+  // Direct callers may use numeric ids. Canonicalize the working copies once
+  // so bounds, scores, flow nodes, result maps, and tie-breaks all address the
+  // same string key. optimizeLineups already performs this normalization, but
+  // the exported allocator must be safe independently.
+  const rotationPlayers = players.map((player) => ({
+    ...player,
+    id: canonicalId(player?.id),
+  }));
 
   const defaultMin = options.minMinutes === undefined ? 8 : options.minMinutes;
   const defaultMax = options.maxMinutes === undefined ? 36 : options.maxMinutes;
   const boundsSource = isPlainObject(options.playerBounds) ? options.playerBounds : {};
   const scoreSource = options.scores ?? options.playerScores ?? options.weights;
+  const rawStrategy = options.strategy ?? options.allocationStrategy ?? "balanced";
+  const strategy = rawStrategy === "maximize-score" ? "objective" : rawStrategy;
+  if (strategy !== "balanced" && strategy !== "objective") {
+    reasons.push('Rotation strategy must be either "balanced" or "objective".');
+  }
+  const rawPositionRequirements =
+    options.positionMinuteRequirements ?? options.positionMinutes ?? null;
+  let positionRequirements = null;
+  if (rawPositionRequirements !== null && rawPositionRequirements !== undefined) {
+    if (!isPlainObject(rawPositionRequirements)) {
+      reasons.push("positionMinuteRequirements must be an object with G, F, and C values.");
+    } else {
+      positionRequirements = { G: 0, F: 0, C: 0 };
+      for (const position of POSITION_KEYS) {
+        const value = Number(rawPositionRequirements[position] ?? 0);
+        if (!Number.isInteger(value) || value < 0) {
+          reasons.push(`Position-minute requirement ${position} must be a non-negative integer.`);
+        }
+        positionRequirements[position] = value;
+      }
+      const requirementTotal = POSITION_KEYS.reduce(
+        (total, position) => total + positionRequirements[position],
+        0,
+      );
+      if (requirementTotal !== 240) {
+        reasons.push(`Position-minute requirements must total 240, but total ${requirementTotal}.`);
+      }
+    }
+  }
+  const projectedConstraints = { statMinimums: {}, maxTurnovers: Number.POSITIVE_INFINITY };
+  const rawProjectedMinimums = options.projectedStatMinimums ?? {};
+  if (!isPlainObject(rawProjectedMinimums)) {
+    reasons.push("projectedStatMinimums must be an object of projected rotation totals.");
+  } else {
+    for (const [stat, rawRequired] of Object.entries(rawProjectedMinimums)) {
+      if (!STAT_MINIMUM_KEYS.includes(stat)) {
+        reasons.push(`projectedStatMinimums contains an unsupported statistic: ${stat}.`);
+        continue;
+      }
+      const required = Number(rawRequired);
+      if (!Number.isFinite(required) || required < 0) {
+        reasons.push(`projectedStatMinimums.${stat} must be a non-negative number.`);
+        continue;
+      }
+      if (required > 0) projectedConstraints.statMinimums[stat] = required;
+    }
+  }
+  if (
+    options.projectedMaxTurnovers !== undefined &&
+    options.projectedMaxTurnovers !== null &&
+    options.projectedMaxTurnovers !== Number.POSITIVE_INFINITY
+  ) {
+    const maximum = Number(options.projectedMaxTurnovers);
+    if (!Number.isFinite(maximum) || maximum < 0) {
+      reasons.push("projectedMaxTurnovers must be a non-negative number.");
+    } else {
+      projectedConstraints.maxTurnovers = maximum;
+    }
+  }
+  const hasProjectedConstraints =
+    Object.keys(projectedConstraints.statMinimums).length > 0 ||
+    Number.isFinite(projectedConstraints.maxTurnovers);
+  let sharedConstraintSearchBudget = options.sharedConstraintSearchBudget ?? null;
+  if (sharedConstraintSearchBudget !== null) {
+    if (
+      !isPlainObject(sharedConstraintSearchBudget) ||
+      !Number.isInteger(sharedConstraintSearchBudget.limit) ||
+      sharedConstraintSearchBudget.limit < 1 ||
+      !Number.isInteger(sharedConstraintSearchBudget.used) ||
+      sharedConstraintSearchBudget.used < 0
+    ) {
+      reasons.push(
+        "sharedConstraintSearchBudget must contain positive integer limit and non-negative integer used values.",
+      );
+      sharedConstraintSearchBudget = null;
+    }
+  }
+  if (hasProjectedConstraints && !positionRequirements) {
+    reasons.push(
+      "Projected rotation constraints require positionMinuteRequirements so feasibility can be proven against a complete 240-minute court-role plan.",
+    );
+  }
   const bounds = new Map();
   const scores = new Map();
 
-  for (const player of players) {
+  for (const player of rotationPlayers) {
     const id = canonicalId(player?.id);
     if (!id) continue;
     const playerBounds = isPlainObject(boundsSource[id]) ? boundsSource[id] : {};
     const minimum = Number(
-      playerBounds.min ?? playerBounds.minimum ?? getBoundValue(defaultMin, id, 8),
+      playerBounds.min ??
+        playerBounds.minimum ??
+        getBoundValue(defaultMin, id, 8, "minMinutes", reasons),
     );
     const maximum = Number(
-      playerBounds.max ?? playerBounds.maximum ?? getBoundValue(defaultMax, id, 36),
+      playerBounds.max ??
+        playerBounds.maximum ??
+        getBoundValue(defaultMax, id, 36, "maxMinutes", reasons),
     );
     if (!Number.isInteger(minimum) || minimum < 0) {
       reasons.push(`Minimum minutes for ${id} must be a non-negative integer.`);
+    } else if (minimum > 48) {
+      reasons.push(`Minimum minutes for ${id} cannot exceed 48 in a regulation game.`);
     }
     if (!Number.isInteger(maximum) || maximum < 0) {
       reasons.push(`Maximum minutes for ${id} must be a non-negative integer.`);
+    } else if (maximum > 48) {
+      reasons.push(`Maximum minutes for ${id} cannot exceed 48 in a regulation game.`);
     }
     if (Number.isInteger(minimum) && Number.isInteger(maximum) && minimum > maximum) {
       reasons.push(`Minimum minutes for ${id} cannot exceed its maximum minutes.`);
     }
     bounds.set(id, { min: minimum, max: maximum });
 
-    const suppliedScore = getMapLikeValue(scoreSource, id);
+    const suppliedScore = getMapLikeValue(scoreSource, id, "Rotation scores", reasons);
     const fallbackScore = Number(player?.minutes) > 0 ? Number(player.minutes) : 1;
     const score = suppliedScore === undefined ? fallbackScore : Number(suppliedScore);
     if (!Number.isFinite(score) || score < 0) {
       reasons.push(`Rotation score for ${id} must be a non-negative number.`);
     }
     scores.set(id, score);
+
+    if (hasProjectedConstraints) {
+      const sourceMinutes = Number(player?.minutes);
+      if (!Number.isFinite(sourceMinutes) || sourceMinutes <= 0) {
+        reasons.push(
+          `Source minutes for ${id} must be a finite number greater than zero when projected constraints are used.`,
+        );
+      }
+      const referencedStats = new Set(Object.keys(projectedConstraints.statMinimums));
+      if (Number.isFinite(projectedConstraints.maxTurnovers)) referencedStats.add("turnovers");
+      for (const stat of referencedStats) {
+        const value = Number(player?.[stat]);
+        if (!Number.isFinite(value) || value < 0) {
+          reasons.push(
+            `Projected source statistic ${stat} for ${id} must be a finite non-negative number.`,
+          );
+        }
+      }
+    }
   }
 
   if (reasons.length > 0) {
-    return rotationFailure(reasons, { selectedPlayers: players.length });
+    return rotationFailure(reasons, { category: "validation", selectedPlayers: players.length });
   }
 
   const sortedIds = ids.slice().sort(compareIds);
@@ -813,97 +1807,156 @@ export function allocateRotationMinutes(players, options = {}) {
       );
     }
     return rotationFailure(feasibilityReasons, {
+      category: "total-minutes",
       selectedPlayers: players.length,
       minimumTotal,
       maximumTotal,
     });
   }
 
-  const minutes = new Map(sortedIds.map((id) => [id, bounds.get(id).min]));
-  const remainingCapacity = new Map(
-    sortedIds.map((id) => [id, bounds.get(id).max - bounds.get(id).min]),
-  );
-  let remaining = 240 - minimumTotal;
+  const balancedTargets = proportionalMinuteTargets(sortedIds, bounds, scores);
+  if (!balancedTargets) {
+    return rotationFailure(["The available minute capacity cannot reach 240 minutes."], {
+      category: "total-minutes",
+      selectedPlayers: players.length,
+      minimumTotal,
+      maximumTotal,
+    });
+  }
 
-  while (remaining > 0) {
-    const active = sortedIds.filter((id) => remainingCapacity.get(id) > 0);
-    if (active.length === 0) {
-      return rotationFailure(["The available minute capacity cannot reach 240 minutes."], {
+  let minutes = balancedTargets;
+  let positionFlow = null;
+  let balancedAdjusted = false;
+  if (positionRequirements) {
+    // A constrained request necessarily uses the objective baseline even when
+    // a direct caller requested balanced workload minutes: the contract is to
+    // optimize the stated objective subject to those constraints, not merely
+    // repair a proportional schedule after it fails.
+    positionFlow = strategy === "objective" || hasProjectedConstraints
+      ? objectivePositionAllocation(rotationPlayers, bounds, scores, positionRequirements)
+      : balancedPositionAllocation(rotationPlayers, bounds, balancedTargets, positionRequirements);
+    if (!positionFlow.feasible) {
+      return rotationFailure([
+        `The selected players cannot cover ${positionRequirements.G} guard, ${positionRequirements.F} forward, and ${positionRequirements.C} center minutes within their minute limits. Add another eligible flex/center or raise an eligible player's maximum.`,
+      ], {
+        category: "position-minutes",
         selectedPlayers: players.length,
         minimumTotal,
         maximumTotal,
+        requiredPositionMinutes: { ...positionRequirements },
+        deliveredPositionFlow: positionFlow.delivered,
+        requiredPositionFlow: positionFlow.balanceDemand,
       });
     }
-
-    const positiveScoreTotal = active.reduce(
-      (total, id) => total + (scores.get(id) > 0 ? scores.get(id) : 0),
-      0,
-    );
-    const effectiveScore = (id) => (positiveScoreTotal > 0 ? Math.max(0, scores.get(id)) : 1);
-    const effectiveTotal = positiveScoreTotal > 0 ? positiveScoreTotal : active.length;
-    const capped = active.filter(
-      (id) => (remaining * effectiveScore(id)) / effectiveTotal >= remainingCapacity.get(id),
-    );
-
-    if (capped.length > 0) {
-      for (const id of capped) {
-        const addition = remainingCapacity.get(id);
-        minutes.set(id, minutes.get(id) + addition);
-        remainingCapacity.set(id, 0);
-        remaining -= addition;
+    if (hasProjectedConstraints) {
+      const constrainedFlow = constrainedPositionAllocation(
+        rotationPlayers,
+        bounds,
+        scores,
+        positionRequirements,
+        positionFlow,
+        projectedConstraints,
+        sharedConstraintSearchBudget,
+      );
+      if (!constrainedFlow.feasible) {
+        const reason = constrainedFlow.constraintSearchLimitReached
+          ? `The constrained minute search reached its ${MAX_CONSTRAINED_ALLOCATION_STATES.toLocaleString()}-state safety limit before proving a plan.`
+          : "No role-feasible 240-minute plan can satisfy the requested projected production constraints.";
+        return rotationFailure([reason], {
+          category: constrainedFlow.constraintSearchLimitReached
+            ? "constraint-search-limit"
+            : "projected-constraints",
+          selectedPlayers: players.length,
+          failedStatMinimums: constrainedFlow.failedStatMinimums,
+          failedMaxTurnovers: constrainedFlow.failedMaxTurnovers,
+          closestProjectedTotals: constrainedFlow.projectedTotals,
+          constraintSearchStates: constrainedFlow.constraintSearchStates,
+          solveConstraintSearchStatesUsed: constrainedFlow.solveConstraintSearchStatesUsed,
+          solveConstraintSearchStateLimit: constrainedFlow.solveConstraintSearchStateLimit,
+          solveWideConstraintSearchLimitReached:
+            constrainedFlow.solveWideConstraintSearchLimitReached,
+        });
       }
-      continue;
+      positionFlow = constrainedFlow;
     }
-
-    const shares = active.map((id) => {
-      const raw = (remaining * effectiveScore(id)) / effectiveTotal;
-      const whole = Math.floor(raw);
-      return { id, raw, whole, fraction: raw - whole };
+    balancedAdjusted = Boolean(positionFlow.adjusted);
+    minutes = new Map(
+      sortedIds.map((id) => [id, positionFlow.totalsByPlayer[id]]),
+    );
+  } else if (strategy === "objective") {
+    // Without role constraints the exact linear allocation is a simple greedy
+    // fill: start every player at the minimum, then give remaining minutes to
+    // the highest score until each reaches the maximum.
+    minutes = new Map(sortedIds.map((id) => [id, bounds.get(id).min]));
+    let remaining = 240 - minimumTotal;
+    const priority = sortedIds.slice().sort((left, right) => {
+      const scoreDifference = scores.get(right) - scores.get(left);
+      return scoreDifference !== 0 ? scoreDifference : compareIds(left, right);
     });
-    let distributed = 0;
-    for (const share of shares) {
-      if (share.whole <= 0) continue;
-      minutes.set(share.id, minutes.get(share.id) + share.whole);
-      remainingCapacity.set(share.id, remainingCapacity.get(share.id) - share.whole);
-      distributed += share.whole;
-    }
-    remaining -= distributed;
-
-    shares.sort((left, right) => {
-      if (left.fraction !== right.fraction) return right.fraction - left.fraction;
-      const scoreDifference = effectiveScore(right.id) - effectiveScore(left.id);
-      if (scoreDifference !== 0) return scoreDifference;
-      return compareIds(left.id, right.id);
-    });
-    for (const share of shares) {
+    for (const id of priority) {
+      const addition = Math.min(remaining, bounds.get(id).max - bounds.get(id).min);
+      minutes.set(id, minutes.get(id) + addition);
+      remaining -= addition;
       if (remaining === 0) break;
-      if (remainingCapacity.get(share.id) <= 0) continue;
-      minutes.set(share.id, minutes.get(share.id) + 1);
-      remainingCapacity.set(share.id, remainingCapacity.get(share.id) - 1);
-      remaining -= 1;
     }
   }
 
-  const playerById = new Map(players.map((player) => [canonicalId(player.id), player]));
+  const playerById = new Map(rotationPlayers.map((player) => [player.id, player]));
   const allocations = sortedIds.map((id) => ({
     id,
     name: String(playerById.get(id)?.name ?? id),
     minutes: minutes.get(id),
     minimum: bounds.get(id).min,
     maximum: bounds.get(id).max,
+    ...(positionFlow ? { roleMinutes: { ...positionFlow.byPlayer[id] } } : {}),
   }));
   const totalMinutes = allocations.reduce((total, allocation) => total + allocation.minutes, 0);
 
   return {
     ok: true,
     status: "success",
+    strategy: hasProjectedConstraints
+      ? "objective-constrained"
+      : strategy === "objective"
+        ? "objective-maximizing"
+        : balancedAdjusted
+          ? "balanced-proportional-adjusted-for-positions"
+          : "balanced-proportional",
     totalMinutes,
     allocations,
     byId: Object.fromEntries(allocations.map((allocation) => [allocation.id, allocation.minutes])),
+    positionMinutes: positionFlow
+      ? {
+          enforced: true,
+          required: { ...positionFlow.required },
+          actual: { ...positionFlow.actual },
+          byPlayer: positionFlow.byPlayer,
+          passed: positionFlow.feasible,
+        }
+      : { enforced: false, required: null, actual: null, byPlayer: {}, passed: true },
     diagnostics: {
       selectedPlayers: players.length,
       minimumTotal,
       maximumTotal,
+      allocationStrategy: strategy,
+      balancedAdjustedForPositions: balancedAdjusted,
+      projectedConstraints: {
+        statMinimums: { ...projectedConstraints.statMinimums },
+        maxTurnovers: Number.isFinite(projectedConstraints.maxTurnovers)
+          ? projectedConstraints.maxTurnovers
+          : null,
+        adjustedAllocation: Boolean(positionFlow?.constraintsAdjusted),
+        searchStates: positionFlow?.constraintSearchStates ?? 0,
+        solveSearchStatesUsed: positionFlow?.solveConstraintSearchStatesUsed ?? 0,
+        solveSearchStateLimit:
+          sharedConstraintSearchBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+      },
+      ...(positionFlow
+        ? {
+            requiredPositionMinutes: { ...positionFlow.required },
+            actualPositionMinutes: { ...positionFlow.actual },
+          }
+        : {}),
     },
   };
 }
@@ -926,10 +1979,20 @@ function bestPossibleTotal(lockedPlayers, availablePlayers, slots, field, descen
   return round(lockedTotal + values.slice(0, slots).reduce((total, value) => total + value, 0));
 }
 
+const OBJECTIVE_SCORE_TOLERANCE = 1e-12;
+
 function alternativeSort(left, right) {
-  if (Math.abs(left._rawScore - right._rawScore) > 1e-12) {
+  if (Math.abs(left._rawScore - right._rawScore) > OBJECTIVE_SCORE_TOLERANCE) {
     return right._rawScore - left._rawScore;
   }
+  return compareIds(left._tieKey, right._tieKey);
+}
+
+function upperBoundSort(left, right) {
+  // Upper bounds need a true numeric total order. `alternativeSort` deliberately
+  // treats near-equal scores as ties, which is ideal for final display ranking
+  // but can be non-transitive across a chain of sub-tolerance differences.
+  if (left._rawScore !== right._rawScore) return right._rawScore - left._rawScore;
   return compareIds(left._tieKey, right._tieKey);
 }
 
@@ -1093,32 +2156,37 @@ export function optimizeLineups(players, config = {}) {
     );
   }
 
-  for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
-    const maximum = bestPossibleTotal(
-      lockedPlayers,
-      availablePlayers,
-      slotsToChoose,
-      stat,
-      true,
-    );
-    if (maximum < required) {
-      preflightReasons.push(
-        `The highest possible ${stat} total is ${maximum}, below the required ${required}.`,
+  // Equal-player lineup totals have a cheap exact preflight bound. Rotation
+  // totals depend on each candidate's feasible minute and role allocation, so
+  // applying the lineup bound there would incorrectly reject valid plans.
+  if (normalizedConfig.mode === "lineup") {
+    for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
+      const maximum = bestPossibleTotal(
+        lockedPlayers,
+        availablePlayers,
+        slotsToChoose,
+        stat,
+        true,
       );
+      if (maximum < required) {
+        preflightReasons.push(
+          `The highest possible ${stat} total is ${maximum}, below the required ${required}.`,
+        );
+      }
     }
-  }
-  if (Number.isFinite(normalizedConfig.maxTurnovers)) {
-    const minimum = bestPossibleTotal(
-      lockedPlayers,
-      availablePlayers,
-      slotsToChoose,
-      "turnovers",
-      false,
-    );
-    if (minimum > normalizedConfig.maxTurnovers) {
-      preflightReasons.push(
-        `The lowest possible turnover total is ${minimum}, above the maximum ${normalizedConfig.maxTurnovers}.`,
+    if (Number.isFinite(normalizedConfig.maxTurnovers)) {
+      const minimum = bestPossibleTotal(
+        lockedPlayers,
+        availablePlayers,
+        slotsToChoose,
+        "turnovers",
+        false,
       );
+      if (minimum > normalizedConfig.maxTurnovers) {
+        preflightReasons.push(
+          `The lowest possible turnover total is ${minimum}, above the maximum ${normalizedConfig.maxTurnovers}.`,
+        );
+      }
     }
   }
 
@@ -1164,11 +2232,24 @@ export function optimizeLineups(players, config = {}) {
     normalizedConfig.rotationOptions.scores ??
     normalizedConfig.rotationOptions.playerScores ??
     normalizedConfig.rotationOptions.weights;
-  const deferRotationAllocation =
+  const hasRotationProjectedConstraints =
     normalizedConfig.mode === "rotation" &&
-    canDeferRotationAllocation(normalizedConfig.rotationOptions);
+    (Object.keys(normalizedConfig.statMinimums).length > 0 ||
+      Number.isFinite(normalizedConfig.maxTurnovers));
+  // One mutable allowance is deliberately shared by every candidate roster.
+  // A per-candidate cap still permits N hard candidates to exceed the Worker's
+  // timeout. The exact solver aborts globally when this allowance is spent.
+  const solveConstraintSearchBudget = hasRotationProjectedConstraints
+    ? { limit: normalizedConfig.maxConstraintSearchStates, used: 0 }
+    : null;
   let rotationAllocationsComputed = 0;
-  let uniformRotationCheck = null;
+  let rotationBaselineAllocationsComputed = 0;
+  let rotationRankingBoundAllocationsComputed = 0;
+  let rotationConstrainedAllocationsComputed = 0;
+  const projectedRotationConstraints = {
+    statMinimums: normalizedConfig.statMinimums,
+    maxTurnovers: normalizedConfig.maxTurnovers,
+  };
 
   function rotationScoresFor(selectedPlayers) {
     return Object.fromEntries(
@@ -1176,77 +2257,82 @@ export function optimizeLineups(players, config = {}) {
     );
   }
 
-  function allocateSelectedRotation(selectedPlayers) {
+  function allocateSelectedRotation(
+    selectedPlayers,
+    {
+      includeProjectedConstraints = hasRotationProjectedConstraints,
+      rankingUpperBound = false,
+    } = {},
+  ) {
     rotationAllocationsComputed += 1;
+    if (includeProjectedConstraints) rotationConstrainedAllocationsComputed += 1;
+    else if (rankingUpperBound) rotationRankingBoundAllocationsComputed += 1;
+    else rotationBaselineAllocationsComputed += 1;
     return allocateRotationMinutes(selectedPlayers, {
       ...normalizedConfig.rotationOptions,
-      scores: callerRotationScores ?? rotationScoresFor(selectedPlayers),
-    });
-  }
-
-  if (deferRotationAllocation) {
-    const samplePlayers = mergePlayersById(lockedPlayers, availablePlayers.slice(0, slotsToChoose));
-    rotationAllocationsComputed += 1;
-    uniformRotationCheck = allocateRotationMinutes(samplePlayers, {
-      ...normalizedConfig.rotationOptions,
-      scores: Object.fromEntries(samplePlayers.map((player) => [player.id, 1])),
+      // The normal allocation honors an explicit caller workload objective.
+      // When that differs from the model's ranking objective, pass 1 requests
+      // one additional exact allocation with `rankingUpperBound` so pruning is
+      // still bounded by the same raw score used to order final alternatives.
+      scores:
+        rankingUpperBound
+          ? rotationScoresFor(selectedPlayers)
+          : callerRotationScores ?? rotationScoresFor(selectedPlayers),
+      // The optimizer's default is the exact objective allocation. The public
+      // allocator retains an explicitly named balanced strategy for callers
+      // that prefer workload proportionality over objective maximization.
+      strategy: hasRotationProjectedConstraints
+        ? "objective"
+        : normalizedConfig.rotationOptions.strategy ?? "objective",
+      // Roster-slot minimums above remain composition constraints. Every
+      // rotation candidate separately proves full two-G/two-F/one-C court
+      // coverage, with flex players allowed to split their minutes.
+      positionMinuteRequirements: STANDARD_POSITION_MINUTES,
+      // These constraints belong inside the allocation problem. Passing them
+      // here prevents a feasible roster from being discarded merely because
+      // its unconstrained minute optimum missed a threshold by one minute.
+      projectedStatMinimums: includeProjectedConstraints
+        ? normalizedConfig.statMinimums
+        : {},
+      projectedMaxTurnovers: includeProjectedConstraints
+        ? normalizedConfig.maxTurnovers
+        : Number.POSITIVE_INFINITY,
+      sharedConstraintSearchBudget: includeProjectedConstraints
+        ? solveConstraintSearchBudget
+        : null,
     });
   }
 
   const topAlternatives = [];
   let combinationsEvaluated = 0;
   let feasibleCombinations = 0;
+  let exactSearchAbort = null;
+  const unresolvedRotationCandidates = [];
+  let baselineConstraintFeasible = 0;
+  let constrainedCandidatesSearched = 0;
+  let constraintBoundPruned = 0;
+  let constraintUnclassified = 0;
   const rejectedByConstraint = {
     positionMinimums: 0,
     statMinimums: Object.fromEntries(Object.keys(normalizedConfig.statMinimums).map((stat) => [stat, 0])),
     maxTurnovers: 0,
     rotationMinutes: 0,
+    rotationPositionMinutes: 0,
+    constraintSearchLimit: 0,
   };
   const chosen = [];
 
-  function evaluateCombination() {
-    combinationsEvaluated += 1;
-    const selectedPlayers = mergePlayersById(lockedPlayers, chosen);
-    const positionResult = findPositionAssignment(
-      selectedPlayers,
-      normalizedConfig.positionMinimums,
-    );
-    const totals = calculateLineupTotals(selectedPlayers);
-    let passed = true;
-
-    if (!positionResult.feasible) {
-      rejectedByConstraint.positionMinimums += 1;
-      passed = false;
-    }
-    for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
-      if (totals[stat] < required) {
+  function recordProjectedConstraintRejection(failedStatMinimums, failedMaxTurnovers) {
+    for (const stat of failedStatMinimums ?? []) {
+      if (hasOwn(rejectedByConstraint.statMinimums, stat)) {
         rejectedByConstraint.statMinimums[stat] += 1;
-        passed = false;
       }
     }
-    if (totals.turnovers > normalizedConfig.maxTurnovers) {
-      rejectedByConstraint.maxTurnovers += 1;
-      passed = false;
-    }
-    if (!passed) return;
+    if (failedMaxTurnovers) rejectedByConstraint.maxTurnovers += 1;
+  }
 
-    const rawScore = calculateObjectiveScore(selectedPlayers, playerObjectiveScores);
-    let rotation = null;
-    if (normalizedConfig.mode === "rotation") {
-      if (deferRotationAllocation) {
-        if (!uniformRotationCheck.ok) {
-          rejectedByConstraint.rotationMinutes += 1;
-          return;
-        }
-      } else {
-        rotation = allocateSelectedRotation(selectedPlayers);
-      }
-      if (rotation && !rotation.ok) {
-        rejectedByConstraint.rotationMinutes += 1;
-        return;
-      }
-    }
-
+  function retainFeasibleCombination(selectedPlayers, positionResult, rotation, totals, rawScore) {
+    if (rotation) rotation.projectedTotals = { ...totals };
     feasibleCombinations += 1;
     insertTopAlternative(
       topAlternatives,
@@ -1262,7 +2348,211 @@ export function optimizeLineups(players, config = {}) {
     );
   }
 
+  function boundsFromRotation(rotation) {
+    return new Map(
+      rotation.allocations.map((allocation) => [
+        allocation.id,
+        { min: allocation.minimum, max: allocation.maximum },
+      ]),
+    );
+  }
+
+  function baselineRotationWithConstraintAudit(rotation, totals) {
+    // The unconstrained optimum itself already satisfies every projected
+    // constraint, so it is also the constrained optimum. Reusing it avoids a
+    // duplicate allocation call while still returning the same truthful
+    // constraint metadata as the ordinary constrained allocator.
+    return {
+      ...rotation,
+      strategy: "objective-constrained",
+      projectedTotals: { ...totals },
+      diagnostics: {
+        ...rotation.diagnostics,
+        projectedConstraints: {
+          statMinimums: { ...normalizedConfig.statMinimums },
+          maxTurnovers: Number.isFinite(normalizedConfig.maxTurnovers)
+            ? normalizedConfig.maxTurnovers
+            : null,
+          adjustedAllocation: false,
+          searchStates: 0,
+          solveSearchStatesUsed: solveConstraintSearchBudget.used,
+          solveSearchStateLimit: solveConstraintSearchBudget.limit,
+        },
+      },
+    };
+  }
+
+  function upperBoundCanEnterTopK(candidate) {
+    if (topAlternatives.length < normalizedConfig.alternatives) return true;
+    // `alternativeSort` is the single ranking contract for both insertion and
+    // pruning. Comparing the candidate's unattainable-best upper bound (rather
+    // than an estimated constrained score) makes this conservative and exact;
+    // equality is pruned only when the fixed roster tie key also cannot win.
+    return alternativeSort(candidate, topAlternatives.at(-1)) < 0;
+  }
+
+  function evaluateCombination() {
+    if (exactSearchAbort) return;
+    combinationsEvaluated += 1;
+    const selectedPlayers = mergePlayersById(lockedPlayers, chosen);
+    const positionResult = findPositionAssignment(
+      selectedPlayers,
+      normalizedConfig.positionMinimums,
+    );
+    let passed = true;
+
+    if (!positionResult.feasible) {
+      rejectedByConstraint.positionMinimums += 1;
+      passed = false;
+    }
+    if (!passed) return;
+
+    if (hasRotationProjectedConstraints) {
+      // Pass 1 never enters the minute-exchange search. It gives every
+      // composition-feasible roster its exact unconstrained, role-feasible
+      // objective allocation. That score is a mathematical upper bound on any
+      // allocation that also obeys the projected side constraints.
+      const baselineRotation = allocateSelectedRotation(selectedPlayers, {
+        includeProjectedConstraints: false,
+      });
+      if (!baselineRotation.ok) {
+        if (baselineRotation.diagnostics.category === "position-minutes") {
+          rejectedByConstraint.rotationPositionMinutes += 1;
+        } else {
+          rejectedByConstraint.rotationMinutes += 1;
+        }
+        return;
+      }
+
+      // A custom rotation workload score remains authoritative for the actual
+      // minute plan. It is not necessarily an upper bound on the model score
+      // used to rank rosters, so compute a second relaxed allocation only in
+      // that advanced API case. With ordinary model scores, the baseline itself
+      // is already the exact ranking bound and no duplicate solve is needed.
+      const rankingBoundRotation = callerRotationScores
+        ? allocateSelectedRotation(selectedPlayers, {
+            includeProjectedConstraints: false,
+            rankingUpperBound: true,
+          })
+        : baselineRotation;
+      if (!rankingBoundRotation.ok) {
+        if (rankingBoundRotation.diagnostics.category === "position-minutes") {
+          rejectedByConstraint.rotationPositionMinutes += 1;
+        } else {
+          rejectedByConstraint.rotationMinutes += 1;
+        }
+        return;
+      }
+
+      const totals = calculateRotationTotals(selectedPlayers, baselineRotation);
+      const rawUpperBound = calculateObjectiveScore(
+        selectedPlayers,
+        playerObjectiveScores,
+        rankingBoundRotation,
+      );
+      const baselineRawScore = calculateObjectiveScore(
+        selectedPlayers,
+        playerObjectiveScores,
+        baselineRotation,
+      );
+      const tieKey = selectedPlayers.map((player) => player.id).join("\u0001");
+      const status = projectedConstraintStatus(totals, projectedRotationConstraints);
+      if (status.passed) {
+        baselineConstraintFeasible += 1;
+        retainFeasibleCombination(
+          selectedPlayers,
+          positionResult,
+          baselineRotationWithConstraintAudit(baselineRotation, totals),
+          totals,
+          baselineRawScore,
+        );
+        return;
+      }
+
+      const proof = proveProjectedConstraintInfeasibility(
+        selectedPlayers,
+        boundsFromRotation(baselineRotation),
+        STANDARD_POSITION_MINUTES,
+        projectedRotationConstraints,
+        status,
+      );
+      if (proof.impossibleStats.length > 0 || proof.impossibleTurnovers) {
+        recordProjectedConstraintRejection(
+          proof.impossibleStats,
+          proof.impossibleTurnovers,
+        );
+        return;
+      }
+
+      // Passing the independent production bounds does not prove joint
+      // feasibility. Preserve the full roster for pass 2, ordered by the exact
+      // objective upper bound; do not count it as rejected or feasible yet.
+      unresolvedRotationCandidates.push({
+        _rawScore: rawUpperBound,
+        _tieKey: tieKey,
+        players: selectedPlayers,
+        positionResult,
+      });
+      return;
+    }
+
+    // Rotation allocation comes before scoring and production constraints. The
+    // resulting minute plan is part of the candidate—not a decorative schedule
+    // added after an equal-player roster has already won.
+    let rotation = null;
+    if (normalizedConfig.mode === "rotation") {
+      rotation = allocateSelectedRotation(selectedPlayers);
+      if (!rotation.ok) {
+        if (rotation.diagnostics.category === "position-minutes") {
+          rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (
+          rotation.diagnostics.category === "projected-constraints" ||
+          rotation.diagnostics.category === "constraint-search-limit"
+        ) {
+          recordProjectedConstraintRejection(
+            rotation.diagnostics.failedStatMinimums,
+            rotation.diagnostics.failedMaxTurnovers,
+          );
+          if (rotation.diagnostics.category === "constraint-search-limit") {
+            rejectedByConstraint.constraintSearchLimit += 1;
+            exactSearchAbort = {
+              category: "constraint-search-limit",
+              diagnostics: rotation.diagnostics,
+            };
+          }
+        } else {
+          rejectedByConstraint.rotationMinutes += 1;
+        }
+        return;
+      }
+    }
+    const totals = rotation
+      ? calculateRotationTotals(selectedPlayers, rotation)
+      : calculateLineupTotals(selectedPlayers);
+
+    for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
+      if (totals[stat] < required) {
+        rejectedByConstraint.statMinimums[stat] += 1;
+        passed = false;
+      }
+    }
+    if (totals.turnovers > normalizedConfig.maxTurnovers) {
+      rejectedByConstraint.maxTurnovers += 1;
+      passed = false;
+    }
+    if (!passed) return;
+
+    retainFeasibleCombination(
+      selectedPlayers,
+      positionResult,
+      rotation,
+      totals,
+      calculateObjectiveScore(selectedPlayers, playerObjectiveScores, rotation),
+    );
+  }
+
   function enumerate(startIndex, remainingSlots) {
+    if (exactSearchAbort) return;
     if (remainingSlots === 0) {
       evaluateCombination();
       return;
@@ -1272,10 +2562,96 @@ export function optimizeLineups(players, config = {}) {
       chosen.push(availablePlayers[index]);
       enumerate(index + 1, remainingSlots - 1);
       chosen.pop();
+      if (exactSearchAbort) break;
     }
   }
 
   enumerate(0, slotsToChoose);
+
+  if (hasRotationProjectedConstraints) {
+    // Pass 2 processes only unresolved rosters, highest attainable score first.
+    // Because `alternativeSort` orders both the upper-bound queue and the
+    // retained shortlist, the first candidate that cannot enter a full top-K
+    // proves that every remaining candidate is also irrelevant to that top-K.
+    unresolvedRotationCandidates.sort(upperBoundSort);
+    for (let index = 0; index < unresolvedRotationCandidates.length; index += 1) {
+      const candidate = unresolvedRotationCandidates[index];
+      if (!upperBoundCanEnterTopK(candidate)) {
+        constraintBoundPruned += 1;
+        constraintUnclassified += 1;
+
+        // A strictly lower numeric upper bound proves the rest of this
+        // descending queue cannot enter either, so bulk-prune and stop. When a
+        // candidate loses only on the lexicographic tie rule inside the score
+        // tolerance, keep scanning: a later, microscopically lower bound can
+        // still have an earlier tie key and win under `alternativeSort`.
+        const cutoff = topAlternatives.at(-1);
+        if (
+          candidate._rawScore <
+          cutoff._rawScore - OBJECTIVE_SCORE_TOLERANCE
+        ) {
+          const remainingAfterCandidate = unresolvedRotationCandidates.length - index - 1;
+          constraintBoundPruned += remainingAfterCandidate;
+          constraintUnclassified += remainingAfterCandidate;
+          break;
+        }
+        continue;
+      }
+
+      constrainedCandidatesSearched += 1;
+      const rotation = allocateSelectedRotation(candidate.players, {
+        includeProjectedConstraints: true,
+      });
+      if (!rotation.ok) {
+        if (rotation.diagnostics.category === "position-minutes") {
+          rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (
+          rotation.diagnostics.category === "projected-constraints" ||
+          rotation.diagnostics.category === "constraint-search-limit"
+        ) {
+          recordProjectedConstraintRejection(
+            rotation.diagnostics.failedStatMinimums,
+            rotation.diagnostics.failedMaxTurnovers,
+          );
+          if (rotation.diagnostics.category === "constraint-search-limit") {
+            rejectedByConstraint.constraintSearchLimit += 1;
+            constraintUnclassified += unresolvedRotationCandidates.length - index;
+            exactSearchAbort = {
+              category: "constraint-search-limit",
+              diagnostics: rotation.diagnostics,
+            };
+            // This contender's unconstrained upper bound could still enter the
+            // retained shortlist. Returning any partial answer would therefore
+            // falsely claim exactness, so preserve the established safe abort.
+            break;
+          }
+        } else {
+          rejectedByConstraint.rotationMinutes += 1;
+        }
+        continue;
+      }
+
+      const totals = calculateRotationTotals(candidate.players, rotation);
+      const status = projectedConstraintStatus(totals, projectedRotationConstraints);
+      if (!status.passed) {
+        // Defensive parity check: the allocator normally makes this branch
+        // unreachable, but rounded public totals must never slip into results
+        // that fail the visible constraint audit.
+        recordProjectedConstraintRejection(
+          status.failedStatMinimums,
+          status.failedMaxTurnovers,
+        );
+        continue;
+      }
+      retainFeasibleCombination(
+        candidate.players,
+        candidate.positionResult,
+        rotation,
+        totals,
+        calculateObjectiveScore(candidate.players, playerObjectiveScores, rotation),
+      );
+    }
+  }
 
   function buildDiagnostics() {
     return {
@@ -1285,16 +2661,62 @@ export function optimizeLineups(players, config = {}) {
       rejectedByConstraint,
       ...(normalizedConfig.mode === "rotation"
         ? {
-            rotationAllocationStrategy: deferRotationAllocation
-              ? "deferred-uniform-bounds"
-              : "per-candidate",
+            rotationAllocationStrategy: "per-candidate-minute-weighted",
             rotationAllocationsComputed,
+            requiredPositionMinutes: { ...STANDARD_POSITION_MINUTES },
+            constraintSearchStatesUsed: solveConstraintSearchBudget?.used ?? 0,
+            constraintSearchStateLimit: solveConstraintSearchBudget?.limit ?? null,
+            ...(hasRotationProjectedConstraints
+              ? {
+                  constrainedRotationSearchStrategy: "two-pass-exact-upper-bound",
+                  baselineConstraintFeasible,
+                  baselineFeasibleCombinations: baselineConstraintFeasible,
+                  unresolvedConstraintCandidates: unresolvedRotationCandidates.length,
+                  constrainedCandidatesQueued: unresolvedRotationCandidates.length,
+                  constrainedCandidatesSearched,
+                  constrainedCandidatesAttempted: constrainedCandidatesSearched,
+                  constraintBoundPruned,
+                  upperBoundPrunedCandidates: constraintBoundPruned,
+                  constraintUnclassified,
+                  feasibleCombinationCountComplete: constraintUnclassified === 0,
+                  exactTopKProven: !exactSearchAbort,
+                  exactAlternativeRankingCompleted: !exactSearchAbort,
+                  rotationBaselineAllocationsComputed,
+                  rotationRankingBoundAllocationsComputed,
+                  rotationConstrainedAllocationsComputed,
+                }
+              : {}),
           }
         : {}),
     };
   }
 
   let diagnostics = buildDiagnostics();
+  if (exactSearchAbort) {
+    const hitSolveWideLimit = Boolean(
+      exactSearchAbort.diagnostics.solveWideConstraintSearchLimitReached,
+    );
+    const triggeredLimit = hitSolveWideLimit
+      ? solveConstraintSearchBudget.limit
+      : MAX_CONSTRAINED_ALLOCATION_STATES;
+    const safeLimitDescription = hitSolveWideLimit
+      ? `the solve-wide browser-safe limit of ${triggeredLimit.toLocaleString()}`
+      : `the per-roster browser-safe limit of ${triggeredLimit.toLocaleString()}`;
+    return failureResult(mode, size, [
+      `Exact constrained rotation search stopped after ${solveConstraintSearchBudget.used.toLocaleString()} solve-wide states when a candidate reached ${safeLimitDescription}. No lineup was returned because an unproven remaining candidate could be better than the feasible candidates already found.`,
+    ], {
+      ...diagnostics,
+      category: "performance",
+      subcategory: "constraint-search-limit",
+      exactSearchCompleted: false,
+      feasibleCombinationsBeforeAbort: feasibleCombinations,
+      constraintSearchStatesUsed: solveConstraintSearchBudget.used,
+      constraintSearchStateLimit: triggeredLimit,
+      solveConstraintSearchStateLimit: solveConstraintSearchBudget.limit,
+      solveWideConstraintSearchLimitReached: hitSolveWideLimit,
+      allocationDiagnostics: exactSearchAbort.diagnostics,
+    });
+  }
   if (feasibleCombinations === 0) {
     const reasons = [
       `No feasible ${mode} was found after evaluating ${combinationsEvaluated} candidate combination${combinationsEvaluated === 1 ? "" : "s"}.`,
@@ -1319,29 +2741,28 @@ export function optimizeLineups(players, config = {}) {
         `${rejectedByConstraint.rotationMinutes} candidate rotation${rejectedByConstraint.rotationMinutes === 1 ? "" : "s"} could not be allocated exactly 240 minutes within the configured bounds.`,
       );
     }
+    if (rejectedByConstraint.rotationPositionMinutes > 0) {
+      reasons.push(
+        `${rejectedByConstraint.rotationPositionMinutes} candidate rotation${rejectedByConstraint.rotationPositionMinutes === 1 ? "" : "s"} could not cover 96 guard, 96 forward, and 48 center minutes within the configured player limits.`,
+      );
+    }
+    if (rejectedByConstraint.constraintSearchLimit > 0) {
+      reasons.push(
+        `${rejectedByConstraint.constraintSearchLimit} candidate rotation${rejectedByConstraint.constraintSearchLimit === 1 ? "" : "s"} reached the constrained minute-search safety limit before feasibility could be proven. Tighten the roster pool or minute bounds and try again.`,
+      );
+    }
     return failureResult(mode, size, reasons, diagnostics);
   }
 
   const alternatives = [];
   for (const [index, alternative] of topAlternatives.entries()) {
-    let rotation = alternative.rotation;
-    if (normalizedConfig.mode === "rotation" && !rotation) {
-      rotation = allocateSelectedRotation(alternative.players);
-      if (!rotation.ok) {
-        diagnostics = buildDiagnostics();
-        return failureResult(mode, size, [
-          "A finalist rotation could not be allocated after passing the uniform-bound feasibility check.",
-        ], {
-          ...diagnostics,
-          category: "rotation-allocation",
-        });
-      }
-    }
+    const rotation = alternative.rotation;
     const objective = calculateObjective(
       alternative.players,
       normalizedMetrics,
       normalizedConfig.weights,
       normalizedConfig.normalizedWeights,
+      rotation,
     );
     const constraintAudit = buildConstraintAudit(
       alternative.players,

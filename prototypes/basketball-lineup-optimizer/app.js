@@ -1,26 +1,27 @@
 import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
+  DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-core.js?v=20260823e";
+} from "./optimizer-core.js?v=20260824a";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260823e";
+} from "./player-data.js?v=20260824a";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260823e";
+} from "./supabase-nba-data.js?v=20260824a";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260823e";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260823e", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260824a";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260824a", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 // Bump this when the normalized live payload changes materially. In this
@@ -41,11 +42,11 @@ const UI_TO_ENGINE_PRESET = Object.freeze({
 });
 const PRESET_LABELS = Object.freeze({
   balanced: "Balanced",
-  defense: "Protect the Lead",
+  defense: "Lockdown Defense",
   offense: "Need a Bucket",
   shooting: "Space the Floor",
   playmaking: "Move the Ball",
-  custom: "Custom mix",
+  custom: "Custom Mix",
 });
 const METRIC_LABELS = Object.freeze({
   points: "Scoring",
@@ -68,6 +69,7 @@ const COMPARE_METRICS = Object.freeze([
   ["turnovers", "Turnovers — lower is better", true],
 ]);
 const CHART_COLORS = ["#1f2fa3", "#e51e2b", "#08775b", "#b06c00"];
+const CARD_SEARCH_PATH = "/basketball-cards.html";
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
@@ -152,6 +154,12 @@ const elements = {
   opponentScout: $("#opponentScout"),
   opponentScoutStatus: $("#opponentScoutStatus"),
   opponentScoutSummary: $("#opponentScoutSummary"),
+  weightsPanel: $("#weightsPanel"),
+  weightValidation: $("#weightValidation"),
+  productionRulesLegend: $("#productionRulesLegend"),
+  productionRulesHelp: $("#productionRulesHelp"),
+  positionCoverageHelp: $("#positionCoverageHelp"),
+  rotationMinutesHelp: $("#rotationMinutesHelp"),
 };
 
 const state = {
@@ -170,6 +178,7 @@ const state = {
   loadedLiveSelection: null,
   opponentDataset: null,
   opponentStrategy: null,
+  opponentWeightUndo: null,
   opponentLoading: false,
   playerMediaStatus: new Map(),
   teamLogoStatus: "unavailable",
@@ -179,6 +188,7 @@ const state = {
   optimizationRunId: 0,
   activeOptimizationToken: null,
   searchScopeCanRun: false,
+  recommendedMinGames: 20,
 };
 
 function loadWatchlist() {
@@ -259,10 +269,32 @@ function formatPercent(value) {
   return Number.isFinite(number) ? `${(number * 100).toFixed(1)}%` : "-";
 }
 
+function formatSignedDifference(value, { percentagePoints = false } = {}) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "-";
+  const display = percentagePoints ? number * 100 : number;
+  const prefix = display > 0 ? "+" : display < 0 ? "−" : "±";
+  return `${prefix}${Math.abs(display).toFixed(1)}${percentagePoints ? " pp" : ""}`;
+}
+
 function titleCase(value) {
   return String(value)
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/^./, (character) => character.toUpperCase());
+}
+
+function createCardSearchLink(player) {
+  // An internal search link is safer than attempting to fuzzy-match a player
+  // directly to catalog records. It preserves the collector's intent while the
+  // catalog remains the authority for whether cards are actually in stock.
+  const link = document.createElement("a");
+  link.className = "text-button card-search-link";
+  link.href = `${CARD_SEARCH_PATH}?search=${encodeURIComponent(player?.name || "")}`;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "View Cards";
+  link.setAttribute("aria-label", `View cards matching ${player?.name || "this player"} in the storefront (opens in a new tab)`);
+  return link;
 }
 
 function safeExternalImageUrl(value) {
@@ -316,7 +348,28 @@ function setSearchScope(text, tone, canRun) {
   state.searchScopeCanRun = canRun;
   elements.searchScopeValue.textContent = text;
   elements.searchScope.dataset.tone = tone;
+  // The fixed mobile bar replaces the desktop run card at narrow widths. Its
+  // title preserves the full structural explanation even when the short plan
+  // label is hidden to make room for the solve button.
+  elements.mobileSolveLabel.title = text;
+  elements.mobileOptimize.title = canRun ? "Run the exact optimizer" : text;
   if (state.activeOptimizationToken === null) setOptimizeButtons();
+}
+
+function hasPositiveObjectiveWeight() {
+  return Object.values(state.weights).some((weight) => Number(weight) > 0);
+}
+
+function syncWeightValidation() {
+  const valid = hasPositiveObjectiveWeight();
+  const wasInvalid = elements.weightsPanel.dataset.validation === "error";
+  elements.weightsPanel.dataset.validation = valid ? "valid" : "error";
+  elements.weightValidation.hidden = valid;
+  // Opening the panel only on the transition to an invalid state makes the
+  // corrective control visible without repeatedly fighting a user's choice to
+  // collapse the disclosure.
+  if (!valid && !wasInvalid) elements.weightsPanel.open = true;
+  return valid;
 }
 
 function updateSearchScope() {
@@ -327,7 +380,12 @@ function updateSearchScope() {
   validationInputs.forEach((input) => input.setCustomValidity(""));
 
   if (!state.dataset) {
-    setSearchScope("Loading the player pool…", "neutral", false);
+    setSearchScope("Loading the roster data…", "neutral", false);
+    return;
+  }
+
+  if (!syncWeightValidation()) {
+    setSearchScope("Set at least one strategy weight above zero before optimizing.", "error", false);
     return;
   }
 
@@ -397,16 +455,19 @@ function updateSearchScope() {
   }
 
   const estimatedCombinations = chooseCount(availablePlayers.length, slotsToChoose);
-  const groupLabel = estimatedCombinations === 1 ? "candidate group" : "candidate groups";
-  if (estimatedCombinations > DEFAULT_MAX_EXACT_COMBINATIONS) {
+  const groupLabel = estimatedCombinations === 1 ? "possible group" : "possible groups";
+  const safeLimit = elements.mode.value === "rotation"
+    ? DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS
+    : DEFAULT_MAX_EXACT_COMBINATIONS;
+  if (estimatedCombinations > safeLimit) {
     setSearchScope(
-      `${estimatedCombinations.toLocaleString()} ${groupLabel} — narrow the pool below the ${DEFAULT_MAX_EXACT_COMBINATIONS.toLocaleString()} exact-search limit.`,
+      `${estimatedCombinations.toLocaleString()} ${groupLabel} exceed the ${safeLimit.toLocaleString()} browser-safe limit. Narrow the eligible roster.`,
       "warning",
       false,
     );
     return;
   }
-  setSearchScope(`${estimatedCombinations.toLocaleString()} ${groupLabel} — browser-safe exact search.`, "success", true);
+  setSearchScope(`${estimatedCombinations.toLocaleString()} ${groupLabel} · every group will be checked.`, "success", true);
 }
 
 function setOptimizeButtons({ disabled = false, label } = {}) {
@@ -437,15 +498,15 @@ function updateLiveSelectionState({ preserveStatus = false } = {}) {
   const matches = liveSelectionMatches(state.loadedLiveSelection, selection);
   elements.liveDataPanel.dataset.selectionState = matches ? "loaded" : "pending";
   elements.datasetStrip.classList.toggle("has-pending-selection", Boolean(state.dataset && !matches));
-  elements.loadLiveData.textContent = matches ? "Refresh player pool" : "Apply selection";
+  elements.loadLiveData.textContent = matches ? "Reload roster data" : "Load selected roster";
   if (!preserveStatus && !matches) {
     setLiveDataStatus(
-      `Selection changed. Apply ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats to replace the current player pool.`,
+      `Selection changed. Load the ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} roster to replace the current data.`,
       "warning",
     );
   } else if (!preserveStatus && matches) {
     setLiveDataStatus(
-      `The current player pool matches ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats.`,
+      `The current roster matches ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats.`,
       "success",
     );
   }
@@ -576,7 +637,7 @@ function populateOpponentTeamOptions({ preferredTeam = "" } = {}) {
   elements.opponentTeam.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
   elements.loadOpponent.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
   if (!canScout && !state.opponentLoading) {
-    setOpponentScoutStatus("Apply the team, season, and phase above before loading an opponent scout.");
+    setOpponentScoutStatus("Apply the team, season, and phase above before building a style counter.");
   }
 }
 
@@ -674,7 +735,7 @@ async function loadLiveDataset({ force = false } = {}) {
       notice: "",
     });
     setLiveDataStatus(
-      `Showing a cached Basketball Reference snapshot. Use Refresh player pool to check for newer ${teamName} totals.`,
+      `Showing a cached Basketball Reference snapshot. Use Reload roster data to check for newer ${teamName} totals.`,
       "success",
     );
     return;
@@ -719,13 +780,14 @@ function setOpponentLoading(loading) {
   elements.opponentScout.setAttribute("aria-busy", String(loading));
   elements.opponentTeam.disabled = loading;
   elements.loadOpponent.disabled = loading;
-  elements.loadOpponent.textContent = loading ? "Loading scout..." : "Load opponent scout";
+  elements.loadOpponent.textContent = loading ? "Building counter..." : "Build style counter";
   if (!loading) populateOpponentTeamOptions({ preferredTeam: state.opponentDataset?.source?.team });
 }
 
 function clearOpponentScout(message = "Choose an opponent to compare historical rotations and team averages.") {
   state.opponentDataset = null;
   state.opponentStrategy = null;
+  state.opponentWeightUndo = null;
   elements.opponentScoutSummary.hidden = true;
   elements.opponentScoutSummary.replaceChildren();
   setOpponentScoutStatus(message);
@@ -784,9 +846,47 @@ function deriveHistoricalCounterStrategy(ownAverages, opponentAverages) {
     reasons.push("The opponent scored more per team game, so the counter adds scoring and shot efficiency.");
   }
   if (reasons.length === 0) {
-    reasons.push("No large same-season statistical gap crossed the scout thresholds, so a balanced mix remains the suggestion.");
+    reasons.push("No large same-season statistical gap crossed the comparison thresholds, so a balanced mix remains the suggestion.");
   }
   return { weights: normalizedDisplayWeights(weights), reasons };
+}
+
+function objectiveWeightsMatch(left, right) {
+  return Object.keys(METRIC_LABELS).every((metric) => Number(left?.[metric] || 0) === Number(right?.[metric] || 0));
+}
+
+function renderCounterWeightPreview(strategy) {
+  const wrap = document.createElement("div");
+  wrap.className = "counter-weight-preview table-wrap";
+  wrap.tabIndex = 0;
+  wrap.setAttribute("aria-label", "Current and suggested optimizer weight comparison");
+  const table = document.createElement("table");
+  table.className = "counter-weight-table";
+  const caption = document.createElement("caption");
+  caption.textContent = "Weight preview";
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const heading of ["Metric", "Current", "Suggested", "Change"]) {
+    const cell = document.createElement("th");
+    cell.scope = "col";
+    cell.textContent = heading;
+    headRow.append(cell);
+  }
+  head.append(headRow);
+  const body = document.createElement("tbody");
+  for (const [metric, label] of Object.entries(METRIC_LABELS)) {
+    const current = Number(state.weights[metric] || 0);
+    const suggested = Number(strategy.weights[metric] || 0);
+    const row = document.createElement("tr");
+    createCell(row, label);
+    createCell(row, String(current));
+    createCell(row, String(suggested));
+    createCell(row, formatSignedDifference(suggested - current));
+    body.append(row);
+  }
+  table.append(caption, head, body);
+  wrap.append(table);
+  return wrap;
 }
 
 function createOpponentTeamMark(source) {
@@ -815,7 +915,7 @@ function renderOpponentScout() {
   const averages = source.teamAverages;
   const rotation = Array.isArray(source.rotation) ? source.rotation : [];
   if (!averages || rotation.length === 0) {
-    throw new Error("This saved team-season does not include the totals needed for a matchup scout yet.");
+    throw new Error("This saved team-season does not include the totals needed for a historical style comparison yet.");
   }
 
   const fragment = document.createDocumentFragment();
@@ -827,33 +927,61 @@ function renderOpponentScout() {
   teamTitle.textContent = `${source.teamName || teamNameForCode(source.team)} ${source.season}`;
   const teamNote = document.createElement("p");
   const phase = source.seasonPhase === "playoffs" ? "playoffs" : "regular season";
-  teamNote.textContent = `${source.teamGames}-game denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages are reconstructed from stored team-stint totals.`;
+  const gameCount = source.teamGames !== null
+    && source.teamGames !== undefined
+    && Number.isFinite(Number(source.teamGames))
+    && Number(source.teamGames) > 0
+    ? `${source.teamGames}-game`
+    : "Stored";
+  teamNote.textContent = `${gameCount} denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages are reconstructed from stored team-stint totals.`;
   teamCopy.append(teamTitle, teamNote);
   teamHeader.append(teamCopy);
   fragment.append(teamHeader);
 
   const stats = document.createElement("dl");
   stats.className = "opponent-scout__stats";
+  const ownAverages = state.dataset?.source?.teamAverages || {};
+  const deltaNote = document.createElement("p");
+  deltaNote.className = "opponent-scout__delta-note";
+  deltaNote.textContent = `Current is ${state.dataset?.source?.teamName || state.dataset?.source?.team || "the loaded player pool"}. Delta equals current minus opponent; positive turnovers are worse.`;
   const statRows = [
-    ["PTS", formatNumber(averages.points)],
-    ["REB", formatNumber(averages.rebounds)],
-    ["AST", formatNumber(averages.assists)],
-    ["STL", formatNumber(averages.steals)],
-    ["BLK", formatNumber(averages.blocks)],
-    ["TOV", formatNumber(averages.turnovers)],
-    ["eFG%", formatPercent(averages.efgPct)],
-    ["3P%", formatPercent(averages.threePct)],
+    ["points", "PTS", false],
+    ["rebounds", "REB", false],
+    ["assists", "AST", false],
+    ["steals", "STL", false],
+    ["blocks", "BLK", false],
+    ["turnovers", "TOV", false],
+    ["efgPct", "eFG%", true],
+    ["threePct", "3P%", true],
   ];
-  for (const [label, value] of statRows) {
+  for (const [metric, label, percentage] of statRows) {
+    const ownValue = Number(ownAverages[metric]);
+    const opponentValue = Number(averages[metric]);
     const item = document.createElement("div");
     const term = document.createElement("dt");
     term.textContent = label;
     const detail = document.createElement("dd");
-    detail.textContent = value;
+    // "Current minus opponent" is used consistently for every stat. Turnover
+    // deltas remain literal (and are explicitly labeled lower-is-better) so the
+    // display never quietly flips a sourced number to make it look favorable.
+    for (const [valueLabel, value] of [
+      ["Current", percentage ? formatPercent(ownValue) : formatNumber(ownValue)],
+      ["Opponent", percentage ? formatPercent(opponentValue) : formatNumber(opponentValue)],
+      ["Δ current−opp.", formatSignedDifference(ownValue - opponentValue, { percentagePoints: percentage })],
+    ]) {
+      const valueWrap = document.createElement("span");
+      const small = document.createElement("small");
+      small.textContent = valueLabel;
+      const strong = document.createElement("strong");
+      strong.textContent = value;
+      valueWrap.append(small, strong);
+      detail.append(valueWrap);
+    }
+    if (metric === "turnovers") term.append(document.createTextNode(" · lower is better"));
     item.append(term, detail);
     stats.append(item);
   }
-  fragment.append(stats);
+  fragment.append(deltaNote, stats);
 
   const rotationSection = document.createElement("section");
   rotationSection.className = "opponent-scout__section";
@@ -883,9 +1011,9 @@ function renderOpponentScout() {
   const counter = document.createElement("section");
   counter.className = "opponent-scout__counter opponent-scout__section";
   const counterHeading = document.createElement("h4");
-  counterHeading.textContent = "Suggested counter-strategy";
+  counterHeading.textContent = "Suggested historical emphasis";
   const counterNote = document.createElement("p");
-  counterNote.textContent = "Based on gaps between the two stored team-season averages. Loading this scout does not change your optimizer settings.";
+  counterNote.textContent = "A transparent heuristic based only on the displayed team-season gaps. Previewing it changes nothing; Apply updates only the strategy weights and can be undone here.";
   const strategy = deriveHistoricalCounterStrategy(state.dataset?.source?.teamAverages, averages);
   state.opponentStrategy = strategy;
   const reasonList = document.createElement("ul");
@@ -897,23 +1025,62 @@ function renderOpponentScout() {
   const applyButton = document.createElement("button");
   applyButton.className = "button button--quiet";
   applyButton.type = "button";
-  applyButton.textContent = "Apply suggested weights";
+  const suggestionAlreadyApplied = objectiveWeightsMatch(state.weights, strategy.weights);
+  applyButton.textContent = suggestionAlreadyApplied ? "Suggested weights applied" : "Apply suggested weights";
+  applyButton.disabled = suggestionAlreadyApplied;
   applyButton.addEventListener("click", () => {
+    // Keep one deliberate undo boundary. A later manual slider or preset edit
+    // clears this snapshot because reverting through unrelated user changes
+    // would be surprising.
+    state.opponentWeightUndo = {
+      weights: { ...state.weights },
+      activePreset: state.activePreset,
+    };
     state.weights = { ...strategy.weights };
     state.activePreset = "custom";
     renderPresetState();
     renderWeightControls();
     updateRunSummary();
     markScenarioChanged();
-    showToast(`Counter-strategy weights applied for ${source.teamName || source.team}.`);
+    renderOpponentScout();
+    showToast(`Historical-emphasis weights applied for ${source.teamName || source.team}.`);
   });
-  counter.append(counterHeading, counterNote, reasonList, applyButton);
+  const actions = document.createElement("div");
+  actions.className = "opponent-scout__actions";
+  actions.append(applyButton);
+  if (state.opponentWeightUndo) {
+    const undoButton = document.createElement("button");
+    undoButton.className = "text-button";
+    undoButton.type = "button";
+    undoButton.textContent = "Undo weight change";
+    undoButton.addEventListener("click", () => {
+      const prior = state.opponentWeightUndo;
+      if (!prior) return;
+      state.weights = { ...prior.weights };
+      state.activePreset = prior.activePreset;
+      state.opponentWeightUndo = null;
+      renderPresetState();
+      renderWeightControls();
+      updateRunSummary();
+      markScenarioChanged();
+      renderOpponentScout();
+      showToast("Previous strategy weights restored.");
+    });
+    actions.append(undoButton);
+  }
+  counter.append(
+    counterHeading,
+    counterNote,
+    reasonList,
+    renderCounterWeightPreview(strategy),
+    actions,
+  );
   fragment.append(counter);
 
   elements.opponentScoutSummary.replaceChildren(fragment);
   elements.opponentScoutSummary.hidden = false;
   setOpponentScoutStatus(
-    `${source.teamName || source.team} ${source.season} scout loaded. Review the sourced averages and optional suggestion below.`,
+    `${source.teamName || source.team} ${source.season} comparison ready. Review the sourced averages, signed gaps, and optional weight preview below.`,
     "success",
   );
 }
@@ -922,7 +1089,7 @@ async function loadOpponentScout() {
   if (state.opponentLoading || state.liveDataLoading) return;
   const selection = selectionFromControls();
   if (!liveSelectionMatches(state.loadedLiveSelection, selection)) {
-    clearOpponentScout("Apply the selected team-season above before scouting an opponent.");
+    clearOpponentScout("Apply the selected team-season above before building a style counter.");
     return;
   }
   const team = elements.opponentTeam.value;
@@ -934,7 +1101,7 @@ async function loadOpponentScout() {
   const teamName = teamNameForCode(team);
   let staleResponseMessage = "";
   setOpponentLoading(true);
-  setOpponentScoutStatus(`Loading ${teamName} ${nbaSeasonLabel(selection.season)} historical averages and rotation...`);
+  setOpponentScoutStatus(`Comparing ${teamName} ${nbaSeasonLabel(selection.season)} historical averages and rotation...`);
   try {
     const cached = readCachedLiveDataset(team, selection.season, selection.seasonPhase);
     const dataset = cached?.fresh
@@ -958,18 +1125,20 @@ async function loadOpponentScout() {
     if (!requestStillMatches) {
       state.opponentDataset = null;
       state.opponentStrategy = null;
+      state.opponentWeightUndo = null;
       elements.opponentScoutSummary.hidden = true;
       elements.opponentScoutSummary.replaceChildren();
-      staleResponseMessage = "The team, season, phase, or opponent changed while the scout was loading. Apply the current player pool, then load the opponent scout again.";
+      staleResponseMessage = "The team, season, phase, or opponent changed while the comparison was loading. Load the current roster, then build the style counter again.";
       return;
     }
 
     state.opponentDataset = dataset;
     renderOpponentScout();
   } catch (error) {
-    const detail = error instanceof Error ? error.message : "The opponent scout could not be loaded.";
+    const detail = error instanceof Error ? error.message : "The historical style comparison could not be loaded.";
     state.opponentDataset = null;
     state.opponentStrategy = null;
+    state.opponentWeightUndo = null;
     elements.opponentScoutSummary.hidden = true;
     setOpponentScoutStatus(detail, "error");
   } finally {
@@ -1001,6 +1170,10 @@ function applyPreset(uiPreset, { announce = false, invalidate = true } = {}) {
   renderWeightControls();
   updateRunSummary();
   if (invalidate) markScenarioChanged();
+  if (invalidate && state.opponentDataset) {
+    state.opponentWeightUndo = null;
+    renderOpponentScout();
+  }
   if (announce) showToast(`${PRESET_LABELS[uiPreset]} strategy loaded.`);
 }
 
@@ -1086,6 +1259,19 @@ function markScenarioChanged() {
 function setMode(mode, { preserveSize = false } = {}) {
   const isRotation = mode === "rotation";
   elements.rotationSettings.hidden = !isRotation;
+  const productionQualifier = document.createElement("span");
+  productionQualifier.textContent = "(optional requirements)";
+  elements.productionRulesLegend.replaceChildren(
+    document.createTextNode(isRotation ? "Projected rotation production " : "Combined player profiles "),
+    productionQualifier,
+  );
+  elements.productionRulesHelp.textContent = isRotation
+    ? "For every candidate, these rules use the exact 240-minute plan to create minute-weighted per-game team projections. They are historical-stat estimates, not game predictions."
+    : "In lineup mode, these rules add each selected player's historical per-game line. They describe the five-player profile; they do not forecast one team box score.";
+  elements.positionCoverageHelp.textContent = isRotation
+    ? "Roster counts are minimum composition requirements. Separately, every plan must cover 96 guard, 96 forward, and 48 center minutes. Source-listed flex players can split their minutes across compatible roles."
+    : "Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required roster slot.";
+  elements.rotationMinutesHelp.textContent = "For every candidate, the optimizer assigns exactly 240 integer minutes to maximize your strategy fit while covering 96 guard, 96 forward, and 48 center minutes.";
   elements.size.min = isRotation ? "8" : "5";
   elements.size.max = isRotation ? "12" : "5";
   if (!preserveSize) elements.size.value = isRotation ? "9" : "5";
@@ -1099,6 +1285,21 @@ function setMode(mode, { preserveSize = false } = {}) {
     elements.minCenters.value = "1";
   }
   updateRunSummary();
+}
+
+function recommendedMinimumGames(seasonPhase) {
+  // A 20-game floor is useful for an 82-game regular season but would erase
+  // most legitimate postseason pools. Keep the defaults phase-aware while
+  // preserving any value the user deliberately customized.
+  return seasonPhase === "playoffs" ? 3 : 20;
+}
+
+function applyLoadedPhaseEligibilityDefault(seasonPhase) {
+  const nextDefault = recommendedMinimumGames(seasonPhase);
+  if (numberFromInput(elements.minGames, state.recommendedMinGames) === state.recommendedMinGames) {
+    elements.minGames.value = String(nextDefault);
+  }
+  state.recommendedMinGames = nextDefault;
 }
 
 function isPlayerEligible(player) {
@@ -1201,6 +1402,11 @@ function createPlayerAvatar(player, className = "player-avatar") {
 }
 
 function createTableCheckbox(player, action, label, checked, disabled = false) {
+  // The visible checkbox stays compact, while its label provides a full 44px
+  // pointer/touch target. Keeping data-action on the input preserves delegated
+  // change handling and keyboard behavior.
+  const target = document.createElement("label");
+  target.className = "table-check-target";
   const input = document.createElement("input");
   input.type = "checkbox";
   input.className = "table-check";
@@ -1209,7 +1415,8 @@ function createTableCheckbox(player, action, label, checked, disabled = false) {
   input.checked = checked;
   input.disabled = disabled;
   input.setAttribute("aria-label", `${label} ${player.name}`);
-  return input;
+  target.append(input);
+  return target;
 }
 
 function restorePlayerControlFocus(focusTarget) {
@@ -1339,6 +1546,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
     const detail = validation.errors.slice(0, 2).map((error) => error.message).join(" ");
     throw new Error(detail || "The player dataset is invalid.");
   }
+  if (liveSelection?.seasonPhase) applyLoadedPhaseEligibilityDefault(liveSelection.seasonPhase);
   cancelOptimization("Optimization cancelled because the player pool changed.");
   state.scenarioVersion += 1;
   state.dataset = dataset;
@@ -1347,7 +1555,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   state.teamLogoStatus = "unavailable";
   clearOpponentScout(liveSelection
     ? "Choose another team from this season and phase to load its averages and historical rotation."
-    : "Load a database team-season above before scouting an opponent.");
+    : "Load a database team-season above before building a style counter.");
   if (clearScenario) {
     state.lockedIds.clear();
     state.excludedIds.clear();
@@ -1589,7 +1797,7 @@ function renderLineupPlayer(player, lineup, index) {
   }
   card.append(top);
   if (avatar) card.append(avatar);
-  card.append(name, stats);
+  card.append(name, stats, createCardSearchLink(player));
   return card;
 }
 
@@ -1652,14 +1860,14 @@ function renderAudit(audit) {
   }
   for (const [stat, check] of Object.entries(audit.statMinimums.checks || {})) {
     list.append(auditRow(
-      `${titleCase(stat)} minimum`,
+      `${titleCase(stat)} ${audit.rotationMinutes ? "projected minimum" : "profile minimum"}`,
       `${formatNumber(check.actual)} / ${formatNumber(check.required)}`,
       check.passed,
     ));
   }
   if (audit.maxTurnovers.maximum !== null) {
     list.append(auditRow(
-      "Turnover ceiling",
+      audit.rotationMinutes ? "Projected turnover ceiling" : "Profile turnover ceiling",
       `${formatNumber(audit.maxTurnovers.actual)} / ${formatNumber(audit.maxTurnovers.maximum)}`,
       audit.maxTurnovers.passed,
     ));
@@ -1671,7 +1879,23 @@ function renderAudit(audit) {
       audit.rotationMinutes.passed,
     ));
   }
+  if (audit.rotationPositionMinutes) {
+    const required = audit.rotationPositionMinutes.required;
+    const actual = audit.rotationPositionMinutes.actual;
+    list.append(auditRow(
+      "On-court role minutes",
+      `G ${actual.G}/${required.G} · F ${actual.F}/${required.F} · C ${actual.C}/${required.C}`,
+      audit.rotationPositionMinutes.passed,
+    ));
+  }
   return list;
+}
+
+function roleMinuteSummary(roleMinutes) {
+  return Object.entries(roleMinutes || {})
+    .filter(([, minutes]) => Number(minutes) > 0)
+    .map(([role, minutes]) => `${role} ${minutes}`)
+    .join(" · ");
 }
 
 function renderRotationMinutes(rotation) {
@@ -1679,14 +1903,22 @@ function renderRotationMinutes(rotation) {
   card.className = "result-card";
   const heading = document.createElement("h3");
   heading.textContent = "240-minute rotation plan";
+  const note = document.createElement("p");
+  note.className = "rotation-plan-note";
+  note.textContent = "Minutes maximize the selected strategy within your player limits. Role splits prove the group can cover 96 guard, 96 forward, and 48 center minutes.";
   const list = document.createElement("ul");
   list.className = "minutes-list";
   const sorted = [...rotation.allocations].sort((left, right) => right.minutes - left.minutes);
   for (const allocation of sorted) {
     const player = currentPlayer(allocation.id);
     const row = document.createElement("li");
-    const name = document.createElement("span");
+    const playerLabel = document.createElement("span");
+    playerLabel.className = "minutes-list__player";
+    const name = document.createElement("strong");
     name.textContent = player?.name || allocation.id;
+    const roles = document.createElement("small");
+    roles.textContent = roleMinuteSummary(allocation.roleMinutes) || "Utility minutes";
+    playerLabel.append(name, roles);
     const track = document.createElement("span");
     track.className = "metric-bar__track";
     const fill = document.createElement("span");
@@ -1694,17 +1926,52 @@ function renderRotationMinutes(rotation) {
     fill.style.width = `${(allocation.minutes / 48) * 100}%`;
     track.append(fill);
     const minutes = document.createElement("strong");
-    minutes.textContent = `${allocation.minutes}`;
-    row.append(name, track, minutes);
+    minutes.textContent = `${allocation.minutes} min`;
+    row.append(playerLabel, track, minutes);
     list.append(row);
   }
-  card.append(heading, list);
+  card.append(heading, note, list);
   return card;
 }
 
-function renderAlternatives(alternatives) {
+function summarizeAlternativeTradeoff(lineup, best) {
+  if (lineup.rank === 1) return "Baseline";
+  const metrics = [
+    ["points", "PTS", false],
+    ["rebounds", "REB", false],
+    ["assists", "AST", false],
+    ["steals", "STL", false],
+    ["blocks", "BLK", false],
+    ["turnovers", "TOV", true],
+  ];
+  // Turnovers are the only lower-is-better production column. Convert every
+  // raw delta to a common benefit direction to identify the clearest gain and
+  // sacrifice, while displaying the original signed stat change to the user.
+  const changes = metrics.map(([metric, label, lowerIsBetter]) => {
+    const delta = Number(lineup.totals[metric]) - Number(best.totals[metric]);
+    return { label, delta, benefit: lowerIsBetter ? -delta : delta };
+  }).filter((change) => Number.isFinite(change.delta) && Math.abs(change.delta) >= 0.05);
+  const gain = changes.filter((change) => change.benefit > 0)
+    .sort((left, right) => right.benefit - left.benefit)[0];
+  const cost = changes.filter((change) => change.benefit < 0)
+    .sort((left, right) => left.benefit - right.benefit)[0];
+  const parts = [];
+  if (gain) parts.push(`Gain ${formatSignedDifference(gain.delta)} ${gain.label}`);
+  if (cost) parts.push(`Cost ${formatSignedDifference(cost.delta)} ${cost.label}`);
+  return parts.join(" · ") || "Nearly identical production";
+}
+
+function renderAlternatives(alternatives, best) {
+  const section = document.createElement("section");
+  section.className = "alternatives-section";
+  const heading = document.createElement("h3");
+  heading.textContent = "Recommended and next-best feasible groups";
+  const note = document.createElement("p");
+  note.textContent = `Fit gap shows points below the recommended group's pool-relative score. Roster changes make each tradeoff explicit. ${best.rotation ? "Production columns are minute-weighted from each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
-  wrap.className = "alternatives-wrap";
+  wrap.className = "alternatives-wrap table-wrap";
+  wrap.tabIndex = 0;
+  wrap.setAttribute("aria-label", "Next-best feasible lineup alternatives");
   const table = document.createElement("table");
   table.className = "alternatives-table";
   const caption = document.createElement("caption");
@@ -1712,7 +1979,7 @@ function renderAlternatives(alternatives) {
   caption.textContent = "Top feasible lineup alternatives";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Rank", "Players", "Score", "PTS", "REB", "AST", "TOV"]) {
+  for (const heading of ["Rank", "Players", "Fit score", "Fit gap", "Changes from #1", "Main production tradeoff", "PTS", "REB", "AST", "TOV"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -1720,11 +1987,22 @@ function renderAlternatives(alternatives) {
   }
   head.append(headRow);
   const body = document.createElement("tbody");
+  const bestIds = new Set(best.players.map((player) => player.id));
   for (const lineup of alternatives) {
+    const lineupIds = new Set(lineup.players.map((player) => player.id));
+    const added = lineup.players.filter((player) => !bestIds.has(player.id)).map((player) => player.name);
+    const removed = best.players.filter((player) => !lineupIds.has(player.id)).map((player) => player.name);
+    const changes = lineup.rank === 1
+      ? "Recommended group"
+      : `In: ${added.join(", ") || "none"}; Out: ${removed.join(", ") || "none"}`;
+    const scoreGap = Math.max(0, Number(best.score) - Number(lineup.score));
     const row = document.createElement("tr");
     createCell(row, `#${lineup.rank}`);
     createCell(row, lineup.players.map((player) => player.name).join(", "));
     createCell(row, formatNumber(lineup.score));
+    createCell(row, lineup.rank === 1 ? "Best" : `−${formatNumber(scoreGap)}`);
+    createCell(row, changes);
+    createCell(row, summarizeAlternativeTradeoff(lineup, best));
     createCell(row, formatNumber(lineup.totals.points));
     createCell(row, formatNumber(lineup.totals.rebounds));
     createCell(row, formatNumber(lineup.totals.assists));
@@ -1733,21 +2011,37 @@ function renderAlternatives(alternatives) {
   }
   table.append(caption, head, body);
   wrap.append(table);
-  return wrap;
+  section.append(heading, note, wrap);
+  return section;
 }
 
 function renderSuccess(result) {
   const best = result.best;
-  elements.resultSummary.textContent = `${result.diagnostics.feasibleCombinations.toLocaleString()} feasible combination${result.diagnostics.feasibleCombinations === 1 ? "" : "s"} found after an exact search of ${result.combinationsEvaluated.toLocaleString()}. Player-profile totals add each selected player's per-game averages.`;
+  const fitPoolSize = state.dataset.players.filter((player) => isPlayerEligible(player) && !state.excludedIds.has(player.id)).length;
+  const productionExplanation = best.rotation
+    ? "Production is minute-weighted from the exact 240-minute plan."
+    : "Profiles add each selected player's per-game averages.";
+  const feasibleCount = result.diagnostics.feasibleCombinations;
+  const possibleCount = result.combinationsEvaluated;
+  const countIsComplete = result.diagnostics.feasibleCombinationCountComplete !== false;
+  // Bound-pruned rotations do not need full constraint classification once
+  // their best-possible score cannot enter the displayed top results. The
+  // winner and alternatives remain exact, but calling the confirmed feasible
+  // count complete would overstate what the proof established.
+  const feasibilityExplanation = countIsComplete
+    ? `${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} met every requirement after checking ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}.`
+    : `At least ${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} met every requirement. The displayed top results were proven exact after bounding ${result.diagnostics.constraintBoundPruned.toLocaleString()} lower-ceiling group${result.diagnostics.constraintBoundPruned === 1 ? "" : "s"} among ${possibleCount.toLocaleString()} possibilities; bounded groups did not need full constraint classification.`;
+  elements.resultSummary.textContent = `${feasibilityExplanation} The fit score is relative to ${fitPoolSize} eligible, non-excluded players—not a win probability. ${productionExplanation}`;
   const fragment = document.createDocumentFragment();
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";
+  const productionPrefix = best.rotation ? "Projected" : "Combined";
   scoreboard.append(
-    renderScoreCard("Model score", formatNumber(best.score), true),
-    renderScoreCard("PTS profile", formatNumber(best.totals.points)),
-    renderScoreCard("REB profile", formatNumber(best.totals.rebounds)),
-    renderScoreCard("AST profile", formatNumber(best.totals.assists)),
-    renderScoreCard("TOV profile", formatNumber(best.totals.turnovers)),
+    renderScoreCard("Fit score in this pool", `${formatNumber(best.score)} / 100`, true),
+    renderScoreCard(`${productionPrefix} PTS`, formatNumber(best.totals.points)),
+    renderScoreCard(`${productionPrefix} REB`, formatNumber(best.totals.rebounds)),
+    renderScoreCard(`${productionPrefix} AST`, formatNumber(best.totals.assists)),
+    renderScoreCard(`${productionPrefix} TOV`, formatNumber(best.totals.turnovers)),
   );
   const lineup = document.createElement("div");
   lineup.className = "lineup-grid";
@@ -1758,7 +2052,7 @@ function renderSuccess(result) {
   const contributionCard = document.createElement("section");
   contributionCard.className = "result-card";
   const contributionHeading = document.createElement("h3");
-  contributionHeading.textContent = "Why this group scored well";
+  contributionHeading.textContent = "Why this group fits your strategy";
   contributionCard.append(contributionHeading, renderContributionList(best.contributionBreakdown));
   const auditCard = document.createElement("section");
   auditCard.className = "result-card";
@@ -1769,7 +2063,7 @@ function renderSuccess(result) {
 
   fragment.append(scoreboard, lineup, detailGrid);
   if (best.rotation) fragment.append(renderRotationMinutes(best.rotation));
-  if (result.alternatives.length > 1) fragment.append(renderAlternatives(result.alternatives));
+  if (result.alternatives.length > 1) fragment.append(renderAlternatives(result.alternatives, best));
   elements.resultContent.replaceChildren(fragment);
 }
 
@@ -1789,7 +2083,7 @@ function renderFailure(result) {
     elements.resultSummary.textContent = "One or more settings need attention before the optimizer can run.";
   } else {
     elements.resultsHeading.textContent = result.mode === "rotation" ? "No feasible rotation" : "No feasible lineup";
-    elements.resultSummary.textContent = "The current hard rules do not leave a feasible group.";
+    elements.resultSummary.textContent = "The current requirements do not leave a feasible group.";
   }
   const card = document.createElement("div");
   card.className = "error-card";
@@ -1806,6 +2100,14 @@ function renderFailure(result) {
     const item = document.createElement("li");
     item.textContent = reason;
     list.append(item);
+  }
+  // A safety-limit message should tell a fan which visible controls actually
+  // shrink the proof, not merely expose an implementation limit. The live
+  // Groups-to-evaluate readout lets them confirm the effect before rerunning.
+  if (category === "performance") {
+    const recovery = document.createElement("li");
+    recovery.textContent = "Try raising Minimum games or MPG, excluding nonessential players, or loosening the production threshold. Check Groups to evaluate, then run the exact search again.";
+    list.append(recovery);
   }
   card.append(heading, list);
   elements.resultContent.replaceChildren(card);
@@ -1923,8 +2225,8 @@ async function runOptimizer(event) {
     elements.results.classList.remove("is-stale");
     elements.resultFreshness.hidden = true;
     elements.resultsHeading.textContent = result.mode === "rotation"
-      ? "Recommended rotation roster"
-      : "Recommended lineup";
+      ? "Best rotation for these settings"
+      : "Best lineup for these settings";
     if (result.ok) renderSuccess(result);
     else renderFailure(result);
     elements.resultActions.hidden = !result.ok;
@@ -1975,22 +2277,36 @@ async function runOptimizer(event) {
   }
 }
 
-function percentileWithinPool(player, metric, lowerIsBetter = false) {
-  const values = state.dataset.players
+function comparisonPool() {
+  // These are the same two pool gates applied before exact combinations are
+  // enumerated. Locks affect membership in a lineup, not the population used
+  // to interpret a player's percentile.
+  return state.dataset.players.filter(
+    (player) => isPlayerEligible(player) && !state.excludedIds.has(player.id),
+  );
+}
+
+function percentileWithinPool(player, metric, lowerIsBetter = false, pool = comparisonPool()) {
+  const values = pool
     .map((item) => Number(item[metric]))
     .filter(Number.isFinite)
     .sort((left, right) => left - right);
+  if (values.length === 0 || !Number.isFinite(Number(player[metric]))) return 0;
   if (values.length <= 1) return 100;
   const value = Number(player[metric]);
   const lower = values.filter((candidate) => candidate < value).length;
   const equal = values.filter((candidate) => candidate === value).length;
-  const percentile = ((lower + Math.max(0, equal - 1) / 2) / (values.length - 1)) * 100;
+  const rawPercentile = ((lower + Math.max(0, equal - 1) / 2) / (values.length - 1)) * 100;
+  // A selected comparison can remain on screen after exclusion. Clamp that
+  // out-of-pool reference value instead of letting it produce a bar above 100.
+  const percentile = Math.max(0, Math.min(100, rawPercentile));
   return lowerIsBetter ? 100 - percentile : percentile;
 }
 
 function renderCompare() {
   if (!state.dataset) return;
   const selected = [...state.compareIds].map(currentPlayer).filter(Boolean).slice(0, 4);
+  const pool = comparisonPool();
   elements.compareContent.replaceChildren();
   if (selected.length < 2) {
     const empty = document.createElement("div");
@@ -1998,11 +2314,15 @@ function renderCompare() {
     const heading = document.createElement("h3");
     heading.textContent = selected.length === 1 ? "Choose one more player" : "Choose two to four players";
     const copy = document.createElement("p");
-    copy.textContent = "Use the Compare checkboxes in the optimizer's player table.";
+    copy.textContent = `Use the Compare checkboxes in the optimizer's player table. The current percentile pool contains ${pool.length} eligible, non-excluded player${pool.length === 1 ? "" : "s"}.`;
     empty.append(heading, copy);
     elements.compareContent.append(empty);
     return;
   }
+
+  const poolNote = document.createElement("p");
+  poolNote.className = "compare-pool-note";
+  poolNote.textContent = `${pool.length} player${pool.length === 1 ? "" : "s"} meet the current sample filters and are not excluded. Percentiles below use exactly that pool; a compared player can remain visible after being excluded.`;
 
   const legend = document.createElement("div");
   legend.className = "compare-legend";
@@ -2016,6 +2336,8 @@ function renderCompare() {
   });
   const scroll = document.createElement("div");
   scroll.className = "table-wrap";
+  scroll.tabIndex = 0;
+  scroll.setAttribute("aria-label", `Percentile comparison across ${pool.length} eligible, non-excluded players`);
   const bars = document.createElement("div");
   bars.className = "compare-bars";
   bars.style.padding = "1rem";
@@ -2027,7 +2349,7 @@ function renderCompare() {
     const rowBars = document.createElement("div");
     rowBars.className = "compare-row__bars";
     selected.forEach((player, index) => {
-      const percentile = percentileWithinPool(player, metric, lowerIsBetter);
+      const percentile = percentileWithinPool(player, metric, lowerIsBetter, pool);
       const valueText = metric.endsWith("Pct")
         ? formatPercent(player[metric])
         : formatNumber(player[metric]);
@@ -2044,7 +2366,7 @@ function renderCompare() {
       bar.setAttribute("aria-valuemax", "100");
       bar.setAttribute("aria-valuenow", String(Math.round(percentile)));
       bar.setAttribute("aria-label", `${player.name}: ${labelText}`);
-      bar.setAttribute("aria-valuetext", `${player.name}, ${labelText}: ${valueText}; ${Math.round(percentile)}th percentile in this player pool`);
+      bar.setAttribute("aria-valuetext", `${player.name}, ${labelText}: ${valueText}; ${Math.round(percentile)}th percentile among ${pool.length} eligible, non-excluded players`);
       const value = document.createElement("span");
       value.className = "compare-player-value";
       value.textContent = valueText;
@@ -2057,7 +2379,7 @@ function renderCompare() {
     bars.append(row);
   }
   scroll.append(bars);
-  elements.compareContent.append(legend, scroll);
+  elements.compareContent.append(poolNote, legend, scroll);
 }
 
 function renderWatchlist() {
@@ -2096,7 +2418,17 @@ function renderWatchlist() {
     heading.textContent = player.name;
     const meta = document.createElement("p");
     const context = player.watchlistContext || {};
-    meta.textContent = `${context.season || state.dataset.source?.season || "Custom"} · ${context.team || player.team} · ${player.positions.join("/")} · age ${player.age}`;
+    const metaParts = [
+      context.season || state.dataset.source?.season || "Custom",
+      context.team || player.team,
+      Array.isArray(player.positions) ? player.positions.join("/") : String(player.positions || "Position unavailable"),
+    ];
+    // Older imports and source pages do not always provide age. Omitting that
+    // fragment is clearer than rendering "age undefined" on a saved card.
+    if (Number.isFinite(Number(player.age)) && Number(player.age) > 0) {
+      metaParts.push(`Age ${formatNumber(player.age)}`);
+    }
+    meta.textContent = metaParts.filter(Boolean).join(" · ");
     text.append(heading, meta);
     if (avatar) identity.append(avatar);
     identity.append(text);
@@ -2124,7 +2456,7 @@ function renderWatchlist() {
       block.append(statLabel, statValue);
       stats.append(block);
     }
-    card.append(headingWrap, stats);
+    card.append(headingWrap, stats, createCardSearchLink(player));
     elements.watchlistContent.append(card);
   }
   if (unresolvedCount) {
@@ -2182,9 +2514,9 @@ function resultSummaryText() {
   const lines = [
     `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Optimized rotation roster + minutes plan" : "Optimized lineup"}`,
     `Strategy: ${PRESET_LABELS[state.activePreset] || "Custom mix"}`,
-    `Score: ${formatNumber(best.score)}`,
+    `Pool-relative fit score: ${formatNumber(best.score)} / 100`,
     `Players: ${best.players.map((player) => player.name).join(", ")}`,
-    `Totals: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
+    `${best.rotation ? "Minute-weighted projection" : "Combined player profiles"}: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
   ];
   if (best.rotation) {
     lines.push(`Minutes: ${best.rotation.allocations.map((item) => `${currentPlayer(item.id)?.name || item.id} ${item.minutes}`).join(", ")}`);
@@ -2216,22 +2548,28 @@ function downloadResult() {
   if (!best) return;
   const minutesById = best.rotation?.byId || {};
   const rows = [
-    ["Player", "Team", "Eligible Positions", "Assigned Slot", "Minutes", "PTS", "REB", "AST", "STL", "BLK", "TOV", "eFG%", "3P%"],
-    ...best.players.map((player) => [
-      player.name,
-      player.team,
-      player.positions.join("/"),
-      assignedPosition(best, player.id),
-      minutesById[player.id] ?? "",
-      player.points,
-      player.rebounds,
-      player.assists,
-      player.steals,
-      player.blocks,
-      player.turnovers,
-      player.efgPct,
-      player.threePct,
-    ]),
+    ["Player", "Team", "Eligible Positions", "Roster Slot", "Minutes", "Guard Minutes", "Forward Minutes", "Center Minutes", "PTS", "REB", "AST", "STL", "BLK", "TOV", "eFG%", "3P%"],
+    ...best.players.map((player) => {
+      const roleMinutes = best.rotation?.positionMinutes?.byPlayer?.[player.id] || {};
+      return [
+        player.name,
+        player.team,
+        player.positions.join("/"),
+        assignedPosition(best, player.id),
+        minutesById[player.id] ?? "",
+        roleMinutes.G ?? "",
+        roleMinutes.F ?? "",
+        roleMinutes.C ?? "",
+        player.points,
+        player.rebounds,
+        player.assists,
+        player.steals,
+        player.blocks,
+        player.turnovers,
+        player.efgPct,
+        player.threePct,
+      ];
+    }),
   ];
   downloadText("djhc-optimized-lineup.csv", rows.map((row) => row.map(csvEscape).join(",")).join("\r\n"));
   showToast("Lineup CSV downloaded.");
@@ -2302,7 +2640,9 @@ function resetScenario() {
   elements.mode.value = "lineup";
   setMode("lineup");
   elements.alternatives.value = "5";
-  elements.minGames.value = "20";
+  const loadedPhase = state.loadedLiveSelection?.seasonPhase || DEFAULT_SEASON_PHASE;
+  state.recommendedMinGames = recommendedMinimumGames(loadedPhase);
+  elements.minGames.value = String(state.recommendedMinGames);
   elements.minMinutes.value = "6";
   elements.minPoints.value = "";
   elements.minRebounds.value = "";
@@ -2314,11 +2654,13 @@ function resetScenario() {
   elements.rotationMax.value = "40";
   state.lockedIds.clear();
   state.excludedIds.clear();
+  state.opponentWeightUndo = null;
   applyPreset("balanced", { invalidate: false });
   clearRenderedResult();
   setSolverStatus("Ready to solve");
   setOptimizeButtons({ label: "Optimize lineup" });
   renderPlayerTable();
+  if (state.opponentDataset) renderOpponentScout();
   showToast("Scenario reset. Your comparison and watchlist were kept.");
 }
 
@@ -2334,9 +2676,15 @@ function bindEvents() {
       state.weights[input.dataset.weight] = Number(input.value);
       input.parentElement.querySelector("output").textContent = input.value;
       state.activePreset = "custom";
+      state.opponentWeightUndo = null;
       renderPresetState();
       updateRunSummary();
       markScenarioChanged();
+    });
+    input.addEventListener("change", () => {
+      // Rebuild the comparison once the drag is complete so its Current column
+      // stays accurate without repeatedly reloading avatars on every slider tick.
+      if (state.opponentDataset) renderOpponentScout();
     });
   });
   elements.mode.addEventListener("change", () => {
@@ -2391,18 +2739,18 @@ function bindEvents() {
   elements.downloadResult.addEventListener("click", downloadResult);
   elements.loadLiveData.addEventListener("click", () => {
     loadLiveDataset({ force: true }).catch((error) => {
-      showToast(error instanceof Error ? `Team data stopped: ${error.message}` : "Team data could not be loaded.");
+      showToast(error instanceof Error ? `Couldn't load team data: ${error.message}` : "Team data could not be loaded.");
     });
   });
   const handleSeasonOrPhaseChange = () => {
-    clearOpponentScout("Apply the updated team-season before loading an opponent scout.");
+    clearOpponentScout("Apply the updated team-season before building a style counter.");
     refreshLiveTeamOptions();
   };
   elements.liveSeason.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveSeasonPhase.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveTeam.addEventListener("change", () => {
     updateLiveSelectionState();
-    clearOpponentScout("Apply this team as the player pool before loading an opponent scout.");
+    clearOpponentScout("Apply this team as the player pool before building a style counter.");
     populateOpponentTeamOptions();
   });
   elements.loadOpponent.addEventListener("click", loadOpponentScout);
@@ -2410,9 +2758,10 @@ function bindEvents() {
     if (state.opponentDataset?.source?.team !== elements.opponentTeam.value) {
       state.opponentDataset = null;
       state.opponentStrategy = null;
+      state.opponentWeightUndo = null;
       elements.opponentScoutSummary.hidden = true;
       elements.opponentScoutSummary.replaceChildren();
-      setOpponentScoutStatus(`Load ${teamNameForCode(elements.opponentTeam.value)} to view its historical averages and rotation.`);
+      setOpponentScoutStatus(`Build a style counter for ${teamNameForCode(elements.opponentTeam.value)} to view historical averages and rotation.`);
     }
   });
   elements.importCsv.addEventListener("click", () => elements.csvFile.click());
@@ -2422,7 +2771,7 @@ function bindEvents() {
     try {
       await importCsvFile(file);
     } catch (error) {
-      showToast(error instanceof Error ? `Import stopped: ${error.message}` : "CSV import stopped.");
+      showToast(error instanceof Error ? `Couldn't import this CSV: ${error.message}` : "This CSV could not be imported.");
     } finally {
       elements.csvFile.value = "";
     }

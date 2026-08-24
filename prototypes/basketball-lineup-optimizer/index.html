@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DJ's Lineup Lab | NBA Team-Season Optimizer</title>
-  <meta name="description" content="An experimental NBA team-season lineup optimizer with historical Basketball Reference data.">
+  <title>DJ's Lineup Lab | NBA Lineup and Rotation Optimizer</title>
+  <meta name="description" content="Build and compare historical NBA lineups and rotations with an exact, constraint-based optimizer.">
   <meta name="robots" content="noindex,nofollow">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#15206b">
@@ -12,7 +12,7 @@
   <link rel="preload" href="../../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260823e">
+  <link rel="stylesheet" href="styles.css?v=20260824a">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -23,10 +23,10 @@
         <img src="../../assets/dj-logo.png" width="56" height="56" alt="" decoding="async">
         <span>
           <strong>DJ's Lineup Lab</strong>
-          <small>Experimental fan tool</small>
+          <small>NBA lineup optimizer</small>
         </span>
       </a>
-      <span class="prototype-badge">Private beta</span>
+      <span class="prototype-badge">Public beta</span>
     </div>
   </header>
 
@@ -76,8 +76,8 @@
         <section class="panel live-data-panel" id="liveDataPanel" aria-labelledby="liveDataHeading" aria-busy="false">
           <div class="live-data-panel__intro">
             <p class="eyebrow">Basketball Reference historical database</p>
-            <h2 id="liveDataHeading">Choose the team and season to optimize</h2>
-            <p>Select any imported NBA team-season from 1980 forward. Team-stint totals are converted to per-game values and cached on this device.</p>
+            <h2 id="liveDataHeading">Choose a historical team and season</h2>
+            <p>Select any imported NBA team-season from 1980 forward. If a player was traded, only that player's games with the selected team count. The roster is cached on this device.</p>
           </div>
           <div class="live-data-panel__controls">
             <label class="field">
@@ -95,18 +95,21 @@
                 <option value="playoffs">Playoffs</option>
               </select>
             </label>
-            <button class="button" id="loadLiveDataButton" type="button">Update player pool</button>
+            <button class="button" id="loadLiveDataButton" type="button">Load selected roster</button>
           </div>
           <p class="live-data-status" id="liveDataStatus" role="status" aria-live="polite">Preparing the imported NBA team-season data...</p>
         </section>
 
-        <div class="dataset-strip" id="datasetStrip" aria-live="polite">
+        <!-- Media availability changes once per remote image. Keeping this
+             strip out of a live region prevents a screen reader from announcing
+             the count again for every successful or failed headshot request. -->
+        <div class="dataset-strip" id="datasetStrip">
           <div class="dataset-strip__mark">
             <span class="dataset-strip__logo-fallback" id="datasetTeamLogoFallback" aria-hidden="true">NBA</span>
             <img class="dataset-strip__logo" id="datasetTeamLogo" alt="" width="52" height="52" hidden>
           </div>
           <div>
-            <span class="dataset-strip__label">Player pool</span>
+            <span class="dataset-strip__label">Current roster data</span>
             <strong id="datasetName">Loading player data...</strong>
             <span class="dataset-strip__media" id="datasetMedia">Preparing verified team and player media...</span>
           </div>
@@ -117,7 +120,7 @@
           </dl>
           <div class="dataset-strip__actions">
             <button class="text-button" id="importCsvButton" type="button">Import player CSV</button>
-            <button class="text-button" id="resetDatasetButton" type="button">Load course demo</button>
+            <button class="text-button" id="resetDatasetButton" type="button">Use course demo</button>
             <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden>
           </div>
         </div>
@@ -125,26 +128,6 @@
         <section class="tool-view" id="optimizerView" data-view="optimizer" role="tabpanel" aria-labelledby="optimizerTab" tabindex="-1">
           <form id="optimizerForm">
             <div class="builder-grid">
-              <aside class="builder-sidebar" aria-label="Optimization controls">
-                <div class="panel run-card">
-                  <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to solve</p>
-                  <h2>Your best group is one click away.</h2>
-                  <dl class="run-card__summary">
-                    <div><dt>Plan</dt><dd id="runModeSummary">Best 5-player group</dd></div>
-                    <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
-                    <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
-                    <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
-                  </dl>
-                  <div class="search-scope" id="searchScope" aria-live="polite" aria-atomic="true">
-                    <span>Exact search</span>
-                    <strong id="searchScopeValue">Loading the player pool…</strong>
-                  </div>
-                  <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Optimize lineup</button>
-                  <button class="text-button text-button--center" id="resetScenarioButton" type="button">Reset scenario</button>
-                  <p class="run-card__note" id="runCardNote">Uses historical stats for exploration. Results are not a prediction or betting recommendation.</p>
-                </div>
-              </aside>
-
               <div class="builder-main">
                 <section class="panel step-panel" aria-labelledby="scenarioHeading">
                   <div class="step-heading">
@@ -157,10 +140,10 @@
 
                   <div class="preset-grid" id="presetGrid">
                     <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Blend scoring, playmaking, and defense</span></button>
-                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Protect the Lead</strong><span>Prioritize rebounds, steals, and rim protection</span></button>
-                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a Bucket</strong><span>Maximize scoring and efficient shot-making</span></button>
+                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Lockdown Defense</strong><span>Win the glass and create stops with steals and blocks</span></button>
+                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a Bucket</strong><span>Favor high-volume scorers and efficient shot-makers</span></button>
                     <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the Floor</strong><span>Favor eFG% and three-point shooting</span></button>
-                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the Ball</strong><span>Prioritize assists, creation, and control</span></button>
+                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the Ball</strong><span>Favor playmakers who create shots without turning it over</span></button>
                   </div>
 
                   <div class="field-row field-row--three">
@@ -188,10 +171,11 @@
                     </label>
                   </div>
 
-                  <details class="weights-panel">
+                  <details class="weights-panel" id="weightsPanel">
                     <summary>Adjust strategy weights</summary>
-                    <p class="helper"><strong>Weights do not need to add to 100.</strong> Only their proportions matter. The optimizer percentile-normalizes each stat so points and percentages can be combined fairly.</p>
-                    <div class="weight-grid" id="weightGrid">
+                    <p class="helper" id="weightsHelp"><strong>Weights do not need to add to 100.</strong> Only their proportions matter. Each stat is converted to a pool-relative percentile before the weights are combined.</p>
+                    <p class="weight-validation" id="weightValidation" role="status" hidden>Choose at least one stat above zero before optimizing.</p>
+                    <div class="weight-grid" id="weightGrid" role="group" aria-label="Strategy objective weights" aria-describedby="weightsHelp weightValidation">
                       <label class="range-field">Scoring <input type="range" min="0" max="100" step="1" data-weight="points"><output>0</output></label>
                       <label class="range-field">Effective FG% <input type="range" min="0" max="100" step="1" data-weight="efgPct"><output>0</output></label>
                       <label class="range-field">Three-point % <input type="range" min="0" max="100" step="1" data-weight="threePct"><output>0</output></label>
@@ -206,16 +190,16 @@
                   <section class="opponent-scout" id="opponentScout" aria-labelledby="opponentScoutHeading">
                     <div class="opponent-scout__heading">
                       <div>
-                        <p class="eyebrow">Optional matchup scout</p>
-                        <h3 id="opponentScoutHeading">Gameplan against a real team-season</h3>
-                        <p>Compare the current player pool with another team from the same season and phase. The scout reconstructs team averages from stored player totals and shows the nine players with the largest historical minute shares.</p>
+                        <p class="eyebrow">Experimental matchup emphasis</p>
+                        <h3 id="opponentScoutHeading">Historical Style Counter</h3>
+                        <p>Compare two teams from the same season and phase. This transparent heuristic highlights historical statistical gaps and previews an optional weight adjustment; it does not simulate a game or predict a winner.</p>
                       </div>
                       <div class="opponent-scout__controls">
                         <label class="field">
                           <span>Opponent</span>
                           <select id="opponentTeamInput" aria-describedby="opponentScoutStatus"></select>
                         </label>
-                        <button class="button button--quiet" id="loadOpponentButton" type="button">Load opponent scout</button>
+                        <button class="button button--quiet" id="loadOpponentButton" type="button">Build style counter</button>
                       </div>
                     </div>
                     <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above to compare an opponent.</p>
@@ -228,7 +212,7 @@
                     <span class="step-number">2</span>
                     <div>
                       <p class="eyebrow">Define the rules</p>
-                      <h2 id="constraintsHeading">Set eligibility and lineup constraints</h2>
+                      <h2 id="constraintsHeading">Choose who qualifies and what the plan must include</h2>
                     </div>
                   </div>
 
@@ -240,20 +224,20 @@
                         <label class="field"><span>Forwards</span><input id="minForwardsInput" type="number" min="0" max="12" step="1" value="2"></label>
                         <label class="field"><span>Centers</span><input id="minCentersInput" type="number" min="0" max="12" step="1" value="1"></label>
                       </div>
-                      <p class="helper">Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required slot.</p>
+                      <p class="helper" id="positionCoverageHelp">Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required roster slot.</p>
                     </fieldset>
 
                     <fieldset>
-                      <legend>Sample-size filters</legend>
+                      <legend>Player eligibility</legend>
                       <div class="compact-fields compact-fields--two">
                         <label class="field"><span>Minimum games</span><input id="minGamesInput" type="number" min="0" max="82" step="1" value="20"></label>
                         <label class="field"><span>Minimum MPG</span><input id="minMinutesInput" type="number" min="0" max="48" step="0.5" value="6"></label>
                       </div>
-                      <p class="helper">Keeps tiny samples from dominating percentage metrics.</p>
+                      <p class="helper">Only players meeting both requirements can be selected. Recommended defaults are 20 regular-season games and 3 playoff games.</p>
                     </fieldset>
 
-                    <fieldset class="constraint-group--wide">
-                      <legend>Team production thresholds <span>(optional totals)</span></legend>
+                    <fieldset class="constraint-group--wide" aria-describedby="productionRulesHelp">
+                      <legend id="productionRulesLegend">Combined player profiles <span>(optional requirements)</span></legend>
                       <div class="compact-fields compact-fields--six">
                         <label class="field"><span>Points ≥</span><input id="minPointsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
                         <label class="field"><span>Rebounds ≥</span><input id="minReboundsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
@@ -262,6 +246,7 @@
                         <label class="field"><span>Blocks ≥</span><input id="minBlocksInput" type="number" min="0" step="0.1" placeholder="Any"></label>
                         <label class="field"><span>Turnovers ≤</span><input id="maxTurnoversInput" type="number" min="0" step="0.1" placeholder="Any"></label>
                       </div>
+                      <p class="helper" id="productionRulesHelp">In lineup mode, these rules add each selected player's historical per-game line. They describe the five-player profile; they do not forecast one team box score.</p>
                     </fieldset>
 
                     <fieldset class="constraint-group--wide rotation-settings" id="rotationSettings" hidden>
@@ -270,7 +255,7 @@
                         <label class="field"><span>Minimum per player</span><input id="rotationMinInput" type="number" min="0" max="30" step="1" value="8"></label>
                         <label class="field"><span>Maximum per player</span><input id="rotationMaxInput" type="number" min="20" max="48" step="1" value="40"></label>
                       </div>
-                      <p class="helper">The planner distributes exactly 240 player-minutes after the rotation is selected.</p>
+                      <p class="helper" id="rotationMinutesHelp">Each candidate receives an exact 240-minute plan before it is scored.</p>
                     </fieldset>
                   </div>
                 </section>
@@ -279,7 +264,7 @@
                   <div class="step-heading step-heading--split">
                     <span class="step-number">3</span>
                     <div>
-                      <p class="eyebrow">Manage the player pool</p>
+                      <p class="eyebrow">Choose your players</p>
                       <h2 id="playersHeading">Lock, exclude, compare, or watch players</h2>
                     </div>
                     <label class="search-field">
@@ -288,7 +273,7 @@
                     </label>
                   </div>
 
-                  <div class="table-wrap player-table-wrap" aria-label="Player pool controls">
+                  <div class="table-wrap player-table-wrap" aria-label="Player pool controls" tabindex="0">
                     <table class="player-table">
                       <caption>Search changes only the visible rows. Eligibility filters apply when optimizing.</caption>
                       <thead>
@@ -316,6 +301,31 @@
                   <div class="pool-summary" id="poolSummary">Loading eligibility...</div>
                 </section>
               </div>
+
+              <!-- Main content precedes the summary in source order so mobile
+                   and assistive-technology users reach Step 1 before a
+                   duplicate solve control. CSS keeps this card sticky at the
+                   right on desktop and places its compact form after the steps
+                   on smaller screens. -->
+              <aside class="builder-sidebar" aria-label="Optimization controls">
+                <div class="panel run-card">
+                  <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to solve</p>
+                  <h2>Review the search, then build your best group.</h2>
+                  <dl class="run-card__summary">
+                    <div><dt>Plan</dt><dd id="runModeSummary">Best 5-player group</dd></div>
+                    <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
+                    <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
+                    <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
+                  </dl>
+                  <div class="search-scope" id="searchScope" aria-live="polite" aria-atomic="true">
+                    <span>Groups to evaluate</span>
+                    <strong id="searchScopeValue">Loading the player pool…</strong>
+                  </div>
+                  <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Optimize lineup</button>
+                  <button class="text-button text-button--center" id="resetScenarioButton" type="button">Reset scenario</button>
+                  <p class="run-card__note" id="runCardNote">Uses historical stats for exploration. Results are not a prediction or betting recommendation.</p>
+                </div>
+              </aside>
 
             </div>
             <div class="mobile-solve-bar">
@@ -353,7 +363,7 @@
           <div class="view-heading">
             <p class="eyebrow">Head-to-head</p>
             <h2>Player comparison</h2>
-            <p>Select up to four players from the optimizer table. Each metric is shown relative to the current player pool.</p>
+            <p>Select up to four players from the optimizer table. Percentiles use the same sample filters and exclusions as the optimizer.</p>
           </div>
           <div id="compareContent" class="panel compare-content"></div>
         </section>
@@ -389,8 +399,8 @@
             </article>
             <article class="panel model-card">
               <span class="model-card__number">02</span>
-              <h3>Comparable objective scores</h3>
-              <p>Each metric is converted to a 0–100 percentile within the eligible pool, then combined using your weights. Lower turnovers receive a better ball-security score.</p>
+              <h3>Pool-relative fit scoring</h3>
+              <p>Each metric is converted to a 0–100 percentile within the eligible, non-excluded pool, then combined using your weights. The result is a pool-relative fit score—not a win probability or universal player rating. Lower turnovers receive a better ball-security score.</p>
             </article>
             <article class="panel model-card">
               <span class="model-card__number">03</span>
@@ -401,7 +411,7 @@
               <span class="model-card__number">04</span>
               <h3>Honest limitations</h3>
               <p>Team-season rows show players who appeared for that team; they are not a current depth chart or injury report. Box scores do not measure chemistry, matchups, role changes, or possession context.</p>
-              <p>Rotation mode ranks the roster by equal-weight player profiles, then creates a separate 240-minute plan. Its profile totals are not a projected team box score or minute-weighted forecast.</p>
+              <p>Rotation mode evaluates each candidate with an exact 240-minute plan under your minimum, maximum, and on-court position limits. Its fit score and displayed production are minute-weighted, and production requirements apply to that projection. It is still a historical-stat scenario—not a game prediction.</p>
             </article>
           </div>
           <div class="panel data-note">
@@ -415,7 +425,7 @@
 
   <footer class="lab-footer">
     <div class="shell">
-      <p><strong>DJ's Lineup Lab</strong> - experimental fan tools from DJ's House of Cards &amp; Comics.</p>
+      <p><strong>DJ's Lineup Lab</strong> - historical NBA tools from DJ's House of Cards &amp; Comics.</p>
       <a href="../../index.html">Return to the storefront</a>
     </div>
   </footer>
@@ -424,6 +434,6 @@
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
   <script defer src="../../backend-config.js?v=20260823b"></script>
   <script defer src="../../supabase-client.js?v=20260823d"></script>
-  <script type="module" src="app.js?v=20260823e"></script>
+  <script type="module" src="app.js?v=20260824a"></script>
 </body>
 </html>
