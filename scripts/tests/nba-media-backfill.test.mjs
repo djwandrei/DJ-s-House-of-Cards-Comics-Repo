@@ -28,6 +28,7 @@ import {
   buildMediaSql,
   createPageFetcher,
   optionsFromArgs,
+  parseCliJson,
 } from '../import-nba-basketball-reference.mjs';
 import { parseRobotsTxt } from '../update-nba-basketball-reference-weekly.mjs';
 
@@ -372,6 +373,16 @@ test('CLI exposes bounded requests, bounded batches, and the legacy alias', () =
   assert.throws(() => optionsFromArgs(['--media-batch-size', '101']));
   assert.throws(() => optionsFromArgs(['--media-only', '--media-request-limit', '1']), /requires --apply/);
   assert.throws(() => optionsFromArgs(['--media-only', '--apply']), /positive --media-request-limit/);
+});
+
+test('linked CLI JSON parser accepts piped arrays and wrapped response envelopes', () => {
+  const rows = [{ subject_type: 'player', external_id: 'abdulka01' }];
+  assert.deepEqual(parseCliJson(JSON.stringify(rows)), { rows });
+  assert.deepEqual(
+    parseCliJson(`Initialising login role...\n${JSON.stringify({ boundary: 'safe', rows, warning: 'untrusted rows' })}\n`),
+    { boundary: 'safe', rows, warning: 'untrusted rows' }
+  );
+  assert.equal(parseCliJson('Initialising login role...\n'), null);
 });
 
 test('checkpoint statuses resume retry and stop found/no-image candidates', () => {

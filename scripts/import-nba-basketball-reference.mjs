@@ -982,14 +982,84 @@ where id = ${sqlUuid(runId)}::uuid;
 }
 
 function parseCliJson(stdout) {
-  const start = stdout.indexOf('{');
-  const end = stdout.lastIndexOf('}');
-  if (start < 0 || end < start) return null;
-  try {
-    return JSON.parse(stdout.slice(start, end + 1));
-  } catch {
-    return null;
+  // Supabase CLI 2.84 emits a bare JSON row array when stdout is piped, while
+  // newer/interactive builds may wrap the same rows in an object containing a
+  // security boundary and warning. Accept both documented shapes.
+  const trimmed = stdout.trim();
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const rows = JSON.parse(trimmed);
+      if (Array.isArray(rows)) return { rows };
+    } catch {
+      // Continue to the envelope scanner so its diagnostic identifies the
+      // malformed structure instead of misreporting a legitimate empty set.
+    }
   }
+  // The CLI can place status text and, in some versions, more than one JSON
+  // envelope on stdout. Slicing from the first opening brace to the final
+  // closing brace makes two individually valid envelopes become one invalid
+  // JSON document. Walk complete top-level objects instead, respecting braces
+  // inside quoted strings, and return the database response containing rows.
+  let objectStart = -1;
+  let depth = 0;
+  let insideString = false;
+  let escaped = false;
+  let completedObjects = 0;
+  let lastParseError = '';
+  for (let index = 0; index < stdout.length; index += 1) {
+    const character = stdout[index];
+    if (objectStart < 0) {
+      if (character !== '{') continue;
+      objectStart = index;
+      depth = 1;
+      insideString = false;
+      escaped = false;
+      continue;
+    }
+    if (insideString) {
+      if (escaped) {
+        escaped = false;
+      } else if (character === '\\') {
+        escaped = true;
+      } else if (character === '"') {
+        insideString = false;
+      }
+      continue;
+    }
+    if (character === '"') {
+      insideString = true;
+    } else if (character === '{') {
+      depth += 1;
+    } else if (character === '}') {
+      depth -= 1;
+      if (depth !== 0) continue;
+      completedObjects += 1;
+      try {
+        const payload = JSON.parse(stdout.slice(objectStart, index + 1));
+        if (Array.isArray(payload?.rows)) return payload;
+      } catch (error) {
+        // Remember only the parser's structural diagnostic, never database
+        // row contents. This makes a future CLI-format regression actionable
+        // without placing player data or credentials in the runner log.
+        lastParseError = String(error?.message ?? error).slice(0, 240);
+      }
+      objectStart = -1;
+    }
+  }
+  if (lastParseError) {
+    throw new Error(`Could not parse ${completedObjects} CLI JSON object(s): ${lastParseError}`);
+  }
+  if (objectStart >= 0) {
+    // Include only structural state and the final character codes. The latter
+    // distinguishes true output truncation from a scanner bug without logging
+    // any row values from the linked database.
+    const tailCodes = [...stdout.slice(-24)].map((character) => character.charCodeAt(0)).join(',');
+    throw new Error(
+      `CLI JSON object was incomplete (depth ${depth}, inString ${insideString}, `
+      + `characters ${stdout.length}, tail codes ${tailCodes}).`
+    );
+  }
+  return null;
 }
 
 async function executeLinkedSql(sql, label) {
@@ -1032,7 +1102,23 @@ async function executeLinkedSql(sql, label) {
     const detail = String(result.stderr || result.stdout || 'Unknown Supabase CLI error').trim().slice(0, 2000);
     throw new Error(`Linked Supabase SQL failed for ${label}: ${detail}`);
   }
-  return parseCliJson(result.stdout)?.rows ?? [];
+  // Do not silently turn malformed/truncated CLI output into an empty query
+  // result. For a media run that would look exactly like "there are no NBA
+  // players to process" and could incorrectly stop a resumable backfill. A
+  // valid query may return an empty rows array; invalid JSON is operationally
+  // different and must reach the runner as a retryable failure.
+  const payload = parseCliJson(result.stdout);
+  if (!payload || !Array.isArray(payload.rows)) {
+    const stderrHint = String(result.stderr ?? '').trim().slice(0, 500);
+    const headCodes = [...result.stdout.slice(0, 32)].map((character) => character.charCodeAt(0)).join(',');
+    const tailCodes = [...result.stdout.slice(-32)].map((character) => character.charCodeAt(0)).join(',');
+    throw new Error(
+      `Linked Supabase SQL returned invalid JSON for ${label} `
+      + `(stdout characters: ${result.stdout.length}; head codes: ${headCodes}; tail codes: ${tailCodes}`
+      + `${stderrHint ? `; ${stderrHint}` : ''}).`
+    );
+  }
+  return payload.rows;
 }
 
 function checkpointPath({ start, end, phases }) {
@@ -1812,4 +1898,4 @@ if (import.meta.url === invokedModuleUrl) {
 
 // Export the smallest useful seam for offline tests. Importing this module no
 // longer launches a crawl because the entrypoint above is guarded explicitly.
-export { buildMediaSql, createPageFetcher, optionsFromArgs };
+export { buildMediaSql, createPageFetcher, optionsFromArgs, parseCliJson };
