@@ -6,8 +6,12 @@ import test from 'node:test';
 import {
   MediaRequestLimitReachedError,
   basketballReferenceMediaPageUrl,
+  basketballReferenceTeamLogoRevision,
+  basketballReferenceTeamLogoRevisionFromLeagueHtml,
+  basketballReferenceTeamLogoUrlFromRevision,
   blankMediaCheckpoint,
   buildMediaCandidateQuery,
+  buildTrustedTeamLogoRevisionCatalog,
   createMediaRequestBudget,
   hasConfirmedExistingMedia,
   isExactBasketballReferenceMediaPageUrl,
@@ -108,6 +112,88 @@ test('media assets require exact provider host and subject-specific path', () =>
     'https://cdn.ssref.net/req/202608202/tlogo/bbr/LAL-1981.png'), '');
   assert.equal(validatedBasketballReferenceMediaUrl(team,
     'https://www.basketball-reference.com/req/202608202/tlogo/bbr/LAL-1980.png'), '');
+});
+
+test('team-logo revisions are derived only from exact league or candidate URLs', () => {
+  const leagueHtml = `
+    <img src="https://cdn.ssref.net/req/202608202/tlogo/bbr/NBA-1980.png" alt="NBA logo">
+    <img src="https://cdn.ssref.net/req/202608202/favicons/bbr/favicon-48.png" alt="">
+  `;
+  assert.equal(basketballReferenceTeamLogoRevisionFromLeagueHtml(leagueHtml, 1980), '202608202');
+  assert.equal(basketballReferenceTeamLogoRevisionFromLeagueHtml(
+    '<img src="https://cdn.ssref.net/req/202608202/tlogo/bbr/NBA-1981.png">', 1980), '');
+  assert.equal(basketballReferenceTeamLogoRevisionFromLeagueHtml(
+    '<img src="https://cdn.ssref.net/req/202608202/tlogo/bbr/NBA-1980.png?download=1">', 1980), '');
+  assert.equal(basketballReferenceTeamLogoRevisionFromLeagueHtml(`
+    <img src="https://cdn.ssref.net/req/revision-a/tlogo/bbr/NBA-1980.png">
+    <img src="https://cdn.ssref.net/req/revision-b/tlogo/bbr/NBA-1980.png">
+  `, 1980), '');
+  assert.equal(basketballReferenceTeamLogoRevisionFromLeagueHtml(
+    '<img src="https://cdn.ssref.net.example.test/req/202608202/tlogo/bbr/NBA-1980.png">', 1980), '');
+
+  const exactLogo = 'https://cdn.ssref.net/req/202608202/tlogo/bbr/LAL-1980.png';
+  assert.equal(basketballReferenceTeamLogoRevision(team, exactLogo), '202608202');
+  assert.equal(basketballReferenceTeamLogoRevision(
+    { ...team, teamCode: 'SDC' }, exactLogo), '');
+  assert.equal(basketballReferenceTeamLogoRevision(player, exactLogo), '');
+});
+
+test('trusted team-logo catalog preserves historical code/year and fails closed on conflicts', () => {
+  const confirmed1981 = {
+    ...team,
+    seasonEndYear: 1981,
+    existingRightsConfirmed: true,
+    existingSourceName: 'basketball_reference',
+    existingAssetUrl: 'https://cdn.ssref.net/req/confirmed-revision/tlogo/bbr/LAL-1981.png',
+  };
+  const catalog = buildTrustedTeamLogoRevisionCatalog({
+    candidates: [confirmed1981, player],
+    cachedLeagueHtmlBySeason: new Map([[
+      1980,
+      '<img src="https://cdn.ssref.net/req/league-revision/tlogo/bbr/NBA-1980.png">',
+    ]]),
+  });
+  const sanDiego1980 = { ...team, teamCode: 'SDC', teamName: 'San Diego Clippers' };
+  assert.equal(catalog.revisionFor(sanDiego1980), 'league-revision');
+  assert.equal(
+    basketballReferenceTeamLogoUrlFromRevision(sanDiego1980, catalog.revisionFor(sanDiego1980)),
+    'https://cdn.ssref.net/req/league-revision/tlogo/bbr/SDC-1980.png'
+  );
+  assert.equal(catalog.revisionFor(confirmed1981), 'confirmed-revision');
+  assert.equal(catalog.revisionFor({ ...team, seasonEndYear: 1982 }), 'confirmed-revision');
+  assert.equal(catalog.revisionFor(player), '');
+  assert.deepEqual({
+    leagueSeasons: catalog.leagueSeasons,
+    confirmedSeasons: catalog.confirmedSeasons,
+    hasUniqueGlobalRevision: catalog.hasUniqueGlobalRevision,
+  }, {
+    leagueSeasons: 1,
+    confirmedSeasons: 1,
+    hasUniqueGlobalRevision: true,
+  });
+
+  const conflictingCatalog = buildTrustedTeamLogoRevisionCatalog({
+    candidates: [
+      confirmed1981,
+      {
+        ...team,
+        seasonEndYear: 1982,
+        existingRightsConfirmed: true,
+        existingSourceName: 'basketball_reference',
+        existingAssetUrl: 'https://cdn.ssref.net/req/other-revision/tlogo/bbr/LAL-1982.png',
+      },
+      {
+        ...team,
+        seasonEndYear: 1983,
+        existingRightsConfirmed: true,
+        existingSourceName: 'other_provider',
+        existingAssetUrl: 'https://cdn.ssref.net/req/ignored-revision/tlogo/bbr/LAL-1983.png',
+      },
+    ],
+  });
+  assert.equal(conflictingCatalog.hasUniqueGlobalRevision, false);
+  assert.equal(conflictingCatalog.revisionFor({ ...team, seasonEndYear: 1984 }), '');
+  assert.equal(conflictingCatalog.revisionFor(confirmed1981), 'confirmed-revision');
 });
 
 test('Basketball Reference existing media skips only after exact URL validation', () => {

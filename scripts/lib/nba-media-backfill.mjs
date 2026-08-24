@@ -44,6 +44,14 @@ function normalizeSeasonEndYear(value) {
     : null;
 }
 
+function normalizeAssetRevision(value) {
+  const revision = String(value ?? '').trim();
+  // Sports Reference revision folders currently look date-like, but the URL
+  // validator deliberately accepts the provider's full safe filename-token
+  // alphabet rather than baking a date format into a long-lived importer.
+  return /^[A-Za-z0-9._-]{1,80}$/.test(revision) ? revision : '';
+}
+
 function readBoolean(value) {
   return value === true || String(value).toLowerCase() === 'true';
 }
@@ -258,6 +266,131 @@ export function validatedBasketballReferenceMediaUrl(candidate, rawAssetUrl) {
     return expectedPath.test(url.pathname) ? url.href : '';
   }
   return '';
+}
+
+/**
+ * Return the revision directory from an exact, confirmed Basketball Reference
+ * team-logo URL. This is intentionally candidate-aware: a valid-looking LAL
+ * URL cannot supply a revision while masquerading as an SDC team-season.
+ */
+export function basketballReferenceTeamLogoRevision(candidate, rawAssetUrl) {
+  if (candidate?.subjectType !== 'team') return '';
+  const validatedUrl = validatedBasketballReferenceMediaUrl(candidate, rawAssetUrl);
+  if (!validatedUrl) return '';
+  const revision = new URL(validatedUrl).pathname.split('/')[2] ?? '';
+  return normalizeAssetRevision(revision);
+}
+
+/**
+ * Read the team-logo revision from an already obtained league page. League
+ * pages expose an era-specific `NBA-{year}.png` mark in the same revision tree
+ * as team logos. Requiring the exact CDN host, season, and URL shape prevents
+ * arbitrary markup in a cache file from becoming a trusted asset prefix.
+ *
+ * If one page unexpectedly references more than one revision, fail closed.
+ * The caller can then use the existing team-page extraction path instead of
+ * guessing which provider revision is authoritative.
+ */
+export function basketballReferenceTeamLogoRevisionFromLeagueHtml(html, seasonEndYear) {
+  const normalizedYear = normalizeSeasonEndYear(seasonEndYear);
+  if (!normalizedYear) return '';
+  const leagueCandidate = {
+    subjectType: 'team',
+    teamCode: 'NBA',
+    seasonEndYear: normalizedYear,
+  };
+  const revisions = new Set();
+  const exactHostUrls = String(html ?? '').match(
+    /https:\/\/cdn\.ssref\.net\/req\/[^\s"'<>]+/gi
+  ) ?? [];
+  for (const rawUrl of exactHostUrls) {
+    const revision = basketballReferenceTeamLogoRevision(leagueCandidate, rawUrl);
+    if (revision) revisions.add(revision);
+  }
+  return revisions.size === 1 ? [...revisions][0] : '';
+}
+
+/**
+ * Construct—not request—the team-season logo URL from a trusted revision.
+ * Historical codes and years are retained verbatim after normalization, so a
+ * relocated franchise such as SDC, SEA, or NJN never receives its modern
+ * successor's branding.
+ */
+export function basketballReferenceTeamLogoUrlFromRevision(candidate, rawRevision) {
+  if (candidate?.subjectType !== 'team') return '';
+  const teamCode = normalizeTeamCode(candidate.teamCode);
+  const seasonEndYear = normalizeSeasonEndYear(candidate.seasonEndYear);
+  const revision = normalizeAssetRevision(rawRevision);
+  if (!teamCode || !seasonEndYear || !revision) return '';
+  const derivedUrl = `https://${TEAM_ASSET_HOST}/req/${revision}/tlogo/bbr/${teamCode}-${seasonEndYear}.png`;
+  return validatedBasketballReferenceMediaUrl(candidate, derivedUrl);
+}
+
+/**
+ * Combine the two permitted revision sources without performing I/O:
+ *
+ * 1. an allowed league page already present in the caller's cache; or
+ * 2. a rights-confirmed, exact Basketball Reference team-logo URL already
+ *    returned by the database candidate query.
+ *
+ * A season-specific league revision has the strongest provenance. A unique
+ * confirmed revision for the same season is next. A single unambiguous global
+ * confirmed revision is a final fallback because Sports Reference serves the
+ * whole logo tree from one revision directory. Conflicting evidence yields no
+ * shortcut, preserving the slower source-page behavior.
+ */
+export function buildTrustedTeamLogoRevisionCatalog({
+  candidates = [],
+  cachedLeagueHtmlBySeason = new Map(),
+} = {}) {
+  const leagueRevisionBySeason = new Map();
+  const confirmedRevisionsBySeason = new Map();
+  const globalConfirmedRevisions = new Set();
+  const leagueEntries = cachedLeagueHtmlBySeason instanceof Map
+    ? cachedLeagueHtmlBySeason.entries()
+    : Object.entries(cachedLeagueHtmlBySeason ?? {});
+
+  for (const [rawYear, html] of leagueEntries) {
+    const seasonEndYear = normalizeSeasonEndYear(rawYear);
+    if (!seasonEndYear) continue;
+    const revision = basketballReferenceTeamLogoRevisionFromLeagueHtml(html, seasonEndYear);
+    if (revision) leagueRevisionBySeason.set(seasonEndYear, revision);
+  }
+
+  for (const candidate of Array.isArray(candidates) ? candidates : []) {
+    if (candidate?.subjectType !== 'team'
+      || candidate.existingRightsConfirmed !== true
+      || candidate.existingSourceName !== SOURCE_NAME) continue;
+    const seasonEndYear = normalizeSeasonEndYear(candidate.seasonEndYear);
+    const revision = basketballReferenceTeamLogoRevision(candidate, candidate.existingAssetUrl);
+    if (!seasonEndYear || !revision) continue;
+    if (!confirmedRevisionsBySeason.has(seasonEndYear)) {
+      confirmedRevisionsBySeason.set(seasonEndYear, new Set());
+    }
+    confirmedRevisionsBySeason.get(seasonEndYear).add(revision);
+    globalConfirmedRevisions.add(revision);
+  }
+
+  const uniqueGlobalRevision = globalConfirmedRevisions.size === 1
+    ? [...globalConfirmedRevisions][0]
+    : '';
+  return Object.freeze({
+    leagueSeasons: leagueRevisionBySeason.size,
+    confirmedSeasons: [...confirmedRevisionsBySeason.values()]
+      .filter((revisions) => revisions.size === 1).length,
+    hasUniqueGlobalRevision: Boolean(uniqueGlobalRevision),
+    revisionFor(candidate) {
+      if (candidate?.subjectType !== 'team') return '';
+      const seasonEndYear = normalizeSeasonEndYear(candidate.seasonEndYear);
+      if (!seasonEndYear || !normalizeTeamCode(candidate.teamCode)) return '';
+      if (leagueRevisionBySeason.has(seasonEndYear)) {
+        return leagueRevisionBySeason.get(seasonEndYear);
+      }
+      const sameSeasonRevisions = confirmedRevisionsBySeason.get(seasonEndYear);
+      if (sameSeasonRevisions?.size === 1) return [...sameSeasonRevisions][0];
+      return uniqueGlobalRevision;
+    },
+  });
 }
 
 export function hasConfirmedExistingMedia(candidate) {

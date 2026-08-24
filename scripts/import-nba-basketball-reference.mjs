@@ -44,8 +44,10 @@ import {
 import {
   MediaRequestLimitReachedError,
   basketballReferenceMediaPageUrl,
+  basketballReferenceTeamLogoUrlFromRevision,
   blankMediaCheckpoint,
   buildMediaCandidateQuery,
+  buildTrustedTeamLogoRevisionCatalog,
   createMediaRequestBudget,
   hasConfirmedExistingMedia,
   isExactBasketballReferenceMediaPageUrl,
@@ -1334,13 +1336,55 @@ function mediaCheckpointCounts(checkpoint) {
 }
 
 /**
- * Backfill media from one globally de-duplicated linked-database queue. The
- * queue query is read-only; each successful source page is then persisted in
- * a small transaction. A candidate is marked `found` only after its batch
- * commits, so a crash between source fetch and database write safely retries
- * from the global page cache.
+ * Read only league pages that are already in the source cache and whose URL is
+ * still allowed by the current Basketball Reference robots policy. This helper
+ * never calls `fetch`, never probes `/req/`, and never creates cache files.
+ * Missing, stale-by-operator-choice, or newly disallowed caches simply leave a
+ * season out so the established per-team source-page path remains available.
  */
-async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget }) {
+function cachedAllowedLeagueHtmlBySeason({
+  candidates,
+  cacheDirectory,
+  robots,
+  refreshCache,
+}) {
+  const htmlBySeason = new Map();
+  // `--refresh-cache` is an explicit request to re-read provider pages. Reusing
+  // an older league cache as a derivation shortcut would violate that intent.
+  if (refreshCache) return htmlBySeason;
+  const teamSeasonYears = [...new Set(candidates
+    .filter((candidate) => candidate.subjectType === 'team')
+    .map((candidate) => candidate.seasonEndYear))]
+    .sort((left, right) => left - right);
+  for (const seasonEndYear of teamSeasonYears) {
+    const url = leaguePageUrl(seasonEndYear);
+    if (!isPathAllowedByRobots(new URL(url).pathname, robots, USER_AGENT)) continue;
+    const cacheFile = sourceCacheFile(cacheDirectory, seasonEndYear, 'league', 'teams');
+    if (!fs.existsSync(cacheFile)) continue;
+    try {
+      htmlBySeason.set(seasonEndYear, fs.readFileSync(cacheFile, 'utf8'));
+    } catch (error) {
+      // A transient local read failure must not make the entire media import
+      // fail. Omitting the cache preserves the existing page-fetch fallback.
+      logSourceEvent('team_logo_revision_cache_unavailable', {
+        seasonEndYear,
+        cacheFile: path.relative(ROOT, cacheFile),
+        reason: String(error?.message ?? error).slice(0, 240),
+      });
+    }
+  }
+  return htmlBySeason;
+}
+
+/**
+ * Backfill media from one globally de-duplicated linked-database queue. The
+ * queue query is read-only; each successful source extraction or trusted,
+ * deterministic team-logo derivation is persisted in a small transaction. A
+ * candidate is marked `found` only after its batch commits, so a crash between
+ * discovery and database write safely retries from the checkpoint/source
+ * caches without claiming an uncommitted asset.
+ */
+async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget, robots }) {
   if (!options.apply) throw new Error('--media-only requires --apply because it writes confirmed media rows.');
   if (!options.mediaRequestLimit || !mediaRequestBudget) {
     throw new Error('--media-only requires a positive --media-request-limit (or deprecated --media-limit alias).');
@@ -1373,6 +1417,7 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
 
   let existingSkipped = 0;
   let sourceFound = 0;
+  let derivedTeamLogos = 0;
   let noImage = 0;
   let retry = 0;
   let requestLimitReached = false;
@@ -1397,11 +1442,39 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     for (const item of batch) {
       recordMediaCandidateStatus(checkpoint, item.candidate, 'found', {
         assetUrl: item.mediaRow.asset_url,
-        source: 'source',
+        source: item.checkpointSource ?? 'source',
       });
       sourceFound += 1;
+      if (item.checkpointSource === 'derived-team-logo') derivedTeamLogos += 1;
     }
     saveMediaCheckpoint(checkpointFile, checkpoint);
+  }
+
+  // Build this catalog lazily. Media candidates are sorted with players first,
+  // and bounded runs often pause before reaching teams. Deferring the cache
+  // reads therefore leaves player-only chunks exactly as lightweight as they
+  // were before the deterministic team-logo optimization.
+  let teamLogoRevisionCatalog = null;
+  function revisionForTeamCandidate(candidate) {
+    if (candidate.subjectType !== 'team' || options.refreshCache) return '';
+    if (!teamLogoRevisionCatalog) {
+      const cachedLeagueHtmlBySeason = cachedAllowedLeagueHtmlBySeason({
+        candidates,
+        cacheDirectory,
+        robots,
+        refreshCache: options.refreshCache,
+      });
+      teamLogoRevisionCatalog = buildTrustedTeamLogoRevisionCatalog({
+        candidates,
+        cachedLeagueHtmlBySeason,
+      });
+      logSourceEvent('team_logo_revision_catalog_ready', {
+        cachedLeagueSeasons: teamLogoRevisionCatalog.leagueSeasons,
+        confirmedMediaSeasons: teamLogoRevisionCatalog.confirmedSeasons,
+        uniqueConfirmedGlobalRevision: teamLogoRevisionCatalog.hasUniqueGlobalRevision,
+      });
+    }
+    return teamLogoRevisionCatalog.revisionFor(candidate);
   }
 
   for (const candidate of candidates) {
@@ -1434,6 +1507,26 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     if (!isExactBasketballReferenceMediaPageUrl(candidate, sourceUrl)) {
       throw new Error(`Internal safety check rejected the generated source URL for ${candidate.key}.`);
     }
+
+    // Team logo filenames are an exact function of the Basketball Reference
+    // team code, season-ending year, and a trusted provider revision. Derive
+    // the URL without requesting the robots-disallowed `/req/` asset path. If
+    // no unambiguous revision is available, continue into the original team
+    // page fetch/extraction path below. Player candidates never enter here.
+    if (candidate.subjectType === 'team') {
+      const trustedRevision = revisionForTeamCandidate(candidate);
+      const derivedAssetUrl = basketballReferenceTeamLogoUrlFromRevision(candidate, trustedRevision);
+      if (derivedAssetUrl) {
+        pendingBatch.push({
+          candidate,
+          mediaRow: mediaRowForCandidate(candidate, derivedAssetUrl, sourceUrl),
+          checkpointSource: 'derived-team-logo',
+        });
+        if (pendingBatch.length >= options.mediaBatchSize) await flushBatch();
+        continue;
+      }
+    }
+
     const cacheFile = path.join(cacheDirectory, ...mediaCacheRelativePath(candidate).split('/'));
     const requestsBefore = mediaRequestBudget.snapshot().used;
     let html;
@@ -1500,6 +1593,7 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     candidates: candidates.length,
     existingSkipped,
     sourceFound,
+    derivedTeamLogos,
     noImage,
     retry,
     remaining,
@@ -1525,7 +1619,13 @@ async function run() {
     mediaRequestBudget,
   });
   if (options.mediaOnly) {
-    await runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget });
+    await runMediaBackfill({
+      options,
+      fetchPage,
+      cacheDirectory,
+      mediaRequestBudget,
+      robots: sourcePolicy.robots,
+    });
     return;
   }
   const checkpointFile = checkpointPath(options);
@@ -1642,7 +1742,13 @@ async function run() {
     // written, allowing its linked read-only query to globally de-duplicate
     // players across the complete regular/playoff range.
     if (options.apply && options.mediaRequestLimit > 0) {
-      await runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget });
+      await runMediaBackfill({
+        options,
+        fetchPage,
+        cacheDirectory,
+        mediaRequestBudget,
+        robots: sourcePolicy.robots,
+      });
     }
     if (options.apply) {
       checkpoint.status = 'completed';
