@@ -1905,23 +1905,3 @@ body.dark-mode .modal-listing-nav__button {
     flex-direction:column;
   }
 }
-
-/* The shared footer is intentionally compact on narrow screens: its remaining
-   links should read as links, not as another repeated grid of large buttons. */
-.footer-link-group a {
-  min-height:0;
-  padding:.24rem 0;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  text-decoration:underline;
-  text-decoration-thickness:1px;
-  text-underline-offset:.16em;
-}
-
-.footer-link-group a:hover,
-.footer-link-group a:focus-visible {
-  background:transparent;
-  border-color:transparent;
-  transform:none;
-}
