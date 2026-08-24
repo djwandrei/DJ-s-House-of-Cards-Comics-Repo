@@ -41,6 +41,47 @@ function player(id, overrides = {}) {
   };
 }
 
+/**
+ * The fan-facing explanation reads `playerContributions`, so keep this check
+ * close to the exact optimizer tests rather than treating the explanation as
+ * a presentation-only concern. Contributions are rounded independently for
+ * transport/display, hence the small tolerance around the rounded fit score.
+ */
+function assertPlayerContributionReconciliation(lineup) {
+  assert.ok(lineup.playerContributions, "expected player-level objective contributions");
+  assert.deepEqual(
+    Object.keys(lineup.playerContributions).sort(),
+    [...lineup.playerIds].sort(),
+    "each selected player should have exactly one contribution record",
+  );
+
+  const playerScoreTotal = Object.values(lineup.playerContributions).reduce(
+    (total, contribution) => total + contribution.scoreContribution,
+    0,
+  );
+  assert.ok(
+    Math.abs(playerScoreTotal - lineup.score) <= 0.00001,
+    `player contributions (${playerScoreTotal}) should reconcile to fit score (${lineup.score})`,
+  );
+
+  for (const [metric, metricBreakdown] of Object.entries(lineup.contributionBreakdown)) {
+    const metricScoreTotal = Object.values(lineup.playerContributions).reduce(
+      (total, contribution) => {
+        assert.ok(
+          contribution.metrics[metric],
+          `expected ${metric} evidence for every selected player`,
+        );
+        return total + contribution.metrics[metric].scoreContribution;
+      },
+      0,
+    );
+    assert.ok(
+      Math.abs(metricScoreTotal - metricBreakdown.scoreContribution) <= 0.00001,
+      `${metric} player evidence (${metricScoreTotal}) should reconcile to its objective component (${metricBreakdown.scoreContribution})`,
+    );
+  }
+}
+
 test("returns exact-size lineups and evaluates every combination", () => {
   const players = Array.from({ length: 6 }, (_, index) =>
     player(`p${index + 1}`, { points: 10 + index }),
@@ -171,6 +212,124 @@ test("preserves equal-player lineup scoring and per-game totals regardless of so
   assert.equal(result.best.score, 50);
   assert.equal(result.best.rotation, undefined);
   assert.equal(result.best.contributionBreakdown.points.minuteWeightedPercentile, undefined);
+});
+
+test("emits additive player evidence that reconciles to every exact lineup objective component", () => {
+  const result = optimizeLineups(
+    [
+      player("scorer", { points: 28, rebounds: 4, turnovers: 4 }),
+      player("rebounder", { points: 18, rebounds: 13, turnovers: 1 }),
+      player("connector", { points: 20, rebounds: 8, turnovers: 2 }),
+      player("reserve", { points: 12, rebounds: 6, turnovers: 3 }),
+    ],
+    {
+      mode: "lineup",
+      size: 3,
+      weights: { points: 5, rebounds: 3, ballSecurity: 2 },
+      alternatives: 1,
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assertPlayerContributionReconciliation(result.best);
+  assert.ok(
+    result.best.playerContributions.scorer.metrics.points.scoreContribution > 0,
+    "the top scoring profile should retain positive point-fit evidence",
+  );
+  assert.ok(
+    result.best.playerContributions.rebounder.metrics.rebounds.scoreContribution > 0,
+    "the top rebounding profile should retain positive rebound-fit evidence",
+  );
+});
+
+test("uses per-36 rotation scoring so a superior rate earns more proposed minutes than a larger raw per-game total", () => {
+  // `rate-star` has the smaller historical per-game scoring average (10 vs.
+  // 20), but produced it in one quarter of the court time. The old raw
+  // per-game comparison would reward `volume-veteran` merely for having been
+  // on the floor 40 minutes. Six middling players make the minute tradeoff
+  // visible: a five-player 48-minute core can leave one profile at zero.
+  const players = [
+    player("rate-star", {
+      positions: ["G", "F", "C"],
+      minutes: 10,
+      points: 10,
+    }),
+    player("volume-veteran", {
+      positions: ["G", "F", "C"],
+      minutes: 40,
+      points: 20,
+    }),
+    ...Array.from({ length: 6 }, (_, index) =>
+      player(`support-${index + 1}`, {
+        positions: ["G", "F", "C"],
+        minutes: 21,
+        points: 14,
+      }),
+    ),
+  ];
+  const baseConfig = {
+    mode: "rotation",
+    size: 8,
+    weights: { points: 1 },
+    alternatives: 1,
+    rotationOptions: { minMinutes: 0, maxMinutes: 48 },
+  };
+
+  const rateBased = optimizeLineups(players, baseConfig);
+  const legacyPerGame = optimizeLineups(players, {
+    ...baseConfig,
+    rotationOptions: {
+      ...baseConfig.rotationOptions,
+      scoringBasis: "perGame",
+    },
+  });
+
+  assert.equal(rateBased.ok, true);
+  assert.equal(rateBased.diagnostics.rotationScoringBasis, "per36");
+  assert.equal(rateBased.best.rotation.byId["rate-star"], 48);
+  assert.equal(rateBased.best.rotation.byId["volume-veteran"], 0);
+  // The displayed projection remains a real 240-minute box-score estimate:
+  // 48 + four * (14 / 21 * 48) = 176 points. Per-36 drives the ranking only.
+  assert.equal(rateBased.best.totals.points, 176);
+  assertPlayerContributionReconciliation(rateBased.best);
+  assert.ok(
+    rateBased.best.playerContributions["rate-star"].scoreContribution > 0,
+    "the superior per-36 scorer should receive fit credit for its allocated minutes",
+  );
+  assert.equal(
+    rateBased.best.playerContributions["volume-veteran"].scoreContribution,
+    0,
+    "a selected roster member with zero proposed minutes should add no rotation fit credit",
+  );
+
+  assert.equal(legacyPerGame.ok, true);
+  assert.equal(legacyPerGame.diagnostics.rotationScoringBasis, "perGame");
+  assert.equal(legacyPerGame.best.rotation.byId["volume-veteran"], 48);
+  assert.equal(legacyPerGame.best.rotation.byId["rate-star"], 0);
+  assertPlayerContributionReconciliation(legacyPerGame.best);
+  assert.ok(
+    legacyPerGame.best.playerContributions["volume-veteran"].scoreContribution > 0,
+    "the explicit legacy basis should still attribute fit only to its allocated scorer",
+  );
+  assert.equal(legacyPerGame.best.playerContributions["rate-star"].scoreContribution, 0);
+});
+
+test("rejects an unsupported rotation scoring basis instead of silently changing the model", () => {
+  const result = optimizeLineups(
+    Array.from({ length: 8 }, (_, index) =>
+      player(`p${index + 1}`, { positions: ["G", "F", "C"] }),
+    ),
+    {
+      mode: "rotation",
+      size: 8,
+      weights: { points: 1 },
+      rotationOptions: { scoringBasis: "per100" },
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.diagnostics.category, "validation");
+  assert.match(result.reasons[0], /rotationOptions\.scoringBasis/);
 });
 
 test("rejects an unbounded alternatives request", () => {

@@ -2,26 +2,35 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-core.js?v=20260824a";
+} from "./optimizer-core.js?v=20260824b";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260824a";
+} from "./player-data.js?v=20260824b";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260824a";
+} from "./supabase-nba-data.js?v=20260824b";
+import {
+  derivePlayerRateViews,
+  explainOptimizationSelection,
+  FAN_ROLE_DEFINITIONS,
+} from "./fan-analytics.js?v=20260824b";
+import {
+  decodeScenarioQuery,
+  encodeScenarioQuery,
+} from "./scenario-url.js?v=20260824b";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260824a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260824a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260824b";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260824b", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 // Bump this when the normalized live payload changes materially. In this
@@ -29,7 +38,7 @@ const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 // reconstructed team-average/rotation summary. A new prefix makes the browser
 // rebuild that source context immediately instead of waiting for the old
 // 24-hour entry to expire.
-const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v4";
+const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v5";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
@@ -68,6 +77,35 @@ const COMPARE_METRICS = Object.freeze([
   ["threePct", "3P%", false],
   ["turnovers", "Turnovers — lower is better", true],
 ]);
+// Display preferences are deliberately separate from the optimizer's exact
+// inputs. A fan can inspect the same selected group in several rate views
+// without silently changing which group the solver selected.
+const ANALYTICS_VIEW_DETAILS = Object.freeze({
+  perGame: Object.freeze({
+    label: "Per game",
+    shortLabel: "per game",
+    rateKey: "perGame",
+    note: "Historical per-game production for the selected team stint.",
+  }),
+  per36: Object.freeze({
+    label: "Per 36 minutes",
+    shortLabel: "per 36",
+    rateKey: "per36",
+    note: "Counting stats normalized to 36 historical minutes; shooting percentages stay unchanged.",
+  }),
+  per100Estimated: Object.freeze({
+    label: "Per 100 estimated possessions",
+    shortLabel: "per 100 estimated possessions",
+    rateKey: "per100",
+    note: "Uses an estimated minute-share possession denominator from team totals, not reported on-court possessions.",
+  }),
+  eraRelative: Object.freeze({
+    label: "Era-relative per-36 index",
+    shortLabel: "era-relative index",
+    rateKey: "eraRelative",
+    note: "100 equals the minute-weighted NBA per-36 baseline for the same season and phase.",
+  }),
+});
 const CHART_COLORS = ["#1f2fa3", "#e51e2b", "#08775b", "#b06c00"];
 const CARD_SEARCH_PATH = "/basketball-cards.html";
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -156,11 +194,19 @@ const elements = {
   opponentScoutSummary: $("#opponentScoutSummary"),
   weightsPanel: $("#weightsPanel"),
   weightValidation: $("#weightValidation"),
+  analyticsPanel: $("#analyticsPanel"),
+  analyticsView: $("#analyticsViewInput"),
+  rotationScoringBasis: $("#rotationScoringBasisInput"),
+  rotationScoringBasisField: $("#rotationScoringBasisField"),
   productionRulesLegend: $("#productionRulesLegend"),
   productionRulesHelp: $("#productionRulesHelp"),
   positionCoverageHelp: $("#positionCoverageHelp"),
   rotationMinutesHelp: $("#rotationMinutesHelp"),
+  shareScenario: $("#shareScenarioButton"),
+  printReport: $("#printReportButton"),
 };
+
+const decodedInitialScenario = decodeScenarioQuery(window.location.search);
 
 const state = {
   dataset: null,
@@ -189,6 +235,12 @@ const state = {
   activeOptimizationToken: null,
   searchScopeCanRun: false,
   recommendedMinGames: 20,
+  analyticsView: decodedInitialScenario.scenario?.analyticsView || "perGame",
+  pendingScenario: decodedInitialScenario.scenario,
+  pendingScenarioWarnings: decodedInitialScenario.warnings,
+  replacementAnalyses: new Map(),
+  replacementRunToken: null,
+  replacementPlayerId: null,
 };
 
 function loadWatchlist() {
@@ -267,6 +319,46 @@ function formatNumber(value, digits = 1) {
 function formatPercent(value) {
   const number = Number(value);
   return Number.isFinite(number) ? `${(number * 100).toFixed(1)}%` : "-";
+}
+
+function analyticsViewDetail(view = state.analyticsView) {
+  return ANALYTICS_VIEW_DETAILS[view] || ANALYTICS_VIEW_DETAILS.perGame;
+}
+
+function analyticsRateViews(player) {
+  // The pure fan-analysis module intentionally reads the optional analytics
+  // envelope itself. That means CSV/course-demo players continue to work: the
+  // per-game and per-36 views remain available while the richer views simply
+  // say that their source context is unavailable.
+  return derivePlayerRateViews(player);
+}
+
+function analyticsValue(player, metric, view = state.analyticsView) {
+  const views = analyticsRateViews(player);
+  if (view === "eraRelative") {
+    return views.eraRelative?.values?.[metric]?.percentOfBaseline ?? null;
+  }
+  const rateKey = analyticsViewDetail(view).rateKey;
+  return views[rateKey]?.values?.[metric] ?? null;
+}
+
+function analyticsMetricText(metric, value, view = state.analyticsView) {
+  if (!Number.isFinite(Number(value))) return "–";
+  if (view === "eraRelative") return `${formatNumber(value, 0)} index`;
+  return metric.endsWith("Pct") ? formatPercent(value) : formatNumber(value);
+}
+
+function analyticsMetricShortLabel(metric, view = state.analyticsView) {
+  const suffix = view === "perGame"
+    ? ""
+    : view === "per36"
+      ? "/36"
+      : view === "per100Estimated"
+        ? "/100"
+        : " IDX";
+  const base = ({ points: "PTS", rebounds: "REB", assists: "AST", steals: "STL", blocks: "BLK", turnovers: "TOV" })[metric]
+    || (METRIC_LABELS[metric] || titleCase(metric));
+  return `${base}${suffix}`;
 }
 
 function formatSignedDifference(value, { percentagePoints = false } = {}) {
@@ -471,8 +563,12 @@ function updateSearchScope() {
 }
 
 function setOptimizeButtons({ disabled = false, label } = {}) {
+  // Once a visitor changes the live selector, the data table still represents
+  // the previously loaded team-season. Never let an exact search silently run
+  // against that old pool while the controls describe a new one.
+  const datasetMatchesSelection = canOptimizeCurrentDataset();
   for (const button of [elements.optimize, elements.mobileOptimize]) {
-    button.disabled = disabled || !state.searchScopeCanRun;
+    button.disabled = disabled || !state.searchScopeCanRun || !datasetMatchesSelection;
     if (label) button.textContent = label;
   }
 }
@@ -485,11 +581,309 @@ function selectionFromControls() {
   };
 }
 
+function liveDatasetMatchesControls() {
+  return Boolean(
+    state.loadedLiveSelection
+    && liveSelectionMatches(state.loadedLiveSelection, selectionFromControls()),
+  );
+}
+
+function canOptimizeCurrentDataset() {
+  // CSV and course-project data do not have a live selector source, so they
+  // remain perfectly valid local optimizer inputs. A loaded historical roster
+  // must always match the visible team, season, and phase controls.
+  return !state.loadedLiveSelection || liveDatasetMatchesControls();
+}
+
+function canShareCurrentScenario() {
+  // A URL can reproduce only a fresh exact result based on a concrete,
+  // database-backed team-season. This prevents a CSV/demo result—or a result
+  // from a previously selected team—from being mislabeled as a shareable live
+  // scenario.
+  return Boolean(
+    state.lastResult?.ok
+    && elements.resultFreshness.hidden
+    && state.loadedLiveSelection
+    && liveDatasetMatchesControls(),
+  );
+}
+
+function syncShareScenarioAvailability() {
+  const available = canShareCurrentScenario();
+  elements.shareScenario.disabled = !available;
+  elements.shareScenario.title = available
+    ? "Copy a link that reloads this team-season and reruns the exact search"
+    : state.loadedLiveSelection && !liveDatasetMatchesControls()
+      ? "Load the selected roster and run a fresh result before sharing"
+      : "Share links are available for fresh, database-backed team-season results";
+}
+
+function setInputValueIfPresent(input, value) {
+  if (value === undefined || value === null || value === "") return;
+  input.value = String(value);
+}
+
+function applySharedScenarioControls(scenario) {
+  if (!scenario) return;
+
+  // A shared link is an input snapshot, not a result. Apply only values the
+  // codec already validated, then let the normal form and exact-scope checks
+  // perform the final structural validation against the loaded player pool.
+  const mode = scenario.mode === "rotation" ? "rotation" : "lineup";
+  elements.mode.value = mode;
+  setMode(mode);
+
+  const requestedSize = Number(scenario.size);
+  if (Number.isInteger(requestedSize)) {
+    if (mode === "lineup" && requestedSize !== 5) {
+      state.pendingScenarioWarnings.push("A five-player lineup always uses five players, so the shared lineup size was reset to 5.");
+      elements.size.value = "5";
+    } else if (mode === "rotation" && requestedSize >= 8 && requestedSize <= 12) {
+      elements.size.value = String(requestedSize);
+    } else if (mode === "rotation") {
+      state.pendingScenarioWarnings.push("The shared rotation size was outside Lineup Lab's 8–12 player range and was reset to 9.");
+      elements.size.value = "9";
+    }
+  }
+
+  setInputValueIfPresent(elements.alternatives, scenario.alternatives);
+  setInputValueIfPresent(elements.minGames, scenario.minGames);
+  setInputValueIfPresent(elements.minMinutes, scenario.minMinutes);
+  setInputValueIfPresent(elements.rotationMin, scenario.rotationMin);
+  setInputValueIfPresent(elements.rotationMax, scenario.rotationMax);
+  setInputValueIfPresent(elements.maxTurnovers, scenario.maxTurnovers);
+
+  const positions = scenario.positionMinimums || {};
+  setInputValueIfPresent(elements.minGuards, positions.G);
+  setInputValueIfPresent(elements.minForwards, positions.F);
+  setInputValueIfPresent(elements.minCenters, positions.C);
+
+  const statMinimums = scenario.statMinimums || {};
+  setInputValueIfPresent(elements.minPoints, statMinimums.points);
+  setInputValueIfPresent(elements.minRebounds, statMinimums.rebounds);
+  setInputValueIfPresent(elements.minAssists, statMinimums.assists);
+  setInputValueIfPresent(elements.minSteals, statMinimums.steals);
+  setInputValueIfPresent(elements.minBlocks, statMinimums.blocks);
+
+  const requestedPreset = scenario.preset;
+  const sharedWeights = scenario.weights && typeof scenario.weights === "object"
+    ? scenario.weights
+    : {};
+  if (requestedPreset && requestedPreset !== "custom") {
+    applyPreset(requestedPreset, { invalidate: false });
+  }
+  if (requestedPreset === "custom" || Object.keys(sharedWeights).length > 0) {
+    // The query stores non-zero weights only. Start from zeros so a custom
+    // share link cannot inherit a stray slider value from a browser session.
+    state.weights = Object.fromEntries(Object.keys(METRIC_LABELS).map((metric) => [metric, 0]));
+    for (const [metric, value] of Object.entries(sharedWeights)) {
+      if (Object.prototype.hasOwnProperty.call(state.weights, metric)) state.weights[metric] = Number(value);
+    }
+    state.activePreset = requestedPreset && requestedPreset !== "custom" ? requestedPreset : "custom";
+  }
+  renderPresetState();
+  renderWeightControls();
+
+  if (ANALYTICS_VIEW_DETAILS[scenario.analyticsView]) {
+    state.analyticsView = scenario.analyticsView;
+  }
+  elements.analyticsView.value = state.analyticsView;
+  if (["per36", "perGame"].includes(scenario.rotationScoreBasis)) {
+    elements.rotationScoringBasis.value = scenario.rotationScoreBasis;
+  }
+  updateRunSummary();
+}
+
+function applyPendingScenarioPlayerSelections(dataset) {
+  const scenario = state.pendingScenario;
+  if (!scenario) return;
+
+  const availableIds = new Set(dataset.players.map((player) => player.id));
+  const requestedLocks = Array.isArray(scenario.lockedIds) ? scenario.lockedIds : [];
+  const requestedExclusions = Array.isArray(scenario.excludedIds) ? scenario.excludedIds : [];
+  const ignoredLocks = requestedLocks.filter((id) => !availableIds.has(id));
+  const ignoredExclusions = requestedExclusions.filter((id) => !availableIds.has(id));
+
+  state.lockedIds = new Set(requestedLocks.filter((id) => availableIds.has(id)));
+  // A lock wins over an exclusion because a player cannot be required and
+  // forbidden in the same exact request. The UI exposes that same mutual
+  // exclusion behavior when a visitor clicks its checkboxes.
+  state.excludedIds = new Set(
+    requestedExclusions.filter((id) => availableIds.has(id) && !state.lockedIds.has(id)),
+  );
+  if (ignoredLocks.length) {
+    state.pendingScenarioWarnings.push(`${ignoredLocks.length} locked player${ignoredLocks.length === 1 ? " was" : "s were"} not in this team-season and could not be applied.`);
+  }
+  if (ignoredExclusions.length) {
+    state.pendingScenarioWarnings.push(`${ignoredExclusions.length} excluded player${ignoredExclusions.length === 1 ? " was" : "s were"} not in this team-season and could not be applied.`);
+  }
+  state.pendingScenario = null;
+}
+
+function sharedScenarioFromControls() {
+  // Serialize the same live selection that produced the visible result—not a
+  // newly chosen but still-unloaded roster. The caller guards this too, so a
+  // programmatic invocation cannot create a misleading link.
+  if (!liveDatasetMatchesControls()) return null;
+  const loadedSelection = state.loadedLiveSelection;
+  const statMinimums = {};
+  for (const [metric, input] of Object.entries({
+    points: elements.minPoints,
+    rebounds: elements.minRebounds,
+    assists: elements.minAssists,
+    steals: elements.minSteals,
+    blocks: elements.minBlocks,
+  })) {
+    const value = optionalNumber(input);
+    if (value !== undefined) statMinimums[metric] = value;
+  }
+  return {
+    team: loadedSelection.team,
+    season: Number(loadedSelection.season),
+    phase: loadedSelection.seasonPhase,
+    mode: elements.mode.value,
+    size: numberFromInput(elements.size, 5),
+    alternatives: numberFromInput(elements.alternatives, 5),
+    preset: state.activePreset,
+    weights: state.weights,
+    minGames: numberFromInput(elements.minGames, 0),
+    minMinutes: numberFromInput(elements.minMinutes, 0),
+    positionMinimums: {
+      G: numberFromInput(elements.minGuards, 0),
+      F: numberFromInput(elements.minForwards, 0),
+      C: numberFromInput(elements.minCenters, 0),
+    },
+    statMinimums,
+    maxTurnovers: optionalNumber(elements.maxTurnovers),
+    rotationMin: numberFromInput(elements.rotationMin, 8),
+    rotationMax: numberFromInput(elements.rotationMax, 40),
+    analyticsView: state.analyticsView,
+    rotationScoreBasis: elements.rotationScoringBasis.value,
+    lockedIds: [...state.lockedIds].sort(),
+    excludedIds: [...state.excludedIds].sort(),
+  };
+}
+
+async function copyScenarioLink() {
+  if (!canShareCurrentScenario()) {
+    showToast("Load the selected team-season and run a fresh exact result before sharing it.");
+    return;
+  }
+  try {
+    const scenario = sharedScenarioFromControls();
+    if (!scenario) throw new Error("The displayed result no longer matches the selected team-season.");
+    const query = encodeScenarioQuery(scenario);
+    const link = new URL(window.location.href);
+    link.search = query;
+    link.hash = "workspace";
+    const text = link.href;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const input = document.createElement("textarea");
+      input.value = text;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.append(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+    }
+    // Keeping the current URL in sync makes a copied link auditable in the
+    // address bar without storing or sharing any result/cache payload.
+    window.history.replaceState({}, "", `${link.pathname}${link.search}${link.hash}`);
+    showToast("Share link copied. It reloads the team-season and reruns the exact search locally.");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "This scenario could not be shared.");
+  }
+}
+
+function printScoutingReport() {
+  if (!state.lastResult?.ok || !elements.resultFreshness.hidden) return;
+  window.print();
+}
+
+function flushPendingScenarioWarnings() {
+  const warnings = [...new Set(state.pendingScenarioWarnings.filter(Boolean))];
+  state.pendingScenarioWarnings = [];
+  if (warnings.length === 0) return;
+  const message = warnings.length === 1
+    ? warnings[0]
+    : `${warnings[0]} (+${warnings.length - 1} more shared-link note${warnings.length === 2 ? "" : "s"}.)`;
+  showToast(message);
+}
+
+function sharedScenarioSelection(scenario) {
+  if (!scenario || !scenario.team || !Number.isInteger(Number(scenario.season))) return null;
+  if (!['regular', 'playoffs'].includes(scenario.phase)) return null;
+  return {
+    team: scenario.team,
+    season: Number(scenario.season),
+    seasonPhase: scenario.phase,
+  };
+}
+
+async function replaySharedScenarioAfterLoad(scenario) {
+  if (!scenario) return;
+  const requestedSelection = sharedScenarioSelection(scenario);
+  if (!requestedSelection) {
+    state.pendingScenarioWarnings.push("The shared link did not identify a complete team-season source, so its exact search was not rerun.");
+    return;
+  }
+  if (!liveSelectionMatches(state.loadedLiveSelection, requestedSelection) || !liveDatasetMatchesControls()) {
+    state.pendingScenarioWarnings.push("The shared team-season was unavailable or could not be loaded exactly, so its exact search was not rerun.");
+    return;
+  }
+
+  // All input controls, locks, and exclusions have already passed through the
+  // normal validation path in setDataset. Reuse the same exact submit handler
+  // rather than creating a second share-only solver path.
+  await runOptimizer();
+}
+
 function liveSelectionMatches(left, right) {
   return Boolean(left && right)
     && left.team === right.team
     && Number(left.season) === Number(right.season)
     && left.seasonPhase === right.seasonPhase;
+}
+
+function finishPendingReplacement(message) {
+  const playerId = state.replacementPlayerId;
+  state.replacementRunToken = null;
+  state.replacementPlayerId = null;
+  if (playerId) {
+    replaceReplacementOutput(playerId, {
+      ok: false,
+      message,
+    });
+  }
+}
+
+function markResultStaleForDatasetSelection() {
+  if (!state.lastResult || !elements.resultFreshness.hidden) return;
+
+  // Changing the selector is a data-input change, even before the visitor
+  // presses Load selected roster. Mark the old result stale immediately so it
+  // cannot be copied, printed, shared, or accidentally treated as a result
+  // for the newly visible team-season choice.
+  state.scenarioVersion += 1;
+  state.replacementAnalyses.clear();
+  const hasPendingReplacement = state.replacementRunToken !== null;
+  if (hasPendingReplacement || state.optimizationWorker || state.activeOptimizationToken !== null) {
+    cancelOptimization("Optimization cancelled because the selected roster changed.");
+  }
+  if (hasPendingReplacement) {
+    finishPendingReplacement("The selected roster changed. Load it and run a new result before testing replacements.");
+  }
+  elements.results.classList.add("is-stale");
+  elements.resultFreshness.hidden = false;
+  elements.resultFreshness.textContent = "The selected team-season changed. Load that roster and run the optimizer again before using this result.";
+  elements.copyResult.disabled = true;
+  elements.downloadResult.disabled = true;
+  elements.shareScenario.disabled = true;
+  elements.printReport.disabled = true;
+  setSolverStatus("Load selected roster to update result", "warning");
 }
 
 function updateLiveSelectionState({ preserveStatus = false } = {}) {
@@ -500,16 +894,23 @@ function updateLiveSelectionState({ preserveStatus = false } = {}) {
   elements.datasetStrip.classList.toggle("has-pending-selection", Boolean(state.dataset && !matches));
   elements.loadLiveData.textContent = matches ? "Reload roster data" : "Load selected roster";
   if (!preserveStatus && !matches) {
+    markResultStaleForDatasetSelection();
     setLiveDataStatus(
       `Selection changed. Load the ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} roster to replace the current data.`,
       "warning",
     );
+    setOptimizeButtons({ label: "Load selected roster" });
   } else if (!preserveStatus && matches) {
     setLiveDataStatus(
       `The current roster matches ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats.`,
       "success",
     );
+    const needsUpdate = !elements.resultFreshness.hidden;
+    setOptimizeButtons({
+      label: `${needsUpdate ? "Update" : "Optimize"} ${elements.mode.value === "rotation" ? "rotation" : "lineup"}`,
+    });
   }
+  syncShareScenarioAvailability();
 }
 
 function setLiveDataLoading(loading, loadingLabel = "Loading stats...") {
@@ -546,9 +947,18 @@ function normalizeCachedLiveDataset(rawDataset) {
   const headshots = new Map(
     (rawDataset?.players || []).map((player) => [String(player?.id || ""), safeExternalImageUrl(player?.headshotUrl)]),
   );
+  // Canonical normalization intentionally strips unknown metadata. Reattach
+  // only the serializable analytics envelope that this page wrote to its own
+  // 24-hour cache so cached historical rosters keep their rate/context report.
+  const analytics = new Map(
+    (rawDataset?.players || [])
+      .filter((player) => player?.analytics && typeof player.analytics === "object" && !Array.isArray(player.analytics))
+      .map((player) => [String(player.id || ""), player.analytics]),
+  );
   dataset.players = dataset.players.map((player) => ({
     ...player,
     headshotUrl: headshots.get(player.id) || "",
+    analytics: analytics.get(player.id) || null,
   }));
   return dataset;
 }
@@ -662,7 +1072,7 @@ async function refreshLiveTeamOptions() {
   }
 }
 
-async function populateLiveDataControls() {
+async function populateLiveDataControls({ sharedScenario = null } = {}) {
   setLiveDataLoading(true, "Loading seasons...");
   setLiveDataStatus("Loading the imported 1980+ NBA seasons...");
   try {
@@ -671,7 +1081,25 @@ async function populateLiveDataControls() {
       throw new Error("No imported NBA seasons are available yet.");
     }
     populateSeasonOptions(seasons);
-    await populateLiveTeamOptions({ preferredTeam: DEFAULT_TEAM_CODE });
+    if (
+      Number.isInteger(Number(sharedScenario?.season))
+      && [...elements.liveSeason.options].some((option) => Number(option.value) === Number(sharedScenario.season))
+    ) {
+      elements.liveSeason.value = String(sharedScenario.season);
+    } else if (sharedScenario?.season) {
+      state.pendingScenarioWarnings.push(
+        `${nbaSeasonLabel(sharedScenario.season)} is not available in this Lineup Lab source, so the newest available season was selected.`,
+      );
+    }
+    if (["regular", "playoffs"].includes(sharedScenario?.phase)) {
+      elements.liveSeasonPhase.value = sharedScenario.phase;
+    }
+    await populateLiveTeamOptions({ preferredTeam: sharedScenario?.team || DEFAULT_TEAM_CODE });
+    if (sharedScenario?.team && elements.liveTeam.value !== sharedScenario.team) {
+      state.pendingScenarioWarnings.push(
+        `${sharedScenario.team} was not available for that season and phase, so ${elements.liveTeam.value} was selected instead.`,
+      );
+    }
     setLiveDataStatus(
       `Ready to load ${selectedLiveTeamName()} ${nbaSeasonLabel(elements.liveSeason.value)} ${selectedLivePhaseLabel()} stats.`,
     );
@@ -1236,17 +1664,25 @@ function clearRenderedResult({ heading = "Your result will appear here", copy = 
   elements.emptyResultCopy.textContent = copy;
   elements.copyResult.disabled = true;
   elements.downloadResult.disabled = true;
+  elements.shareScenario.disabled = true;
+  elements.printReport.disabled = true;
 }
 
 function markScenarioChanged() {
   state.scenarioVersion += 1;
-  if (state.optimizationWorker || state.activeOptimizationToken !== null) cancelOptimization();
+  state.replacementAnalyses.clear();
+  if (state.optimizationWorker || state.activeOptimizationToken !== null || state.replacementRunToken !== null) cancelOptimization();
+  if (state.replacementRunToken !== null) {
+    finishPendingReplacement("The scenario changed. Run the optimizer again before testing replacements.");
+  }
   if (state.lastResult) {
     elements.results.classList.add("is-stale");
     elements.resultFreshness.hidden = false;
     elements.resultFreshness.textContent = "Settings changed after this result was calculated. Run the optimizer again before copying or downloading it.";
     elements.copyResult.disabled = true;
     elements.downloadResult.disabled = true;
+    elements.shareScenario.disabled = true;
+    elements.printReport.disabled = true;
     setSolverStatus("Settings changed - update the result", "warning");
   } else {
     setSolverStatus("Ready with your latest settings");
@@ -1259,6 +1695,7 @@ function markScenarioChanged() {
 function setMode(mode, { preserveSize = false } = {}) {
   const isRotation = mode === "rotation";
   elements.rotationSettings.hidden = !isRotation;
+  elements.rotationScoringBasisField.hidden = !isRotation;
   const productionQualifier = document.createElement("span");
   productionQualifier.textContent = "(optional requirements)";
   elements.productionRulesLegend.replaceChildren(
@@ -1548,6 +1985,9 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   }
   if (liveSelection?.seasonPhase) applyLoadedPhaseEligibilityDefault(liveSelection.seasonPhase);
   cancelOptimization("Optimization cancelled because the player pool changed.");
+  if (state.replacementRunToken !== null) {
+    finishPendingReplacement("The player pool changed. Run a new result before testing replacements.");
+  }
   state.scenarioVersion += 1;
   state.dataset = dataset;
   state.loadedLiveSelection = liveSelection;
@@ -1563,6 +2003,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
     elements.playerSearch.value = "";
     clearRenderedResult();
   }
+  applyPendingScenarioPlayerSelections(dataset);
   const availableIds = new Set(dataset.players.map((player) => player.id));
   state.compareIds = new Set([...state.compareIds].filter((id) => availableIds.has(id)));
   let migratedWatchlistSnapshot = false;
@@ -1743,6 +2184,10 @@ function buildOptimizerConfig() {
     config.rotationOptions = {
       minMinutes: numberFromInput(elements.rotationMin, 8),
       maxMinutes: numberFromInput(elements.rotationMax, 40),
+      // The exact allocator receives a rate-normalized priority rather than
+      // raw per-game output by default. Projections still use source per-minute
+      // production, so this changes only who earns time—not the unit math.
+      scoringBasis: elements.rotationScoringBasis.value,
     };
   }
   return config;
@@ -1766,7 +2211,168 @@ function renderScoreCard(label, value, primary = false) {
   return card;
 }
 
-function renderLineupPlayer(player, lineup, index) {
+function playerInsightFor(explanation, playerId) {
+  return explanation?.selectedPlayers?.find((item) => item.playerId === playerId) || null;
+}
+
+function renderPlayerSeasonContext(player, insight) {
+  const context = document.createElement("p");
+  context.className = "lineup-player__context";
+  const source = player.analytics?.source || state.dataset?.source || {};
+  const sample = insight?.sample || analyticsRateViews(player).sample || {};
+  const phase = source.phase === "playoffs" || source.seasonPhase === "playoffs"
+    ? "Playoffs"
+    : "Regular season";
+  const parts = [
+    source.season || state.dataset?.source?.season,
+    source.team || player.team,
+    phase,
+    Number.isFinite(Number(sample.games)) ? `${formatNumber(sample.games, 0)} G` : "",
+    Number.isFinite(Number(sample.totalMinutes)) ? `${formatNumber(sample.totalMinutes, 0)} total min` : "",
+  ].filter(Boolean);
+  if (player.analytics?.postseasonAvailable === true) parts.push("Playoff stats available");
+  context.textContent = parts.join(" · ");
+  return context;
+}
+
+function renderRoleTags(roles = []) {
+  const tags = document.createElement("div");
+  tags.className = "role-tags";
+  if (!Array.isArray(roles) || roles.length === 0) {
+    const tag = document.createElement("span");
+    tag.className = "role-tag role-tag--neutral";
+    tag.textContent = "Role signal not established";
+    tag.title = "The current comparison pool did not establish a statistical role signal for this player.";
+    tags.append(tag);
+    return tags;
+  }
+  roles.slice(0, 3).forEach((role) => {
+    const tag = document.createElement("span");
+    tag.className = "role-tag";
+    const provisional = role.confidence === "small-sample";
+    // Keep short-stint labels useful while making their uncertainty obvious at
+    // the exact place a fan first sees them—not only in a later method note.
+    tag.textContent = provisional
+      ? `Provisional ${role.shortLabel || role.label}`
+      : role.shortLabel || role.label;
+    tag.title = `${role.label}${provisional ? " (provisional small sample; not counted toward role coverage)" : ""}: ${role.evidence?.[0] || "statistical role signal"}`;
+    tags.append(tag);
+  });
+  return tags;
+}
+
+function renderExactObjectiveReasons(player, result, insight) {
+  const details = document.createElement("details");
+  details.className = "why-selected";
+  const summary = document.createElement("summary");
+  summary.textContent = "Why the exact model selected this player";
+  details.append(summary);
+
+  const rotationBasis = result?.diagnostics?.rotationScoringBasis;
+  const basis = document.createElement("p");
+  basis.textContent = rotationBasis === "per36"
+    ? "In this rotation, counting stats are ranked per 36 minutes before minutes are allocated; the contribution below also reflects the proposed minutes."
+    : rotationBasis === "perGame"
+      ? "This rotation uses the legacy per-game ranking basis; the contribution below also reflects the proposed minutes."
+      : "This lineup gives each selected player an equal share of the configured pool-relative objective.";
+  details.append(basis);
+
+  const contribution = result?.best?.playerContributions?.[player.id];
+  const entries = Object.entries(contribution?.metrics || {})
+    .filter(([, item]) => Number(item?.scoreContribution) > 0)
+    .sort((left, right) => Number(right[1].scoreContribution) - Number(left[1].scoreContribution));
+  const list = document.createElement("ul");
+  if (entries.length) {
+    entries.slice(0, 3).forEach(([metric, item]) => {
+      const row = document.createElement("li");
+      const percentile = Number(item.percentile);
+      row.textContent = `${METRIC_LABELS[metric] || titleCase(metric)}: ${Math.round(percentile * 100)}th percentile, +${formatNumber(item.scoreContribution, 2)} fit-score points.`;
+      list.append(row);
+    });
+    const total = document.createElement("li");
+    total.textContent = `Exact objective contribution: +${formatNumber(contribution.scoreContribution, 2)} of the group's ${formatNumber(result.best.score)} fit-score points.`;
+    list.append(total);
+  } else {
+    // The explanation layer remains useful if a future compatible optimizer
+    // does not return player-level contributions. It is visibly labelled as a
+    // pool-relative profile, not back-filled as an exact solver explanation.
+    (insight?.whySelected || []).slice(0, 3).forEach((reason) => {
+      const row = document.createElement("li");
+      row.textContent = reason;
+      list.append(row);
+    });
+  }
+  details.append(list);
+  return details;
+}
+
+function replacementResultElement(playerId) {
+  return [...elements.resultContent.querySelectorAll("[data-replacement-result]")]
+    .find((element) => element.dataset.replacementResult === playerId) || null;
+}
+
+function replacementButtonElement(playerId) {
+  return [...elements.resultContent.querySelectorAll('[data-action="exact-replacement"]')]
+    .find((element) => element.dataset.playerId === playerId) || null;
+}
+
+function replacementAnalysisMarkup(playerId, analysis) {
+  const output = document.createElement("p");
+  output.className = "exact-replacement__result";
+  output.dataset.replacementResult = playerId;
+  // Do not imply that a replacement is infeasible before the visitor asks the
+  // exact solver to test one. The empty node gives the delegated handler a
+  // stable place to render its result without layout-jumping the player card.
+  if (analysis === undefined) {
+    output.hidden = true;
+    return output;
+  }
+  if (!analysis?.ok) {
+    output.dataset.status = "unavailable";
+    output.textContent = analysis?.message || "No feasible exact replacement was found under the current rules.";
+    return output;
+  }
+  const deltas = analysis.deltas || {};
+  const deltaParts = [
+    `PTS ${formatSignedDifference(deltas.points)}`,
+    `REB ${formatSignedDifference(deltas.rebounds)}`,
+    `AST ${formatSignedDifference(deltas.assists)}`,
+    `TOV ${formatSignedDifference(deltas.turnovers)}`,
+  ].filter((part) => !part.endsWith("-"));
+  output.textContent = `Exact replacement: ${analysis.replacementName}. Fit ${formatSignedDifference(analysis.scoreDelta)}; ${deltaParts.join(" · ")}. This preserves every other selected player and current rule.`;
+  return output;
+}
+
+function renderExactReplacementPanel(player, result, insight) {
+  const wrap = document.createElement("div");
+  wrap.className = "exact-replacement";
+  const cached = state.replacementAnalyses.get(`${state.scenarioVersion}:${player.id}`);
+  const nearest = insight?.replacements?.byRemovedPlayerId?.[player.id];
+  if (nearest) {
+    const nearby = document.createElement("p");
+    nearby.textContent = `Closest displayed alternative: ${nearest.summary} It may change more than one player.`;
+    wrap.append(nearby);
+  }
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "button button--quiet";
+  button.dataset.action = "exact-replacement";
+  button.dataset.playerId = player.id;
+  button.textContent = "Test exact replacement";
+  if (state.lockedIds.has(player.id)) {
+    button.disabled = true;
+    const unavailable = replacementAnalysisMarkup(player.id, {
+      ok: false,
+      message: "This player is locked by the current scenario. Unlock them to test a replacement.",
+    });
+    wrap.append(button, unavailable);
+    return wrap;
+  }
+  wrap.append(button, replacementAnalysisMarkup(player.id, cached));
+  return wrap;
+}
+
+function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
   const card = document.createElement("article");
   card.className = "lineup-player";
   const top = document.createElement("div");
@@ -1782,22 +2388,29 @@ function renderLineupPlayer(player, lineup, index) {
   const name = document.createElement("h3");
   name.textContent = player.name;
   const stats = document.createElement("dl");
-  for (const [label, value] of [
-    ["PTS", player.points],
-    ["REB", player.rebounds],
-    ["AST", player.assists],
-  ]) {
+  for (const metric of ["points", "rebounds", "assists"]) {
+    const label = analyticsMetricShortLabel(metric);
+    const value = analyticsValue(player, metric);
+
     const wrap = document.createElement("div");
     const dt = document.createElement("dt");
     dt.textContent = label;
     const dd = document.createElement("dd");
-    dd.textContent = formatNumber(value);
+    dd.textContent = analyticsMetricText(metric, value);
     wrap.append(dt, dd);
     stats.append(wrap);
   }
   card.append(top);
   if (avatar) card.append(avatar);
-  card.append(name, stats, createCardSearchLink(player));
+  card.append(
+    name,
+    renderPlayerSeasonContext(player, insight),
+    stats,
+    renderRoleTags(insight?.roles),
+    renderExactObjectiveReasons(player, result, insight),
+    renderExactReplacementPanel(player, result, insight),
+    createCardSearchLink(player),
+  );
   return card;
 }
 
@@ -2015,9 +2628,209 @@ function renderAlternatives(alternatives, best) {
   return section;
 }
 
+function analyticsAverage(players, metric, { rotation = null } = {}) {
+  let weightedTotal = 0;
+  let weightTotal = 0;
+  for (const player of players) {
+    const value = Number(analyticsValue(player, metric));
+    if (!Number.isFinite(value)) continue;
+    const weight = rotation ? Number(rotation.byId?.[player.id] || 0) : 1;
+    if (!(weight > 0)) continue;
+    weightedTotal += value * weight;
+    weightTotal += weight;
+  }
+  return weightTotal > 0 ? weightedTotal / weightTotal : null;
+}
+
+function renderAnalyticsComparisonChart(best, pool) {
+  const section = document.createElement("section");
+  section.className = "fan-report__chart";
+  const heading = document.createElement("h4");
+  heading.textContent = "Selected group vs eligible pool";
+  const note = document.createElement("p");
+  const view = analyticsViewDetail();
+  note.textContent = `${best.rotation ? "Selected values are minute-weighted by the exact 240-minute plan" : "Selected values are averaged across the five selected players"}; pool values are unweighted across ${pool.length} eligible, non-excluded player${pool.length === 1 ? "" : "s"}. ${view.note}`;
+  section.append(heading, note);
+
+  const chart = document.createElement("div");
+  chart.className = "analytics-chart";
+  let rendered = 0;
+  for (const [metric, label, lowerIsBetter] of COMPARE_METRICS) {
+    const selected = analyticsAverage(best.players, metric, { rotation: best.rotation });
+    const poolAverage = analyticsAverage(pool, metric);
+    if (!Number.isFinite(selected) || !Number.isFinite(poolAverage)) continue;
+    const maximum = Math.max(Math.abs(selected), Math.abs(poolAverage), 0.01);
+    const row = document.createElement("div");
+    row.className = "analytics-chart__row";
+    const name = document.createElement("strong");
+    name.textContent = label;
+    const track = document.createElement("span");
+    track.className = "analytics-chart__track";
+    const bar = document.createElement("span");
+    bar.className = "analytics-chart__bar";
+    if (lowerIsBetter && selected > poolAverage) bar.classList.add("analytics-chart__bar--warning");
+    bar.style.setProperty("--bar-width", `${Math.max(2, (Math.abs(selected) / maximum) * 100)}%`);
+    bar.setAttribute("role", "img");
+    bar.setAttribute("aria-label", `${label}: selected group ${analyticsMetricText(metric, selected)}, eligible-pool average ${analyticsMetricText(metric, poolAverage)}.`);
+    track.append(bar);
+    const values = document.createElement("span");
+    values.textContent = `${analyticsMetricText(metric, selected)} / ${analyticsMetricText(metric, poolAverage)}`;
+    row.append(name, track, values);
+    chart.append(row);
+    rendered += 1;
+  }
+  if (rendered === 0) {
+    const unavailable = document.createElement("p");
+    unavailable.textContent = "This view is not available for the current source. Per game and per 36 remain available for compatible player rows.";
+    section.append(unavailable);
+  } else {
+    section.append(chart);
+  }
+  return section;
+}
+
+function renderInsightList(headingText, entries, { warning = false, emptyText } = {}) {
+  const section = document.createElement("section");
+  const heading = document.createElement("h4");
+  heading.textContent = headingText;
+  const list = document.createElement("ul");
+  list.className = `insight-list${warning ? " insight-list--warning" : ""}`;
+  if (entries.length === 0) {
+    const item = document.createElement("li");
+    item.textContent = emptyText;
+    list.append(item);
+  } else {
+    entries.slice(0, 4).forEach((entry) => {
+      const item = document.createElement("li");
+      item.textContent = entry.message;
+      list.append(item);
+    });
+  }
+  section.append(heading, list);
+  return section;
+}
+
+function renderRoleMatrix(roleCoverage) {
+  const section = document.createElement("section");
+  section.className = "fan-report__matrix";
+  const heading = document.createElement("h4");
+  heading.textContent = "Role coverage matrix";
+  const note = document.createElement("p");
+  note.textContent = `Signals are measured against the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ meets the normal sample standard; △ is provisional and does not fill a coverage target. Every mark is a statistical signal, not a scouting certainty.`;
+  section.append(heading, note);
+  const scroll = document.createElement("div");
+  scroll.className = "role-matrix table-wrap";
+  scroll.tabIndex = 0;
+  scroll.setAttribute("aria-label", "Statistical role coverage matrix for the selected group");
+  const table = document.createElement("table");
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const label of ["Player", ...FAN_ROLE_DEFINITIONS.map((role) => role.shortLabel)]) {
+    const cell = document.createElement("th");
+    cell.scope = "col";
+    cell.textContent = label;
+    headRow.append(cell);
+  }
+  head.append(headRow);
+  const body = document.createElement("tbody");
+  roleCoverage.matrix.forEach((row) => {
+    const tableRow = document.createElement("tr");
+    createCell(tableRow, row.playerName);
+    FAN_ROLE_DEFINITIONS.forEach((definition) => {
+      const role = row.roles?.[definition.id];
+      const provisional = role?.confidence === "small-sample";
+      const cell = createCell(tableRow, role ? (provisional ? "△" : "✓") : "—");
+      cell.title = role
+        ? `${definition.label}${provisional ? " (provisional small sample; excluded from coverage targets)" : ""}: ${role.evidence?.[0] || "statistical signal"}`
+        : `${definition.label} signal not established`;
+      cell.setAttribute("aria-label", `${row.playerName}: ${role ? `${provisional ? "provisional " : ""}${definition.label}` : `no ${definition.label.toLowerCase()} signal`}`);
+    });
+    body.append(tableRow);
+  });
+  table.append(head, body);
+  scroll.append(table);
+  section.append(scroll);
+  return section;
+}
+
+function renderFanScoutingReport(result, explanation) {
+  if (!explanation?.available || !explanation.roleCoverage) return null;
+  const best = result.best;
+  const source = state.dataset?.source || {};
+  const report = document.createElement("section");
+  report.className = "fan-report";
+  report.setAttribute("aria-labelledby", "fanReportHeading");
+
+  const header = document.createElement("div");
+  header.className = "fan-report__header";
+  const headerText = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  eyebrow.className = "eyebrow print-only";
+  eyebrow.textContent = "Lineup Lab historical scouting report";
+  const heading = document.createElement("h3");
+  heading.id = "fanReportHeading";
+  heading.textContent = "Fan analytics report";
+  const intro = document.createElement("p");
+  intro.textContent = "A transparent explanation layer for the exact result: roles, rate views, sample context, and tradeoffs. It is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
+  headerText.append(eyebrow, heading, intro);
+  const provenance = document.createElement("p");
+  provenance.className = "report-provenance";
+  const postseasonCount = best.players.filter((player) => player.analytics?.postseasonAvailable === true).length;
+  provenance.textContent = [
+    `${source.teamName || source.team || "Selected team"} · ${source.season || "season unavailable"}`,
+    source.seasonPhase === "playoffs" ? "Playoffs" : "Regular season",
+    `${best.players.length} selected team stints`,
+    `${postseasonCount} with a recorded same-team playoff stint`,
+    source.provider || "Source context unavailable",
+  ].join(" · ");
+  header.append(headerText, provenance);
+  report.append(header);
+
+  const grid = document.createElement("div");
+  grid.className = "fan-report__grid";
+  grid.append(
+    renderInsightList(
+      "Lineup strengths",
+      explanation.roleCoverage.strengths || [],
+      { emptyText: "No role signal cleared its configured coverage target in this comparison pool." },
+    ),
+    renderInsightList(
+      "Watchouts and coverage gaps",
+      explanation.roleCoverage.deficiencies || [],
+      {
+        warning: true,
+        emptyText: "No thin or missing role signal was identified by this box-score model.",
+      },
+    ),
+  );
+  report.append(grid, renderRoleMatrix(explanation.roleCoverage), renderAnalyticsComparisonChart(best, comparisonPool()));
+
+  const caveats = [...new Set([
+    analyticsViewDetail().note,
+    ...(explanation.caveats || []),
+  ])];
+  if (caveats.length) {
+    const note = document.createElement("p");
+    note.className = "report-provenance";
+    note.textContent = `Method note: ${caveats.join(" ")}`;
+    report.append(note);
+  }
+  return report;
+}
+
 function renderSuccess(result) {
   const best = result.best;
-  const fitPoolSize = state.dataset.players.filter((player) => isPlayerEligible(player) && !state.excludedIds.has(player.id)).length;
+  const eligibleComparisonPool = comparisonPool();
+  const fitPoolSize = eligibleComparisonPool.length;
+  // Selection remains entirely inside optimizer-core. This pure explanation
+  // call only translates the returned exact choice into fan-readable roles,
+  // samples, and alternative context; it cannot change feasibility or score.
+  const fanExplanation = explainOptimizationSelection(result, {
+    candidatePool: eligibleComparisonPool,
+    referencePlayers: eligibleComparisonPool,
+    weights: state.weights,
+    comparisonLabel: "eligible, non-excluded player pool",
+  });
   const productionExplanation = best.rotation
     ? "Production is minute-weighted from the exact 240-minute plan."
     : "Profiles add each selected player's per-game averages.";
@@ -2045,14 +2858,19 @@ function renderSuccess(result) {
   );
   const lineup = document.createElement("div");
   lineup.className = "lineup-grid";
-  best.players.forEach((player, index) => lineup.append(renderLineupPlayer(player, best, index)));
+  best.players.forEach((player, index) => lineup.append(renderLineupPlayer(player, best, index, {
+    result,
+    insight: playerInsightFor(fanExplanation, player.id),
+  })));
 
   const detailGrid = document.createElement("div");
   detailGrid.className = "result-detail-grid";
   const contributionCard = document.createElement("section");
   contributionCard.className = "result-card";
   const contributionHeading = document.createElement("h3");
-  contributionHeading.textContent = "Why this group fits your strategy";
+  contributionHeading.textContent = best.rotation && result.diagnostics?.rotationScoringBasis === "per36"
+    ? "Why this group fits your strategy (rate-based rotation scoring)"
+    : "Why this group fits your strategy";
   contributionCard.append(contributionHeading, renderContributionList(best.contributionBreakdown));
   const auditCard = document.createElement("section");
   auditCard.className = "result-card";
@@ -2064,6 +2882,8 @@ function renderSuccess(result) {
   fragment.append(scoreboard, lineup, detailGrid);
   if (best.rotation) fragment.append(renderRotationMinutes(best.rotation));
   if (result.alternatives.length > 1) fragment.append(renderAlternatives(result.alternatives, best));
+  const fanReport = renderFanScoutingReport(result, fanExplanation);
+  if (fanReport) fragment.append(fanReport);
   elements.resultContent.replaceChildren(fragment);
 }
 
@@ -2199,11 +3019,22 @@ function runOptimization(players, config, jobToken) {
 }
 
 async function runOptimizer(event) {
-  event.preventDefault();
+  event?.preventDefault();
   if (!state.dataset) return;
+  if (!canOptimizeCurrentDataset()) {
+    setLiveDataStatus("Load the selected roster before running an exact search against it.", "warning");
+    showToast("Load the selected team-season before optimizing it.");
+    return;
+  }
   updateSearchScope();
   if (!state.searchScopeCanRun) return;
   if (!elements.form.reportValidity()) return;
+  if (state.replacementRunToken !== null) {
+    // The main exact search owns the same worker as a one-player test. Close
+    // the visible pending state before aborting it so a new solve cannot leave
+    // an old card indefinitely saying that it is still checking.
+    finishPendingReplacement("A new exact result is being calculated, so this replacement test was cancelled.");
+  }
   const jobToken = cancelOptimization("A newer optimization replaced the previous request.");
   const scenarioVersion = state.scenarioVersion;
   state.activeOptimizationToken = jobToken;
@@ -2234,6 +3065,8 @@ async function runOptimizer(event) {
     elements.results.hidden = false;
     elements.copyResult.disabled = !result.ok;
     elements.downloadResult.disabled = !result.ok;
+    syncShareScenarioAvailability();
+    elements.printReport.disabled = !result.ok;
     setSolverStatus(result.ok ? "Exact result ready" : "Scenario needs attention", result.ok ? "success" : "warning");
     elements.resultsHeading.focus({ preventScroll: true });
     elements.results.scrollIntoView({ behavior: motionBehavior(), block: "start" });
@@ -2261,6 +3094,8 @@ async function runOptimizer(event) {
     elements.results.hidden = false;
     elements.copyResult.disabled = true;
     elements.downloadResult.disabled = true;
+    elements.shareScenario.disabled = true;
+    elements.printReport.disabled = true;
     setSolverStatus("Scenario needs attention", "warning");
     showToast(detail);
   } finally {
@@ -2277,6 +3112,145 @@ async function runOptimizer(event) {
   }
 }
 
+function replaceReplacementOutput(playerId, analysis) {
+  const existing = replacementResultElement(playerId);
+  if (!existing) return;
+  existing.replaceWith(replacementAnalysisMarkup(playerId, analysis));
+}
+
+function restoreReplacementButtons() {
+  elements.resultContent.querySelectorAll('[data-action="exact-replacement"]').forEach((button) => {
+    const player = currentPlayer(button.dataset.playerId);
+    button.disabled = !player || state.lockedIds.has(button.dataset.playerId);
+    button.textContent = "Test exact replacement";
+  });
+}
+
+function setReplacementButtonsBusy(activePlayerId) {
+  // Each counterfactual uses the same exact-search worker. Keeping one
+  // request in flight makes cancellation deterministic and prevents another
+  // card from being left at a misleading "Checking…" state.
+  elements.resultContent.querySelectorAll('[data-action="exact-replacement"]').forEach((button) => {
+    button.disabled = true;
+    button.textContent = button.dataset.playerId === activePlayerId
+      ? "Testing exact replacement…"
+      : "Replacement test running…";
+  });
+}
+
+async function runExactReplacement(playerId) {
+  const originalResult = state.lastResult;
+  const originalBest = originalResult?.best;
+  const player = currentPlayer(playerId);
+  if (!originalResult?.ok || !originalBest || !player || !elements.resultFreshness.hidden) return;
+  if (state.replacementRunToken !== null) return;
+  if (state.lockedIds.has(playerId)) {
+    replaceReplacementOutput(playerId, {
+      ok: false,
+      message: "This player is locked by the current scenario. Unlock them to test a replacement.",
+    });
+    return;
+  }
+
+  const cacheKey = `${state.scenarioVersion}:${playerId}`;
+  if (state.replacementAnalyses.has(cacheKey)) {
+    replaceReplacementOutput(playerId, state.replacementAnalyses.get(cacheKey));
+    return;
+  }
+
+  const originalIds = new Set(originalBest.players.map((item) => item.id));
+  const preservedIds = originalBest.players
+    .map((item) => item.id)
+    .filter((id) => id !== playerId);
+  const replacementConfig = buildOptimizerConfig();
+  // Locking the other returned IDs and excluding the tested player turns a
+  // broad top-N search into an auditable one-player counterfactual. It keeps
+  // every current eligibility, position, production, and minute rule intact.
+  replacementConfig.lockedIds = [...new Set([
+    ...replacementConfig.lockedIds.filter((id) => id !== playerId),
+    ...preservedIds,
+  ])];
+  replacementConfig.excludedIds = [...new Set([
+    ...replacementConfig.excludedIds,
+    playerId,
+  ])].filter((id) => !replacementConfig.lockedIds.includes(id));
+  replacementConfig.alternatives = 1;
+
+  const scenarioVersion = state.scenarioVersion;
+  const jobToken = cancelOptimization("The exact replacement test started.");
+  state.replacementRunToken = jobToken;
+  state.replacementPlayerId = playerId;
+  setReplacementButtonsBusy(playerId);
+  const pending = replacementResultElement(playerId);
+  if (pending) {
+    pending.hidden = false;
+    delete pending.dataset.status;
+    pending.textContent = "Checking every eligible one-player replacement under the current exact rules…";
+  }
+
+  try {
+    const replacementResult = await runOptimization(state.dataset.players, replacementConfig, jobToken);
+    if (
+      jobToken !== state.optimizationRunId
+      || state.replacementRunToken !== jobToken
+      || scenarioVersion !== state.scenarioVersion
+      || state.lastResult !== originalResult
+    ) return;
+    let analysis;
+    if (!replacementResult.ok || !replacementResult.best) {
+      analysis = {
+        ok: false,
+        message: "No feasible one-player replacement meets every current rule.",
+      };
+    } else {
+      const replacement = replacementResult.best.players.find((item) => !originalIds.has(item.id));
+      if (!replacement) {
+        analysis = {
+          ok: false,
+          message: "The solver did not return a distinct replacement under the current rules.",
+        };
+      } else {
+        const deltas = Object.fromEntries(
+          ["points", "rebounds", "assists", "turnovers"].map((metric) => [
+            metric,
+            Number(replacementResult.best.totals?.[metric]) - Number(originalBest.totals?.[metric]),
+          ]),
+        );
+        analysis = {
+          ok: true,
+          replacementId: replacement.id,
+          replacementName: replacement.name,
+          // The recommended result is the exact global optimum for this
+          // scenario, so this should be zero or negative after rounding.
+          scoreDelta: Number(replacementResult.best.score) - Number(originalBest.score),
+          deltas,
+        };
+      }
+    }
+    state.replacementAnalyses.set(cacheKey, analysis);
+    replaceReplacementOutput(playerId, analysis);
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+    if (
+      jobToken !== state.optimizationRunId
+      || state.replacementRunToken !== jobToken
+      || scenarioVersion !== state.scenarioVersion
+      || state.lastResult !== originalResult
+    ) return;
+    const analysis = {
+      ok: false,
+      message: error instanceof Error ? error.message : "The exact replacement check could not run.",
+    };
+    state.replacementAnalyses.set(cacheKey, analysis);
+    replaceReplacementOutput(playerId, analysis);
+  } finally {
+    if (jobToken !== state.optimizationRunId || state.replacementRunToken !== jobToken) return;
+    state.replacementRunToken = null;
+    state.replacementPlayerId = null;
+    restoreReplacementButtons();
+  }
+}
+
 function comparisonPool() {
   // These are the same two pool gates applied before exact combinations are
   // enumerated. Locks affect membership in a lineup, not the population used
@@ -2286,16 +3260,16 @@ function comparisonPool() {
   );
 }
 
-function percentileWithinPool(player, metric, lowerIsBetter = false, pool = comparisonPool()) {
-  const values = pool
-    .map((item) => Number(item[metric]))
+function percentileForPoolValue(value, poolValues, lowerIsBetter = false) {
+  const values = poolValues
+    .map(Number)
     .filter(Number.isFinite)
     .sort((left, right) => left - right);
-  if (values.length === 0 || !Number.isFinite(Number(player[metric]))) return 0;
+  if (values.length === 0 || !Number.isFinite(Number(value))) return null;
   if (values.length <= 1) return 100;
-  const value = Number(player[metric]);
-  const lower = values.filter((candidate) => candidate < value).length;
-  const equal = values.filter((candidate) => candidate === value).length;
+  const numericValue = Number(value);
+  const lower = values.filter((candidate) => candidate < numericValue).length;
+  const equal = values.filter((candidate) => candidate === numericValue).length;
   const rawPercentile = ((lower + Math.max(0, equal - 1) / 2) / (values.length - 1)) * 100;
   // A selected comparison can remain on screen after exclusion. Clamp that
   // out-of-pool reference value instead of letting it produce a bar above 100.
@@ -2307,6 +3281,7 @@ function renderCompare() {
   if (!state.dataset) return;
   const selected = [...state.compareIds].map(currentPlayer).filter(Boolean).slice(0, 4);
   const pool = comparisonPool();
+  const view = analyticsViewDetail();
   elements.compareContent.replaceChildren();
   if (selected.length < 2) {
     const empty = document.createElement("div");
@@ -2322,7 +3297,7 @@ function renderCompare() {
 
   const poolNote = document.createElement("p");
   poolNote.className = "compare-pool-note";
-  poolNote.textContent = `${pool.length} player${pool.length === 1 ? "" : "s"} meet the current sample filters and are not excluded. Percentiles below use exactly that pool; a compared player can remain visible after being excluded.`;
+  poolNote.textContent = `${pool.length} player${pool.length === 1 ? "" : "s"} meet the current sample filters and are not excluded. Values use ${view.label.toLowerCase()}. Percentiles below use exactly that pool; a compared player can remain visible after being excluded. ${view.note}`;
 
   const legend = document.createElement("div");
   legend.className = "compare-legend";
@@ -2342,6 +3317,7 @@ function renderCompare() {
   bars.className = "compare-bars";
   bars.style.padding = "1rem";
   for (const [metric, labelText, lowerIsBetter] of COMPARE_METRICS) {
+    const poolValues = pool.map((item) => analyticsValue(item, metric));
     const row = document.createElement("div");
     row.className = "compare-row";
     const label = document.createElement("strong");
@@ -2349,24 +3325,25 @@ function renderCompare() {
     const rowBars = document.createElement("div");
     rowBars.className = "compare-row__bars";
     selected.forEach((player, index) => {
-      const percentile = percentileWithinPool(player, metric, lowerIsBetter, pool);
-      const valueText = metric.endsWith("Pct")
-        ? formatPercent(player[metric])
-        : formatNumber(player[metric]);
+      const rawValue = analyticsValue(player, metric);
+      const percentile = percentileForPoolValue(rawValue, poolValues, lowerIsBetter);
+      const valueText = analyticsMetricText(metric, rawValue);
       const line = document.createElement("div");
       line.className = "compare-player-line";
       const track = document.createElement("span");
       track.className = "compare-player-track";
       const bar = document.createElement("div");
       bar.className = "compare-player-bar";
-      bar.style.width = `${Math.max(2, percentile)}%`;
+      bar.style.width = `${percentile === null ? 0 : Math.max(2, percentile)}%`;
       bar.style.background = CHART_COLORS[index];
       bar.setAttribute("role", "progressbar");
       bar.setAttribute("aria-valuemin", "0");
       bar.setAttribute("aria-valuemax", "100");
-      bar.setAttribute("aria-valuenow", String(Math.round(percentile)));
+      bar.setAttribute("aria-valuenow", String(Math.round(percentile || 0)));
       bar.setAttribute("aria-label", `${player.name}: ${labelText}`);
-      bar.setAttribute("aria-valuetext", `${player.name}, ${labelText}: ${valueText}; ${Math.round(percentile)}th percentile among ${pool.length} eligible, non-excluded players`);
+      bar.setAttribute("aria-valuetext", percentile === null
+        ? `${player.name}, ${labelText}: unavailable in the selected ${view.shortLabel} view.`
+        : `${player.name}, ${labelText}: ${valueText}; ${Math.round(percentile)}th percentile among ${pool.length} eligible, non-excluded players`);
       const value = document.createElement("span");
       value.className = "compare-player-value";
       value.textContent = valueText;
@@ -2509,7 +3486,9 @@ function downloadText(filename, text, type = "text/csv;charset=utf-8") {
 
 function resultSummaryText() {
   const result = state.lastResult;
-  if (!result?.ok) return "";
+  // Result actions are disabled when inputs change, but retain this guard for
+  // keyboard/programmatic calls during an async roster-selector refresh.
+  if (!result?.ok || !elements.resultFreshness.hidden) return "";
   const best = result.best;
   const lines = [
     `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Optimized rotation roster + minutes plan" : "Optimized lineup"}`,
@@ -2545,7 +3524,7 @@ async function copyResult() {
 
 function downloadResult() {
   const best = state.lastResult?.best;
-  if (!best) return;
+  if (!best || !elements.resultFreshness.hidden) return;
   const minutesById = best.rotation?.byId || {};
   const rows = [
     ["Player", "Team", "Eligible Positions", "Roster Slot", "Minutes", "Guard Minutes", "Forward Minutes", "Center Minutes", "PTS", "REB", "AST", "STL", "BLK", "TOV", "eFG%", "3P%"],
@@ -2635,7 +3614,11 @@ async function importCsvFile(file) {
 }
 
 function resetScenario() {
+  const hasPendingReplacement = state.replacementRunToken !== null;
   cancelOptimization("Optimization cancelled because the scenario was reset.");
+  if (hasPendingReplacement) {
+    finishPendingReplacement("The scenario was reset. Run a new result before testing replacements.");
+  }
   state.scenarioVersion += 1;
   elements.mode.value = "lineup";
   setMode("lineup");
@@ -2652,6 +3635,9 @@ function resetScenario() {
   elements.maxTurnovers.value = "";
   elements.rotationMin.value = "8";
   elements.rotationMax.value = "40";
+  state.analyticsView = "perGame";
+  elements.analyticsView.value = state.analyticsView;
+  elements.rotationScoringBasis.value = "per36";
   state.lockedIds.clear();
   state.excludedIds.clear();
   state.opponentWeightUndo = null;
@@ -2691,9 +3677,26 @@ function bindEvents() {
     setMode(elements.mode.value);
     markScenarioChanged();
   });
+  elements.analyticsView.addEventListener("change", () => {
+    state.analyticsView = ANALYTICS_VIEW_DETAILS[elements.analyticsView.value]
+      ? elements.analyticsView.value
+      : "perGame";
+    // Rate display is deliberately presentation-only. Keep the exact result
+    // fresh and redraw the facts/cards instead of forcing a needless re-solve.
+    renderCompare();
+    if (state.lastResult?.ok && elements.resultFreshness.hidden) renderSuccess(state.lastResult);
+  });
+  elements.rotationScoringBasis.addEventListener("change", markScenarioChanged);
   elements.form.addEventListener("submit", runOptimizer);
   elements.playerTableBody.addEventListener("change", handlePlayerControl);
   elements.playerTableBody.addEventListener("click", handlePlayerControl);
+  elements.resultContent.addEventListener("click", (event) => {
+    const button = event.target.closest('[data-action="exact-replacement"]');
+    if (!button || button.disabled) return;
+    runExactReplacement(button.dataset.playerId).catch((error) => {
+      showToast(error instanceof Error ? error.message : "The exact replacement check could not run.");
+    });
+  });
   elements.watchlistContent.addEventListener("click", (event) => {
     const button = event.target.closest('[data-action="watch"]');
     if (!button) return;
@@ -2736,13 +3739,19 @@ function bindEvents() {
   ].forEach((input) => input.addEventListener("input", markScenarioChanged));
   elements.resetScenario.addEventListener("click", resetScenario);
   elements.copyResult.addEventListener("click", copyResult);
+  elements.shareScenario.addEventListener("click", copyScenarioLink);
   elements.downloadResult.addEventListener("click", downloadResult);
+  elements.printReport.addEventListener("click", printScoutingReport);
   elements.loadLiveData.addEventListener("click", () => {
     loadLiveDataset({ force: true }).catch((error) => {
       showToast(error instanceof Error ? `Couldn't load team data: ${error.message}` : "Team data could not be loaded.");
     });
   });
   const handleSeasonOrPhaseChange = () => {
+    // The selector value changes synchronously, while the team list refreshes
+    // asynchronously. Stale the old result before the network request so it
+    // cannot be copied, downloaded, printed, or shared in that short window.
+    markResultStaleForDatasetSelection();
     clearOpponentScout("Apply the updated team-season before building a style counter.");
     refreshLiveTeamOptions();
   };
@@ -2805,9 +3814,12 @@ async function initialize() {
   bindEvents();
   applyPreset("balanced", { invalidate: false });
   setMode("lineup", { preserveSize: true });
+  const sharedScenario = state.pendingScenario;
+  applySharedScenarioControls(sharedScenario);
   try {
-    await populateLiveDataControls();
+    await populateLiveDataControls({ sharedScenario });
     await loadLiveDataset();
+    await replaySharedScenarioAfterLoad(sharedScenario);
   } catch (error) {
     try {
       await loadFixture({ notice: "Historical data was unavailable, so the course-project demo was loaded." });
@@ -2825,6 +3837,8 @@ async function initialize() {
       setOptimizeButtons({ disabled: true });
       showToast("Player data could not be loaded. Refresh the page and try again.");
     }
+  } finally {
+    flushPendingScenarioWarnings();
   }
 }
 

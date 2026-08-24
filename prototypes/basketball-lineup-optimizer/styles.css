@@ -2312,6 +2312,330 @@ select:focus-visible,
   border-radius: 12px;
 }
 
+/* The analytics controls deliberately live beside the strategy weights instead
+ * of in the constraint section: they change how a fan reads a result, while
+ * the optimizer still owns the feasibility rules below. */
+.analytics-panel {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem 1rem;
+  background: linear-gradient(145deg, #f8faff, var(--surface-soft));
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+.analytics-panel[open] {
+  border-color: #cbd4ef;
+  box-shadow: 0 8px 20px rgba(31, 47, 163, 0.06);
+}
+
+.analytics-panel summary {
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.analytics-panel summary::marker {
+  color: var(--blue);
+}
+
+.analytics-panel .helper {
+  max-width: 78ch;
+}
+
+.analytics-panel__fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.9rem;
+}
+
+.analytics-panel__help,
+.analytics-panel > .field__help {
+  max-width: 86ch;
+  margin: 0.7rem 0 0;
+}
+
+/* Result cards keep the familiar roster-first scan pattern, then add the
+ * context a fan needs before trusting a role or recommendation. */
+.lineup-player__context {
+  min-height: 2.45em;
+  margin: 0.42rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.42;
+}
+
+.role-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.55rem 0 0;
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 0.16rem 0.45rem;
+  color: var(--blue);
+  background: #edf1ff;
+  border: 1px solid #d6def8;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.why-selected {
+  margin-top: 0.72rem;
+  padding: 0.5rem 0.58rem;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.why-selected summary {
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.why-selected[open] summary {
+  margin-bottom: 0.45rem;
+}
+
+.why-selected p,
+.why-selected ul {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.why-selected ul {
+  padding-left: 1rem;
+}
+
+.exact-replacement {
+  display: grid;
+  gap: 0.48rem;
+  margin-top: 0.76rem;
+  padding-top: 0.72rem;
+  border-top: 1px solid var(--line);
+}
+
+.exact-replacement .button {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.48rem 0.58rem;
+  font-size: 0.72rem;
+}
+
+.exact-replacement__result {
+  padding: 0.48rem 0.55rem;
+  color: #33405f;
+  background: #eef3ff;
+  border: 1px solid #d4dcf4;
+  border-radius: 8px;
+  font-size: 0.71rem;
+  line-height: 1.42;
+}
+
+.exact-replacement__result[data-status="unavailable"] {
+  color: var(--warning);
+  background: #fff8e8;
+  border-color: #ead18b;
+}
+
+.fan-report {
+  margin-top: 1.2rem;
+  padding: clamp(1rem, 2.3vw, 1.4rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--gold);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.fan-report__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem 1.25rem;
+}
+
+.fan-report__header h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: clamp(1.02rem, 1.8vw, 1.18rem);
+}
+
+.fan-report__header p {
+  max-width: 76ch;
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fan-report__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+}
+
+.fan-report__grid > * {
+  min-width: 0;
+  padding: 0.9rem;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+
+.fan-report__grid h4 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 0.86rem;
+}
+
+.insight-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.insight-list li {
+  position: relative;
+  padding-left: 0.95rem;
+  color: #3f4b68;
+  font-size: 0.76rem;
+  line-height: 1.43;
+}
+
+.insight-list li::before {
+  position: absolute;
+  left: 0;
+  color: var(--blue);
+  content: "•";
+  font-weight: 700;
+}
+
+.insight-list--warning li::before {
+  color: var(--warning);
+}
+
+.role-matrix {
+  margin-top: 0.7rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.role-matrix table {
+  width: 100%;
+  min-width: 460px;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.role-matrix th,
+.role-matrix td {
+  padding: 0.48rem 0.55rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.role-matrix th {
+  color: var(--navy);
+  background: #edf1fb;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+.role-matrix tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.role-matrix td:last-child {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.analytics-comparison {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.analytics-chart {
+  display: grid;
+  gap: 0.64rem;
+  margin-top: 0.65rem;
+}
+
+.analytics-chart__row {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.65fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.analytics-chart__row > strong {
+  color: var(--ink);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.analytics-chart__row > span {
+  min-width: 44px;
+  color: var(--navy);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.analytics-chart__track {
+  height: 11px;
+  overflow: hidden;
+  background: #dfe5ef;
+  border-radius: 999px;
+}
+
+.analytics-chart__bar {
+  width: var(--bar-width, 0%);
+  min-width: 3px;
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-2), var(--blue));
+  border-radius: inherit;
+}
+
+.analytics-chart__bar--warning {
+  background: linear-gradient(90deg, #e6ad39, #bf7610);
+}
+
+.report-provenance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  color: #46526f;
+  background: #f0f3fb;
+  border: 1px solid #d9e0ee;
+  border-radius: 9px;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.report-provenance strong {
+  color: var(--navy);
+}
+
+.print-only {
+  display: none;
+}
+
 @media (max-width: 1100px) {
   .hero__grid {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
@@ -2811,5 +3135,141 @@ select:focus-visible,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .analytics-panel__fields,
+  .fan-report__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fan-report__header {
+    display: grid;
+  }
+
+  .analytics-chart__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .analytics-chart__track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 470px) {
+  .lineup-player__context {
+    min-height: 0;
+  }
+
+  .role-tag {
+    font-size: 0.64rem;
+  }
+
+  .fan-report,
+  .fan-report__grid > * {
+    padding: 0.8rem;
+  }
+}
+
+/* Printing is deliberately report-first. Controls, data loading, navigation,
+ * and action buttons are interactive-only; the selected roster, explanations,
+ * evidence, and caveats remain on paper. */
+@media print {
+  @page {
+    margin: 0.45in;
+  }
+
+  html {
+    font-size: 10pt;
+  }
+
+  body {
+    min-width: 0;
+    background: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .skip-link,
+  .lab-header,
+  .hero,
+  .tool-nav,
+  .live-data-panel,
+  .dataset-strip,
+  #optimizerForm,
+  .mobile-solve-bar,
+  .toast,
+  .noscript,
+  .lab-footer,
+  .results__actions,
+  .empty-result,
+  #compareView,
+  #watchlistView,
+  #modelView,
+  .card-search-link,
+  .exact-replacement,
+  button {
+    display: none !important;
+  }
+
+  .workspace,
+  .workspace .shell,
+  .results {
+    width: 100%;
+    margin: 0;
+  }
+
+  .workspace {
+    padding: 0;
+  }
+
+  .results {
+    padding: 0;
+    background: #fff;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .results__heading {
+    margin-bottom: 0.7rem;
+  }
+
+  .result-scoreboard,
+  .lineup-grid,
+  .fan-report__grid {
+    break-inside: avoid;
+  }
+
+  .lineup-player,
+  .result-card,
+  .fan-report,
+  .fan-report__grid > * {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+
+  .lineup-player {
+    padding: 0.65rem;
+  }
+
+  .lineup-player__portrait {
+    width: 54px;
+    height: 54px;
+  }
+
+  .fan-report {
+    margin-top: 0.85rem;
+    background: #fff;
+  }
+
+  .fan-report__grid > * {
+    background: #fff;
+  }
+
+  .print-only {
+    display: initial !important;
   }
 }

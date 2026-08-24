@@ -17,6 +17,31 @@ const OBJECTIVE_METRICS = Object.freeze([
   "ballSecurity",
 ]);
 
+// Counting stats and turnovers arrive in the source-neutral player shape as
+// per-game values. A rotation, however, is a proposed 240-minute game plan.
+// Ranking its minute allocation from raw per-game totals would reward a player
+// simply for having received more historical minutes. These are the objective
+// metrics that can be safely converted to a common per-36-minute opportunity
+// basis. Shooting percentages are already rate statistics, so they remain
+// untouched under every scoring basis.
+const RATE_NORMALIZED_OBJECTIVE_METRICS = new Set([
+  "points",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "ballSecurity",
+]);
+
+// Rotation mode uses this basis unless a caller deliberately requests the
+// legacy per-game comparison. Keeping the value public makes the API contract
+// discoverable to applications that surface a model explanation to fans.
+export const DEFAULT_ROTATION_SCORING_BASIS = "per36";
+const ROTATION_SCORING_BASES = Object.freeze({
+  PER_36: "per36",
+  PER_GAME: "perGame",
+});
+
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
 // A regulation NBA game contains five simultaneous court roles for 48 minutes:
 // two guard roles, two forward roles, and one center role. Rotation roster
@@ -289,6 +314,28 @@ function copyMetricWeights(source, destination, label, reasons) {
   }
 }
 
+/**
+ * Normalize the scoring basis used only for the model's rotation objective.
+ *
+ * `per36` compares counting production after putting every player on the same
+ * 36-minute opportunity scale. `perGame` is an explicit compatibility escape
+ * hatch for callers that intentionally want the old raw per-game comparison.
+ * It does not change projected team totals: those are always calculated from
+ * the source per-minute rate and the allocated minutes.
+ */
+function normalizeRotationScoringBasis(value, reasons) {
+  if (value === undefined || value === null) return DEFAULT_ROTATION_SCORING_BASIS;
+
+  const compact = String(value).trim().toLowerCase().replace(/[\s_-]+/g, "");
+  if (compact === "per36") return ROTATION_SCORING_BASES.PER_36;
+  if (compact === "pergame") return ROTATION_SCORING_BASES.PER_GAME;
+
+  reasons.push(
+    'rotationOptions.scoringBasis must be either "per36" (the default rate-based model) or "perGame".',
+  );
+  return DEFAULT_ROTATION_SCORING_BASIS;
+}
+
 function normalizeConfig(config = {}) {
   const reasons = [];
   if (!isPlainObject(config)) {
@@ -455,6 +502,10 @@ function normalizeConfig(config = {}) {
     reasons.push("rotationOptions must be an object when provided.");
     rotationOptions = {};
   }
+  const rotationScoringBasis = normalizeRotationScoringBasis(
+    rotationOptions.scoringBasis,
+    reasons,
+  );
 
   return {
     config: {
@@ -474,6 +525,7 @@ function normalizeConfig(config = {}) {
       normalizedWeights,
       presetName,
       rotationOptions,
+      rotationScoringBasis,
     },
     reasons,
   };
@@ -517,12 +569,43 @@ export function percentileNormalize(entries, { lowerIsBetter = false } = {}) {
   return percentiles;
 }
 
-function buildNormalizedMetrics(players) {
+/**
+ * Return the value used to rank one objective metric before percentile
+ * normalization. The source player shape deliberately retains per-game box
+ * score values because those are the natural unit for a historical stat line
+ * and for projected team totals. Rotation selection needs a different view:
+ * a player who scored 12 points in 16 minutes was not a worse scorer than one
+ * who scored 15 in 32 minutes merely because the latter received more court
+ * time. Per-36 keeps counting metrics comparable while leaving efficiency
+ * percentages as the source rate.
+ *
+ * A zero-minute row cannot yield a meaningful rate. Assigning it a zero value
+ * is conservative and, importantly, avoids turning a data-quality issue into
+ * an infinite score or an artificial minute-allocation priority.
+ */
+function objectiveMetricValue(player, metric, scoringBasis) {
+  const sourceField = metric === "ballSecurity" ? "turnovers" : metric;
+  const sourceValue = Number(player[sourceField]);
+  if (
+    scoringBasis !== ROTATION_SCORING_BASES.PER_36 ||
+    !RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)
+  ) {
+    return sourceValue;
+  }
+
+  const sourceMinutes = Number(player.minutes);
+  if (!(sourceMinutes > 0)) return 0;
+  return (sourceValue / sourceMinutes) * 36;
+}
+
+function buildNormalizedMetrics(players, { scoringBasis = ROTATION_SCORING_BASES.PER_GAME } = {}) {
   const byPlayerId = new Map(players.map((player) => [player.id, {}]));
   for (const metric of OBJECTIVE_METRICS) {
-    const sourceField = metric === "ballSecurity" ? "turnovers" : metric;
     const percentiles = percentileNormalize(
-      players.map((player) => ({ id: player.id, value: player[sourceField] })),
+      players.map((player) => ({
+        id: player.id,
+        value: objectiveMetricValue(player, metric, scoringBasis),
+      })),
       { lowerIsBetter: metric === "ballSecurity" },
     );
     for (const player of players) {
@@ -621,8 +704,11 @@ function calculateLineupTotals(players) {
  * Basketball Reference supplies per-game production and minutes per game. A
  * player's historical per-minute rate is therefore `stat / minutes`; applying
  * that rate to the proposed allocation makes rotation thresholds describe the
- * minutes that will actually be played. A zero-minute source row contributes
- * zero rather than manufacturing an undefined rate.
+ * minutes that will actually be played. This calculation deliberately stays
+ * in source-rate units even when rotation scoring uses per-36 values: per-36
+ * is a ranking basis, not a second multiplier for a projected box score. A
+ * zero-minute source row contributes zero rather than manufacturing an
+ * undefined rate.
  */
 function calculateRotationTotals(players, rotationAllocation) {
   const totals = {
@@ -660,6 +746,15 @@ function calculateObjective(
   rotationAllocation = null,
 ) {
   const contributionBreakdown = {};
+  // Keep the group-level breakdown for the existing UI, while also retaining
+  // the additive player-level evidence a fan report needs to explain why a
+  // specific player belongs in this exact result. Every player contribution is
+  // measured on the same objective scale and the player totals reconcile to
+  // the displayed fit score (subject only to display rounding).
+  const playerContributions = Object.fromEntries(players.map((player) => [
+    player.id,
+    { scoreContribution: 0, metrics: {} },
+  ]));
   let rawScore = 0;
 
   for (const metric of OBJECTIVE_METRICS) {
@@ -677,6 +772,19 @@ function calculateObjective(
         ) / players.length;
     const scoreContribution = averagePercentile * normalizedWeights[metric] * 100;
     rawScore += scoreContribution;
+    for (const player of players) {
+      const percentile = normalizedMetrics.get(player.id)[metric];
+      const share = rotationAllocation
+        ? objectiveShare(player.id, players, rotationAllocation)
+        : 1 / players.length;
+      const playerScoreContribution = percentile * normalizedWeights[metric] * 100 * share;
+      const playerEntry = playerContributions[player.id];
+      playerEntry.metrics[metric] = {
+        percentile: round(percentile),
+        scoreContribution: round(playerScoreContribution),
+      };
+      playerEntry.scoreContribution += playerScoreContribution;
+    }
     contributionBreakdown[metric] = {
       weight: rawWeights[metric],
       normalizedWeight: round(normalizedWeights[metric]),
@@ -695,6 +803,12 @@ function calculateObjective(
     rawScore,
     score: round(rawScore),
     contributionBreakdown,
+    playerContributions: Object.fromEntries(
+      Object.entries(playerContributions).map(([id, detail]) => [
+        id,
+        { ...detail, scoreContribution: round(detail.scoreContribution) },
+      ]),
+    ),
   };
 }
 
@@ -2056,7 +2170,11 @@ function formatPositionMinimums(minimums) {
 
 /**
  * Exhaustively optimize a lineup or rotation from a single-team player pool.
- * Every combination is evaluated; no greedy selection is used.
+ * Every combination is evaluated; no greedy selection is used. Rotation mode
+ * defaults `rotationOptions.scoringBasis` to `per36` for counting stats and
+ * turnovers; use `perGame` only when an API caller deliberately needs the
+ * legacy raw-per-game ranking. That scoring choice never alters production
+ * projections, which remain source per-minute rates times allocated minutes.
  */
 export function optimizeLineups(players, config = {}) {
   const normalizedPlayerResult = normalizePlayers(players);
@@ -2200,6 +2318,11 @@ export function optimizeLineups(players, config = {}) {
     estimatedCombinations,
     maxCombinations: normalizedConfig.maxCombinations,
     requestedAlternatives: normalizedConfig.alternatives,
+    // This is intentionally absent from lineup mode: its equal-player profile
+    // keeps the historical per-game comparison users already expect.
+    ...(normalizedConfig.mode === "rotation"
+      ? { rotationScoringBasis: normalizedConfig.rotationScoringBasis }
+      : {}),
   };
   if (preflightReasons.length > 0) {
     return failureResult(mode, size, preflightReasons, {
@@ -2217,7 +2340,17 @@ export function optimizeLineups(players, config = {}) {
     });
   }
 
-  const normalizedMetrics = buildNormalizedMetrics(eligiblePlayers);
+  // A five-player profile remains an equal-player, per-game comparison. For a
+  // rotation, the exact allocator gives players proposed game minutes, so use
+  // per-36 counting rates by default before those players compete for minutes.
+  // The explicit perGame option remains available to API callers who need the
+  // legacy comparison for a historical experiment.
+  const normalizedMetrics = buildNormalizedMetrics(eligiblePlayers, {
+    scoringBasis:
+      normalizedConfig.mode === "rotation"
+        ? normalizedConfig.rotationScoringBasis
+        : ROTATION_SCORING_BASES.PER_GAME,
+  });
   const playerObjectiveScores = new Map(
     eligiblePlayers.map((player) => [
       player.id,
@@ -2777,6 +2910,7 @@ export function optimizeLineups(players, config = {}) {
       players: alternative.players,
       score: objective.score,
       contributionBreakdown: objective.contributionBreakdown,
+      playerContributions: objective.playerContributions,
       totals: alternative.totals,
       positionAssignment: alternative.positionResult.assignment,
       constraintAudit,

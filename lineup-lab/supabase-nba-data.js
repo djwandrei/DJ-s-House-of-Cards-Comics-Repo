@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260824a";
+import { normalizeDataset } from "./player-data.js?v=20260824b";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -50,6 +50,25 @@ function optionalNonNegativeNumber(value, fallback = 0) {
   if (value === null || value === undefined || value === "") return fallback;
   const number = Number(value);
   return Number.isFinite(number) && number >= 0 ? number : fallback;
+}
+
+// Advanced Basketball Reference metrics such as BPM can legitimately be
+// negative, so they need a separate optional-number helper from the raw
+// box-score total helper above. Returning `null` keeps missing provider values
+// distinct from a genuine zero in the fan-analysis layer.
+function optionalFiniteNumber(value, fallback = null) {
+  if (value === null || value === undefined || value === "") return fallback;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function safeMetricObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([key, metric]) => [String(key), optionalFiniteNumber(metric)])
+      .filter(([, metric]) => metric !== null),
+  );
 }
 
 function safeHttpsUrl(value) {
@@ -178,6 +197,68 @@ export function mapSupabaseNbaPlayer(row, options = {}) {
     turnovers: divideByGames(row.turnovers, games),
     points: divideByGames(row.points, games),
     headshotUrl: safeHttpsUrl(row.player_headshot_url),
+  };
+}
+
+/**
+ * Keep fan-analysis metadata separate from the intentionally narrow optimizer
+ * schema. `normalizeDataset()` validates the canonical per-game player shape
+ * and deliberately strips unknown columns, so layering this object afterward
+ * prevents a reporting feature from quietly changing exact-solver inputs.
+ */
+function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl }) {
+  const totals = {
+    minutes: optionalNonNegativeNumber(row.minutes_played),
+    fieldGoalsMade: optionalNonNegativeNumber(row.field_goals_made),
+    fieldGoalsAttempted: optionalNonNegativeNumber(row.field_goals_attempted),
+    threePointFieldGoalsMade: optionalNonNegativeNumber(row.three_point_field_goals_made),
+    threePointFieldGoalsAttempted: optionalNonNegativeNumber(row.three_point_field_goals_attempted),
+    freeThrowsMade: optionalNonNegativeNumber(row.free_throws_made),
+    freeThrowsAttempted: optionalNonNegativeNumber(row.free_throws_attempted),
+    offensiveRebounds: optionalNonNegativeNumber(row.offensive_rebounds),
+    defensiveRebounds: optionalNonNegativeNumber(row.defensive_rebounds),
+    totalRebounds: optionalNonNegativeNumber(row.total_rebounds),
+    assists: optionalNonNegativeNumber(row.assists),
+    steals: optionalNonNegativeNumber(row.steals),
+    blocks: optionalNonNegativeNumber(row.blocks),
+    turnovers: optionalNonNegativeNumber(row.turnovers),
+    personalFouls: optionalNonNegativeNumber(row.personal_fouls),
+    points: optionalNonNegativeNumber(row.points),
+  };
+  const leaguePer36 = {
+    // These aggregates and the team-level denominator are non-negative by
+    // definition. Treat a malformed optional browser payload as unavailable,
+    // rather than letting it create an impossible rate or possession estimate.
+    // (Advanced metrics below intentionally retain signed values such as BPM.)
+    points: optionalNonNegativeNumber(row.league_points_per_36, null),
+    rebounds: optionalNonNegativeNumber(row.league_rebounds_per_36, null),
+    assists: optionalNonNegativeNumber(row.league_assists_per_36, null),
+    steals: optionalNonNegativeNumber(row.league_steals_per_36, null),
+    blocks: optionalNonNegativeNumber(row.league_blocks_per_36, null),
+    turnovers: optionalNonNegativeNumber(row.league_turnovers_per_36, null),
+    efgPct: optionalNonNegativeNumber(row.league_efg_pct, null),
+    threePct: optionalNonNegativeNumber(row.league_three_pct, null),
+  };
+
+  return {
+    totals,
+    advanced: safeMetricObject(row.advanced_metrics),
+    teamTotalMinutes: optionalNonNegativeNumber(row.team_total_minutes, null),
+    estimatedTeamPossessions: optionalNonNegativeNumber(row.estimated_team_possessions, null),
+    leaguePer36,
+    postseasonAvailable: row.postseason_available === true,
+    source: {
+      season: nbaSeasonLabel(season),
+      team,
+      phase: seasonPhase,
+      url: sourceUrl,
+      // The view's league benchmarks aggregate every non-TOT NBA team stint
+      // for this exact ending season and phase. Mark that scope explicitly so
+      // fan analytics never treats a single roster as an era-wide baseline.
+      isLeagueWide: true,
+      leagueLabel: `NBA ${nbaSeasonLabel(season)} ${phaseLabel(seasonPhase)} per-36 baseline`,
+      leagueScope: "all imported NBA team stints in the same season and phase, weighted by player minutes",
+    },
   };
 }
 
@@ -346,6 +427,10 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
     teamGamesMethod: "aggregate player minutes with maximum player games as a lower bound",
     teamAverages: teamSummary.teamAverages,
     rotation: teamSummary.rotation,
+    analytics: {
+      per100Method: "Estimated team offensive possessions = FGA + 0.44 × FTA − offensive rebounds + turnovers. Individual exposure is estimated from that team's possession total and the player's share of team minutes.",
+      leagueBaselineMethod: "Same-season, same-phase NBA team-stint totals weighted by player minutes and expressed per 36 minutes. It is a historical context index, not an all-in-one player rating.",
+    },
     note: "Basketball Reference team-stint totals, converted to per-game values. Players who changed teams are scoped only to this team stint.",
   };
   const rawPlayers = rows.map((row) => mapSupabaseNbaPlayer(row, { team, season, seasonPhase }));
@@ -355,9 +440,14 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
   });
 
   const headshots = new Map(rawPlayers.map((player) => [player.id, player.headshotUrl]));
+  const analyticsById = new Map(rows.map((row) => {
+    const id = requireText(row.player_id, "Player ID");
+    return [id, fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl })];
+  }));
   dataset.players = dataset.players.map((player) => ({
     ...player,
     headshotUrl: headshots.get(player.id) || "",
+    analytics: analyticsById.get(player.id) || null,
   }));
   return dataset;
 }

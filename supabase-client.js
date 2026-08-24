@@ -1019,14 +1019,33 @@ window.DJ = window.DJ || {};
           'three_point_field_goals_attempted',
           'free_throws_made',
           'free_throws_attempted',
+          'offensive_rebounds',
+          'defensive_rebounds',
           'total_rebounds',
           'assists',
           'steals',
           'blocks',
           'turnovers',
+          'personal_fouls',
           'points',
           'source_name',
-          'source_url'
+          'source_url',
+          // The Lineup Lab maps these read-only analytics fields into a
+          // separate presentation layer. Keeping them here, at the single
+          // browser/Supabase boundary, prevents the page module from ever
+          // constructing an ad hoc database query.
+          'team_total_minutes',
+          'estimated_team_possessions',
+          'league_points_per_36',
+          'league_rebounds_per_36',
+          'league_assists_per_36',
+          'league_steals_per_36',
+          'league_blocks_per_36',
+          'league_turnovers_per_36',
+          'league_efg_pct',
+          'league_three_pct',
+          'advanced_metrics',
+          'postseason_available'
         ].join(','))
         .eq('season_end_year', seasonEndYear)
         .eq('team_code', teamCode)

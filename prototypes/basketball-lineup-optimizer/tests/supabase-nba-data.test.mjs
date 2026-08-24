@@ -240,6 +240,141 @@ test("creates a valid single-team data set with optional confirmed media", () =>
   assert.match(dataset.source.note, /team-stint totals/i);
 });
 
+test("attaches a source-backed fan analytics envelope from optional player-pool fields", () => {
+  const dataset = createSupabaseNbaTeamDataset([savedRow({
+    offensive_rebounds: "59",
+    defensive_rebounds: 391,
+    personal_fouls: "164",
+    team_total_minutes: "19684",
+    estimated_team_possessions: "8279.44",
+    league_points_per_36: "16.7",
+    league_rebounds_per_36: 6.5,
+    league_assists_per_36: "3.8",
+    league_steals_per_36: 1.1,
+    league_blocks_per_36: 0.7,
+    league_turnovers_per_36: "2.1",
+    league_efg_pct: "0.541",
+    league_three_pct: 0.358,
+    advanced_metrics: {
+      player_efficiency_rating: "24.6",
+      box_plus_minus: -1.25,
+      usage_percentage: 0.317,
+      malformed_value: "not-a-number",
+      missing_value: null,
+    },
+    postseason_available: true,
+  })], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+  });
+
+  const [player] = dataset.players;
+  // The solver-facing per-game fields are still produced by the established
+  // mapper; analytics lives in a separate object so it cannot silently alter
+  // a constraint or exact objective input.
+  assert.equal(player.points, 2177 / 79);
+  assert.equal(player.minutes, 2871 / 79);
+  assert.deepEqual(player.analytics.totals, {
+    minutes: 2871,
+    fieldGoalsMade: 789,
+    fieldGoalsAttempted: 1764,
+    threePointFieldGoalsMade: 320,
+    threePointFieldGoalsAttempted: 811,
+    freeThrowsMade: 279,
+    freeThrowsAttempted: 333,
+    offensiveRebounds: 59,
+    defensiveRebounds: 391,
+    totalRebounds: 450,
+    assists: 359,
+    steals: 91,
+    blocks: 51,
+    turnovers: 249,
+    personalFouls: 164,
+    points: 2177,
+  });
+  assert.deepEqual(player.analytics.advanced, {
+    player_efficiency_rating: 24.6,
+    box_plus_minus: -1.25,
+    usage_percentage: 0.317,
+  });
+  assert.deepEqual(player.analytics.leaguePer36, {
+    points: 16.7,
+    rebounds: 6.5,
+    assists: 3.8,
+    steals: 1.1,
+    blocks: 0.7,
+    turnovers: 2.1,
+    efgPct: 0.541,
+    threePct: 0.358,
+  });
+  assert.equal(player.analytics.teamTotalMinutes, 19684);
+  assert.equal(player.analytics.estimatedTeamPossessions, 8279.44);
+  assert.equal(player.analytics.postseasonAvailable, true);
+  assert.deepEqual(player.analytics.source, {
+    season: "2024-25",
+    team: "MIN",
+    phase: "regular",
+    url: "https://www.basketball-reference.com/leagues/NBA_2025_totals.html",
+    isLeagueWide: true,
+    leagueLabel: "NBA 2024-25 Regular season per-36 baseline",
+    leagueScope: "all imported NBA team stints in the same season and phase, weighted by player minutes",
+  });
+});
+
+test("keeps legacy player-pool rows compatible when fan analytics fields are absent", () => {
+  const dataset = createSupabaseNbaTeamDataset([savedRow()], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+  });
+
+  const [player] = dataset.players;
+  assert.equal(player.id, "edwaran01");
+  assert.equal(player.points, 2177 / 79);
+  assert.deepEqual(player.analytics.advanced, {});
+  assert.deepEqual(player.analytics.leaguePer36, {
+    points: null,
+    rebounds: null,
+    assists: null,
+    steals: null,
+    blocks: null,
+    turnovers: null,
+    efgPct: null,
+    threePct: null,
+  });
+  assert.equal(player.analytics.teamTotalMinutes, null);
+  assert.equal(player.analytics.estimatedTeamPossessions, null);
+  assert.equal(player.analytics.postseasonAvailable, false);
+  assert.equal(player.analytics.totals.offensiveRebounds, 0);
+  assert.equal(player.analytics.totals.defensiveRebounds, 0);
+  assert.equal(player.analytics.totals.personalFouls, 0);
+});
+
+test("drops malformed optional fan analytics values without rejecting a valid legacy row", () => {
+  const dataset = createSupabaseNbaTeamDataset([savedRow({
+    team_total_minutes: -1,
+    estimated_team_possessions: "not-a-number",
+    league_points_per_36: -9,
+    league_efg_pct: "invalid",
+    advanced_metrics: ["not", "a", "metric-map"],
+    postseason_available: "true",
+  })], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+  });
+
+  const [player] = dataset.players;
+  assert.equal(player.points, 2177 / 79);
+  assert.equal(player.analytics.teamTotalMinutes, null);
+  assert.equal(player.analytics.estimatedTeamPossessions, null);
+  assert.equal(player.analytics.leaguePer36.points, null);
+  assert.equal(player.analytics.leaguePer36.efgPct, null);
+  assert.deepEqual(player.analytics.advanced, {});
+  assert.equal(player.analytics.postseasonAvailable, false);
+});
+
 test("uses clear playoff copy in historical dataset labels", () => {
   const dataset = createSupabaseNbaTeamDataset([savedRow({ season_phase: "playoffs" })], {
     team: "MIN",

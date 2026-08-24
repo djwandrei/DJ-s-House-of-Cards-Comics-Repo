@@ -12,6 +12,8 @@ const releaseFiles = [
   "optimizer-worker.js",
   "player-data.js",
   "supabase-nba-data.js",
+  "fan-analytics.js",
+  "scenario-url.js",
   "styles.css",
   "fixtures/timberwolves-2021-22.json",
 ];

@@ -12,7 +12,7 @@
   <link rel="preload" href="../../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260824a">
+  <link rel="stylesheet" href="styles.css?v=20260824b">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -187,6 +187,31 @@
                     </div>
                   </details>
 
+                  <details class="analytics-panel" id="analyticsPanel">
+                    <summary>Analytics and reporting assumptions</summary>
+                    <p class="helper"><strong>These options explain the result; they do not weaken the exact constraints.</strong> Per 36 puts counting stats on an equal playing-time scale. The per-100 view is labelled an estimate because historical team possessions are reconstructed from available team totals.</p>
+                    <div class="field-row field-row--two analytics-panel__fields">
+                      <label class="field">
+                        <span>Stat display</span>
+                        <select id="analyticsViewInput" aria-describedby="analyticsViewHelp">
+                          <option value="perGame" selected>Per game</option>
+                          <option value="per36">Per 36 minutes</option>
+                          <option value="per100Estimated">Per 100 estimated possessions</option>
+                          <option value="eraRelative">Era-relative per-36 index</option>
+                        </select>
+                      </label>
+                      <label class="field" id="rotationScoringBasisField">
+                        <span>Rotation scoring basis</span>
+                        <select id="rotationScoringBasisInput" aria-describedby="rotationScoringBasisHelp">
+                          <option value="per36" selected>Per 36 rate — recommended</option>
+                          <option value="perGame">Per game — legacy comparison</option>
+                        </select>
+                      </label>
+                    </div>
+                    <p class="field__help" id="analyticsViewHelp">Per game, per 36, and per-100 estimates all describe the selected team stint. Era-relative index compares a player's per-36 rate with the same NBA season and phase; 100 is the minute-weighted league baseline.</p>
+                    <p class="field__help" id="rotationScoringBasisHelp">In rotation mode, the recommended per-36 basis decides which rate profiles earn minutes. Exact projected totals always use each player's historical per-minute production times the proposed minutes.</p>
+                  </details>
+
                   <section class="opponent-scout" id="opponentScout" aria-labelledby="opponentScoutHeading">
                     <div class="opponent-scout__heading">
                       <div>
@@ -344,7 +369,9 @@
               </div>
               <div class="results__actions">
                 <button class="button button--quiet" id="copyResultButton" type="button">Copy summary</button>
+                <button class="button button--quiet" id="shareScenarioButton" type="button">Copy share link</button>
                 <button class="button button--quiet" id="downloadResultButton" type="button">Download CSV</button>
+                <button class="button button--quiet" id="printReportButton" type="button">Print scouting report</button>
               </div>
             </div>
             <div id="resultContent"></div>
@@ -363,7 +390,7 @@
           <div class="view-heading">
             <p class="eyebrow">Head-to-head</p>
             <h2>Player comparison</h2>
-            <p>Select up to four players from the optimizer table. Percentiles use the same sample filters and exclusions as the optimizer.</p>
+            <p>Select up to four players from the optimizer table. Choose the stat display in Analytics and reporting assumptions; percentiles use the same sample filters and exclusions as the optimizer.</p>
           </div>
           <div id="compareContent" class="panel compare-content"></div>
         </section>
@@ -410,8 +437,8 @@
             <article class="panel model-card">
               <span class="model-card__number">04</span>
               <h3>Honest limitations</h3>
-              <p>Team-season rows show players who appeared for that team; they are not a current depth chart or injury report. Box scores do not measure chemistry, matchups, role changes, or possession context.</p>
-              <p>Rotation mode evaluates each candidate with an exact 240-minute plan under your minimum, maximum, and on-court position limits. Its fit score and displayed production are minute-weighted, and production requirements apply to that projection. It is still a historical-stat scenario—not a game prediction.</p>
+              <p>Team-season rows show players who appeared for that team; they are not a current depth chart or injury report. Box scores do not directly measure chemistry, matchups, role changes, or on-court possessions. Any per-100 view is visibly labelled as a team-total-based estimate.</p>
+              <p>Rotation mode evaluates each candidate with an exact 240-minute plan under your minimum, maximum, and on-court position limits. By default, it ranks counting-stat quality per 36 minutes before allocating time, so historical playing time does not automatically earn more proposed minutes. Projected production still uses each player's historical per-minute production times the exact minutes assigned. It is a historical-stat scenario—not a game prediction.</p>
             </article>
           </div>
           <div class="panel data-note">
@@ -432,8 +459,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../../backend-config.js?v=20260823b"></script>
-  <script defer src="../../supabase-client.js?v=20260823d"></script>
-  <script type="module" src="app.js?v=20260824a"></script>
+  <script defer src="../../backend-config.js?v=20260824b"></script>
+  <script defer src="../../supabase-client.js?v=20260824b"></script>
+  <script type="module" src="app.js?v=20260824b"></script>
 </body>
 </html>

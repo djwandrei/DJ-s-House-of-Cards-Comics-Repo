@@ -3,11 +3,13 @@
 # The shared Supabase browser adapter is included because the Lab reads the
 # NBA views through it. Path-list releases never delete remote files.
 lineup-lab/app.js
+lineup-lab/fan-analytics.js
 lineup-lab/fixtures/timberwolves-2021-22.json
 lineup-lab/index.html
 lineup-lab/optimizer-core.js
 lineup-lab/optimizer-worker.js
 lineup-lab/player-data.js
+lineup-lab/scenario-url.js
 lineup-lab/styles.css
 lineup-lab/supabase-nba-data.js
 supabase-client.js
