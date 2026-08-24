@@ -40,6 +40,19 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Restore the resumable media checkpoint
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: outputs/nba-basketball-reference-import-checkpoints
+          # A unique primary key lets each successful Tuesday save its newer
+          # checkpoint. The prefix restores the newest prior run, so confirmed
+          # no-image decisions are not needlessly crawled from A to Z again.
+          key: nba-media-checkpoint-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            nba-media-checkpoint-${{ github.ref_name }}-
+            nba-media-checkpoint-
+
       - name: Link the approved Supabase project for an apply run
         if: ${{ github.event_name == 'schedule' || inputs.apply }}
         env:
@@ -94,6 +107,31 @@ jobs:
             args+=(--season-end-year "$REQUESTED_SEASON_END_YEAR")
           fi
           "${args[@]}"
+
+      - name: Backfill newly available current-season media
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
+        env:
+          BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
+          NBA_WEEKLY_UPDATE_ALLOW_WRITE: ${{ secrets.NBA_WEEKLY_UPDATE_ALLOW_WRITE }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          REQUESTED_PHASE: ${{ inputs.phase }}
+        shell: bash
+        run: |
+          # The statistics refresh intentionally avoids an unbounded media
+          # crawl. Follow it with a separate checkpointed pass for the same
+          # season so new players and team-season rows acquire assets over
+          # successive Tuesdays without risking the workflow timeout.
+          season_end_year="$(node -p "require('./outputs/nba-weekly-update/report.json').seasonEndYear")"
+          node scripts/import-nba-basketball-reference.mjs \
+            --apply \
+            --media-only \
+            --season-start "$season_end_year" \
+            --season-end "$season_end_year" \
+            --phase "${REQUESTED_PHASE:-both}" \
+            --request-delay-ms 4000 \
+            --media-request-limit 120 \
+            --media-batch-size 25
 
       - name: Publish the safe run summary
         if: always()
