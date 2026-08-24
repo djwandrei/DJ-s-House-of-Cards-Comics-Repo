@@ -41,6 +41,120 @@ const VISUAL_MATRIX_VIEWPORTS = [
   { label: 'tablet', width: 900, height: 900 },
   { label: 'desktop', width: 1280, height: 900 }
 ];
+const NBA_SLAB_STATS_FIXTURE = {
+  schemaVersion: 1,
+  provider: 'NBA',
+  productId: 9000001,
+  players: [
+    {
+      mapping: {
+        subjectOrder: 1,
+        subjectRole: 'co_subject',
+        depictedSeasonLabel: '2003-04',
+        depictedSeasonStartYear: 2003,
+        depictedSeasonEndYear: 2004,
+        seasonMappingMethod: 'title_season_range',
+        reviewState: 'auto_verified'
+      },
+      player: {
+        athleteId: 'smoke-athlete-one',
+        nbaPlayerId: 'smoke-nba-one',
+        name: 'Test Player One',
+        primaryPosition: 'G',
+        heightInches: 78,
+        weightPounds: 210,
+        college: 'Test University',
+        headshotUrl: ''
+      },
+      seasons: [
+        {
+          seasonEndYear: 2004,
+          seasonLabel: '2003-04',
+          phase: 'regular',
+          gamesPlayed: 10,
+          minutesPlayed: 350,
+          points: 200,
+          totalRebounds: 80,
+          assists: 60,
+          steals: 20,
+          blocks: 10,
+          turnovers: 30,
+          fieldGoalPercentage: 0.5,
+          threePointPercentage: 0.4,
+          freeThrowPercentage: 0.8,
+          trueShootingPercentage: 0.61,
+          playerEfficiencyRating: 22.2,
+          winShares: 4.5,
+          boxPlusMinus: 5.3,
+          valueOverReplacementPlayer: 3.1
+        },
+        {
+          seasonEndYear: 2004,
+          seasonLabel: '2003-04',
+          phase: 'playoffs',
+          gamesPlayed: 5,
+          minutesPlayed: 170,
+          points: 90,
+          totalRebounds: 35,
+          assists: 25,
+          steals: 8,
+          blocks: 4,
+          turnovers: 12,
+          fieldGoalPercentage: 0.48,
+          threePointPercentage: 0.37,
+          freeThrowPercentage: 0.79,
+          trueShootingPercentage: 0.58,
+          playerEfficiencyRating: 20.1,
+          winShares: 1.2,
+          boxPlusMinus: 4.1,
+          valueOverReplacementPlayer: 0.8
+        }
+      ]
+    },
+    {
+      mapping: {
+        subjectOrder: 2,
+        subjectRole: 'co_subject',
+        depictedSeasonEndYear: null,
+        seasonMappingMethod: 'unresolved',
+        reviewState: 'human_verified'
+      },
+      player: {
+        athleteId: 'smoke-athlete-two',
+        nbaPlayerId: 'smoke-nba-two',
+        name: 'Test Player Two',
+        primaryPosition: 'F',
+        heightInches: 81,
+        weightPounds: 235,
+        college: '',
+        headshotUrl: ''
+      },
+      seasons: [
+        {
+          seasonEndYear: 2005,
+          seasonLabel: '2004-05',
+          phase: 'regular',
+          gamesPlayed: 12,
+          minutesPlayed: 360,
+          points: 180,
+          totalRebounds: 108,
+          assists: 36,
+          steals: 12,
+          blocks: 18,
+          turnovers: 24,
+          fieldGoalPercentage: 0.52,
+          threePointPercentage: 0.33,
+          freeThrowPercentage: 0.75,
+          trueShootingPercentage: 0.6,
+          playerEfficiencyRating: 21,
+          winShares: 3.7,
+          boxPlusMinus: 4.4,
+          valueOverReplacementPlayer: 2.4
+        }
+      ]
+    }
+  ]
+};
 const MIME_TYPES = new Map([
   ['.css', 'text/css; charset=utf-8'],
   ['.csv', 'text/csv; charset=utf-8'],
@@ -165,7 +279,11 @@ class CdpClient {
       returnByValue: true
     });
     if (result.exceptionDetails) {
-      throw new Error(result.exceptionDetails.text || 'Runtime exception');
+      throw new Error(
+        result.exceptionDetails.exception?.description
+        || result.exceptionDetails.text
+        || 'Runtime exception'
+      );
     }
     return result.result?.value;
   }
@@ -661,6 +779,92 @@ async function inspectEveryPageVisualMatrix(client, baseUrl) {
   };
 }
 
+async function inspectNbaSlabStatsPanel(client, baseUrl) {
+  const results = [];
+  for (const viewport of [
+    { label: 'mobile', width: 390, height: 844, scale: 2 },
+    { label: 'desktop', width: 1280, height: 900, scale: 1 }
+  ]) {
+    client.consumeEvents();
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width: viewport.width,
+      height: viewport.height,
+      deviceScaleFactor: viewport.scale,
+      mobile: viewport.width <= 900,
+      screenWidth: viewport.width,
+      screenHeight: viewport.height
+    });
+    await navigate(client, `${baseUrl}/basketball-cards.html?slabStatsSmoke=${viewport.width}`);
+    const state = await client.evaluate(`(async () => {
+      const statsModule = await import('/nba-slab-stats.mjs?renderSmoke=20260824a');
+      const modal = document.getElementById('productModal');
+      const modalInner = document.getElementById('modalInner');
+      if (!modal || !modalInner) return { mounted: false, reason: 'modal host missing' };
+      modalInner.innerHTML = '<div class="modal-layout"><div class="modal-media" aria-hidden="true"></div><div class="modal-copy"><h3 id="modalTitle">NBA stats smoke product</h3><section class="nba-slab-stats" id="nbaSlabStatsPanel" aria-label="NBA player statistics for this product"></section></div></div>';
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      modal.removeAttribute('inert');
+      const host = document.getElementById('nbaSlabStatsPanel');
+      const mounted = await statsModule.mountNbaSlabStatsPanel(host, { id: 9000001 }, {
+        requestStats: async () => (${JSON.stringify(NBA_SLAB_STATS_FIXTURE)}),
+        isCurrent: () => true
+      });
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const tabs = Array.from(host.querySelectorAll('[data-slab-player-tab]'));
+      const firstTab = tabs[0];
+      firstTab?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      await new Promise((resolve) => setTimeout(resolve, 30));
+      const secondTabSelected = tabs[1]?.getAttribute('aria-selected') === 'true'
+        && document.activeElement === tabs[1];
+      firstTab?.click();
+      const select = host.querySelector('[data-slab-season-select="0"]');
+      if (select) {
+        select.value = '2004:playoffs';
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      await new Promise((resolve) => setTimeout(resolve, 30));
+      const hostRect = host.getBoundingClientRect();
+      const visiblePlayerPanel = Array.from(host.querySelectorAll('[data-slab-player-panel]'))
+        .find((panel) => !panel.hidden);
+      const metricGrid = visiblePlayerPanel?.querySelector('.slab-stats-metrics');
+      const metricGridRect = metricGrid?.getBoundingClientRect();
+      const visibleMetrics = Array.from(visiblePlayerPanel?.querySelectorAll('.slab-stats-metric') || []);
+      const metricsFit = visibleMetrics.every((metric) => {
+        const rect = metric.getBoundingClientRect();
+        return !metricGridRect || (rect.left >= metricGridRect.left - 1 && rect.right <= metricGridRect.right + 1);
+      });
+      return {
+        mounted,
+        visible: hostRect.width > 0 && hostRect.height > 0,
+        horizontalOverflow: host.scrollWidth - host.clientWidth,
+        pageOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+        tabCount: tabs.length,
+        secondTabSelected,
+        visiblePanelCount: Array.from(host.querySelectorAll('[data-slab-player-panel]')).filter((panel) => !panel.hidden).length,
+        seasonChanged: /Playoffs/.test(host.querySelector('[data-slab-season-output="0"]')?.textContent || ''),
+        conciseAnnouncement: /Showing 2003-04 Playoffs stats for Test Player One/.test(host.querySelector('[data-slab-season-announcement="0"]')?.textContent || ''),
+        metricColumnCount: getComputedStyle(metricGrid).gridTemplateColumns.split(/\\s+/).filter(Boolean).length,
+        metricCount: visibleMetrics.length,
+        metricsFit,
+        disclaimerVisible: /not a card valuation, scouting grade, or projection/i.test(host.textContent || ''),
+        fullPanelLiveRegions: host.querySelectorAll('[aria-live]').length
+      };
+    })()`);
+    const failures = [];
+    if (!state.mounted || !state.visible) failures.push('panel did not mount visibly');
+    if (state.horizontalOverflow > 2 || state.pageOverflow > 2) failures.push('panel caused horizontal overflow');
+    if (state.tabCount !== 2 || !state.secondTabSelected || state.visiblePanelCount !== 1) failures.push('keyboard player tabs failed');
+    if (!state.seasonChanged || !state.conciseAnnouncement) failures.push('season selector feedback failed');
+    if (state.metricColumnCount !== 3 || state.metricCount !== 6 || !state.metricsFit) failures.push('key stat grid is irregular');
+    if (!state.disclaimerVisible) failures.push('historical-data disclaimer is missing');
+    if (state.fullPanelLiveRegions !== 0) failures.push('full panel became an oversized live region');
+    const badEvents = eventFailures(client.consumeEvents());
+    failures.push(...badEvents.map((event) => `browser error: ${event}`));
+    results.push({ label: `NBA Slab-to-Stats ${viewport.label}`, state, badEvents, failures });
+  }
+  return results;
+}
+
 async function main() {
   const server = await startStaticServer();
   const port = server.address().port;
@@ -687,6 +891,22 @@ async function main() {
       screenWidth: 1440,
       screenHeight: 1000
     });
+    if (process.argv.includes('--nba-slab-stats-only')) {
+      const slabStats = await inspectNbaSlabStatsPanel(client, baseUrl);
+      client.websocket.close();
+      const failures = slabStats.flatMap((item) => (
+        item.failures.map((failure) => `${item.label}: ${failure}`)
+      ));
+      const summary = {
+        ok: failures.length === 0,
+        baseUrl,
+        slabStats,
+        failures
+      };
+      console.log(JSON.stringify(summary, null, 2));
+      if (!summary.ok) process.exitCode = 1;
+      return;
+    }
     const desktopPages = [
       { label: 'home', path: '/', expect: { minCards: 7 } },
       { label: 'baseball category', path: '/baseball-cards.html?search=rookie', expect: { catalog: true } },
@@ -700,6 +920,7 @@ async function main() {
     for (const page of desktopPages) {
       desktop.push(await inspectDesktopPage(client, baseUrl, page));
     }
+    const slabStats = await inspectNbaSlabStatsPanel(client, baseUrl);
     const mobile = await inspectMobileFlow(client, baseUrl);
     const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
     const visualMatrix = await inspectEveryPageVisualMatrix(client, baseUrl);
@@ -710,6 +931,7 @@ async function main() {
       ...desktop.flatMap((item) => item.badEvents.map((event) => `${item.label}: ${event}`)),
       ...mobile.failures.map((failure) => `${mobile.label}: ${failure}`),
       ...mobile.badEvents.map((event) => `${mobile.label}: ${event}`),
+      ...slabStats.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
       ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
       ...visualMatrix.failures
     ];
@@ -718,6 +940,7 @@ async function main() {
       baseUrl,
       desktop,
       mobile,
+      slabStats,
       responsive,
       visualMatrix,
       failures: allFailures

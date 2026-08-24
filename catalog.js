@@ -141,6 +141,8 @@ window.DJ = window.DJ || {};
   let linkedProductAutoOpenedId = null;
   let activeModalProductId = null;
   let activeModalContextProducts = [];
+  let modalSlabStatsRequestId = 0;
+  let nbaSlabStatsModulePromise = null;
   let cartActionFeedbackTimer = 0;
 
   function setFilterPanelDescendantsFocusable(filterPanel, enabled) {
@@ -1846,6 +1848,52 @@ window.DJ = window.DJ || {};
       DJ.versionedProductAsset('payments.js')
     ]);
     return DJ.payments || null;
+  }
+
+  function isNbaSlabStatsCandidate(product = {}) {
+    return String(product.category || '').trim().toLowerCase() === 'basketball'
+      && String(product.league || '').trim().toUpperCase() === 'NBA';
+  }
+
+  async function ensureNbaSlabStatsBridge() {
+    await DJ.loadScriptsInOrder([
+      DJ.versionedProductAsset('backend-config.js'),
+      DJ.versionedProductAsset('supabase-client.js')
+    ]);
+    if (!DJ.remoteCatalog?.getNbaProductSlabStats) return null;
+
+    if (!nbaSlabStatsModulePromise) {
+      nbaSlabStatsModulePromise = import(DJ.versionedProductAsset('nba-slab-stats.mjs'))
+        .catch((error) => {
+          nbaSlabStatsModulePromise = null;
+          throw error;
+        });
+    }
+    return nbaSlabStatsModulePromise;
+  }
+
+  function hydrateNbaSlabStatsPanel(product, requestId) {
+    const container = document.getElementById('nbaSlabStatsPanel');
+    if (!container) return;
+
+    const isCurrent = () => (
+      requestId === modalSlabStatsRequestId
+      && Number(activeModalProductId) === Number(product.id)
+      && container.isConnected
+      && document.getElementById('productModal')?.classList.contains('active')
+    );
+
+    ensureNbaSlabStatsBridge()
+      .then((statsModule) => {
+        if (!isCurrent() || !statsModule?.mountNbaSlabStatsPanel) return;
+        return statsModule.mountNbaSlabStatsPanel(container, product, { isCurrent });
+      })
+      .catch((error) => {
+        if (!isCurrent()) return;
+        container.hidden = true;
+        container.replaceChildren();
+        console.warn('NBA Slab-to-Stats panel could not be initialized.', error);
+      });
   }
 
   function hydrateCustomerAccountAfterPaint() {
@@ -4483,6 +4531,7 @@ Thank you.`
     const modal = document.getElementById('productModal');
     const modalInner = document.getElementById('modalInner');
     if (!modal || !modalInner) return;
+    const slabStatsRequestId = ++modalSlabStatsRequestId;
     DJ.trackEvent?.('product_open', { productId: Number(product.id), category: product.category });
     if (!options.preserveUrl) {
       replaceProductUrl(product);
@@ -4549,6 +4598,11 @@ Thank you.`
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
+          ${isNbaSlabStatsCandidate(product) ? `
+            <section class="nba-slab-stats" id="nbaSlabStatsPanel" aria-label="NBA player statistics for this product" aria-busy="true">
+              <p class="slab-stats-loading" role="status">Matching this card to verified NBA statistics&hellip;</p>
+            </section>
+          ` : ''}
           ${isDirectCheckout ? `
             <div class="modal-quantity-row">
               <label for="modalQuantity">Quantity</label>
@@ -4657,6 +4711,9 @@ Thank you.`
     modal.setAttribute('aria-hidden', 'false');
     modal.removeAttribute('inert');
     document.body.style.overflow = 'hidden';
+    if (isNbaSlabStatsCandidate(product)) {
+      hydrateNbaSlabStatsPanel(product, slabStatsRequestId);
+    }
     requestAnimationFrame(() => {
       const preferredFocus = options.focusSelector ? modal.querySelector(options.focusSelector) : null;
       const fallbackFocus = modal.querySelector('.modal-listing-nav__button:not([disabled])')
@@ -4672,6 +4729,7 @@ Thank you.`
     const modal = document.getElementById('productModal');
     if (!modal) return;
 
+    modalSlabStatsRequestId += 1;
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     modal.setAttribute('inert', '');

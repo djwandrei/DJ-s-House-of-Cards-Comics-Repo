@@ -10,6 +10,7 @@ This site is a static storefront with Supabase-backed catalog administration and
 4. `catalog.js` loads Supabase first, falls back to static catalog files, normalizes products, and renders all storefront product views.
 5. `backend-admin.js` powers the only listing editor. Signed-in changes update Supabase immediately.
 6. `payments.js` bridges buyer authentication and quantity-aware, multi-item Stripe Checkout through Supabase Edge Functions. Checkout success removes only the saved checkout snapshot after the server confirms that the returned session is paid.
+7. Eligible NBA product modals lazily import `nba-slab-stats.mjs`, which reads a fixed-shape payload through `supabase-client.js`. Product grids never load player statistics.
 
 ## Sources Of Truth
 
@@ -19,6 +20,9 @@ This site is a static storefront with Supabase-backed catalog administration and
 - Live catalog: Supabase `products`.
 - Deployable static fallback: `products.json` and generated category catalog files.
 - Product display media: local files under `assets/`.
+- Athlete identity and product relationships: Supabase `athletes`, league
+  membership/alias tables, and `product_athlete_mappings`. NBA profile and stat
+  facts remain in the `nba_*` domain; see `docs/universal-athlete-schema.md`.
 
 The static catalog and Supabase should always contain the same product IDs and media paths after a release.
 
@@ -56,12 +60,16 @@ deletion through the audited Shopify/Supabase Edge workflow.
 - Shopify OAuth tokens are encrypted before database storage. The encryption
   key and worker secret belong only in Edge Function secrets, never browser
   configuration or this repository.
+- Athlete names are evidence, not keys. Shopper-facing Slab-to-Stats panels use
+  only active identities and verified product mappings, and expose media only
+  when its rights flag is confirmed.
 
 ## Main Files
 
 - `core.js`: shared utilities and page initialization.
 - `nav.js`: desktop/mobile navigation behavior.
 - `catalog.js`: catalog loading, filtering, product cards, wishlist/cart actions, cart page, and product modal.
+- `nba-slab-stats.mjs`: lazy NBA product-modal stats adapter and accessible panel renderer.
 - `supabase-client.js`: Supabase adapter and row mapping.
 - `backend-admin.js`: live catalog administration.
 - `payments.js`: buyer auth and single-item/cart checkout.
@@ -88,6 +96,8 @@ node scripts/site-integrity-check.mjs
 node scripts/audit-backend-hardening.mjs
 node scripts/run-correctness-regression-tests.mjs
 node scripts/audit-structured-data.mjs
+node --test scripts/tests/nba-product-player-mapping.test.mjs scripts/tests/nba-slab-stats.test.mjs
+npx supabase test db
 powershell -ExecutionPolicy Bypass -File scripts/audit-secrets.ps1
 git diff --check
 ```

@@ -28,6 +28,7 @@ inquiries.js
 metrics.html
 metrics.js
 nav.js
+nba-slab-stats.mjs
 offline.html
 offline.js
 offer.html
