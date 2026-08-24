@@ -530,11 +530,11 @@
   body.dark-mode[data-page="sports-hub"] .department-split-grid .category-card .category-pill {
     min-height:34px;
     padding:0 .86rem;
-    background:rgba(5,9,20,.88);
-    border-color:rgba(255,255,255,.42);
+    background:rgba(5,9,20,.96);
+    border-color:rgba(255,255,255,.68);
     color:#fff;
     font-size:.9rem;
-    text-shadow:none;
+    text-shadow:0 1px 2px rgba(0,0,0,.78);
     box-shadow:0 14px 28px rgba(0,0,0,.3);
   }
 
@@ -1398,8 +1398,10 @@ body.dark-mode {
 }
 
 .category-card .category-pill {
-  background:rgba(8,14,32,.78);
-  border-color:rgba(255,255,255,.32);
+  background:rgba(5,9,20,.94);
+  border-color:rgba(255,255,255,.68);
+  box-shadow:0 10px 20px rgba(0,0,0,.32);
+  text-shadow:0 1px 2px rgba(0,0,0,.78);
 }
 
 @media (hover:hover) and (pointer:fine) {
@@ -1902,4 +1904,24 @@ body.dark-mode .modal-listing-nav__button {
     align-items:stretch;
     flex-direction:column;
   }
+}
+
+/* The shared footer is intentionally compact on narrow screens: its remaining
+   links should read as links, not as another repeated grid of large buttons. */
+.footer-link-group a {
+  min-height:0;
+  padding:.24rem 0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:.16em;
+}
+
+.footer-link-group a:hover,
+.footer-link-group a:focus-visible {
+  background:transparent;
+  border-color:transparent;
+  transform:none;
 }

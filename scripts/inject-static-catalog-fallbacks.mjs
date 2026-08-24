@@ -140,6 +140,33 @@ function displayPrice(product) {
     : 'Ask DJ for price';
 }
 
+function availableQuantity(product = {}) {
+  const explicitQuantity = Number(product.quantityAvailable);
+  if (Number.isFinite(explicitQuantity)) {
+    return Math.max(0, Math.floor(explicitQuantity));
+  }
+
+  const copyCount = Number(product.copyCount);
+  if (Number.isFinite(copyCount)) {
+    return Math.max(0, Math.floor(copyCount));
+  }
+
+  return 1;
+}
+
+function hasCheckoutAvailability(product = {}) {
+  const saleStatus = String(product.saleStatus || 'available').trim().toLowerCase();
+  const price = Number(product.price);
+  const priceLabel = displayPrice(product).toLowerCase();
+  return product.isDeleted !== true
+    && product.checkoutEnabled !== false
+    && saleStatus === 'available'
+    && Number.isFinite(price)
+    && price > 0
+    && availableQuantity(product) > 0
+    && !/contact|ask|inquir|availability/.test(priceLabel);
+}
+
 function primaryImage(product) {
   return String(product.image || '').trim() || 'assets/dj-logo.png';
 }
@@ -178,6 +205,8 @@ function productHref(product) {
 function fallbackCard(product, index) {
   const category = categoryOf(product);
   const image = productImageSources(product);
+  const quantityAvailable = availableQuantity(product);
+  const isDirectCheckout = hasCheckoutAvailability(product);
   const attributes = Array.isArray(product.attributes)
     ? product.attributes.map((attribute) => String(attribute || '').trim()).filter(Boolean)
     : [];
@@ -191,10 +220,14 @@ function fallbackCard(product, index) {
         <div class="product-card-footer">
           <div class="product-pricing">
             <span class="product-price-label">Listing price</span>
-            <div class="product-price">${escapeHtml(displayPrice(product))}</div>
+            <div class="product-pricing-values">
+              <div class="product-price">${escapeHtml(displayPrice(product))}</div>
+              ${isDirectCheckout ? `<span class="product-inventory">${escapeHtml(`${quantityAvailable} available`)}</span>` : ''}
+            </div>
           </div>
           <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
             <a class="button-secondary details-button" href="${escapeHtml(productHref(product))}">View details</a>
+            <a class="offer-button" data-product-offer href="offer.html?item=${encodeURIComponent(product.id)}">Make Offer</a>
             <a class="buy-button buy-button--inquiry" href="contact.html?item=${encodeURIComponent(product.id)}">Ask DJ</a>
           </div>
         </div>
@@ -215,7 +248,7 @@ function replaceProductGrid(file, cards) {
 
 function replaceFeaturedGrid(products) {
   const html = fs.readFileSync(FEATURED_PAGE, 'utf8');
-  const pattern = /(<div class="products-grid" id="featuredProducts">\r?\n)[\s\S]*(\r?\n<\/div>\r?\n<\/div>\r?\n<\/section>\r?\n<section class="section">\r?\n<div class="container features-grid">)/;
+  const pattern = /(<div class="products-grid" id="featuredProducts">\r?\n)[\s\S]*(\r?\n<\/div>\r?\n<\/div>\r?\n<\/section>\r?\n<section class="section">\r?\n<div class="container features-grid(?: [^"]*)?">)/;
   if (!pattern.test(html)) throw new Error(`Could not find featuredProducts in ${FEATURED_PAGE}.`);
   const next = html.replace(
     pattern,

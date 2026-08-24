@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DJ's Lineup Lab | NBA Team-Season Optimizer</title>
+  <meta name="description" content="An experimental NBA team-season lineup optimizer with historical Basketball Reference data.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#15206b">
+  <link rel="icon" href="../assets/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=20260823d">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to lineup tools</a>
+
+  <header class="lab-header">
+    <div class="shell lab-header__inner">
+      <a class="brand" href="../index.html" aria-label="Return to DJ's House of Cards and Comics">
+        <img src="../assets/dj-logo.png" width="56" height="56" alt="" decoding="async">
+        <span>
+          <strong>DJ's Lineup Lab</strong>
+          <small>Experimental fan tool</small>
+        </span>
+      </a>
+      <span class="prototype-badge">Private beta</span>
+    </div>
+  </header>
+
+  <main id="mainContent" tabindex="-1">
+    <section class="hero">
+      <div class="shell hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow">Inspired by the original R + lpSolve course project</p>
+          <h1>Build the lineup. <span>See every tradeoff.</span></h1>
+          <p class="hero__lede">Choose a game plan, set real constraints, lock your must-play players, and let an exact optimizer compare every eligible combination.</p>
+          <div class="hero__actions">
+            <a class="button" href="#workspace">Open the optimizer</a>
+            <button class="button button--quiet" type="button" data-view-target="model">How the model works</button>
+          </div>
+          <ul class="hero__proof" aria-label="How to use Lineup Lab">
+            <li>Choose a team-season</li>
+            <li>Set your game plan</li>
+            <li>Build and explain the best group</li>
+          </ul>
+        </div>
+        <div class="court-card" aria-hidden="true">
+          <div class="court-card__score"><span>DJHC</span><strong>05</strong><span>OPT</span></div>
+          <div class="court">
+            <span class="court__arc"></span>
+            <span class="court__paint"></span>
+            <span class="court__circle"></span>
+            <i class="court__player court__player--1">1</i>
+            <i class="court__player court__player--2">2</i>
+            <i class="court__player court__player--3">3</i>
+            <i class="court__player court__player--4">4</i>
+            <i class="court__player court__player--5">5</i>
+          </div>
+          <p>Scenario: balanced closing five</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace" tabindex="-1">
+      <div class="shell">
+        <nav class="tool-nav" aria-label="Lineup Lab tools" role="tablist">
+          <button class="tool-nav__button is-active" id="optimizerTab" type="button" role="tab" data-view-target="optimizer" aria-controls="optimizerView" aria-selected="true">Optimizer</button>
+          <button class="tool-nav__button" id="compareTab" type="button" role="tab" data-view-target="compare" aria-controls="compareView" aria-selected="false" tabindex="-1">Player compare <span id="compareCount">0</span></button>
+          <button class="tool-nav__button" id="watchlistTab" type="button" role="tab" data-view-target="watchlist" aria-controls="watchlistView" aria-selected="false" tabindex="-1">Collector watchlist <span id="watchlistCount">0</span></button>
+          <button class="tool-nav__button" id="modelTab" type="button" role="tab" data-view-target="model" aria-controls="modelView" aria-selected="false" tabindex="-1">Data &amp; model</button>
+        </nav>
+
+        <section class="panel live-data-panel" id="liveDataPanel" aria-labelledby="liveDataHeading" aria-busy="false">
+          <div class="live-data-panel__intro">
+            <p class="eyebrow">Basketball Reference historical database</p>
+            <h2 id="liveDataHeading">Choose the team and season to optimize</h2>
+            <p>Select any imported NBA team-season from 1980 forward. Team-stint totals are converted to per-game values and cached on this device.</p>
+          </div>
+          <div class="live-data-panel__controls">
+            <label class="field">
+              <span>NBA team</span>
+              <select id="nbaTeamInput" aria-describedby="liveDataStatus"></select>
+            </label>
+            <label class="field">
+              <span>Season</span>
+              <select id="nbaSeasonInput" aria-describedby="liveDataStatus"></select>
+            </label>
+            <label class="field">
+              <span>Season phase</span>
+              <select id="nbaSeasonPhaseInput" aria-describedby="liveDataStatus">
+                <option value="regular" selected>Regular season</option>
+                <option value="playoffs">Playoffs</option>
+              </select>
+            </label>
+            <button class="button" id="loadLiveDataButton" type="button">Update player pool</button>
+          </div>
+          <p class="live-data-status" id="liveDataStatus" role="status" aria-live="polite">Preparing the imported NBA team-season data...</p>
+        </section>
+
+        <div class="dataset-strip" id="datasetStrip" aria-live="polite">
+          <div class="dataset-strip__mark">
+            <span class="dataset-strip__logo-fallback" id="datasetTeamLogoFallback" aria-hidden="true">NBA</span>
+            <img class="dataset-strip__logo" id="datasetTeamLogo" alt="" width="52" height="52" hidden>
+          </div>
+          <div>
+            <span class="dataset-strip__label">Player pool</span>
+            <strong id="datasetName">Loading player data...</strong>
+            <span class="dataset-strip__media" id="datasetMedia">Preparing verified team and player media...</span>
+          </div>
+          <dl>
+            <div><dt>Season</dt><dd id="datasetSeason">-</dd></div>
+            <div><dt>Team</dt><dd id="datasetTeam">-</dd></div>
+            <div><dt>Players</dt><dd id="datasetCount">-</dd></div>
+          </dl>
+          <div class="dataset-strip__actions">
+            <button class="text-button" id="importCsvButton" type="button">Import player CSV</button>
+            <button class="text-button" id="resetDatasetButton" type="button">Use course demo</button>
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden>
+          </div>
+        </div>
+
+        <section class="tool-view" id="optimizerView" data-view="optimizer" role="tabpanel" aria-labelledby="optimizerTab" tabindex="-1">
+          <form id="optimizerForm">
+            <div class="builder-grid">
+              <aside class="builder-sidebar" aria-label="Optimization controls">
+                <div class="panel run-card">
+                  <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to solve</p>
+                  <h2>Your best group is one click away.</h2>
+                  <dl class="run-card__summary">
+                    <div><dt>Mode</dt><dd id="runModeSummary">5-player lineup</dd></div>
+                    <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
+                    <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
+                    <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
+                  </dl>
+                  <div class="search-scope" id="searchScope" aria-live="polite" aria-atomic="true">
+                    <span>Exact search</span>
+                    <strong id="searchScopeValue">Loading the player pool…</strong>
+                  </div>
+                  <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Optimize lineup</button>
+                  <button class="text-button text-button--center" id="resetScenarioButton" type="button">Reset scenario</button>
+                  <p class="run-card__note" id="runCardNote">Uses historical stats for exploration. Results are not a prediction or betting recommendation.</p>
+                </div>
+              </aside>
+
+              <div class="builder-main">
+                <section class="panel step-panel" aria-labelledby="scenarioHeading">
+                  <div class="step-heading">
+                    <span class="step-number">1</span>
+                    <div>
+                      <p class="eyebrow">Set the game plan</p>
+                      <h2 id="scenarioHeading">What should this group do best?</h2>
+                    </div>
+                  </div>
+
+                  <div class="preset-grid" id="presetGrid">
+                    <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Two-way mix</span></button>
+                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Protect the lead</strong><span>Rebounds, steals, blocks</span></button>
+                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a bucket</strong><span>Scoring efficiency</span></button>
+                    <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the floor</strong><span>Shooting first</span></button>
+                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the ball</strong><span>Creation and control</span></button>
+                  </div>
+
+                  <div class="field-row field-row--three">
+                    <label class="field">
+                      <span>Build type</span>
+                      <select id="modeInput" name="mode">
+                        <option value="lineup">Five-player lineup</option>
+                        <option value="rotation">Rotation roster + minutes plan</option>
+                      </select>
+                    </label>
+                    <label class="field">
+                      <span>Players selected</span>
+                      <input id="sizeInput" name="size" type="number" min="5" max="12" step="1" value="5" inputmode="numeric">
+                    </label>
+                    <label class="field">
+                      <span>Show alternatives</span>
+                      <select id="alternativesInput" name="alternatives">
+                        <option value="3">Top 3</option>
+                        <option value="5" selected>Top 5</option>
+                        <option value="10">Top 10</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <details class="weights-panel">
+                    <summary>Fine-tune objective weights</summary>
+                    <p class="helper">The optimizer percentile-normalizes each stat, so points and percentages can be combined without one unit overpowering another.</p>
+                    <div class="weight-grid" id="weightGrid">
+                      <label class="range-field">Scoring <input type="range" min="0" max="100" step="1" data-weight="points"><output>0</output></label>
+                      <label class="range-field">Effective FG% <input type="range" min="0" max="100" step="1" data-weight="efgPct"><output>0</output></label>
+                      <label class="range-field">Three-point % <input type="range" min="0" max="100" step="1" data-weight="threePct"><output>0</output></label>
+                      <label class="range-field">Rebounding <input type="range" min="0" max="100" step="1" data-weight="rebounds"><output>0</output></label>
+                      <label class="range-field">Playmaking <input type="range" min="0" max="100" step="1" data-weight="assists"><output>0</output></label>
+                      <label class="range-field">Steals <input type="range" min="0" max="100" step="1" data-weight="steals"><output>0</output></label>
+                      <label class="range-field">Blocks <input type="range" min="0" max="100" step="1" data-weight="blocks"><output>0</output></label>
+                      <label class="range-field">Ball security <input type="range" min="0" max="100" step="1" data-weight="ballSecurity"><output>0</output></label>
+                    </div>
+                  </details>
+                </section>
+
+                <section class="panel step-panel" aria-labelledby="constraintsHeading">
+                  <div class="step-heading">
+                    <span class="step-number">2</span>
+                    <div>
+                      <p class="eyebrow">Define the rules</p>
+                      <h2 id="constraintsHeading">Set eligibility and lineup constraints</h2>
+                    </div>
+                  </div>
+
+                  <div class="constraint-groups">
+                    <fieldset>
+                      <legend>Position slots</legend>
+                      <div class="compact-fields">
+                        <label class="field"><span>Guards</span><input id="minGuardsInput" type="number" min="0" max="12" step="1" value="2"></label>
+                        <label class="field"><span>Forwards</span><input id="minForwardsInput" type="number" min="0" max="12" step="1" value="2"></label>
+                        <label class="field"><span>Centers</span><input id="minCentersInput" type="number" min="0" max="12" step="1" value="1"></label>
+                      </div>
+                      <p class="helper">A flex player can fill one slot, not two.</p>
+                    </fieldset>
+
+                    <fieldset>
+                      <legend>Sample-size filters</legend>
+                      <div class="compact-fields compact-fields--two">
+                        <label class="field"><span>Minimum games</span><input id="minGamesInput" type="number" min="0" max="82" step="1" value="20"></label>
+                        <label class="field"><span>Minimum MPG</span><input id="minMinutesInput" type="number" min="0" max="48" step="0.5" value="6"></label>
+                      </div>
+                      <p class="helper">Keeps tiny samples from dominating percentage metrics.</p>
+                    </fieldset>
+
+                    <fieldset class="constraint-group--wide">
+                      <legend>Team production thresholds <span>(optional totals)</span></legend>
+                      <div class="compact-fields compact-fields--six">
+                        <label class="field"><span>Points ≥</span><input id="minPointsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                        <label class="field"><span>Rebounds ≥</span><input id="minReboundsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                        <label class="field"><span>Assists ≥</span><input id="minAssistsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                        <label class="field"><span>Steals ≥</span><input id="minStealsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                        <label class="field"><span>Blocks ≥</span><input id="minBlocksInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                        <label class="field"><span>Turnovers ≤</span><input id="maxTurnoversInput" type="number" min="0" step="0.1" placeholder="Any"></label>
+                      </div>
+                    </fieldset>
+
+                    <fieldset class="constraint-group--wide rotation-settings" id="rotationSettings" hidden>
+                      <legend>Rotation minutes</legend>
+                      <div class="compact-fields compact-fields--two">
+                        <label class="field"><span>Minimum per player</span><input id="rotationMinInput" type="number" min="0" max="30" step="1" value="8"></label>
+                        <label class="field"><span>Maximum per player</span><input id="rotationMaxInput" type="number" min="20" max="48" step="1" value="40"></label>
+                      </div>
+                      <p class="helper">The planner distributes exactly 240 player-minutes after the rotation is selected.</p>
+                    </fieldset>
+                  </div>
+                </section>
+
+                <section class="panel step-panel" aria-labelledby="playersHeading">
+                  <div class="step-heading step-heading--split">
+                    <span class="step-number">3</span>
+                    <div>
+                      <p class="eyebrow">Manage the player pool</p>
+                      <h2 id="playersHeading">Lock, exclude, compare, or watch players</h2>
+                    </div>
+                    <label class="search-field">
+                      <span class="sr-only">Search players</span>
+                      <input id="playerSearchInput" type="search" placeholder="Search players">
+                    </label>
+                  </div>
+
+                  <div class="table-wrap player-table-wrap" aria-label="Player pool controls">
+                    <table class="player-table">
+                      <caption>Search changes only the visible rows. Eligibility filters apply when optimizing.</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">Player</th>
+                          <th scope="col">Pos</th>
+                          <th scope="col">MPG</th>
+                          <th scope="col">PTS</th>
+                          <th scope="col">REB</th>
+                          <th scope="col">AST</th>
+                          <th scope="col">STL</th>
+                          <th scope="col">BLK</th>
+                          <th scope="col">TOV</th>
+                          <th scope="col">Lock</th>
+                          <th scope="col">Exclude</th>
+                          <th scope="col">Compare</th>
+                          <th scope="col">Watch</th>
+                        </tr>
+                      </thead>
+                      <tbody id="playerTableBody">
+                        <tr><td colspan="13" class="loading-cell">Loading player data...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="pool-summary" id="poolSummary">Loading eligibility...</div>
+                </section>
+              </div>
+
+            </div>
+            <div class="mobile-solve-bar">
+              <span>Exact lineup search</span>
+              <button class="button button--solve" id="mobileOptimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Optimize lineup</button>
+            </div>
+          </form>
+
+          <section class="results" id="results" aria-labelledby="resultsHeading" hidden>
+            <div class="result-freshness" id="resultFreshness" role="status" aria-live="polite" hidden></div>
+            <div class="results__heading">
+              <div>
+                <p class="eyebrow">Optimizer result</p>
+                <h2 id="resultsHeading" tabindex="-1">Recommended lineup</h2>
+                <p id="resultSummary"></p>
+              </div>
+              <div class="results__actions">
+                <button class="button button--quiet" id="copyResultButton" type="button">Copy summary</button>
+                <button class="button button--quiet" id="downloadResultButton" type="button">Download CSV</button>
+              </div>
+            </div>
+            <div id="resultContent"></div>
+          </section>
+
+          <section class="panel empty-result" id="emptyResult">
+            <span class="empty-result__mark" aria-hidden="true">05</span>
+            <div>
+              <h2>Your result will appear here</h2>
+              <p>Pick a strategy, set any must-have rules, and run the optimizer. You will get a best group, alternatives, and a constraint check.</p>
+            </div>
+          </section>
+        </section>
+
+        <section class="tool-view" id="compareView" data-view="compare" role="tabpanel" aria-labelledby="compareTab" tabindex="-1" hidden>
+          <div class="view-heading">
+            <p class="eyebrow">Head-to-head</p>
+            <h2>Player comparison</h2>
+            <p>Select up to four players from the optimizer table. Each metric is shown relative to the current player pool.</p>
+          </div>
+          <div id="compareContent" class="panel compare-content"></div>
+        </section>
+
+        <section class="tool-view" id="watchlistView" data-view="watchlist" role="tabpanel" aria-labelledby="watchlistTab" tabindex="-1" hidden>
+          <div class="view-heading view-heading--actions">
+            <div>
+              <p class="eyebrow">Collector helper</p>
+              <h2>Player watchlist</h2>
+              <p>Keep a private shortlist on this device while you research players or browse cards. Saved players stay visible when you switch team-seasons.</p>
+            </div>
+            <button class="button button--quiet" id="downloadWatchlistButton" type="button">Download watchlist</button>
+          </div>
+          <div id="watchlistContent" class="watchlist-grid"></div>
+        </section>
+
+        <section class="tool-view" id="modelView" data-view="model" role="tabpanel" aria-labelledby="modelTab" tabindex="-1" hidden>
+          <div class="view-heading">
+            <p class="eyebrow">Transparent by design</p>
+            <h2>Data, scoring, and limitations</h2>
+            <p>The optimizer keeps its math visible and its historical data boundary explicit.</p>
+          </div>
+          <div class="model-grid">
+            <article class="panel model-card">
+              <span class="model-card__number">01</span>
+              <h3>Traceable Basketball Reference data</h3>
+              <p>Team-season totals come from Basketball Reference through the DJHC historical database and are converted to per-game values before optimization. The original 15-player course snapshot and compatible CSV imports remain available as fallbacks.</p>
+              <p id="sourceAttribution"></p>
+              <div class="card-actions">
+                <button class="text-button" id="exportDatasetButton" type="button">Export current CSV</button>
+                <button class="text-button" id="downloadTemplateButton" type="button">Download CSV template</button>
+              </div>
+            </article>
+            <article class="panel model-card">
+              <span class="model-card__number">02</span>
+              <h3>Comparable objective scores</h3>
+              <p>Each metric is converted to a 0–100 percentile within the eligible pool, then combined using your weights. Lower turnovers receive a better ball-security score.</p>
+            </article>
+            <article class="panel model-card">
+              <span class="model-card__number">03</span>
+              <h3>Exact constraints</h3>
+              <p>The solver checks every eligible combination within a safe browser limit. Locked and excluded players, position assignments, production floors, and turnover ceilings are hard rules.</p>
+            </article>
+            <article class="panel model-card">
+              <span class="model-card__number">04</span>
+              <h3>Honest limitations</h3>
+              <p>Team-season rows show players who appeared for that team; they are not a current depth chart or injury report. Box scores do not measure chemistry, matchups, role changes, or possession context.</p>
+              <p>Rotation mode ranks the roster by equal-weight player profiles, then creates a separate 240-minute plan. Its profile totals are not a projected team box score or minute-weighted forecast.</p>
+            </article>
+          </div>
+          <div class="panel data-note">
+            <h3>Historical data boundary</h3>
+            <p>The browser reads a scoped Supabase player pool; it does not scrape Basketball Reference. Each player is limited to the selected team stint, so a midseason trade never adds that player’s all-team aggregate to a lineup. The tool is for historical exploration, not a current roster, injury, prediction, or betting service.</p>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="lab-footer">
+    <div class="shell">
+      <p><strong>DJ's Lineup Lab</strong> - experimental fan tools from DJ's House of Cards &amp; Comics.</p>
+      <a href="../index.html">Return to the storefront</a>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
+  <script defer src="../backend-config.js?v=20260823b"></script>
+  <script defer src="../supabase-client.js?v=20260823d"></script>
+  <script type="module" src="app.js?v=20260823d"></script>
+</body>
+</html>

@@ -24,13 +24,13 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260823a';
+  const PRODUCT_ASSET_VERSION = '20260823b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
-  // Below this width the theme button moves out of the header to preserve the
-  // logo/menu lockup on narrow mobile screens.
-  const FOOTER_THEME_BREAKPOINT = 700;
-  const FOOTER_THEME_QUERY = typeof window.matchMedia === 'function'
-    ? window.matchMedia(`(max-width: ${FOOTER_THEME_BREAKPOINT}px)`)
+  // Below this width the theme button moves into the open navigation drawer so
+  // the header can preserve the logo/menu lockup without duplicating controls.
+  const MOBILE_THEME_BREAKPOINT = 700;
+  const MOBILE_THEME_QUERY = typeof window.matchMedia === 'function'
+    ? window.matchMedia(`(max-width: ${MOBILE_THEME_BREAKPOINT}px)`)
     : null;
   // Generated fallbacks expose both a script and a global. Keep those names
   // paired so adding a catalog segment cannot update one registry but not the other.
@@ -65,6 +65,10 @@ window.DJ = window.DJ || {};
     'sports-cards.html',
     'comics.html',
     'collectibles.html'
+  ]);
+  const FOOTER_UTILITY_HREFS = new Set([
+    'wishlist.html',
+    'cart.html'
   ]);
 
   // Centralize localStorage keys so future refactors only need to update them in one place.
@@ -758,8 +762,8 @@ window.DJ = window.DJ || {};
     return false;
   }
 
-  function isFooterThemeLayout() {
-    return FOOTER_THEME_QUERY ? FOOTER_THEME_QUERY.matches : window.innerWidth <= FOOTER_THEME_BREAKPOINT;
+  function isMobileThemeLayout() {
+    return MOBILE_THEME_QUERY ? MOBILE_THEME_QUERY.matches : window.innerWidth <= MOBILE_THEME_BREAKPOINT;
   }
 
   // ---------------------------------------------------------------------------
@@ -1239,25 +1243,7 @@ window.DJ = window.DJ || {};
 
       footer.dataset.enhanced = 'true';
 
-      const footerBrand = footer.querySelector('.footer-brand');
       const footerLinks = footer.querySelector('.footer-links');
-
-      if (footerBrand && !footerBrand.querySelector('.footer-actions')) {
-        const footerActions = document.createElement('div');
-        footerActions.className = 'footer-actions';
-        footerActions.innerHTML = `
-          <a class="footer-action-link footer-action-link--secondary" href="wishlist.html">Wishlist <span class="footer-action-count" data-wishlist-count="0">(0)</span></a>
-          <a class="footer-action-link footer-action-link--secondary" href="cart.html">Cart <span class="footer-action-count" data-cart-count="0">(0)</span></a>
-          <a aria-label="Visit DJ's House of Cards and Comics on Facebook" class="footer-action-link footer-action-link--secondary footer-action-link--facebook social-link" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
-            <svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="12" fill="#1877F2"></circle>
-              <path d="M13.5 20v-6h2l.3-2.4h-2.3V10c0-.7.2-1.2 1.2-1.2H16V6.6c-.2 0-.9-.1-1.8-.1-1.8 0-3 1.1-3 3.2v1.8H9.4V14h1.8v6h2.3Z" fill="#FFFFFF"></path>
-            </svg>
-            Facebook
-          </a>
-        `;
-        footerBrand.appendChild(footerActions);
-      }
 
       if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
         FOOTER_POLICY_LINKS.forEach(([label, href]) => {
@@ -1283,6 +1269,7 @@ window.DJ = window.DJ || {};
         const storefrontLinks = directLinks.filter((link) => link.dataset.footerGroup === 'storefronts');
         const supportLinks = directLinks.filter((link) => (
           !FOOTER_BROWSE_HREFS.has(link.getAttribute('href'))
+          && !FOOTER_UTILITY_HREFS.has(link.getAttribute('href'))
           && link.dataset.footerGroup !== 'storefronts'
         ));
         const groups = document.createElement('div');
@@ -1319,8 +1306,8 @@ window.DJ = window.DJ || {};
 
   /**
    * On compact mobile layouts the theme toggle competes with the brand lockup.
-   * Move the existing toggle into the footer action stack so the header can
-   * prioritize the logo and menu, then restore it to the header on wider screens.
+   * Move the existing toggle into the navigation drawer, then restore it to
+   * the header on wider screens without duplicating the control in the footer.
    */
   function syncThemeTogglePlacement() {
     const themeToggle = document.getElementById('themeToggle');
@@ -1329,32 +1316,40 @@ window.DJ = window.DJ || {};
       return;
     }
 
-    let footerActions = document.querySelector('.footer-actions');
+    let mobileActions = document.querySelector('.site-nav__mobile-actions');
 
     const placeToggle = () => {
-      footerActions = footerActions && footerActions.isConnected ? footerActions : document.querySelector('.footer-actions');
-      // Mobile headers need the brand and menu to stay readable, so the theme
-      // toggle lives with footer actions until the viewport has room again.
-      const useFooterPlacement = isFooterThemeLayout() && footerActions;
+      const siteNav = document.getElementById('siteNav');
+      mobileActions = mobileActions && mobileActions.isConnected
+        ? mobileActions
+        : document.querySelector('.site-nav__mobile-actions');
 
-      if (useFooterPlacement) {
-        const backToTopAction = footerActions.querySelector('[data-scroll-top]');
-        if (themeToggle.parentElement !== footerActions) {
-          footerActions.insertBefore(themeToggle, backToTopAction || null);
+      if (isMobileThemeLayout() && siteNav) {
+        if (!mobileActions) {
+          mobileActions = document.createElement('div');
+          mobileActions.className = 'site-nav__mobile-actions';
+          siteNav.appendChild(mobileActions);
         }
-        themeToggle.classList.add('theme-toggle--footer');
+        if (themeToggle.parentElement !== mobileActions) {
+          mobileActions.appendChild(themeToggle);
+        }
+        themeToggle.classList.add('theme-toggle--menu');
         return;
       }
 
       if (themeToggle.parentElement !== headerActions) {
         headerActions.appendChild(themeToggle);
       }
-      themeToggle.classList.remove('theme-toggle--footer');
+      themeToggle.classList.remove('theme-toggle--menu');
+      if (mobileActions && !mobileActions.childElementCount) {
+        mobileActions.remove();
+        mobileActions = null;
+      }
     };
 
     if (themeToggle.dataset.responsivePlacementBound !== 'true') {
       themeToggle.dataset.responsivePlacementBound = 'true';
-      if (!bindMediaQueryChange(FOOTER_THEME_QUERY, placeToggle)) {
+      if (!bindMediaQueryChange(MOBILE_THEME_QUERY, placeToggle)) {
         addRafResizeListener(placeToggle, { runImmediately: false });
       }
       window.addEventListener('pageshow', placeToggle);

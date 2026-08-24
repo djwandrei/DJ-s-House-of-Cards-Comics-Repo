@@ -312,6 +312,13 @@ function Test-DeployablePath {
     return $true
   }
 
+  # The private-beta Lineup Lab is intentionally isolated from storefront
+  # navigation, sitemap, and other public page roots. Keep its deploy allowlist
+  # narrow so a future fan-tools workspace cannot be uploaded by accident.
+  if ($normalizedPath.StartsWith("lineup-lab/", [System.StringComparison]::OrdinalIgnoreCase)) {
+    return @(".html", ".js", ".css", ".json") -contains $extension
+  }
+
   $allowedRootFiles = @(
     ".htaccess",
     "account.html",

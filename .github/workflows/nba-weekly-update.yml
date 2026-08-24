@@ -1,0 +1,107 @@
+name: NBA weekly current-season update
+
+on:
+  schedule:
+    - cron: '17 11 * * 2' # Tuesdays at 11:17 UTC
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Write the refreshed snapshot to Supabase
+        required: true
+        default: false
+        type: boolean
+      season_end_year:
+        description: Optional season ending year override (for example 2026)
+        required: false
+        type: string
+      phase:
+        description: Season phase to refresh
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - regular
+          - playoffs
+permissions:
+  contents: read
+
+concurrency:
+  group: nba-current-season-update
+  cancel-in-progress: false
+
+jobs:
+  refresh-current-season:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Link the approved Supabase project for an apply run
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        shell: bash
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_PROJECT_REF"
+          test -n "$SUPABASE_DB_PASSWORD"
+          npx --yes supabase@2.84.2 link \
+            --project-ref "$SUPABASE_PROJECT_REF" \
+            --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Download and validate without database credentials
+        if: ${{ github.event_name != 'schedule' && !inputs.apply }}
+        env:
+          BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
+          REQUESTED_SEASON_END_YEAR: ${{ inputs.season_end_year }}
+          REQUESTED_PHASE: ${{ inputs.phase }}
+        shell: bash
+        run: |
+          args=(
+            node scripts/update-nba-basketball-reference-weekly.mjs
+            --report-file outputs/nba-weekly-update/report.json
+            --phase "${REQUESTED_PHASE:-both}"
+          )
+          if [[ -n "$REQUESTED_SEASON_END_YEAR" ]]; then
+            args+=(--season-end-year "$REQUESTED_SEASON_END_YEAR")
+          fi
+          "${args[@]}"
+
+      - name: Refresh and apply to the linked Supabase project
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
+        env:
+          BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
+          NBA_WEEKLY_UPDATE_ALLOW_WRITE: ${{ secrets.NBA_WEEKLY_UPDATE_ALLOW_WRITE }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          REQUESTED_SEASON_END_YEAR: ${{ inputs.season_end_year }}
+          REQUESTED_PHASE: ${{ inputs.phase }}
+        shell: bash
+        run: |
+          args=(
+            node scripts/update-nba-basketball-reference-weekly.mjs
+            --apply
+            --report-file outputs/nba-weekly-update/report.json
+            --phase "${REQUESTED_PHASE:-both}"
+          )
+          if [[ -n "$REQUESTED_SEASON_END_YEAR" ]]; then
+            args+=(--season-end-year "$REQUESTED_SEASON_END_YEAR")
+          fi
+          "${args[@]}"
+
+      - name: Publish the safe run summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ ! -f outputs/nba-weekly-update/report.json ]]; then
+            echo "NBA updater did not produce a report." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node -e "const r=require('./outputs/nba-weekly-update/report.json'); console.log(JSON.stringify({status:r.status,mode:r.mode,seasonEndYear:r.seasonEndYear,phase:r.phase,startedAt:r.startedAt,finishedAt:r.finishedAt,requestDelayMs:r.requestDelayMs,importerExitCode:r.importerExitCode,error:r.error},null,2))" \
+            >> "$GITHUB_STEP_SUMMARY"

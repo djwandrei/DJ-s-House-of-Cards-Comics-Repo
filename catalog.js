@@ -1742,12 +1742,15 @@ window.DJ = window.DJ || {};
           <div class="product-card-footer">
             <div class="${pricingClass}">
               <span class="product-price-label">${DJ.escapeHtml(priceLabel)}</span>
-              <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
-              ${isDirectCheckout ? `<span class="product-inventory">${DJ.escapeHtml(`${availableQuantity} available`)}</span>` : ''}
+              <div class="product-pricing-values">
+                <div class="product-price">${DJ.escapeHtml(displayPrice)}</div>
+                ${isDirectCheckout ? `<span class="product-inventory">${DJ.escapeHtml(`${availableQuantity} available`)}</span>` : ''}
+              </div>
             </div>
             <div class="product-actions product-card-actions" aria-label="Listing actions" role="group">
               <button type="button" class="details-button" data-product-details aria-label="${DJ.escapeHtml(`View details for ${product.name}`)}" aria-describedby="${summaryId}" aria-haspopup="dialog">Details</button>
               ${isDirectCheckout ? `<button type="button" class="button-secondary add-cart-button" data-product-cart aria-label="${DJ.escapeHtml(`Add to Cart: ${product.name}`)}" aria-describedby="${summaryId}">Add to Cart</button>` : ''}
+              <a class="offer-button" data-product-offer href="offer.html?item=${encodeURIComponent(product.id)}" aria-label="${DJ.escapeHtml(`Make an offer for ${product.name}`)}" aria-describedby="${summaryId}">Make Offer</a>
               <button type="button" class="buy-button${isDirectCheckout ? '' : ' buy-button--inquiry'}" data-product-buy data-checkout-button aria-label="${DJ.escapeHtml(`${quickActionLabel} for ${product.name}`)}" aria-describedby="${summaryId}">${DJ.escapeHtml(quickActionLabel)}</button>
             </div>
           </div>
@@ -2270,6 +2273,10 @@ Thank you.`
       if (event.target.closest('.wishlist-button')) {
         event.preventDefault();
         toggleWishlist(productId);
+        return;
+      }
+
+      if (event.target.closest('[data-product-offer]')) {
         return;
       }
 

@@ -165,7 +165,10 @@ window.DJ = window.DJ || {};
       nav.insertBefore(mobileHeader, nav.firstChild);
     }
 
-    nav.querySelector('.site-nav__mobile-actions')?.remove();
+    const mobileActions = nav.querySelector('.site-nav__mobile-actions');
+    if (mobileActions && !mobileActions.querySelector('#themeToggle')) {
+      mobileActions.remove();
+    }
 
     let navBackdrop = document.querySelector('.site-nav-backdrop');
     if (!navBackdrop) {

@@ -881,6 +881,162 @@ window.DJ = window.DJ || {};
     }
   }
 
+  function normalizeNbaSeasonEndYear(value) {
+    const seasonEndYear = Number(value);
+    if (!Number.isInteger(seasonEndYear) || seasonEndYear < 1947 || seasonEndYear > 2200) {
+      throw new Error('Choose a valid NBA season.');
+    }
+    return seasonEndYear;
+  }
+
+  function normalizeNbaTeamCode(value) {
+    const teamCode = String(value || '').trim().toUpperCase();
+    if (!/^[A-Z0-9]{2,8}$/.test(teamCode)) {
+      throw new Error('Choose a valid NBA team.');
+    }
+    return teamCode;
+  }
+
+  function normalizeNbaSeasonPhase(value) {
+    const seasonPhase = String(value || 'regular').trim().toLowerCase();
+    if (!['regular', 'playoffs'].includes(seasonPhase)) {
+      throw new Error('Choose either regular-season or playoff stats.');
+    }
+    return seasonPhase;
+  }
+
+  /**
+   * Read the historical season list used by the Lineup Lab. These NBA tables
+   * are public, read-only views; this remains the single browser boundary for
+   * all Supabase access.
+   */
+  async function listNbaLineupSeasons(options = {}) {
+    const minimumSeason = Number.isInteger(Number(options.minimumSeason))
+      ? normalizeNbaSeasonEndYear(options.minimumSeason)
+      : 1980;
+    const cacheKey = `nba-lineup-seasons:${minimumSeason}`;
+    const cachedPromise = getCachedRemotePromise(cacheKey, { force: options.force });
+    if (cachedPromise) return cachedPromise;
+
+    const pending = (async () => {
+      const client = await getRequiredClient();
+      const { data, error } = await client
+        .from('nba_lineup_available_seasons')
+        .select('season_end_year,season_label')
+        .gte('season_end_year', minimumSeason)
+        .order('season_end_year', { ascending: false });
+      if (error) throw createFriendlyError(error, 'listNbaLineupSeasons');
+      return data || [];
+    })();
+
+    if (!options.force) setCachedRemotePromise(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      if (!options.force) remoteCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  /**
+   * List the historical team identities available for one season. Team-season
+   * rows preserve relocations and historical names instead of remapping them
+   * to current franchises.
+   */
+  async function listNbaLineupTeams(options = {}) {
+    const seasonEndYear = normalizeNbaSeasonEndYear(options.seasonEndYear);
+    const seasonPhase = normalizeNbaSeasonPhase(options.seasonPhase);
+    const cacheKey = `nba-lineup-teams:${seasonEndYear}:${seasonPhase}`;
+    const cachedPromise = getCachedRemotePromise(cacheKey, { force: options.force });
+    if (cachedPromise) return cachedPromise;
+
+    const pending = (async () => {
+      const client = await getRequiredClient();
+      const { data, error } = await client
+        .from('nba_lineup_available_teams')
+        .select('team_code,team_name,season_end_year,season_phase')
+        .eq('season_end_year', seasonEndYear)
+        .eq('season_phase', seasonPhase)
+        .order('team_name', { ascending: true });
+      if (error) throw createFriendlyError(error, 'listNbaLineupTeams');
+      return data || [];
+    })();
+
+    if (!options.force) setCachedRemotePromise(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      if (!options.force) remoteCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  /**
+   * Load one team-season player pool for the fan-facing optimizer. The
+   * database view deliberately excludes provider multi-team aggregate rows so
+   * a traded player's team stint is never confused with a season aggregate.
+   */
+  async function listNbaTeamSeasonPlayers(options = {}) {
+    const seasonEndYear = normalizeNbaSeasonEndYear(options.seasonEndYear);
+    const teamCode = normalizeNbaTeamCode(options.teamCode);
+    const seasonPhase = normalizeNbaSeasonPhase(options.seasonPhase);
+    const cacheKey = `nba-lineup-players:${seasonEndYear}:${teamCode}:${seasonPhase}`;
+    const cachedPromise = getCachedRemotePromise(cacheKey, { force: options.force });
+    if (cachedPromise) return cachedPromise;
+
+    const pending = (async () => {
+      const client = await getRequiredClient();
+      const { data, error } = await client
+        .from('nba_lineup_player_pool')
+        .select([
+          'player_id',
+          'player_name',
+          'player_primary_position',
+          'player_headshot_url',
+          'team_logo_url',
+          'season_end_year',
+          'season_label',
+          'season_phase',
+          'team_code',
+          'team_name',
+          'listed_position',
+          'player_age',
+          'games_played',
+          'games_started',
+          'minutes_played',
+          'field_goals_made',
+          'field_goals_attempted',
+          'three_point_field_goals_made',
+          'three_point_field_goals_attempted',
+          'free_throws_made',
+          'free_throws_attempted',
+          'total_rebounds',
+          'assists',
+          'steals',
+          'blocks',
+          'turnovers',
+          'points',
+          'source_name',
+          'source_url'
+        ].join(','))
+        .eq('season_end_year', seasonEndYear)
+        .eq('team_code', teamCode)
+        .eq('season_phase', seasonPhase)
+        .order('minutes_played', { ascending: false, nullsFirst: false })
+        .order('player_name', { ascending: true });
+      if (error) throw createFriendlyError(error, 'listNbaTeamSeasonPlayers');
+      return data || [];
+    })();
+
+    if (!options.force) setCachedRemotePromise(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      if (!options.force) remoteCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Auth operations used by the remote admin
   // ---------------------------------------------------------------------------
@@ -1269,6 +1425,9 @@ window.DJ = window.DJ || {};
     onAuthStateChange,
     invokeFunction,
     listProducts,
+    listNbaLineupSeasons,
+    listNbaLineupTeams,
+    listNbaTeamSeasonPlayers,
     listOrders,
     getAccountProfile,
     saveAccountProfile,
