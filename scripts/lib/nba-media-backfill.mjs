@@ -393,6 +393,26 @@ export function buildTrustedTeamLogoRevisionCatalog({
   });
 }
 
+/**
+ * Materialize the deterministic team-only work as a separate plan. The media
+ * importer commits this plan before entering its request-bounded candidate
+ * loop, while continuing to iterate that original loop for players and teams
+ * that lack a trusted revision. Returning references to the normalized
+ * candidates keeps checkpoint keys and database identifiers identical across
+ * both passes.
+ */
+export function buildDerivedTeamLogoAssetPlan(candidates, revisionCatalog) {
+  if (!Array.isArray(candidates) || typeof revisionCatalog?.revisionFor !== 'function') return [];
+  const plan = [];
+  for (const candidate of candidates) {
+    if (candidate?.subjectType !== 'team') continue;
+    const revision = revisionCatalog.revisionFor(candidate);
+    const assetUrl = basketballReferenceTeamLogoUrlFromRevision(candidate, revision);
+    if (assetUrl) plan.push(Object.freeze({ candidate, assetUrl }));
+  }
+  return Object.freeze(plan);
+}
+
 export function hasConfirmedExistingMedia(candidate) {
   if (!candidate?.existingRightsConfirmed || !candidate.existingAssetUrl) return false;
   // A rights-confirmed primary from another provider belongs to that provider:

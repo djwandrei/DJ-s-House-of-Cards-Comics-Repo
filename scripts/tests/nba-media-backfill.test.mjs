@@ -10,6 +10,7 @@ import {
   basketballReferenceTeamLogoRevisionFromLeagueHtml,
   basketballReferenceTeamLogoUrlFromRevision,
   blankMediaCheckpoint,
+  buildDerivedTeamLogoAssetPlan,
   buildMediaCandidateQuery,
   buildTrustedTeamLogoRevisionCatalog,
   createMediaRequestBudget,
@@ -194,6 +195,29 @@ test('trusted team-logo catalog preserves historical code/year and fails closed 
   assert.equal(conflictingCatalog.hasUniqueGlobalRevision, false);
   assert.equal(conflictingCatalog.revisionFor({ ...team, seasonEndYear: 1984 }), '');
   assert.equal(conflictingCatalog.revisionFor(confirmed1981), 'confirmed-revision');
+});
+
+test('derived team-logo plan is independent of player-first candidate order', () => {
+  const sanDiego1980 = {
+    ...team,
+    teamCode: 'SDC',
+    teamName: 'San Diego Clippers',
+  };
+  const unavailable1981 = { ...team, seasonEndYear: 1981 };
+  const catalog = {
+    revisionFor(candidate) {
+      return candidate.seasonEndYear === 1980 ? 'trusted-revision' : '';
+    },
+  };
+  const originalOrder = [player, sanDiego1980, unavailable1981];
+  const plan = buildDerivedTeamLogoAssetPlan(originalOrder, catalog);
+  assert.equal(plan.length, 1);
+  assert.equal(plan[0].candidate, sanDiego1980);
+  assert.equal(plan[0].assetUrl,
+    'https://cdn.ssref.net/req/trusted-revision/tlogo/bbr/SDC-1980.png');
+  // Planning does not reorder or remove the fallback candidates; the importer
+  // can still iterate this original list for players and unavailable teams.
+  assert.deepEqual(originalOrder, [player, sanDiego1980, unavailable1981]);
 });
 
 test('Basketball Reference existing media skips only after exact URL validation', () => {

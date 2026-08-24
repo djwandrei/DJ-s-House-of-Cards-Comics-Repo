@@ -44,8 +44,8 @@ import {
 import {
   MediaRequestLimitReachedError,
   basketballReferenceMediaPageUrl,
-  basketballReferenceTeamLogoUrlFromRevision,
   blankMediaCheckpoint,
+  buildDerivedTeamLogoAssetPlan,
   buildMediaCandidateQuery,
   buildTrustedTeamLogoRevisionCatalog,
   createMediaRequestBudget,
@@ -1422,6 +1422,11 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
   let retry = 0;
   let requestLimitReached = false;
   const pendingBatch = [];
+  // The linked candidate query is a snapshot taken before this invocation's
+  // writes. Remember successful commits locally so the ordinary pass does not
+  // misinterpret those fresh rows as stale `found` checkpoint entries merely
+  // because they are absent from that earlier snapshot.
+  const committedThisInvocation = new Set();
 
   async function flushBatch() {
     if (!pendingBatch.length) return;
@@ -1444,38 +1449,65 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
         assetUrl: item.mediaRow.asset_url,
         source: item.checkpointSource ?? 'source',
       });
+      committedThisInvocation.add(item.candidate.key);
       sourceFound += 1;
       if (item.checkpointSource === 'derived-team-logo') derivedTeamLogos += 1;
     }
     saveMediaCheckpoint(checkpointFile, checkpoint);
   }
 
-  // Build this catalog lazily. Media candidates are sorted with players first,
-  // and bounded runs often pause before reaching teams. Deferring the cache
-  // reads therefore leaves player-only chunks exactly as lightweight as they
-  // were before the deterministic team-logo optimization.
-  let teamLogoRevisionCatalog = null;
-  function revisionForTeamCandidate(candidate) {
-    if (candidate.subjectType !== 'team' || options.refreshCache) return '';
-    if (!teamLogoRevisionCatalog) {
-      const cachedLeagueHtmlBySeason = cachedAllowedLeagueHtmlBySeason({
-        candidates,
-        cacheDirectory,
-        robots,
-        refreshCache: options.refreshCache,
-      });
-      teamLogoRevisionCatalog = buildTrustedTeamLogoRevisionCatalog({
-        candidates,
-        cachedLeagueHtmlBySeason,
-      });
-      logSourceEvent('team_logo_revision_catalog_ready', {
-        cachedLeagueSeasons: teamLogoRevisionCatalog.leagueSeasons,
-        confirmedMediaSeasons: teamLogoRevisionCatalog.confirmedSeasons,
-        uniqueConfirmedGlobalRevision: teamLogoRevisionCatalog.hasUniqueGlobalRevision,
+  // Commit every derivable team logo before starting the request-bounded
+  // player crawl. This pass performs no network I/O, so all historical team
+  // seasons can be populated even when the later player pass exhausts its HTTP
+  // budget. `--refresh-cache` intentionally produces an empty derivation plan.
+  let derivedTeamLogoPlan = [];
+  if (!options.refreshCache) {
+    const cachedLeagueHtmlBySeason = cachedAllowedLeagueHtmlBySeason({
+      candidates,
+      cacheDirectory,
+      robots,
+      refreshCache: options.refreshCache,
+    });
+    const teamLogoRevisionCatalog = buildTrustedTeamLogoRevisionCatalog({
+      candidates,
+      cachedLeagueHtmlBySeason,
+    });
+    derivedTeamLogoPlan = buildDerivedTeamLogoAssetPlan(candidates, teamLogoRevisionCatalog);
+    logSourceEvent('team_logo_revision_catalog_ready', {
+      cachedLeagueSeasons: teamLogoRevisionCatalog.leagueSeasons,
+      confirmedMediaSeasons: teamLogoRevisionCatalog.confirmedSeasons,
+      uniqueConfirmedGlobalRevision: teamLogoRevisionCatalog.hasUniqueGlobalRevision,
+      derivableTeamLogos: derivedTeamLogoPlan.length,
+    });
+  }
+
+  for (const { candidate, assetUrl } of derivedTeamLogoPlan) {
+    if (hasConfirmedExistingMedia(candidate)) continue;
+    const previous = checkpoint.candidates?.[candidate.key];
+    // Preserve terminal no-image decisions and retry semantics. A stale
+    // `found` status may be reopened only after we know this team has a safe
+    // deterministic replacement ready to commit.
+    if (previous?.status === 'no-image') continue;
+    if (previous?.status === 'found') {
+      recordMediaCandidateStatus(checkpoint, candidate, 'retry', {
+        reason: 'confirmed-media-no-longer-present',
+        attempted: false,
       });
     }
-    return teamLogoRevisionCatalog.revisionFor(candidate);
+    if (!shouldAttemptMediaCandidate(checkpoint, candidate)) continue;
+    const sourceUrl = basketballReferenceMediaPageUrl(candidate);
+    if (!isExactBasketballReferenceMediaPageUrl(candidate, sourceUrl)) {
+      throw new Error(`Internal safety check rejected the generated source URL for ${candidate.key}.`);
+    }
+    pendingBatch.push({
+      candidate,
+      mediaRow: mediaRowForCandidate(candidate, assetUrl, sourceUrl),
+      checkpointSource: 'derived-team-logo',
+    });
+    if (pendingBatch.length >= options.mediaBatchSize) await flushBatch();
   }
+  // Flush the final partial derived batch before any player request begins.
+  await flushBatch();
 
   for (const candidate of candidates) {
     // The linked read-only query returns any confirmed primary media. Preserve
@@ -1490,6 +1522,11 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
       existingSkipped += 1;
       continue;
     }
+
+    // A successful deterministic pre-pass commit is already represented in
+    // Supabase and the checkpoint. Do not reconcile it against the stale
+    // pre-write candidate snapshot or count/process it a second time.
+    if (committedThisInvocation.has(candidate.key)) continue;
 
     const previous = checkpoint.candidates?.[candidate.key];
     // A formerly successful checkpoint is not authoritative if the current
@@ -1506,25 +1543,6 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     const sourceUrl = basketballReferenceMediaPageUrl(candidate);
     if (!isExactBasketballReferenceMediaPageUrl(candidate, sourceUrl)) {
       throw new Error(`Internal safety check rejected the generated source URL for ${candidate.key}.`);
-    }
-
-    // Team logo filenames are an exact function of the Basketball Reference
-    // team code, season-ending year, and a trusted provider revision. Derive
-    // the URL without requesting the robots-disallowed `/req/` asset path. If
-    // no unambiguous revision is available, continue into the original team
-    // page fetch/extraction path below. Player candidates never enter here.
-    if (candidate.subjectType === 'team') {
-      const trustedRevision = revisionForTeamCandidate(candidate);
-      const derivedAssetUrl = basketballReferenceTeamLogoUrlFromRevision(candidate, trustedRevision);
-      if (derivedAssetUrl) {
-        pendingBatch.push({
-          candidate,
-          mediaRow: mediaRowForCandidate(candidate, derivedAssetUrl, sourceUrl),
-          checkpointSource: 'derived-team-logo',
-        });
-        if (pendingBatch.length >= options.mediaBatchSize) await flushBatch();
-        continue;
-      }
     }
 
     const cacheFile = path.join(cacheDirectory, ...mediaCacheRelativePath(candidate).split('/'));
