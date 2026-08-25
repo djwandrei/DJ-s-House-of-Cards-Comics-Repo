@@ -14,6 +14,10 @@ storefront navigation, sitemap, service worker shell, and search discovery.
   optional production floors, and a turnover ceiling.
 - Top alternatives, score contributions, constraint checks, and an optional
   240-minute rotation plan.
+- Per-36 rotation ranking with an optional, evidence-gated small-sample
+  stability adjustment.
+- Historical-aware or open what-if minute plans, plus auditable guard, forward,
+  and center role-minute profiles.
 - CSV import/export, side-by-side player comparison, and a device-local player
   watchlist.
 - A source-neutral player schema and provider adapter that keep the optimizer
@@ -49,7 +53,42 @@ node --test .\prototypes\basketball-lineup-optimizer\tests\*.test.mjs
 The tests cover data normalization and CSV compatibility, the Supabase
 Basketball Reference adapter, deterministic optimization, locks/exclusions,
 positional assignment, safe search limits, infeasible scenarios, alternative
-ordering, 240-minute allocation, and the legacy local-server safeguards.
+ordering, 240-minute allocation, historical workload guardrails, sample-rate
+stability, custom role-minute proofs, and the legacy local-server safeguards.
+
+## Rotation model contract
+
+The rotation solver separates selection, minute allocation, and descriptive
+production so their units do not get mixed:
+
+- Counting-stat profiles and turnovers are compared per 36 source minutes by
+  default. Shooting percentages remain rates. `perGame` is an explicit legacy
+  comparison mode.
+- When same-season evidence exists, `sampleAdjusted` blends each observed rate
+  toward the imported league baseline before percentile ranking:
+  `baseline + n / (n + k) * (observed - baseline)`. The evidence sample `n` is
+  total minutes for counting stats and turnovers, field-goal attempts for
+  eFG%, and three-point attempts for 3P%. The current conservative guardrail
+  constants are `k=600`, `k=500`, and `k=180`, respectively. These constants
+  are transparent model settings, not fitted player-impact coefficients.
+- Metric weights are normalized into relative shares. Each candidate's fit is
+  the weighted, eligible-pool percentile profile, and rotation fit is then
+  weighted by the exact minutes assigned to each selected player.
+- `historicalAware` rescales the selected players' recorded team-stint minute
+  shares to 240 and builds visible per-player bands around those targets.
+  `openWhatIf` deliberately removes that workload prior and uses only the hard
+  player bounds.
+- Every successful rotation assigns exactly 240 integer player-minutes and the
+  selected role profile's exact G/F/C totals. Custom role totals are used in
+  both the allocation and every projected-stat feasibility proof.
+- Projected box-score totals always use each player's source per-minute rate
+  multiplied by assigned minutes. They are descriptive estimates, not game,
+  injury, availability, matchup, or betting predictions.
+
+Imported play-by-play, reconstructed lineup stints, and RAPM are not inputs to
+this box-score objective yet. The interface must continue to label observed
+five-player impact as unavailable until a separately validated, adequately
+sampled play-by-play layer is approved for model use.
 
 ## Data boundary
 

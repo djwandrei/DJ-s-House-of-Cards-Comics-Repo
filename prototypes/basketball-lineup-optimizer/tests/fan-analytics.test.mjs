@@ -281,3 +281,67 @@ test("explains exact solver selections and only reports solver-supplied replacem
   assert.ok(explanation.selectedPlayers.find((item) => item.playerId === "p1").whySelected.length > 0);
   assert.match(explanation.replacements.caveats.join(" "), /solver-ranked alternatives/i);
 });
+
+test("rotation explanations preserve the optimizer's per-36 percentile evidence", () => {
+  const rateStar = player("rate-star", { minutes: 10, points: 10 });
+  const volumeVeteran = player("volume-veteran", { minutes: 40, points: 20 });
+  const best = {
+    players: [rateStar, volumeVeteran],
+    rotation: { byId: { "rate-star": 48, "volume-veteran": 0 } },
+    playerContributions: {
+      "rate-star": { metrics: { points: { percentile: 1, scoreContribution: 100 } } },
+      "volume-veteran": { metrics: { points: { percentile: 0, scoreContribution: 0 } } },
+    },
+  };
+  const explanation = explainOptimizationSelection({
+    best,
+    alternatives: [best],
+    diagnostics: { rotationScoringBasis: "per36" },
+  }, {
+    candidatePool: best.players,
+    referencePlayers: best.players,
+    weights: { points: 1 },
+  });
+  const profileById = Object.fromEntries(
+    explanation.selectedPlayers.map((selected) => [selected.playerId, selected.profile]),
+  );
+  const ratePoints = profileById["rate-star"].contributions.find((item) => item.metric === "points");
+  const volumePoints = profileById["volume-veteran"].contributions.find((item) => item.metric === "points");
+
+  assert.equal(explanation.objectiveScoringBasis, "per36");
+  assert.equal(ratePoints.value, 36);
+  assert.equal(ratePoints.valueBasis, "per36");
+  assert.equal(ratePoints.percentile, 1);
+  assert.equal(ratePoints.percentileSource, "optimizer");
+  assert.equal(volumePoints.value, 18);
+  assert.equal(volumePoints.percentile, 0);
+  assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /36 per 36/);
+});
+
+test("rotation explanations mirror the optimizer's conservative zero for zero-minute rates", () => {
+  const noMinutePlayer = player("no-minutes", { minutes: 0, points: 0 });
+  const best = {
+    players: [noMinutePlayer],
+    rotation: { byId: { "no-minutes": 0 } },
+    playerContributions: {
+      "no-minutes": { metrics: { points: { percentile: 0, scoreContribution: 0 } } },
+    },
+  };
+  const explanation = explainOptimizationSelection({
+    best,
+    alternatives: [best],
+    diagnostics: { rotationScoringBasis: "per36" },
+  }, {
+    candidatePool: [noMinutePlayer],
+    referencePlayers: [noMinutePlayer],
+    weights: { points: 1 },
+  });
+  const points = explanation.selectedPlayers[0].profile.contributions
+    .find((item) => item.metric === "points");
+
+  assert.equal(points.value, 0);
+  assert.equal(points.valueBasis, "per36");
+  assert.equal(points.percentile, 0);
+  assert.equal(points.percentileSource, "optimizer");
+  assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /0 per 36/);
+});

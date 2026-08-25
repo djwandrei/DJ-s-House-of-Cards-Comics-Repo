@@ -11,6 +11,16 @@ export const SCENARIO_URL_VERSION = "1";
 const MODE_VALUES = new Set(["lineup", "rotation"]);
 const PHASE_VALUES = new Set(["regular", "playoffs"]);
 const PRESET_VALUES = new Set(["balanced", "defense", "offense", "shooting", "playmaking", "custom"]);
+const ROTATION_MINUTE_PLAN_VALUES = new Set(["historicalAware", "openWhatIf"]);
+const ROTATION_RATE_STABILITY_VALUES = new Set(["sampleAdjusted", "raw"]);
+// These sets mirror the visible selects in index.html. A shared URL must never
+// claim to restore an assumption the receiving UI cannot actually represent.
+const ROTATION_MINUTE_FLEXIBILITY_VALUES = new Set([4, 8, 12, 16]);
+const ROTATION_ROLE_PROFILE_VALUES = new Set([
+  "96:96:48",
+  "120:96:24",
+  "72:120:48",
+]);
 const WEIGHT_CODES = Object.freeze({
   points: "p",
   efgPct: "e",
@@ -158,6 +168,41 @@ export function encodeScenarioQuery(input = {}) {
   if (["perGame", "per36"].includes(input.rotationScoreBasis)) {
     params.set("scoreBasis", input.rotationScoreBasis);
   }
+  if (ROTATION_MINUTE_PLAN_VALUES.has(input.rotationMinutePlan)) {
+    params.set("minutePlan", input.rotationMinutePlan);
+  }
+  const minuteFlexibility = finiteNumber(input.rotationMinuteFlexibility, {
+    minimum: 0,
+    maximum: 48,
+    integer: true,
+  });
+  if (ROTATION_MINUTE_FLEXIBILITY_VALUES.has(minuteFlexibility)) {
+    params.set("minuteFlex", String(minuteFlexibility));
+  }
+  if (ROTATION_RATE_STABILITY_VALUES.has(input.rotationRateStability)) {
+    params.set("rateStability", input.rotationRateStability);
+  }
+  const roleMinutes = input.rotationPositionMinuteRequirements || {};
+  const normalizedRoleMinutes = [
+    ["g", "G"],
+    ["f", "F"],
+    ["c", "C"],
+  ].map(([code, field]) => ({
+    code,
+    value: finiteNumber(roleMinutes[field], { minimum: 0, maximum: 240, integer: true }),
+  }));
+  const hasCompleteRoleProfile = normalizedRoleMinutes.every(({ value }) => value !== undefined);
+  const roleMinuteTotal = normalizedRoleMinutes.reduce(
+    (sum, { value }) => sum + (value ?? 0),
+    0,
+  );
+  const roleProfileKey = normalizedRoleMinutes.map(({ value }) => value ?? "").join(":");
+  if (hasCompleteRoleProfile && roleMinuteTotal === 240 && ROTATION_ROLE_PROFILE_VALUES.has(roleProfileKey)) {
+    params.set(
+      "roleMinutes",
+      normalizedRoleMinutes.map(({ code, value }) => `${code}:${value}`).join(","),
+    );
+  }
   const lockedIds = Array.isArray(input.lockedIds) ? input.lockedIds.slice(0, MAX_SHARED_IDS) : [];
   const excludedIds = Array.isArray(input.excludedIds) ? input.excludedIds.slice(0, MAX_SHARED_IDS) : [];
   if (lockedIds.length) params.set("lock", lockedIds.map(String).join(","));
@@ -228,6 +273,44 @@ export function decodeScenarioQuery(search = "") {
   if (rotationScoreBasis) {
     if (["perGame", "per36"].includes(rotationScoreBasis)) scenario.rotationScoreBasis = rotationScoreBasis;
     else warnings.push("Ignored an invalid rotation scoring basis from the shared link.");
+  }
+  const rotationMinutePlan = params.get("minutePlan");
+  if (rotationMinutePlan) {
+    if (ROTATION_MINUTE_PLAN_VALUES.has(rotationMinutePlan)) scenario.rotationMinutePlan = rotationMinutePlan;
+    else warnings.push("Ignored an invalid rotation minute plan from the shared link.");
+  }
+  const rotationMinuteFlexibility = finiteNumber(params.get("minuteFlex"), {
+    minimum: 0,
+    maximum: 48,
+    integer: true,
+  });
+  if (params.has("minuteFlex")) {
+    if (!ROTATION_MINUTE_FLEXIBILITY_VALUES.has(rotationMinuteFlexibility)) warnings.push("Ignored an unsupported rotation minute flexibility from the shared link.");
+    else scenario.rotationMinuteFlexibility = rotationMinuteFlexibility;
+  }
+  const rotationRateStability = params.get("rateStability");
+  if (rotationRateStability) {
+    if (ROTATION_RATE_STABILITY_VALUES.has(rotationRateStability)) scenario.rotationRateStability = rotationRateStability;
+    else warnings.push("Ignored an invalid rotation rate-stability setting from the shared link.");
+  }
+  const rotationPositionMinuteRequirements = {};
+  for (const entry of String(params.get("roleMinutes") || "").split(",")) {
+    const [code, rawValue] = entry.split(":");
+    const field = ({ g: "G", f: "F", c: "C" })[code];
+    const value = finiteNumber(rawValue, { minimum: 0, maximum: 240, integer: true });
+    if (!entry) continue;
+    if (!field || value === undefined) warnings.push("Ignored an invalid on-court role-minute setting from the shared link.");
+    else rotationPositionMinuteRequirements[field] = value;
+  }
+  if (Object.keys(rotationPositionMinuteRequirements).length > 0) {
+    const complete = ["G", "F", "C"].every((position) => Number.isInteger(rotationPositionMinuteRequirements[position]));
+    const total = Object.values(rotationPositionMinuteRequirements).reduce((sum, value) => sum + value, 0);
+    const profileKey = ["G", "F", "C"].map((position) => rotationPositionMinuteRequirements[position] ?? "").join(":");
+    if (complete && total === 240 && ROTATION_ROLE_PROFILE_VALUES.has(profileKey)) {
+      scenario.rotationPositionMinuteRequirements = rotationPositionMinuteRequirements;
+    } else {
+      warnings.push("Ignored on-court role minutes that do not match a supported rotation profile.");
+    }
   }
   scenario.lockedIds = commaSeparatedIds(params.get("lock"), warnings, "locked");
   scenario.excludedIds = commaSeparatedIds(params.get("exclude"), warnings, "excluded");

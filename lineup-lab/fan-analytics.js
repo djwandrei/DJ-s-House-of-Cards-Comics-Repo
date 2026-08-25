@@ -73,6 +73,14 @@ export const FAN_METRIC_LABELS = Object.freeze({
 });
 
 const LOWER_IS_BETTER_METRICS = new Set(["turnovers", "ballSecurity"]);
+const PER_36_OBJECTIVE_METRICS = new Set([
+  "points",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "ballSecurity",
+]);
 const POSITION_KEYS = new Set(["G", "F", "C"]);
 
 /**
@@ -908,8 +916,16 @@ function percentileOrThreshold(percentile, value, percentileThreshold, absoluteT
   return Number.isFinite(value) && value >= absoluteThreshold;
 }
 
+/** Format rounded percentile ranks with natural ordinal wording (for example, 93rd). */
 function formatPercentile(value) {
-  return Number.isFinite(value) ? `${Math.round(value * 100)}th percentile` : "not ranked";
+  if (!Number.isFinite(value)) return "not ranked";
+  const percentile = Math.round(value * 100);
+  const lastTwoDigits = Math.abs(percentile) % 100;
+  const lastDigit = Math.abs(percentile) % 10;
+  const suffix = lastTwoDigits >= 11 && lastTwoDigits <= 13
+    ? "th"
+    : lastDigit === 1 ? "st" : lastDigit === 2 ? "nd" : lastDigit === 3 ? "rd" : "th";
+  return `${percentile}${suffix} percentile`;
 }
 
 function createRole(id, score, evidence, profile) {
@@ -1234,34 +1250,61 @@ function normalizedWeights(weights = {}) {
   return Object.fromEntries(valid.map(([metric]) => [metric, 1 / valid.length]));
 }
 
-function objectiveValue(player, metric) {
-  if (metric === "ballSecurity") return nonNegativeNumber(player?.turnovers);
-  if (FAN_EFFICIENCY_METRICS.includes(metric)) return readFromCandidates([player?.[metric]], { percentage: true });
-  return nonNegativeNumber(player?.[metric]);
+function objectiveValue(player, metric, scoringBasis = "perGame") {
+  const value = metric === "ballSecurity"
+    ? nonNegativeNumber(player?.turnovers)
+    : FAN_EFFICIENCY_METRICS.includes(metric)
+      ? readFromCandidates([player?.[metric]], { percentage: true })
+      : nonNegativeNumber(player?.[metric]);
+  if (value === null || scoringBasis !== "per36" || !PER_36_OBJECTIVE_METRICS.has(metric)) {
+    return value;
+  }
+  const minutes = nonNegativeNumber(player?.minutes);
+  // Match optimizer-core exactly: a validated zero-minute source row has no
+  // meaningful rate and receives a conservative zero rather than an invented
+  // infinite value or an unexplained "unavailable" display.
+  return minutes === null ? null : minutes > 0 ? (value / minutes) * 36 : 0;
 }
 
-function objectivePercentiles(players) {
+function objectivePercentiles(players, { scoringBasis = "perGame" } = {}) {
   const maps = {};
   for (const metric of FAN_OBJECTIVE_METRICS) {
-    maps[metric] = percentileRanks(players, (player) => objectiveValue(player, metric), {
+    maps[metric] = percentileRanks(players, (player) => objectiveValue(player, metric, scoringBasis), {
       lowerIsBetter: metric === "ballSecurity",
     });
   }
   return maps;
 }
 
-function weightedProfile(player, percentileMaps, weights) {
+function optimizerPercentile(playerContribution, metric) {
+  const raw = playerContribution?.metrics?.[metric]?.percentile;
+  if (raw === null || raw === undefined || raw === "") return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 && value <= 1 ? value : null;
+}
+
+function weightedProfile(
+  player,
+  percentileMaps,
+  weights,
+  { scoringBasis = "perGame", playerContribution = null } = {},
+) {
   const id = playerId(player);
   const normalized = normalizedWeights(weights);
   const contributions = FAN_OBJECTIVE_METRICS.map((metric) => {
-    const percentile = percentileMaps[metric]?.get(id);
-    const raw = objectiveValue(player, metric);
+    const optimizerEvidence = optimizerPercentile(playerContribution, metric);
+    const percentile = optimizerEvidence ?? percentileMaps[metric]?.get(id);
+    const raw = objectiveValue(player, metric, scoringBasis);
     const weight = normalized[metric];
     return {
       metric,
       label: FAN_METRIC_LABELS[metric],
       value: raw,
+      valueBasis: scoringBasis === "per36" && PER_36_OBJECTIVE_METRICS.has(metric)
+        ? "per36"
+        : FAN_EFFICIENCY_METRICS.includes(metric) ? "rate" : "perGame",
       percentile: Number.isFinite(percentile) ? percentile : null,
+      percentileSource: optimizerEvidence === null ? "recomputed" : "optimizer",
       weight: round(weight, 4),
       weightedContribution: Number.isFinite(percentile) ? round(percentile * weight, 4) : 0,
       lowerIsBetter: metric === "ballSecurity",
@@ -1283,11 +1326,12 @@ function weightedProfile(player, percentileMaps, weights) {
 }
 
 function formatObjectiveReason(item) {
-  const percentile = item.percentile === null ? "not ranked" : `${Math.round(item.percentile * 100)}th percentile`;
+  const percentile = formatPercentile(item.percentile);
   const value = item.value === null ? "unavailable" : item.metric.endsWith("Pct")
     ? `${round(item.value * 100, 1)}%`
     : round(item.value, 1);
-  return `${item.label}: ${value} (${percentile}; ${Math.round(item.weight * 100)}% of this objective).`;
+  const unit = item.value !== null && item.valueBasis === "per36" ? " per 36" : "";
+  return `${item.label}: ${value}${unit} (${percentile}; ${Math.round(item.weight * 100)}% of this objective).`;
 }
 
 function lineupPlayers(lineup) {
@@ -1400,7 +1444,10 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     ? options.candidatePool
     : best.players;
   const poolWithSelected = dedupePlayers([...candidatePool, ...best.players]);
-  const percentileMaps = objectivePercentiles(poolWithSelected);
+  const scoringBasis = best.rotation && result?.diagnostics?.rotationScoringBasis === "per36"
+    ? "per36"
+    : "perGame";
+  const percentileMaps = objectivePercentiles(poolWithSelected, { scoringBasis });
   const weights = options.weights || result?.config?.weights || {};
   const roleCoverage = analyzeRoleCoverage(best.players, {
     ...options,
@@ -1408,11 +1455,15 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     comparisonLabel: options.comparisonLabel || "eligible, non-excluded player pool",
   });
   const selectedPlayers = best.players.map((player, index) => {
-    const profile = weightedProfile(player, percentileMaps, weights);
-    const roles = roleCoverage.matrix.find((row) => row.playerId === playerId(player))?.roles || {};
+    const id = playerId(player, index);
+    const profile = weightedProfile(player, percentileMaps, weights, {
+      scoringBasis,
+      playerContribution: best.playerContributions?.[id] ?? null,
+    });
+    const roles = roleCoverage.matrix.find((row) => row.playerId === id)?.roles || {};
     const activeRoles = Object.values(roles).filter(Boolean);
     return {
-      playerId: playerId(player, index),
+      playerId: id,
       playerName: playerName(player, index),
       positions: normalizePositions(player.positions),
       sample: sampleForPlayer(player, contextForPlayer(player, options)),
@@ -1428,12 +1479,19 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
   const replacements = summarizeReplacementAlternatives(best, alternatives, options);
   const caveats = [
     "Objective contribution is pool-relative and explains the configured strategy; it is not a win probability or player projection.",
+    ...(best.rotation && scoringBasis === "per36"
+      ? ["Rotation counting-stat explanations use per-36 values and the optimizer's exact percentile evidence when it is available."]
+      : []),
+    ...(result?.diagnostics?.rotationRateStabilityEvidence?.applied
+      ? ["Optimizer percentiles include the configured sample adjustment; displayed per-36 values remain the observed raw rates."]
+      : []),
     ...(roleCoverage.caveats || []),
     ...(replacements.caveats || []),
   ];
   return {
     available: true,
     mode: best.rotation ? "rotation" : "lineup",
+    objectiveScoringBasis: scoringBasis,
     selectedPlayers,
     roleCoverage,
     replacements,

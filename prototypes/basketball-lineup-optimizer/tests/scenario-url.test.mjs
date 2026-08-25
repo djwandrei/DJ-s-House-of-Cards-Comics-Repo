@@ -21,6 +21,10 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     rotationMax: 40,
     analyticsView: "eraRelative",
     rotationScoreBasis: "per36",
+    rotationMinutePlan: "historicalAware",
+    rotationMinuteFlexibility: 8,
+    rotationRateStability: "sampleAdjusted",
+    rotationPositionMinuteRequirements: { G: 120, F: 96, C: 24 },
     lockedIds: ["edwaran01"],
     excludedIds: ["sample-player"],
   });
@@ -33,6 +37,10 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.positionMinimums.C, 2);
   assert.equal(scenario.analyticsView, "eraRelative");
   assert.equal(scenario.rotationScoreBasis, "per36");
+  assert.equal(scenario.rotationMinutePlan, "historicalAware");
+  assert.equal(scenario.rotationMinuteFlexibility, 8);
+  assert.equal(scenario.rotationRateStability, "sampleAdjusted");
+  assert.deepEqual(scenario.rotationPositionMinuteRequirements, { G: 120, F: 96, C: 24 });
   assert.deepEqual(scenario.lockedIds, ["edwaran01"]);
   assert.equal(warnings.length, 0);
 });
@@ -48,6 +56,35 @@ test("scenario URL decoder ignores malformed, unsafe, and unsupported entries", 
   assert.deepEqual(scenario.lockedIds, ["ok"]);
   assert.deepEqual(scenario.weights, {});
   assert.ok(warnings.length >= 5);
+});
+
+test("scenario URL encoder omits incomplete role-minute profiles", () => {
+  const query = encodeScenarioQuery({
+    mode: "rotation",
+    rotationPositionMinuteRequirements: { G: 240 },
+  });
+  const params = new URLSearchParams(query);
+  const { scenario, warnings } = decodeScenarioQuery(query);
+
+  assert.equal(params.has("roleMinutes"), false);
+  assert.equal(scenario.rotationPositionMinuteRequirements, undefined);
+  assert.deepEqual(warnings, []);
+});
+
+test("scenario URL codec rejects assumptions the visible controls cannot represent", () => {
+  const encoded = encodeScenarioQuery({
+    mode: "rotation",
+    rotationMinuteFlexibility: 7,
+    rotationPositionMinuteRequirements: { G: 80, F: 80, C: 80 },
+  });
+  const encodedParams = new URLSearchParams(encoded);
+  assert.equal(encodedParams.has("minuteFlex"), false);
+  assert.equal(encodedParams.has("roleMinutes"), false);
+
+  const { scenario, warnings } = decodeScenarioQuery("?v=1&mode=rotation&minuteFlex=7&roleMinutes=g%3A80%2Cf%3A80%2Cc%3A80");
+  assert.equal(scenario.rotationMinuteFlexibility, undefined);
+  assert.equal(scenario.rotationPositionMinuteRequirements, undefined);
+  assert.equal(warnings.length, 2);
 });
 
 test("unsupported shared-link versions are not partially applied", () => {

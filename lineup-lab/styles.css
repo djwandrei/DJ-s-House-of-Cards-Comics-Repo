@@ -992,6 +992,18 @@ select:focus-visible,
   text-align: right;
 }
 
+.weight-share-summary {
+  margin: 0.85rem 0 0;
+  padding: 0.65rem 0.75rem;
+  color: #26345f;
+  background: #fff;
+  border: 1px solid #d4dbef;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .constraint-groups {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1042,6 +1054,79 @@ select:focus-visible,
 
 .compact-fields--six {
   grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+/*
+ * Rotation realism is a first-class model choice, so it lives inside the
+ * constraint step instead of being buried with presentation-only analytics.
+ * The visual hierarchy separates evidence policy from the hard min/max rules
+ * that always remain authoritative.
+ */
+.rotation-model-intro,
+.rotation-plan__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.rotation-model-intro {
+  margin-bottom: 0.9rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #eef2ff, #fff);
+  border: 1px solid #ccd5f3;
+  border-radius: 11px;
+}
+
+.rotation-model-intro strong {
+  color: var(--navy);
+  font-size: 0.9rem;
+}
+
+.rotation-model-intro p,
+.rotation-hard-limits p {
+  margin: 0.18rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.model-status-chip {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.55rem;
+  color: #0a5f4b;
+  background: #e8f7f2;
+  border: 1px solid #a9d9cc;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.rotation-model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.rotation-model-grid .field.is-disabled {
+  opacity: 0.56;
+}
+
+.rotation-model-grid .field.is-disabled select {
+  cursor: not-allowed;
+}
+
+.rotation-hard-limits {
+  margin: 1rem 0 0.65rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+
+.rotation-hard-limits strong {
+  color: var(--navy);
+  font-size: 0.84rem;
 }
 
 /*
@@ -1722,6 +1807,73 @@ select:focus-visible,
   margin-top: 1.25rem;
 }
 
+.result-evidence {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+}
+
+.result-evidence > div {
+  min-width: 0;
+  padding: 0.78rem;
+  background: linear-gradient(145deg, #f8faff, #fff);
+  border: 1px solid #d6ddef;
+  border-radius: 12px;
+}
+
+.result-evidence span,
+.result-ranking-context span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.result-evidence strong,
+.result-evidence small {
+  display: block;
+}
+
+.result-evidence strong {
+  margin-top: 0.18rem;
+  color: var(--navy);
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.result-evidence small {
+  margin-top: 0.28rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.42;
+}
+
+.result-ranking-context {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.7rem;
+}
+
+.result-ranking-context > div {
+  padding: 0.65rem 0.75rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--blue);
+  border-radius: 9px;
+}
+
+.result-ranking-context strong {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--navy);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .score-card {
   min-width: 0;
   padding: 0.9rem;
@@ -1937,6 +2089,61 @@ select:focus-visible,
   margin: 0.35rem 0 0.8rem;
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.rotation-plan,
+.historical-benchmark {
+  margin-top: 1rem;
+}
+
+.rotation-plan__heading h3 {
+  padding-top: 0.18rem;
+}
+
+.historical-benchmark > p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.historical-benchmark > .workload-stretch-note {
+  padding: 0.65rem 0.75rem;
+  color: #704100;
+  background: #fff8e6;
+  border: 1px solid #efd59b;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.historical-benchmark__table {
+  margin-top: 0.75rem;
+}
+
+.historical-benchmark table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.historical-benchmark th,
+.historical-benchmark td {
+  padding: 0.55rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.historical-benchmark th {
+  color: var(--navy);
+  background: #edf1fb;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.historical-benchmark tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .minutes-list__player,
@@ -2343,7 +2550,8 @@ select:focus-visible,
 }
 
 .analytics-panel__fields {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 430px;
   margin-top: 0.9rem;
 }
 
@@ -2662,6 +2870,11 @@ select:focus-visible,
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .result-evidence,
+  .rotation-model-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .score-card--primary {
     grid-column: span 2;
   }
@@ -2788,6 +3001,20 @@ select:focus-visible,
     font-size: 1rem;
   }
 
+  .mobile-solve-bar.is-result-current {
+    right: max(0.75rem, env(safe-area-inset-right));
+    left: auto;
+    padding: 0.65rem 0.85rem;
+    color: #eafff7;
+    background: rgba(6, 93, 72, 0.96);
+    border-color: rgba(197, 255, 235, 0.32);
+    box-shadow: 0 12px 28px rgba(5, 70, 54, 0.22);
+  }
+
+  .mobile-solve-bar.is-result-current .button--solve {
+    display: none;
+  }
+
   .watchlist-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2877,8 +3104,21 @@ select:focus-visible,
   .constraint-groups,
   .compact-fields--six,
   .weight-grid,
-  .model-grid {
+  .model-grid,
+  .result-evidence,
+  .result-ranking-context,
+  .rotation-model-grid {
     grid-template-columns: 1fr;
+  }
+
+  .rotation-model-intro,
+  .rotation-plan__heading {
+    display: grid;
+  }
+
+  .rotation-model-intro .model-status-chip,
+  .rotation-plan__heading .model-status-chip {
+    justify-self: start;
   }
 
   .opponent-scout__stats {
@@ -3040,6 +3280,15 @@ select:focus-visible,
     flex: 1;
   }
 
+  .minutes-list li {
+    grid-template-columns: minmax(0, 1fr) 84px;
+  }
+
+  .minutes-list li .metric-bar__track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
   .compare-row {
     grid-template-columns: 1fr;
     gap: 0.35rem;
@@ -3113,8 +3362,14 @@ select:focus-visible,
     font-size: 3.2rem;
   }
 
-  .mobile-solve-bar span {
+  .mobile-solve-bar:not(.is-result-current) span {
     display: none;
+  }
+
+  .mobile-solve-bar.is-result-current span {
+    display: block;
+    font-size: 0.76rem;
+    white-space: nowrap;
   }
 
   .mobile-solve-bar .button--solve {

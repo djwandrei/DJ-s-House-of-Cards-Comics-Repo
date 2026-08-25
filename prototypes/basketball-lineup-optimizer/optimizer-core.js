@@ -42,6 +42,32 @@ const ROTATION_SCORING_BASES = Object.freeze({
   PER_GAME: "perGame",
 });
 
+// A rate-based score answers which profiles best match a game plan. It does
+// not, by itself, answer how a real team would distribute 240 minutes among
+// those profiles. Historical-aware plans use recorded team-stint workload as
+// a visible guardrail; open what-if plans preserve the unrestricted original
+// experiment for users who deliberately want to ignore historical usage.
+export const DEFAULT_ROTATION_MINUTE_PLAN = "historicalAware";
+const ROTATION_MINUTE_PLANS = Object.freeze({
+  HISTORICAL_AWARE: "historicalAware",
+  OPEN_WHAT_IF: "openWhatIf",
+});
+export const DEFAULT_ROTATION_MINUTE_FLEXIBILITY = 8;
+
+// Per-36 removes opportunity bias but a 150-minute rate is still much less
+// certain than a 2,000-minute rate. Where the data adapter provides a same
+// season/phase baseline and the appropriate raw sample, blend the observed
+// rate toward that baseline. This is deliberately a stability adjustment,
+// not an all-in-one player-impact estimate.
+export const DEFAULT_ROTATION_RATE_STABILITY = "sampleAdjusted";
+const ROTATION_RATE_STABILITY_MODES = Object.freeze({
+  SAMPLE_ADJUSTED: "sampleAdjusted",
+  RAW: "raw",
+});
+const RATE_STABILITY_PRIOR_MINUTES = 600;
+const RATE_STABILITY_PRIOR_FIELD_GOAL_ATTEMPTS = 500;
+const RATE_STABILITY_PRIOR_THREE_POINT_ATTEMPTS = 180;
+
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
 // A regulation NBA game contains five simultaneous court roles for 48 minutes:
 // two guard roles, two forward roles, and one center role. Rotation roster
@@ -336,6 +362,76 @@ function normalizeRotationScoringBasis(value, reasons) {
   return DEFAULT_ROTATION_SCORING_BASIS;
 }
 
+/** Normalize the user-visible policy that governs proposed rotation minutes. */
+function normalizeRotationMinutePlan(value, reasons) {
+  if (value === undefined || value === null) return DEFAULT_ROTATION_MINUTE_PLAN;
+  const compact = String(value).trim().toLowerCase().replace(/[\s_-]+/g, "");
+  if (compact === "historicalaware" || compact === "historical") {
+    return ROTATION_MINUTE_PLANS.HISTORICAL_AWARE;
+  }
+  if (compact === "openwhatif" || compact === "open") {
+    return ROTATION_MINUTE_PLANS.OPEN_WHAT_IF;
+  }
+  reasons.push(
+    'rotationOptions.minutePlan must be either "historicalAware" (the default) or "openWhatIf".',
+  );
+  return DEFAULT_ROTATION_MINUTE_PLAN;
+}
+
+/**
+ * Normalize the optional evidence correction used before per-36 percentile
+ * ranking. `raw` keeps a deliberately unadjusted comparison for historical
+ * experiments; `sampleAdjusted` is the safer default when source evidence is
+ * available.
+ */
+function normalizeRotationRateStability(value, reasons) {
+  if (value === undefined || value === null) return DEFAULT_ROTATION_RATE_STABILITY;
+  const compact = String(value).trim().toLowerCase().replace(/[\s_-]+/g, "");
+  if (compact === "sampleadjusted" || compact === "stabilized") {
+    return ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED;
+  }
+  if (compact === "raw") return ROTATION_RATE_STABILITY_MODES.RAW;
+  reasons.push(
+    'rotationOptions.rateStability must be either "sampleAdjusted" (the default) or "raw".',
+  );
+  return DEFAULT_ROTATION_RATE_STABILITY;
+}
+
+/**
+ * The core already proves arbitrary integer G/F/C minute requirements. Keep
+ * the validation here as well so the exact search, its diagnostics, and the
+ * UI all use one normalized court-shape contract.
+ */
+function normalizeRotationPositionMinuteRequirements(value, reasons) {
+  if (value === undefined || value === null) return { ...STANDARD_POSITION_MINUTES };
+  if (!isPlainObject(value)) {
+    reasons.push("rotationOptions.positionMinuteRequirements must be an object with G, F, and C values.");
+    return { ...STANDARD_POSITION_MINUTES };
+  }
+  const requirements = { G: 0, F: 0, C: 0 };
+  for (const key of Object.keys(value)) {
+    if (!POSITION_KEYS.includes(key)) {
+      reasons.push(`rotationOptions.positionMinuteRequirements contains an unsupported position: ${key}.`);
+    }
+  }
+  for (const position of POSITION_KEYS) {
+    requirements[position] = normalizeNonNegativeNumber(
+      value[position],
+      0,
+      `rotationOptions.positionMinuteRequirements.${position}`,
+      reasons,
+      true,
+    );
+  }
+  const total = POSITION_KEYS.reduce((sum, position) => sum + requirements[position], 0);
+  if (total !== 240) {
+    reasons.push(
+      `rotationOptions.positionMinuteRequirements must total 240, but total ${total}.`,
+    );
+  }
+  return requirements;
+}
+
 function normalizeConfig(config = {}) {
   const reasons = [];
   if (!isPlainObject(config)) {
@@ -506,6 +602,25 @@ function normalizeConfig(config = {}) {
     rotationOptions.scoringBasis,
     reasons,
   );
+  const rotationMinutePlan = normalizeRotationMinutePlan(rotationOptions.minutePlan, reasons);
+  const rotationRateStability = normalizeRotationRateStability(
+    rotationOptions.rateStability,
+    reasons,
+  );
+  const rotationMinuteFlexibility = normalizeNonNegativeNumber(
+    rotationOptions.minuteFlexibility,
+    DEFAULT_ROTATION_MINUTE_FLEXIBILITY,
+    "rotationOptions.minuteFlexibility",
+    reasons,
+    true,
+  );
+  if (rotationMinuteFlexibility > 48) {
+    reasons.push("rotationOptions.minuteFlexibility cannot exceed 48 minutes.");
+  }
+  const rotationPositionMinuteRequirements = normalizeRotationPositionMinuteRequirements(
+    rotationOptions.positionMinuteRequirements,
+    reasons,
+  );
 
   return {
     config: {
@@ -526,6 +641,10 @@ function normalizeConfig(config = {}) {
       presetName,
       rotationOptions,
       rotationScoringBasis,
+      rotationMinutePlan,
+      rotationRateStability,
+      rotationMinuteFlexibility,
+      rotationPositionMinuteRequirements,
     },
     reasons,
   };
@@ -598,21 +717,136 @@ function objectiveMetricValue(player, metric, scoringBasis) {
   return (sourceValue / sourceMinutes) * 36;
 }
 
-function buildNormalizedMetrics(players, { scoringBasis = ROTATION_SCORING_BASES.PER_GAME } = {}) {
+function finiteNonNegative(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+/**
+ * Locate the evidence needed to shrink a per-36 rate toward a published
+ * same-season baseline. The adapter deliberately keeps this metadata outside
+ * the optimizer's canonical player schema, so CSV/demo callers remain fully
+ * supported and simply retain raw rate ranking when the evidence is absent.
+ */
+function rateStabilityEvidence(player, metric) {
+  const analytics = isPlainObject(player?.analytics) ? player.analytics : null;
+  const totals = isPlainObject(analytics?.totals) ? analytics.totals : null;
+  const baseline = isPlainObject(analytics?.leaguePer36) ? analytics.leaguePer36 : null;
+  if (!totals || !baseline) return null;
+
+  if (metric === "efgPct") {
+    const sample = finiteNonNegative(totals.fieldGoalsAttempted);
+    const reference = finiteNonNegative(baseline.efgPct);
+    if (sample === null || reference === null) return null;
+    return {
+      sample,
+      prior: RATE_STABILITY_PRIOR_FIELD_GOAL_ATTEMPTS,
+      baseline: reference,
+      denominator: "field-goal attempts",
+    };
+  }
+  if (metric === "threePct") {
+    const sample = finiteNonNegative(totals.threePointFieldGoalsAttempted);
+    const reference = finiteNonNegative(baseline.threePct);
+    if (sample === null || reference === null) return null;
+    return {
+      sample,
+      prior: RATE_STABILITY_PRIOR_THREE_POINT_ATTEMPTS,
+      baseline: reference,
+      denominator: "three-point attempts",
+    };
+  }
+
+  const baselineMetric = metric === "ballSecurity" ? "turnovers" : metric;
+  const sample = finiteNonNegative(totals.minutes);
+  const reference = finiteNonNegative(baseline[baselineMetric]);
+  if (sample === null || reference === null) return null;
+  return {
+    sample,
+    prior: RATE_STABILITY_PRIOR_MINUTES,
+    baseline: reference,
+    denominator: "total minutes",
+  };
+}
+
+/**
+ * Apply a conservative empirical-Bayes-style blend only when all of its
+ * inputs are actually supplied by the current source. It intentionally does
+ * not fabricate a baseline for imported CSVs or older incomplete rows.
+ */
+function stabilizedObjectiveMetricValue(player, metric, scoringBasis, rateStability) {
+  const raw = objectiveMetricValue(player, metric, scoringBasis);
+  if (
+    scoringBasis !== ROTATION_SCORING_BASES.PER_36 ||
+    rateStability !== ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED
+  ) {
+    return { value: raw, adjusted: false };
+  }
+  const evidence = rateStabilityEvidence(player, metric);
+  if (!evidence || !(evidence.sample > 0) || !(evidence.prior > 0)) {
+    return { value: raw, adjusted: false };
+  }
+  const reliability = evidence.sample / (evidence.sample + evidence.prior);
+  return {
+    value: evidence.baseline + (reliability * (raw - evidence.baseline)),
+    adjusted: true,
+    reliability,
+    denominator: evidence.denominator,
+  };
+}
+
+function buildNormalizedMetrics(
+  players,
+  {
+    scoringBasis = ROTATION_SCORING_BASES.PER_GAME,
+    rateStability = ROTATION_RATE_STABILITY_MODES.RAW,
+  } = {},
+) {
   const byPlayerId = new Map(players.map((player) => [player.id, {}]));
+  const adjustedPlayerIds = new Set();
+  let adjustedPlayerMetricCount = 0;
   for (const metric of OBJECTIVE_METRICS) {
+    const measured = players.map((player) => {
+      const value = stabilizedObjectiveMetricValue(
+        player,
+        metric,
+        scoringBasis,
+        rateStability,
+      );
+      if (value.adjusted) {
+        adjustedPlayerIds.add(player.id);
+        adjustedPlayerMetricCount += 1;
+      }
+      return { id: player.id, value: value.value };
+    });
     const percentiles = percentileNormalize(
-      players.map((player) => ({
-        id: player.id,
-        value: objectiveMetricValue(player, metric, scoringBasis),
-      })),
+      measured,
       { lowerIsBetter: metric === "ballSecurity" },
     );
     for (const player of players) {
       byPlayerId.get(player.id)[metric] = percentiles.get(player.id);
     }
   }
-  return byPlayerId;
+  return {
+    metrics: byPlayerId,
+    rateStability: {
+      requested: rateStability,
+      applied: adjustedPlayerMetricCount > 0,
+      adjustedPlayers: adjustedPlayerIds.size,
+      adjustedPlayerMetricCount,
+      eligiblePlayers: players.length,
+      // Per-game is intentionally a compatibility mode. Presenting raw values
+      // as sample-adjusted in that branch would mix unlike units.
+      reason:
+        scoringBasis !== ROTATION_SCORING_BASES.PER_36
+          ? "Rate stabilization applies only to the per-36 rotation basis."
+          : rateStability === ROTATION_RATE_STABILITY_MODES.RAW
+            ? "Rate stabilization was disabled for this result, so the model used raw per-36 rates."
+            : adjustedPlayerMetricCount > 0
+              ? null
+              : "The current player source does not include enough same-season rate evidence to stabilize the selected metrics.",
+    },
+  };
 }
 
 /**
@@ -1370,6 +1604,162 @@ function balancedPositionAllocation(players, bounds, targetMinutes, requirements
   return { ...feasibleFlow, adjusted: true };
 }
 
+/**
+ * Convert a recorded team-stint workload into regulation-game minutes. The
+ * denominator is the team's aggregate player-minutes, not a player's MPG per
+ * appearance, so missed games and partial-season stints do not masquerade as
+ * full-season workloads. A data adapter may also provide the precomputed
+ * value directly for callers that do not retain raw totals in the browser.
+ */
+function historicalMinuteAnchorFromPlayer(player) {
+  const analytics = isPlainObject(player?.analytics) ? player.analytics : null;
+  if (!analytics) return null;
+  const direct = finiteNonNegative(analytics.historicalMinutesPerTeamGame);
+  if (direct !== null && direct > 0) return direct;
+  const totalMinutes = finiteNonNegative(analytics?.totals?.minutes);
+  const teamTotalMinutes = finiteNonNegative(analytics.teamTotalMinutes);
+  if (!(totalMinutes > 0) || !(teamTotalMinutes > 0)) return null;
+  return (240 * totalMinutes) / teamTotalMinutes;
+}
+
+function mapLikeHistoricalAnchor(source, playerId, reasons) {
+  if (source === undefined || source === null) return undefined;
+  if (!(source instanceof Map) && !isPlainObject(source)) {
+    reasons.push("historicalMinuteAnchors must be an object or Map keyed by player id.");
+    return undefined;
+  }
+  const value = getMapLikeValue(source, playerId, "historicalMinuteAnchors", reasons);
+  if (value === undefined) return undefined;
+  const parsed = finiteNonNegative(value);
+  if (parsed === null || !(parsed > 0)) {
+    reasons.push(`Historical minute anchor for ${playerId} must be a positive finite number.`);
+    return undefined;
+  }
+  return parsed;
+}
+
+function boundsAroundHistoricalTargets(bounds, targets, flexibility) {
+  return new Map(
+    [...bounds].map(([id, bound]) => {
+      const target = targets.get(id);
+      return [id, {
+        min: Math.max(bound.min, target - flexibility),
+        max: Math.min(bound.max, target + flexibility),
+      }];
+    }),
+  );
+}
+
+function boundsToObject(bounds) {
+  return Object.fromEntries(
+    [...bounds].map(([id, bound]) => [id, { min: bound.min, max: bound.max }]),
+  );
+}
+
+/**
+ * Build transparent historical workload guardrails for one already-selected
+ * roster. The targets are rescaled to the required 240 minutes while honoring
+ * the user's global limits, then each player can move by the selected amount.
+ * If a narrow band cannot satisfy the exact G/F/C minute shape, widen only as
+ * much as needed from a short, deterministic sequence. If no legal guidance
+ * band exists, fall back to the user's declared bounds and report that fact;
+ * the caller never receives a silently relaxed historical plan.
+ */
+function deriveHistoricalGuidanceBounds(
+  players,
+  baseBounds,
+  {
+    historicalMinuteAnchors = undefined,
+    minuteFlexibility = DEFAULT_ROTATION_MINUTE_FLEXIBILITY,
+    positionRequirements = null,
+  } = {},
+  reasons,
+) {
+  const sortedIds = players.map((player) => player.id).sort(compareIds);
+  const anchors = new Map();
+  const unavailablePlayerIds = [];
+  for (const player of players) {
+    const supplied = mapLikeHistoricalAnchor(historicalMinuteAnchors, player.id, reasons);
+    const anchor = supplied === undefined ? historicalMinuteAnchorFromPlayer(player) : supplied;
+    if (!(anchor > 0)) unavailablePlayerIds.push(player.id);
+    else anchors.set(player.id, anchor);
+  }
+
+  const base = {
+    requested: true,
+    applied: false,
+    status: "unavailable",
+    minuteFlexibility,
+    flexibilityUsed: null,
+    anchorsById: Object.fromEntries(anchors),
+    targetsById: {},
+    boundsById: boundsToObject(baseBounds),
+    unavailablePlayerIds,
+    reason: null,
+  };
+  if (unavailablePlayerIds.length > 0) {
+    return {
+      bounds: baseBounds,
+      guidance: {
+        ...base,
+        reason: "Recorded team-stint minutes are unavailable for one or more selected players, so this plan uses the user-set minute bounds.",
+      },
+    };
+  }
+
+  const targets = proportionalMinuteTargets(sortedIds, baseBounds, anchors);
+  if (!targets) {
+    return {
+      bounds: baseBounds,
+      guidance: {
+        ...base,
+        reason: "Recorded workload targets could not be reconciled with the user-set minute bounds, so this plan uses those bounds directly.",
+      },
+    };
+  }
+
+  // Preserve the requested band first. The two modest expansions cover rare
+  // flex/position conflicts without paying a large flow-search cost for every
+  // candidate. The final user-bound pass remains explicit in the result.
+  const requestedFlexibility = Math.min(48, Math.max(0, minuteFlexibility));
+  const flexibilityCandidates = [...new Set([
+    requestedFlexibility,
+    Math.min(48, requestedFlexibility + 4),
+    Math.min(48, requestedFlexibility + 8),
+  ])];
+  for (const flexibility of flexibilityCandidates) {
+    const candidateBounds = boundsAroundHistoricalTargets(baseBounds, targets, flexibility);
+    const flow = positionRequirements
+      ? findPositionMinuteFlow(players, candidateBounds, positionRequirements)
+      : { feasible: true };
+    if (!flow.feasible) continue;
+    return {
+      bounds: candidateBounds,
+      guidance: {
+        ...base,
+        applied: true,
+        status: flexibility === requestedFlexibility ? "applied" : "expanded-for-role-coverage",
+        flexibilityUsed: flexibility,
+        targetsById: Object.fromEntries(targets),
+        boundsById: boundsToObject(candidateBounds),
+        reason: flexibility === requestedFlexibility
+          ? null
+          : "The recorded-workload band was widened slightly so the selected players can cover the requested on-court roles.",
+      },
+    };
+  }
+
+  return {
+    bounds: baseBounds,
+    guidance: {
+      ...base,
+      status: "role-coverage-fallback",
+      targetsById: Object.fromEntries(targets),
+      reason: "The recorded-workload guardrails could not cover the requested on-court roles, so this candidate uses the user-set minute bounds.",
+    },
+  };
+}
+
 const ROTATION_CONSTRAINT_TOLERANCE = 1e-9;
 // Side constraints are normally resolved in the first few exchanges (often a
 // single minute). Mixed-role states are much more expensive than all-flex
@@ -1716,6 +2106,9 @@ function constrainedPositionAllocation(
  * - scores (alias playerScores/weights): object/Map used for allocation priority
  * - strategy: "balanced" (proportional workload) or "objective" (maximum score)
  * - positionMinuteRequirements: optional exact G/F/C role-minute requirements
+ * - minutePlan: "historicalAware" (default when evidence exists) or "openWhatIf"
+ * - historicalMinuteAnchors: optional regulation-game workload map by player id
+ * - minuteFlexibility: integer minutes a historical-aware plan may move per player
  * - projectedStatMinimums / projectedMaxTurnovers: optional constraints applied
  *   while choosing minutes, using each player's source per-minute rates; these
  *   require positionMinuteRequirements so a complete role-feasible plan exists
@@ -1764,6 +2157,18 @@ export function allocateRotationMinutes(players, options = {}) {
   if (strategy !== "balanced" && strategy !== "objective") {
     reasons.push('Rotation strategy must be either "balanced" or "objective".');
   }
+  const minutePlan = normalizeRotationMinutePlan(options.minutePlan, reasons);
+  const minuteFlexibility = normalizeNonNegativeNumber(
+    options.minuteFlexibility,
+    DEFAULT_ROTATION_MINUTE_FLEXIBILITY,
+    "minuteFlexibility",
+    reasons,
+    true,
+  );
+  if (minuteFlexibility > 48) {
+    reasons.push("minuteFlexibility cannot exceed 48 minutes.");
+  }
+  const historicalMinuteAnchors = options.historicalMinuteAnchors;
   const rawPositionRequirements =
     options.positionMinuteRequirements ?? options.positionMinutes ?? null;
   let positionRequirements = null;
@@ -1906,35 +2311,84 @@ export function allocateRotationMinutes(players, options = {}) {
   }
 
   const sortedIds = ids.slice().sort(compareIds);
-  const minimumTotal = sortedIds.reduce((total, id) => total + bounds.get(id).min, 0);
-  const maximumTotal = sortedIds.reduce((total, id) => total + bounds.get(id).max, 0);
-  if (minimumTotal > 240 || maximumTotal < 240) {
+  const userMinimumTotal = sortedIds.reduce((total, id) => total + bounds.get(id).min, 0);
+  const userMaximumTotal = sortedIds.reduce((total, id) => total + bounds.get(id).max, 0);
+  if (userMinimumTotal > 240 || userMaximumTotal < 240) {
     const feasibilityReasons = [];
-    if (minimumTotal > 240) {
+    if (userMinimumTotal > 240) {
       feasibilityReasons.push(
-        `Player minimums total ${minimumTotal} minutes, which exceeds the required 240.`,
+        `Player minimums total ${userMinimumTotal} minutes, which exceeds the required 240.`,
       );
     }
-    if (maximumTotal < 240) {
+    if (userMaximumTotal < 240) {
       feasibilityReasons.push(
-        `Player maximums total ${maximumTotal} minutes, which is below the required 240.`,
+        `Player maximums total ${userMaximumTotal} minutes, which is below the required 240.`,
       );
     }
     return rotationFailure(feasibilityReasons, {
       category: "total-minutes",
       selectedPlayers: players.length,
-      minimumTotal,
-      maximumTotal,
+      minimumTotal: userMinimumTotal,
+      maximumTotal: userMaximumTotal,
     });
   }
 
-  const balancedTargets = proportionalMinuteTargets(sortedIds, bounds, scores);
+  let effectiveBounds = bounds;
+  let historicalGuidance = {
+    requested: minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE,
+    applied: false,
+    status: minutePlan === ROTATION_MINUTE_PLANS.OPEN_WHAT_IF ? "open-what-if" : "unavailable",
+    minuteFlexibility,
+    flexibilityUsed: null,
+    anchorsById: {},
+    targetsById: {},
+    boundsById: boundsToObject(bounds),
+    unavailablePlayerIds: [],
+    reason: minutePlan === ROTATION_MINUTE_PLANS.OPEN_WHAT_IF
+      ? "Open what-if mode uses only the minute bounds you set."
+      : null,
+  };
+  if (minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE) {
+    const derived = deriveHistoricalGuidanceBounds(
+      rotationPlayers,
+      bounds,
+      {
+        historicalMinuteAnchors,
+        minuteFlexibility,
+        positionRequirements,
+      },
+      reasons,
+    );
+    if (reasons.length > 0) {
+      return rotationFailure(reasons, { category: "validation", selectedPlayers: players.length });
+    }
+    effectiveBounds = derived.bounds;
+    historicalGuidance = derived.guidance;
+  }
+
+  const minimumTotal = sortedIds.reduce((total, id) => total + effectiveBounds.get(id).min, 0);
+  const maximumTotal = sortedIds.reduce((total, id) => total + effectiveBounds.get(id).max, 0);
+  if (minimumTotal > 240 || maximumTotal < 240) {
+    // Targets are constructed to include a 240-minute vector. Keep this
+    // defensive diagnostic in case a future custom-bound policy changes that
+    // invariant, rather than returning an unexplained allocation failure.
+    return rotationFailure(["The active minute-plan guardrails cannot reach exactly 240 minutes."], {
+      category: "minute-plan-bounds",
+      selectedPlayers: players.length,
+      minimumTotal,
+      maximumTotal,
+      historicalGuidance,
+    });
+  }
+
+  const balancedTargets = proportionalMinuteTargets(sortedIds, effectiveBounds, scores);
   if (!balancedTargets) {
     return rotationFailure(["The available minute capacity cannot reach 240 minutes."], {
       category: "total-minutes",
       selectedPlayers: players.length,
       minimumTotal,
       maximumTotal,
+      historicalGuidance,
     });
   }
 
@@ -1947,8 +2401,8 @@ export function allocateRotationMinutes(players, options = {}) {
     // optimize the stated objective subject to those constraints, not merely
     // repair a proportional schedule after it fails.
     positionFlow = strategy === "objective" || hasProjectedConstraints
-      ? objectivePositionAllocation(rotationPlayers, bounds, scores, positionRequirements)
-      : balancedPositionAllocation(rotationPlayers, bounds, balancedTargets, positionRequirements);
+      ? objectivePositionAllocation(rotationPlayers, effectiveBounds, scores, positionRequirements)
+      : balancedPositionAllocation(rotationPlayers, effectiveBounds, balancedTargets, positionRequirements);
     if (!positionFlow.feasible) {
       return rotationFailure([
         `The selected players cannot cover ${positionRequirements.G} guard, ${positionRequirements.F} forward, and ${positionRequirements.C} center minutes within their minute limits. Add another eligible flex/center or raise an eligible player's maximum.`,
@@ -1960,12 +2414,13 @@ export function allocateRotationMinutes(players, options = {}) {
         requiredPositionMinutes: { ...positionRequirements },
         deliveredPositionFlow: positionFlow.delivered,
         requiredPositionFlow: positionFlow.balanceDemand,
+        historicalGuidance,
       });
     }
     if (hasProjectedConstraints) {
       const constrainedFlow = constrainedPositionAllocation(
         rotationPlayers,
-        bounds,
+        effectiveBounds,
         scores,
         positionRequirements,
         positionFlow,
@@ -1989,6 +2444,7 @@ export function allocateRotationMinutes(players, options = {}) {
           solveConstraintSearchStateLimit: constrainedFlow.solveConstraintSearchStateLimit,
           solveWideConstraintSearchLimitReached:
             constrainedFlow.solveWideConstraintSearchLimitReached,
+          historicalGuidance,
         });
       }
       positionFlow = constrainedFlow;
@@ -2001,14 +2457,17 @@ export function allocateRotationMinutes(players, options = {}) {
     // Without role constraints the exact linear allocation is a simple greedy
     // fill: start every player at the minimum, then give remaining minutes to
     // the highest score until each reaches the maximum.
-    minutes = new Map(sortedIds.map((id) => [id, bounds.get(id).min]));
+    minutes = new Map(sortedIds.map((id) => [id, effectiveBounds.get(id).min]));
     let remaining = 240 - minimumTotal;
     const priority = sortedIds.slice().sort((left, right) => {
       const scoreDifference = scores.get(right) - scores.get(left);
       return scoreDifference !== 0 ? scoreDifference : compareIds(left, right);
     });
     for (const id of priority) {
-      const addition = Math.min(remaining, bounds.get(id).max - bounds.get(id).min);
+      const addition = Math.min(
+        remaining,
+        effectiveBounds.get(id).max - effectiveBounds.get(id).min,
+      );
       minutes.set(id, minutes.get(id) + addition);
       remaining -= addition;
       if (remaining === 0) break;
@@ -2020,8 +2479,16 @@ export function allocateRotationMinutes(players, options = {}) {
     id,
     name: String(playerById.get(id)?.name ?? id),
     minutes: minutes.get(id),
-    minimum: bounds.get(id).min,
-    maximum: bounds.get(id).max,
+    minimum: effectiveBounds.get(id).min,
+    maximum: effectiveBounds.get(id).max,
+    userMinimum: bounds.get(id).min,
+    userMaximum: bounds.get(id).max,
+    ...(historicalGuidance.targetsById[id] !== undefined
+      ? {
+          historicalTarget: historicalGuidance.targetsById[id],
+          historicalAnchor: historicalGuidance.anchorsById[id],
+        }
+      : {}),
     ...(positionFlow ? { roleMinutes: { ...positionFlow.byPlayer[id] } } : {}),
   }));
   const totalMinutes = allocations.reduce((total, allocation) => total + allocation.minutes, 0);
@@ -2039,6 +2506,8 @@ export function allocateRotationMinutes(players, options = {}) {
     totalMinutes,
     allocations,
     byId: Object.fromEntries(allocations.map((allocation) => [allocation.id, allocation.minutes])),
+    minutePlan,
+    historicalGuidance,
     positionMinutes: positionFlow
       ? {
           enforced: true,
@@ -2054,6 +2523,8 @@ export function allocateRotationMinutes(players, options = {}) {
       maximumTotal,
       allocationStrategy: strategy,
       balancedAdjustedForPositions: balancedAdjusted,
+      minutePlan,
+      historicalGuidance,
       projectedConstraints: {
         statMinimums: { ...projectedConstraints.statMinimums },
         maxTurnovers: Number.isFinite(projectedConstraints.maxTurnovers)
@@ -2192,6 +2663,9 @@ export function optimizeLineups(players, config = {}) {
   }
 
   const normalizedPlayers = normalizedPlayerResult.players;
+  const rotationPositionMinuteRequirements = normalizedConfig.mode === "rotation"
+    ? normalizedConfig.rotationPositionMinuteRequirements
+    : STANDARD_POSITION_MINUTES;
   const playerById = new Map(normalizedPlayers.map((player) => [player.id, player]));
   const lockedSet = new Set(normalizedConfig.lockedIds);
   const excludedSet = new Set(normalizedConfig.excludedIds);
@@ -2321,7 +2795,13 @@ export function optimizeLineups(players, config = {}) {
     // This is intentionally absent from lineup mode: its equal-player profile
     // keeps the historical per-game comparison users already expect.
     ...(normalizedConfig.mode === "rotation"
-      ? { rotationScoringBasis: normalizedConfig.rotationScoringBasis }
+      ? {
+          rotationScoringBasis: normalizedConfig.rotationScoringBasis,
+          rotationMinutePlan: normalizedConfig.rotationMinutePlan,
+          rotationMinuteFlexibility: normalizedConfig.rotationMinuteFlexibility,
+          rotationRateStability: normalizedConfig.rotationRateStability,
+          requiredPositionMinutes: { ...rotationPositionMinuteRequirements },
+        }
       : {}),
   };
   if (preflightReasons.length > 0) {
@@ -2345,12 +2825,24 @@ export function optimizeLineups(players, config = {}) {
   // per-36 counting rates by default before those players compete for minutes.
   // The explicit perGame option remains available to API callers who need the
   // legacy comparison for a historical experiment.
-  const normalizedMetrics = buildNormalizedMetrics(eligiblePlayers, {
+  const normalizedMetricResult = buildNormalizedMetrics(eligiblePlayers, {
     scoringBasis:
       normalizedConfig.mode === "rotation"
         ? normalizedConfig.rotationScoringBasis
         : ROTATION_SCORING_BASES.PER_GAME,
+    rateStability:
+      normalizedConfig.mode === "rotation"
+        ? normalizedConfig.rotationRateStability
+        : ROTATION_RATE_STABILITY_MODES.RAW,
   });
+  const normalizedMetrics = normalizedMetricResult.metrics;
+  if (normalizedConfig.mode === "rotation") {
+    // This small summary makes a result auditable without exposing every raw
+    // row value in the solver payload. Individual player rates remain visible
+    // in the UI; this only tells the fan whether the evidence guardrail was
+    // actually available for the current source.
+    baseDiagnostics.rotationRateStabilityEvidence = normalizedMetricResult.rateStability;
+  }
   const playerObjectiveScores = new Map(
     eligiblePlayers.map((player) => [
       player.id,
@@ -2418,9 +2910,15 @@ export function optimizeLineups(players, config = {}) {
         ? "objective"
         : normalizedConfig.rotationOptions.strategy ?? "objective",
       // Roster-slot minimums above remain composition constraints. Every
-      // rotation candidate separately proves full two-G/two-F/one-C court
-      // coverage, with flex players allowed to split their minutes.
-      positionMinuteRequirements: STANDARD_POSITION_MINUTES,
+      // rotation candidate separately proves the selected G/F/C court shape,
+      // with flex players allowed to split their minutes.
+      positionMinuteRequirements: rotationPositionMinuteRequirements,
+      // Normalize the public model settings once at the solve boundary so a
+      // caller cannot accidentally have the UI describe one policy while the
+      // allocator applies another. Historical anchors themselves come from
+      // the selected players' source metadata unless explicitly supplied.
+      minutePlan: normalizedConfig.rotationMinutePlan,
+      minuteFlexibility: normalizedConfig.rotationMinuteFlexibility,
       // These constraints belong inside the allocation problem. Passing them
       // here prevents a feasible roster from being discarded merely because
       // its unconstrained minute optimum missed a threshold by one minute.
@@ -2605,7 +3103,7 @@ export function optimizeLineups(players, config = {}) {
       const proof = proveProjectedConstraintInfeasibility(
         selectedPlayers,
         boundsFromRotation(baselineRotation),
-        STANDARD_POSITION_MINUTES,
+        rotationPositionMinuteRequirements,
         projectedRotationConstraints,
         status,
       );
@@ -2796,7 +3294,7 @@ export function optimizeLineups(players, config = {}) {
         ? {
             rotationAllocationStrategy: "per-candidate-minute-weighted",
             rotationAllocationsComputed,
-            requiredPositionMinutes: { ...STANDARD_POSITION_MINUTES },
+            requiredPositionMinutes: { ...rotationPositionMinuteRequirements },
             constraintSearchStatesUsed: solveConstraintSearchBudget?.used ?? 0,
             constraintSearchStateLimit: solveConstraintSearchBudget?.limit ?? null,
             ...(hasRotationProjectedConstraints
@@ -2876,7 +3374,7 @@ export function optimizeLineups(players, config = {}) {
     }
     if (rejectedByConstraint.rotationPositionMinutes > 0) {
       reasons.push(
-        `${rejectedByConstraint.rotationPositionMinutes} candidate rotation${rejectedByConstraint.rotationPositionMinutes === 1 ? "" : "s"} could not cover 96 guard, 96 forward, and 48 center minutes within the configured player limits.`,
+        `${rejectedByConstraint.rotationPositionMinutes} candidate rotation${rejectedByConstraint.rotationPositionMinutes === 1 ? "" : "s"} could not cover ${rotationPositionMinuteRequirements.G} guard, ${rotationPositionMinuteRequirements.F} forward, and ${rotationPositionMinuteRequirements.C} center minutes within the configured player limits.`,
       );
     }
     if (rejectedByConstraint.constraintSearchLimit > 0) {

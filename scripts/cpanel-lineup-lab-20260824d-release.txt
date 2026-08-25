@@ -1,0 +1,35 @@
+# Follow-up static Lineup Lab release: correct ordinal percentile labels and align cache tokens.
+# No catalog, media, customer, payment, or Supabase files are included.
+about.html
+account.html
+admin.html
+baseball-cards.html
+basketball-cards.html
+cart.html
+checkout-success.html
+collectibles.html
+comics.html
+contact.html
+core.js
+football-cards.html
+inbox.html
+index.html
+lineup-lab/app.js
+lineup-lab/fan-analytics.js
+lineup-lab/index.html
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/scenario-url.js
+lineup-lab/styles.css
+lineup-lab/supabase-nba-data.js
+metrics.html
+offer.html
+offline.html
+policies.html
+returns.html
+sell-trade-want-list.html
+shipping.html
+shop.html
+sports-cards.html
+sw.js
+wishlist.html

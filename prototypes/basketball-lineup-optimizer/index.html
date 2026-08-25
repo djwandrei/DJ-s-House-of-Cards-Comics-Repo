@@ -12,7 +12,7 @@
   <link rel="preload" href="../../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260824b">
+  <link rel="stylesheet" href="styles.css?v=20260824d">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -185,12 +185,13 @@
                       <label class="range-field">Blocks <input type="range" min="0" max="100" step="1" data-weight="blocks"><output>0</output></label>
                       <label class="range-field">Ball security <input type="range" min="0" max="100" step="1" data-weight="ballSecurity"><output>0</output></label>
                     </div>
+                    <p class="weight-share-summary" id="weightShareSummary" aria-live="polite"></p>
                   </details>
 
                   <details class="analytics-panel" id="analyticsPanel">
                     <summary>Analytics and reporting assumptions</summary>
                     <p class="helper"><strong>These options explain the result; they do not weaken the exact constraints.</strong> Per 36 puts counting stats on an equal playing-time scale. The per-100 view is labelled an estimate because historical team possessions are reconstructed from available team totals.</p>
-                    <div class="field-row field-row--two analytics-panel__fields">
+                    <div class="field-row analytics-panel__fields">
                       <label class="field">
                         <span>Stat display</span>
                         <select id="analyticsViewInput" aria-describedby="analyticsViewHelp">
@@ -200,31 +201,23 @@
                           <option value="eraRelative">Era-relative per-36 index</option>
                         </select>
                       </label>
-                      <label class="field" id="rotationScoringBasisField">
-                        <span>Rotation scoring basis</span>
-                        <select id="rotationScoringBasisInput" aria-describedby="rotationScoringBasisHelp">
-                          <option value="per36" selected>Per 36 rate — recommended</option>
-                          <option value="perGame">Per game — legacy comparison</option>
-                        </select>
-                      </label>
                     </div>
                     <p class="field__help" id="analyticsViewHelp">Per game, per 36, and per-100 estimates all describe the selected team stint. Era-relative index compares a player's per-36 rate with the same NBA season and phase; 100 is the minute-weighted league baseline.</p>
-                    <p class="field__help" id="rotationScoringBasisHelp">In rotation mode, the recommended per-36 basis decides which rate profiles earn minutes. Exact projected totals always use each player's historical per-minute production times the proposed minutes.</p>
                   </details>
 
                   <section class="opponent-scout" id="opponentScout" aria-labelledby="opponentScoutHeading">
                     <div class="opponent-scout__heading">
                       <div>
-                        <p class="eyebrow">Experimental matchup emphasis</p>
-                        <h3 id="opponentScoutHeading">Historical Style Counter</h3>
-                        <p>Compare two teams from the same season and phase. This transparent heuristic highlights historical statistical gaps and previews an optional weight adjustment; it does not simulate a game or predict a winner.</p>
+                        <p class="eyebrow">Descriptive matchup context</p>
+                        <h3 id="opponentScoutHeading">Opponent Scouting Cue</h3>
+                        <p>Compare same-season team profiles and minute leaders, then preview an optional strategy emphasis. This is historical context—not a game simulation, matchup prediction, or betting model.</p>
                       </div>
                       <div class="opponent-scout__controls">
                         <label class="field">
                           <span>Opponent</span>
                           <select id="opponentTeamInput" aria-describedby="opponentScoutStatus"></select>
                         </label>
-                        <button class="button button--quiet" id="loadOpponentButton" type="button">Build style counter</button>
+                        <button class="button button--quiet" id="loadOpponentButton" type="button">Build scouting cue</button>
                       </div>
                     </div>
                     <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above to compare an opponent.</p>
@@ -275,7 +268,62 @@
                     </fieldset>
 
                     <fieldset class="constraint-group--wide rotation-settings" id="rotationSettings" hidden>
-                      <legend>Rotation minutes</legend>
+                      <legend>Rotation minute model</legend>
+                      <div class="rotation-model-intro">
+                        <div>
+                          <strong>Decide how much freedom the optimizer has.</strong>
+                          <p>The recommended plan starts from each player's recorded team-stint workload, then uses your strategy to move minutes inside a visible starting range.</p>
+                        </div>
+                        <span class="model-status-chip">Exact 240-minute plan</span>
+                      </div>
+                      <div class="rotation-model-grid">
+                        <label class="field">
+                          <span>Minute plan</span>
+                          <select id="rotationMinutePlanInput" aria-describedby="rotationMinutePlanHelp">
+                            <option value="historicalAware" selected>Historical-aware — recommended</option>
+                            <option value="openWhatIf">Open what-if</option>
+                          </select>
+                        </label>
+                        <label class="field" id="rotationFlexibilityField">
+                          <span>Preferred workload band</span>
+                          <select id="rotationFlexibilityInput" aria-describedby="rotationMinutePlanHelp">
+                            <option value="4">Start at ±4 minutes</option>
+                            <option value="8" selected>Start at ±8 minutes</option>
+                            <option value="12">Start at ±12 minutes</option>
+                            <option value="16">Start at ±16 minutes</option>
+                          </select>
+                        </label>
+                        <label class="field" id="rotationScoringBasisField">
+                          <span>Rate comparison</span>
+                          <select id="rotationScoringBasisInput" aria-describedby="rotationScoringBasisHelp">
+                            <option value="per36" selected>Per 36 minutes — recommended</option>
+                            <option value="perGame">Per game — legacy comparison</option>
+                          </select>
+                        </label>
+                        <label class="field" id="rotationRateStabilityField">
+                          <span>Small-sample treatment</span>
+                          <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
+                            <option value="sampleAdjusted" selected>Stabilize rates — recommended</option>
+                            <option value="raw">Use raw rates</option>
+                          </select>
+                        </label>
+                        <label class="field">
+                          <span>On-court role shape</span>
+                          <select id="rotationPositionProfileInput" aria-describedby="rotationPositionProfileHelp">
+                            <option value="traditional" selected>Traditional — 96 G / 96 F / 48 C</option>
+                            <option value="small">Small — 120 G / 96 F / 24 C</option>
+                            <option value="big">Big — 72 G / 120 F / 48 C</option>
+                          </select>
+                        </label>
+                      </div>
+                      <p class="helper" id="rotationMinutePlanHelp"><strong>Historical-aware:</strong> recorded team-stint minutes are rescaled to this selected group, then the optimizer starts with your preferred band. If exact role coverage requires 4–8 more minutes of flexibility, the result discloses the expansion. Hard player limits never change.</p>
+                      <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares production at equal playing time. Projected team totals still use each player's historical per-minute production times the proposed minutes.</p>
+                      <p class="field__help" id="rotationRateStabilityHelp">When the database has total minutes and shot attempts, rate stabilization pulls smaller samples toward the same-season NBA baseline before players are ranked. It is an uncertainty guardrail, not a player-impact rating.</p>
+                      <p class="field__help" id="rotationPositionProfileHelp">Every option totals 240 exact on-court role minutes. Source-listed flex players can split their time across compatible roles.</p>
+                      <div class="rotation-hard-limits">
+                        <strong>Hard player limits</strong>
+                        <p>These limits always apply, including in open what-if mode.</p>
+                      </div>
                       <div class="compact-fields compact-fields--two">
                         <label class="field"><span>Minimum per player</span><input id="rotationMinInput" type="number" min="0" max="30" step="1" value="8"></label>
                         <label class="field"><span>Maximum per player</span><input id="rotationMaxInput" type="number" min="20" max="48" step="1" value="40"></label>
@@ -339,6 +387,7 @@
                   <dl class="run-card__summary">
                     <div><dt>Plan</dt><dd id="runModeSummary">Best 5-player group</dd></div>
                     <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
+                    <div id="runMinuteModelRow" hidden><dt>Minute model</dt><dd id="runMinuteModelSummary">Historical-aware</dd></div>
                     <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
                     <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
                   </dl>
@@ -369,7 +418,7 @@
               </div>
               <div class="results__actions">
                 <button class="button button--quiet" id="copyResultButton" type="button">Copy summary</button>
-                <button class="button button--quiet" id="shareScenarioButton" type="button">Copy share link</button>
+                <button class="button button--quiet" id="shareScenarioButton" type="button">Share setup</button>
                 <button class="button button--quiet" id="downloadResultButton" type="button">Download CSV</button>
                 <button class="button button--quiet" id="printReportButton" type="button">Print scouting report</button>
               </div>
@@ -438,7 +487,8 @@
               <span class="model-card__number">04</span>
               <h3>Honest limitations</h3>
               <p>Team-season rows show players who appeared for that team; they are not a current depth chart or injury report. Box scores do not directly measure chemistry, matchups, role changes, or on-court possessions. Any per-100 view is visibly labelled as a team-total-based estimate.</p>
-              <p>Rotation mode evaluates each candidate with an exact 240-minute plan under your minimum, maximum, and on-court position limits. By default, it ranks counting-stat quality per 36 minutes before allocating time, so historical playing time does not automatically earn more proposed minutes. Projected production still uses each player's historical per-minute production times the exact minutes assigned. It is a historical-stat scenario—not a game prediction.</p>
+              <p>Rotation mode evaluates each candidate with an exact 240-minute plan under your player limits and selected on-court role shape. The recommended historical-aware plan uses recorded team-stint workload as a guardrail, compares counting production per 36, and stabilizes small samples when the source evidence is available. Open what-if mode deliberately removes the workload guardrail. Projected production still uses each player's historical per-minute production times the exact minutes assigned.</p>
+              <p>Player-season box scores and recorded workload are not observed five-player impact. Verified play-by-play impact can be added as a separate evidence layer when coverage exists; it is not inferred from raw plus-minus or team totals.</p>
             </article>
           </div>
           <div class="panel data-note">
@@ -459,8 +509,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../../backend-config.js?v=20260824b"></script>
-  <script defer src="../../supabase-client.js?v=20260824b"></script>
-  <script type="module" src="app.js?v=20260824b"></script>
+  <script defer src="../../backend-config.js?v=20260824d"></script>
+  <script defer src="../../supabase-client.js?v=20260824d"></script>
+  <script type="module" src="app.js?v=20260824d"></script>
 </body>
 </html>
