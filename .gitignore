@@ -44,9 +44,14 @@ _backups/
 __pycache__/
 scripts/__pycache__/
 outputs/
+reports/
 dist/
 supabase/.branches/
 supabase/.temp/
+
+# Local source material and credentials that must never enter Git history
+Ebay Bulk Upload Legacy with HTML.xlsx
+Stripe Key.docx
 
 # OS/editor noise
 Thumbs.db
