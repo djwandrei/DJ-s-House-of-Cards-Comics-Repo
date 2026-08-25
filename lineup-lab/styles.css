@@ -1118,6 +1118,19 @@ select:focus-visible,
   cursor: not-allowed;
 }
 
+/* This compact source check turns the model's evidence requirement into an
+ * actionable pre-solve fact rather than a surprise hidden in the result. */
+.rotation-evidence-preview {
+  margin: 0.85rem 0 0;
+  padding: 0.62rem 0.72rem;
+  color: #40506e;
+  background: #f4f7fd;
+  border-left: 3px solid #8192d6;
+  border-radius: 0 9px 9px 0;
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
 .rotation-hard-limits {
   margin: 1rem 0 0.65rem;
   padding-top: 0.8rem;
@@ -1140,6 +1153,43 @@ select:focus-visible,
   background: linear-gradient(145deg, #f7f8ff, #fff);
   border: 1px solid #cfd7f2;
   border-radius: 15px;
+}
+
+.opponent-scout > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 800;
+  list-style: none;
+}
+
+.opponent-scout > summary::-webkit-details-marker {
+  display: none;
+}
+
+.opponent-scout > summary::after {
+  color: var(--blue);
+  content: "+";
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.opponent-scout[open] > summary {
+  margin-bottom: 0.9rem;
+}
+
+.opponent-scout[open] > summary::after {
+  content: "−";
+}
+
+.opponent-scout > summary span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 400;
 }
 
 .opponent-scout__heading {
@@ -1419,6 +1469,76 @@ select:focus-visible,
   display: block;
 }
 
+.player-action-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem 0.7rem;
+  margin: -0.3rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.player-action-legend span {
+  padding: 0.28rem 0.45rem;
+  background: var(--surface-soft);
+  border: 1px solid #e2e7f1;
+  border-radius: 999px;
+}
+
+.player-action-legend strong {
+  color: var(--navy);
+}
+
+.active-selection-tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  padding: 0.58rem 0.65rem;
+  background: linear-gradient(135deg, #f1f4ff, #fbfcff);
+  border: 1px solid #d7dff4;
+  border-radius: 11px;
+}
+
+.active-selection-tray > strong {
+  margin-right: 0.15rem;
+  color: var(--navy);
+  font-size: 0.76rem;
+}
+
+.selection-chip {
+  min-height: 30px;
+  padding: 0.28rem 0.5rem;
+  color: #223769;
+  background: #fff;
+  border: 1px solid #cad4ed;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.selection-chip:hover {
+  background: #e9eeff;
+  border-color: #8ea0da;
+  transform: none;
+}
+
+.selection-chip--lock {
+  color: #0c5a48;
+  border-color: #9ed5c3;
+}
+
+.selection-chip--exclude {
+  color: #8d1b28;
+  border-color: #ecb8bd;
+}
+
+.selection-chip--watch {
+  color: #8a5900;
+  border-color: #e8d093;
+}
+
 .table-wrap {
   width: 100%;
   min-width: 0;
@@ -1441,6 +1561,11 @@ select:focus-visible,
   white-space: nowrap;
 }
 
+.player-table {
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
 .player-table caption {
   padding: 0.55rem 0.75rem;
   color: var(--muted);
@@ -1455,7 +1580,7 @@ select:focus-visible,
 .alternatives-table td,
 .compare-table th,
 .compare-table td {
-  padding: 0.67rem 0.62rem;
+  padding: 0.58rem 0.5rem;
   border-bottom: 1px solid #e6eaf1;
   text-align: right;
 }
@@ -1467,6 +1592,13 @@ select:focus-visible,
   background: #f4f6fa;
   font-size: 0.75rem;
   letter-spacing: 0.025em;
+}
+
+.player-table th:nth-child(n + 10) {
+  width: 72px;
+  white-space: normal;
+  line-height: 1.15;
+  text-align: center;
 }
 
 .player-table th:first-child,
@@ -1489,6 +1621,15 @@ select:focus-visible,
 
 .player-table tbody tr.is-excluded {
   opacity: 0.58;
+}
+
+.player-table tbody tr.is-locked {
+  background: linear-gradient(90deg, #edf8f4, #fff 32%);
+  box-shadow: inset 4px 0 0 var(--success);
+}
+
+.player-table tbody tr.is-locked:hover {
+  background: linear-gradient(90deg, #e7f5ef, #f9fffc 32%);
 }
 
 .player-name {
@@ -2890,6 +3031,12 @@ select:focus-visible,
 }
 
 @media (max-width: 900px) {
+  html {
+    /* Keep focused controls and the last player action clear of the fixed
+     * mobile solve bar when the browser scrolls them into view. */
+    scroll-padding-bottom: 6.75rem;
+  }
+
   body {
     padding-bottom: 5.9rem;
   }
@@ -3149,6 +3296,15 @@ select:focus-visible,
     grid-column: 1 / -1;
   }
 
+  .player-action-legend {
+    gap: 0.35rem;
+    margin-top: -0.1rem;
+  }
+
+  .active-selection-tray {
+    align-items: flex-start;
+  }
+
   .player-table-wrap {
     overflow: visible;
     border: 0;
@@ -3337,6 +3493,10 @@ select:focus-visible,
 
   .opponent-scout__stats {
     grid-template-columns: 1fr;
+  }
+
+  .player-action-legend span {
+    width: 100%;
   }
 
   .preset-card:last-child,

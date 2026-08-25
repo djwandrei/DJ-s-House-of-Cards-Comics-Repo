@@ -100,6 +100,147 @@ test("historical workload anchors are derived from the live adapter's team-stint
   assert.deepEqual(result.historicalGuidance.targetsById, expected);
 });
 
+test("historical workload protection keeps a tiny rate spike from inheriting starter minutes by default", () => {
+  const historicalMinuteAnchors = Object.fromEntries([
+    ["micro", 2],
+    ...Array.from({ length: 7 }, (_, index) => [`rotation-${index + 1}`, 34]),
+  ]);
+  const players = Object.keys(historicalMinuteAnchors).map((id) => player(id));
+  const common = {
+    minMinutes: 0,
+    maxMinutes: 48,
+    scores: Object.fromEntries(players.map((item) => [item.id, item.id === "micro" ? 100 : 1])),
+    strategy: "objective",
+    historicalMinuteAnchors,
+    minuteFlexibility: 8,
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+  };
+  const protectedPlan = allocateRotationMinutes(players, {
+    ...common,
+    minutePlan: "historicalAware",
+  });
+  const strategyFirst = allocateRotationMinutes(players, {
+    ...common,
+    minutePlan: "historicalAware",
+    historicalAllocationStyle: "strategyFirst",
+  });
+  const openWhatIf = allocateRotationMinutes(players, {
+    ...common,
+    minutePlan: "openWhatIf",
+  });
+
+  assert.equal(protectedPlan.ok, true);
+  assert.equal(protectedPlan.byId.micro, 2);
+  assert.equal(protectedPlan.historicalGuidance.allocationStyleApplied, "preserveWorkload");
+  assert.equal(protectedPlan.strategy, "historical-workload-continuity");
+  assert.equal(strategyFirst.ok, true);
+  assert.equal(strategyFirst.byId.micro, 10);
+  assert.equal(strategyFirst.historicalGuidance.allocationStyleApplied, "strategyFirst");
+  assert.equal(openWhatIf.ok, true);
+  assert.equal(openWhatIf.byId.micro, 48);
+});
+
+test("realistic mode rejects a selected roster that lacks observed workload capacity", () => {
+  const players = Array.from({ length: 8 }, (_, index) => player(`reserve-${index + 1}`));
+  const historicalMinuteAnchors = Object.fromEntries(
+    players.map((item) => [item.id, 20]),
+  );
+  const common = {
+    minMinutes: 0,
+    maxMinutes: 48,
+    historicalMinuteAnchors,
+    minuteFlexibility: 8,
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+  };
+  const realistic = allocateRotationMinutes(players, {
+    ...common,
+    minutePlan: "historicalAware",
+  });
+  const openWhatIf = allocateRotationMinutes(players, {
+    ...common,
+    minutePlan: "openWhatIf",
+  });
+
+  // Eight 20-minute reserves can provide at most 224 minutes inside a
+  // +/-8 workload window. Rescaling their targets to 240 would manufacture
+  // starter minutes, so realistic mode must fail explicitly instead.
+  assert.equal(realistic.ok, false);
+  assert.equal(realistic.diagnostics.category, "historical-workload");
+  assert.equal(realistic.diagnostics.historicalGuidance.status, "workload-capacity-infeasible");
+  assert.match(realistic.reasons.join(" "), /at most 224 of 240 minutes/i);
+
+  assert.equal(openWhatIf.ok, true);
+});
+
+test("historical continuity minimizes workload departure when exact role coverage changes a target", () => {
+  const players = [
+    ...Array.from({ length: 3 }, (_, index) => player(`g${index + 1}`, { positions: ["G"] })),
+    ...Array.from({ length: 4 }, (_, index) => player(`f${index + 1}`, { positions: ["F"] })),
+    player("center", { positions: ["C"] }),
+  ];
+  const historicalMinuteAnchors = {
+    g1: 36,
+    g2: 36,
+    g3: 36,
+    f1: 22,
+    f2: 22,
+    f3: 22,
+    f4: 22,
+    center: 44,
+  };
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    minutePlan: "historicalAware",
+    minuteFlexibility: 8,
+    historicalMinuteAnchors,
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.byId.center, 48);
+  assert.equal(result.positionMinutes.actual.C, 48);
+  assert.equal(result.diagnostics.historicalGuidance.allocationStyleApplied, "preserveWorkload");
+  assert.equal(result.positionMinutes.byPlayer.center.C, 48);
+  assert.equal(
+    result.allocations.reduce(
+      (total, allocation) => total + Math.abs(allocation.minutes - allocation.historicalTarget),
+      0,
+    ),
+    // The source targets call for 108 G / 88 F / 44 C minutes. Reaching the
+    // required 96 / 96 / 48 shape therefore needs at least 12 + 8 + 4 = 24
+    // absolute player-minute changes; the continuity network attains that
+    // lower bound rather than drifting by ID order.
+    24,
+  );
+});
+
+test("a partial-season player is anchored to the team's game share, never raw MPG", () => {
+  const partialAnchor = (12 * 30) / 82;
+  const remainingAnchor = (240 - partialAnchor) / 7;
+  const players = [
+    player("short-stint", { games: 12, minutes: 30 }),
+    ...Array.from({ length: 7 }, (_, index) => player(`full-${index + 1}`, {
+      games: 82,
+      minutes: remainingAnchor,
+    })),
+  ];
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    minutePlan: "historicalAware",
+    minuteFlexibility: 0,
+    historicalTeamGames: 82,
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+  });
+
+  assert.equal(result.ok, true);
+  assert.ok(Math.abs(result.historicalGuidance.anchorsById["short-stint"] - partialAnchor) < 1e-9);
+  assert.ok(result.historicalGuidance.targetsById["short-stint"] <= 5);
+  assert.ok(result.byId["short-stint"] <= 5);
+  assert.notEqual(result.byId["short-stint"], 30);
+});
+
 test("sample adjustment keeps a tiny-sample rate spike from outranking proven production", () => {
   const steadyPlayers = Array.from({ length: 7 }, (_, index) => player(`steady-${index + 1}`, {
     points: 15 + index * 0.01,
@@ -161,6 +302,49 @@ test("sample adjustment keeps a tiny-sample rate spike from outranking proven pr
   assert.match(raw.diagnostics.rotationRateStabilityEvidence.reason, /disabled.*raw per-36/i);
   assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.applied, true);
   assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.adjustedPlayers, 9);
+});
+
+test("missing rate metadata cannot create a ranking advantage over an identical short sample", () => {
+  const steadyPlayers = Array.from({ length: 7 }, (_, index) => player(`steady-${index + 1}`, {
+    points: 15 + index * 0.01,
+    analytics: {
+      totals: { minutes: 1800 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const players = [
+    player("a-backed", {
+      minutes: 1,
+      points: 2,
+      analytics: {
+        totals: { minutes: 10 },
+        leaguePer36: { points: 15 },
+      },
+    }),
+    player("z-missing", { minutes: 1, points: 2 }),
+    ...steadyPlayers,
+  ];
+  const result = optimizeLineups(players, {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.ok(result.best.playerIds.includes("a-backed"));
+  assert.ok(result.best.playerIds.includes("z-missing"));
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.applied, false);
+  assert.ok(result.diagnostics.rotationRateStabilityEvidence.rawMetricsDueToIncompleteEvidence.includes("points"));
 });
 
 test("custom position profiles reconcile every player and role minute", () => {

@@ -12,6 +12,7 @@ const MODE_VALUES = new Set(["lineup", "rotation"]);
 const PHASE_VALUES = new Set(["regular", "playoffs"]);
 const PRESET_VALUES = new Set(["balanced", "defense", "offense", "shooting", "playmaking", "custom"]);
 const ROTATION_MINUTE_PLAN_VALUES = new Set(["historicalAware", "openWhatIf"]);
+const ROTATION_ALLOCATION_STYLE_VALUES = new Set(["preserveWorkload", "strategyFirst"]);
 const ROTATION_RATE_STABILITY_VALUES = new Set(["sampleAdjusted", "raw"]);
 // These sets mirror the visible selects in index.html. A shared URL must never
 // claim to restore an assumption the receiving UI cannot actually represent.
@@ -171,6 +172,9 @@ export function encodeScenarioQuery(input = {}) {
   if (ROTATION_MINUTE_PLAN_VALUES.has(input.rotationMinutePlan)) {
     params.set("minutePlan", input.rotationMinutePlan);
   }
+  if (ROTATION_ALLOCATION_STYLE_VALUES.has(input.rotationHistoricalAllocationStyle)) {
+    params.set("minuteStyle", input.rotationHistoricalAllocationStyle);
+  }
   const minuteFlexibility = finiteNumber(input.rotationMinuteFlexibility, {
     minimum: 0,
     maximum: 48,
@@ -278,6 +282,14 @@ export function decodeScenarioQuery(search = "") {
   if (rotationMinutePlan) {
     if (ROTATION_MINUTE_PLAN_VALUES.has(rotationMinutePlan)) scenario.rotationMinutePlan = rotationMinutePlan;
     else warnings.push("Ignored an invalid rotation minute plan from the shared link.");
+  }
+  const rotationHistoricalAllocationStyle = params.get("minuteStyle");
+  if (rotationHistoricalAllocationStyle) {
+    if (ROTATION_ALLOCATION_STYLE_VALUES.has(rotationHistoricalAllocationStyle)) {
+      scenario.rotationHistoricalAllocationStyle = rotationHistoricalAllocationStyle;
+    } else {
+      warnings.push("Ignored an invalid rotation minute-use style from the shared link.");
+    }
   }
   const rotationMinuteFlexibility = finiteNumber(params.get("minuteFlex"), {
     minimum: 0,

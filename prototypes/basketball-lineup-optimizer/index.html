@@ -12,7 +12,7 @@
   <link rel="preload" href="../../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260824d">
+  <link rel="stylesheet" href="styles.css?v=20260824e">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -139,21 +139,21 @@
                   </div>
 
                   <div class="preset-grid" id="presetGrid">
-                    <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Blend scoring, playmaking, and defense</span></button>
-                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Lockdown Defense</strong><span>Win the glass and create stops with steals and blocks</span></button>
-                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a Bucket</strong><span>Favor high-volume scorers and efficient shot-makers</span></button>
-                    <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the Floor</strong><span>Favor eFG% and three-point shooting</span></button>
-                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the Ball</strong><span>Favor playmakers who create shots without turning it over</span></button>
+                    <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>A well-rounded mix of scoring, creation, and stops</span></button>
+                    <button class="preset-card" type="button" data-preset="defense" aria-pressed="false"><strong>Lockdown Defense</strong><span>Make every possession harder with boards, steals, and blocks</span></button>
+                    <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Need a Bucket</strong><span>Find scoring punch through volume, efficiency, and shot-making</span></button>
+                    <button class="preset-card" type="button" data-preset="shooting" aria-pressed="false"><strong>Space the Floor</strong><span>Open driving lanes with efficient, high-value shooting</span></button>
+                    <button class="preset-card" type="button" data-preset="playmaking" aria-pressed="false"><strong>Move the Ball</strong><span>Create cleaner looks with passing and turnover control</span></button>
                   </div>
 
                   <div class="field-row field-row--three">
                     <label class="field">
-                      <span>Plan format</span>
+                      <span>Build type</span>
                       <select id="modeInput" name="mode" aria-describedby="modeInputHelp">
-                        <option value="lineup">Five-player lineup</option>
-                        <option value="rotation">Rotation roster + minutes plan</option>
+                        <option value="lineup">Five-player lineup — find the best five</option>
+                        <option value="rotation">Rotation — choose 8–12 players and assign 240 minutes</option>
                       </select>
-                      <small class="field__help" id="modeInputHelp">Choose one five-player group or a larger roster with an exact 240-minute plan.</small>
+                      <small class="field__help" id="modeInputHelp">Choose a best five or a rotation where every proposed minute is assigned and role-checked.</small>
                     </label>
                     <label class="field">
                       <span>Players in plan</span>
@@ -161,13 +161,13 @@
                       <small class="field__help" id="sizeInputHelp">Five in lineup mode; eight to twelve in rotation mode.</small>
                     </label>
                     <label class="field">
-                      <span>Results to compare</span>
+                      <span>Other viable options</span>
                       <select id="alternativesInput" name="alternatives" aria-describedby="alternativesInputHelp">
                         <option value="3">Top 3</option>
                         <option value="5" selected>Top 5</option>
                         <option value="10">Top 10</option>
                       </select>
-                      <small class="field__help" id="alternativesInputHelp">Show the best result plus the next-best feasible groups.</small>
+                      <small class="field__help" id="alternativesInputHelp">Show the next-best complete groups under the same rules—not individual player substitutions.</small>
                     </label>
                   </div>
 
@@ -185,7 +185,7 @@
                       <label class="range-field">Blocks <input type="range" min="0" max="100" step="1" data-weight="blocks"><output>0</output></label>
                       <label class="range-field">Ball security <input type="range" min="0" max="100" step="1" data-weight="ballSecurity"><output>0</output></label>
                     </div>
-                    <p class="weight-share-summary" id="weightShareSummary" aria-live="polite"></p>
+                    <p class="weight-share-summary" id="weightShareSummary"></p>
                   </details>
 
                   <details class="analytics-panel" id="analyticsPanel">
@@ -205,12 +205,12 @@
                     <p class="field__help" id="analyticsViewHelp">Per game, per 36, and per-100 estimates all describe the selected team stint. Era-relative index compares a player's per-36 rate with the same NBA season and phase; 100 is the minute-weighted league baseline.</p>
                   </details>
 
-                  <section class="opponent-scout" id="opponentScout" aria-labelledby="opponentScoutHeading">
+                  <details class="opponent-scout" id="opponentScout">
+                    <summary>Game-plan against a historical opponent <span>(optional)</span></summary>
                     <div class="opponent-scout__heading">
                       <div>
-                        <p class="eyebrow">Descriptive matchup context</p>
                         <h3 id="opponentScoutHeading">Opponent Scouting Cue</h3>
-                        <p>Compare same-season team profiles and minute leaders, then preview an optional strategy emphasis. This is historical context—not a game simulation, matchup prediction, or betting model.</p>
+                        <p>Compare same-season team profiles and minute leaders, then preview an optional strategy emphasis. Nothing changes until you apply the suggested weights.</p>
                       </div>
                       <div class="opponent-scout__controls">
                         <label class="field">
@@ -222,7 +222,7 @@
                     </div>
                     <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above to compare an opponent.</p>
                     <div class="opponent-scout__summary" id="opponentScoutSummary" hidden></div>
-                  </section>
+                  </details>
                 </section>
 
                 <section class="panel step-panel" aria-labelledby="constraintsHeading">
@@ -271,26 +271,33 @@
                       <legend>Rotation minute model</legend>
                       <div class="rotation-model-intro">
                         <div>
-                          <strong>Decide how much freedom the optimizer has.</strong>
-                          <p>The recommended plan starts from each player's recorded team-stint workload, then uses your strategy to move minutes inside a visible starting range.</p>
+                          <strong>Choose the level of realism for proposed minutes.</strong>
+                          <p>Your strategy always ranks the roster. The default minute plan then keeps the selected group close to its recorded workload, so a tiny rate sample cannot quietly inherit a star's role.</p>
                         </div>
                         <span class="model-status-chip">Exact 240-minute plan</span>
                       </div>
                       <div class="rotation-model-grid">
                         <label class="field">
-                          <span>Minute plan</span>
+                          <span>Minute realism</span>
                           <select id="rotationMinutePlanInput" aria-describedby="rotationMinutePlanHelp">
-                            <option value="historicalAware" selected>Historical-aware — recommended</option>
-                            <option value="openWhatIf">Open what-if</option>
+                            <option value="historicalAware" selected>Realistic historical rotation — recommended</option>
+                            <option value="openWhatIf">Open what-if — hard limits only</option>
                           </select>
                         </label>
                         <label class="field" id="rotationFlexibilityField">
-                          <span>Preferred workload band</span>
+                          <span>Workload flexibility</span>
                           <select id="rotationFlexibilityInput" aria-describedby="rotationMinutePlanHelp">
-                            <option value="4">Start at ±4 minutes</option>
-                            <option value="8" selected>Start at ±8 minutes</option>
-                            <option value="12">Start at ±12 minutes</option>
-                            <option value="16">Start at ±16 minutes</option>
+                            <option value="4">Observed workload window: ±4 minutes</option>
+                            <option value="8" selected>Observed workload window: ±8 minutes</option>
+                            <option value="12">Observed workload window: ±12 minutes</option>
+                            <option value="16">Observed workload window: ±16 minutes</option>
+                          </select>
+                        </label>
+                        <label class="field" id="rotationAllocationStyleField">
+                          <span>Minute-use style</span>
+                          <select id="rotationAllocationStyleInput" aria-describedby="rotationAllocationStyleHelp">
+                            <option value="preserveWorkload" selected>Keep observed workload — recommended</option>
+                            <option value="strategyFirst">Lean into the game plan</option>
                           </select>
                         </label>
                         <label class="field" id="rotationScoringBasisField">
@@ -301,7 +308,7 @@
                           </select>
                         </label>
                         <label class="field" id="rotationRateStabilityField">
-                          <span>Small-sample treatment</span>
+                          <span>Trust smaller samples less</span>
                           <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
                             <option value="sampleAdjusted" selected>Stabilize rates — recommended</option>
                             <option value="raw">Use raw rates</option>
@@ -310,16 +317,18 @@
                         <label class="field">
                           <span>On-court role shape</span>
                           <select id="rotationPositionProfileInput" aria-describedby="rotationPositionProfileHelp">
-                            <option value="traditional" selected>Traditional — 96 G / 96 F / 48 C</option>
-                            <option value="small">Small — 120 G / 96 F / 24 C</option>
-                            <option value="big">Big — 72 G / 120 F / 48 C</option>
+                            <option value="traditional" selected>Traditional — two guards, two forwards, one center</option>
+                            <option value="small">Small — more guard time, less center time</option>
+                            <option value="big">Big — more forward time, standard center time</option>
                           </select>
                         </label>
                       </div>
-                      <p class="helper" id="rotationMinutePlanHelp"><strong>Historical-aware:</strong> recorded team-stint minutes are rescaled to this selected group, then the optimizer starts with your preferred band. If exact role coverage requires 4–8 more minutes of flexibility, the result discloses the expansion. Hard player limits never change.</p>
+                      <p class="helper" id="rotationMinutePlanHelp"><strong>Realistic historical rotation:</strong> recorded team-stint minutes create a real capacity window for each player. The selected group must have enough observed workload to cover all 240 minutes; a small, disclosed expansion is allowed only to prove exact role coverage. Hard player limits never change.</p>
+                      <p class="field__help" id="rotationAllocationStyleHelp"><strong>Keep observed workload</strong> uses your strategy to choose the roster, then gives its players the closest possible version of their recorded workload. <strong>Lean into the game plan</strong> shifts minutes toward the highest-fitting profiles inside the same source-backed capacity window.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares production at equal playing time. Projected team totals still use each player's historical per-minute production times the proposed minutes.</p>
                       <p class="field__help" id="rotationRateStabilityHelp">When the database has total minutes and shot attempts, rate stabilization pulls smaller samples toward the same-season NBA baseline before players are ranked. It is an uncertainty guardrail, not a player-impact rating.</p>
-                      <p class="field__help" id="rotationPositionProfileHelp">Every option totals 240 exact on-court role minutes. Source-listed flex players can split their time across compatible roles.</p>
+                      <p class="field__help" id="rotationPositionProfileHelp">Every option totals 240 exact on-court role minutes. Source-listed multi-position players can split their time across compatible roles; a PF only covers center when the source lists PF-C (or another C-eligible role).</p>
+                      <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking source workload evidence for this roster…</p>
                       <div class="rotation-hard-limits">
                         <strong>Hard player limits</strong>
                         <p>These limits always apply, including in open what-if mode.</p>
@@ -338,7 +347,7 @@
                     <span class="step-number">3</span>
                     <div>
                       <p class="eyebrow">Choose your players</p>
-                      <h2 id="playersHeading">Lock, exclude, compare, or watch players</h2>
+                      <h2 id="playersHeading">Set player rules and compare prospects</h2>
                     </div>
                     <label class="search-field">
                       <span class="sr-only">Search players</span>
@@ -346,9 +355,16 @@
                     </label>
                   </div>
 
+                  <div class="player-action-legend" aria-label="Player action guide">
+                    <span><strong>Must include</strong> is a hard rule</span>
+                    <span><strong>Do not use</strong> removes a player from the search</span>
+                    <span><strong>Compare</strong> changes charts only</span>
+                    <span><strong>Watch</strong> saves on this device</span>
+                  </div>
+                  <div class="active-selection-tray" id="activeSelectionTray" hidden aria-label="Active player selections"></div>
                   <div class="table-wrap player-table-wrap" aria-label="Player pool controls" tabindex="0">
                     <table class="player-table">
-                      <caption>Search changes only the visible rows. Eligibility filters apply when optimizing.</caption>
+                      <caption>Must include and Do not use change the exact search. Compare and Watch do not. Search changes only the visible rows.</caption>
                       <thead>
                         <tr>
                           <th scope="col">Player</th>
@@ -360,8 +376,8 @@
                           <th scope="col">STL</th>
                           <th scope="col">BLK</th>
                           <th scope="col">TOV</th>
-                          <th scope="col">Lock</th>
-                          <th scope="col">Exclude</th>
+                          <th scope="col">Must include</th>
+                          <th scope="col">Do not use</th>
                           <th scope="col">Compare</th>
                           <th scope="col">Watch</th>
                         </tr>
@@ -387,11 +403,11 @@
                   <dl class="run-card__summary">
                     <div><dt>Plan</dt><dd id="runModeSummary">Best 5-player group</dd></div>
                     <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
-                    <div id="runMinuteModelRow" hidden><dt>Minute model</dt><dd id="runMinuteModelSummary">Historical-aware</dd></div>
-                    <div><dt>Locked</dt><dd id="runLockedSummary">0</dd></div>
-                    <div><dt>Excluded</dt><dd id="runExcludedSummary">0</dd></div>
+                    <div id="runMinuteModelRow" hidden><dt>Minute model</dt><dd id="runMinuteModelSummary">Realistic historical rotation</dd></div>
+                    <div><dt>Must include</dt><dd id="runLockedSummary">0</dd></div>
+                    <div><dt>Do not use</dt><dd id="runExcludedSummary">0</dd></div>
                   </dl>
-                  <div class="search-scope" id="searchScope" aria-live="polite" aria-atomic="true">
+                  <div class="search-scope" id="searchScope">
                     <span>Groups to evaluate</span>
                     <strong id="searchScopeValue">Loading the player pool…</strong>
                   </div>
@@ -418,8 +434,8 @@
               </div>
               <div class="results__actions">
                 <button class="button button--quiet" id="copyResultButton" type="button">Copy summary</button>
-                <button class="button button--quiet" id="shareScenarioButton" type="button">Share setup</button>
-                <button class="button button--quiet" id="downloadResultButton" type="button">Download CSV</button>
+                <button class="button button--quiet" id="shareScenarioButton" type="button">Copy shareable setup link</button>
+                <button class="button button--quiet" id="downloadResultButton" type="button">Export lineup CSV</button>
                 <button class="button button--quiet" id="printReportButton" type="button">Print scouting report</button>
               </div>
             </div>
@@ -509,8 +525,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../../backend-config.js?v=20260824d"></script>
-  <script defer src="../../supabase-client.js?v=20260824d"></script>
-  <script type="module" src="app.js?v=20260824d"></script>
+  <script defer src="../../backend-config.js?v=20260824e"></script>
+  <script defer src="../../supabase-client.js?v=20260824e"></script>
+  <script type="module" src="app.js?v=20260824e"></script>
 </body>
 </html>

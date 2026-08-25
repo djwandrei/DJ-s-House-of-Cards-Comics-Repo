@@ -22,6 +22,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     analyticsView: "eraRelative",
     rotationScoreBasis: "per36",
     rotationMinutePlan: "historicalAware",
+    rotationHistoricalAllocationStyle: "preserveWorkload",
     rotationMinuteFlexibility: 8,
     rotationRateStability: "sampleAdjusted",
     rotationPositionMinuteRequirements: { G: 120, F: 96, C: 24 },
@@ -38,6 +39,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.analyticsView, "eraRelative");
   assert.equal(scenario.rotationScoreBasis, "per36");
   assert.equal(scenario.rotationMinutePlan, "historicalAware");
+  assert.equal(scenario.rotationHistoricalAllocationStyle, "preserveWorkload");
   assert.equal(scenario.rotationMinuteFlexibility, 8);
   assert.equal(scenario.rotationRateStability, "sampleAdjusted");
   assert.deepEqual(scenario.rotationPositionMinuteRequirements, { G: 120, F: 96, C: 24 });
@@ -75,16 +77,19 @@ test("scenario URL codec rejects assumptions the visible controls cannot represe
   const encoded = encodeScenarioQuery({
     mode: "rotation",
     rotationMinuteFlexibility: 7,
+    rotationHistoricalAllocationStyle: "unsupported-style",
     rotationPositionMinuteRequirements: { G: 80, F: 80, C: 80 },
   });
   const encodedParams = new URLSearchParams(encoded);
   assert.equal(encodedParams.has("minuteFlex"), false);
+  assert.equal(encodedParams.has("minuteStyle"), false);
   assert.equal(encodedParams.has("roleMinutes"), false);
 
-  const { scenario, warnings } = decodeScenarioQuery("?v=1&mode=rotation&minuteFlex=7&roleMinutes=g%3A80%2Cf%3A80%2Cc%3A80");
+  const { scenario, warnings } = decodeScenarioQuery("?v=1&mode=rotation&minuteFlex=7&minuteStyle=unsupported-style&roleMinutes=g%3A80%2Cf%3A80%2Cc%3A80");
   assert.equal(scenario.rotationMinuteFlexibility, undefined);
+  assert.equal(scenario.rotationHistoricalAllocationStyle, undefined);
   assert.equal(scenario.rotationPositionMinuteRequirements, undefined);
-  assert.equal(warnings.length, 2);
+  assert.equal(warnings.length, 3);
 });
 
 test("unsupported shared-link versions are not partially applied", () => {

@@ -54,6 +54,18 @@ const ROTATION_MINUTE_PLANS = Object.freeze({
 });
 export const DEFAULT_ROTATION_MINUTE_FLEXIBILITY = 8;
 
+// Historical-aware mode has two deliberately different jobs: selecting the
+// best-fitting *group* and deciding how that group shares its 240 minutes.
+// A rate score is useful for the first job, but blindly maximizing that score
+// for the second job can turn a brief hot streak into a starter-sized workload.
+// Keep observed workload as the default minute tiebreaker, while retaining a
+// clearly labelled strategy-forward experiment for fans who want that choice.
+export const DEFAULT_HISTORICAL_ALLOCATION_STYLE = "preserveWorkload";
+const HISTORICAL_ALLOCATION_STYLES = Object.freeze({
+  PRESERVE_WORKLOAD: "preserveWorkload",
+  STRATEGY_FIRST: "strategyFirst",
+});
+
 // Per-36 removes opportunity bias but a 150-minute rate is still much less
 // certain than a 2,000-minute rate. Where the data adapter provides a same
 // season/phase baseline and the appropriate raw sample, blend the observed
@@ -379,6 +391,28 @@ function normalizeRotationMinutePlan(value, reasons) {
 }
 
 /**
+ * Normalize how an otherwise realistic historical plan distributes minutes.
+ * This is intentionally separate from the roster objective: the exact search
+ * always uses the visitor's strategy to choose a group, then this policy says
+ * whether its final minute plan should retain source workload or lean into the
+ * strategy inside the declared historical band.
+ */
+function normalizeHistoricalAllocationStyle(value, reasons) {
+  if (value === undefined || value === null) return DEFAULT_HISTORICAL_ALLOCATION_STYLE;
+  const compact = String(value).trim().toLowerCase().replace(/[\s_-]+/g, "");
+  if (compact === "preserveworkload" || compact === "continuity" || compact === "historical") {
+    return HISTORICAL_ALLOCATION_STYLES.PRESERVE_WORKLOAD;
+  }
+  if (compact === "strategyfirst" || compact === "strategy") {
+    return HISTORICAL_ALLOCATION_STYLES.STRATEGY_FIRST;
+  }
+  reasons.push(
+    'rotationOptions.historicalAllocationStyle must be either "preserveWorkload" (the default) or "strategyFirst".',
+  );
+  return DEFAULT_HISTORICAL_ALLOCATION_STYLE;
+}
+
+/**
  * Normalize the optional evidence correction used before per-36 percentile
  * ranking. `raw` keeps a deliberately unadjusted comparison for historical
  * experiments; `sampleAdjusted` is the safer default when source evidence is
@@ -603,6 +637,10 @@ function normalizeConfig(config = {}) {
     reasons,
   );
   const rotationMinutePlan = normalizeRotationMinutePlan(rotationOptions.minutePlan, reasons);
+  const rotationHistoricalAllocationStyle = normalizeHistoricalAllocationStyle(
+    rotationOptions.historicalAllocationStyle,
+    reasons,
+  );
   const rotationRateStability = normalizeRotationRateStability(
     rotationOptions.rateStability,
     reasons,
@@ -642,6 +680,7 @@ function normalizeConfig(config = {}) {
       rotationOptions,
       rotationScoringBasis,
       rotationMinutePlan,
+      rotationHistoricalAllocationStyle,
       rotationRateStability,
       rotationMinuteFlexibility,
       rotationPositionMinuteRequirements,
@@ -771,10 +810,18 @@ function rateStabilityEvidence(player, metric) {
 
 /**
  * Apply a conservative empirical-Bayes-style blend only when all of its
- * inputs are actually supplied by the current source. It intentionally does
- * not fabricate a baseline for imported CSVs or older incomplete rows.
+ * inputs are actually supplied by the current source. A zero-attempt or
+ * zero-minute row is still legitimate evidence of *no* player sample, so it
+ * blends fully to the shared baseline instead of receiving a free raw-rate
+ * advantage over a comparable player with complete metadata.
  */
-function stabilizedObjectiveMetricValue(player, metric, scoringBasis, rateStability) {
+function stabilizedObjectiveMetricValue(
+  player,
+  metric,
+  scoringBasis,
+  rateStability,
+  suppliedEvidence = undefined,
+) {
   const raw = objectiveMetricValue(player, metric, scoringBasis);
   if (
     scoringBasis !== ROTATION_SCORING_BASES.PER_36 ||
@@ -782,8 +829,10 @@ function stabilizedObjectiveMetricValue(player, metric, scoringBasis, rateStabil
   ) {
     return { value: raw, adjusted: false };
   }
-  const evidence = rateStabilityEvidence(player, metric);
-  if (!evidence || !(evidence.sample > 0) || !(evidence.prior > 0)) {
+  const evidence = suppliedEvidence === undefined
+    ? rateStabilityEvidence(player, metric)
+    : suppliedEvidence;
+  if (!evidence || evidence.sample === null || !(evidence.prior > 0)) {
     return { value: raw, adjusted: false };
   }
   const reliability = evidence.sample / (evidence.sample + evidence.prior);
@@ -805,13 +854,33 @@ function buildNormalizedMetrics(
   const byPlayerId = new Map(players.map((player) => [player.id, {}]));
   const adjustedPlayerIds = new Set();
   let adjustedPlayerMetricCount = 0;
+  const stabilizedMetrics = [];
+  const rawMetricsDueToIncompleteEvidence = [];
   for (const metric of OBJECTIVE_METRICS) {
-    const measured = players.map((player) => {
+    const evidenceByPlayer = players.map((player) => rateStabilityEvidence(player, metric));
+    // Applying a shrinkage correction to only the rows whose metadata happened
+    // to arrive would make missing data an accidental advantage. Stabilize a
+    // metric for everyone in the eligible pool, or use the same raw comparison
+    // for everyone and surface that evidence gap in the result diagnostics.
+    const canStabilizeMetric =
+      scoringBasis === ROTATION_SCORING_BASES.PER_36 &&
+      rateStability === ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED &&
+      evidenceByPlayer.every((evidence) => evidence && evidence.prior > 0);
+    if (canStabilizeMetric) stabilizedMetrics.push(metric);
+    else if (
+      scoringBasis === ROTATION_SCORING_BASES.PER_36 &&
+      rateStability === ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED &&
+      evidenceByPlayer.some(Boolean)
+    ) {
+      rawMetricsDueToIncompleteEvidence.push(metric);
+    }
+    const measured = players.map((player, index) => {
       const value = stabilizedObjectiveMetricValue(
         player,
         metric,
         scoringBasis,
         rateStability,
+        canStabilizeMetric ? evidenceByPlayer[index] : null,
       );
       if (value.adjusted) {
         adjustedPlayerIds.add(player.id);
@@ -835,6 +904,8 @@ function buildNormalizedMetrics(
       adjustedPlayers: adjustedPlayerIds.size,
       adjustedPlayerMetricCount,
       eligiblePlayers: players.length,
+      stabilizedMetrics,
+      rawMetricsDueToIncompleteEvidence,
       // Per-game is intentionally a compatibility mode. Presenting raw values
       // as sample-adjusted in that branch would mix unlike units.
       reason:
@@ -843,8 +914,10 @@ function buildNormalizedMetrics(
           : rateStability === ROTATION_RATE_STABILITY_MODES.RAW
             ? "Rate stabilization was disabled for this result, so the model used raw per-36 rates."
             : adjustedPlayerMetricCount > 0
-              ? null
-              : "The current player source does not include enough same-season rate evidence to stabilize the selected metrics.",
+              ? rawMetricsDueToIncompleteEvidence.length > 0
+                ? `Applied equal-treatment stabilization to ${stabilizedMetrics.length} metric${stabilizedMetrics.length === 1 ? "" : "s"}; ${rawMetricsDueToIncompleteEvidence.length} incomplete metric${rawMetricsDueToIncompleteEvidence.length === 1 ? " was" : "s were"} kept raw for every eligible player.`
+                : null
+              : "The current player source does not include complete same-season rate evidence for any metric, so every eligible player was compared on the same raw per-36 basis.",
     },
   };
 }
@@ -1605,21 +1678,245 @@ function balancedPositionAllocation(players, bounds, targetMinutes, requirements
 }
 
 /**
+ * A compact successive-shortest-path network for the one place the standard
+ * max-flow oracle cannot express a preference: choosing the role-feasible
+ * minute plan closest to recorded workload. Capacities are integral, so every
+ * returned player and role minute remains an integer without a rounding pass.
+ */
+function createMinCostFlowNetwork(nodeCount) {
+  const graph = Array.from({ length: nodeCount }, () => []);
+
+  function addEdge(from, to, capacity, cost) {
+    const forward = {
+      to,
+      reverseIndex: graph[to].length,
+      capacity,
+      initialCapacity: capacity,
+      cost,
+    };
+    const reverse = {
+      to: from,
+      reverseIndex: graph[from].length,
+      capacity: 0,
+      initialCapacity: 0,
+      cost: -cost,
+    };
+    graph[from].push(forward);
+    graph[to].push(reverse);
+    return forward;
+  }
+
+  function minCostFlow(source, sink, requiredFlow) {
+    let delivered = 0;
+    let cost = 0;
+    while (delivered < requiredFlow) {
+      // Some marginal workload costs are negative while a player is moving
+      // toward his source target, so use a queue-based Bellman-Ford variant
+      // rather than assuming Dijkstra's non-negative-cost precondition.
+      const distance = Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+      const previousNode = Array(nodeCount).fill(-1);
+      const previousEdge = Array(nodeCount).fill(-1);
+      const queued = Array(nodeCount).fill(false);
+      const queue = [source];
+      let queueIndex = 0;
+      distance[source] = 0;
+      queued[source] = true;
+
+      while (queueIndex < queue.length) {
+        const node = queue[queueIndex];
+        queueIndex += 1;
+        queued[node] = false;
+        graph[node].forEach((edge, edgeIndex) => {
+          if (edge.capacity <= 0) return;
+          const nextDistance = distance[node] + edge.cost;
+          if (nextDistance >= distance[edge.to]) return;
+          distance[edge.to] = nextDistance;
+          previousNode[edge.to] = node;
+          previousEdge[edge.to] = edgeIndex;
+          if (!queued[edge.to]) {
+            queued[edge.to] = true;
+            queue.push(edge.to);
+          }
+        });
+      }
+
+      if (!Number.isFinite(distance[sink])) break;
+      let addition = requiredFlow - delivered;
+      for (let node = sink; node !== source; node = previousNode[node]) {
+        const edge = graph[previousNode[node]][previousEdge[node]];
+        addition = Math.min(addition, edge.capacity);
+      }
+      for (let node = sink; node !== source; node = previousNode[node]) {
+        const edge = graph[previousNode[node]][previousEdge[node]];
+        edge.capacity -= addition;
+        graph[node][edge.reverseIndex].capacity += addition;
+      }
+      delivered += addition;
+      cost += addition * distance[sink];
+    }
+    return { delivered, cost };
+  }
+
+  return { addEdge, minCostFlow };
+}
+
+/**
+ * Minimize total absolute departure from the selected group's rescaled
+ * historical workload target while still proving every G/F/C minute. This is
+ * a true secondary objective, not an ID-ordered repair: if the exact targets
+ * are role-feasible they are returned unchanged; otherwise the smallest
+ * possible total departure is chosen before any deterministic display order.
+ */
+function historicalContinuityPositionAllocation(players, bounds, targetMinutes, requirements) {
+  // This is the common case for a source-grounded roster. Avoid constructing a
+  // 240-unit cost network when the historical target vector already covers the
+  // requested roles exactly; the ordinary role-flow proof is both faster and
+  // sufficient to establish zero workload deviation.
+  const exactTarget = findPositionMinuteFlow(
+    players,
+    fixedBoundsFrom(targetMinutes),
+    requirements,
+  );
+  if (exactTarget.feasible) {
+    return {
+      ...exactTarget,
+      adjusted: false,
+      continuityApplied: true,
+      continuityDeviation: 0,
+    };
+  }
+  const feasibility = findPositionMinuteFlow(players, bounds, requirements);
+  if (!feasibility.feasible) return feasibility;
+
+  const sortedPlayers = players.slice().sort(comparePlayersById);
+  const source = 0;
+  const playerStart = 1;
+  const positionStart = playerStart + sortedPlayers.length;
+  const sink = positionStart + POSITION_KEYS.length;
+  const superSource = sink + 1;
+  const superSink = sink + 2;
+  const network = createMinCostFlowNetwork(superSink + 1);
+  const totalRequired = POSITION_KEYS.reduce(
+    (total, position) => total + requirements[position],
+    0,
+  );
+  const minimumTotal = sortedPlayers.reduce(
+    (total, player) => total + bounds.get(player.id).min,
+    0,
+  );
+  const roleEdges = new Map();
+
+  sortedPlayers.forEach((player, index) => {
+    const playerNode = playerStart + index;
+    const playerBounds = bounds.get(player.id);
+    const target = Number(targetMinutes.get(player.id));
+    const normalizedTarget = Number.isInteger(target) ? target : playerBounds.min;
+
+    // The lower bound is introduced as a direct supply at the player node.
+    // Each remaining source-to-player unit carries the exact marginal change
+    // in absolute workload distance, making the full network solve an L1
+    // continuity objective subject to the existing role constraints.
+    network.addEdge(superSource, playerNode, playerBounds.min, 0);
+    for (let minute = playerBounds.min + 1; minute <= playerBounds.max; minute += 1) {
+      const marginalCost =
+        Math.abs(minute - normalizedTarget) - Math.abs((minute - 1) - normalizedTarget);
+      network.addEdge(source, playerNode, 1, marginalCost);
+    }
+
+    const playerRoleEdges = new Map();
+    const eligiblePositions = Array.isArray(player.positions) ? player.positions : [];
+    for (const position of POSITION_KEYS) {
+      if (!eligiblePositions.includes(position)) continue;
+      const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+      playerRoleEdges.set(
+        position,
+        network.addEdge(playerNode, positionNode, playerBounds.max, 0),
+      );
+    }
+    roleEdges.set(player.id, playerRoleEdges);
+  });
+
+  // Remaining court minutes originate at the usual source node. Together with
+  // each player's lower-bound supply this always totals exactly 240 minutes.
+  network.addEdge(superSource, source, totalRequired - minimumTotal, 0);
+  for (const position of POSITION_KEYS) {
+    const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+    network.addEdge(positionNode, sink, requirements[position], 0);
+  }
+  network.addEdge(sink, superSink, totalRequired, 0);
+
+  const solved = network.minCostFlow(superSource, superSink, totalRequired);
+  if (solved.delivered !== totalRequired) {
+    // The ordinary bounded-flow oracle already proved feasibility above. Keep
+    // that exact result as a defensive fallback if a future network change ever
+    // breaks the secondary objective implementation; never fabricate minutes.
+    return { ...feasibility, continuityApplied: false, adjusted: true };
+  }
+
+  const byPlayer = {};
+  const totalsByPlayer = {};
+  const actual = { G: 0, F: 0, C: 0 };
+  for (const player of sortedPlayers) {
+    const roleMinutes = { G: 0, F: 0, C: 0 };
+    for (const [position, edge] of roleEdges.get(player.id)) {
+      const minutes = edge.initialCapacity - edge.capacity;
+      roleMinutes[position] = minutes;
+      actual[position] += minutes;
+    }
+    byPlayer[player.id] = roleMinutes;
+    totalsByPlayer[player.id] = POSITION_KEYS.reduce(
+      (total, position) => total + roleMinutes[position],
+      0,
+    );
+  }
+  const totalDeviation = sortedPlayers.reduce(
+    (total, player) => total + Math.abs(
+      totalsByPlayer[player.id] - Number(targetMinutes.get(player.id)),
+    ),
+    0,
+  );
+  return {
+    feasible: POSITION_KEYS.every((position) => actual[position] === requirements[position]),
+    required: { ...requirements },
+    actual,
+    byPlayer,
+    totalsByPlayer,
+    delivered: solved.delivered,
+    balanceDemand: totalRequired,
+    adjusted: totalDeviation > 0,
+    continuityApplied: true,
+    continuityDeviation: totalDeviation,
+  };
+}
+
+/**
  * Convert a recorded team-stint workload into regulation-game minutes. The
  * denominator is the team's aggregate player-minutes, not a player's MPG per
  * appearance, so missed games and partial-season stints do not masquerade as
  * full-season workloads. A data adapter may also provide the precomputed
  * value directly for callers that do not retain raw totals in the browser.
  */
-function historicalMinuteAnchorFromPlayer(player) {
+function historicalMinuteAnchorFromPlayer(player, historicalTeamGames = null) {
   const analytics = isPlainObject(player?.analytics) ? player.analytics : null;
-  if (!analytics) return null;
-  const direct = finiteNonNegative(analytics.historicalMinutesPerTeamGame);
+  const direct = finiteNonNegative(analytics?.historicalMinutesPerTeamGame);
   if (direct !== null && direct > 0) return direct;
   const totalMinutes = finiteNonNegative(analytics?.totals?.minutes);
-  const teamTotalMinutes = finiteNonNegative(analytics.teamTotalMinutes);
-  if (!(totalMinutes > 0) || !(teamTotalMinutes > 0)) return null;
-  return (240 * totalMinutes) / teamTotalMinutes;
+  const teamTotalMinutes = finiteNonNegative(analytics?.teamTotalMinutes);
+  if (totalMinutes > 0 && teamTotalMinutes > 0) {
+    return (240 * totalMinutes) / teamTotalMinutes;
+  }
+
+  // Standalone callers and legacy course data may retain only GP and MPG.
+  // Reconstruct a regulation-game share only when the selected team has a
+  // plausible team-game denominator; do not mistake a 30 MPG partial stint for
+  // a 30-minute full-season role. Live adapters still take the richer totals
+  // branch above, so this fallback cannot overwrite verified team-stint data.
+  const games = finiteNonNegative(player?.games);
+  const minutesPerGame = finiteNonNegative(player?.minutes);
+  if (games > 0 && minutesPerGame > 0 && historicalTeamGames > 0) {
+    return (games * minutesPerGame) / historicalTeamGames;
+  }
+  return null;
 }
 
 function mapLikeHistoricalAnchor(source, playerId, reasons) {
@@ -1638,16 +1935,43 @@ function mapLikeHistoricalAnchor(source, playerId, reasons) {
   return parsed;
 }
 
-function boundsAroundHistoricalTargets(bounds, targets, flexibility) {
+/**
+ * Keep a historical rotation from turning a low-workload reserve into a
+ * starter merely because the selected group must collectively cover 240
+ * minutes. Targets below are still rescaled so they form a complete plan, but
+ * this observed-workload window is a separate capacity guardrail: a player
+ * cannot absorb unlimited missing minutes from teammates who were not chosen.
+ *
+ * Rounding outward is intentional. The exact solver works in integer minutes,
+ * while Basketball Reference team-stint workload is fractional once missed
+ * games and trades are expressed per team game. A 14.3-minute player with an
+ * eight-minute window can therefore receive at most 23, never an accidental
+ * 22 because of rounding down.
+ */
+function boundsAroundObservedWorkload(bounds, anchors, flexibility) {
   return new Map(
     [...bounds].map(([id, bound]) => {
-      const target = targets.get(id);
+      const anchor = Number(anchors.get(id));
       return [id, {
-        min: Math.max(bound.min, target - flexibility),
-        max: Math.min(bound.max, target + flexibility),
+        min: Math.max(bound.min, Math.floor(Math.max(0, anchor - flexibility))),
+        max: Math.min(bound.max, Math.ceil(anchor + flexibility)),
       }];
     }),
   );
+}
+
+function boundsCanReachRegulationMinutes(bounds) {
+  const totals = [...bounds.values()].reduce(
+    (summary, bound) => ({
+      minimum: summary.minimum + bound.min,
+      maximum: summary.maximum + bound.max,
+    }),
+    { minimum: 0, maximum: 0 },
+  );
+  return {
+    ...totals,
+    feasible: totals.minimum <= 240 && totals.maximum >= 240,
+  };
 }
 
 function boundsToObject(bounds) {
@@ -1658,18 +1982,19 @@ function boundsToObject(bounds) {
 
 /**
  * Build transparent historical workload guardrails for one already-selected
- * roster. The targets are rescaled to the required 240 minutes while honoring
- * the user's global limits, then each player can move by the selected amount.
- * If a narrow band cannot satisfy the exact G/F/C minute shape, widen only as
- * much as needed from a short, deterministic sequence. If no legal guidance
- * band exists, fall back to the user's declared bounds and report that fact;
- * the caller never receives a silently relaxed historical plan.
+ * roster. Rescaled targets ensure the selected group can be compared on a
+ * full 240-minute basis, while observed-workload windows stop those targets
+ * from promoting a low-minute reserve just to make the arithmetic add up.
+ * If the requested window cannot cover the exact G/F/C shape, it may widen by
+ * a small, disclosed amount. If the group still lacks credible capacity, it is
+ * rejected so the outer exact search can choose a better-supported rotation.
  */
 function deriveHistoricalGuidanceBounds(
   players,
   baseBounds,
   {
     historicalMinuteAnchors = undefined,
+    historicalTeamGames = null,
     minuteFlexibility = DEFAULT_ROTATION_MINUTE_FLEXIBILITY,
     positionRequirements = null,
   } = {},
@@ -1680,10 +2005,14 @@ function deriveHistoricalGuidanceBounds(
   const unavailablePlayerIds = [];
   for (const player of players) {
     const supplied = mapLikeHistoricalAnchor(historicalMinuteAnchors, player.id, reasons);
-    const anchor = supplied === undefined ? historicalMinuteAnchorFromPlayer(player) : supplied;
+    const anchor = supplied === undefined
+      ? historicalMinuteAnchorFromPlayer(player, historicalTeamGames)
+      : supplied;
     if (!(anchor > 0)) unavailablePlayerIds.push(player.id);
     else anchors.set(player.id, anchor);
   }
+
+  const rawAnchorTotal = [...anchors.values()].reduce((total, anchor) => total + anchor, 0);
 
   const base = {
     requested: true,
@@ -1693,8 +2022,14 @@ function deriveHistoricalGuidanceBounds(
     flexibilityUsed: null,
     anchorsById: Object.fromEntries(anchors),
     targetsById: {},
+    workloadCapacityById: {},
     boundsById: boundsToObject(baseBounds),
     unavailablePlayerIds,
+    knownAnchorCount: anchors.size,
+    selectedPlayerCount: players.length,
+    rawAnchorTotal,
+    coverageOf240: rawAnchorTotal / 240,
+    sourceWorkloadScale: rawAnchorTotal > 0 ? 240 / rawAnchorTotal : null,
     reason: null,
   };
   if (unavailablePlayerIds.length > 0) {
@@ -1718,17 +2053,45 @@ function deriveHistoricalGuidanceBounds(
     };
   }
 
-  // Preserve the requested band first. The two modest expansions cover rare
-  // flex/position conflicts without paying a large flow-search cost for every
-  // candidate. The final user-bound pass remains explicit in the result.
+  // First prove the roster can cover a regulation game's minutes without any
+  // player exceeding the requested observed-workload window. This check is
+  // deliberately not softened by rescaling: doing so is how a 14-minute
+  // reserve can otherwise inherit a 30-plus-minute assignment.
   const requestedFlexibility = Math.min(48, Math.max(0, minuteFlexibility));
+  const requestedBounds = boundsAroundObservedWorkload(
+    baseBounds,
+    anchors,
+    requestedFlexibility,
+  );
+  const requestedCapacity = boundsCanReachRegulationMinutes(requestedBounds);
+  if (!requestedCapacity.feasible) {
+    return {
+      bounds: requestedBounds,
+      guidance: {
+        ...base,
+        status: "workload-capacity-infeasible",
+        targetsById: Object.fromEntries(targets),
+        workloadCapacityById: Object.fromEntries(
+          [...requestedBounds].map(([id, bound]) => [id, bound.max]),
+        ),
+        boundsById: boundsToObject(requestedBounds),
+        reason: `Recorded workload can supply at most ${requestedCapacity.maximum} of 240 minutes inside the selected ±${requestedFlexibility}-minute window. Choose players with more observed court time, increase workload flexibility, or use Open what-if.`,
+      },
+    };
+  }
+
+  // Preserve the requested window first. The two modest expansions cover rare
+  // role conflicts without turning a capacity shortfall into an automatic
+  // exception. Every expansion is visible in the final result.
   const flexibilityCandidates = [...new Set([
     requestedFlexibility,
     Math.min(48, requestedFlexibility + 4),
     Math.min(48, requestedFlexibility + 8),
   ])];
   for (const flexibility of flexibilityCandidates) {
-    const candidateBounds = boundsAroundHistoricalTargets(baseBounds, targets, flexibility);
+    const candidateBounds = boundsAroundObservedWorkload(baseBounds, anchors, flexibility);
+    const candidateCapacity = boundsCanReachRegulationMinutes(candidateBounds);
+    if (!candidateCapacity.feasible) continue;
     const flow = positionRequirements
       ? findPositionMinuteFlow(players, candidateBounds, positionRequirements)
       : { feasible: true };
@@ -1741,21 +2104,28 @@ function deriveHistoricalGuidanceBounds(
         status: flexibility === requestedFlexibility ? "applied" : "expanded-for-role-coverage",
         flexibilityUsed: flexibility,
         targetsById: Object.fromEntries(targets),
+        workloadCapacityById: Object.fromEntries(
+          [...candidateBounds].map(([id, bound]) => [id, bound.max]),
+        ),
         boundsById: boundsToObject(candidateBounds),
         reason: flexibility === requestedFlexibility
           ? null
-          : "The recorded-workload band was widened slightly so the selected players can cover the requested on-court roles.",
+          : "The observed-workload window was widened slightly so the selected players can cover the requested on-court roles.",
       },
     };
   }
 
   return {
-    bounds: baseBounds,
+    bounds: requestedBounds,
     guidance: {
       ...base,
-      status: "role-coverage-fallback",
+      status: "workload-role-coverage-infeasible",
       targetsById: Object.fromEntries(targets),
-      reason: "The recorded-workload guardrails could not cover the requested on-court roles, so this candidate uses the user-set minute bounds.",
+      workloadCapacityById: Object.fromEntries(
+        [...requestedBounds].map(([id, bound]) => [id, bound.max]),
+      ),
+      boundsById: boundsToObject(requestedBounds),
+      reason: "This selected group has enough observed workload for 240 minutes, but its source-listed roles cannot cover the requested on-court shape inside the historical workload windows. Choose a different role mix, increase workload flexibility, or use Open what-if.",
     },
   };
 }
@@ -2108,7 +2478,9 @@ function constrainedPositionAllocation(
  * - positionMinuteRequirements: optional exact G/F/C role-minute requirements
  * - minutePlan: "historicalAware" (default when evidence exists) or "openWhatIf"
  * - historicalMinuteAnchors: optional regulation-game workload map by player id
+ * - historicalTeamGames: optional team-game denominator for GP × MPG fallback
  * - minuteFlexibility: integer minutes a historical-aware plan may move per player
+ * - historicalAllocationStyle: "preserveWorkload" (default) or "strategyFirst"
  * - projectedStatMinimums / projectedMaxTurnovers: optional constraints applied
  *   while choosing minutes, using each player's source per-minute rates; these
  *   require positionMinuteRequirements so a complete role-feasible plan exists
@@ -2158,6 +2530,10 @@ export function allocateRotationMinutes(players, options = {}) {
     reasons.push('Rotation strategy must be either "balanced" or "objective".');
   }
   const minutePlan = normalizeRotationMinutePlan(options.minutePlan, reasons);
+  const historicalAllocationStyle = normalizeHistoricalAllocationStyle(
+    options.historicalAllocationStyle,
+    reasons,
+  );
   const minuteFlexibility = normalizeNonNegativeNumber(
     options.minuteFlexibility,
     DEFAULT_ROTATION_MINUTE_FLEXIBILITY,
@@ -2169,6 +2545,15 @@ export function allocateRotationMinutes(players, options = {}) {
     reasons.push("minuteFlexibility cannot exceed 48 minutes.");
   }
   const historicalMinuteAnchors = options.historicalMinuteAnchors;
+  let historicalTeamGames = null;
+  if (options.historicalTeamGames !== undefined && options.historicalTeamGames !== null) {
+    const parsedTeamGames = Number(options.historicalTeamGames);
+    if (!Number.isFinite(parsedTeamGames) || parsedTeamGames <= 0) {
+      reasons.push("historicalTeamGames must be a positive finite number when provided.");
+    } else {
+      historicalTeamGames = parsedTeamGames;
+    }
+  }
   const rawPositionRequirements =
     options.positionMinuteRequirements ?? options.positionMinutes ?? null;
   let positionRequirements = null;
@@ -2344,6 +2729,18 @@ export function allocateRotationMinutes(players, options = {}) {
     targetsById: {},
     boundsById: boundsToObject(bounds),
     unavailablePlayerIds: [],
+    knownAnchorCount: 0,
+    selectedPlayerCount: players.length,
+    rawAnchorTotal: 0,
+    coverageOf240: 0,
+    sourceWorkloadScale: null,
+    allocationStyleRequested: historicalAllocationStyle,
+    allocationStyleApplied: minutePlan === ROTATION_MINUTE_PLANS.OPEN_WHAT_IF
+      ? "hard-limits-only"
+      : "unavailable",
+    allocationStyleReason: minutePlan === ROTATION_MINUTE_PLANS.OPEN_WHAT_IF
+      ? "Open what-if mode uses the strategy-first objective inside the hard player limits."
+      : null,
     reason: minutePlan === ROTATION_MINUTE_PLANS.OPEN_WHAT_IF
       ? "Open what-if mode uses only the minute bounds you set."
       : null,
@@ -2354,6 +2751,7 @@ export function allocateRotationMinutes(players, options = {}) {
       bounds,
       {
         historicalMinuteAnchors,
+        historicalTeamGames,
         minuteFlexibility,
         positionRequirements,
       },
@@ -2366,14 +2764,58 @@ export function allocateRotationMinutes(players, options = {}) {
     historicalGuidance = derived.guidance;
   }
 
+  // A hard projected production rule changes the minute problem itself. The
+  // constraint solver must start from the objective-maximizing plan in order to
+  // prove feasibility, so surface that override instead of pretending it kept
+  // an observed-workload allocation. Without such a rule, default historical
+  // mode protects workload while the exact roster search still ranks groups by
+  // the visitor's strategy score.
+  if (minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE) {
+    if (!historicalGuidance.applied) {
+      historicalGuidance = {
+        ...historicalGuidance,
+        allocationStyleRequested: historicalAllocationStyle,
+        allocationStyleApplied: "unavailable",
+        allocationStyleReason: "Historical workload protection could not be applied because the selected group lacks complete source workload evidence.",
+      };
+    } else if (hasProjectedConstraints) {
+      historicalGuidance = {
+        ...historicalGuidance,
+        allocationStyleRequested: historicalAllocationStyle,
+        allocationStyleApplied: HISTORICAL_ALLOCATION_STYLES.STRATEGY_FIRST,
+        allocationStyleReason: "A hard projected production rule requires a strategy-first minute search so the exact solver can prove a feasible 240-minute plan.",
+      };
+    } else {
+      historicalGuidance = {
+        ...historicalGuidance,
+        allocationStyleRequested: historicalAllocationStyle,
+        allocationStyleApplied: historicalAllocationStyle,
+        allocationStyleReason: historicalAllocationStyle === HISTORICAL_ALLOCATION_STYLES.PRESERVE_WORKLOAD
+          ? "The roster is ranked by your strategy, then its minutes stay as close as possible to the selected group's rescaled workload targets inside the observed-workload capacity caps."
+          : "The roster is ranked by your strategy and its minutes shift toward the highest-fitting player profiles inside the observed-workload capacity caps.",
+      };
+    }
+  }
+
   const minimumTotal = sortedIds.reduce((total, id) => total + effectiveBounds.get(id).min, 0);
   const maximumTotal = sortedIds.reduce((total, id) => total + effectiveBounds.get(id).max, 0);
   if (minimumTotal > 240 || maximumTotal < 240) {
+    const failedHistoricalWorkload =
+      minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE &&
+      ["workload-capacity-infeasible", "workload-role-coverage-infeasible"].includes(
+        historicalGuidance.status,
+      );
     // Targets are constructed to include a 240-minute vector. Keep this
     // defensive diagnostic in case a future custom-bound policy changes that
-    // invariant, rather than returning an unexplained allocation failure.
-    return rotationFailure(["The active minute-plan guardrails cannot reach exactly 240 minutes."], {
-      category: "minute-plan-bounds",
+    // invariant. For an observed-workload capacity failure, preserve the
+    // concrete source-backed explanation instead of collapsing it into a
+    // generic total-minutes error.
+    return rotationFailure([
+      failedHistoricalWorkload
+        ? historicalGuidance.reason
+        : "The active minute-plan guardrails cannot reach exactly 240 minutes.",
+    ], {
+      category: failedHistoricalWorkload ? "historical-workload" : "minute-plan-bounds",
       selectedPlayers: players.length,
       minimumTotal,
       maximumTotal,
@@ -2395,14 +2837,37 @@ export function allocateRotationMinutes(players, options = {}) {
   let minutes = balancedTargets;
   let positionFlow = null;
   let balancedAdjusted = false;
+  const historicalTargets = new Map(
+    sortedIds
+      .filter((id) => Number.isInteger(Number(historicalGuidance.targetsById[id])))
+      .map((id) => [id, Number(historicalGuidance.targetsById[id])]),
+  );
+  const usesHistoricalContinuity =
+    minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE &&
+    historicalGuidance.applied &&
+    historicalGuidance.allocationStyleApplied === HISTORICAL_ALLOCATION_STYLES.PRESERVE_WORKLOAD &&
+    !hasProjectedConstraints &&
+    historicalTargets.size === sortedIds.length;
+  const usesStrategyFirstAllocation =
+    hasProjectedConstraints ||
+    (minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE &&
+      historicalGuidance.applied &&
+      historicalGuidance.allocationStyleApplied === HISTORICAL_ALLOCATION_STYLES.STRATEGY_FIRST);
   if (positionRequirements) {
-    // A constrained request necessarily uses the objective baseline even when
-    // a direct caller requested balanced workload minutes: the contract is to
-    // optimize the stated objective subject to those constraints, not merely
-    // repair a proportional schedule after it fails.
-    positionFlow = strategy === "objective" || hasProjectedConstraints
-      ? objectivePositionAllocation(rotationPlayers, effectiveBounds, scores, positionRequirements)
-      : balancedPositionAllocation(rotationPlayers, effectiveBounds, balancedTargets, positionRequirements);
+    // Historical continuity is an exact secondary objective: it minimizes the
+    // total deviation from recorded workload after the roster itself has been
+    // chosen. Strategy-first and hard-production modes intentionally retain the
+    // exact linear score maximizer used by the existing constrained search.
+    positionFlow = usesHistoricalContinuity
+      ? historicalContinuityPositionAllocation(
+        rotationPlayers,
+        effectiveBounds,
+        historicalTargets,
+        positionRequirements,
+      )
+      : strategy === "objective" || usesStrategyFirstAllocation
+        ? objectivePositionAllocation(rotationPlayers, effectiveBounds, scores, positionRequirements)
+        : balancedPositionAllocation(rotationPlayers, effectiveBounds, balancedTargets, positionRequirements);
     if (!positionFlow.feasible) {
       return rotationFailure([
         `The selected players cannot cover ${positionRequirements.G} guard, ${positionRequirements.F} forward, and ${positionRequirements.C} center minutes within their minute limits. Add another eligible flex/center or raise an eligible player's maximum.`,
@@ -2453,7 +2918,11 @@ export function allocateRotationMinutes(players, options = {}) {
     minutes = new Map(
       sortedIds.map((id) => [id, positionFlow.totalsByPlayer[id]]),
     );
-  } else if (strategy === "objective") {
+  } else if (usesHistoricalContinuity) {
+    // Without role requirements the rescaled targets already total exactly
+    // 240. Copying them directly avoids an unnecessary score-based minute shift.
+    minutes = new Map(sortedIds.map((id) => [id, historicalTargets.get(id)]));
+  } else if (strategy === "objective" || usesStrategyFirstAllocation) {
     // Without role constraints the exact linear allocation is a simple greedy
     // fill: start every player at the minimum, then give remaining minutes to
     // the highest score until each reaches the maximum.
@@ -2498,11 +2967,15 @@ export function allocateRotationMinutes(players, options = {}) {
     status: "success",
     strategy: hasProjectedConstraints
       ? "objective-constrained"
-      : strategy === "objective"
-        ? "objective-maximizing"
-        : balancedAdjusted
-          ? "balanced-proportional-adjusted-for-positions"
-          : "balanced-proportional",
+      : usesHistoricalContinuity
+        ? balancedAdjusted
+          ? "historical-workload-continuity-adjusted-for-positions"
+          : "historical-workload-continuity"
+        : strategy === "objective" || usesStrategyFirstAllocation
+          ? "objective-maximizing"
+          : balancedAdjusted
+            ? "balanced-proportional-adjusted-for-positions"
+            : "balanced-proportional",
     totalMinutes,
     allocations,
     byId: Object.fromEntries(allocations.map((allocation) => [allocation.id, allocation.minutes])),
@@ -2522,6 +2995,7 @@ export function allocateRotationMinutes(players, options = {}) {
       minimumTotal,
       maximumTotal,
       allocationStrategy: strategy,
+      historicalAllocationStyle: historicalGuidance.allocationStyleApplied,
       balancedAdjustedForPositions: balancedAdjusted,
       minutePlan,
       historicalGuidance,
@@ -2798,6 +3272,7 @@ export function optimizeLineups(players, config = {}) {
       ? {
           rotationScoringBasis: normalizedConfig.rotationScoringBasis,
           rotationMinutePlan: normalizedConfig.rotationMinutePlan,
+          rotationHistoricalAllocationStyle: normalizedConfig.rotationHistoricalAllocationStyle,
           rotationMinuteFlexibility: normalizedConfig.rotationMinuteFlexibility,
           rotationRateStability: normalizedConfig.rotationRateStability,
           requiredPositionMinutes: { ...rotationPositionMinuteRequirements },
@@ -2918,6 +3393,7 @@ export function optimizeLineups(players, config = {}) {
       // allocator applies another. Historical anchors themselves come from
       // the selected players' source metadata unless explicitly supplied.
       minutePlan: normalizedConfig.rotationMinutePlan,
+      historicalAllocationStyle: normalizedConfig.rotationHistoricalAllocationStyle,
       minuteFlexibility: normalizedConfig.rotationMinuteFlexibility,
       // These constraints belong inside the allocation problem. Passing them
       // here prevents a feasible roster from being discarded merely because
@@ -2949,6 +3425,7 @@ export function optimizeLineups(players, config = {}) {
     maxTurnovers: 0,
     rotationMinutes: 0,
     rotationPositionMinutes: 0,
+    historicalWorkload: 0,
     constraintSearchLimit: 0,
   };
   const chosen = [];
@@ -3049,6 +3526,8 @@ export function optimizeLineups(players, config = {}) {
       if (!baselineRotation.ok) {
         if (baselineRotation.diagnostics.category === "position-minutes") {
           rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (baselineRotation.diagnostics.category === "historical-workload") {
+          rejectedByConstraint.historicalWorkload += 1;
         } else {
           rejectedByConstraint.rotationMinutes += 1;
         }
@@ -3069,6 +3548,8 @@ export function optimizeLineups(players, config = {}) {
       if (!rankingBoundRotation.ok) {
         if (rankingBoundRotation.diagnostics.category === "position-minutes") {
           rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (rankingBoundRotation.diagnostics.category === "historical-workload") {
+          rejectedByConstraint.historicalWorkload += 1;
         } else {
           rejectedByConstraint.rotationMinutes += 1;
         }
@@ -3136,6 +3617,8 @@ export function optimizeLineups(players, config = {}) {
       if (!rotation.ok) {
         if (rotation.diagnostics.category === "position-minutes") {
           rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (rotation.diagnostics.category === "historical-workload") {
+          rejectedByConstraint.historicalWorkload += 1;
         } else if (
           rotation.diagnostics.category === "projected-constraints" ||
           rotation.diagnostics.category === "constraint-search-limit"
@@ -3236,6 +3719,8 @@ export function optimizeLineups(players, config = {}) {
       if (!rotation.ok) {
         if (rotation.diagnostics.category === "position-minutes") {
           rejectedByConstraint.rotationPositionMinutes += 1;
+        } else if (rotation.diagnostics.category === "historical-workload") {
+          rejectedByConstraint.historicalWorkload += 1;
         } else if (
           rotation.diagnostics.category === "projected-constraints" ||
           rotation.diagnostics.category === "constraint-search-limit"
@@ -3375,6 +3860,11 @@ export function optimizeLineups(players, config = {}) {
     if (rejectedByConstraint.rotationPositionMinutes > 0) {
       reasons.push(
         `${rejectedByConstraint.rotationPositionMinutes} candidate rotation${rejectedByConstraint.rotationPositionMinutes === 1 ? "" : "s"} could not cover ${rotationPositionMinuteRequirements.G} guard, ${rotationPositionMinuteRequirements.F} forward, and ${rotationPositionMinuteRequirements.C} center minutes within the configured player limits.`,
+      );
+    }
+    if (rejectedByConstraint.historicalWorkload > 0) {
+      reasons.push(
+        `${rejectedByConstraint.historicalWorkload} candidate rotation${rejectedByConstraint.historicalWorkload === 1 ? "" : "s"} lacked enough source-backed workload to form a credible 240-minute game inside the selected historical window. Choose more established minutes, increase workload flexibility, or use Open what-if.`,
       );
     }
     if (rejectedByConstraint.constraintSearchLimit > 0) {
