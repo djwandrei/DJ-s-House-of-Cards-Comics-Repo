@@ -51,7 +51,8 @@ try {
     ok = [bool]$body.ok
     mappedProducts = $body.mappedProducts
     cacheUpserts = $body.cacheUpserts
-    shadowChecked = $body.shadowChecked
+    cachePrunes = $body.cachePrunes
+    cacheChecked = $body.cacheChecked
     mismatches = $body.mismatches
   }
   if (-not $summary.ok -or [int]$summary.mismatches -ne 0) {

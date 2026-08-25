@@ -29,9 +29,11 @@ Original commerce project
 
 Lineup Lab reads public, read-only NBA views directly from the dedicated
 analytics project. The storefront product panel keeps using the original
-commerce project's `get_nba_product_slab_stats` RPC. That RPC prefers a
-validated local cache and falls back to the original scoped source query when
-the cache is missing or no longer matches the verified mapping state.
+commerce project's `get_nba_product_slab_stats` RPC, but that RPC reads only
+the validated local cache. It never reads full historical NBA facts from the
+commerce project after decommissioning. A missing or invalidated cache entry
+safely hides the optional stats panel; it never exposes stale mapping data or
+falls back to a duplicate analytics table.
 
 ## Initial copy and verification
 
@@ -52,12 +54,47 @@ node .\scripts\check-nba-analytics-target.mjs --scope base
 The PBP/RAPM scope is deliberately separate because its migrations and
 ingestion pipeline are maintained independently from this base transition.
 
+## Commerce-project analytics decommission
+
+After a full source-to-target checksum verification and a zero-mismatch cache
+refresh, the duplicate historical NBA facts can be removed from the commerce
+project. The decommission migration has an in-transaction cache-coverage
+preflight: every currently visible, verified NBA-mapped product must have a
+current cache entry sourced from the dedicated analytics project.
+
+The commerce project deliberately retains its mapping identity projection:
+
+- `sports`, `sports_leagues`, `athletes`, and
+  `athlete_league_memberships` preserve the foreign keys for
+  `product_athlete_mappings`.
+- `athlete_aliases` and `athlete_external_ids` remain as conservative
+  identity/mapping evidence. They are small and are not historical NBA
+  performance data.
+- Products, media, mappings, customer/auth records, orders, offers, payments,
+  and Storage are never included in the decommission scope.
+
+The migration truncates only the duplicated NBA fact/profile tables and removes
+the obsolete original Lineup Lab views plus legacy product-stat fallback RPC.
+It preserves the empty table schemas so the exact verified data in the
+dedicated analytics project remains a controlled recovery source if needed.
+
+The original-to-target parity command is a pre-decommission evidence check,
+not a recurring health check. Once the commerce facts are intentionally empty,
+use `check-nba-analytics-target.mjs --scope base` to validate the dedicated
+project; do not expect the historical source-to-target checksum to remain
+equal.
+
+After this point, run the cache-refresh worker after either of these events:
+
+1. A verified NBA product mapping is added, changed, or removed.
+2. The dedicated analytics project receives an approved NBA profile/stat refresh.
+
 ## Product-stats cache refresh
 
-After an approved analytics data refresh, run the worker wrapper. It generates
-a one-use worker trigger secret in process memory, invokes the server-side
-worker, and requires a zero-mismatch shadow comparison against the retained
-legacy source query.
+After an approved analytics data refresh or a verified NBA mapping change, run
+the worker wrapper. It generates a one-use worker trigger secret in process
+memory, invokes the server-side worker, reads the dedicated analytics project,
+and verifies the compact rows persisted in commerce before reporting success.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\sync-nba-product-slab-stats-cache.ps1 -Apply

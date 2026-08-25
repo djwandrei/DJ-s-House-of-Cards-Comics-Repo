@@ -29,6 +29,23 @@ type AnalyticsProfile = {
   seasons: unknown[];
 };
 
+type CacheWriteRow = {
+  product_id: number;
+  athlete_ids: string[];
+  mapping_sha256: string;
+  payload: Record<string, unknown>;
+  payload_sha256: string;
+  analytics_project_ref: string;
+  analytics_schema_version: number;
+  analytics_refreshed_at: string;
+  synced_at: string;
+  updated_at: string;
+};
+
+type StoredCacheRow = Pick<CacheWriteRow,
+  'product_id' | 'athlete_ids' | 'mapping_sha256' | 'payload_sha256'
+  | 'analytics_project_ref' | 'analytics_schema_version'>;
+
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
 const analyticsUrl = String(Deno.env.get('ANALYTICS_SUPABASE_URL') || '').trim().replace(/\/+$/, '');
@@ -219,18 +236,68 @@ async function finishRun(runId: string, values: Record<string, unknown>) {
   if (error) throw new Error(`Could not finish the cache synchronization audit: ${error.message}`);
 }
 
-async function shadowVerify(productIds: number[]) {
+function sameOrderedStrings(left: unknown, right: unknown) {
+  return Array.isArray(left)
+    && Array.isArray(right)
+    && left.length === right.length
+    && left.every((value, index) => String(value) === String(right[index]));
+}
+
+// The original commerce database intentionally stops carrying the full NBA
+// fact tables after the analytics-project migration.  Validate the stored
+// compact payload against the rows just calculated from the dedicated project,
+// rather than calling a legacy in-database stats query as a shadow source.
+async function verifyStoredCache(expectedRows: CacheWriteRow[]) {
   let checked = 0;
   let mismatches = 0;
-  for (const ids of chunks(productIds, 400)) {
-    const { data, error } = await admin.rpc('verify_nba_product_slab_stats_cache', { p_product_ids: ids });
-    if (error) throw new Error(`Could not shadow-validate cached product stats: ${error.message}`);
-    const rows = Array.isArray(data) ? data as Array<{ product_id?: number; payload_matches?: boolean }> : [];
-    if (rows.length !== ids.length) throw new Error('Shadow validation did not return every synchronized product.');
-    checked += rows.length;
-    mismatches += rows.filter((row) => row.payload_matches !== true).length;
+  const expectedByProductId = new Map(expectedRows.map((row) => [row.product_id, row]));
+
+  for (const ids of chunks([...expectedByProductId.keys()].sort((left, right) => left - right), 200)) {
+    const { data, error } = await admin
+      .from('nba_product_slab_stats_cache')
+      .select('product_id,athlete_ids,mapping_sha256,payload_sha256,analytics_project_ref,analytics_schema_version')
+      .in('product_id', ids);
+    if (error) throw new Error(`Could not verify stored product stats cache rows: ${error.message}`);
+
+    const actualByProductId = new Map(
+      ((data || []) as StoredCacheRow[]).map((row) => [Number(row.product_id), row]),
+    );
+    for (const productId of ids) {
+      const expected = expectedByProductId.get(productId);
+      const actual = actualByProductId.get(productId);
+      checked += 1;
+      if (!expected || !actual
+        || !sameOrderedStrings(actual.athlete_ids, expected.athlete_ids)
+        || actual.mapping_sha256 !== expected.mapping_sha256
+        || actual.payload_sha256 !== expected.payload_sha256
+        || actual.analytics_project_ref !== expected.analytics_project_ref
+        || Number(actual.analytics_schema_version) !== expected.analytics_schema_version) {
+        mismatches += 1;
+      }
+    }
   }
   return { checked, mismatches };
+}
+
+async function pruneObsoleteCache(eligibleProductIds: number[]) {
+  const { data, error } = await admin
+    .from('nba_product_slab_stats_cache')
+    .select('product_id')
+    .order('product_id', { ascending: true });
+  if (error) throw new Error(`Could not inspect obsolete product stats cache rows: ${error.message}`);
+
+  const eligible = new Set(eligibleProductIds);
+  const staleProductIds = ((data || []) as Array<{ product_id?: number }>)
+    .map((row) => Number(row.product_id))
+    .filter((productId) => Number.isSafeInteger(productId) && !eligible.has(productId));
+  for (const ids of chunks(staleProductIds, 200)) {
+    const { error: deleteError } = await admin
+      .from('nba_product_slab_stats_cache')
+      .delete()
+      .in('product_id', ids);
+    if (deleteError) throw new Error(`Could not remove obsolete product stats cache rows: ${deleteError.message}`);
+  }
+  return staleProductIds.length;
 }
 
 Deno.serve(async (request) => {
@@ -280,7 +347,7 @@ Deno.serve(async (request) => {
     if (missingProfiles.length) throw new Error(`${missingProfiles.length} verified product mappings have no active dedicated-analytics profile.`);
 
     const synchronizedAt = new Date().toISOString();
-    const cacheRows = [];
+    const cacheRows: CacheWriteRow[] = [];
     for (const productId of eligibleProducts) {
       const productMappings = grouped.get(productId) || [];
       const payload = cachePayload(productId, productMappings, profiles);
@@ -314,23 +381,28 @@ Deno.serve(async (request) => {
       if (error) throw new Error(`Could not update the product stats cache: ${error.message}`);
     }
 
-    const shadow = await shadowVerify(eligibleProducts);
+    const verification = await verifyStoredCache(cacheRows);
+    const cachePrunes = verification.mismatches ? 0 : await pruneObsoleteCache(eligibleProducts);
     await finishRun(runId, {
-      status: shadow.mismatches ? 'failed' : 'completed',
+      status: verification.mismatches ? 'failed' : 'completed',
       mapped_product_count: eligibleProducts.length,
       cache_upsert_count: cacheRows.length,
-      shadow_checked_count: shadow.checked,
-      mismatch_count: shadow.mismatches,
-      error_summary: shadow.mismatches ? 'Shadow validation found a payload mismatch.' : '',
+      // The persisted column name predates the dedicated-project cutover.
+      // It now records direct stored-cache verification, not a legacy shadow
+      // query, and stays unchanged for historical audit compatibility.
+      shadow_checked_count: verification.checked,
+      mismatch_count: verification.mismatches,
+      error_summary: verification.mismatches ? 'Stored cache validation found a payload mismatch.' : '',
       completed_at: new Date().toISOString(),
     });
     return jsonResponse({
-      ok: shadow.mismatches === 0,
+      ok: verification.mismatches === 0,
       mappedProducts: eligibleProducts.length,
       cacheUpserts: cacheRows.length,
-      shadowChecked: shadow.checked,
-      mismatches: shadow.mismatches,
-    }, shadow.mismatches ? 409 : 200, request);
+      cachePrunes,
+      cacheChecked: verification.checked,
+      mismatches: verification.mismatches,
+    }, verification.mismatches ? 409 : 200, request);
   } catch (error) {
     if (runId) {
       try {
