@@ -139,7 +139,7 @@ export async function main(argv = process.argv.slice(2)) {
     throw new Error('SUPABASE_URL/backend-config.js and SUPABASE_SERVICE_ROLE_KEY are required.');
   }
 
-  const [aliasRows, athleteRows, existingRows, remoteProductRows] = await Promise.all([
+  const [aliasRows, athleteRows, membershipRows, existingRows, remoteProductRows] = await Promise.all([
     fetchAllRows(projectUrl, serviceRoleKey, 'athlete_aliases',
       'athlete_id,league_code,alias,normalized_alias,alias_type,review_state', {
         league_code: 'eq.NBA',
@@ -149,6 +149,11 @@ export async function main(argv = process.argv.slice(2)) {
     fetchAllRows(projectUrl, serviceRoleKey, 'athletes', 'id,identity_status', {
       order: 'id.asc',
     }),
+    fetchAllRows(projectUrl, serviceRoleKey, 'athlete_league_memberships',
+      'athlete_id,league_code,membership_status', {
+        league_code: 'eq.NBA',
+        order: 'athlete_id.asc',
+      }),
     fetchAllRows(projectUrl, serviceRoleKey, 'product_athlete_mappings',
       'product_id,athlete_id,league_code,review_state,subject_order', {
         league_code: 'eq.NBA',
@@ -164,9 +169,18 @@ export async function main(argv = process.argv.slice(2)) {
   const identityStatusById = new Map(
     athleteRows.map((athlete) => [String(athlete.id), String(athlete.identity_status || '')])
   );
+  const membershipStatusByAthleteId = new Map(
+    membershipRows.map((membership) => [
+      String(membership.athlete_id),
+      String(membership.membership_status || ''),
+    ])
+  );
   const aliases = aliasRows.map((alias) => ({
     ...alias,
     identity_status: identityStatusById.get(String(alias.athlete_id)) || 'disputed',
+    // A verified alias without a currently verified NBA membership is not
+    // enough evidence to create an NBA catalog mapping.
+    membership_status: membershipStatusByAthleteId.get(String(alias.athlete_id)) || 'inactive',
   }));
   const plan = buildNbaProductPlayerMappingPlan({ products: catalog, aliases });
   const remoteProductIds = new Set(remoteProductRows.map((row) => Number(row.id)));

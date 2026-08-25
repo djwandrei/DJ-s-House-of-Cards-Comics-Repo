@@ -71,23 +71,35 @@ export function inferNbaSeasonContext(productName) {
 }
 
 export function aliasesFromNbaPlayers(players = []) {
-  return players.map((player) => ({
-    athleteId: readAliasField(player, 'athleteId', 'athlete_id')
-      || readAliasField(player, 'id', 'id'),
-    leagueCode: NBA_LEAGUE_CODE,
-    alias: readAliasField(player, 'fullName', 'full_name'),
-    normalizedAlias: readAliasField(player, 'normalizedName', 'normalized_name')
-      || normalizeCatalogPlayerName(readAliasField(player, 'fullName', 'full_name')),
-    aliasType: 'canonical',
-    reviewState: 'verified',
-    identityStatus: 'active',
-  }));
+  return (Array.isArray(players) ? players : [])
+    .map((player) => {
+      // nba_players.id is a league-profile key, not a permanent substitute for
+      // the universal-athlete identity. A profile that has not been linked must
+      // remain unmapped rather than silently creating a second identity.
+      const athleteId = cleanText(readAliasField(player, 'athleteId', 'athlete_id'));
+      if (!athleteId) return null;
+
+      return {
+        athleteId,
+        leagueCode: NBA_LEAGUE_CODE,
+        alias: readAliasField(player, 'fullName', 'full_name'),
+        normalizedAlias: readAliasField(player, 'normalizedName', 'normalized_name')
+          || normalizeCatalogPlayerName(readAliasField(player, 'fullName', 'full_name')),
+        aliasType: 'canonical',
+        reviewState: 'verified',
+        identityStatus: 'active',
+      };
+    })
+    .filter(Boolean);
 }
 
 function normalizeAlias(alias) {
   const athleteId = cleanText(readAliasField(alias, 'athleteId', 'athlete_id'));
   const leagueCode = cleanText(readAliasField(alias, 'leagueCode', 'league_code')).toUpperCase();
   const reviewState = cleanText(readAliasField(alias, 'reviewState', 'review_state')).toLowerCase();
+  const membershipStatus = cleanText(
+    readAliasField(alias, 'membershipStatus', 'membership_status') || 'verified'
+  ).toLowerCase();
   const identityStatus = cleanText(readAliasField(alias, 'identityStatus', 'identity_status') || 'active')
     .toLowerCase();
   const aliasType = cleanText(readAliasField(alias, 'aliasType', 'alias_type') || 'known_name')
@@ -98,6 +110,7 @@ function normalizeAlias(alias) {
   );
 
   if (!athleteId || leagueCode !== NBA_LEAGUE_CODE || reviewState !== 'verified'
+    || membershipStatus !== 'verified'
     || identityStatus !== 'active' || !normalizedAlias) {
     return null;
   }
@@ -151,15 +164,26 @@ export function buildNbaProductPlayerMappingPlan({ products = [], aliases = [] }
   const aliasIndex = buildAliasIndex(Array.isArray(aliases) ? aliases : []);
   const mappings = [];
   const unresolved = [];
-  let eligibleProductCount = 0;
+  const eligibleProducts = (Array.isArray(products) ? products : [])
+    .filter(isNbaBasketballProduct)
+    .map((product) => ({ identity: productIdentity(product) }));
+  const productIdCounts = new Map();
 
-  for (const product of Array.isArray(products) ? products : []) {
-    if (!isNbaBasketballProduct(product)) continue;
-    eligibleProductCount += 1;
+  for (const { identity } of eligibleProducts) {
+    if (!identity.productId) continue;
+    productIdCounts.set(identity.productId, (productIdCounts.get(identity.productId) || 0) + 1);
+  }
 
-    const identity = productIdentity(product);
+  for (const { identity } of eligibleProducts) {
     if (!identity.productId) {
       unresolved.push(unresolvedProduct(identity, 'invalid_product_id'));
+      continue;
+    }
+
+    // The database enforces one active mapping at each subject position. A
+    // duplicated source ID is therefore ambiguous input, not a safe upsert.
+    if (productIdCounts.get(identity.productId) > 1) {
+      unresolved.push(unresolvedProduct(identity, 'duplicate_product_id'));
       continue;
     }
 
@@ -240,7 +264,7 @@ export function buildNbaProductPlayerMappingPlan({ products = [], aliases = [] }
     mappings: Object.freeze(mappings),
     unresolved: Object.freeze(unresolved),
     summary: Object.freeze({
-      eligibleProductCount,
+      eligibleProductCount: eligibleProducts.length,
       mappedProductCount,
       mappedRowCount: mappings.length,
       unresolvedProductCount: unresolved.length,

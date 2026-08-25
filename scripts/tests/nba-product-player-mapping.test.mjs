@@ -129,7 +129,7 @@ test('multi-player products map all subjects in order or none at all', () => {
   assert.equal(partial.unresolved[0].reason, 'unmatched_alias');
 });
 
-test('ambiguous aliases, repeated athletes, qualifiers, and unverified aliases fail closed', () => {
+test('ambiguous aliases, repeated athletes, qualifiers, and unverified identity evidence fail closed', () => {
   const ambiguous = buildNbaProductPlayerMappingPlan({
     products: [nbaProduct({ playerAthlete: 'Chris Smith' })],
     aliases: [
@@ -166,9 +166,19 @@ test('ambiguous aliases, repeated athletes, qualifiers, and unverified aliases f
   });
   assert.equal(unverified.mappings.length, 0);
   assert.equal(unverified.unresolved[0].reason, 'unmatched_alias');
+
+  const inactiveMembership = buildNbaProductPlayerMappingPlan({
+    products: [nbaProduct()],
+    aliases: [{
+      ...verifiedAlias('athlete-lebron', 'LeBron James'),
+      membershipStatus: 'inactive',
+    }],
+  });
+  assert.equal(inactiveMembership.mappings.length, 0);
+  assert.equal(inactiveMembership.unresolved[0].reason, 'unmatched_alias');
 });
 
-test('NBA player rows can seed canonical universal aliases without changing IDs', () => {
+test('NBA player rows seed canonical aliases only after a universal identity is linked', () => {
   assert.deepEqual(aliasesFromNbaPlayers([{
     id: 'nba-player-id',
     athlete_id: 'universal-athlete-id',
@@ -183,6 +193,36 @@ test('NBA player rows can seed canonical universal aliases without changing IDs'
     reviewState: 'verified',
     identityStatus: 'active',
   }]);
+
+  assert.deepEqual(aliasesFromNbaPlayers([{
+    id: 'nba-profile-without-universal-link',
+    full_name: 'Nikola Jokic',
+  }]), []);
+});
+
+test('duplicate eligible catalog product IDs are withheld before mappings are emitted', () => {
+  const plan = buildNbaProductPlayerMappingPlan({
+    products: [
+      nbaProduct({ id: 101, playerAthlete: 'LeBron James' }),
+      nbaProduct({ id: '101', playerAthlete: 'Dwyane Wade' }),
+    ],
+    aliases: [
+      verifiedAlias('athlete-lebron', 'LeBron James'),
+      verifiedAlias('athlete-wade', 'Dwyane Wade'),
+    ],
+  });
+
+  assert.deepEqual(plan.summary, {
+    eligibleProductCount: 2,
+    mappedProductCount: 0,
+    mappedRowCount: 0,
+    unresolvedProductCount: 2,
+  });
+  assert.equal(plan.mappings.length, 0);
+  assert.deepEqual(plan.unresolved.map((item) => item.reason), [
+    'duplicate_product_id',
+    'duplicate_product_id',
+  ]);
 });
 
 test('invalid NBA product identities are reported and other leagues are ignored', () => {
