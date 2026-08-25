@@ -1,0 +1,4 @@
+project_id = "djhc-nba-analytics"
+
+# This directory is intentionally separate from ../supabase.  The latter
+# remains the migration history for the live commerce project.

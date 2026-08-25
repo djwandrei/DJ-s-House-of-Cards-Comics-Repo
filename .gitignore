@@ -48,6 +48,7 @@ reports/
 dist/
 supabase/.branches/
 supabase/.temp/
+supabase-analytics/supabase/.temp/
 
 # Local source material and credentials that must never enter Git history
 Ebay Bulk Upload Legacy with HTML.xlsx

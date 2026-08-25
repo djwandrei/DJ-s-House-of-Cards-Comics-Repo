@@ -28,6 +28,8 @@ window.DJ = window.DJ || {};
     provider: 'supabase',
     supabaseUrl: '',
     supabasePublishableKey: '',
+    analyticsSupabaseUrl: '',
+    analyticsSupabasePublishableKey: '',
     productsTable: 'products',
     storageBucket: 'product-images',
     imageFolder: 'products',
@@ -50,6 +52,8 @@ window.DJ = window.DJ || {};
 
   config.supabaseUrl = String(config.supabaseUrl || '').trim();
   config.supabasePublishableKey = String(config.supabasePublishableKey || '').trim();
+  config.analyticsSupabaseUrl = String(config.analyticsSupabaseUrl || '').trim();
+  config.analyticsSupabasePublishableKey = String(config.analyticsSupabasePublishableKey || '').trim();
   config.productsTable = String(config.productsTable || 'products').trim() || 'products';
   config.storageBucket = String(config.storageBucket || 'product-images').trim() || 'product-images';
   config.imageFolder = String(config.imageFolder || 'products').trim().replace(/^\/+|\/+$/g, '') || 'products';
@@ -57,6 +61,8 @@ window.DJ = window.DJ || {};
 
   const hasSupabaseProvider = config.provider === 'supabase';
   const hasValidProjectUrl = /^https:\/\/[a-z0-9-]+\.supabase\.co(?:\/)?$/i.test(config.supabaseUrl);
+  const analyticsConfigurationPresent = Boolean(config.analyticsSupabaseUrl || config.analyticsSupabasePublishableKey);
+  const hasValidAnalyticsProjectUrl = /^https:\/\/[a-z0-9-]+\.supabase\.co(?:\/)?$/i.test(config.analyticsSupabaseUrl);
 
   config.enabled = Boolean(
     requestedEnabled &&
@@ -66,6 +72,7 @@ window.DJ = window.DJ || {};
   );
 
   let supabaseClient = null;
+  let analyticsSupabaseClient = null;
   let preparePromise = null;
   let remoteCacheLifecycleBound = false;
 
@@ -177,12 +184,18 @@ window.DJ = window.DJ || {};
       issues.push('Replace the placeholder Supabase browser key with the current publishable key from Project Settings > API.');
     }
 
+    if (analyticsConfigurationPresent && !isAnalyticsConfigured()) {
+      issues.push('Configure a valid NBA analytics project URL and publishable browser key together.');
+    }
+
     return {
       enabled: config.enabled,
       provider: config.provider,
       requestedEnabled,
       projectUrl: config.supabaseUrl,
       hasBrowserKey: !hasPlaceholderApiKey(config.supabasePublishableKey),
+      analyticsProjectUrl: config.analyticsSupabaseUrl,
+      analyticsEnabled: isAnalyticsConfigured(),
       productsTable: config.productsTable,
       storageBucket: config.storageBucket,
       imageFolder: config.imageFolder,
@@ -291,6 +304,14 @@ window.DJ = window.DJ || {};
 
   function isConfigured() {
     return config.enabled;
+  }
+
+  function isAnalyticsConfigured() {
+    return Boolean(
+      hasSupabaseProvider &&
+      hasValidAnalyticsProjectUrl &&
+      !hasPlaceholderApiKey(config.analyticsSupabasePublishableKey)
+    );
   }
 
   function clearCache() {
@@ -456,6 +477,32 @@ window.DJ = window.DJ || {};
     });
 
     return supabaseClient;
+  }
+
+  /**
+   * The public analytics client deliberately does not persist or reuse the
+   * commerce-auth session. It is limited to Lineup Lab's public read views.
+   */
+  function getAnalyticsClient() {
+    if (!isAnalyticsConfigured()) return null;
+    if (analyticsSupabaseClient) return analyticsSupabaseClient;
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      throw new Error('Supabase client library is not loaded.');
+    }
+
+    analyticsSupabaseClient = window.supabase.createClient(
+      config.analyticsSupabaseUrl,
+      config.analyticsSupabasePublishableKey,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+          storageKey: `dj-house-analytics-${projectRefFromUrl(config.analyticsSupabaseUrl)}`
+        }
+      }
+    );
+    return analyticsSupabaseClient;
   }
 
   // ---------------------------------------------------------------------------
@@ -753,6 +800,16 @@ window.DJ = window.DJ || {};
     return client;
   }
 
+  async function getRequiredNbaAnalyticsClient() {
+    await ensureSupabaseLibrary();
+    if (analyticsConfigurationPresent) {
+      const client = getAnalyticsClient();
+      if (!client) throw new Error('The dedicated NBA analytics connection is not configured correctly.');
+      return client;
+    }
+    return getRequiredClient();
+  }
+
   // ---------------------------------------------------------------------------
   // Read operations used by the storefront
   // ---------------------------------------------------------------------------
@@ -928,7 +985,7 @@ window.DJ = window.DJ || {};
     if (cachedPromise) return cachedPromise;
 
     const pending = (async () => {
-      const client = await getRequiredClient();
+      const client = await getRequiredNbaAnalyticsClient();
       const { data, error } = await client
         .from('nba_lineup_available_seasons')
         .select('season_end_year,season_label')
@@ -960,7 +1017,7 @@ window.DJ = window.DJ || {};
     if (cachedPromise) return cachedPromise;
 
     const pending = (async () => {
-      const client = await getRequiredClient();
+      const client = await getRequiredNbaAnalyticsClient();
       const { data, error } = await client
         .from('nba_lineup_available_teams')
         .select('team_code,team_name,season_end_year,season_phase')
@@ -994,7 +1051,7 @@ window.DJ = window.DJ || {};
     if (cachedPromise) return cachedPromise;
 
     const pending = (async () => {
-      const client = await getRequiredClient();
+      const client = await getRequiredNbaAnalyticsClient();
       const { data, error } = await client
         .from('nba_lineup_player_pool')
         .select([
@@ -1476,6 +1533,8 @@ window.DJ = window.DJ || {};
     isConfigured,
     prepare,
     getClient,
+    getAnalyticsClient,
+    isAnalyticsConfigured,
     getSession,
     signIn,
     signUp,

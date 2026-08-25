@@ -17,6 +17,10 @@
     provider: 'supabase',
     supabaseUrl: 'https://gkqdymnmczabcggvigce.supabase.co',
     supabasePublishableKey: 'sb_publishable_BHrJWQtop2ovkpOMOd9w3A_-9MTaeGG',
+    // Public, read-only NBA analytics project. It is intentionally separate
+    // from the commerce catalog/auth project above.
+    analyticsSupabaseUrl: 'https://fbbmuqbdpgsmvnezowwn.supabase.co',
+    analyticsSupabasePublishableKey: 'sb_publishable_ZZUUmm65NYHiRtUBHNW0sg_eJXE6KV2',
     productsTable: 'products',
     storageBucket: 'product-images',
     imageFolder: 'products',
