@@ -11961,3 +11961,151 @@ body[data-page="home"] .home-category-section .category-card__cta svg {
     max-width:58ch;
   }
 }
+
+/* Homepage hero finish: give the collector promise the same considered
+   treatment as the catalog cards, without changing the existing copy. */
+body[data-page="home"] .hero-copy,
+body[data-page="home"] .hero-brand {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+
+body[data-page="home"] .hero-copy::before,
+body[data-page="home"] .hero-brand::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+body[data-page="home"] .hero-copy::before {
+  background:
+    radial-gradient(circle at 94% 4%,rgba(36,72,218,.11),transparent 31%),
+    linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,0) 62%);
+}
+
+body[data-page="home"] .hero-brand::before {
+  background:
+    radial-gradient(circle at 88% 2%,rgba(228,177,65,.19),transparent 30%),
+    linear-gradient(150deg,rgba(36,72,218,.06),rgba(239,24,35,.04));
+}
+
+body[data-page="home"] .hero-copy > *,
+body[data-page="home"] .hero-brand > * {
+  position:relative;
+  z-index:1;
+}
+
+body[data-page="home"] .hero-logo-wrap {
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82),0 14px 30px rgba(16,27,57,.08);
+}
+
+body[data-page="home"] .hero-logo-wrap::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 0,rgba(228,177,65,.13),transparent 47%);
+  pointer-events:none;
+}
+
+body[data-page="home"] .hero-logo {
+  position:relative;
+  z-index:1;
+}
+
+body[data-page="home"] .hero-guarantee {
+  display:grid;
+  grid-template-columns:2.25rem minmax(0,1fr);
+  column-gap:.78rem;
+  align-items:start;
+  margin-top:1.05rem;
+  padding:.82rem .9rem;
+  border:1px solid rgba(31,47,163,.15);
+  border-top-color:rgba(228,177,65,.58);
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(36,72,218,.065),rgba(239,24,35,.035));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 10px 20px rgba(16,27,57,.055);
+}
+
+body[data-page="home"] .hero-guarantee::before {
+  content:"✓";
+  display:grid;
+  grid-column:1;
+  grid-row:1 / span 2;
+  place-items:center;
+  width:2.15rem;
+  height:2.15rem;
+  border-radius:50%;
+  background:linear-gradient(145deg,#f3ca5a,#dfa52e);
+  box-shadow:0 7px 14px rgba(180,128,13,.23);
+  color:#12245e;
+  font-size:1.12rem;
+  font-weight:1000;
+}
+
+body[data-page="home"] .hero-guarantee h2,
+body[data-page="home"] .hero-guarantee p {
+  grid-column:2;
+}
+
+body[data-page="home"] .hero-guarantee h2 {
+  margin:0 0 .18rem;
+  color:#172a80;
+  font-size:1.02rem;
+  line-height:1.15;
+}
+
+body[data-page="home"] .hero-guarantee p {
+  margin:0;
+  font-size:.9rem;
+  line-height:1.42;
+}
+
+body.dark-mode[data-page="home"] .hero-copy::before {
+  background:
+    radial-gradient(circle at 94% 4%,rgba(91,127,255,.16),transparent 31%),
+    linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,0) 62%);
+}
+
+body.dark-mode[data-page="home"] .hero-brand::before {
+  background:
+    radial-gradient(circle at 88% 2%,rgba(228,177,65,.14),transparent 30%),
+    linear-gradient(150deg,rgba(91,127,255,.12),rgba(239,24,35,.08));
+}
+
+body.dark-mode[data-page="home"] .hero-logo-wrap {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 16px 32px rgba(0,0,0,.25);
+}
+
+body.dark-mode[data-page="home"] .hero-guarantee {
+  border-color:rgba(255,255,255,.16);
+  border-top-color:rgba(228,177,65,.68);
+  background:linear-gradient(135deg,rgba(91,127,255,.16),rgba(239,24,35,.1));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 24px rgba(0,0,0,.2);
+}
+
+body.dark-mode[data-page="home"] .hero-guarantee h2 {
+  color:#fff;
+}
+
+@media (max-width:520px) {
+  body[data-page="home"] .hero-guarantee {
+    grid-template-columns:2rem minmax(0,1fr);
+    column-gap:.65rem;
+    padding:.76rem;
+  }
+
+  body[data-page="home"] .hero-guarantee::before {
+    width:1.92rem;
+    height:1.92rem;
+    font-size:1rem;
+  }
+
+  body[data-page="home"] .hero-guarantee p {
+    font-size:.86rem;
+  }
+}

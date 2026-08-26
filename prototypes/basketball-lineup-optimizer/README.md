@@ -20,7 +20,7 @@ the beta.
   rate projection that prevents low-usage spikes from being extrapolated as if
   they were already star-sized roles.
 - Game-plan-first minute allocation by default, with an optional
-  observed-workload guardrail and auditable guard, forward, and center
+  recorded-minutes guardrail and auditable guard, forward, and center
   role-minute profiles.
 - CSV import/export, side-by-side player comparison, and a device-local player
   watchlist.
@@ -57,7 +57,7 @@ node --test .\prototypes\basketball-lineup-optimizer\tests\*.test.mjs
 The tests cover data normalization and CSV compatibility, the Supabase
 Basketball Reference adapter, deterministic optimization, locks/exclusions,
 positional assignment, safe search limits, infeasible scenarios, alternative
-ordering, 240-minute allocation, optional workload guardrails, small-sample
+ordering, 240-minute allocation, optional recorded-minutes guardrails, small-sample
 and role-expansion rate projections, custom role-minute proofs, and the legacy
 local-server safeguards.
 
@@ -75,7 +75,7 @@ production so their units do not get mixed:
   distinct larger-role projection: only when the rotation's average role
   (`240 / selected roster size`) exceeds the player's source MPG, the
   unobserved share is blended again toward that baseline. This never caps a
-  player's minutes or rewards past workload; it asks how much of a rate has
+  player's minutes or rewards past minutes; it asks how much of a rate has
   actually been demonstrated at the role the plan requests. The evidence
   sample `n` is total minutes for counting stats and turnovers, field-goal
   attempts for eFG%, and three-point attempts for 3P%. The current conservative
@@ -86,8 +86,8 @@ production so their units do not get mixed:
   the weighted, eligible-pool percentile profile, and rotation fit is then
   weighted by the exact minutes assigned to each selected player.
 - The default game-plan plan uses only the visitor's hard player bounds and
-  objective. `historicalAware` is an explicit optional observed-workload
-  guardrail that rescales the selected players' recorded team-stint minute
+  objective. `historicalAware` is an explicit optional recorded-minutes
+  guardrail that rescales the selected players' team-stint minute
   shares to 240 and builds visible per-player bands around those targets. It
   never contributes a second roster-ranking score.
 - Every successful rotation assigns exactly 240 integer player-minutes and the
