@@ -4,36 +4,36 @@ import {
   DEFAULT_PRESETS,
   assessHistoricalPositionMinuteEvidence,
   deriveHistoricalPositionMinuteRequirements,
-} from "./optimizer-config.js?v=20260826b";
+} from "./optimizer-config.js?v=20260826c";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260826b";
+} from "./player-data.js?v=20260826c";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260826b";
+} from "./supabase-nba-data.js?v=20260826c";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260826b";
+} from "./fan-analytics.js?v=20260826c";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260826b";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826b";
+} from "./scenario-url.js?v=20260826c";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826c";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826b";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826b", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826c";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826c", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
