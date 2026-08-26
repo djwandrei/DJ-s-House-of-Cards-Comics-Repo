@@ -4,36 +4,36 @@ import {
   DEFAULT_PRESETS,
   assessHistoricalPositionMinuteEvidence,
   deriveHistoricalPositionMinuteRequirements,
-} from "./optimizer-config.js?v=20260826a";
+} from "./optimizer-config.js?v=20260826b";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260826a";
+} from "./player-data.js?v=20260826b";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260826a";
+} from "./supabase-nba-data.js?v=20260826b";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260826a";
+} from "./fan-analytics.js?v=20260826b";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260826a";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826a";
+} from "./scenario-url.js?v=20260826b";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826b";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826b";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826b", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
@@ -138,7 +138,7 @@ const ROTATION_POSITION_PROFILES = Object.freeze({
   big: Object.freeze({ G: 72, F: 120, C: 48 }),
 });
 const ROTATION_MINUTE_PLAN_LABELS = Object.freeze({
-  historicalAware: "Recorded-minutes guardrail",
+  historicalAware: "Observed-workload guardrail",
   openWhatIf: "Game-plan optimization",
 });
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -618,7 +618,7 @@ function updateSearchScope() {
   validationInputs.forEach((input) => input.setCustomValidity(""));
 
   if (!state.dataset) {
-    setSearchScope("Loading team-season data…", "neutral", false);
+    setSearchScope("Loading the roster data…", "neutral", false);
     return;
   }
 
@@ -760,7 +760,7 @@ function syncShareScenarioAvailability() {
   elements.shareScenario.title = available
     ? "Copy a link that reloads this team-season and reruns the exact search"
     : state.loadedLiveSelection && !liveDatasetMatchesControls()
-      ? "Load the selected team-season and run a fresh result before sharing"
+      ? "Load the selected roster and run a fresh result before sharing"
       : "Share links are available for fresh, database-backed team-season results";
 }
 
@@ -1054,20 +1054,20 @@ function markResultStaleForDatasetSelection() {
   state.replacementAnalyses.clear();
   const hasPendingReplacement = state.replacementRunToken !== null;
   if (hasPendingReplacement || state.optimizationWorker || state.activeOptimizationToken !== null) {
-    cancelOptimization("Optimization cancelled because the selected team-season changed.");
+    cancelOptimization("Optimization cancelled because the selected roster changed.");
   }
   if (hasPendingReplacement) {
-    finishPendingReplacement("The selected team-season changed. Load it and run a new result before testing replacements.");
+    finishPendingReplacement("The selected roster changed. Load it and run a new result before testing replacements.");
   }
   elements.results.classList.add("is-stale");
   elements.resultFreshness.hidden = false;
-  elements.resultFreshness.textContent = "The selected team-season changed. Load its data and run the optimizer again before using this result.";
+  elements.resultFreshness.textContent = "The selected team-season changed. Load that roster and run the optimizer again before using this result.";
   elements.copyResult.disabled = true;
   elements.downloadResult.disabled = true;
   elements.shareScenario.disabled = true;
   elements.printReport.disabled = true;
   setMobileResultCurrent(false);
-  setSolverStatus("Load team-season data to update result", "warning");
+  setSolverStatus("Load selected roster to update result", "warning");
 }
 
 function updateLiveSelectionState({ preserveStatus = false } = {}) {
@@ -1076,17 +1076,17 @@ function updateLiveSelectionState({ preserveStatus = false } = {}) {
   const matches = liveSelectionMatches(state.loadedLiveSelection, selection);
   elements.liveDataPanel.dataset.selectionState = matches ? "loaded" : "pending";
   elements.datasetStrip.classList.toggle("has-pending-selection", Boolean(state.dataset && !matches));
-  elements.loadLiveData.textContent = matches ? "Reload team-season data" : "Load team-season";
+  elements.loadLiveData.textContent = matches ? "Reload roster data" : "Load selected roster";
   if (!preserveStatus && !matches) {
     markResultStaleForDatasetSelection();
     setLiveDataStatus(
-      `Selection changed. Load ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} data to replace the current team-season.`,
+      `Selection changed. Load the ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} roster to replace the current data.`,
       "warning",
     );
-    setOptimizeButtons({ label: "Load team-season" });
+    setOptimizeButtons({ label: "Load selected roster" });
   } else if (!preserveStatus && matches) {
     setLiveDataStatus(
-      `The selected team-season matches ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats.`,
+      `The current roster matches ${selectedLiveTeamName()} ${nbaSeasonLabel(selection.season)} ${selectedLivePhaseLabel()} stats.`,
       "success",
     );
     const needsUpdate = !elements.resultFreshness.hidden;
@@ -1351,7 +1351,7 @@ async function loadLiveDataset({ force = false, intentGeneration = null } = {}) 
       notice: "",
     });
     setLiveDataStatus(
-      `Showing a cached Basketball Reference snapshot. Use Reload team-season data to check for newer ${teamName} totals.`,
+      `Showing a cached Basketball Reference snapshot. Use Reload roster data to check for newer ${teamName} totals.`,
       "success",
     );
     return;
@@ -1749,7 +1749,7 @@ async function loadOpponentScout() {
       state.opponentWeightUndo = null;
       elements.opponentScoutSummary.hidden = true;
       elements.opponentScoutSummary.replaceChildren();
-      staleResponseMessage = "The team, season, phase, or opponent changed while the comparison was loading. Load the selected team-season, then build the scouting cue again.";
+      staleResponseMessage = "The team, season, phase, or opponent changed while the comparison was loading. Load the current roster, then build the scouting cue again.";
       return;
     }
 
@@ -1910,7 +1910,7 @@ function historicalMinuteAnchorsForCurrentDataset() {
 function renderRotationEvidencePreview() {
   const players = state.dataset?.players || [];
   if (players.length === 0) {
-    elements.rotationEvidencePreview.textContent = "Load a team-season to check recorded-minutes and rate evidence.";
+    elements.rotationEvidencePreview.textContent = "Load a team-season to check workload and rate evidence.";
     elements.simpleModelSummaryCopy.textContent = "Load a team and season to apply Lineup Lab's recommended sample and rotation safeguards.";
     elements.simpleModelSummaryNote.textContent = "Simple mode will explain any source limitation instead of guessing around it.";
     return;
@@ -1921,23 +1921,23 @@ function renderRotationEvidencePreview() {
     player.analytics?.totals && player.analytics?.leaguePer36
   )).length;
   const historicalAware = elements.rotationMinutePlan.value === "historicalAware";
-  const workloadCopy = `${anchorCount} of ${players.length} roster rows have recorded minutes with this team`;
+  const workloadCopy = `${anchorCount} of ${players.length} roster rows have recorded team-minute evidence`;
   const rateCopy = `${rateEvidenceCount} of ${players.length} have same-season rate evidence`;
   elements.rotationEvidencePreview.textContent = historicalAware
-    ? `Source check: ${workloadCopy}; ${rateCopy}. Recorded minutes are an optional guardrail; the game-plan fit still uses the same conservative rate projection.`
-    : `Source check: ${rateCopy}. Recorded minutes are available for comparison only and do not change selection or minutes.`;
+    ? `Source check: ${workloadCopy}; ${rateCopy}. Observed workload is an optional capacity guardrail; the game-plan score still uses the same conservative rate projection.`
+    : `Source check: ${rateCopy}. Recorded workload is available for comparison only and does not change selection or minutes.`;
   if (elements.mode.value !== "rotation") {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples before comparing five-player groups.";
-    elements.simpleModelSummaryNote.textContent = "Recommended sample and position rules are already active. Open Detailed only to change them.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples before it compares five-player groups.";
+    elements.simpleModelSummaryNote.textContent = "Standard sample and position rules remain active. Switch to Detailed when you want to edit them.";
   } else if (historicalAware && anchorCount === players.length) {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer compares rates at equal playing time, then adjusts limited-sample production before assigning all 240 rotation minutes.";
-    elements.simpleModelSummaryNote.textContent = "Recorded minutes are used only as the guardrail you selected. Open Detailed to change the rules.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team, filters out thin samples, compares production at equal playing time, and projects what each rate can reasonably carry into a full rotation role.";
+    elements.simpleModelSummaryNote.textContent = "Standard sample and position rules remain active. Switch to Detailed when you want to edit them.";
   } else if (historicalAware) {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples. The optional recorded-minutes guardrail needs complete source evidence, but it never changes the game-plan fit score.";
-    elements.simpleModelSummaryNote.textContent = "Open Detailed to review the source check or change advanced limits.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples. The optional observed-workload guardrail needs complete source evidence, but it never changes the game-plan score.";
+    elements.simpleModelSummaryNote.textContent = "Switch to Detailed to review the source check or adjust advanced limits.";
   } else {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It adjusts limited-role rates instead of assuming they will scale unchanged to star minutes.";
-    elements.simpleModelSummaryNote.textContent = "Past minutes do not affect selection or assigned minutes unless you turn on the optional guardrail in Detailed.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It evaluates low-minute and low-usage rates conservatively at a common rotation responsibility, rather than assuming they scale unchanged to star minutes.";
+    elements.simpleModelSummaryNote.textContent = "Recorded workload does not affect selection or minutes unless you turn on the optional guardrail in Detailed.";
   }
 }
 
@@ -1961,40 +1961,35 @@ function rotationPositionProfileForRequirements(requirements) {
 
 function syncRotationModelControls() {
   const historicalAware = elements.rotationMinutePlan.value === "historicalAware";
-  // The recommended game-plan model needs only one decision here. Keep the two
-  // past-minute controls out of the visual path until a visitor explicitly
-  // chooses the optional guardrail, rather than showing disabled jargon.
-  elements.rotationFlexibilityField.hidden = !historicalAware;
-  elements.rotationAllocationStyleField.hidden = !historicalAware;
   elements.rotationFlexibility.disabled = !historicalAware;
   elements.rotationFlexibilityField.classList.toggle("is-disabled", !historicalAware);
   elements.rotationFlexibilityField.title = historicalAware
-    ? "Each selected player's recorded-minutes allowance; exact position coverage may expand it by 4–8 minutes, but it never fills a general minutes shortfall"
+    ? "Each selected player's observed workload allowance; exact role coverage may expand it by 4–8 minutes, but it never fills a general workload shortfall"
     : "Game-plan optimization uses only the hard player limits below";
   elements.rotationAllocationStyle.disabled = !historicalAware;
   elements.rotationAllocationStyleField.classList.toggle("is-disabled", !historicalAware);
   elements.rotationAllocationStyleField.title = historicalAware
-    ? "Choose whether the selected roster stays close to its recorded minutes or shifts time toward your game plan"
+    ? "Choose whether the selected roster keeps its recorded workload or shifts minutes toward your game-plan fit"
     : "Game-plan optimization always uses your objective inside the hard player limits";
   elements.rotationMinutePlanHelp.replaceChildren(
     Object.assign(document.createElement("strong"), {
-      textContent: historicalAware ? "Recorded-minutes guardrail: " : "Game-plan optimization: ",
+      textContent: historicalAware ? "Observed-workload guardrail: " : "Game-plan optimization: ",
     }),
     document.createTextNode(historicalAware
-      ? "the selected players must have enough recorded minutes with this team to cover all 240 minutes. It is a feasibility guardrail, not a player rating; your hard player limits never change."
-      : "past minutes do not restrict the plan. The optimizer assigns players inside your hard limits according to the game plan, while it adjusts limited-role rates conservatively."),
+      ? "recorded minutes with this team create an additional per-player capacity window. It is optional context for a source-grounded rotation—not a player-ranking score. A selected group must have enough observed workload to cover 240 minutes; hard player limits never change."
+      : "recorded workloads do not restrict the plan. The optimizer assigns each selected player anywhere between your hard minimum and maximum according to the game plan, after it projects unproven low-role rates conservatively."),
   );
   elements.rotationAllocationStyleHelp.replaceChildren(
     Object.assign(document.createElement("strong"), {
       textContent: historicalAware && elements.rotationAllocationStyle.value === "strategyFirst"
-        ? "Favor my game plan: "
-        : "Stay closer to recorded minutes: ",
+        ? "Optimize for the game plan: "
+        : "Keep close to observed workload: ",
     }),
     document.createTextNode(historicalAware
       ? elements.rotationAllocationStyle.value === "strategyFirst"
-        ? "the optional recorded-minutes capacity window remains active, while the minute plan shifts time toward the profiles that best match your strategy."
-        : "the game-plan fit still ranks the roster, then the minute solver stays as close as possible to recorded minutes while proving all 240 position minutes."
-      : "This option is inactive because the game-plan model does not use past minutes."),
+        ? "the optional source capacity window remains active, while the minute plan shifts time toward the selected profiles that best match your strategy."
+        : "the strategy score still ranks the roster, then the minute solver minimizes departure from observed workload while proving all 240 role minutes."
+      : "game-plan optimization uses your objective inside the hard player limits; recorded workload has no selection or minute-allocation effect."),
   );
 
   const usesPer36Rates = elements.rotationScoringBasis.value === "per36";
@@ -2010,11 +2005,11 @@ function syncRotationModelControls() {
   elements.rotationRateStability.disabled = !usesPer36Rates;
   elements.rotationRateStabilityField.classList.toggle("is-disabled", !usesPer36Rates);
   elements.rotationRateStabilityField.title = usesPer36Rates
-    ? "Choose whether limited samples and larger-role projections are adjusted toward a same-season baseline"
+    ? "Choose whether small samples and larger-role projections are stabilized toward a same-season baseline"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "When the source has matching minutes or shot attempts for every eligible player, the model pulls extreme limited-sample rates toward the same-season NBA baseline. It also tempers a rate when the rotation asks for a larger role. If evidence is incomplete, that stat stays raw for everyone."
-    : "Per-game comparison uses raw historical per-game lines. Limited-sample adjustment is available only with per-36 comparison.";
+    ? "When every eligible player has matching total-minute or shot-attempt evidence, the model first pulls tiny samples toward the same-season NBA baseline. It then tempers a rate only when the rotation asks for a bigger role than the player held in the source. A metric stays raw for everyone if its evidence is incomplete, so missing metadata never becomes an advantage."
+    : "Per-game comparison uses each raw historical per-game line. Small-sample stabilization is available only with the per-36 rate comparison.";
   renderRotationEvidencePreview();
 }
 
@@ -2060,13 +2055,13 @@ function setMobileResultCurrent(current) {
   // success feedback.
   elements.mobileSolveLabel.textContent = elements.mode.value === "rotation"
     ? `${numberFromInput(elements.size, 9)}-player rotation · all 240 team minutes`
-    : "Starting five";
+    : "Best 5-player group";
 }
 
 function updateRunSummary() {
   const modeLabel = elements.mode.value === "rotation"
     ? `${numberFromInput(elements.size, 9)}-player rotation · all 240 team minutes`
-    : "Starting five";
+    : "Best 5-player group";
   elements.runModeSummary.textContent = modeLabel;
   if (!elements.mobileSolveBar.classList.contains("is-result-current")) {
     elements.mobileSolveLabel.textContent = modeLabel;
@@ -2976,12 +2971,12 @@ function renderExactObjectiveReasons(player, result, insight) {
   const minutePlanExplanation = minutePlan === "historicalAware"
     ? historicalGuidance?.applied
       ? historicalGuidance?.allocationStyleApplied === "preserveWorkload"
-        ? `Your game-plan fit selected this roster. The optional past-minutes guardrail then keeps the plan close to recorded minutes inside its disclosed capacity window${historicalGuidance.status === "expanded-for-role-coverage" ? ", including the disclosed position-coverage expansion" : ""}.`
-        : `${historicalGuidance.allocationStyleReason || "Minutes shift toward the best-fitting profiles inside the displayed recorded-minutes capacity caps."}`
-      : `The optional past-minutes guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The report identifies the missing minutes evidence."}`
-    : "Game-plan minutes optimize inside the hard limits you set; recorded minutes did not affect this result.";
+        ? `The game-plan score selected this roster. The optional minute guardrail then keeps the plan close to observed workload inside its disclosed capacity window${historicalGuidance.status === "expanded-for-role-coverage" ? ", including the disclosed role-coverage expansion" : ""}.`
+        : `${historicalGuidance.allocationStyleReason || "Minutes shift toward the best-fitting profiles inside the displayed observed-workload capacity caps."}`
+      : `The optional workload guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The result report identifies the missing workload evidence."}`
+    : "Game-plan minutes optimize inside the hard limits you set; recorded workload did not affect this result.";
   const roleProjectionCopy = rateStability?.roleAdjustedPlayerMetricCount > 0
-    ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline before `
+    ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, rates from smaller source roles are tempered toward the same-season NBA baseline before `
     : rateStability?.applied
       ? "Smaller samples are stabilized toward the same-season NBA baseline before "
       : "";
@@ -3006,7 +3001,7 @@ function renderExactObjectiveReasons(player, result, insight) {
       list.append(row);
     });
     const total = document.createElement("li");
-    total.textContent = `Contribution to this result: ${formatNumber(contribution.scoreContribution, 2)} of ${formatNumber(result.best.score)} game-plan-fit points in this search.`;
+    total.textContent = `Contribution to this result: ${formatNumber(contribution.scoreContribution, 2)} of ${formatNumber(result.best.score)} match-score points in this search.`;
     list.append(total);
   } else {
     // The explanation layer remains useful if a future compatible optimizer
@@ -3265,7 +3260,7 @@ function renderResultEvidence(result) {
   strip.setAttribute("aria-label", "Result evidence and limitations");
   const phase = source.seasonPhase === "playoffs" ? "Playoffs" : "Regular season";
   strip.append(resultEvidenceItem(
-    "Stats used",
+    "Historical source",
     `${source.teamName || source.team || "Selected team"} · ${source.season || "Season unavailable"}`,
     `${phase} stats recorded with this team from ${source.provider || source.label || "the loaded dataset"}`,
   ));
@@ -3278,15 +3273,15 @@ function renderResultEvidence(result) {
     const value = !hasHistoricalWorkload
       ? "Game-plan allocation"
       : minuteStyle === "preserveWorkload"
-      ? "Recorded-minutes guardrail"
+        ? "Observed-workload guardrail"
         : "Game-plan-first with guardrail";
     const workloadDetail = !hasHistoricalWorkload
-      ? "Recorded minutes did not affect selection or minutes; the allocation used your game plan inside the hard player limits."
-      : `${guidance.knownAnchorCount || result.best.players.length} of ${guidance.selectedPlayerCount || result.best.players.length} selected players had recorded minutes${Number.isFinite(teamGames) && teamGames > 0 ? ` across ${formatNumber(teamGames, 0)} team games` : ""}. ${guidance.allocationStyleReason || ""}`.trim();
-    strip.append(resultEvidenceItem("Minute plan", value, workloadDetail));
+      ? "Recorded workload did not affect selection or minutes; the allocation used your game plan inside the hard player limits."
+      : `${guidance.knownAnchorCount || result.best.players.length} of ${guidance.selectedPlayerCount || result.best.players.length} selected players had a workload anchor${Number.isFinite(teamGames) && teamGames > 0 ? ` across ${formatNumber(teamGames, 0)} team games` : ""}. ${guidance.allocationStyleReason || ""}`.trim();
+    strip.append(resultEvidenceItem("Minute planning", value, workloadDetail));
   } else {
     strip.append(resultEvidenceItem(
-      "Recorded minutes",
+      "Workload evidence",
       Number.isFinite(teamGames) && teamGames > 0
         ? `${formatNumber(teamGames, 0)} reconstructed team games`
         : "Player-season samples",
@@ -3318,9 +3313,9 @@ function renderResultEvidence(result) {
     ));
   }
   strip.append(resultEvidenceItem(
-    "Lineup chemistry data",
-    "Not included",
-    "Box scores cannot identify lineup chemistry or matchup-adjusted impact. Verified play-by-play must be a separate sourced layer.",
+    "Observed five-player impact",
+    "Not used in this result",
+    "Box scores cannot identify lineup chemistry or matchup-adjusted impact. Verified play-by-play evidence must be a separate sourced layer.",
   ));
   return strip;
 }
@@ -3363,14 +3358,14 @@ function renderRotationMinutes(rotation) {
   const headingRow = document.createElement("div");
   headingRow.className = "rotation-plan__heading";
   const heading = document.createElement("h3");
-  heading.textContent = "Your 240-minute plan";
+  heading.textContent = "240-minute game-plan allocation";
   const planChip = document.createElement("span");
   planChip.className = "model-status-chip";
   const guidance = rotation.historicalGuidance || {};
   planChip.textContent = rotation.minutePlan === "historicalAware" && guidance.applied
     ? guidance.allocationStyleApplied === "preserveWorkload"
-      ? "Recorded-minutes guardrail"
-      : "Game-plan-first plan"
+      ? "Workload-protected plan"
+      : "Game-plan-first allocation"
     : rotation.minutePlan === "openWhatIf"
       ? "Game-plan allocation"
       : ROTATION_MINUTE_PLAN_LABELS[rotation.minutePlan] || "Exact minute plan";
@@ -3386,15 +3381,15 @@ function renderRotationMinutes(rotation) {
     // the requested observed-workload window. Surface that exception here instead of
     // letting the result appear to have ignored the selected control.
     const roleCoverageNote = expandedForRoles
-      ? ` You requested a ±${requestedFlexibility}-minute recorded-minutes window, and the exact position check widened it to ±${appliedFlexibility} minutes so the group could cover ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`
+      ? ` You requested a ±${requestedFlexibility}-minute observed-workload window, and the exact role check widened it to ±${appliedFlexibility} minutes so the group could cover ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`
       : ` Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
     note.textContent = guidance.allocationStyleApplied === "preserveWorkload"
-      ? `Your game plan selected this roster; the optional recorded-minutes mode then kept its minute plan close to past usage inside the displayed caps and hard limits.${roleCoverageNote}`
-      : `${guidance.allocationStyleReason || "The minute solver shifted time toward the player profiles that best fit your strategy inside the recorded-minutes caps."}${roleCoverageNote}`;
+      ? `Your game plan selected this roster; the optional source-workload mode then kept its minute plan close to observed usage inside the displayed capacity caps and hard limits.${roleCoverageNote}`
+      : `${guidance.allocationStyleReason || "The minute solver shifted time toward the player profiles that best fit your strategy inside the observed-workload capacity caps."}${roleCoverageNote}`;
   } else if (rotation.minutePlan === "openWhatIf") {
     note.textContent = `This allocation maximizes your game-plan fit inside your hard player limits. It does not try to recreate the source team's rotation. Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   } else {
-    note.textContent = `${guidance.reason || "Recorded-minutes evidence was unavailable, so the plan used your hard player limits."} Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
+    note.textContent = `${guidance.reason || "Historical workload evidence was unavailable, so the plan used your hard player limits."} Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   }
   const list = document.createElement("ul");
   list.className = "minutes-list";
@@ -3411,7 +3406,7 @@ function renderRotationMinutes(rotation) {
     const target = Number(guidance.targetsById?.[allocation.id]);
     const workloadParts = [roleMinuteSummary(allocation.roleMinutes) || "Utility minutes"];
     if (Number.isFinite(anchor)) workloadParts.push(`recorded ${formatNumber(anchor)} team-game min`);
-    if (Number.isFinite(target)) workloadParts.push(`recorded-minutes target ${formatNumber(target, 0)}`);
+    if (Number.isFinite(target)) workloadParts.push(`workload target ${formatNumber(target, 0)}`);
     workloadParts.push(`allowed ${allocation.minimum}–${allocation.maximum}`);
     roles.textContent = workloadParts.join(" · ");
     playerLabel.append(name, roles);
@@ -3455,7 +3450,7 @@ function renderHistoricalWorkloadBenchmark(result) {
   const card = document.createElement("section");
   card.className = "result-card historical-benchmark";
   const heading = document.createElement("h3");
-  heading.textContent = "Recorded minutes comparison (optional)";
+  heading.textContent = "Source workload comparison (optional)";
   const sourceLeaders = Array.isArray(state.dataset?.source?.rotation)
     ? state.dataset.source.rotation
     : [];
@@ -3463,16 +3458,16 @@ function renderHistoricalWorkloadBenchmark(result) {
   const overlap = best.playerIds.filter((id) => sourceLeaderIds.has(id)).length;
   const note = document.createElement("p");
   if (Object.keys(benchmarkAnchors).length === 0) {
-    note.textContent = "Recorded team-game minutes are unavailable for this source, so a past-minutes comparison cannot be shown. The exact result above remains valid under the displayed hard limits.";
+    note.textContent = "Recorded team-game workload is unavailable for this source, so a historical minutes comparison cannot be shown. The exact result above remains valid under the displayed hard limits.";
     card.append(heading, note);
     return card;
   }
   if (best.rotation.minutePlan === "openWhatIf") {
-    note.textContent = "This game-plan allocation did not use recorded minutes. The source minutes below are context only—not an optimizer input and not a claim that the historical allocation was optimal.";
+    note.textContent = "This game-plan allocation did not use recorded workload. The source minutes below are context only—not an optimizer input and not a claim that the historical allocation was optimal.";
   } else {
     note.textContent = sourceLeaders.length > 0
-      ? `${overlap} of ${best.playerIds.length} selected players appear among this source's ${sourceLeaders.length} largest historical minute shares. Recorded minutes describe past usage—not a claim that the coach's allocation was optimal.`
-      : "Recorded team-game minutes are compared with the proposal below. They describe past usage—not a claim that the historical allocation was optimal.";
+      ? `${overlap} of ${best.playerIds.length} selected players appear among this source's ${sourceLeaders.length} largest historical minute shares. Recorded minutes are descriptive usage—not a claim that the coach's allocation was optimal.`
+      : "Recorded team-game minutes are compared with the proposal below. They are descriptive usage—not a claim that the historical allocation was optimal.";
   }
 
   // A mathematically legal plan can still be a large departure from the
@@ -3488,13 +3483,13 @@ function renderHistoricalWorkloadBenchmark(result) {
   stretchNote.className = "workload-stretch-note";
   stretchNote.hidden = workloadStretches.length === 0;
   stretchNote.textContent = workloadStretches.length > 0
-    ? `Reality check: ${workloadStretches.length} selected player${workloadStretches.length === 1 ? " is" : "s are"} at least 12 minutes from recorded team-game usage. Treat this as a game-plan result, not a likely real-world rotation.`
+    ? `Reality check: ${workloadStretches.length} selected player${workloadStretches.length === 1 ? " is" : "s are"} at least 12 minutes from recorded team-game usage. Review those rows before treating this as a plausible coaching rotation.`
     : "";
 
   const wrap = document.createElement("div");
   wrap.className = "table-wrap historical-benchmark__table";
   wrap.tabIndex = 0;
-  wrap.setAttribute("aria-label", "Recorded and proposed rotation minutes");
+  wrap.setAttribute("aria-label", "Historical workload and proposed rotation minutes");
   const table = document.createElement("table");
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
@@ -3557,9 +3552,9 @@ function renderAlternatives(alternatives, best) {
   const section = document.createElement("section");
   section.className = "alternatives-section";
   const heading = document.createElement("h3");
-  heading.textContent = "Other complete groups to compare";
+  heading.textContent = "Recommended and next-best feasible groups";
   const note = document.createElement("p");
-  note.textContent = `Game-plan fit compares these groups only within this exact search; it is not a player rating or win prediction. Each row shows the main tradeoff. ${best.rotation ? "Production columns use each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
+  note.textContent = `Match score compares these groups only within this exact search; it is not a player rating or win prediction. Roster changes make each tradeoff explicit. ${best.rotation ? "Production columns are minute-weighted from each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
   wrap.className = "alternatives-wrap table-wrap";
   wrap.tabIndex = 0;
@@ -3571,7 +3566,7 @@ function renderAlternatives(alternatives, best) {
   caption.textContent = "Top feasible lineup alternatives";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Rank", "Players", "Game-plan fit", "Gap from #1", "Changes from #1", "Main tradeoff", "PTS", "REB", "AST", "TOV"]) {
+  for (const heading of ["Rank", "Players", "Match score", "Gap from #1", "Changes from #1", "Main production tradeoff", "PTS", "REB", "AST", "TOV"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -3693,9 +3688,9 @@ function renderRoleMatrix(roleCoverage) {
   const section = document.createElement("section");
   section.className = "fan-report__matrix";
   const heading = document.createElement("h4");
-  heading.textContent = "Player strengths at a glance";
+  heading.textContent = "Player strengths by role";
   const note = document.createElement("p");
-  note.textContent = `Each mark is a statistical strength compared with the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ has a normal-sized sample; △ is limited evidence shown only for context. These are box-score signals, not scouting certainties.`;
+  note.textContent = `Each mark is a statistical strength compared with the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ has a normal-sized sample; △ is a smaller sample and is shown for context only. These are box-score signals, not scouting certainties.`;
   section.append(heading, note);
   const scroll = document.createElement("div");
   scroll.className = "role-matrix table-wrap";
@@ -3750,9 +3745,9 @@ function renderFanScoutingReport(result, explanation) {
   eyebrow.textContent = "Lineup Lab game-plan report";
   const heading = document.createElement("h3");
   heading.id = "fanReportHeading";
-  heading.textContent = "Strengths, gaps, and evidence";
+  heading.textContent = "Full statistical breakdown";
   const intro = document.createElement("p");
-  intro.textContent = "Explore the evidence behind this result: strengths, sample context, player comparisons, and alternatives. This is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
+  intro.textContent = "Explore the evidence behind the exact result: strengths, sample context, player comparisons, and alternatives. This is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
   headerText.append(eyebrow, heading, intro);
   const provenance = document.createElement("p");
   provenance.className = "report-provenance";
@@ -3841,14 +3836,14 @@ function renderSimpleResultOverview(result, fanExplanation) {
   const fitReason = document.createElement("li");
   fitReason.textContent = strongest.length
     ? `It matches your game plan most through ${strongest.join(", ")}.`
-    : "It is the strongest game-plan fit under the rules you selected.";
+    : "It is the strongest statistical match for the game plan you selected.";
   list.append(fitReason);
 
   if (best.rotation) {
     const readinessReason = document.createElement("li");
     readinessReason.textContent = result.diagnostics?.rotationHistoricalReadiness?.applied
-      ? "The game plan selected this roster, then the optional past-minutes guardrail kept its 240-minute plan close to recorded usage."
-      : "This rotation follows your game plan inside the hard player-minute limits; past minutes did not affect the roster or assigned minutes.";
+      ? "The rotation ranking balances your game plan with each player's recorded workload for this team, then assigns all 240 minutes close to those historical roles."
+      : "This what-if rotation follows your game plan inside the hard player-minute limits; recorded workload does not affect the roster or minutes.";
     list.append(readinessReason);
   }
 
@@ -3884,7 +3879,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
   detailsButton.type = "button";
   detailsButton.className = "button button--quiet simple-result-details";
   detailsButton.dataset.action = "show-detailed";
-  detailsButton.textContent = "See details and alternatives";
+  detailsButton.textContent = "Open Detailed analysis";
   panel.append(detailsButton);
   return panel;
 }
@@ -3926,17 +3921,17 @@ function renderSuccess(result) {
   const fullAnalysis = document.createElement("details");
   fullAnalysis.className = "full-analysis detailed-only";
   const fullSummary = document.createElement("summary");
-  fullSummary.textContent = "See score, alternatives, and evidence";
+  fullSummary.textContent = "Open full analysis, alternatives, and model checks";
   const scoreExplanation = document.createElement("p");
   scoreExplanation.className = "full-analysis__intro";
   scoreExplanation.textContent = best.rotation
-    ? "Game-plan fit is a 0–100 comparison of this allocation against the players eligible in this exact search. It uses only the priorities you selected, with limited-sample and larger-role rate adjustment when source evidence is available. Compare it only with alternatives from this same search; it is not team quality, player quality, or win probability."
-    : "Game-plan fit is a 0–100 comparison of this group against the players eligible in this exact search using the priorities you selected. Compare it only with alternatives from this same search; it is not team quality or win probability.";
+    ? "Match score is a 0–100 comparison of this game-plan allocation against the eligible players in this exact search. It uses only the priorities you selected, with small-sample and larger-role rate protection when source evidence is available. Compare it only with alternatives from this same search; it is not team quality, player quality, or win probability."
+    : "Match score is a 0–100 comparison of this group against the eligible players in this exact search using the priorities you selected. Compare it only with alternatives from this same search; it is not team quality or win probability.";
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";
   const productionPrefix = best.rotation ? "Projected" : "Combined";
   scoreboard.append(renderScoreCard(
-    "Game-plan fit in this search",
+    "Match score in this search",
     `${formatNumber(best.score)} / 100`,
     true,
   ));
@@ -4119,7 +4114,7 @@ async function runOptimizer(event) {
   event?.preventDefault();
   if (!state.dataset) return;
   if (!canOptimizeCurrentDataset()) {
-    setLiveDataStatus("Load the selected team-season before running an exact search.", "warning");
+    setLiveDataStatus("Load the selected roster before running an exact search against it.", "warning");
     showToast("Load the selected team-season before optimizing it.");
     return;
   }
@@ -4583,7 +4578,7 @@ function resultSummaryText() {
   const lines = [
     `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Recommended rotation and minutes plan" : "Recommended lineup"}`,
     `Strategy: ${PRESET_LABELS[state.activePreset] || "Custom mix"}`,
-    `Game-plan fit in this search: ${formatNumber(best.score)} / 100`,
+    `Match score in this search: ${formatNumber(best.score)} / 100`,
     `Players: ${best.players.map((player) => player.name).join(", ")}`,
     `${best.rotation ? "Minute-weighted projection" : "Combined player profiles"}: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
   ];

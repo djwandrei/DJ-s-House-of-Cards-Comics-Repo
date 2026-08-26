@@ -10,7 +10,7 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260826a";
+} from "./optimizer-config.js?v=20260826b";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,
