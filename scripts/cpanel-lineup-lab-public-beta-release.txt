@@ -2,6 +2,7 @@
 # noindex and outside primary navigation; unrelated storefront files stay out.
 # The shared Supabase browser adapter is included because the Lab reads the
 # NBA views through it. Path-list releases never delete remote files.
+.htaccess
 lineup-lab/app.js
 lineup-lab/fan-analytics.js
 lineup-lab/fixtures/timberwolves-2021-22.json

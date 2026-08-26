@@ -83,6 +83,28 @@ const core = read('core.js');
 const assetVersion = core.match(/PRODUCT_ASSET_VERSION\s*=\s*'([^']+)'/)?.[1] || '';
 if (!assetVersion) issues.push({ file: 'core.js', type: 'missing product asset version' });
 
+const backendConfig = read('backend-config.js');
+const csp = read('.htaccess')
+  .match(/Content-Security-Policy\s+"([^"]+)"/i)?.[1] || '';
+const connectSources = csp
+  .split(';')
+  .map((directive) => directive.trim())
+  .find((directive) => directive.startsWith('connect-src '))
+  ?.split(/\s+/)
+  .slice(1) || [];
+for (const [name, property] of [
+  ['commerce', 'supabaseUrl'],
+  ['analytics', 'analyticsSupabaseUrl']
+]) {
+  const match = backendConfig.match(new RegExp(`${property}\\s*:\\s*['\"](https:\\/\\/[^'\"]+)['\"]`));
+  const projectUrl = match?.[1] || '';
+  if (!projectUrl) {
+    issues.push({ file: 'backend-config.js', type: `missing ${name} Supabase URL` });
+  } else if (!connectSources.includes(projectUrl)) {
+    issues.push({ file: '.htaccess', type: `CSP connect-src blocks ${name} Supabase`, value: projectUrl });
+  }
+}
+
 for (const file of HTML_FILES) {
   const html = read(file);
   const tags = [...html.matchAll(/<(?:meta|link|script|img|a)\b[^>]*>/gi)].map((match) => match[0]);
