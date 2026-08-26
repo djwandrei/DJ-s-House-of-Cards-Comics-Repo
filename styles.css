@@ -11477,16 +11477,19 @@ body[data-page="home"] .home-connect-lab .lineup-lab-promo__cta {
 }
 
 body[data-page="home"] .site-footer {
-  --footer-artwork-offset:0px;
+  --footer-artwork-offset:clamp(3rem,4vw,4.5rem);
   margin-top:0;
   overflow:hidden;
   background:linear-gradient(135deg,#08132d 0%,#101d4d 54%,#15266b 100%);
 }
 
 body[data-page="home"] .site-footer::before {
-  content:none;
-  display:none;
-  background:none;
+  content:"";
+  display:block;
+  height:var(--footer-artwork-offset);
+  background:linear-gradient(180deg,rgba(7,11,24,.08),rgba(7,11,24,.52)),var(--footer-image) center 42%/cover no-repeat;
+  border-bottom:3px solid rgba(255,255,255,.14);
+  opacity:.56;
 }
 
 body[data-page="home"] .site-footer::after {
@@ -11499,7 +11502,7 @@ body[data-page="home"] .site-footer::after {
 body[data-page="home"] .site-footer .footer-inner {
   grid-template-columns:minmax(260px,.9fr) minmax(0,1.6fr);
   gap:2.25rem;
-  padding-top:3.5rem;
+  padding-top:calc(var(--footer-artwork-offset) + 1.5rem);
   padding-bottom:2.25rem;
 }
 
@@ -11766,5 +11769,100 @@ body.dark-mode[data-page="home"] .home-category-section .category-card {
 
   body[data-page="home"] .site-footer .footer-link-groups {
     grid-template-columns:1fr;
+  }
+}
+
+/* Homepage refinement pass: add depth and rhythm without replacing the
+   collection imagery or the established DJHC blue, red, and gold palette. */
+body[data-page="home"] .home-category-section,
+body[data-page="home"] .home-featured-section {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+
+body[data-page="home"] .home-category-section::before,
+body[data-page="home"] .home-featured-section::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+body[data-page="home"] .home-category-section::before {
+  background:
+    radial-gradient(circle at 6% 8%,rgba(36,72,218,.09),transparent 26%),
+    radial-gradient(circle at 94% 72%,rgba(239,24,35,.075),transparent 23%);
+}
+
+body[data-page="home"] .home-featured-section::before {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.24),rgba(239,244,255,.34)),
+    radial-gradient(circle at 90% 6%,rgba(228,177,65,.1),transparent 23%);
+}
+
+body[data-page="home"] .home-category-section > .container,
+body[data-page="home"] .home-featured-section > .container {
+  position:relative;
+  z-index:1;
+}
+
+body.dark-mode[data-page="home"] .home-category-section::before {
+  background:
+    radial-gradient(circle at 6% 8%,rgba(91,127,255,.16),transparent 28%),
+    radial-gradient(circle at 94% 72%,rgba(239,24,35,.13),transparent 25%);
+}
+
+body.dark-mode[data-page="home"] .home-featured-section::before {
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.025),rgba(55,82,144,.07)),
+    radial-gradient(circle at 90% 6%,rgba(228,177,65,.1),transparent 24%);
+}
+
+body[data-page="home"] .home-featured-section .product-card {
+  border-color:rgba(31,47,163,.12);
+  box-shadow:0 16px 32px rgba(16,27,57,.1);
+}
+
+body[data-page="home"] .home-connect-card {
+  position:relative;
+  overflow:hidden;
+  transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease,background-color .24s ease;
+}
+
+body[data-page="home"] .home-connect-card::before {
+  content:"";
+  position:absolute;
+  top:0;
+  left:1.45rem;
+  width:38%;
+  height:3px;
+  border-radius:0 0 999px 999px;
+  background:linear-gradient(90deg,var(--brand-gold),rgba(228,177,65,0));
+  pointer-events:none;
+}
+
+body[data-page="home"] .home-connect-card:nth-child(2)::before {
+  background:linear-gradient(90deg,#7f8fff,rgba(127,143,255,0));
+}
+
+body[data-page="home"] .home-connect-card:nth-child(3)::before {
+  background:linear-gradient(90deg,#ff6670,rgba(255,102,112,0));
+}
+
+@media (hover:hover) and (pointer:fine) {
+  body[data-page="home"] .home-featured-section .product-card:hover,
+  body[data-page="home"] .home-featured-section .product-card:focus-within {
+    transform:translateY(-5px);
+    border-color:rgba(31,47,163,.28);
+    box-shadow:0 24px 42px rgba(16,27,57,.17);
+  }
+
+  body[data-page="home"] .home-connect-card:hover,
+  body[data-page="home"] .home-connect-card:focus-within {
+    transform:translateY(-4px);
+    border-color:rgba(255,255,255,.26);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 42px rgba(1,7,25,.25);
   }
 }

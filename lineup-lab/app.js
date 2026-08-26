@@ -3740,7 +3740,9 @@ function renderFanScoutingReport(result, explanation) {
   const headerText = document.createElement("div");
   const eyebrow = document.createElement("p");
   eyebrow.className = "eyebrow print-only";
-  eyebrow.textContent = "Lineup Lab historical scouting report";
+  // The report explains a user-defined game plan using historical statistics. It does
+  // not claim to reproduce a real NBA depth chart, so lead with the useful concept.
+  eyebrow.textContent = "Lineup Lab game-plan report";
   const heading = document.createElement("h3");
   heading.id = "fanReportHeading";
   heading.textContent = "Full statistical breakdown";
@@ -3900,7 +3902,9 @@ function renderSuccess(result) {
   const validLabel = countIsComplete
     ? `${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule`
     : `at least ${feasibleCount.toLocaleString()} proven valid group${feasibleCount === 1 ? "" : "s"}`;
-  elements.resultSummary.textContent = `Recommended #1 of ${validLabel}. The solver checked ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}; this is a historical statistical match, not a win prediction.`;
+  // Keep the headline plain: this is the highest-scoring fit inside this exact
+  // search, not a prediction of wins or an assertion about a real team's depth chart.
+  elements.resultSummary.textContent = `Recommended #1 of ${validLabel}. The solver checked ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}. This is the highest-scoring fit for the game plan you set—not a win prediction or real-world depth chart.`;
 
   const fragment = document.createDocumentFragment();
   const lineup = document.createElement("div");

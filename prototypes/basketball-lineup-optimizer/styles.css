@@ -3581,6 +3581,10 @@ body[data-experience-mode="simple"] .simple-model-summary {
   }
 
   .player-table thead {
+    /* Keep semantic column headers available to assistive technology while the
+     * mobile card layout supplies visible data labels. Paint containment is
+     * important here: browsers can otherwise count the hidden table cells as
+     * page-width overflow on very narrow screens. */
     position: absolute;
     width: 1px;
     height: 1px;
@@ -3588,6 +3592,8 @@ body[data-experience-mode="simple"] .simple-model-summary {
     margin: -1px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    contain: paint;
     white-space: nowrap;
     border: 0;
   }
