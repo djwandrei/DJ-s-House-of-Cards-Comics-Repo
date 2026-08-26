@@ -357,7 +357,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball Cards",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Dell Curry Redemption",
+    "playerAthlete": "Dell Curry",
     "attributes": [
       "Autograph"
     ],
@@ -905,7 +905,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 858,
     "name": "1997-98 Topps Finest Uncommon Chauncey Billups Rookie SP #286",
     "category": "Basketball",
-    "team": "Detroit Pistons",
+    "team": "Boston Celtics",
     "year": 1997,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -916,7 +916,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/1900-2000/1997-98 Topps Finest Uncommon Chauncey Billups Rookie SP #286 (1).jpg",
       "assets/Ebay Listing Photos/1900-2000/1997-98 Topps Finest Uncommon Chauncey Billups Rookie SP #286 (2).jpg"
     ],
-    "description": "1997-98 Topps Finest Uncommon Chauncey Billups Rookie SP #286\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 1997-98 Topps Finest; Season: 1997-98; Year manufactured: 1997; Player/Athlete: Chauncey Billups; Team: Detroit Pistons; Sport: Basketball; League: NBA; Features: Rookie, Short Print; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "1997-98 Topps Finest Uncommon Chauncey Billups Rookie SP #286\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 1997-98 Topps Finest; Season: 1997-98; Year manufactured: 1997; Player/Athlete: Chauncey Billups; Team: Boston Celtics; Sport: Basketball; League: NBA; Features: Rookie, Short Print; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/1997-98-topps-finest-uncommon-chauncey-billups-rookie-sp-286-2.BuE9UYX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1400,7 +1400,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 984,
     "name": "2012-13 Panini Brilliance Anthony Davis Magic Numbers + Bradley Beal Rookie Set",
     "category": "Basketball",
-    "team": "Los Angeles Lakers|Phoenix Suns",
+    "team": "New Orleans Hornets|Washington Wizards",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -1410,7 +1410,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Brilliance Anthony Davis Magic Numbers + Bradley Beal Rookie Set (1).jpg"
     ],
-    "description": "2012-13 Panini Brilliance Anthony Davis Magic Numbers + Bradley Beal Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Brilliance; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Anthony Davis, Bradley Beal; Team: Los Angeles Lakers, Phoenix Suns; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Brilliance Anthony Davis Magic Numbers + Bradley Beal Rookie Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Brilliance; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Anthony Davis, Bradley Beal; Team: New Orleans Hornets, Washington Wizards; Sport: Basketball; League: NBA; Features: Rookie; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-brilliance-anthony-davis-magic-numbers-plus-bradley-beal-rookie-set-1.BuEjuKF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1436,7 +1436,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 985,
     "name": "2012-13 Panini Brilliance Lebron James Scorers Inc SP Insert #4",
     "category": "Basketball",
-    "team": "Los Angeles Lakers",
+    "team": "Miami Heat",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -1447,7 +1447,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Brilliance Lebron James Scorers Inc SP Insert #4 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Brilliance Lebron James Scorers Inc SP Insert #4 (2).jpg"
     ],
-    "description": "2012-13 Panini Brilliance Lebron James Scorers Inc SP Insert #4\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Score; Season: 2012-13; Year manufactured: 2012; Player/Athlete: LeBron James; Team: Los Angeles Lakers; Sport: Basketball; League: NBA; Features: Short Print, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Brilliance Lebron James Scorers Inc SP Insert #4\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Score; Season: 2012-13; Year manufactured: 2012; Player/Athlete: LeBron James; Team: Miami Heat; Sport: Basketball; League: NBA; Features: Short Print, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-brilliance-lebron-james-scorers-inc-sp-insert-4-1.BuENEan",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1785,7 +1785,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 995,
     "name": "2012-13 Panini Crusade Maurice Harkless Quest Auto #63",
     "category": "Basketball",
-    "team": "Portland Trail Blazers",
+    "team": "Orlando Magic",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -1796,7 +1796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Maurice Harkless Quest Auto #63 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Maurice Harkless Quest Auto #63 (2).jpg"
     ],
-    "description": "2012-13 Panini Crusade Maurice Harkless Quest Auto #63\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Maurice Harkless; Team: Portland Trail Blazers; Sport: Basketball; League: NBA; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Crusade Maurice Harkless Quest Auto #63\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Maurice Harkless; Team: Orlando Magic; Sport: Basketball; League: NBA; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crusade-maurice-harkless-quest-auto-63-1.BuEbGTv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1823,7 +1823,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 996,
     "name": "2012-13 Panini Crusade Mirza Teletovic Quest Auto #22",
     "category": "Basketball",
-    "team": "",
+    "team": "Brooklyn Nets",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -1834,7 +1834,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Mirza Teletovic Quest Auto #22 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Mirza Teletovic Quest Auto #22 (2).jpg"
     ],
-    "description": "2012-13 Panini Crusade Mirza Teletovic Quest Auto #22\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Mirza Teletovic; Sport: Basketball; League: NBA; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Crusade Mirza Teletovic Quest Auto #22\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Mirza Teletovic; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crusade-mirza-teletovic-quest-auto-22-1.BuEmrOJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1860,7 +1860,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 997,
     "name": "2012-13 Panini Crusade Red Arron Afflalo /99 #174",
     "category": "Basketball",
-    "team": "Denver Nuggets",
+    "team": "Orlando Magic",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -1871,7 +1871,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Red Arron Afflalo 99 #174 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Red Arron Afflalo 99 #174 (2).jpg"
     ],
-    "description": "2012-13 Panini Crusade Red Arron Afflalo /99 #174\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade Red; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Arron Afflalo; Team: Denver Nuggets; Sport: Basketball; League: NBA; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Crusade Red Arron Afflalo /99 #174\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade Red; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Arron Afflalo; Team: Orlando Magic; Sport: Basketball; League: NBA; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crusade-red-arron-afflalo-99-174-1.BuGH67t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1898,7 +1898,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 998,
     "name": "2012-13 Panini Crusade Tornike Shengelia Quest Auto #33",
     "category": "Basketball",
-    "team": "",
+    "team": "Brooklyn Nets",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 3.49,
@@ -1909,7 +1909,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Tornike Shengelia Quest Auto #33 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Crusade Tornike Shengelia Quest Auto #33 (2).jpg"
     ],
-    "description": "2012-13 Panini Crusade Tornike Shengelia Quest Auto #33\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Tornike Shengelia; Sport: Basketball; League: NBA; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Crusade Tornike Shengelia Quest Auto #33\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Crusade; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Tornike Shengelia; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-crusade-tornike-shengelia-quest-auto-33-1.BuEy4Gp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -1973,7 +1973,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1001,
     "name": "2012-13 Panini Intrigue Arron Afflalo Auto Jerseys /25 #40",
     "category": "Basketball",
-    "team": "Denver Nuggets",
+    "team": "Orlando Magic",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -1984,7 +1984,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Intrigue Arron Afflalo Auto Jerseys 25 #40 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Intrigue Arron Afflalo Auto Jerseys 25 #40 (2).jpg"
     ],
-    "description": "2012-13 Panini Intrigue Arron Afflalo Auto Jerseys /25 #40\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Intrigue; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Arron Afflalo; Team: Denver Nuggets; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Intrigue Arron Afflalo Auto Jerseys /25 #40\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Intrigue; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Arron Afflalo; Team: Orlando Magic; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-intrigue-arron-afflalo-auto-jerseys-25-40-1.BuGd8UN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2012,7 +2012,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1002,
     "name": "2012-13 Panini Intrigue Charles Oakley Immortalized Auto /299 #53",
     "category": "Basketball",
-    "team": "New York Knicks",
+    "team": "Chicago Bulls",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 21.95,
@@ -2023,7 +2023,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Intrigue Charles Oakley Immortalized Auto 299 #53 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Intrigue Charles Oakley Immortalized Auto 299 #53 (2).jpg"
     ],
-    "description": "2012-13 Panini Intrigue Charles Oakley Immortalized Auto /299 #53\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Intrigue; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Charles Oakley; Team: New York Knicks; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Intrigue Charles Oakley Immortalized Auto /299 #53\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Intrigue; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Charles Oakley; Team: Chicago Bulls; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-intrigue-charles-oakley-immortalized-auto-299-53-1.BuGKnm7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2163,7 +2163,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1007,
     "name": "2012-13 Panini Threads Kris Joseph On-Card Rookie Auto #249",
     "category": "Basketball",
-    "team": "",
+    "team": "Boston Celtics",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 3.49,
@@ -2174,7 +2174,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Threads Kris Joseph On-Card Rookie Auto #249 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Threads Kris Joseph On-Card Rookie Auto #249 (2).jpg"
     ],
-    "description": "2012-13 Panini Threads Kris Joseph On-Card Rookie Auto #249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Threads; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Kris Joseph; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Threads Kris Joseph On-Card Rookie Auto #249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Threads; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Kris Joseph; Team: Boston Celtics; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-threads-kris-joseph-on-card-rookie-auto-249-1.BuGCJyl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2201,7 +2201,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1008,
     "name": "2012-13 Panini Threads Orlando Johnson On-Card Rookie Auto #236",
     "category": "Basketball",
-    "team": "",
+    "team": "Indiana Pacers",
     "year": 2012,
     "condition": "Near mint or better",
     "price": 3.49,
@@ -2212,7 +2212,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Threads Orlando Johnson On-Card Rookie Auto #236 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2012-13 Panini Threads Orlando Johnson On-Card Rookie Auto #236 (2).jpg"
     ],
-    "description": "2012-13 Panini Threads Orlando Johnson On-Card Rookie Auto #236\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Threads; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Orlando Johnson; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2012-13 Panini Threads Orlando Johnson On-Card Rookie Auto #236\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2012-13 Panini Threads; Season: 2012-13; Year manufactured: 2012; Player/Athlete: Orlando Johnson; Team: Indiana Pacers; Sport: Basketball; League: NBA; Features: Autograph, Rookie; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2012-13-panini-threads-orlando-johnson-on-card-rookie-auto-236-1.BuGCB6u",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2429,7 +2429,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1072,
     "name": "2013-14 Panini Preferred Isaiah Thomas Signatures Blue Auto /49 #551",
     "category": "Basketball",
-    "team": "Boston Celtics",
+    "team": "Sacramento Kings",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -2440,7 +2440,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Preferred Isaiah Thomas Signatures Blue Auto 49 #551 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Preferred Isaiah Thomas Signatures Blue Auto 49 #551 (2).jpg"
     ],
-    "description": "2013-14 Panini Preferred Isaiah Thomas Signatures Blue Auto /49 #551\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Preferred; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Isaiah Thomas; Team: Boston Celtics; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Preferred Isaiah Thomas Signatures Blue Auto /49 #551\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Preferred; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Isaiah Thomas; Team: Sacramento Kings; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-preferred-isaiah-thomas-signatures-blue-auto-49-551-1.BuGxMwQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2584,7 +2584,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1077,
     "name": "2013-14 Panini Prizm Jeremy Evans Purple Prizm Die-Cut /49 SSP",
     "category": "Basketball",
-    "team": "",
+    "team": "Utah Jazz",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 3.49,
@@ -2595,7 +2595,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Prizm Jeremy Evans Purple Prizm Die-Cut 49 SSP (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Prizm Jeremy Evans Purple Prizm Die-Cut 49 SSP (2).jpg"
     ],
-    "description": "2013-14 Panini Prizm Jeremy Evans Purple Prizm Die-Cut /49 SSP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Prizm; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Jeremy Evans; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Prizm Jeremy Evans Purple Prizm Die-Cut /49 SSP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Prizm; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Jeremy Evans; Team: Utah Jazz; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-prizm-jeremy-evans-purple-prizm-die-cut-49-ssp-1.BuGuAJe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2623,7 +2623,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1078,
     "name": "2013-14 Panini Prizm Terrence Ross Purple Prizm Die-Cut /49 SSP",
     "category": "Basketball",
-    "team": "Orlando Magic",
+    "team": "Toronto Raptors",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -2634,7 +2634,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Prizm Terrence Ross Purple Prizm Die-Cut 49 SSP (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Prizm Terrence Ross Purple Prizm Die-Cut 49 SSP (2).jpg"
     ],
-    "description": "2013-14 Panini Prizm Terrence Ross Purple Prizm Die-Cut /49 SSP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Prizm; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Terrence Ross; Team: Orlando Magic; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Prizm Terrence Ross Purple Prizm Die-Cut /49 SSP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Prizm; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Terrence Ross; Team: Toronto Raptors; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Purple; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-prizm-terrence-ross-purple-prizm-die-cut-49-ssp-1.BuGu4mG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2662,7 +2662,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1079,
     "name": "2013-14 Panini Timeless Treasures Devin Harris /299 #42",
     "category": "Basketball",
-    "team": "New Jersey Nets",
+    "team": "Dallas Mavericks",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -2673,7 +2673,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Timeless Treasures Devin Harris 299 #42 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Timeless Treasures Devin Harris 299 #42 (2).jpg"
     ],
-    "description": "2013-14 Panini Timeless Treasures Devin Harris /299 #42\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Timeless Treasures; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Devin Harris; Team: New Jersey Nets; Sport: Basketball; League: NBA; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Timeless Treasures Devin Harris /299 #42\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Timeless Treasures; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Devin Harris; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Features: Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-timeless-treasures-devin-harris-299-42-1.BuGROlI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2700,7 +2700,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1080,
     "name": "2013-14 Panini Titanium Michael Kidd-Gilchrist New Wave SP Auto",
     "category": "Basketball",
-    "team": "Charlotte Hornets",
+    "team": "Charlotte Bobcats",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -2711,7 +2711,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Titanium Michael Kidd-Gilchrist New Wave SP Auto (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Titanium Michael Kidd-Gilchrist New Wave SP Auto (2).jpg"
     ],
-    "description": "2013-14 Panini Titanium Michael Kidd-Gilchrist New Wave SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Titanium; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Michael Kidd-Gilchrist; Team: Charlotte Hornets; Sport: Basketball; League: NBA; Parallel/Variety: Wave; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Titanium Michael Kidd-Gilchrist New Wave SP Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Titanium; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Michael Kidd-Gilchrist; Team: Charlotte Bobcats; Sport: Basketball; League: NBA; Parallel/Variety: Wave; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-titanium-michael-kidd-gilchrist-new-wave-sp-auto-1.BuGRbDb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2739,7 +2739,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1081,
     "name": "2013-14 Panini Totally Certified Alan Anderson Present Potential Auto /199",
     "category": "Basketball",
-    "team": "",
+    "team": "Brooklyn Nets",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -2750,7 +2750,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Totally Certified Alan Anderson Present Potential Auto 199 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2013-14 Panini Totally Certified Alan Anderson Present Potential Auto 199 (2).jpg"
     ],
-    "description": "2013-14 Panini Totally Certified Alan Anderson Present Potential Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Totally Certified; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Alan Anderson; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013-14 Panini Totally Certified Alan Anderson Present Potential Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2013-14 Panini Totally Certified; Season: 2013-14; Year manufactured: 2013; Player/Athlete: Alan Anderson; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-14-panini-totally-certified-alan-anderson-present-potential-auto-199-1.BuGYnFp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -2969,7 +2969,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1099,
     "name": "2014-15 Panini Hoops David Lee #257 Silver Refractor /399",
     "category": "Basketball",
-    "team": "New York Knicks",
+    "team": "Golden State Warriors",
     "year": 2014,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -2980,7 +2980,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini Hoops David Lee #257 Silver Refractor 399 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini Hoops David Lee #257 Silver Refractor 399 (2).jpg"
     ],
-    "description": "2014-15 Panini Hoops David Lee #257 Silver Refractor /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: David Lee; Team: New York Knicks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2014-15 Panini Hoops David Lee #257 Silver Refractor /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: David Lee; Team: Golden State Warriors; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-15-panini-hoops-david-lee-257-silver-refractor-399-1.BuGlllR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3045,7 +3045,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1101,
     "name": "2014-15 Panini NBA Hoops Ben Gordon Hot Signatures Refractor Auto #14",
     "category": "Basketball",
-    "team": "Chicago Bulls",
+    "team": "Orlando Magic",
     "year": 2014,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -3056,7 +3056,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Ben Gordon Hot Signatures Refractor Auto #14 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Ben Gordon Hot Signatures Refractor Auto #14 (2).jpg"
     ],
-    "description": "2014-15 Panini NBA Hoops Ben Gordon Hot Signatures Refractor Auto #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini NBA Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Ben Gordon; Team: Chicago Bulls; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2014-15 Panini NBA Hoops Ben Gordon Hot Signatures Refractor Auto #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini NBA Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Ben Gordon; Team: Orlando Magic; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-15-panini-nba-hoops-ben-gordon-hot-signatures-refractor-auto-14-1.BuG0zqG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3083,7 +3083,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1102,
     "name": "2014-15 Panini NBA Hoops Victor Oladipo Artists Proof Silver Prizm /99 #14",
     "category": "Basketball",
-    "team": "Indiana Pacers",
+    "team": "Orlando Magic",
     "year": 2014,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -3094,7 +3094,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Victor Oladipo Artists Proof Silver Prizm 99 #14 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Victor Oladipo Artists Proof Silver Prizm 99 #14 (2).jpg"
     ],
-    "description": "2014-15 Panini NBA Hoops Victor Oladipo Artists Proof Silver Prizm /99 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Prizm; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Victor Oladipo; Team: Indiana Pacers; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2014-15 Panini NBA Hoops Victor Oladipo Artists Proof Silver Prizm /99 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Prizm; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Victor Oladipo; Team: Orlando Magic; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-15-panini-nba-hoops-victor-oladipo-artists-proof-silver-prizm-99-14-1.BuG0XkB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3121,7 +3121,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1103,
     "name": "2014-15 Panini NBA Hoops Victor Oladipo Hot Signatures Refractor Auto #61",
     "category": "Basketball",
-    "team": "Indiana Pacers",
+    "team": "Orlando Magic",
     "year": 2014,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -3132,7 +3132,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Victor Oladipo Hot Signatures Refractor Auto #61 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2014-15 Panini NBA Hoops Victor Oladipo Hot Signatures Refractor Auto #61 (2).jpg"
     ],
-    "description": "2014-15 Panini NBA Hoops Victor Oladipo Hot Signatures Refractor Auto #61\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini NBA Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Victor Oladipo; Team: Indiana Pacers; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2014-15 Panini NBA Hoops Victor Oladipo Hot Signatures Refractor Auto #61\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2014-15 Panini NBA Hoops; Season: 2014-15; Year manufactured: 2014; Player/Athlete: Victor Oladipo; Team: Orlando Magic; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2014-15-panini-nba-hoops-victor-oladipo-hot-signatures-refractor-auto-61-1.BuG1Jj9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3726,7 +3726,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1140,
     "name": "2018-19 Panini Immaculate Collection Malcolm Brogdon Shadowbox Auto /99",
     "category": "Basketball",
-    "team": "Washington Wizards",
+    "team": "Milwaukee Bucks",
     "year": 2018,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -3737,7 +3737,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Immaculate Collection Malcolm Brogdon Shadowbox Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Immaculate Collection Malcolm Brogdon Shadowbox Auto 99 (2).jpg"
     ],
-    "description": "2018-19 Panini Immaculate Collection Malcolm Brogdon Shadowbox Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Immaculate; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Malcolm Brogdon; Team: Washington Wizards; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2018-19 Panini Immaculate Collection Malcolm Brogdon Shadowbox Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Immaculate; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Malcolm Brogdon; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-immaculate-collection-malcolm-brogdon-shadowbox-auto-99-1.BuET9gn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3764,7 +3764,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1141,
     "name": "2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto /99",
     "category": "Basketball",
-    "team": "Washington Wizards",
+    "team": "Milwaukee Bucks",
     "year": 2018,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -3775,7 +3775,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "https://iili.io/CZ0AUfj.md.jpg",
       "https://iili.io/CZ0Ag0x.md.jpg"
     ],
-    "description": "2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Immaculate; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Malcolm Brogdon; Team: Washington Wizards; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2018-19 Panini Immaculate Malcolm Brogdon Modern Marks Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Immaculate; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Malcolm Brogdon; Team: Milwaukee Bucks; Sport: Basketball; League: NBA; Features: Autograph, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-immaculate-malcolm-brogdon-modern-marks-auto-99-1.CZ0AUfj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -3851,12 +3851,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint (1).jpg",
       "assets/Ebay Listing Photos/2011-2018/2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint (2).jpg"
     ],
-    "description": "2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Prizm; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Devonte Graham; Team: Charlotte Hornets; Sport: Basketball; League: NBA; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2018-19 Panini Prizm; Season: 2018-19; Year manufactured: 2018; Player/Athlete: Devonte' Graham; Team: Charlotte Hornets; Sport: Basketball; League: NBA; Features: Rookie, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2018-19-panini-prizm-devonte-and-039-graham-silver-prizm-rookie-288-psa-9-mint-1.BuElcEx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Devonte Graham",
+    "playerAthlete": "Devonte' Graham",
     "attributes": [
       "Rookie",
       "Parallel/Variety"
@@ -3865,7 +3865,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Devonte Graham",
+      "playerAthlete": "Devonte' Graham",
       "excelFields": {
         "Title": "2018-19 Panini Prizm Devonte' Graham Silver Prizm Rookie #288 PSA 9 Mint",
         "C:Features": "Rookie|Parallel/Variety",
@@ -4730,7 +4730,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1175,
     "name": "2020-21 Panini Chronicles Kira Lewis Pink Playbook & Marquee + Rookie Set (x7)",
     "category": "Basketball",
-    "team": "Brooklyn Nets",
+    "team": "New Orleans Pelicans",
     "year": 2020,
     "condition": "Near mint or better",
     "price": 1.95,
@@ -4740,12 +4740,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Chronicles Kira Lewis Pink Playbook & Marquee + Rookie Set (x7) (1).jpg"
     ],
-    "description": "2020-21 Panini Chronicles Kira Lewis Pink Playbook & Marquee + Rookie Set (x7)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Chronicles; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Chronicles Kira; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 7; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2020-21 Panini Chronicles Kira Lewis Pink Playbook & Marquee + Rookie Set (x7)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Chronicles; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Kira Lewis Jr.; Team: New Orleans Pelicans; Sport: Basketball; League: NBA; Features: Rookie, Parallel/Variety; Autographed: No; Cards included: 7; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-chronicles-kira-lewis-pink-playbook-marquee-plus-rookie-set-x7-1.BuEavPR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Chronicles Kira",
+    "playerAthlete": "Kira Lewis Jr.",
     "attributes": [
       "Rookie",
       "Parallel/Variety"
@@ -4754,7 +4754,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Chronicles Kira",
+      "playerAthlete": "Kira Lewis Jr.",
       "excelFields": {
         "Title": "2020-21 Panini Chronicles Kira Lewis Pink Playbook & Marquee + Rookie Set (x7)",
         "C:Features": "Rookie|Parallel/Variety",
@@ -4767,7 +4767,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1176,
     "name": "2020-21 Panini Chronicles Score James Wiseman Purple Rookie SP /49",
     "category": "Basketball",
-    "team": "Indiana Pacers",
+    "team": "Golden State Warriors",
     "year": 2020,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -4778,7 +4778,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Chronicles Score James Wiseman Purple Rookie SP 49 (1).jpg",
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Chronicles Score James Wiseman Purple Rookie SP 49 (2).jpg"
     ],
-    "description": "2020-21 Panini Chronicles Score James Wiseman Purple Rookie SP /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Chronicles; Season: 2020-21; Year manufactured: 2020; Player/Athlete: James Wiseman; Team: Indiana Pacers; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2020-21 Panini Chronicles Score James Wiseman Purple Rookie SP /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Chronicles; Season: 2020-21; Year manufactured: 2020; Player/Athlete: James Wiseman; Team: Golden State Warriors; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2020-21-panini-chronicles-score-james-wiseman-purple-rookie-sp-49-1.BuEGjAN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -5038,7 +5038,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1184,
     "name": "2020-21 Panini Contenders Paul George Cracked Ice Prospect Ticket /23",
     "category": "Basketball",
-    "team": "Philadelphia 76ers",
+    "team": "Los Angeles Clippers",
     "year": 2020,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -5049,7 +5049,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Contenders Paul George Cracked Ice Prospect Ticket 23 (1).jpg",
       "assets/Ebay Listing Photos/2020-21/2020-21 Panini Contenders Paul George Cracked Ice Prospect Ticket 23 (2).jpg"
     ],
-    "description": "2020-21 Panini Contenders Paul George Cracked Ice Prospect Ticket /23\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Paul George; Team: Philadelphia 76ers; Sport: Basketball; League: NBA; Parallel/Variety: Ice; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2020-21 Panini Contenders Paul George Cracked Ice Prospect Ticket /23\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2020-21 Panini Contenders; Season: 2020-21; Year manufactured: 2020; Player/Athlete: Paul George; Team: Los Angeles Clippers; Sport: Basketball; League: NBA; Parallel/Variety: Ice; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BuEgLvI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -5731,7 +5731,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1216,
     "name": "2021-22 Donruss Optic Usman Garuba Pink Prizm Rated Rookie Auto /20",
     "category": "Basketball",
-    "team": "",
+    "team": "Houston Rockets",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -5742,7 +5742,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Donruss Optic Usman Garuba Pink Prizm Rated Rookie Auto 20 (1).jpg",
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Donruss Optic Usman Garuba Pink Prizm Rated Rookie Auto 20 (2).jpg"
     ],
-    "description": "2021-22 Donruss Optic Usman Garuba Pink Prizm Rated Rookie Auto /20\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2021-22 Donruss Optic; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Usman Garuba; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Donruss Optic Usman Garuba Pink Prizm Rated Rookie Auto /20\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2021-22 Donruss Optic; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Usman Garuba; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BuhqSwv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -5771,7 +5771,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1217,
     "name": "2021-22 Donruss Optic Wayne Ellington Signature Series SP Auto #SS-Wel",
     "category": "Basketball",
-    "team": "Brooklyn Nets",
+    "team": "Los Angeles Lakers",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -5781,7 +5781,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Donruss Optic Wayne Ellington Signature Series SP Auto #SS-Wel (1).jpg"
     ],
-    "description": "2021-22 Donruss Optic Wayne Ellington Signature Series SP Auto #SS-Wel\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2021-22 Donruss Optic; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Wayne Ellington; Team: Brooklyn Nets; Sport: Basketball; League: NBA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Donruss Optic Wayne Ellington Signature Series SP Auto #SS-Wel\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2021-22 Donruss Optic; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Wayne Ellington; Team: Los Angeles Lakers; Sport: Basketball; League: NBA; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Buhz7Mx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -7181,12 +7181,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2021-22 Leaf Memories Trinity Jabari Smith Jr Bronze Foil Rookie Auto 140 (1).jpg"
     ],
-    "description": "2021-22 Leaf Memories Trinity Jabari Smith Jr Bronze Foil Rookie Auto /140\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Memories Trinity; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Leaf Memories Trinity Jabari Smith Jr Bronze Foil Rookie Auto /140\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Memories Trinity; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Bronze; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-leaf-memories-trinity-jabari-smith-jr-bronze-foil-rookie-auto-140-1.BAGB6be",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -7197,7 +7197,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2021-22 Leaf Memories Trinity Jabari Smith Jr Bronze Foil Rookie Auto /140",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -7220,12 +7220,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2021-22 Leaf Memories Trinity Jabari Smith Jr Green Foil Rookie Auto 75 (1).jpg"
     ],
-    "description": "2021-22 Leaf Memories Trinity Jabari Smith Jr Green Foil Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Memories Trinity; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Leaf Memories Trinity Jabari Smith Jr Green Foil Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Leaf; Set: 2021-22 Leaf Memories Trinity; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-leaf-memories-trinity-jabari-smith-jr-green-foil-rookie-auto-75-2.BAEvhjp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -7236,7 +7236,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2021-22 Leaf Memories Trinity Jabari Smith Jr Green Foil Rookie Auto /75",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -11245,7 +11245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1359,
     "name": "2021-22 Panini Prizm Joe Wieskamp Penmanship Silver Rookie Auto + Leaf Auto",
     "category": "Basketball",
-    "team": "",
+    "team": "San Antonio Spurs",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -11256,7 +11256,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Joe Wieskamp Penmanship Silver Rookie Auto + Leaf Auto (1).jpg",
       "assets/Ebay Listing Photos/2021-22/Panini/2021-22 Panini Prizm Joe Wieskamp Penmanship Silver Rookie Auto + Leaf Auto (2).jpg"
     ],
-    "description": "2021-22 Panini Prizm Joe Wieskamp Penmanship Silver Rookie Auto + Leaf Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Panini Prizm; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Joe Wieskamp; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Panini Prizm Joe Wieskamp Penmanship Silver Rookie Auto + Leaf Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2021-22 Panini Prizm; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Joe Wieskamp; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-panini-prizm-joe-wieskamp-penmanship-silver-rookie-auto-plus-leaf-auto-1.BujhjdN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -11443,7 +11443,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1364,
     "name": "2021-22 Topps OTE Chrome Izan Almansa Green Refractor /75 Aqua /199 Purple /399",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -11456,7 +11456,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2021-22 Topps OTE Chrome Izan Almansa Green Refractor 75 Aqua 199 Purple 399 (3).jpg",
       "assets/Personal collection/I Almansa/2021-22 Topps OTE Chrome Izan Almansa Green Refractor 75 Aqua 199 Purple 399 (4).jpg"
     ],
-    "description": "2021-22 Topps OTE Chrome Izan Almansa Green Refractor /75 Aqua /199 Purple /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua, Green, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Topps OTE Chrome Izan Almansa Green Refractor /75 Aqua /199 Purple /399\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua, Green, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-topps-ote-chrome-izan-almansa-green-refractor-75-aqua-199-purple-399-2.BAaxrIj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11483,7 +11483,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1365,
     "name": "2021-22 Topps OTE Chrome Jalen Lewis Refractor Auto Set (x3) Gold /50 Green /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -11494,7 +11494,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2021-22 Topps OTE Chrome Jalen Lewis Refractor Auto Set (x3) Gold 50 Green 75 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2021-22 Topps OTE Chrome Jalen Lewis Refractor Auto Set (x3) Gold 50 Green 75 (2).jpg"
     ],
-    "description": "2021-22 Topps OTE Chrome Jalen Lewis Refractor Auto Set (x3) Gold /50 Green /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Topps OTE Chrome Jalen Lewis Refractor Auto Set (x3) Gold /50 Green /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-topps-ote-chrome-jalen-lewis-refractor-auto-set-x3-gold-50-green-75-1.BuesMeS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -11522,7 +11522,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1366,
     "name": "2021-22 Topps OTE Inception Jahzare Jackson Pink Rookie Patch Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -11533,7 +11533,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Topps OTE Inception Jahzare Jackson Pink Rookie Patch Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Topps OTE Inception Jahzare Jackson Pink Rookie Patch Auto 99 (2).jpg"
     ],
-    "description": "2021-22 Topps OTE Inception Jahzare Jackson Pink Rookie Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jahzare Jackson; Sport: Basketball; League: NBA; Parallel/Variety: Pink; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Topps OTE Inception Jahzare Jackson Pink Rookie Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Jahzare Jackson; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Pink; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-topps-ote-inception-jahzare-jackson-pink-rookie-patch-auto-99-1.BuhTJXs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -11563,7 +11563,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1367,
     "name": "2021-22 Topps OTE Inception Lewis Duarte Rookie Patch Auto /199",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2021,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -11574,7 +11574,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Topps OTE Inception Lewis Duarte Rookie Patch Auto 199 (1).jpg",
       "assets/Ebay Listing Photos/2021-22/Other/2021-22 Topps OTE Inception Lewis Duarte Rookie Patch Auto 199 (2).jpg"
     ],
-    "description": "2021-22 Topps OTE Inception Lewis Duarte Rookie Patch Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Lewis Duarte; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2021-22 Topps OTE Inception Lewis Duarte Rookie Patch Auto /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2021-22 Topps; Season: 2021-22; Year manufactured: 2021; Player/Athlete: Lewis Duarte; Team: Overtime Elite; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2021-22-topps-ote-inception-lewis-duarte-rookie-patch-auto-199-1.BuhGxSe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -16067,7 +16067,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1510,
     "name": "2022-23 Donruss Optic Danny Green Blue Disco Prizm /49",
     "category": "Basketball",
-    "team": "San Antonio Spurs",
+    "team": "Cleveland Cavaliers",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -16078,7 +16078,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Donruss Optic Danny Green Blue Disco Prizm 49 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Donruss Optic Danny Green Blue Disco Prizm 49 (2).jpg"
     ],
-    "description": "2022-23 Donruss Optic Danny Green Blue Disco Prizm /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Danny Green; Team: San Antonio Spurs; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Donruss Optic Danny Green Blue Disco Prizm /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Danny Green; Team: Cleveland Cavaliers; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-donruss-optic-danny-green-blue-disco-prizm-49-1.BuN3VSe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -16116,12 +16116,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Donruss Optic Draft Picks Jabari Smith Jr Red Prizm Rated Rookie 149 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Donruss Optic Draft Picks Jabari Smith Jr Red Prizm Rated Rookie 149 (2).jpg"
     ],
-    "description": "2022-23 Donruss Optic Draft Picks Jabari Smith Jr Red Prizm Rated Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Donruss Optic Draft Picks Jabari Smith Jr Red Prizm Rated Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-donruss-optic-draft-picks-jabari-smith-jr-red-prizm-rated-rookie-149-1.BAE8P5J",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -16131,7 +16131,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Donruss Optic Draft Picks Jabari Smith Jr Red Prizm Rated Rookie /149",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -16155,12 +16155,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/Graded/2022-23 Donruss Optic Jabari Smith Jr Holo Fast Break Prizm Rated Rookie SGC 9 (1).jpg",
       "assets/Personal collection/Jabari smith/Graded/2022-23 Donruss Optic Jabari Smith Jr Holo Fast Break Prizm Rated Rookie SGC 9 (2).jpg"
     ],
-    "description": "2022-23 Donruss Optic Jabari Smith Jr Holo Fast Break Prizm Rated Rookie SGC 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Holo; Features: Rookie, Parallel/Variety; Autographed: No; Condition: SGC 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Donruss Optic Jabari Smith Jr Holo Fast Break Prizm Rated Rookie SGC 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Optic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Holo; Features: Rookie, Parallel/Variety; Autographed: No; Condition: SGC 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-donruss-optic-jabari-smith-jr-holo-fast-break-prizm-rated-rookie-sgc-9-1.BAE8NOx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Parallel/Variety"
@@ -16169,7 +16169,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Donruss Optic Jabari Smith Jr Holo Fast Break Prizm Rated Rookie SGC 9",
         "C:Features": "Rookie|Parallel/Variety",
@@ -16181,7 +16181,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1513,
     "name": "2022-23 Donruss Signature Series Christian Koloko SP Rookie Auto SS-CKO",
     "category": "Basketball",
-    "team": "Los Angeles Lakers",
+    "team": "Toronto Raptors",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -16192,7 +16192,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Donruss Signature Series Christian Koloko SP Rookie Auto SS-CKO (1).jpg",
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Donruss Signature Series Christian Koloko SP Rookie Auto SS-CKO (2).jpg"
     ],
-    "description": "2022-23 Donruss Signature Series Christian Koloko SP Rookie Auto SS-CKO\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Signature Series; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Christian Koloko; Team: Los Angeles Lakers; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Donruss Signature Series Christian Koloko SP Rookie Auto SS-CKO\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2022-23 Donruss Signature Series; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Christian Koloko; Team: Toronto Raptors; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Short Print; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-donruss-signature-series-christian-koloko-sp-rookie-auto-ss-cko-1.BuNJpHb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -22811,7 +22811,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1683,
     "name": "2022-23 NBA Hoops Jae Crowder Orange Pulsar SP /25 #169",
     "category": "Basketball",
-    "team": "Sacramento Kings",
+    "team": "Phoenix Suns",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -22822,7 +22822,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 NBA Hoops Jae Crowder Orange Pulsar SP 25 #169 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 NBA Hoops Jae Crowder Orange Pulsar SP 25 #169 (2).jpg"
     ],
-    "description": "2022-23 NBA Hoops Jae Crowder Orange Pulsar SP /25 #169\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jae Crowder; Team: Sacramento Kings; Sport: Basketball; League: NBA; Parallel/Variety: Pulsar, Orange; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 NBA Hoops Jae Crowder Orange Pulsar SP /25 #169\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jae Crowder; Team: Phoenix Suns; Sport: Basketball; League: NBA; Parallel/Variety: Pulsar, Orange; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-nba-hoops-jae-crowder-orange-pulsar-sp-25-169-1.BuNKx2t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -23153,12 +23153,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Draft Jabari Smith Jr Luminance Red Foil Rookie 149 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Draft Jabari Smith Jr Luminance Red Foil Rookie 149 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Draft Jabari Smith Jr Luminance Red Foil Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Draft Jabari Smith Jr Luminance Red Foil Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-jabari-smith-jr-luminance-red-foil-rookie-149-1.BAEgfSe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23168,7 +23168,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Draft Jabari Smith Jr Luminance Red Foil Rookie /149",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23192,12 +23192,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Chronicles Draft Jabari Smith Luminance Purple Rookie 49 PSA 9 (1).jpg",
       "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Chronicles Draft Jabari Smith Luminance Purple Rookie 49 PSA 9 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Draft Jabari Smith Luminance Purple Rookie /49 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Draft Jabari Smith Luminance Purple Rookie /49 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-draft-jabari-smith-luminance-purple-rookie-49-psa-9-1.BAEgaRa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23207,7 +23207,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Draft Jabari Smith Luminance Purple Rookie /49 PSA 9",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23269,12 +23269,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Pinnacle Purple Parallel Rookie 49 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Pinnacle Purple Parallel Rookie 49 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Jabari Smith Jr Pinnacle Purple Parallel Rookie /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Jabari Smith Jr Pinnacle Purple Parallel Rookie /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-jabari-smith-jr-pinnacle-purple-parallel-rookie-49-1.BAEgkx4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23284,7 +23284,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Jabari Smith Jr Pinnacle Purple Parallel Rookie /49",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23307,12 +23307,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Plates & Patches Red Rookie 249 (1).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Jabari Smith Jr Plates & Patches Red Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Jabari Smith Jr Plates & Patches Red Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-jabari-smith-jr-plates-patches-red-rookie-249-2.BAErzes",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23323,7 +23323,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Jabari Smith Jr Plates & Patches Red Rookie /249",
         "C:Features": "Rookie|Serial Numbered|Memorabilia|Parallel/Variety",
@@ -23347,12 +23347,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Prestige Blue Parallel Rookie 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Prestige Blue Parallel Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Jabari Smith Jr Prestige Blue Parallel Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Jabari Smith Jr Prestige Blue Parallel Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-jabari-smith-jr-prestige-blue-parallel-rookie-99-1.BAE4Fyu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23362,7 +23362,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Jabari Smith Jr Prestige Blue Parallel Rookie /99",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23386,12 +23386,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Timeless Treasures Red Rookie 249 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Jabari Smith Jr Timeless Treasures Red Rookie 249 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Jabari Smith Jr Timeless Treasures Red Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Jabari Smith Jr Timeless Treasures Red Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-jabari-smith-jr-timeless-treasures-red-rookie-249-1.BAE4BZx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23401,7 +23401,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Jabari Smith Jr Timeless Treasures Red Rookie /249",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23504,12 +23504,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Select Jabari Smith Jr Blue Prizm Rookie 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Chronicles Select Jabari Smith Jr Blue Prizm Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Chronicles Select Jabari Smith Jr Blue Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Chronicles Select Jabari Smith Jr Blue Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Chronicles; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-chronicles-select-jabari-smith-jr-blue-prizm-rookie-99-1.BAE4W9n",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23519,7 +23519,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Chronicles Select Jabari Smith Jr Blue Prizm Rookie /99",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23543,12 +23543,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Contenders Jabari Smith Jr. Rookie Ticket Patch SP (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Contenders Jabari Smith Jr. Rookie Ticket Patch SP (2).jpg"
     ],
-    "description": "2022-23 Panini Contenders Jabari Smith Jr. Rookie Ticket Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Contenders; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Contenders Jabari Smith Jr. Rookie Ticket Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Contenders; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-contenders-jabari-smith-jr-rookie-ticket-patch-sp-1.BAE4SS9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -23558,7 +23558,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Contenders Jabari Smith Jr. Rookie Ticket Patch SP",
         "C:Features": "Rookie|Short Print|Memorabilia",
@@ -23619,12 +23619,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Crown Royale Jabari Smith Jr Crystal Blue Die-Cut Rookie 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Crown Royale Jabari Smith Jr Crystal Blue Die-Cut Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Crown Royale Jabari Smith Jr Crystal Blue Die-Cut Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Crown Royale; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Die-Cut, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Crown Royale Jabari Smith Jr Crystal Blue Die-Cut Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Crown Royale; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Die-Cut, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-crown-royale-jabari-smith-jr-crystal-blue-die-cut-rookie-99-1.BAE4LPV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23634,7 +23634,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Crown Royale Jabari Smith Jr Crystal Blue Die-Cut Rookie /99",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23658,12 +23658,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Flux Jabari Smith Black Prizm Rookie 49 #201 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Flux Jabari Smith Black Prizm Rookie 49 #201 (2).jpg"
     ],
-    "description": "2022-23 Panini Flux Jabari Smith Black Prizm Rookie /49 #201\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Black; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Flux Jabari Smith Black Prizm Rookie /49 #201\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Black; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-flux-jabari-smith-black-prizm-rookie-49-201-1.BAE6FKN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23673,7 +23673,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Flux Jabari Smith Black Prizm Rookie /49 #201",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23686,7 +23686,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1705,
     "name": "2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm /99",
     "category": "Basketball",
-    "team": "Phoenix Suns",
+    "team": "Charlotte Hornets",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 3.95,
@@ -23697,12 +23697,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kelly Oubre; Team: Phoenix Suns; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pulsar, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kelly Oubre Jr.; Team: Charlotte Hornets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pulsar, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-flux-kelly-oubre-red-pulsar-prizm-99-1.BuNC4Rt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Kelly Oubre",
+    "playerAthlete": "Kelly Oubre Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -23711,7 +23711,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Kelly Oubre",
+      "playerAthlete": "Kelly Oubre Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Flux Kelly Oubre Red Pulsar Prizm /99",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -23762,7 +23762,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1707,
     "name": "2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm /99",
     "category": "Basketball",
-    "team": "Washington Bullets|Los Angeles Clippers",
+    "team": "Houston Rockets",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 3.95,
@@ -23773,12 +23773,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/Listed/2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kevin Porter, Kevin Porter Jr.; Team: Washington Bullets, Los Angeles Clippers; Sport: Basketball; League: NCAA, NBA; Parallel/Variety: Prizm, Pulsar, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kevin Porter Jr.; Team: Houston Rockets; Sport: Basketball; League: NCAA, NBA; Parallel/Variety: Prizm, Pulsar, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-flux-kevin-porter-jr-red-pulsar-prizm-99-1.BuNx1iG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA|NBA",
     "sport": "Basketball",
-    "playerAthlete": "Kevin Porter|Kevin Porter Jr.",
+    "playerAthlete": "Kevin Porter Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -23787,7 +23787,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Kevin Porter|Kevin Porter Jr.",
+      "playerAthlete": "Kevin Porter Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Flux Kevin Porter Jr. Red Pulsar Prizm /99",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -23811,12 +23811,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Hoops Premium Stock Jabari Smith Jr Red Prizm Rookie 149 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Hoops Premium Stock Jabari Smith Jr Red Prizm Rookie 149 (2).jpg"
     ],
-    "description": "2022-23 Panini Hoops Premium Stock Jabari Smith Jr Red Prizm Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Hoops Premium Stock Jabari Smith Jr Red Prizm Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-hoops-premium-stock-jabari-smith-jr-red-prizm-rookie-149-1.BAE6lDb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -23826,7 +23826,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Hoops Premium Stock Jabari Smith Jr Red Prizm Rookie /149",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -23965,12 +23965,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini NBA Hoops Jabari Smith Jr. Rise N Shine Rookie Patch SP (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini NBA Hoops Jabari Smith Jr. Rise N Shine Rookie Patch SP (2).jpg"
     ],
-    "description": "2022-23 Panini NBA Hoops Jabari Smith Jr. Rise N Shine Rookie Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini NBA Hoops Jabari Smith Jr. Rise N Shine Rookie Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-nba-hoops-jabari-smith-jr-rise-n-shine-rookie-patch-sp-1.BAEPFXj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -23980,7 +23980,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini NBA Hoops Jabari Smith Jr. Rise N Shine Rookie Patch SP",
         "C:Features": "Rookie|Short Print|Memorabilia",
@@ -24004,12 +24004,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini NBA Hoops Jabari Smith Jr Silver Foil Rookie 199 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini NBA Hoops Jabari Smith Jr Silver Foil Rookie 199 (2).jpg"
     ],
-    "description": "2022-23 Panini NBA Hoops Jabari Smith Jr. Silver Foil Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Silver; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini NBA Hoops Jabari Smith Jr. Silver Foil Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini NBA Hoops; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Silver; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-nba-hoops-jabari-smith-jr-silver-foil-rookie-199-1.BAE6rgI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24019,7 +24019,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini NBA Hoops Jabari Smith Jr. Silver Foil Rookie /199",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24043,12 +24043,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Obsidian Jabari Smith Jr. Equinox Electric Etch Orange Rookie 25 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Obsidian Jabari Smith Jr. Equinox Electric Etch Orange Rookie 25 (2).jpg"
     ],
-    "description": "2022-23 Panini Obsidian Jabari Smith Jr. Equinox Electric Etch Orange Rookie /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Obsidian; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Obsidian Jabari Smith Jr. Equinox Electric Etch Orange Rookie /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Obsidian; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-obsidian-jabari-smith-jr-equinox-electric-etch-orange-rookie-25-1.BAEiEFV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24058,7 +24058,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Obsidian Jabari Smith Jr. Equinox Electric Etch Orange Rookie /25",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24082,12 +24082,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Obsidian Jabari Smith Orbital Insert Rookie 99 #20 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Obsidian Jabari Smith Orbital Insert Rookie 99 #20 (2).jpg"
     ],
-    "description": "2022-23 Panini Obsidian Jabari Smith Orbital Insert Rookie /99 #20\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Obsidian; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Obsidian Jabari Smith Orbital Insert Rookie /99 #20\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Obsidian; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-obsidian-jabari-smith-orbital-insert-rookie-99-20-1.BAELKLG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24097,7 +24097,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Obsidian Jabari Smith Orbital Insert Rookie /99 #20",
         "C:Features": "Rookie|Serial Numbered|Insert",
@@ -24121,12 +24121,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Origins Jabari Smith Jr. Jumbo Rookie Patch SP (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Origins Jabari Smith Jr. Jumbo Rookie Patch SP (2).jpg"
     ],
-    "description": "2022-23 Panini Origins Jabari Smith Jr. Jumbo Rookie Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Origins; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Origins Jabari Smith Jr. Jumbo Rookie Patch SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Origins; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Short Print, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-origins-jabari-smith-jr-jumbo-rookie-patch-sp-1.BAEL9dN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -24136,7 +24136,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Origins Jabari Smith Jr. Jumbo Rookie Patch SP",
         "C:Features": "Rookie|Short Print|Memorabilia",
@@ -24199,12 +24199,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Photogenic Jabari Smith Rookie 999 #171 (2).jpg"
     ],
-    "description": "2022-23 Panini Photogenic Jabari Smith Rookie /999 #171\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Photogenic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Photogenic Jabari Smith Rookie /999 #171\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Photogenic; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-photogenic-jabari-smith-rookie-999-171-1.BAELMTF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered"
@@ -24213,7 +24213,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Photogenic Jabari Smith Rookie /999 #171",
         "C:Features": "Rookie|Serial Numbered",
@@ -24276,12 +24276,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Jabari Smith Jr Pink Circles Prizm Rookie 20 #50 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Jabari Smith Jr Pink Circles Prizm Rookie 20 #50 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr Pink Circles Prizm Rookie /20 #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr Pink Circles Prizm Rookie /20 #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-jabari-smith-jr-pink-circles-prizm-rookie-20-50-1.BAEQhN9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24291,7 +24291,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Jabari Smith Jr Pink Circles Prizm Rookie /20 #50",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24314,12 +24314,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Prizm Draft Jabari Smith Jr. Brilliance Blue Shimmer RC 19 BGS 9 (1).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr. Brilliance Blue Shimmer RC /19 BGS 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Shimmer, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: BGS 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr. Brilliance Blue Shimmer RC /19 BGS 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Shimmer, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: BGS 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-jabari-smith-jr-brilliance-blue-shimmer-rc-19-bgs-9-2.BAEZfUl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24329,7 +24329,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Jabari Smith Jr. Brilliance Blue Shimmer RC /19 BGS 9",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24352,12 +24352,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Prizm Draft Jabari Smith Jr. Green Pulsar Rookie Auto 25 PSA 9 (1).jpg",
       "assets/Personal collection/Jabari smith/Graded/2022-23 Panini Prizm Draft Jabari Smith Jr. Green Pulsar Rookie Auto 25 PSA 9 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr. Green Pulsar Rookie Auto /25 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Pulsar, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Jabari Smith Jr. Green Pulsar Rookie Auto /25 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Pulsar, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-jabari-smith-jr-green-pulsar-rookie-auto-25-psa-9-1.BAEZYJV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -24368,7 +24368,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Jabari Smith Jr. Green Pulsar Rookie Auto /25 PSA 9",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -24391,12 +24391,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Pick Jabari Smith Jr Purple Ice Variation Rookie 149 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Pick Jabari Smith Jr Purple Ice Variation Rookie 149 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Pick Jabari Smith Jr Purple Ice Variation Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Pick Jabari Smith Jr Purple Ice Variation Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-pick-jabari-smith-jr-purple-ice-variation-rookie-149-1.BAEZZXe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24406,7 +24406,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Pick Jabari Smith Jr Purple Ice Variation Rookie /149",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24509,12 +24509,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr Red Choice Prizm Rookie 88 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr Red Choice Prizm Rookie 88 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Red Choice Prizm Rookie /88\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Red Choice Prizm Rookie /88\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-picks-jabari-smith-jr-red-choice-prizm-rookie-88-1.BAEtIpI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24524,7 +24524,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Red Choice Prizm Rookie /88",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24548,12 +24548,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr Silver Prizm Rookie #50 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr Silver Prizm Rookie #50 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Silver Prizm Rookie #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Silver Prizm Rookie #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Silver; Features: Rookie, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-picks-jabari-smith-jr-silver-prizm-rookie-50-1.BAEtRQn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Parallel/Variety"
@@ -24562,7 +24562,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr Silver Prizm Rookie #50",
         "C:Features": "Rookie|Parallel/Variety",
@@ -24586,12 +24586,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr. Red Prizm Rookie 299 #50 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Prizm Draft Picks Jabari Smith Jr. Red Prizm Rookie 299 #50 (2).jpg"
     ],
-    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr. Red Prizm Rookie /299 #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr. Red Prizm Rookie /299 #50\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm Draft Picks; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-prizm-draft-picks-jabari-smith-jr-red-prizm-rookie-299-50-1.BAEthCu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24601,7 +24601,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Prizm Draft Picks Jabari Smith Jr. Red Prizm Rookie /299 #50",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24911,12 +24911,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr Bronze Holo Rookie 299 #215 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr Bronze Holo Rookie 299 #215 (2).jpg"
     ],
-    "description": "2022-23 Panini Recon Jabari Smith Jr Bronze Holo Rookie /299 #215\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Recon; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Bronze; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Recon Jabari Smith Jr Bronze Holo Rookie /299 #215\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Recon; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Bronze; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-recon-jabari-smith-jr-bronze-holo-rookie-299-215-1.BAEts3v",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24926,7 +24926,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Recon Jabari Smith Jr Bronze Holo Rookie /299 #215",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24950,12 +24950,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr Red Holo Rookie 199 #215 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr Red Holo Rookie 199 #215 (2).jpg"
     ],
-    "description": "2022-23 Panini Recon Jabari Smith Jr Red Holo Rookie /199 #215\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Recon; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Recon Jabari Smith Jr Red Holo Rookie /199 #215\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Recon; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-recon-jabari-smith-jr-red-holo-rookie-199-215-1.BAEDdFf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -24965,7 +24965,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Recon Jabari Smith Jr Red Holo Rookie /199 #215",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -24989,12 +24989,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr. Purple Holo Prizm Rookie 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Recon Jabari Smith Jr. Purple Holo Prizm Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Recon Jabari Smith Jr. Purple Holo Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Holo, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Recon Jabari Smith Jr. Purple Holo Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Prizm; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Holo, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-recon-jabari-smith-jr-purple-holo-prizm-rookie-99-1.BAEDhNI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -25004,7 +25004,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Recon Jabari Smith Jr. Purple Holo Prizm Rookie /99",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -25149,12 +25149,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Blue Prizm Die-Cut Rookie 249 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Blue Prizm Die-Cut Rookie 249 (2).jpg"
     ],
-    "description": "2022-23 Panini Select Jabari Smith Jr. Blue Prizm Die-Cut Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Select Jabari Smith Jr. Blue Prizm Die-Cut Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Die-Cut, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-jr-blue-prizm-die-cut-rookie-249-1.BAEba5l",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -25164,7 +25164,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Select Jabari Smith Jr. Blue Prizm Die-Cut Rookie /249",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -25190,12 +25190,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Concourse White Prizm Rookie 149 (3).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Concourse White Prizm Rookie 149 (4).jpg"
     ],
-    "description": "2022-23 Panini Select Jabari Smith Jr. Concourse White Prizm Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Select Jabari Smith Jr. Concourse White Prizm Rookie /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-jr-concourse-white-prizm-rookie-149-1.BAEbUqg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -25205,7 +25205,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Select Jabari Smith Jr. Concourse White Prizm Rookie /149",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -25229,12 +25229,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Draft Selections Prizm Patch Rookie SP (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Draft Selections Prizm Patch Rookie SP (2).jpg"
     ],
-    "description": "2022-23 Panini Select Jabari Smith Jr. Draft Selections Prizm Patch Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Select Jabari Smith Jr. Draft Selections Prizm Patch Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-jr-draft-selections-prizm-patch-rookie-sp-1.BAEmxYx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -25245,7 +25245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Select Jabari Smith Jr. Draft Selections Prizm Patch Rookie SP",
         "C:Features": "Rookie|Short Print|Memorabilia|Parallel/Variety",
@@ -25269,12 +25269,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Light Blue Disco Prizm Rookie 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Light Blue Disco Prizm Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Panini Select Jabari Smith Jr. Light Blue Disco Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Select Jabari Smith Jr. Light Blue Disco Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-jr-light-blue-disco-prizm-rookie-99-1.BAEmMTN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -25284,7 +25284,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Select Jabari Smith Jr. Light Blue Disco Prizm Rookie /99",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -25308,12 +25308,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Sparks Prizm Patch Rookie SP (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Panini Select Jabari Smith Jr. Sparks Prizm Patch Rookie SP (2).jpg"
     ],
-    "description": "2022-23 Panini Select Jabari Smith Jr. Sparks Prizm Patch Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Panini Select Jabari Smith Jr. Sparks Prizm Patch Rookie SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2022-23 Panini Select; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm; Features: Rookie, Short Print, Memorabilia, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-panini-select-jabari-smith-jr-sparks-prizm-patch-rookie-sp-1.BAEmUjS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -25324,7 +25324,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Panini Select Jabari Smith Jr. Sparks Prizm Patch Rookie SP",
         "C:Features": "Rookie|Short Print|Memorabilia|Parallel/Variety",
@@ -25925,12 +25925,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/MCDONALDS/2022-23 Topps McDonald's Chrome Dereck Lively Wave Refractor Rookie 299 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/MCDONALDS/2022-23 Topps McDonald's Chrome Dereck Lively Wave Refractor Rookie 299 (2).jpg"
     ],
-    "description": "2022-23 Topps McDonald's Chrome Dereck Lively Wave Refractor Rookie /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dereck Lively; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Wave; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps McDonald's Chrome Dereck Lively Wave Refractor Rookie /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Dereck Lively II; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Wave; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-mcdonald-and-039s-chrome-dereck-lively-wave-refractor-rookie-299-1.BuNk4YG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Dereck Lively",
+    "playerAthlete": "Dereck Lively II",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -25940,7 +25940,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Dereck Lively",
+      "playerAthlete": "Dereck Lively II",
       "excelFields": {
         "Title": "2022-23 Topps McDonald's Chrome Dereck Lively Wave Refractor Rookie /299",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -26382,7 +26382,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1776,
     "name": "2022-23 Topps McDonald's Chrome Whole Squad Pink /150 Aqua /199 Purple /299",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -26393,7 +26393,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/MCDONALDS/2022-23 Topps McDonald's Chrome Whole Squad Pink 150 Aqua 199 Purple 299 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/MCDONALDS/2022-23 Topps McDonald's Chrome Whole Squad Pink 150 Aqua 199 Purple 299 (2).jpg"
     ],
-    "description": "2022-23 Topps McDonald's Chrome Whole Squad Pink /150 Aqua /199 Purple /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Sport: Basketball; League: NCAA; Parallel/Variety: Chrome, Aqua, Purple, Pink; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps McDonald's Chrome Whole Squad Pink /150 Aqua /199 Purple /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Sport: Basketball; Team: Overtime Elite; League: NCAA; Parallel/Variety: Chrome, Aqua, Purple, Pink; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-mcdonald-and-039s-chrome-whole-squad-pink-150-aqua-199-purple-299-1.BuNMKwg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26497,7 +26497,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1779,
     "name": "2022-23 Topps OTE Chrome Bryce Griggs Gold Refractor Rookie Auto /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -26508,7 +26508,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Bryce Griggs Gold Refractor Rookie Auto 50 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Bryce Griggs Gold Refractor Rookie Auto 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryce Griggs Gold Refractor Rookie Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryce Griggs; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryce Griggs Gold Refractor Rookie Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryce Griggs; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryce-griggs-gold-refractor-rookie-auto-50-1.BuORu3u",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -26537,7 +26537,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1780,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -26556,7 +26556,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 (9).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 (10).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-aqua-refractor-rookie-199-1.BARcqoG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26585,7 +26585,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1781,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #38",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -26599,7 +26599,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #38 (4).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #38 (5).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-aqua-refractor-rookie-199-38-2.BAR7GHX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26628,7 +26628,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1782,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #67",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -26641,7 +26641,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #67 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #67 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-aqua-refractor-rookie-199-67-1.BARYEqQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26670,7 +26670,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1783,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #81",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -26689,7 +26689,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #81 (9).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie 199 #81 (10).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Aqua Refractor Rookie /199 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-aqua-refractor-rookie-199-81-1.BARYNIa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26718,7 +26718,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1784,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #61",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -26729,7 +26729,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #61 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #61 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #61\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #61\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-blue-refractor-rookie-99-61-1.BARllXs",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26757,7 +26757,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1785,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #67",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -26768,7 +26768,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #67 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #67 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-blue-refractor-rookie-99-67-1.BARlOhu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26796,7 +26796,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1786,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #81",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -26807,7 +26807,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #81 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie 99 #81 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Blue Refractor Rookie /99 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-blue-refractor-rookie-99-81-1.BARliTF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26835,7 +26835,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1787,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -26846,7 +26846,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie 50 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-gold-refractor-rookie-50-1.BAR0TZu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26874,7 +26874,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1788,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50 #81",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -26885,7 +26885,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie 50 #81 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie 50 #81 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Gold Refractor Rookie /50 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Gold; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-gold-refractor-rookie-50-81-1.BAR0Ca2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26913,7 +26913,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1789,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -26926,7 +26926,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-green-wave-refractor-rookie-75-1.BARE9Xn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26955,7 +26955,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1790,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #38",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -26966,7 +26966,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #38 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #38 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-green-wave-refractor-rookie-75-38-1.BAR0vwX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -26994,7 +26994,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1791,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #67",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -27005,7 +27005,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #67 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #67 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #67\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-green-wave-refractor-rookie-75-67-1.BAR0pPj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27033,7 +27033,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1792,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #81",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -27044,7 +27044,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #81 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie 75 #81 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Green Wave Refractor Rookie /75 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-green-wave-refractor-rookie-75-81-1.BAR1ANt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27072,7 +27072,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1793,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Orange Ball City Insert Refractor /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 29.95,
@@ -27083,7 +27083,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Orange Ball City Insert Refractor 25 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Orange Ball City Insert Refractor 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Orange Ball City Insert Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Orange Ball City Insert Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-orange-ball-city-insert-refractor-25-1.BAREtEb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27111,7 +27111,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1794,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Pink Refractor Rookie /75 #81",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -27122,7 +27122,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Pink Refractor Rookie 75 #81 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Pink Refractor Rookie 75 #81 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Pink Refractor Rookie /75 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Pink Refractor Rookie /75 #81\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-pink-refractor-rookie-75-81-1.BARG2ZF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27150,7 +27150,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1795,
     "name": "2022-23 Topps OTE Chrome De'Vontes Cobbs Green Auto 75 +Auto + Refractors (x18)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -27160,7 +27160,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome De'Vontes Cobbs Green Auto 75 +Auto + Refractors (x18).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome De'Vontes Cobbs Green Auto 75 +Auto + Refractors (x18)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: De'vontes Cobbs; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Parallel/Variety; Autographed: Yes; Cards included: 18; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome De'Vontes Cobbs Green Auto 75 +Auto + Refractors (x18)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: De'vontes Cobbs; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Parallel/Variety; Autographed: Yes; Cards included: 18; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-de-and-039vontes-cobbs-green-auto-75-plus-auto-plus-refractors-x18.BuOcogt",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27187,7 +27187,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1796,
     "name": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #30",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -27198,7 +27198,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie 99 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #30\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #30\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-eli-ellis-blue-refractor-rookie-99-1.BAauOZb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27226,7 +27226,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1797,
     "name": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #63",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -27236,7 +27236,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie 99 (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #63\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Eli Ellis Blue Refractor Rookie /99 #63\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-eli-ellis-blue-refractor-rookie-99-3.BAaAMxa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27264,7 +27264,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1798,
     "name": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -27275,7 +27275,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie 150 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie 150 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-eli-ellis-pink-refractor-rookie-150-1.BAYmZEQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27303,7 +27303,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1799,
     "name": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150 #72",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -27313,7 +27313,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie 150 #72 (1).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150 #72\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Eli Ellis Pink Refractor Rookie /150 #72\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-eli-ellis-pink-refractor-rookie-150-72-2.BAYmW7t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27341,7 +27341,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1800,
     "name": "2022-23 Topps OTE Chrome Eli Ellis Refractor Rookie Auto",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -27352,7 +27352,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Refractor Rookie Auto (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Chrome Eli Ellis Refractor Rookie Auto (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Eli Ellis Refractor Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Eli Ellis Refractor Rookie Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-eli-ellis-refractor-rookie-auto-1.BAYmhpn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27380,7 +27380,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1801,
     "name": "2022-23 Topps OTE Chrome Izan Almansa Rookie Aqua Refractor Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -27391,7 +27391,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Chrome Izan Almansa Rookie Aqua Refractor Auto 99 (1).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Chrome Izan Almansa Rookie Aqua Refractor Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Izan Almansa Rookie Aqua Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Izan Almansa Rookie Aqua Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-izan-almansa-rookie-aqua-refractor-auto-99-1.BAaIPUP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27503,7 +27503,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1804,
     "name": "2022-23 Topps OTE Chrome Jahzare Jackson 1/1 Printing Plate + Green Auto /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 27.95,
@@ -27514,7 +27514,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jahzare Jackson 11 Printing Plate + Green Auto 75 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jahzare Jackson 11 Printing Plate + Green Auto 75 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jahzare Jackson 1/1 Printing Plate + Green Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jahzare Jackson 1/1 Printing Plate + Green Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Serial Numbered, One of One, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BuOXO4j",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27543,7 +27543,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1805,
     "name": "2022-23 Topps OTE Chrome Jahzare Jackson Autos + Aqua /99 + Refractors (x19)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -27555,7 +27555,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jahzare Jackson Autos + Aqua 99 + Refractors (x19) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jahzare Jackson Autos + Aqua 99 + Refractors (x19) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jahzare Jackson Autos + Aqua /99 + Refractors (x19)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 19; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jahzare Jackson Autos + Aqua /99 + Refractors (x19)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 19; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-jahzare-jackson-autos-plus-aqua-99-plus-refractors-x19-1.BuOjrqg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27583,7 +27583,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1806,
     "name": "2022-23 Topps OTE Chrome Jalen Lewis Auto Gold /50 Green /75 Refractor Set (x39)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 27.95,
@@ -27595,7 +27595,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Auto Gold 50 Green 75 Refractor Set (x39) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Auto Gold 50 Green 75 Refractor Set (x39) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jalen Lewis Auto Gold /50 Green /75 Refractor Set (x39)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 39; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jalen Lewis Auto Gold /50 Green /75 Refractor Set (x39)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 39; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-jalen-lewis-auto-gold-50-green-75-refractor-set-x39-1.BuOeTvf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27623,7 +27623,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1807,
     "name": "2022-23 Topps OTE Chrome Jalen Lewis Black Refractor Rookie /10 + Orange /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -27634,7 +27634,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Black Refractor Rookie 10 + Orange 25 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Black Refractor Rookie 10 + Orange 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jalen Lewis Black Refractor Rookie /10 + Orange /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange, Black; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jalen Lewis Black Refractor Rookie /10 + Orange /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange, Black; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-jalen-lewis-black-refractor-rookie-10-plus-orange-25-1.BuO8MyG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27662,7 +27662,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1808,
     "name": "2022-23 Topps OTE Chrome Jalen Lewis Green Refractor Auto /75 + 3 Aqua Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -27673,7 +27673,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Green Refractor Auto 75 + 3 Aqua Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jalen Lewis Green Refractor Auto 75 + 3 Aqua Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jalen Lewis Green Refractor Auto /75 + 3 Aqua Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jalen Lewis Green Refractor Auto /75 + 3 Aqua Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-jalen-lewis-green-refractor-auto-75-plus-3-aqua-auto-99-1.BuOrCNa",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -27701,7 +27701,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1809,
     "name": "2022-23 Topps OTE Chrome Jayden Williams Auto /75 Green /75 +Refractor Set (x22)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.94,
@@ -27713,7 +27713,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jayden Williams Auto 75 Green 75 +Refractor Set (x22) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jayden Williams Auto 75 Green 75 +Refractor Set (x22) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jayden Williams Auto /75 Green /75 +Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jayden Williams; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jayden Williams Auto /75 Green /75 +Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jayden Williams; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-jayden-williams-auto-75-green-75-plus-refractor-set-x22-1.BuO688P",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27741,7 +27741,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1810,
     "name": "2022-23 Topps OTE Chrome Jayden Williams Gold Auto /50 + Superfly Case Hit /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 12.95,
@@ -27752,7 +27752,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jayden Williams Gold Auto 50 + Superfly Case Hit SP25 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Jayden Williams Gold Auto 50 + Superfly Case Hit SP25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Jayden Williams Gold Auto /50 + Superfly Case Hit /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jayden Williams; Sport: Basketball; League: NBA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Jayden Williams Gold Auto /50 + Superfly Case Hit /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jayden Williams; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BuOspN1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27857,7 +27857,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1813,
     "name": "2022-23 Topps OTE Chrome Johned Walker Gold Refractor Rookie Auto /50 + Gold /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -27868,7 +27868,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Johned Walker Gold Refractor Rookie Auto 50 + Gold 50 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Johned Walker Gold Refractor Rookie Auto 50 + Gold 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Johned Walker Gold Refractor Rookie Auto /50 + Gold /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Johned Walker; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Johned Walker Gold Refractor Rookie Auto /50 + Gold /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Johned Walker; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-johned-walker-gold-refractor-rookie-auto-50-plus-gold-50-1.Bue9IsI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -27897,7 +27897,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1814,
     "name": "2022-23 Topps OTE Chrome Johned Walker Refractor Auto + Base Set (x12)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -27907,7 +27907,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Johned Walker Refractor Auto + Base Set (x12).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Johned Walker Refractor Auto + Base Set (x12)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Johned Walker; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Cards included: 12; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Johned Walker Refractor Auto + Base Set (x12)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Johned Walker; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Parallel/Variety; Autographed: Yes; Cards included: 12; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-johned-walker-refractor-auto-plus-base-set-x12.Buedj7n",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28011,7 +28011,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1817,
     "name": "2022-23 Topps OTE Chrome Kok Yat Green Auto /75 Aqua Auto /99 + Refractors (x23)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -28023,7 +28023,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Kok Yat Green Auto 75 Aqua Auto 99 + Refractors (x23) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Kok Yat Green Auto 75 Aqua Auto 99 + Refractors (x23) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Kok Yat Green Auto /75 Aqua Auto /99 + Refractors (x23)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kok Yat; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 23; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Kok Yat Green Auto /75 Aqua Auto /99 + Refractors (x23)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kok Yat; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 23; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-kok-yat-green-auto-75-aqua-auto-99-plus-refractors-x23-1.BueKzyF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28051,7 +28051,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1818,
     "name": "2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue /50 Green /75 + Set (x28)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -28063,7 +28063,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "https://iili.io/CZ0RIm7.md.jpg",
       "https://iili.io/CZ0RAXe.md.jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue /50 Green /75 + Set (x28)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Malik Bowman; Sport: Basketball; League: NBA; Parallel/Variety: Blue, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Malik Bowman Auto (x2) + Blue /50 Green /75 + Set (x28)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Malik Bowman; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Blue, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-malik-bowman-auto-x2-plus-blue-50-green-75-11-insert-2.CZ0Rx72",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28499,7 +28499,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1829,
     "name": "2022-23 Topps OTE Chrome Nathan Missia-Dio Gold /50 Pink /150 + Finest Auto Set",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -28510,7 +28510,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Nathan Missia-Dio Gold 50 Pink 150 + Finest Auto Set (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Nathan Missia-Dio Gold 50 Pink 150 + Finest Auto Set (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Nathan Missia-Dio Gold /50 Pink /150 + Finest Auto Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Nathan Missia-Dio; Sport: Basketball; League: NBA; Parallel/Variety: Gold, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Nathan Missia-Dio Gold /50 Pink /150 + Finest Auto Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Nathan Missia-Dio; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Gold, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-nathan-missia-dio-gold-50-pink-150-plus-finest-auto-set-1.BueCNWu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28538,7 +28538,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1830,
     "name": "2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto /50 + Gold /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -28549,12 +28549,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto 50 + Gold 50 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto 50 + Gold 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto /50 + Gold /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ralph Martino; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto /50 + Gold /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ralph Martino Jr.; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Gold; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-ralph-martino-gold-refractor-rookie-auto-50-plus-gold-50-1.BuenA1j",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Ralph Martino",
+    "playerAthlete": "Ralph Martino Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -28565,7 +28565,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Ralph Martino",
+      "playerAthlete": "Ralph Martino Jr.",
       "excelFields": {
         "Title": "2022-23 Topps OTE Chrome Ralph Martino Gold Refractor Rookie Auto /50 + Gold /50",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -28578,7 +28578,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1831,
     "name": "2022-23 Topps OTE Chrome Ralph Martino Jr Green Auto 75 + Auto + Refractor Set",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -28588,12 +28588,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ralph Martino Jr Green Auto 75 + Auto + Refractor Set.jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Ralph Martino Jr Green Auto 75 + Auto + Refractor Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ralph Martino; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Ralph Martino Jr Green Auto 75 + Auto + Refractor Set\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ralph Martino Jr.; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-ralph-martino-jr-green-auto-75-plus-auto-plus-refractor-set.BueoHvV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Ralph Martino",
+    "playerAthlete": "Ralph Martino Jr.",
     "attributes": [
       "Autograph",
       "Parallel/Variety"
@@ -28602,7 +28602,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Ralph Martino",
+      "playerAthlete": "Ralph Martino Jr.",
       "excelFields": {
         "Title": "2022-23 Topps OTE Chrome Ralph Martino Jr Green Auto 75 + Auto + Refractor Set",
         "C:Features": "Autograph|Parallel/Variety",
@@ -28655,7 +28655,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1833,
     "name": "2022-23 Topps OTE Chrome Ryan Bewley 1/1 Printing Plate + Orange Refractor /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -28666,7 +28666,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ryan Bewley 11 Printing Plate + Orange Refractor 25 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ryan Bewley 11 Printing Plate + Orange Refractor 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Ryan Bewley 1/1 Printing Plate + Orange Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Bewley; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, One of One, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Ryan Bewley 1/1 Printing Plate + Orange Refractor /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Bewley; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, One of One, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bueoscv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28694,7 +28694,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1834,
     "name": "2022-23 Topps OTE Chrome Ryan Bewley Auto Gold /50 Aqua /199 Refractor Set (x22)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -28706,7 +28706,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ryan Bewley Auto Gold 50 Aqua 199 Refractor Set (x22) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Ryan Bewley Auto Gold 50 Aqua 199 Refractor Set (x22) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Ryan Bewley Auto Gold /50 Aqua /199 Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Bewley; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Ryan Bewley Auto Gold /50 Aqua /199 Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Ryan Bewley; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-ryan-bewley-auto-gold-50-aqua-199-refractor-set-x22-1.BuezKrJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28938,7 +28938,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1840,
     "name": "2022-23 Topps OTE Chrome TJ Clark Auto + Green /75 Blue /99 Refractor Set (x27)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -28950,7 +28950,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome TJ Clark Auto + Green 75 Blue 99 Refractor Set (x27) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome TJ Clark Auto + Green 75 Blue 99 Refractor Set (x27) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome TJ Clark Auto + Green /75 Blue /99 Refractor Set (x27)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tj Clark; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 27; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome TJ Clark Auto + Green /75 Blue /99 Refractor Set (x27)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tj Clark; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 27; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-tj-clark-auto-plus-green-75-blue-99-refractor-set-x27-1.BueAx8G",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -28978,7 +28978,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1841,
     "name": "2022-23 Topps OTE Chrome Trey Parker Blue /99 + Aqua /199 + Refractor Set (x25)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -28988,7 +28988,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Trey Parker Blue 99 + Aqua 199 + Refractor Set (x25).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Trey Parker Blue /99 + Aqua /199 + Refractor Set (x25)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Trey Parker; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 25; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Trey Parker Blue /99 + Aqua /199 + Refractor Set (x25)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Trey Parker; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 25; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-trey-parker-blue-99-plus-aqua-199-plus-refractor-set-x25.Bueaavn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -29015,7 +29015,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1842,
     "name": "2022-23 Topps OTE Chrome Tudor Somacescu Auto Pink /150 Aqua /199 + Refractors",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -29027,7 +29027,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Tudor Somacescu Auto Pink 150 Aqua 199 + Refractors (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Tudor Somacescu Auto Pink 150 Aqua 199 + Refractors (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Tudor Somacescu Auto Pink /150 Aqua /199 + Refractors\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tudor Somacescu; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Tudor Somacescu Auto Pink /150 Aqua /199 + Refractors\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tudor Somacescu; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Aqua, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-tudor-somacescu-auto-pink-150-aqua-199-plus-refractors-1.BueYW5g",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -29055,7 +29055,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1843,
     "name": "2022-23 Topps OTE Chrome Tyler Bey Rookie Auto + Refractor Insert Set (x38)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -29065,7 +29065,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome Tyler Bey Rookie Auto + Refractor  Insert Set (x38).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome Tyler Bey Rookie Auto + Refractor Insert Set (x38)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tyler Bey; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety, Insert; Autographed: Yes; Cards included: 38; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome Tyler Bey Rookie Auto + Refractor Insert Set (x38)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Tyler Bey; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety, Insert; Autographed: Yes; Cards included: 38; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-tyler-bey-rookie-auto-plus-refractor-insert-set-x38.BueYymb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -29131,7 +29131,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1845,
     "name": "2022-23 Topps OTE Chrome ZZ Clark Autos + Orange /25 + Chrome Refractors (x29)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -29141,7 +29141,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Chrome ZZ Clark Autos + Orange 25 + Chrome Refractors (x29).jpg"
     ],
-    "description": "2022-23 Topps OTE Chrome ZZ Clark Autos + Orange /25 + Chrome Refractors (x29)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: ZZ Clark; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Chrome, Orange; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 29; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Chrome ZZ Clark Autos + Orange /25 + Chrome Refractors (x29)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: ZZ Clark; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Chrome, Orange; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 29; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-zz-clark-autos-plus-orange-25-plus-chrome-refractors-x29.BueaeTb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -29208,7 +29208,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1847,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Apprentices Aqua Refractor Rookie /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29221,7 +29221,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Apprentices Aqua Refractor Rookie 99 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Apprentices Aqua Refractor Rookie 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Apprentices Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Apprentices Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-apprentices-aqua-refractor-rookie-99-1.BARGjFj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29250,7 +29250,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1848,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29261,7 +29261,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #14 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #14 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-aqua-refractor-rookie-75-14-1.BARMCiu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29289,7 +29289,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1849,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29302,7 +29302,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #31 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #31 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-aqua-refractor-rookie-75-31-1.BARMbeV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29331,7 +29331,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1850,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29342,7 +29342,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #76 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 #76 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-aqua-refractor-rookie-75-76-1.BARVW2j",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29370,7 +29370,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1851,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 Set (x2)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 30,
@@ -29381,7 +29381,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 Set (x2) (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie 75 Set (x2) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Aqua Refractor Rookie /75 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-aqua-refractor-rookie-75-set-x2-1.BARWKGe",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29409,7 +29409,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1852,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Aqua Refractor Rookie /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29422,7 +29422,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Arrivals Aqua Refractor Rookie 99 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Arrivals Aqua Refractor Rookie 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-arrivals-aqua-refractor-rookie-99-1.BARWn8x",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29451,7 +29451,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1853,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Red & Blue Refractor Rookie /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -29462,7 +29462,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Arrivals Red & Blue Refractor Rookie 50 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Arrivals Red & Blue Refractor Rookie 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Red & Blue Refractor Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Arrivals Red & Blue Refractor Rookie /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-arrivals-red-blue-refractor-rookie-50-1.BARWboP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29490,7 +29490,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1854,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29503,7 +29503,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #14 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #14 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-blue-refractor-rookie-150-14-1.BARX3RR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29532,7 +29532,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1855,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29545,7 +29545,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #31 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #31 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-blue-refractor-rookie-150-31-1.BARXPst",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29574,7 +29574,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1856,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #32",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29585,7 +29585,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #32 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #32 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-blue-refractor-rookie-150-32-1.BARheQS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29613,7 +29613,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1857,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29624,7 +29624,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #76 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie 150 #76 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Blue Refractor Rookie /150 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-blue-refractor-rookie-150-76-1.BARjJuR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29652,7 +29652,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1858,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Cyberspace Aqua Refractor Rookie /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -29665,7 +29665,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Cyberspace Aqua Refractor Rookie 99 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Cyberspace Aqua Refractor Rookie 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Cyberspace Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Cyberspace Aqua Refractor Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Aqua; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-cyberspace-aqua-refractor-rookie-99-1.BARwKDQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29694,7 +29694,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1859,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29709,7 +29709,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #14 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #14 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-diamond-sparkle-refractor-rookie-175-14-1.BARwwsS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29738,7 +29738,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1860,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29749,7 +29749,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #31 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #31 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-diamond-sparkle-refractor-rookie-175-31-1.BARN6yG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29777,7 +29777,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1861,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #32",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29788,7 +29788,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #32 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #32 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-diamond-sparkle-refractor-rookie-175-32-1.BAROVol",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29816,7 +29816,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1862,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -29831,7 +29831,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #76 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie 175 #76 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Diamond Sparkle Refractor Rookie /175 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-diamond-sparkle-refractor-rookie-175-76-1.BAReu5u",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29860,7 +29860,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1863,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Green Refractor Rookie Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 29.95,
@@ -29871,7 +29871,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Green Refractor Rookie Auto 99 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Green Refractor Rookie Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Green Refractor Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Green Refractor Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-green-refractor-rookie-auto-99-1.BARk0Q4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29900,7 +29900,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1864,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 16.95,
@@ -29913,7 +29913,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #14 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #14 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-lime-green-refractor-rookie-99-14-1.BARvcS1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29942,7 +29942,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1865,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 16.95,
@@ -29955,7 +29955,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #31 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #31 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-lime-green-refractor-rookie-99-31-1.BAR8FOg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -29984,7 +29984,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1866,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #32",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 16.95,
@@ -29997,7 +29997,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #32 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #32 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-lime-green-refractor-rookie-99-32-1.BAR8e1V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30026,7 +30026,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1867,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 16.95,
@@ -30039,7 +30039,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #76 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 #76 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-lime-green-refractor-rookie-99-76-1.BARSXaI",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30068,7 +30068,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1868,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 Set (x2)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -30079,7 +30079,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 Set (x2) (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie 99 Set (x2) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Lime Green Refractor Rookie /99 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-lime-green-refractor-rookie-99-set-x2-1.BARUFoJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30107,7 +30107,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1869,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -30118,7 +30118,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #14 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #14 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-pink-refractor-rookie-125-14-1.BARU5P4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30146,7 +30146,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1870,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -30159,7 +30159,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #31 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #31 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-pink-refractor-rookie-125-31-1.BARUXix",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30188,7 +30188,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1871,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #32",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -30203,7 +30203,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #32 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #32 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-pink-refractor-rookie-125-32-1.BARgBWb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30232,7 +30232,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1872,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -30245,7 +30245,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #76 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie 125 #76 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Pink Refractor Rookie /125 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Pink; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-pink-refractor-rookie-125-76-1.BARru44",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30274,7 +30274,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1873,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #14",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -30285,7 +30285,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #14 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #14 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #14\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-14-1.BARr8MJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30314,7 +30314,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1874,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #31",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -30325,7 +30325,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #31 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #31 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #31\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-31-1.BAR4JA7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30353,7 +30353,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1875,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #32",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -30366,7 +30366,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #32 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #32 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #32\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-32-1.BAR4XiG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30395,7 +30395,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1876,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #76",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -30406,7 +30406,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #76 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 #76 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Purple; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-76-1.BAR6GdQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30435,7 +30435,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1877,
     "name": "2022-23 Topps OTE Finest Eli Ellis Diamond Sparkle Refractor Rookie /175",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -30446,7 +30446,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Finest Eli Ellis Diamond Sparkle Refractor Rookie 175 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Finest Eli Ellis Diamond Sparkle Refractor Rookie 175 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Eli Ellis Diamond Sparkle Refractor Rookie /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Finest Eli Ellis Diamond Sparkle Refractor Rookie /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-eli-ellis-diamond-sparkle-refractor-rookie-175-1.BAYpR6l",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30827,7 +30827,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1887,
     "name": "2022-23 Topps OTE Inception Bryce Griggs Auto /99 Aqua /75 Pink /150 + Set (x30)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 25.95,
@@ -30839,7 +30839,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Bryce Griggs Auto 99 Aqua 75 Pink 150 + Set (x30) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Bryce Griggs Auto 99 Aqua 75 Pink 150 + Set (x30) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryce Griggs Auto /99 Aqua /75 Pink /150 + Set (x30)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryce Griggs; Sport: Basketball; League: NBA; Parallel/Variety: Aqua, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 30; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryce Griggs Auto /99 Aqua /75 Pink /150 + Set (x30)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryce Griggs; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Aqua, Pink; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 30; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryce-griggs-auto-99-aqua-75-pink-150-plus-set-x30-1.BueMZJV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -30867,7 +30867,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1888,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Blue Foil Rookie Auto /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 44.95,
@@ -30878,7 +30878,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Blue Foil Rookie Auto 25 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Blue Foil Rookie Auto 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Blue Foil Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Blue Foil Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-blue-foil-rookie-auto-25-1.BARPByB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30907,7 +30907,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1889,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Cloth Collaboration RC Patch Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 39.95,
@@ -30918,7 +30918,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Cloth Collaboration RC Patch Auto 99 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Cloth Collaboration RC Patch Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Cloth Collaboration RC Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Cloth Collaboration RC Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-cloth-collaboration-rc-patch-auto-99-1.BARPYyN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30947,7 +30947,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1890,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 33.95,
@@ -30960,7 +30960,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-auto-99-1.BARiVx1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -30989,7 +30989,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1891,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 33.95,
@@ -31002,7 +31002,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (7).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (8).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-auto-99-5.BARiZe2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31031,7 +31031,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1892,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT3",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 33.95,
@@ -31043,7 +31043,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (10).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (11).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT3\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT3\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-auto-99-9.BARsG2f",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31072,7 +31072,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1893,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT4",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 33.95,
@@ -31084,7 +31084,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (13).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto 99 (14).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT4\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Auto /99 #IA-BT4\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-auto-99-12.BARQ2DB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31113,7 +31113,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1894,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 50,
@@ -31124,7 +31124,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-patch-auto-30-1.BARDHHG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31154,7 +31154,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1895,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 50,
@@ -31165,7 +31165,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-patch-auto-30-3.BARDFx2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31195,7 +31195,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1896,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT3",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 50,
@@ -31206,7 +31206,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto 30 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT3\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Magenta Rookie Patch Auto /30 #IARC-BT3\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-magenta-rookie-patch-auto-30-5.BARDw0X",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31236,7 +31236,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1897,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Orange Jumbo Patch Auto Rookie /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 75,
@@ -31247,7 +31247,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Jumbo Patch Auto Rookie 25 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Jumbo Patch Auto Rookie 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Jumbo Patch Auto Rookie /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Jumbo Patch Auto Rookie /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-orange-jumbo-patch-auto-rookie-25-1.BARDQ5b",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31277,7 +31277,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1898,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 37.95,
@@ -31289,7 +31289,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto 50 (2).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto 50 (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-orange-rookie-auto-50-1.BARbJrF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31318,7 +31318,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1899,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 37.95,
@@ -31330,7 +31330,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto 50 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto 50 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Orange Rookie Auto /50 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-orange-rookie-auto-50-4.BARbVkb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31359,7 +31359,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1900,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT1",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 34.95,
@@ -31371,7 +31371,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto 75 (2).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto 75 (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT1\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-red-rookie-auto-75-1.BARmByb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31401,7 +31401,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1901,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT2",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 34.95,
@@ -31413,7 +31413,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto 75 (5).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto 75 (6).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Auto /75 #IA-BT2\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-red-rookie-auto-75-4.BARmXcX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31443,7 +31443,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1902,
     "name": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Patch Auto SP /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 60,
@@ -31454,7 +31454,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Patch Auto SP 25 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Inception Bryson Tiller Red Rookie Patch Auto SP 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Patch Auto SP /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Short Print, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Tiller Red Rookie Patch Auto SP /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Short Print, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-tiller-red-rookie-patch-auto-sp-25-1.BARmDiB",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31485,7 +31485,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1903,
     "name": "2022-23 Topps OTE Inception Bryson Warren Patch Auto /149 + Refractor Set (x22)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 15.95,
@@ -31497,7 +31497,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Bryson Warren Patch Auto 149 + Refractor Set (x22) (2).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Bryson Warren Patch Auto 149 + Refractor Set (x22) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Bryson Warren Patch Auto /149 + Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Warren; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Bryson Warren Patch Auto /149 + Refractor Set (x22)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Bryson Warren; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Cards included: 22; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-bryson-warren-patch-auto-149-plus-refractor-set-x22-1.Bueh9se",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -31526,7 +31526,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1904,
     "name": "2022-23 Topps OTE Inception Eli Ellis Jumbo Rookie Patch Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 30,
@@ -31539,7 +31539,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Jumbo Rookie Patch Auto 99 (3).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Jumbo Rookie Patch Auto 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Eli Ellis Jumbo Rookie Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Eli Ellis Jumbo Rookie Patch Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-eli-ellis-jumbo-rookie-patch-auto-99-1.BAYpmP4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31569,7 +31569,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1905,
     "name": "2022-23 Topps OTE Inception Eli Ellis Orange Foil Rookie Auto /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 34.95,
@@ -31582,7 +31582,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Orange Foil Rookie Auto 50 (3).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Orange Foil Rookie Auto 50 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Eli Ellis Orange Foil Rookie Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Eli Ellis Orange Foil Rookie Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-eli-ellis-orange-foil-rookie-auto-50-1.BAYyt5P",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31612,7 +31612,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1906,
     "name": "2022-23 Topps OTE Inception Eli Ellis Pink Foil Rookie Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 37.95,
@@ -31623,7 +31623,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Pink Foil Rookie Auto 99 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Pink Foil Rookie Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Eli Ellis Pink Foil Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Eli Ellis Pink Foil Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-eli-ellis-pink-foil-rookie-auto-99-1.BAaHBaV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31652,7 +31652,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1907,
     "name": "2022-23 Topps OTE Inception Eli Ellis Red Foil Rookie Auto Patch /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 54.95,
@@ -31663,7 +31663,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Red Foil Rookie Auto Patch 25 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Red Foil Rookie Auto Patch 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Eli Ellis Red Foil Rookie Auto Patch /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Red; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Eli Ellis Red Foil Rookie Auto Patch /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Red; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-eli-ellis-red-foil-rookie-auto-patch-25-1.BAaJt72",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31693,7 +31693,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1908,
     "name": "2022-23 Topps OTE Inception Eli Ellis Red Rookie Auto /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -31704,7 +31704,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Red Rookie Auto 75 (1).jpg",
       "assets/Personal collection/Eli Ellis/2022-23 Topps OTE Inception Eli Ellis Red Rookie Auto 75 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Eli Ellis Red Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Eli Ellis Red Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Eli Ellis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-eli-ellis-red-rookie-auto-75-1.BAadIEJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31733,7 +31733,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1909,
     "name": "2022-23 Topps OTE Inception Izan Almansa Blue Foil Rookie Auto /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -31744,7 +31744,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Blue Foil Rookie Auto 25 (1).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Blue Foil Rookie Auto 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Izan Almansa Blue Foil Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Izan Almansa Blue Foil Rookie Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-izan-almansa-blue-foil-rookie-auto-25-1.BAaA99t",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31773,7 +31773,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1910,
     "name": "2022-23 Topps OTE Inception Izan Almansa Magenta Foil Rookie Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -31786,7 +31786,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Magenta Foil Rookie Auto 99 (3).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Magenta Foil Rookie Auto 99 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Izan Almansa Magenta Foil Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Parallel/Variety: Foil; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Izan Almansa Magenta Foil Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-izan-almansa-magenta-foil-rookie-auto-99-1.BAaAgsf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31816,7 +31816,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1911,
     "name": "2022-23 Topps OTE Inception Izan Almansa Magenta Rookie Patch Auto /30",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -31827,7 +31827,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Magenta Rookie Patch Auto 30 (1).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Magenta Rookie Patch Auto 30 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Izan Almansa Magenta Rookie Patch Auto /30\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Izan Almansa Magenta Rookie Patch Auto /30\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-izan-almansa-magenta-rookie-patch-auto-30-1.BAa51na",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31857,7 +31857,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1912,
     "name": "2022-23 Topps OTE Inception Izan Almansa Red Foil Rookie Auto /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 11.95,
@@ -31868,7 +31868,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Red Foil Rookie Auto 75 (1).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Red Foil Rookie Auto 75 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Izan Almansa Red Foil Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Izan Almansa Red Foil Rookie Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Foil, Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-izan-almansa-red-foil-rookie-auto-75-1.BAa7dDF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -31897,7 +31897,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1913,
     "name": "2022-23 Topps OTE Inception Izan Almansa Rookie Patch Auto RPA /149",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 12.95,
@@ -31910,7 +31910,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Rookie Patch Auto RPA 149 (3).jpg",
       "assets/Personal collection/I Almansa/2022-23 Topps OTE Inception Izan Almansa Rookie Patch Auto RPA 149 (4).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Izan Almansa Rookie Patch Auto RPA /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Izan Almansa Rookie Patch Auto RPA /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Izan Almansa; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-izan-almansa-rookie-patch-auto-rpa-149-1.BAaaJCg",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32021,7 +32021,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1916,
     "name": "2022-23 Topps OTE Inception Jahzare Jackson Orange Patch Auto /25 + Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 12.95,
@@ -32032,7 +32032,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jahzare Jackson Orange Patch Auto 25 + Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jahzare Jackson Orange Patch Auto 25 + Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jahzare Jackson Orange Patch Auto /25 + Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jahzare Jackson Orange Patch Auto /25 + Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jahzare Jackson; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jahzare-jackson-orange-patch-auto-25-plus-auto-99-1.Buejq3G",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -32061,7 +32061,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1917,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Blue Rookie Patch Auto /5",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 27.95,
@@ -32072,7 +32072,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Blue Rookie Patch Auto 5 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Blue Rookie Patch Auto 5 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Blue Rookie Patch Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Blue Rookie Patch Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-blue-rookie-patch-auto-5-1.BuejO9R",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32102,7 +32102,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1918,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Blue Patch Auto /5",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 34.95,
@@ -32113,7 +32113,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Blue Patch Auto 5 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Blue Patch Auto 5 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Blue Patch Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Blue Patch Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Blue; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-cloth-collaborations-blue-patch-auto-5-1.BuewqV1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32142,7 +32142,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1919,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Gold Patch Auto /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 13.95,
@@ -32153,7 +32153,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Gold Patch Auto 50 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Gold Patch Auto 50 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Gold Patch Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Cloth Collaborations Gold Patch Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-cloth-collaborations-gold-patch-auto-50-1.BuewIHv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32182,7 +32182,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1920,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Orange Rookie Auto /50 Set (x2)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -32193,7 +32193,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Orange Rookie Auto 50 Set (x2) (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Orange Rookie Auto 50 Set (x2) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Orange Rookie Auto /50 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Orange Rookie Auto /50 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-orange-rookie-auto-50-set-x2-1.BuewvJj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32222,7 +32222,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1921,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Patch Rookie Auto /149 Set (x3)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -32233,7 +32233,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Patch Rookie Auto 149 Set (x3) (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Patch Rookie Auto 149 Set (x3) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Patch Rookie Auto /149 Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Patch Rookie Auto /149 Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-patch-rookie-auto-149-set-x3-1.BuewiqF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32262,7 +32262,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1922,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Pink Rookie Auto /99 Set (x3)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -32273,7 +32273,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Pink Rookie Auto 99 Set (x3) (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Pink Rookie Auto 99 Set (x3) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Pink Rookie Auto /99 Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Pink Rookie Auto /99 Set (x3)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Pink; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 3; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-pink-rookie-auto-99-set-x3-1.Buee5xV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32302,7 +32302,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1923,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Red Rookie Auto /75 Set (x6)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 29.95,
@@ -32313,7 +32313,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Red Rookie Auto 75 Set (x6) (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Red Rookie Auto 75 Set (x6) (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Red Rookie Auto /75 Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Red Rookie Auto /75 Set (x6)\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Red; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Cards included: 6; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-red-rookie-auto-75-set-x6-1.Bueel0F",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32342,7 +32342,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1924,
     "name": "2022-23 Topps OTE Inception Jalen Lewis Rookie Shoe Relic Auto /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -32353,7 +32353,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Rookie Shoe Relic Auto 25 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Jalen Lewis Rookie Shoe Relic Auto 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Jalen Lewis Rookie Shoe Relic Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Jalen Lewis Rookie Shoe Relic Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jalen Lewis; Team: Overtime Elite; Sport: Basketball; League: NCAA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-jalen-lewis-rookie-shoe-relic-auto-25-1.Bue87Wl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -32466,7 +32466,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1927,
     "name": "2022-23 Topps OTE Inception Kok Yat Jumbo Patch Rookie Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -32477,7 +32477,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Kok Yat Jumbo Patch Rookie Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Kok Yat Jumbo Patch Rookie Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Kok Yat Jumbo Patch Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kok Yat; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Kok Yat Jumbo Patch Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kok Yat; Team: Overtime Elite; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-kok-yat-jumbo-patch-rookie-auto-99-1.BueSU37",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -32506,7 +32506,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1928,
     "name": "2022-23 Topps OTE Inception Malik Bowman Orange Jumbo Rookie Patch Auto /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -32517,7 +32517,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Malik Bowman Orange Jumbo Rookie Patch Auto 25 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception Malik Bowman Orange Jumbo Rookie Patch Auto 25 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception Malik Bowman Orange Jumbo Rookie Patch Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Malik Bowman; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception Malik Bowman Orange Jumbo Rookie Patch Auto /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Malik Bowman; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Rookie, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-malik-bowman-orange-jumbo-rookie-patch-auto-25-1.BueUC8X",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -33415,7 +33415,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1950,
     "name": "2022-23 Topps OTE Inception ZZ Clark Orange Jumbo Patch Auto /25 + Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -33426,7 +33426,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception ZZ Clark Orange Jumbo Patch Auto 25 + Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2022-23/OTE/2022-23 Topps OTE Inception ZZ Clark Orange Jumbo Patch Auto 25 + Auto 99 (2).jpg"
     ],
-    "description": "2022-23 Topps OTE Inception ZZ Clark Orange Jumbo Patch Auto /25 + Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: ZZ Clark; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Topps OTE Inception ZZ Clark Orange Jumbo Patch Auto /25 + Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE; Season: 2022-23; Year manufactured: 2022; Player/Athlete: ZZ Clark; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Orange; Features: Autograph, Serial Numbered, Memorabilia, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-inception-zz-clark-orange-jumbo-patch-auto-25-plus-auto-99-1.Buegs1V",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -34616,12 +34616,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Wild Card Matte Draft Jabari Smith Jr. Green Premium Rookie Auto 150 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Wild Card Matte Draft Jabari Smith Jr. Green Premium Rookie Auto 150 (2).jpg"
     ],
-    "description": "2022-23 Wild Card Matte Draft Jabari Smith Jr. Green Premium Rookie Auto /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Wild Card; Set: 2022-23 Wild Card Matte Draft; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Wild Card Matte Draft Jabari Smith Jr. Green Premium Rookie Auto /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Wild Card; Set: 2022-23 Wild Card Matte Draft; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-wild-card-matte-draft-jabari-smith-jr-green-premium-rookie-auto-150-1.BAEykI2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -34632,7 +34632,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Wild Card Matte Draft Jabari Smith Jr. Green Premium Rookie Auto /150",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -34656,12 +34656,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2022-23 Wild Card Matte Jabari Smith Jr. Green Premium Rookie Auto 150 (1).jpg",
       "assets/Personal collection/Jabari smith/2022-23 Wild Card Matte Jabari Smith Jr. Green Premium Rookie Auto 150 (2).jpg"
     ],
-    "description": "2022-23 Wild Card Matte Jabari Smith Jr. Green Premium Rookie Auto /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Wild Card; Set: 2022-23 Wild Card Matte; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Wild Card Matte Jabari Smith Jr. Green Premium Rookie Auto /150\n\nListing details: Type: Sports Trading Card; Manufacturer: Wild Card; Set: 2022-23 Wild Card Matte; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Green; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-wild-card-matte-jabari-smith-jr-green-premium-rookie-auto-150-1.BAEyrru",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Rookie",
@@ -34672,7 +34672,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2022-23 Wild Card Matte Jabari Smith Jr. Green Premium Rookie Auto /150",
         "C:Features": "Autograph|Rookie|Serial Numbered|Parallel/Variety",
@@ -34852,12 +34852,12 @@ window.DJ_PRELOADED_PRODUCTS = [
     "imageGallery": [
       "assets/Personal collection/Jabari smith/2023 Panini Player of the Day Jabari Smith Jr. Blue Foil Rookie 499 (1).jpg"
     ],
-    "description": "2023 Panini Player of the Day Jabari Smith Jr. Blue Foil Rookie /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini Player of the Day; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023 Panini Player of the Day Jabari Smith Jr. Blue Foil Rookie /499\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023 Panini Player of the Day; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAEyQIV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -34867,7 +34867,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023 Panini Player of the Day Jabari Smith Jr. Blue Foil Rookie /499",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -39920,12 +39920,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Donruss Optic Jabari Smith Fast Break Signatures Auto (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Donruss Optic Jabari Smith Fast Break Signatures Auto (2).jpg"
     ],
-    "description": "2023-24 Donruss Optic Jabari Smith Fast Break Signatures Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Donruss Optic Jabari Smith Fast Break Signatures Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Autograph, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG9BEX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Autograph",
       "Parallel/Variety"
@@ -39934,7 +39934,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Donruss Optic Jabari Smith Fast Break Signatures Auto",
         "C:Features": "Autograph|Parallel/Variety",
@@ -39958,12 +39958,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Donruss Optic Jabari Smith Jr. Orange Prizm 99 + Orange Shimmer 199 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Donruss Optic Jabari Smith Jr. Orange Prizm 99 + Orange Shimmer 199 (2).jpg"
     ],
-    "description": "2023-24 Donruss Optic Jabari Smith Jr. Orange Prizm /99 + Orange Shimmer /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Shimmer, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Donruss Optic Jabari Smith Jr. Orange Prizm /99 + Orange Shimmer /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Shimmer, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG9hCP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -39972,7 +39972,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Donruss Optic Jabari Smith Jr. Orange Prizm /99 + Orange Shimmer /199",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -39985,7 +39985,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2169,
     "name": "2023-24 Donruss Optic Leonard Miller Blue Seismic Prizm Rated Rookie /249",
     "category": "Basketball",
-    "team": "",
+    "team": "Minnesota Timberwolves",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -39996,7 +39996,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Wolves/2023-24 Donruss Optic Leonard Miller Blue Seismic Prizm Rated Rookie 249 (1).jpg",
       "assets/Personal collection/Wolves/2023-24 Donruss Optic Leonard Miller Blue Seismic Prizm Rated Rookie 249 (2).jpg"
     ],
-    "description": "2023-24 Donruss Optic Leonard Miller Blue Seismic Prizm Rated Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Donruss Optic Leonard Miller Blue Seismic Prizm Rated Rookie /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2023-24 Donruss Optic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAXoIJj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -40306,12 +40306,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini Court Kings Jabari Smith Jr Red Parallel 99 #41 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini Court Kings Jabari Smith Jr Red Parallel 99 #41 (2).jpg"
     ],
-    "description": "2023-24 Panini Court Kings Jabari Smith Jr Red Parallel /99 #41\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Court Kings; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini Court Kings Jabari Smith Jr Red Parallel /99 #41\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Court Kings; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG9ynS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -40320,7 +40320,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini Court Kings Jabari Smith Jr Red Parallel /99 #41",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -40420,12 +40420,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 75 + Blue Prizm 199 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 75 + Blue Prizm 199 (2).jpg"
     ],
-    "description": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm /75 + Blue Prizm /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Mosaic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm /75 + Blue Prizm /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Mosaic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGHEKX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -40434,7 +40434,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm /75 + Blue Prizm /199",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -40458,12 +40458,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 7575 Bookend (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 7575 Bookend (2).jpg"
     ],
-    "description": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 75/75 Bookend\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Mosaic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 75/75 Bookend\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Mosaic; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGH6DQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -40472,7 +40472,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini Mosaic Jabari Smith Jr. Green Prizm 75/75 Bookend",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -40747,12 +40747,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini NBA Hoops Jabari Smith Jr. Green Foil Prizm 99 #205 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini NBA Hoops Jabari Smith Jr. Green Foil Prizm 99 #205 (2).jpg"
     ],
-    "description": "2023-24 Panini NBA Hoops Jabari Smith Jr. Green Foil Prizm /99 #205\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini NBA Hoops Jabari Smith Jr. Green Foil Prizm /99 #205\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGJNkJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -40761,7 +40761,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini NBA Hoops Jabari Smith Jr. Green Foil Prizm /99 #205",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -40824,12 +40824,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini NBA Hoops Premium Stock Jabari Smith Jr. Blue Prizm 120 Set (x2) (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini NBA Hoops Premium Stock Jabari Smith Jr. Blue Prizm 120 Set (x2) (2).jpg"
     ],
-    "description": "2023-24 Panini NBA Hoops Premium Stock Jabari Smith Jr. Blue Prizm /120 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini NBA Hoops Premium Stock Jabari Smith Jr. Blue Prizm /120 Set (x2)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Prizm; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 2; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGd92e",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -40838,7 +40838,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini NBA Hoops Premium Stock Jabari Smith Jr. Blue Prizm /120 Set (x2)",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -40862,12 +40862,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini Origins Jabari Smith Jr. Variation SP 25 #57 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini Origins Jabari Smith Jr. Variation SP 25 #57 (2).jpg"
     ],
-    "description": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /25 #57\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Origins; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /25 #57\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Origins; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGdSuj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Short Print",
@@ -40877,7 +40877,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /25 #57",
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
@@ -40901,12 +40901,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2023-24 Panini Origins Jabari Smith Jr. Variation SP 49 #57 (1).jpg",
       "assets/Personal collection/Jabari smith/2023-24 Panini Origins Jabari Smith Jr. Variation SP 49 #57 (2).jpg"
     ],
-    "description": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /49 #57\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Origins; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /49 #57\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2023-24 Panini Origins; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG2sWl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Short Print",
@@ -40916,7 +40916,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2023-24 Panini Origins Jabari Smith Jr. Variation SP /49 #57",
         "C:Features": "Serial Numbered|Short Print|Parallel/Variety",
@@ -45465,12 +45465,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Mcdonalds/2023-24 Topps McDonald's Chrome Jeremy Fears Lava Refractor Rookie 299 (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Mcdonalds/2023-24 Topps McDonald's Chrome Jeremy Fears Lava Refractor Rookie 299 (2).jpg"
     ],
-    "description": "2023-24 Topps McDonald's Chrome Jeremy Fears Lava Refractor Rookie /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jeremy Fears; Team: Michigan State Spartans; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Lava; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps McDonald's Chrome Jeremy Fears Lava Refractor Rookie /299\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jeremy Fears Jr.; Team: Michigan State Spartans; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Lava; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfV2UJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
-    "playerAthlete": "Jeremy Fears",
+    "playerAthlete": "Jeremy Fears Jr.",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -45480,7 +45480,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jeremy Fears",
+      "playerAthlete": "Jeremy Fears Jr.",
       "excelFields": {
         "Title": "2023-24 Topps McDonald's Chrome Jeremy Fears Lava Refractor Rookie /299",
         "C:Features": "Rookie|Serial Numbered|Parallel/Variety",
@@ -46959,7 +46959,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2354,
     "name": "2023-24 Topps Motif Leonard Miller Acrylic RC Drip Pyrrol Scarlet Rookie Auto /5",
     "category": "Basketball",
-    "team": "",
+    "team": "Minnesota Timberwolves",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 30,
@@ -46970,7 +46970,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Acrylic Drip Pyrrol Scarlet Rookie Auto 5 (1).jpg",
       "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Acrylic Drip Pyrrol Scarlet Rookie Auto 5 (2).jpg"
     ],
-    "description": "2023-24 Topps Motif Leonard Miller Acrylic RC Drip Pyrrol Scarlet Rookie Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps Motif Leonard Miller Acrylic RC Drip Pyrrol Scarlet Rookie Auto /5\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2023-24-topps-motif-leonard-miller-acrylic-drip-pyrrol-scarlet-rookie-auto-5-1.CCxyFvS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -46998,7 +46998,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2355,
     "name": "2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto /49",
     "category": "Basketball",
-    "team": "",
+    "team": "Minnesota Timberwolves",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -47009,7 +47009,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (1).jpg",
       "assets/Personal collection/Wolves/2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto 49 (2).jpg"
     ],
-    "description": "2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps Motif Leonard Miller Gallery Graphs Blue Rookie Auto /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Parallel/Variety: Blue; Features: Autograph, Rookie, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfgLUQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -47038,7 +47038,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2356,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Green Refractor Auto /75 #A-BT",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 29.95,
@@ -47049,7 +47049,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Green Refractor Auto 75 #A-BT (1).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Green Refractor Auto 75 #A-BT (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Green Refractor Auto /75 #A-BT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Green Refractor Auto /75 #A-BT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5fDcx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47077,7 +47077,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2357,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #38",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -47088,7 +47088,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor 149 #38 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor 149 #38 (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Red, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #38\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Red, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5BIeV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47115,7 +47115,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2358,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #7",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 9.95,
@@ -47126,7 +47126,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor 149 #7 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor 149 #7 (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #7\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Red, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Red Yellow Refractor /149 #7\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Red, Yellow; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5qXlj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47153,7 +47153,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2359,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BT",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 23.95,
@@ -47168,7 +47168,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BT (5).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BT (6).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BT\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5B6Be",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47197,7 +47197,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2360,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BTA",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 23.95,
@@ -47210,7 +47210,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BTA (3).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BTA (4).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BTA\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Rookie Refractor Auto #A-BTA\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5CwZP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47239,7 +47239,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2361,
     "name": "2023-24 Topps OTE Chrome Bryson Tiller Superfly Orange Refractor Case Hit /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 34.95,
@@ -47250,7 +47250,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Superfly Orange Refractor Case Hit 25 (1).jpg",
       "assets/Personal collection/Bryson Tiller/2023-24 Topps OTE Chrome Bryson Tiller Superfly Orange Refractor Case Hit 25 (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Bryson Tiller Superfly Orange Refractor Case Hit /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Bryson Tiller Superfly Orange Refractor Case Hit /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Orange; Features: Serial Numbered, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BA5ndo7",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -47278,7 +47278,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2362,
     "name": "2023-24 Topps OTE Chrome Jahari Miller Rookie Refractor Auto",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -47289,7 +47289,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Topps OTE Chrome Jahari Miller Rookie Refractor Auto (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Donruss + Hoops + Select/2023-24 Topps OTE Chrome Jahari Miller Rookie Refractor Auto (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Jahari Miller Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jahari Miller; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Jahari Miller Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jahari Miller; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfR7DJ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -47317,7 +47317,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2363,
     "name": "2023-24 Topps OTE Chrome Kanon Catchings Rookie Refractor Auto #A-KC",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 5.95,
@@ -47328,7 +47328,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Kanon Catchings Rookie Refractor Auto #A-KC (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Kanon Catchings Rookie Refractor Auto #A-KC (2).jpg"
     ],
-    "description": "2023-24 Topps OTE Chrome Kanon Catchings Rookie Refractor Auto #A-KC\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kanon Catchings; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Kanon Catchings Rookie Refractor Auto #A-KC\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Kanon Catchings; Team: Overtime Elite; Sport: Basketball; League: NBA; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfgbb1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -47488,12 +47488,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Royalty Jaylen Clark Rookie Jumbo Relics 99 #RJR-JC (1).jpg",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps Royalty Jaylen Clark Rookie Jumbo Relics 99 #RJR-JC (2).jpg"
     ],
-    "description": "2023-24 Topps Royalty Jaylen Clark Rookie Jumbo Relics /99 #RJR-JC\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jaylen Clar; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps Royalty Jaylen Clark Rookie Jumbo Relics /99 #RJR-JC\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Jaylen Clark; Sport: Basketball; League: NBA; Features: Rookie, Serial Numbered, Memorabilia; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAfrhmP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jaylen Clar",
+    "playerAthlete": "Jaylen Clark",
     "attributes": [
       "Rookie",
       "Serial Numbered",
@@ -47503,7 +47503,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jaylen Clar",
+      "playerAthlete": "Jaylen Clark",
       "excelFields": {
         "Title": "2023-24 Topps Royalty Jaylen Clark Rookie Jumbo Relics /99 #RJR-JC",
         "C:Features": "Rookie|Serial Numbered|Memorabilia",
@@ -47556,7 +47556,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2370,
     "name": "2023-24 Topps Royalty Leonard Miller Superior Jersey Signatures Rookie Auto /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Minnesota Timberwolves",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 21.95,
@@ -47567,7 +47567,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Wolves/2023-24 Topps Royalty Leonard Miller Superior Jersey Signatures Rookie Auto 99 (1).jpg",
       "assets/Personal collection/Wolves/2023-24 Topps Royalty Leonard Miller Superior Jersey Signatures Rookie Auto 99 (2).jpg"
     ],
-    "description": "2023-24 Topps Royalty Leonard Miller Superior Jersey Signatures Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps Royalty Leonard Miller Superior Jersey Signatures Rookie Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Leonard Miller; Team: Minnesota Timberwolves; Sport: Basketball; League: NBA; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAXzRP1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -49099,12 +49099,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Robert Wright III Green Refractor 75 + Blue 199 (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman U Chrome Robert Wright III Green Refractor 75 + Blue 199 (2).jpg"
     ],
-    "description": "2024-25 Bowman U Chrome Robert Wright III Green Refractor /75 + Blue /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Bowman U Chrome Robert Wright III Green Refractor /75 + Blue /199\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright III; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Blue, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqM1e4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Robert Wright",
+    "playerAthlete": "Robert Wright III",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -49113,7 +49113,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Robert Wright",
+      "playerAthlete": "Robert Wright III",
       "excelFields": {
         "Title": "2024-25 Bowman U Chrome Robert Wright III Green Refractor /75 + Blue /199",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -50253,12 +50253,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto 99 (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Best/2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto 99 (2).jpg"
     ],
-    "description": "2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright III; Sport: Basketball; League: NBA; Parallel/Variety: Refractor, Green; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2024-25-bowman-university-best-robert-wright-iii-iso-green-refractor-auto-99-1.CtJMQcu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Robert Wright",
+    "playerAthlete": "Robert Wright III",
     "attributes": [
       "Autograph",
       "Serial Numbered",
@@ -50268,7 +50268,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Robert Wright",
+      "playerAthlete": "Robert Wright III",
       "excelFields": {
         "Title": "2024-25 Bowman University Best Robert Wright III Iso Green Refractor Auto /99",
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
@@ -51501,12 +51501,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Robert Wright Black Wave Refractor Auto SP (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 Bowman Chrome/2024-25 Bowman University Chrome Robert Wright Black Wave Refractor Auto SP (2).jpg"
     ],
-    "description": "2024-25 Bowman University Chrome Robert Wright Black Wave Refractor Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Black; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Bowman University Chrome Robert Wright Black Wave Refractor Auto SP\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2024-25 Bowman; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Robert Wright III; Sport: Basketball; League: NCAA; Parallel/Variety: Refractor, Wave, Black; Features: Autograph, Short Print, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAqvVf4",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
     "sport": "Basketball",
-    "playerAthlete": "Robert Wright",
+    "playerAthlete": "Robert Wright III",
     "attributes": [
       "Autograph",
       "Short Print",
@@ -51516,7 +51516,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Robert Wright",
+      "playerAthlete": "Robert Wright III",
       "excelFields": {
         "Title": "2024-25 Bowman University Chrome Robert Wright Black Wave Refractor Auto SP",
         "C:Features": "Autograph|Short Print|Parallel/Variety",
@@ -51808,12 +51808,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Donruss Optic Jabari Smith Jr. Fast Break Red Prizm 75 Houston Rockets (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Donruss Optic Jabari Smith Jr. Fast Break Red Prizm 75 Houston Rockets (2).jpg"
     ],
-    "description": "2024-25 Donruss Optic Jabari Smith Jr. Fast Break Red Prizm /75 Houston Rockets\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss Optic; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Donruss Optic Jabari Smith Jr. Fast Break Red Prizm /75 Houston Rockets\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss Optic; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG32sV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -51822,7 +51822,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Donruss Optic Jabari Smith Jr. Fast Break Red Prizm /75 Houston Rockets",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -51846,12 +51846,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Donruss Optic Jabari Smith Jr. Red Prizm 75 Houston Rockets #165 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Donruss Optic Jabari Smith Jr. Red Prizm 75 Houston Rockets #165 (2).jpg"
     ],
-    "description": "2024-25 Donruss Optic Jabari Smith Jr. Red Prizm /75 Houston Rockets #165\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss Optic; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Donruss Optic Jabari Smith Jr. Red Prizm /75 Houston Rockets #165\n\nListing details: Type: Sports Trading Card; Manufacturer: Donruss; Set: 2024-25 Donruss Optic; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAG3rrP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -51860,7 +51860,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Donruss Optic Jabari Smith Jr. Red Prizm /75 Houston Rockets #165",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52346,12 +52346,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Red Prizm 75 #170 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Red Prizm 75 #170 (2).jpg"
     ],
-    "description": "2024-25 Panini NBA Hoops Jabari Smith Jr. Red Prizm /75 #170\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini NBA Hoops Jabari Smith Jr. Red Prizm /75 #170\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGFsFS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52360,7 +52360,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini NBA Hoops Jabari Smith Jr. Red Prizm /75 #170",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52384,12 +52384,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Silver Foil Prizm 199 #170 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini NBA Hoops Jabari Smith Jr. Silver Foil Prizm 199 #170 (2).jpg"
     ],
-    "description": "2024-25 Panini NBA Hoops Jabari Smith Jr. Silver Foil Prizm /199 #170\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Foil, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini NBA Hoops Jabari Smith Jr. Silver Foil Prizm /199 #170\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Foil, Silver; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGKIKN",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52398,7 +52398,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini NBA Hoops Jabari Smith Jr. Silver Foil Prizm /199 #170",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52538,12 +52538,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Blue Prizm 199 + White Prizm 175 (3).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Blue Prizm 199 + White Prizm 175 (4).jpg"
     ],
-    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Blue Prizm /199 + White Prizm /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Blue Prizm /199 + White Prizm /175\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGKeiQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52552,7 +52552,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Black Jabari Smith Jr. Blue Prizm /199 + White Prizm /175",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52576,12 +52576,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Orange Ball Prizm 225 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Orange Ball Prizm 225 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Ball Prizm /225\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Ball Prizm /225\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGfgEl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52590,7 +52590,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Ball Prizm /225",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52614,12 +52614,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Orange Prizm 49 + Orange 60 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Black Jabari Smith Jr. Orange Prizm 49 + Orange 60 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Prizm /49 + Orange /60\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Prizm /49 + Orange /60\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGq93B",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52628,7 +52628,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Black Jabari Smith Jr. Orange Prizm /49 + Orange /60",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -52846,12 +52846,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Deca Jabari Smith Jr. Red Prizm 199 + Blue Prizm 149 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Deca Jabari Smith Jr. Red Prizm 199 + Blue Prizm 149 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Deca Jabari Smith Jr. Red Prizm /199 + Blue Prizm /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Deca Jabari Smith Jr. Red Prizm /199 + Blue Prizm /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Blue, Red; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGqC4p",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -52860,7 +52860,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Deca Jabari Smith Jr. Red Prizm /199 + Blue Prizm /149",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -54623,12 +54623,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Ron Holland Blue Ice 99 + Variation 199 (x5) (8).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 Prizm Draft/2024-25 Panini Prizm Draft Picks Ron Holland Blue Ice 99 + Variation 199 (x5) (9).jpg"
     ],
-    "description": "2024-25 Panini Prizm Draft Picks Ron Holland Blue Ice /99 + Variation /199 (x5)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Ron Holland; Team: Detroit Pistons; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 5; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Draft Picks Ron Holland Blue Ice /99 + Variation /199 (x5)\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Prizm Draft Picks; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Ron Holland II; Team: Detroit Pistons; Sport: Basketball; League: NBA; Parallel/Variety: Ice, Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 5; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACXiYX",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Ron Holland",
+    "playerAthlete": "Ron Holland II",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -54637,7 +54637,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Ron Holland",
+      "playerAthlete": "Ron Holland II",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Draft Picks Ron Holland Blue Ice /99 + Variation /199 (x5)",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -55024,12 +55024,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Orange Disco Prizm 125 #77 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Orange Disco Prizm 125 #77 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Jabari Smith Jr. Orange Disco Prizm /125 #77\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Jabari Smith Jr. Orange Disco Prizm /125 #77\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGqRZG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -55038,7 +55038,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Jabari Smith Jr. Orange Disco Prizm /125 #77",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -55062,12 +55062,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Purple Disco Prizm 75 + Purple Prizm 99 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Purple Disco Prizm 75 + Purple Prizm 99 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Jabari Smith Jr. Purple Disco Prizm /75 + Purple Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Jabari Smith Jr. Purple Disco Prizm /75 + Purple Prizm /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGqhnj",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -55076,7 +55076,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Jabari Smith Jr. Purple Disco Prizm /75 + Purple Prizm /99",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -55100,12 +55100,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Purple Prizm 149 + Skewed Prizm 249 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Prizm Jabari Smith Jr. Purple Prizm 149 + Skewed Prizm 249 (2).jpg"
     ],
-    "description": "2024-25 Panini Prizm Jabari Smith Jr. Purple Prizm /149 + Skewed Prizm /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Jabari Smith Jr. Purple Prizm /149 + Skewed Prizm /249\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Prizm, Purple; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGqgta",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -55114,7 +55114,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Prizm Jabari Smith Jr. Purple Prizm /149 + Skewed Prizm /249",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -55368,12 +55368,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2024-25 Panini Silhouette Jabari Smith Jr. Silhouettes Bronze 49 (1).jpg",
       "assets/Personal collection/Jabari smith/2024-25 Panini Silhouette Jabari Smith Jr. Silhouettes Bronze 49 (2).jpg"
     ],
-    "description": "2024-25 Panini Silhouette Jabari Smith Jr. Silhouettes Bronze /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Silhouette; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Bronze; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Silhouette Jabari Smith Jr. Silhouettes Bronze /49\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Silhouette; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Bronze; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGBIKQ",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -55382,7 +55382,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2024-25 Panini Silhouette Jabari Smith Jr. Silhouettes Bronze /49",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -55679,12 +55679,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Inception Dereck Lively II Gold Holo Auto 50 (1).jpg",
       "assets/Ebay Listing Photos/2024-25/2024-25 Topps Chrome + Motif/2024-25 Topps Inception Dereck Lively II Gold Holo Auto 50 (2).jpg"
     ],
-    "description": "2024-25 Topps Inception Dereck Lively II Gold Holo Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Inception; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dereck Lively; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Topps Inception Dereck Lively II Gold Holo Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2024-25 Topps Inception; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Dereck Lively II; Team: Dallas Mavericks; Sport: Basketball; League: NBA; Parallel/Variety: Holo, Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BACE6nS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Dereck Lively",
+    "playerAthlete": "Dereck Lively II",
     "attributes": [
       "Autograph",
       "Serial Numbered",
@@ -55694,7 +55694,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Dereck Lively",
+      "playerAthlete": "Dereck Lively II",
       "excelFields": {
         "Title": "2024-25 Topps Inception Dereck Lively II Gold Holo Auto /50",
         "C:Features": "Autograph|Serial Numbered|Parallel/Variety",
@@ -58939,12 +58939,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Jabari smith/2025-26 Topps Jabari Smith Jr. Green Foil 99 #177 (1).jpg",
       "assets/Personal collection/Jabari smith/2025-26 Topps Jabari Smith Jr. Green Foil 99 #177 (2).jpg"
     ],
-    "description": "2025-26 Topps Jabari Smith Jr. Green Foil /99 #177\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Jabari Smith; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2025-26 Topps Jabari Smith Jr. Green Foil /99 #177\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Jabari Smith Jr.; Team: Houston Rockets; Sport: Basketball; League: NBA; Parallel/Variety: Foil, Green; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/BAGBGlp",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Jabari Smith",
+    "playerAthlete": "Jabari Smith Jr.",
     "attributes": [
       "Serial Numbered",
       "Parallel/Variety"
@@ -58953,7 +58953,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Jabari Smith",
+      "playerAthlete": "Jabari Smith Jr.",
       "excelFields": {
         "Title": "2025-26 Topps Jabari Smith Jr. Green Foil /99 #177",
         "C:Features": "Serial Numbered|Parallel/Variety",
@@ -59020,7 +59020,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 1990s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Z-Force Kevin Garnett",
+    "playerAthlete": "Kevin Garnett",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59052,7 +59052,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 1990s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Miniatures Tim Duncan",
+    "playerAthlete": "Tim Duncan",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59084,7 +59084,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 1990s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Factory All StarQuest Gary Payton",
+    "playerAthlete": "Gary Payton",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59180,7 +59180,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Autographics Carmelo Anthony",
+    "playerAthlete": "Carmelo Anthony",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59212,7 +59212,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Matrix Darko Milicic 112|T.J. Ford 118|LeBron James 111",
+    "playerAthlete": "Darko Milicic|T.J. Ford|LeBron James",
     "copyCount": 1,
     "attributes": [
       "Rookie"
@@ -59279,7 +59279,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "SPx Super Scripts Al Horford",
+    "playerAthlete": "Al Horford",
     "copyCount": 1,
     "attributes": [
       "Autograph"
@@ -59314,7 +59314,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Tip-Off Derrick Rose",
+    "playerAthlete": "Derrick Rose",
     "copyCount": 1,
     "attributes": [
       "Rookie"
@@ -59349,7 +59349,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "UD Black Framed Al Horford",
+    "playerAthlete": "Al Horford",
     "copyCount": 1,
     "attributes": [
       "Autograph"
@@ -59384,7 +59384,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Star Signings Al Horford",
+    "playerAthlete": "Al Horford",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59416,7 +59416,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 2000s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Starquest Black Carmelo Anthony",
+    "playerAthlete": "Carmelo Anthony",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -59655,7 +59655,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Basketball 1990s",
     "league": "NBA",
     "sport": "Basketball",
-    "playerAthlete": "Edge Impulse KB8 Kobe Bryant",
+    "playerAthlete": "Kobe Bryant",
     "copyCount": 1,
     "attributes": [
       "Parallel/Variety"
@@ -63020,7 +63020,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3122,
     "name": "2023-24 Topps OTE Chrome Karter Knox Rookie Refractor Auto",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 17.95,
@@ -63031,7 +63031,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Karter Knox Rookie Refractor Auto (1).JPG",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Karter Knox Rookie Refractor Auto (2).JPG"
     ],
-    "description": "2023-24 Topps OTE Chrome Karter Knox Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Karter Knox; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Karter Knox Rookie Refractor Auto\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Karter Knox; Team: Overtime Elite; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Refractor; Features: Autograph, Rookie, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OJQxS",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "Overtime Elite",
@@ -63058,7 +63058,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3123,
     "name": "2023-24 Topps OTE Chrome Nathan Missia-Dio Green Refractor Auto /75",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 7.95,
@@ -63069,7 +63069,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Nathan Missia-Dio Green Refractor Auto 75 (1).JPG",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Nathan Missia-Dio Green Refractor Auto 75 (2).JPG"
     ],
-    "description": "2023-24 Topps OTE Chrome Nathan Missia-Dio Green Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Nathan Missia-Dio; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Nathan Missia-Dio Green Refractor Auto /75\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Nathan Missia-Dio; Team: Overtime Elite; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OJts9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "Overtime Elite",
@@ -63096,7 +63096,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3124,
     "name": "2023-24 Topps OTE Chrome Parker Robinson Red Yellow Refractor /149",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -63107,7 +63107,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Parker Robinson Red Yellow Refractor 149 (1).JPG",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Parker Robinson Red Yellow Refractor 149 (2).JPG"
     ],
-    "description": "2023-24 Topps OTE Chrome Parker Robinson Red Yellow Refractor /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Parker Robinson; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Red Yellow Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Parker Robinson Red Yellow Refractor /149\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Parker Robinson; Team: Overtime Elite; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Red Yellow Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OJm0u",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "Overtime Elite",
@@ -63133,7 +63133,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3125,
     "name": "2023-24 Topps OTE Chrome Ralph Martino Ball Refractor SP /25",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -63144,7 +63144,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Ralph Martino Ball Refractor SP 25 (1).JPG",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Ralph Martino Ball Refractor SP 25 (2).JPG"
     ],
-    "description": "2023-24 Topps OTE Chrome Ralph Martino Ball Refractor SP /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Ralph Martino; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Refractor; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Ralph Martino Ball Refractor SP /25\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Ralph Martino; Team: Overtime Elite; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Refractor; Features: Serial Numbered, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OdH5x",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "Overtime Elite",
@@ -63171,7 +63171,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3126,
     "name": "2023-24 Topps OTE Chrome Reynan Dos Santos Gold Refractor /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2023,
     "condition": "Near mint or better",
     "price": 4.95,
@@ -63182,7 +63182,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Reynan Dos Santos Gold Refractor 50 (1).JPG",
       "assets/Ebay Listing Photos/2023-24/2023-24 Topps Chrome/2023-24 Topps OTE Chrome Reynan Dos Santos Gold Refractor 50 (2).JPG"
     ],
-    "description": "2023-24 Topps OTE Chrome Reynan Dos Santos Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Reynan Dos Santos; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2023-24 Topps OTE Chrome Reynan Dos Santos Gold Refractor /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2023-24 Topps OTE Chrome; Season: 2023-24; Year manufactured: 2023; Player/Athlete: Reynan Dos Santos; Team: Overtime Elite; Sport: Basketball; League: Overtime Elite; Parallel/Variety: Gold Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2OddbV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "Overtime Elite",
@@ -69417,7 +69417,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3408,
     "name": "2025-26 Topps Kel'El Ware Blue Refractor /150 #74",
     "category": "Basketball",
-    "team": "",
+    "team": "Miami Heat",
     "year": 2025,
     "condition": "Near mint or better",
     "price": 19.95,
@@ -69428,7 +69428,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (1).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Blue Refractor 150 #74 (2).jpg"
     ],
-    "description": "2025-26 Topps Kel'El Ware Blue Refractor /150 #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Blue Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2025-26 Topps Kel'El Ware Blue Refractor /150 #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Blue Refractor; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSPEu",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -69455,7 +69455,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3409,
     "name": "2025-26 Topps Kel'El Ware Gold Border /2025  #74",
     "category": "Basketball",
-    "team": "",
+    "team": "Miami Heat",
     "year": 2025,
     "condition": "Near mint or better",
     "price": 14.95,
@@ -69466,7 +69466,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (1).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2025-26 Topps Kel'El Ware Gold Border 2025  #74 (2).jpg"
     ],
-    "description": "2025-26 Topps Kel'El Ware Gold Border /2025  #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Gold Border; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2025-26 Topps Kel'El Ware Gold Border /2025  #74\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Gold Border; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PSL2j",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -69494,7 +69494,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3410,
     "name": "2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie /99",
     "category": "Basketball",
-    "team": "",
+    "team": "Miami Heat",
     "year": 2024,
     "condition": "Near mint or better",
     "price": 24.95,
@@ -69505,7 +69505,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (1).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie 99 (2).jpg"
     ],
-    "description": "2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Select; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Purple Ice, Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Select Kel'El Ware Mezzanine Purple Ice Prizm Rookie /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Select; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Purple Ice, Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2P8vx1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -69533,7 +69533,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3411,
     "name": "2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto /50",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 79.95,
@@ -69544,7 +69544,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (1).jpg",
       "assets/Personal collection/Kel’El Ware/Listed - Copy (2)/2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto 50 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Inception; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Inception Kel'El Ware Primordial Gold Auto /50\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Inception; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Gold; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pjyue",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -72313,7 +72313,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3487,
     "name": "2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie /100 PSA 9 Mint",
     "category": "Basketball",
-    "team": "",
+    "team": "Miami Heat",
     "year": 2024,
     "condition": "PSA 9",
     "price": 59.95,
@@ -72324,7 +72324,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (1).JPG",
       "assets/Personal collection/Kel’El Ware/PSA/2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie 100 PSA 9 Mint (2).JPG"
     ],
-    "description": "2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie /100 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Red Fast Break Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024-25 Panini Prizm Kel'El Ware Red Fast Break Prizm Rookie /100 PSA 9 Mint\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024-25 Panini Prizm; Season: 2024-25; Year manufactured: 2024; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Red Fast Break Prizm; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PxfP2",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -72393,7 +72393,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3493,
     "name": "2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto /99 PSA 8",
     "category": "Basketball",
-    "team": "",
+    "team": "Miami Heat",
     "year": 2025,
     "condition": "PSA 8",
     "price": 34.95,
@@ -72404,7 +72404,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (1).JPG",
       "assets/Personal collection/Kel’El Ware/PSA/2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto 99 PSA 8 (2).JPG"
     ],
-    "description": "2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NBA; Parallel/Variety: Green Foil; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2025-26 Topps Kel'El Ware Topps Notch Signatures Green Foil Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2025-26 Topps; Season: 2025-26; Year manufactured: 2025; Player/Athlete: Kel'El Ware; Team: Miami Heat; Sport: Basketball; League: NBA; Parallel/Variety: Green Foil; Features: Autograph, Serial Numbered, Parallel/Variety, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PzJUP",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NBA",
@@ -72870,7 +72870,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3506,
     "name": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75 PSA 10",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 10",
     "price": 349.95,
@@ -72881,7 +72881,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto 75 PSA 10 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Lava Refractor, Gold Lava; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Gold Lava Refractor Auto /75 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Lava Refractor, Gold Lava; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCPl1",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -72910,7 +72910,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3508,
     "name": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 10",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 10",
     "price": 349.95,
@@ -72921,7 +72921,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 10 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnFOG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -72949,7 +72949,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3509,
     "name": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 9",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 9",
     "price": 299.95,
@@ -72960,7 +72960,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Chrome Kel'El Ware Green Refractor Auto 99 PSA 9 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 9 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn2Jn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -72989,7 +72989,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3511,
     "name": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 8",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 8",
     "price": 199.95,
@@ -73002,7 +73002,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (5).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Green Refractor Auto 99 PSA 8 (6).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Green Refractor Auto /99 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Green Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PCtDv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73031,7 +73031,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3514,
     "name": "2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto /150 PSA 9",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 9",
     "price": 279.95,
@@ -73046,7 +73046,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (7).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto 150 PSA 9 (8).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto /150 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Blue Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Blue Refractor Auto /150 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Blue Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PC1AG",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73075,7 +73075,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3518,
     "name": "2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto /25 PSA 10",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 10",
     "price": 499.95,
@@ -73086,7 +73086,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto 25 PSA 10 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto /25 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Ref; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Prime Orange Ref Auto /25 PSA 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Orange Ref; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 10.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn7zx",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73114,7 +73114,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3519,
     "name": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 9",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 9",
     "price": 299.95,
@@ -73125,7 +73125,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 9 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 9\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pn00P",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73153,7 +73153,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3520,
     "name": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 8",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 8",
     "price": 229.95,
@@ -73164,7 +73164,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto 50 PSA 8 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Prime Signatures Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Features: Autograph, Serial Numbered, Insert; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnasV",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73192,7 +73192,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3521,
     "name": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 8",
     "price": 229.95,
@@ -73203,7 +73203,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto 50 PSA 8 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Lava Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Neon Lava Refractor Auto /50 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Lava Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2Pnzg9",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -73232,7 +73232,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3523,
     "name": "2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto /25 PSA 8",
     "category": "Basketball",
-    "team": "",
+    "team": "Oregon Ducks",
     "year": 2022,
     "condition": "PSA 8",
     "price": 299.95,
@@ -73243,7 +73243,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (1).jpg",
       "assets/Personal collection/Kel’El Ware/PSA/2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto 25 PSA 8 (2).jpg"
     ],
-    "description": "2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto /25 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Speckle Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2022-23 Bowman University Best Kel'El Ware Neon Speckle Refractor Auto /25 PSA 8\n\nListing details: Type: Sports Trading Card; Manufacturer: Bowman; Set: 2022-23 Bowman University Best; Season: 2022-23; Year manufactured: 2022; Player/Athlete: Kel'El Ware; Team: Oregon Ducks; Sport: Basketball; League: NCAA; Parallel/Variety: Neon Speckle Refractor; Features: Autograph, Serial Numbered, Parallel/Variety; Autographed: Yes; Condition: PSA 8.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/C2PnAOb",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NCAA",
@@ -74819,7 +74819,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3569,
     "name": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 27.95,
@@ -74832,7 +74832,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (3).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6 (4).JPG"
     ],
-    "description": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Chrome; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: OTE; Parallel/Variety: Refractor; Features: Rookie, Short Print, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
+    "description": "2022-23 Topps OTE Chrome Bryson Tiller Super Fly Refractor Rookie SP #SF-6\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Chrome; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: OTE; Parallel/Variety: Refractor; Features: Rookie, Short Print, Parallel/Variety, Insert; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-chrome-bryson-tiller-super-fly-refractor-rookie-sp-sf-6-1.CLhYs2e",
     "sourcePage": "Non-Legacy Listings",
     "league": "OTE",
@@ -74862,7 +74862,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 3570,
     "name": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)",
     "category": "Basketball",
-    "team": "",
+    "team": "Overtime Elite",
     "year": 2022,
     "condition": "Near mint or better",
     "price": 47.95,
@@ -74874,7 +74874,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (2).jpg",
       "assets/Personal collection/Bryson Tiller/2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie 250 Set (x8) (3).jpg"
     ],
-    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Finest; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Sport: Basketball; League: OTE; Parallel/Variety: Purple Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
+    "description": "2022-23 Topps OTE Finest Bryson Tiller Purple Refractor Rookie /250 Set (x8)\n\nDetails: Type: Sports Trading Card; Manufacturer: Topps; Set: 2022-23 Topps OTE Finest; Season: 2022-23; Year: 2022; Player/Athlete: Bryson Tiller; Team: Overtime Elite; Sport: Basketball; League: OTE; Parallel/Variety: Purple Refractor; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Cards included: 8; Condition: Near mint or better.\n\nPlease review all photos for the exact items included and condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2022-23-topps-ote-finest-bryson-tiller-purple-refractor-rookie-250-set-x8-1.CLhYbhQ",
     "sourcePage": "Non-Legacy Listings",
     "league": "OTE",

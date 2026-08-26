@@ -780,7 +780,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football Cards",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Jamal Charles",
+    "playerAthlete": "Jamaal Charles",
     "attributes": [
       "Rookie"
     ],
@@ -2417,7 +2417,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football Cards",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Lamar Miller Authentic",
+    "playerAthlete": "Lamar Miller",
     "attributes": [
       "Memorabilia"
     ],
@@ -2928,7 +2928,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 900,
     "name": "2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto /25 BGS 9 Auto 10",
     "category": "Football",
-    "team": "Los Angeles Rams",
+    "team": "St. Louis Rams",
     "year": 2010,
     "condition": "BGS 9",
     "price": 44.95,
@@ -2939,7 +2939,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto 25 BGS 9 Auto 10 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto 25 BGS 9 Auto 10 (2).jpg"
     ],
-    "description": "2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto /25 BGS 9 Auto 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2010 Panini Plates and Patches; Season: 2010-11; Year manufactured: 2010; Player/Athlete: Sam Bradford; Team: Los Angeles Rams; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: BGS 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2010 Panini Plates and Patches Sam Bradford Rookie Blitz Auto /25 BGS 9 Auto 10\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2010 Panini Plates and Patches; Season: 2010-11; Year manufactured: 2010; Player/Athlete: Sam Bradford; Team: St. Louis Rams; Sport: Football; League: NFL; Features: Autograph, Rookie, Serial Numbered, Memorabilia; Autographed: Yes; Condition: BGS 9.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2010-panini-plates-and-patches-sam-bradford-rookie-blitz-auto-25-bgs-9-auto-10-1.Bu7rOOv",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -3586,7 +3586,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 926,
     "name": "2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54",
     "category": "Football",
-    "team": "",
+    "team": "Green Bay Packers",
     "year": 2011,
     "condition": "Near mint or better",
     "price": 1.95,
@@ -3597,12 +3597,12 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54 (2).jpg"
     ],
-    "description": "2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Finest; Season: 2011; Year manufactured: 2011; Player/Athlete: Finest Alex; Sport: Football; League: NFL; Parallel/Variety: Refractor, Speckle, Green; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2011 Topps Finest; Season: 2011; Year manufactured: 2011; Player/Athlete: Alex Green; Team: Green Bay Packers; Sport: Football; League: NFL; Parallel/Variety: Refractor, Speckle, Green; Features: Rookie, Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2011-topps-finest-alex-green-speckle-refractor-rookie-sp-54-1.BuYCqRn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Finest Alex",
+    "playerAthlete": "Alex Green",
     "attributes": [
       "Rookie",
       "Short Print",
@@ -3612,7 +3612,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "isDeleted": false,
     "sortRank": 0,
     "metadata": {
-      "playerAthlete": "Finest Alex",
+      "playerAthlete": "Alex Green",
       "excelFields": {
         "Title": "2011 Topps Finest Alex Green Speckle Refractor Rookie SP #54",
         "C:Features": "Rookie|Short Print|Parallel/Variety",
@@ -4983,7 +4983,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1042,
     "name": "2013 Panini Certified Peyton Manning Silver #56 + /2006 Topps Total Red SP #300",
     "category": "Football",
-    "team": "Indianapolis Colts",
+    "team": "Denver Broncos|Indianapolis Colts",
     "year": 2013,
     "condition": "Near mint or better",
     "price": 1.95,
@@ -4994,7 +4994,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Peyton Manning Silver #56 + 2006 Topps Total Red SP #300 (1).jpg",
       "assets/Ebay Listing Photos/Football/1990-2013/2013 Panini Certified Peyton Manning Silver #56 + 2006 Topps Total Red SP #300 (2).jpg"
     ],
-    "description": "2013 Panini Certified Peyton Manning Silver #56 + /2006 Topps Total Red SP #300\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Panini Certified; Season: 2013; Year manufactured: 2013; Player/Athlete: Peyton Manning; Team: Indianapolis Colts; Sport: Football; League: NFL; Parallel/Variety: Red, Silver; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2013 Panini Certified Peyton Manning Silver #56 + /2006 Topps Total Red SP #300\n\nListing details: Type: Sports Trading Card; Manufacturer: Topps; Set: 2013 Panini Certified; Season: 2013; Year manufactured: 2013; Player/Athlete: Peyton Manning; Team: Denver Broncos|Indianapolis Colts; Sport: Football; League: NFL; Parallel/Variety: Red, Silver; Features: Short Print, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2013-panini-certified-peyton-manning-silver-56-plus-2006-topps-total-red-sp-300-1.BuanFPR",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5846,7 +5846,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1112,
     "name": "2016 Panini Crown Royale Allen Robinson Light Blue /99",
     "category": "Football",
-    "team": "Chicago Bears",
+    "team": "Jacksonville Jaguars",
     "year": 2016,
     "condition": "Near mint or better",
     "price": 2.49,
@@ -5857,7 +5857,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Allen Robinson Light Blue 99 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Allen Robinson Light Blue 99 (2).jpg"
     ],
-    "description": "2016 Panini Crown Royale Allen Robinson Light Blue /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Allen Robinson; Team: Chicago Bears; Sport: Football; League: NFL; Parallel/Variety: Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2016 Panini Crown Royale Allen Robinson Light Blue /99\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Allen Robinson; Team: Jacksonville Jaguars; Sport: Football; League: NFL; Parallel/Variety: Blue; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-allen-robinson-light-blue-99-1.Bu0czRn",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -5884,7 +5884,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1113,
     "name": "2016 Panini Crown Royale Braxton Miller Red Foil /249 Rookie #91",
     "category": "Football",
-    "team": "",
+    "team": "Houston Texans",
     "year": 2016,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -5895,7 +5895,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Braxton Miller Red Foil 249 Rookie #91 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Braxton Miller Red Foil 249 Rookie #91 (2).jpg"
     ],
-    "description": "2016 Panini Crown Royale Braxton Miller Red Foil /249 Rookie #91\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Braxton Miller; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2016 Panini Crown Royale Braxton Miller Red Foil /249 Rookie #91\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Braxton Miller; Team: Houston Texans; Sport: Football; League: NFL; Parallel/Variety: Foil, Red; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-braxton-miller-red-foil-249-rookie-91-1.Bu0leEl",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6039,7 +6039,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1117,
     "name": "2016 Panini Crown Royale Paxton Lynch Orange Foil /249 Rookie #84",
     "category": "Football",
-    "team": "",
+    "team": "Denver Broncos",
     "year": 2016,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -6050,7 +6050,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Orange Foil 249 Rookie #84 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Paxton Lynch Orange Foil 249 Rookie #84 (2).jpg"
     ],
-    "description": "2016 Panini Crown Royale Paxton Lynch Orange Foil /249 Rookie #84\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Paxton Lynch; Sport: Football; League: NFL; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2016 Panini Crown Royale Paxton Lynch Orange Foil /249 Rookie #84\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Paxton Lynch; Team: Denver Broncos; Sport: Football; League: NFL; Parallel/Variety: Foil, Orange; Features: Rookie, Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-paxton-lynch-orange-foil-249-rookie-84-1.Bu0NHEF",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -6155,7 +6155,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 1120,
     "name": "2016 Panini Crown Royale Su'A Cravens Auto #27",
     "category": "Football",
-    "team": "",
+    "team": "Washington Redskins",
     "year": 2016,
     "condition": "Near mint or better",
     "price": 2.95,
@@ -6166,7 +6166,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Su'A Cravens Auto #27 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2016 Panini Crown Royale Su'A Cravens Auto #27 (2).jpg"
     ],
-    "description": "2016 Panini Crown Royale Su'A Cravens Auto #27\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Su'a Cravens; Sport: Football; League: NFL; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2016 Panini Crown Royale Su'A Cravens Auto #27\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2016 Panini Crown Royale; Season: 2016; Year manufactured: 2016; Player/Athlete: Su'a Cravens; Team: Washington Redskins; Sport: Football; League: NFL; Features: Autograph; Autographed: Yes; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/2016-panini-crown-royale-su-and-039a-cravens-auto-27-1.Bu0ONRf",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7728,7 +7728,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "id": 2382,
     "name": "2024 Panini Absolute Football Derek Carr Orange Mosaic /299 #76",
     "category": "Football",
-    "team": "Las Vegas Raiders",
+    "team": "New Orleans Saints",
     "year": 2024,
     "condition": "Near mint or better",
     "price": 3.95,
@@ -7739,7 +7739,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Panini Absolute Football Derek Carr Orange Mosaic 299 #76 (1).jpg",
       "assets/Ebay Listing Photos/Football/2014-2026/2024 Panini Absolute Football Derek Carr Orange Mosaic 299 #76 (2).jpg"
     ],
-    "description": "2024 Panini Absolute Football Derek Carr Orange Mosaic /299 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024 Panini Absolute; Season: 2024; Year manufactured: 2024; Player/Athlete: Derek Carr; Team: Las Vegas Raiders; Sport: Football; League: NFL; Parallel/Variety: Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
+    "description": "2024 Panini Absolute Football Derek Carr Orange Mosaic /299 #76\n\nListing details: Type: Sports Trading Card; Manufacturer: Panini; Set: 2024 Panini Absolute; Season: 2024; Year manufactured: 2024; Player/Athlete: Derek Carr; Team: New Orleans Saints; Sport: Football; League: NFL; Parallel/Variety: Orange; Features: Serial Numbered, Parallel/Variety; Autographed: No; Condition: Near mint or better.\n\nPlease review all photos for the exact item or items included and for condition details.",
     "photoHostPageUrl": "https://freeimage.host/i/Bu185Ml",
     "sourcePage": "Ebay Bulk Upload (Final) - Photo Links Updated",
     "league": "NFL",
@@ -7855,7 +7855,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2000s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Total Adrian Peterson",
+    "playerAthlete": "Adrian Peterson",
     "copyCount": 1,
     "attributes": [
       "Rookie"
@@ -7925,7 +7925,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2000s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Hit Jordy Nelson",
+    "playerAthlete": "Jordy Nelson",
     "copyCount": 1,
     "attributes": [
       "Autograph"
@@ -8030,7 +8030,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2000s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "UD Masterpieces Captured on Canvas Jerseys Jordy Nelson",
+    "playerAthlete": "Jordy Nelson",
     "copyCount": 1,
     "attributes": [
       "Memorabilia"
@@ -8161,7 +8161,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Class of -4 Cam Newton",
+    "playerAthlete": "Cam Newton",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -8229,7 +8229,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Hit Blue Cam Newton",
+    "playerAthlete": "Cam Newton",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -8261,7 +8261,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Hit Art Cam Newton",
+    "playerAthlete": "Cam Newton",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -8361,7 +8361,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Rising Prince Amukamara",
+    "playerAthlete": "Prince Amukamara",
     "copyCount": 1,
     "attributes": [
       "Rookie"
@@ -8428,7 +8428,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Rising Ryan Williams",
+    "playerAthlete": "Ryan Williams",
     "copyCount": 1,
     "attributes": [
       "Rookie"
@@ -8528,7 +8528,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Mirror Blue Freshman Fabric Cam Newton Jsy",
+    "playerAthlete": "Cam Newton",
     "copyCount": 1,
     "attributes": [
       "Autograph",
@@ -8565,7 +8565,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "& Stars Longevity Freshman Orientation Jerseys A.J. Green",
+    "playerAthlete": "A.J. Green",
     "copyCount": 1,
     "attributes": [
       "Rookie",
@@ -8601,7 +8601,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Hit Blue Orange Cam Newton",
+    "playerAthlete": "Cam Newton",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,
@@ -8633,7 +8633,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sourcePage": "Football 2010s",
     "league": "NFL",
     "sport": "Football",
-    "playerAthlete": "Hit Make Ready A.J. Green Cyan Plate",
+    "playerAthlete": "A.J. Green",
     "copyCount": 1,
     "isFeatured": false,
     "isDeleted": false,

@@ -503,7 +503,7 @@
       "sourcePage": "Baseball 1950s",
       "league": "MLB",
       "sport": "Baseball",
-      "playerAthlete": "Fence Busters Aaron-Mathews",
+      "playerAthlete": "Hank Aaron|Eddie Mathews",
       "isFeatured": false,
       "sortRank": 0,
       "hasThumbnail": true
@@ -677,7 +677,7 @@
       "sourcePage": "Baseball 1960s",
       "league": "MLB",
       "sport": "Baseball",
-      "playerAthlete": "Bob (Roberto) Clemente",
+      "playerAthlete": "Roberto Clemente",
       "isFeatured": false,
       "sortRank": 0,
       "hasThumbnail": true
@@ -805,7 +805,7 @@
       "sourcePage": "Baseball 1960s",
       "league": "MLB",
       "sport": "Baseball",
-      "playerAthlete": "Joe Morgan",
+      "playerAthlete": "Joe M. Morgan",
       "attributes": [
         "Rookie"
       ],
