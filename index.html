@@ -14,8 +14,8 @@
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/grass.webp" rel="preload" type="image/webp"/>
 <link as="image" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260825b" rel="stylesheet"/>
-<link href="styles-mobile-overrides.css?v=20260825b" rel="stylesheet"/>
+ <link href="styles.css?v=20260826a" rel="stylesheet"/>
+<link href="styles-mobile-overrides.css?v=20260826a" rel="stylesheet"/>
 <meta content="index,follow,max-image-preview:large" name="robots"/>
 <meta content="#1f2fa3" name="theme-color"/>
 <meta content="light dark" name="color-scheme"/>
@@ -31,7 +31,7 @@
 <meta content="Shop vintage sports cards, graded favorites, Bronze Age comics, autographs, relics, and collectible finds at DJ's House of Cards &amp; Comics." name="twitter:description"/>
 <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" name="twitter:image"/>
 <link href="https://www.djshouseofcards-comics.com/" rel="canonical"/>
-<link href="site.webmanifest?v=20260825b" rel="manifest"/>
+<link href="site.webmanifest?v=20260826a" rel="manifest"/>
 <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
 <!-- Shared JavaScript bundles. Load order matters because later files depend on window.DJ helpers. -->
@@ -55,6 +55,62 @@
       </span>
 </span>
 </a>
+<form class="home-header-search" id="homeCatalogSearch" role="search">
+<label class="sr-only" for="homeCatalogSearchInput">Search the DJHC catalog</label>
+<div class="home-header-search__bar">
+<svg aria-hidden="true" class="home-header-search__icon" focusable="false" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="6.5"></circle>
+<path d="m16 16 4 4"></path>
+</svg>
+<input autocomplete="off" id="homeCatalogSearchInput" name="search" placeholder="Search player, title, year, set, or category" type="search"/>
+<button aria-controls="homeSearchScope" aria-expanded="false" id="homeCatalogSearchSubmit" type="submit">
+<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="6.5"></circle>
+<path d="m16 16 4 4"></path>
+</svg>
+<span>Search</span>
+</button>
+</div>
+<div class="home-search-scope" hidden id="homeSearchScope">
+<p class="sr-only" id="homeSearchStatus" role="status"></p>
+<div class="home-search-scope__heading">
+<span>Choose where to search</span>
+<strong id="homeSearchScopeTerm"></strong>
+</div>
+<div class="home-search-scope__links">
+<a data-search-base="baseball-cards.html" href="baseball-cards.html">Baseball</a>
+<a data-search-base="basketball-cards.html" href="basketball-cards.html">Basketball</a>
+<a data-search-base="football-cards.html" href="football-cards.html">Football</a>
+<a data-search-base="comics.html" href="comics.html">Comics</a>
+<a data-search-base="collectibles.html" href="collectibles.html">Collectibles</a>
+</div>
+</div>
+</form>
+<noscript>
+<style>#homeCatalogSearch{display:none}</style>
+<aside class="home-header-search__no-script">
+Catalog search needs JavaScript. Browse <a href="sports-cards.html">Sports Cards</a>, <a href="comics.html">Comics</a>, or <a href="collectibles.html">Collectibles</a>.
+</aside>
+</noscript>
+<div aria-label="Account and shopping tools" class="home-header-utility" role="navigation">
+<a class="home-header-utility__sell" href="sell-trade-want-list.html">
+<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M7.5 12.5 4 9l2.2-2.2 3.4 3.4m6.9 2.3L20 9l-2.2-2.2-3.4 3.4M8 17l2.2 2.2a2.6 2.6 0 0 0 3.6 0L16 17m-8-4.5 3.1-3.1a1.3 1.3 0 0 1 1.8 0l3.1 3.1-3.2 3.2a1.1 1.1 0 0 1-1.6 0l-.9-.9"></path></svg>
+<span>Sell or Trade</span>
+</a>
+<a aria-label="Account" class="home-header-utility__icon" href="account.html" title="Account">
+<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+</a>
+<a class="home-header-utility__icon" href="wishlist.html" title="Wishlist">
+<span class="sr-only">Wishlist </span>
+<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M20.8 4.8a5.5 5.5 0 0 0-7.8 0L12 5.9l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z"></path></svg>
+<span class="home-header-utility__count" data-wishlist-count="0">0</span>
+</a>
+<a class="home-header-utility__icon" data-cart-link href="cart.html" title="Cart">
+<span class="sr-only">Cart </span>
+<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 7h16l-1.2 13H5.2L4 7Z"></path><path d="M9 7V5a3 3 0 0 1 6 0v2"></path></svg>
+<span class="home-header-utility__count" data-cart-count="0">(0)</span>
+</a>
+</div>
 <nav aria-label="Primary navigation" class="site-nav" id="siteNav">
      <ul class="primary-nav__list">
       <li class="primary-nav__item">
@@ -114,29 +170,6 @@
 <h2>DJ's Guarantee</h2>
 <p>Authenticity, careful packing, and responsive communication remain part of every order, with questions welcomed before and after a sale.</p>
 </div>
-<div class="lineup-lab-promo">
-<a aria-label="Explore DJ's Lineup Lab, an experimental NBA team-season lineup optimizer" class="lineup-lab-promo__link" href="lineup-lab/">
-<span aria-hidden="true" class="lineup-lab-promo__logo">
-<svg class="lineup-lab-promo__mark" viewBox="0 0 48 48">
-<rect fill="currentColor" height="46" opacity=".16" rx="12" width="46" x="1" y="1"></rect>
-<path d="M24 6v36M10 24h28M14 10c6 4 14 4 20 0M14 38c6-4 14-4 20 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
-<circle cx="24" cy="24" fill="none" r="7" stroke="currentColor" stroke-width="2"></circle>
-<circle cx="12" cy="14" fill="#ef233c" r="3"></circle>
-<circle cx="36" cy="14" fill="#ef233c" r="3"></circle>
-<circle cx="12" cy="34" fill="#4c65eb" r="3"></circle>
-<circle cx="36" cy="34" fill="#4c65eb" r="3"></circle>
-<circle cx="24" cy="24" fill="#f4c766" r="3"></circle>
-</svg>
-<span class="lineup-lab-promo__wordmark"><span>DJ'S</span><strong>LINEUP LAB</strong></span>
-</span>
-<span class="lineup-lab-promo__copy">
-<span class="lineup-lab-promo__eyebrow">New fan tool</span>
-<strong>Build the lineup. See every tradeoff.</strong>
-<span>An experimental NBA team-season optimizer for comparing lineups around your game plan.</span>
-</span>
-<span class="lineup-lab-promo__cta">Explore Lab <span aria-hidden="true">&rarr;</span></span>
-</a>
-</div>
 </div>
 <div class="hero-brand glass-card">
 <div class="hero-logo-wrap">
@@ -162,35 +195,15 @@
         Sell or Trade With DJ
        </a>
 </div>
-<div class="hero-marketplace-card">
-<span class="hero-card-eyebrow">Shop DJ everywhere</span>
-<h2>Follow the full inventory trail.</h2>
-<div class="marketplace-link-grid" aria-label="DJ marketplace storefronts">
-<a href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a>
-<a href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify</a>
-<a href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a>
-</div>
-</div>
-<div class="hero-account-card">
-<span class="hero-card-eyebrow">Customer account</span>
-<h2>Sign in while you browse.</h2>
-<p>Save wishlist picks, keep buyer details handy, and come back to checkout-ready favorites without jumping tabs first.</p>
-<div class="home-auth-actions">
-<button class="button" id="homeSignIn" type="button">Sign In / Create Account</button>
-<a class="button-secondary" href="account.html">Account Details</a>
-</div>
-<p aria-live="polite" class="home-auth-status" hidden id="homeAuthStatus"></p>
-</div>
 </div>
 </div>
 </section>
-<section class="section section-top">
+<section class="section section-top home-category-section" id="shop-by-category">
 <div class="container">
-<div class="section-heading">
+<div aria-hidden="true" class="home-section-rule"><span></span><span></span><span></span></div>
+<div class="section-heading home-section-heading">
 <div>
-<span class="kicker">
-        Shop by Category
-       </span>
+<span class="home-section-kicker"><strong>01</strong><i>/</i> Shop by Category</span>
 <h2 class="section-title">Browse the collection your way.</h2>
 </div>
 <p>Start with the department that matches the search, then narrow the inventory to the cards, comics, or collectibles that fit a collector's taste.</p>
@@ -199,6 +212,10 @@
 <a class="category-card" href="sports-cards.html" style="--category-bg:var(--image-baseball-main)">
 <div class="overlay">
 </div>
+<span aria-hidden="true" class="category-card__number">01</span>
+<span aria-hidden="true" class="category-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"></path><path d="M8 6H4v1a5 5 0 0 0 5 5m7-6h4v1a5 5 0 0 1-5 5M12 12v5m-4 3h8m-6-3h4"></path></svg>
+</span>
 <span class="category-pill">
         Sports Cards
        </span>
@@ -209,6 +226,10 @@
 <a class="category-card" href="comics.html" style="--category-bg:var(--image-comics-main)">
 <div class="overlay">
 </div>
+<span aria-hidden="true" class="category-card__number">02</span>
+<span aria-hidden="true" class="category-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4V5.5Z"></path><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H14v17a3 3 0 0 1 3-3h3V5.5Z"></path></svg>
+</span>
 <span class="category-pill">
         Comics
        </span>
@@ -219,6 +240,10 @@
 <a class="category-card" href="collectibles.html" style="--category-bg:var(--image-jordan)">
 <div class="overlay">
 </div>
+<span aria-hidden="true" class="category-card__number">03</span>
+<span aria-hidden="true" class="category-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><path d="m3 9 4-5h10l4 5-9 11L3 9Z"></path><path d="m7 4 2 5 3-5 3 5 2-5M3 9h18M9 9l3 11 3-11"></path></svg>
+</span>
 <span class="category-pill">
         Collectibles
        </span>
@@ -229,13 +254,12 @@
 </div>
 </div>
 </section>
-<section class="section">
+<section class="section home-featured-section">
 <div class="container">
-<div class="section-heading">
+<div aria-hidden="true" class="home-section-rule"><span></span><span></span><span></span></div>
+<div class="section-heading home-section-heading">
 <div>
-<span class="kicker">
-        Featured Finds
-       </span>
+<span class="home-section-kicker"><strong>02</strong><i>/</i> Featured Finds</span>
 <h2 class="section-title">Featured pieces from the collection.</h2>
 </div>
 <p>Featured listings highlight the mix that defines the shop: vintage stars, graded favorites, modern memorabilia cards, Bronze Age comics, and collectible pieces worth a closer look.</p>
@@ -405,6 +429,85 @@
 </div>
 </div>
 </section>
+<section class="section home-connect-section" id="connect">
+<div class="container">
+<div aria-hidden="true" class="home-section-rule"><span></span><span></span><span></span></div>
+<div class="section-heading home-section-heading home-connect-heading">
+<div>
+<span class="home-section-kicker"><strong>03</strong><i>/</i> More Ways to Connect</span>
+<h2 class="section-title">Shop, save, or ask DJ.</h2>
+</div>
+<p>The supporting homepage tools remain easy to find without competing with the first shopping decision.</p>
+</div>
+<div class="home-connect-grid">
+<article class="home-connect-card hero-marketplace-card">
+<span aria-hidden="true" class="home-connect-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><path d="M4 9h16l-1-5H5L4 9Z"></path><path d="M5 9v11h14V9M9 20v-6h6v6M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path></svg>
+</span>
+<span class="hero-card-eyebrow">Shop DJ everywhere</span>
+<h3>Follow the full inventory trail.</h3>
+<p>Find DJHC across the current marketplace storefronts.</p>
+<div aria-label="DJ marketplace storefronts" class="marketplace-link-grid">
+<a href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a>
+<a href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify</a>
+<a href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a>
+</div>
+</article>
+<article class="home-connect-card hero-account-card">
+<span aria-hidden="true" class="home-connect-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><circle cx="10" cy="7" r="4"></circle><path d="M3 21a7 7 0 0 1 11.8-5.1M16 18l2 2 4-5"></path></svg>
+</span>
+<span class="hero-card-eyebrow">Customer account</span>
+<h3>Sign in while you browse.</h3>
+<p>Save wishlist picks, keep buyer details handy, and return to checkout-ready favorites.</p>
+<div class="home-auth-actions">
+<button class="button" id="homeSignIn" type="button">Sign In / Create Account</button>
+<a class="button-secondary" href="account.html">Account Details</a>
+</div>
+<p aria-live="polite" class="home-auth-status" hidden id="homeAuthStatus"></p>
+</article>
+<article class="home-connect-card home-connect-card--contact">
+<span aria-hidden="true" class="home-connect-card__icon">
+<svg focusable="false" viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 4V5Z"></path><path d="M8 9h8M8 13h5"></path></svg>
+</span>
+<span class="hero-card-eyebrow">Direct conversation</span>
+<h3>Talk directly with DJ.</h3>
+<p>Ask about a listing, follow on Facebook, or start a sell-and-trade conversation.</p>
+<div class="home-connect-actions">
+<a class="button-secondary social-link social-link--facebook" href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="social-link__icon social-link__icon--facebook" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="#1877F2" r="12"></circle><path d="M13.5 20v-6h2l.3-2.4h-2.3V10c0-.7.2-1.2 1.2-1.2H16V6.6c-.2 0-.9-.1-1.8-.1-1.8 0-3 1.1-3 3.2v1.8H9.4V14h1.8v6h2.3Z" fill="#FFFFFF" stroke="none"></path></svg>
+Facebook
+</a>
+<a class="button-secondary" href="sell-trade-want-list.html">Sell or Trade</a>
+<a class="button-secondary" href="contact.html">Contact DJ</a>
+</div>
+</article>
+</div>
+<div class="lineup-lab-promo home-connect-lab">
+<a aria-label="Explore DJ's Lineup Lab, an experimental NBA team-season lineup optimizer" class="lineup-lab-promo__link" href="lineup-lab/">
+<span aria-hidden="true" class="lineup-lab-promo__logo">
+<svg class="lineup-lab-promo__mark" viewBox="0 0 48 48">
+<rect fill="currentColor" height="46" opacity=".16" rx="12" width="46" x="1" y="1"></rect>
+<path d="M24 6v36M10 24h28M14 10c6 4 14 4 20 0M14 38c6-4 14-4 20 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<circle cx="24" cy="24" fill="none" r="7" stroke="currentColor" stroke-width="2"></circle>
+<circle cx="12" cy="14" fill="#ef233c" r="3"></circle>
+<circle cx="36" cy="14" fill="#ef233c" r="3"></circle>
+<circle cx="12" cy="34" fill="#4c65eb" r="3"></circle>
+<circle cx="36" cy="34" fill="#4c65eb" r="3"></circle>
+<circle cx="24" cy="24" fill="#f4c766" r="3"></circle>
+</svg>
+<span class="lineup-lab-promo__wordmark"><span>DJ'S</span><strong>LINEUP LAB</strong></span>
+</span>
+<span class="lineup-lab-promo__copy">
+<span class="lineup-lab-promo__eyebrow">Separate fan tool</span>
+<strong>Build the lineup. See every tradeoff.</strong>
+<span>An experimental NBA team-season optimizer, kept secondary to the storefront.</span>
+</span>
+<span class="lineup-lab-promo__cta">Explore Lab <span aria-hidden="true">&rarr;</span></span>
+</a>
+</div>
+</div>
+</section>
   <div aria-hidden="true" aria-label="Product details" aria-modal="true" class="modal" id="productModal" inert="" role="dialog">
 <div class="modal-content">
 <button aria-label="Close product details" class="modal-close" type="button">
@@ -416,7 +519,7 @@
 </div>
 </main>
 <!-- Shared site footer and quick links -->
-<footer class="footer">
+<footer class="footer site-footer">
 <div class="container footer-inner">
 <div class="footer-brand">
 <div class="footer-logo-line">
@@ -426,60 +529,117 @@
         DJ's House of Cards
        </div>
 <div class="brand-kicker">
-        &amp; Comics &bull; Trusted Hobby Finds
+        Sports cards &bull; Comics &bull; Collector finds
        </div>
 </div>
 </div>
 <p>
-      Curated sports cards, comics, and collectibles for buyers who enjoy the hunt.
+      A collector-focused storefront for vintage stars, graded cards, modern hobby finds, key comics, and direct conversations with DJ.
      </p>
 </div>
 <div class="footer-links">
-<strong>
-      Quick Links
-     </strong>
-<a href="sports-cards.html">
-      Sports Cards
-     </a>
-<a href="comics.html">
-      Comics
-     </a>
-<a href="collectibles.html">
-      Collectibles
-     </a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify Store</a><a class="footer-marketplace-link" data-footer-group="storefronts" href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a>
-<a href="wishlist.html">
-      View wishlist
-      <span data-wishlist-count="0">
-       0
-      </span>
-</a>
-<a href="about.html">
-      About DJ
-     </a>
-<a href="policies.html">
-      Policies &amp; Authenticity
-     </a>
-<a href="sell-trade-want-list.html">
-      Sell / Trade / Want List
-     </a>
-<a href="contact.html">
-      Contact
-     </a>
+<div class="footer-link-groups">
+<div class="footer-link-group footer-link-group--browse">
+<strong><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"></path></svg> Browse</strong>
+<a href="sports-cards.html">Sports Cards</a>
+<a href="comics.html">Comics</a>
+<a href="collectibles.html">Collectibles</a>
+</div>
+<div class="footer-link-group footer-link-group--support">
+<strong><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9a2.6 2.6 0 0 1 5 .9c0 2-2.6 2.2-2.6 4M12 18h.01"></path></svg> Help &amp; Policies</strong>
+<a href="contact.html">Contact DJ</a>
+<a href="shipping.html">Shipping</a>
+<a href="returns.html">Returns</a>
+<a href="policies.html">Policies &amp; Authenticity</a>
+</div>
+<div class="footer-link-group footer-link-group--storefronts">
+<strong><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 9h16l-1-5H5L4 9Z"></path><path d="M5 9v11h14V9M9 20v-6h6v6"></path></svg> Shop &amp; Follow</strong>
+<a href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">Facebook</a>
+<a href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a>
+<a href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify</a>
+<a href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a>
+</div>
+</div>
 </div>
 </div>
 <div class="container footer-bottom">
 <span>
-     &copy; 2026 DJ's House of Cards &amp; Comics. All rights reserved.
+     DJ's House of Cards &amp; Comics &bull; Independent collector storefront
     </span>
+<span>Actual-item photography &bull; Questions welcomed</span>
 </div>
 </footer>
 <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">
    &uarr;
   </button>
-<script defer="" src="core.js?v=20260825b">
+<script defer="" src="core.js?v=20260826a">
 </script>
-<script defer="" src="seo.js?v=20260825b"></script>
-<script defer="" src="nav.js?v=20260825b">
+<script defer="" src="seo.js?v=20260826a"></script>
+<script defer="" src="nav.js?v=20260826a">
+</script>
+<script>
+(() => {
+  const form = document.getElementById('homeCatalogSearch');
+  const input = document.getElementById('homeCatalogSearchInput');
+  const submit = document.getElementById('homeCatalogSearchSubmit');
+  const scope = document.getElementById('homeSearchScope');
+  const term = document.getElementById('homeSearchScopeTerm');
+  const status = document.getElementById('homeSearchStatus');
+  if (!form || !input || !submit || !scope || !term || !status) return;
+
+  const closeScope = () => {
+    scope.hidden = true;
+    submit.setAttribute('aria-expanded', 'false');
+    status.textContent = '';
+  };
+
+  const updateScope = ({ announce = false } = {}) => {
+    const query = input.value.trim();
+    if (!query) {
+      closeScope();
+      input.focus();
+      status.textContent = 'Enter a search term before choosing a department.';
+      return false;
+    }
+
+    term.textContent = `“${query}”`;
+    scope.querySelectorAll('[data-search-base]').forEach((link) => {
+      link.href = `${link.dataset.searchBase}?search=${encodeURIComponent(query)}`;
+    });
+    scope.hidden = false;
+    submit.setAttribute('aria-expanded', 'true');
+    if (announce) {
+      status.textContent = `Choose a department to search for ${query}.`;
+    }
+    return true;
+  };
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    updateScope({ announce: true });
+  });
+
+  input.addEventListener('input', () => {
+    if (!scope.hidden) updateScope();
+  });
+
+  form.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      updateScope({ announce: true });
+      return;
+    }
+
+    if (event.key === 'Escape' && !scope.hidden) {
+      closeScope();
+      input.focus();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!form.contains(event.target)) closeScope();
+  });
+})();
 </script>
 </body>
 </html>

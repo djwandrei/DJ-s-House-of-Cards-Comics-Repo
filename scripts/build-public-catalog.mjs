@@ -7,7 +7,7 @@ const cleanJsonSources = process.argv.includes('--clean-json');
 const optimizeSegmentJson = process.argv.includes('--optimize-segments');
 const JSON_INDENT = 2;
 const FILES = [
-  'products.json',
+  'products-public.json',
   'products-baseball.json',
   'products-basketball.json',
   'products-football.json',
@@ -27,7 +27,7 @@ const SEGMENTS = {
 };
 
 const BUNDLE_FILES = {
-  'products.json': 'products-data-full.js',
+  'products-public.json': 'products-data-full.js',
   'products-baseball.json': 'products-data-baseball.js',
   'products-basketball.json': 'products-data-basketball.js',
   'products-football.json': 'products-data-football.js',
@@ -47,9 +47,9 @@ const BOOTSTRAP_FILES = {
 };
 const BOOTSTRAP_PRODUCT_LIMIT = 48;
 
-// Category pages only need buyer-facing fields plus a small metadata subset
+// Public catalogs only need buyer-facing fields plus a small metadata subset
 // used to derive storefront badges. The canonical products.json source is never
-// rewritten here so admin tools and Supabase sync retain import bookkeeping.
+// rewritten or served so maintenance tools retain import bookkeeping.
 const STOREFRONT_FIELDS = new Set([
   'id', 'name', 'category', 'team', 'year', 'condition', 'price', 'priceLabel',
   'displayPrice', 'image', 'imageGallery', 'description', 'photoHostPageUrl',
@@ -202,21 +202,21 @@ for (const file of FILES) {
   const fullPath = path.join(root, file);
   // Derive every segment from products.json so one canonical catalog update
   // cannot leave stale category JSON or preloaded bundles behind.
-  let raw = file === 'products.json'
+  let raw = file === 'products-public.json'
     ? canonicalProducts
     : canonicalProducts.filter(SEGMENTS[file]);
   if (file === 'products-featured.json') {
     raw = sortByStorefrontRank(raw);
   }
   assertRangeCheckoutPrices(raw, file);
-  const isFullCatalog = file === 'products.json';
+  const isFullCatalog = file === 'products-public.json';
   const activeRaw = Array.isArray(raw)
     ? raw.filter((item) => item?.isDeleted !== true)
     : [];
   const storefront = Array.isArray(raw)
     ? activeRaw.map((item) => pickStorefrontFields(item))
     : [];
-  if (!isFullCatalog && (cleanJsonSources || optimizeSegmentJson)) {
+  if ((isFullCatalog || cleanJsonSources || optimizeSegmentJson)) {
     await writeTextFile(fullPath, structuredJson(storefront));
   }
   if (BOOTSTRAP_FILES[file]) {
@@ -235,7 +235,7 @@ for (const file of FILES) {
     ].join('\n');
     await writeTextFile(path.join(root, BUNDLE_FILES[file]), bundle);
   }
-  const action = !isFullCatalog && (cleanJsonSources || optimizeSegmentJson)
+  const action = isFullCatalog || cleanJsonSources || optimizeSegmentJson
     ? 'Optimized and bundled'
     : 'Bundled';
   console.log(`${action} ${file} (${storefront.length} rows)`);

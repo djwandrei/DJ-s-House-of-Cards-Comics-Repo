@@ -42,7 +42,9 @@ Sources of truth:
 - Non-legacy listings: `Listings` sheet in
   `C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx`
 - Live catalog: Supabase `products`
-- Deployable static catalog/generation source: `products.json`
+- Protected local catalog/generation source: `products.json`
+- Deployable buyer-safe static catalog: `products-public.json` and generated
+  category catalog files
 - Product media: `assets/`
 - Product rendering: `catalog.js`
 - Supabase row mapping/browser access: `supabase-client.js`
@@ -50,8 +52,9 @@ Sources of truth:
 After release, Supabase and the static catalog should match on product IDs,
 media paths, and relevant fields. Matching row counts is insufficient.
 
-Never manually edit `products-data-*.js`, `products-bootstrap-*.json`, or
-category product JSON files. After an approved `products.json` change, run:
+Never manually edit `products-public.json`, `products-data-*.js`,
+`products-bootstrap-*.json`, or category product JSON files. After an approved
+`products.json` change, run:
 
 ```powershell
 node .\scripts\build-public-catalog.mjs --optimize-segments

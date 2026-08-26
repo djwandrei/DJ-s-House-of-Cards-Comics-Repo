@@ -1,5 +1,4 @@
-window.DJ_PRELOADED_SOURCE = "products-public.json";
-window.DJ_PRELOADED_PRODUCTS = [
+[
   {
     "id": 1,
     "name": "1909-11 T206 #84 Hal Chase/Portrait Blue PSA 1",
@@ -119232,4 +119231,4 @@ window.DJ_PRELOADED_PRODUCTS = [
       }
     }
   }
-];
+]

@@ -9,11 +9,13 @@
 export const SCENARIO_URL_VERSION = "1";
 
 const MODE_VALUES = new Set(["lineup", "rotation"]);
+const EXPERIENCE_VALUES = new Set(["simple", "detailed"]);
 const PHASE_VALUES = new Set(["regular", "playoffs"]);
 const PRESET_VALUES = new Set(["balanced", "defense", "offense", "shooting", "playmaking", "custom"]);
 const ROTATION_MINUTE_PLAN_VALUES = new Set(["historicalAware", "openWhatIf"]);
 const ROTATION_ALLOCATION_STYLE_VALUES = new Set(["preserveWorkload", "strategyFirst"]);
 const ROTATION_RATE_STABILITY_VALUES = new Set(["sampleAdjusted", "raw"]);
+const ROTATION_POSITION_PROFILE_VALUES = new Set(["automatic", "traditional", "small", "big"]);
 // These sets mirror the visible selects in index.html. A shared URL must never
 // claim to restore an assumption the receiving UI cannot actually represent.
 const ROTATION_MINUTE_FLEXIBILITY_VALUES = new Set([4, 8, 12, 16]);
@@ -140,6 +142,7 @@ export function encodeScenarioQuery(input = {}) {
   if (/^[A-Z0-9]{2,8}$/.test(team)) params.set("team", team);
   addFiniteParameter(params, "season", input.season, { minimum: 1980, maximum: 2200, integer: true });
   if (PHASE_VALUES.has(input.phase)) params.set("phase", input.phase);
+  if (EXPERIENCE_VALUES.has(input.experience)) params.set("experience", input.experience);
   if (MODE_VALUES.has(input.mode)) params.set("mode", input.mode);
   addFiniteParameter(params, "size", input.size, { minimum: 5, maximum: 12, integer: true });
   addFiniteParameter(params, "alts", input.alternatives, { minimum: 1, maximum: 50, integer: true });
@@ -186,6 +189,9 @@ export function encodeScenarioQuery(input = {}) {
   if (ROTATION_RATE_STABILITY_VALUES.has(input.rotationRateStability)) {
     params.set("rateStability", input.rotationRateStability);
   }
+  if (ROTATION_POSITION_PROFILE_VALUES.has(input.rotationPositionProfile)) {
+    params.set("roleProfile", input.rotationPositionProfile);
+  }
   const roleMinutes = input.rotationPositionMinuteRequirements || {};
   const normalizedRoleMinutes = [
     ["g", "G"],
@@ -201,7 +207,17 @@ export function encodeScenarioQuery(input = {}) {
     0,
   );
   const roleProfileKey = normalizedRoleMinutes.map(({ value }) => value ?? "").join(":");
-  if (hasCompleteRoleProfile && roleMinuteTotal === 240 && ROTATION_ROLE_PROFILE_VALUES.has(roleProfileKey)) {
+  // Automatic uses the full loaded roster to derive its target at run time.
+  // Do not pin a coincidentally familiar 240-minute split into the link: the
+  // receiving page should derive the same current team-season profile rather
+  // than restoring a stale manual-looking snapshot alongside "automatic".
+  const isAutomaticRoleProfile = input.rotationPositionProfile === "automatic";
+  if (
+    !isAutomaticRoleProfile &&
+    hasCompleteRoleProfile &&
+    roleMinuteTotal === 240 &&
+    ROTATION_ROLE_PROFILE_VALUES.has(roleProfileKey)
+  ) {
     params.set(
       "roleMinutes",
       normalizedRoleMinutes.map(({ code, value }) => `${code}:${value}`).join(","),
@@ -235,7 +251,12 @@ export function decodeScenarioQuery(search = "") {
   }
   const season = finiteNumber(params.get("season"), { minimum: 1980, maximum: 2200, integer: true });
   if (season !== undefined) scenario.season = season;
-  for (const [key, allowed] of [["phase", PHASE_VALUES], ["mode", MODE_VALUES], ["preset", PRESET_VALUES]]) {
+  for (const [key, allowed] of [
+    ["phase", PHASE_VALUES],
+    ["mode", MODE_VALUES],
+    ["preset", PRESET_VALUES],
+    ["experience", EXPERIENCE_VALUES],
+  ]) {
     const value = params.get(key);
     if (!value) continue;
     if (allowed.has(value)) scenario[key] = value;
@@ -304,6 +325,14 @@ export function decodeScenarioQuery(search = "") {
   if (rotationRateStability) {
     if (ROTATION_RATE_STABILITY_VALUES.has(rotationRateStability)) scenario.rotationRateStability = rotationRateStability;
     else warnings.push("Ignored an invalid rotation rate-stability setting from the shared link.");
+  }
+  const rotationPositionProfile = params.get("roleProfile");
+  if (rotationPositionProfile) {
+    if (ROTATION_POSITION_PROFILE_VALUES.has(rotationPositionProfile)) {
+      scenario.rotationPositionProfile = rotationPositionProfile;
+    } else {
+      warnings.push("Ignored an invalid rotation position profile from the shared link.");
+    }
   }
   const rotationPositionMinuteRequirements = {};
   for (const entry of String(params.get("roleMinutes") || "").split(",")) {

@@ -170,7 +170,9 @@ export async function main(argv = process.argv.slice(2), dependencies = {}) {
     remote = await request(`${config.projectUrl}/rest/v1/rpc/ingest_nba_rapm_model`, config.serviceRoleKey, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      // Match the SQL function's single jsonb parameter name so PostgREST
+      // does not try to resolve the model object as a multi-argument RPC.
+      body: JSON.stringify({ p_payload: payload }),
     });
   }
   const report = {

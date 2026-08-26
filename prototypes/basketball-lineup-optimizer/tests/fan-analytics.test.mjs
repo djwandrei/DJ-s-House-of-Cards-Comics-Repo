@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  FAN_ROLE_DEFINITIONS,
   analyzeRoleCoverage,
   buildEraBaseline,
   calculateEraRelativeView,
@@ -153,6 +154,36 @@ test("uses optimizer-compatible tied percentile ranks and reverses ball-security
   assert.equal(turnoverRanks.get("a"), 0);
 });
 
+test("uses plain, evidence-bounded labels for fan-facing player roles", () => {
+  const labels = Object.fromEntries(FAN_ROLE_DEFINITIONS.map((role) => [role.id, role.label]));
+  const definitionsById = new Map(FAN_ROLE_DEFINITIONS.map((role) => [role.id, role]));
+
+  assert.deepEqual(labels, {
+    primaryCreator: "Lead playmaker",
+    secondaryCreator: "Secondary playmaker",
+    leadScorer: "Lead scorer",
+    movementShooter: "High-volume 3-point shooter",
+    perimeterShooter: "Accurate 3-point shooter",
+    connector: "Low-turnover passer",
+    rimProtector: "Shot blocker",
+    switchDefender: "Multi-position defensive activity",
+    rebounder: "Rebounder",
+    disruptor: "Steals and blocks",
+  });
+  for (const roleId of [
+    "primaryCreator",
+    "secondaryCreator",
+    "movementShooter",
+    "perimeterShooter",
+    "connector",
+    "rimProtector",
+    "switchDefender",
+    "disruptor",
+  ]) {
+    assert.equal(definitionsById.get(roleId).shortLabel, labels[roleId]);
+  }
+});
+
 test("classifies understandable roles only from supported signals and surfaces missing shooting-volume evidence", () => {
   const roster = [
     player("creator", {
@@ -183,14 +214,14 @@ test("classifies understandable roles only from supported signals and surfaces m
   assert.ok(rolesFor("big").includes("rebounder"));
   assert.ok(rolesFor("big").includes("switchDefender"));
   assert.match(rolesFor("connector").join(" "), /connector|secondaryCreator/);
-  assert.match(classified.byId.get("connector").caveats.join(" "), /movement-shooting proxy is withheld/i);
+  assert.match(classified.byId.get("connector").caveats.join(" "), /high-volume 3-point shooter label is withheld/i);
   assert.equal(
     classified.byId.get("shooter").roles.find((role) => role.id === "movementShooter").label,
-    "Movement-shooting proxy",
+    "High-volume 3-point shooter",
   );
   assert.equal(
     classified.byId.get("big").roles.find((role) => role.id === "switchDefender").label,
-    "Switch-defense proxy",
+    "Multi-position defensive activity",
   );
 });
 

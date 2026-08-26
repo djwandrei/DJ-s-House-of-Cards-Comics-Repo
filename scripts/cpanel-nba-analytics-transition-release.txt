@@ -36,5 +36,6 @@ shipping.html
 shop.html
 sports-cards.html
 supabase-client.js
+vendor/supabase.min.js
 sw.js
 wishlist.html

@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = process.cwd();
 const HTML_FILES = fs.readdirSync(root).filter((file) => file.endsWith('.html')).sort();
 const CATALOG_FILES = [
-  'products.json',
+  'products-public.json',
   'products-baseball.json',
   'products-basketball.json',
   'products-football.json',
@@ -25,6 +25,12 @@ const MIRROR_FIELDS = [
   'priceLabel', 'displayPrice', 'image', 'imageGallery'
 ];
 const CANONICAL_OPERATIONAL_FIELDS = ['itemPhotoUrls', 'htmlImageUrls'];
+const PUBLIC_FORBIDDEN_FIELDS = new Set([
+  'itemPhotoUrl', 'itemPhotoUrls', 'htmlFullLink', 'htmlImageUrls',
+  'soldAt', 'hiddenReason', 'archivedAt'
+]);
+const PUBLIC_METADATA_FIELDS = new Set(['conditionNotes', 'playerAthlete', 'excelFields']);
+const PUBLIC_EXCEL_FIELDS = new Set(['Title', 'C:Features', 'C:Autographed']);
 const WRONG_CONTACT_PATTERN = /djwandrei@gmail\.com|contact@djshouseofcards-comics\.com/i;
 const RANGE_PATTERN = /\$?\s*(\d[\d,]*(?:\.\d+)?)\s*(?:-|\u2013|\u2014|\bto\b)\s*\$?\s*(\d[\d,]*(?:\.\d+)?)/i;
 const issues = [];
@@ -199,15 +205,29 @@ if (shellImageBytes > 1024 * 1024) {
 }
 
 const supabaseClient = read('supabase-client.js');
-const remoteSelectColumns = supabaseClient.match(/const REMOTE_LIST_SELECT_COLUMNS = \[([\s\S]*?)\]\.join/)?.[1] || '';
+const remoteSelectColumns = supabaseClient.match(/const PUBLIC_REMOTE_LIST_SELECT_COLUMNS = \[([\s\S]*?)\]\.join/)?.[1] || '';
 for (const field of ['metadata', 'item_photo_url', 'item_photo_urls', 'html_full_link', 'html_image_urls']) {
-  if (!new RegExp(`['"]${field}['"]`).test(remoteSelectColumns)) {
-    issues.push({ file: 'supabase-client.js', type: 'remote product select omits storefront field', value: field });
+  const present = new RegExp(`['"]${field}['"]`).test(remoteSelectColumns);
+  if (field === 'metadata' ? !present : present) {
+    issues.push({ file: 'supabase-client.js', type: 'unsafe public product select', value: field });
+  }
+}
+
+const sdkVersion = supabaseClient.match(/SUPABASE_LIBRARY_VERSION\s*=\s*'([^']+)'/)?.[1] || '';
+const vendoredSupabase = read('vendor/supabase.min.js');
+if (!sdkVersion || !vendoredSupabase.includes(`supabase-js@${sdkVersion}`)) {
+  issues.push({ file: 'vendor/supabase.min.js', type: 'vendored Supabase SDK version does not match adapter pin', value: sdkVersion });
+}
+for (const manifest of fs.readdirSync(path.join(root, 'scripts')).filter((file) => file.endsWith('.txt'))) {
+  const content = read(path.join('scripts', manifest));
+  if (content.split(/\r?\n/).includes('supabase-client.js') && !content.split(/\r?\n/).includes('vendor/supabase.min.js')) {
+    issues.push({ file: path.join('scripts', manifest), type: 'release includes Supabase adapter without pinned vendor bundle' });
   }
 }
 
 const catalogs = Object.fromEntries(CATALOG_FILES.map((file) => [file, JSON.parse(read(file))]));
-const fullCatalog = new Map(catalogs['products.json'].map((item) => [String(item.id), item]));
+const canonicalProducts = JSON.parse(read('products.json'));
+const fullCatalog = new Map(canonicalProducts.map((item) => [String(item.id), item]));
 for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
   if (!exists(bootstrapFile)) {
     issues.push({ file: bootstrapFile, type: 'missing catalog bootstrap file' });
@@ -250,7 +270,7 @@ for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
   });
 }
 for (const field of CANONICAL_OPERATIONAL_FIELDS) {
-  const missingCount = catalogs['products.json'].filter(
+  const missingCount = canonicalProducts.filter(
     (item) => !Object.prototype.hasOwnProperty.call(item, field)
   ).length;
   if (missingCount) {
@@ -261,7 +281,7 @@ for (const field of CANONICAL_OPERATIONAL_FIELDS) {
     });
   }
 }
-const richMetadataCount = catalogs['products.json'].filter((item) => {
+const richMetadataCount = canonicalProducts.filter((item) => {
   const metadata = item.metadata;
   return metadata
     && typeof metadata === 'object'
@@ -280,6 +300,26 @@ for (const [file, items] of Object.entries(catalogs)) {
   if (duplicateIds.length) issues.push({ file, type: 'duplicate product ids', values: duplicateIds.slice(0, 10) });
 
   for (const item of items) {
+    for (const field of Object.keys(item || {})) {
+      if (PUBLIC_FORBIDDEN_FIELDS.has(field)) {
+        issues.push({ file, type: 'public catalog exposes internal product field', id: item.id, field });
+      }
+    }
+    const metadata = item?.metadata;
+    if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+      for (const field of Object.keys(metadata)) {
+        if (!PUBLIC_METADATA_FIELDS.has(field)) {
+          issues.push({ file, type: 'public catalog exposes internal metadata field', id: item.id, field });
+        }
+      }
+      if (metadata.excelFields && typeof metadata.excelFields === 'object' && !Array.isArray(metadata.excelFields)) {
+        for (const field of Object.keys(metadata.excelFields)) {
+          if (!PUBLIC_EXCEL_FIELDS.has(field)) {
+            issues.push({ file, type: 'public catalog exposes internal workbook field', id: item.id, field });
+          }
+        }
+      }
+    }
     const high = rangeHigh(item);
     if (high != null && Math.abs(Number(item.price) - high) >= 0.001) {
       issues.push({ file, type: 'ranged listing does not use high checkout price', id: item.id });
@@ -295,7 +335,6 @@ for (const [file, items] of Object.entries(catalogs)) {
         }
       }
     }
-    if (file === 'products.json') continue;
     const fullItem = fullCatalog.get(String(item.id));
     if (!fullItem) {
       issues.push({ file, type: 'listing missing from full catalog', id: item.id });
@@ -311,7 +350,7 @@ for (const [file, items] of Object.entries(catalogs)) {
 
 const summary = {
   htmlFiles: HTML_FILES.length,
-  catalogRows: catalogs['products.json'].length,
+  catalogRows: canonicalProducts.length,
   assetVersion,
   shellAssets: shellAssets.length,
   shellImageKB: Math.round(shellImageBytes / 1024),

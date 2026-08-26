@@ -375,7 +375,7 @@ function Test-DeployablePath {
     "products-featured.json",
     "products-football.json",
     "products-sports.json",
-    "products.json",
+    "products-public.json",
     "robots.txt",
     "seo.js",
     "shipping.html",

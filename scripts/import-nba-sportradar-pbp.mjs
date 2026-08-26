@@ -273,11 +273,14 @@ export async function uploadPrivateSourceDocument({ projectUrl, serviceRoleKey, 
   });
 }
 
-async function invokeIngest({ projectUrl, serviceRoleKey, payload }) {
+export async function invokeIngest({ projectUrl, serviceRoleKey, payload }) {
   return remoteRequest(`${projectUrl}/rest/v1/rpc/ingest_nba_sportradar_game`, serviceRoleKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    // PostgREST maps JSON object keys to SQL parameter names.  The ingest
+    // function accepts one jsonb parameter named p_payload, so keep the full
+    // provider-derived payload nested under that explicit boundary.
+    body: JSON.stringify({ p_payload: payload }),
   });
 }
 

@@ -2,36 +2,38 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260825b";
+  assessHistoricalPositionMinuteEvidence,
+  deriveHistoricalPositionMinuteRequirements,
+} from "./optimizer-config.js?v=20260826a";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260825b";
+} from "./player-data.js?v=20260826a";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260825b";
+} from "./supabase-nba-data.js?v=20260826a";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260825b";
+} from "./fan-analytics.js?v=20260826a";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260825b";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260825b";
+} from "./scenario-url.js?v=20260826a";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826a";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260825b";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260825b", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826a";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826a", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
@@ -107,7 +109,7 @@ const ANALYTICS_VIEW_DETAILS = Object.freeze({
     label: "Per game",
     shortLabel: "per game",
     rateKey: "perGame",
-    note: "Historical per-game production for the selected team stint.",
+    note: "Per-game production from the player's games with the selected team.",
   }),
   per36: Object.freeze({
     label: "Per 36 minutes",
@@ -136,8 +138,8 @@ const ROTATION_POSITION_PROFILES = Object.freeze({
   big: Object.freeze({ G: 72, F: 120, C: 48 }),
 });
 const ROTATION_MINUTE_PLAN_LABELS = Object.freeze({
-  historicalAware: "Realistic historical rotation",
-  openWhatIf: "Open what-if",
+  historicalAware: "Observed-workload guardrail",
+  openWhatIf: "Game-plan optimization",
 });
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
@@ -150,6 +152,11 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const elements = {
   form: $("#optimizerForm"),
+  simpleMode: $("#simpleModeButton"),
+  detailedMode: $("#detailedModeButton"),
+  playersStepNumber: $("#playersStepNumber"),
+  simpleModelSummaryCopy: $("#simpleModelSummaryCopy"),
+  simpleModelSummaryNote: $("#simpleModelSummaryNote"),
   playerTableBody: $("#playerTableBody"),
   playerSearch: $("#playerSearchInput"),
   poolSummary: $("#poolSummary"),
@@ -259,6 +266,12 @@ const decodedInitialScenario = decodeScenarioQuery(window.location.search);
 
 const state = {
   dataset: null,
+  experienceMode: decodedInitialScenario.scenario?.experience === "detailed" ? "detailed" : "simple",
+  // Simple mode deliberately replaces hidden advanced settings with a known,
+  // safe baseline. Keep one in-memory snapshot so returning to Detailed does
+  // not silently discard a visitor's custom work; it is never persisted or
+  // shared because it is only a temporary view-switch convenience.
+  detailedSettingsSnapshot: null,
   activePreset: "balanced",
   weights: {},
   lockedIds: new Set(),
@@ -762,6 +775,9 @@ function applySharedScenarioControls(scenario) {
   // A shared link is an input snapshot, not a result. Apply only values the
   // codec already validated, then let the normal form and exact-scope checks
   // perform the final structural validation against the loaded player pool.
+  if (["simple", "detailed"].includes(scenario.experience)) {
+    setExperienceMode(scenario.experience, { applyDefaults: false });
+  }
   const mode = scenario.mode === "rotation" ? "rotation" : "lineup";
   elements.mode.value = mode;
   setMode(mode);
@@ -842,7 +858,9 @@ function applySharedScenarioControls(scenario) {
   if (scenario.rotationScoreBasis === "perGame" && scenario.rotationRateStability === "sampleAdjusted") {
     state.pendingScenarioWarnings.push("Per-game rotation scoring uses raw source values, so the shared sample-adjustment setting was disabled.");
   }
-  if (scenario.rotationPositionMinuteRequirements) {
+  if (["automatic", "traditional", "small", "big"].includes(scenario.rotationPositionProfile)) {
+    elements.rotationPositionProfile.value = scenario.rotationPositionProfile;
+  } else if (scenario.rotationPositionMinuteRequirements) {
     elements.rotationPositionProfile.value = rotationPositionProfileForRequirements(
       scenario.rotationPositionMinuteRequirements,
     );
@@ -896,6 +914,7 @@ function sharedScenarioFromControls() {
     if (value !== undefined) statMinimums[metric] = value;
   }
   return {
+    experience: state.experienceMode,
     team: loadedSelection.team,
     season: Number(loadedSelection.season),
     phase: loadedSelection.seasonPhase,
@@ -921,6 +940,7 @@ function sharedScenarioFromControls() {
     rotationHistoricalAllocationStyle: elements.rotationAllocationStyle.value,
     rotationMinuteFlexibility: numberFromInput(elements.rotationFlexibility, 8),
     rotationRateStability: elements.rotationRateStability.value,
+    rotationPositionProfile: elements.rotationPositionProfile.value,
     rotationPositionMinuteRequirements: selectedRotationPositionRequirements(),
     lockedIds: [...state.lockedIds].sort(),
     excludedIds: [...state.excludedIds].sort(),
@@ -1070,9 +1090,7 @@ function updateLiveSelectionState({ preserveStatus = false } = {}) {
       "success",
     );
     const needsUpdate = !elements.resultFreshness.hidden;
-    setOptimizeButtons({
-      label: `${needsUpdate ? "Update" : "Optimize"} ${elements.mode.value === "rotation" ? "rotation" : "lineup"}`,
-    });
+    setOptimizeButtons({ label: solveActionLabel({ update: needsUpdate }) });
   }
   syncShareScenarioAvailability();
 }
@@ -1350,7 +1368,7 @@ async function loadLiveDataset({ force = false, intentGeneration = null } = {}) 
       notice: force ? `${dataset.players.length} ${teamName} players loaded from the Basketball Reference database.` : "",
     });
     setLiveDataStatus(
-      `Loaded ${dataset.players.length} team-stint players for ${teamName}; totals were converted to per-game stats.`,
+      `Loaded ${dataset.players.length} players who appeared for ${teamName}; their team-only totals were converted to per-game stats.`,
       "success",
     );
   } catch (error) {
@@ -1533,7 +1551,7 @@ function renderOpponentScout() {
     && Number(source.teamGames) > 0
     ? `${source.teamGames}-game`
     : "Stored";
-  teamNote.textContent = `${gameCount} denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages are reconstructed from stored team-stint totals.`;
+  teamNote.textContent = `${gameCount} denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages use only stats recorded with this team.`;
   teamCopy.append(teamTitle, teamNote);
   teamHeader.append(teamCopy);
   fragment.append(teamHeader);
@@ -1840,6 +1858,12 @@ function renderWeightShareSummary() {
 }
 
 function selectedRotationPositionRequirements() {
+  if (elements.rotationPositionProfile.value === "automatic") {
+    return deriveHistoricalPositionMinuteRequirements(
+      state.dataset?.players || [],
+      historicalMinuteAnchorsForCurrentDataset(),
+    );
+  }
   const selected = ROTATION_POSITION_PROFILES[elements.rotationPositionProfile.value]
     || ROTATION_POSITION_PROFILES.traditional;
   return { ...selected };
@@ -1887,6 +1911,8 @@ function renderRotationEvidencePreview() {
   const players = state.dataset?.players || [];
   if (players.length === 0) {
     elements.rotationEvidencePreview.textContent = "Load a team-season to check workload and rate evidence.";
+    elements.simpleModelSummaryCopy.textContent = "Load a team and season to apply Lineup Lab's recommended sample and rotation safeguards.";
+    elements.simpleModelSummaryNote.textContent = "Simple mode will explain any source limitation instead of guessing around it.";
     return;
   }
   const anchors = historicalMinuteAnchorsForCurrentDataset();
@@ -1895,22 +1921,42 @@ function renderRotationEvidencePreview() {
     player.analytics?.totals && player.analytics?.leaguePer36
   )).length;
   const historicalAware = elements.rotationMinutePlan.value === "historicalAware";
-  const workloadCopy = historicalAware
-    ? `${anchorCount} of ${players.length} roster rows have a workload anchor`
-    : `${anchorCount} of ${players.length} roster rows have a workload anchor available for comparison`;
+  const workloadCopy = `${anchorCount} of ${players.length} roster rows have recorded team-minute evidence`;
   const rateCopy = `${rateEvidenceCount} of ${players.length} have same-season rate evidence`;
   elements.rotationEvidencePreview.textContent = historicalAware
-    ? `Source check: ${workloadCopy}; ${rateCopy}. Every selected player needs workload evidence, and the group needs enough observed minute capacity to form a realistic 240-minute plan.`
-    : `Open what-if does not enforce workload. Source check: ${workloadCopy}; ${rateCopy}.`;
+    ? `Source check: ${workloadCopy}; ${rateCopy}. Observed workload is an optional capacity guardrail; the game-plan score still uses the same conservative rate projection.`
+    : `Source check: ${rateCopy}. Recorded workload is available for comparison only and does not change selection or minutes.`;
+  if (elements.mode.value !== "rotation") {
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples before it compares five-player groups.";
+    elements.simpleModelSummaryNote.textContent = "Standard sample and position rules remain active. Switch to Detailed when you want to edit them.";
+  } else if (historicalAware && anchorCount === players.length) {
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team, filters out thin samples, compares production at equal playing time, and projects what each rate can reasonably carry into a full rotation role.";
+    elements.simpleModelSummaryNote.textContent = "Standard sample and position rules remain active. Switch to Detailed when you want to edit them.";
+  } else if (historicalAware) {
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses only stats from this team and filters out thin samples. The optional observed-workload guardrail needs complete source evidence, but it never changes the game-plan score.";
+    elements.simpleModelSummaryNote.textContent = "Switch to Detailed to review the source check or adjust advanced limits.";
+  } else {
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It evaluates low-minute and low-usage rates conservatively at a common rotation responsibility, rather than assuming they scale unchanged to star minutes.";
+    elements.simpleModelSummaryNote.textContent = "Recorded workload does not affect selection or minutes unless you turn on the optional guardrail in Detailed.";
+  }
 }
 
 function rotationPositionProfileForRequirements(requirements) {
-  if (!requirements || typeof requirements !== "object") return "traditional";
-  return Object.entries(ROTATION_POSITION_PROFILES).find(([, profile]) => (
+  if (!requirements || typeof requirements !== "object") return "automatic";
+  const namedProfile = Object.entries(ROTATION_POSITION_PROFILES).find(([, profile]) => (
     profile.G === Number(requirements.G)
     && profile.F === Number(requirements.F)
     && profile.C === Number(requirements.C)
-  ))?.[0] || "traditional";
+  ))?.[0];
+  if (namedProfile) return namedProfile;
+  const automatic = deriveHistoricalPositionMinuteRequirements(
+    state.dataset?.players || [],
+    historicalMinuteAnchorsForCurrentDataset(),
+  );
+  if (["G", "F", "C"].every((position) => automatic[position] === Number(requirements[position]))) {
+    return "automatic";
+  }
+  return "automatic";
 }
 
 function syncRotationModelControls() {
@@ -1919,31 +1965,31 @@ function syncRotationModelControls() {
   elements.rotationFlexibilityField.classList.toggle("is-disabled", !historicalAware);
   elements.rotationFlexibilityField.title = historicalAware
     ? "Each selected player's observed workload allowance; exact role coverage may expand it by 4–8 minutes, but it never fills a general workload shortfall"
-    : "Open what-if mode uses only the hard player limits below";
+    : "Game-plan optimization uses only the hard player limits below";
   elements.rotationAllocationStyle.disabled = !historicalAware;
   elements.rotationAllocationStyleField.classList.toggle("is-disabled", !historicalAware);
   elements.rotationAllocationStyleField.title = historicalAware
     ? "Choose whether the selected roster keeps its recorded workload or shifts minutes toward your game-plan fit"
-    : "Open what-if mode always uses the game-plan objective inside the hard player limits";
+    : "Game-plan optimization always uses your objective inside the hard player limits";
   elements.rotationMinutePlanHelp.replaceChildren(
     Object.assign(document.createElement("strong"), {
-      textContent: historicalAware ? "Realistic historical rotation: " : "Open what-if: ",
+      textContent: historicalAware ? "Observed-workload guardrail: " : "Game-plan optimization: ",
     }),
     document.createTextNode(historicalAware
-      ? "recorded team-stint minutes create a real per-player capacity window. A selected group must have enough observed workload to cover 240 minutes; a small, disclosed expansion is allowed only to prove exact role coverage. Hard player limits never change."
-      : "recorded workloads do not restrict the plan. The optimizer may move any selected player between your hard minimum and maximum, so treat the result as an experiment rather than a realistic rotation forecast."),
+      ? "recorded minutes with this team create an additional per-player capacity window. It is optional context for a source-grounded rotation—not a player-ranking score. A selected group must have enough observed workload to cover 240 minutes; hard player limits never change."
+      : "recorded workloads do not restrict the plan. The optimizer assigns each selected player anywhere between your hard minimum and maximum according to the game plan, after it projects unproven low-role rates conservatively."),
   );
   elements.rotationAllocationStyleHelp.replaceChildren(
     Object.assign(document.createElement("strong"), {
       textContent: historicalAware && elements.rotationAllocationStyle.value === "strategyFirst"
-        ? "Lean into the game plan: "
-        : "Keep observed workload: ",
+        ? "Optimize for the game plan: "
+        : "Keep close to observed workload: ",
     }),
     document.createTextNode(historicalAware
       ? elements.rotationAllocationStyle.value === "strategyFirst"
-        ? "the exact roster still respects observed workload capacity, but the minute plan shifts time toward the player profiles that best match your strategy."
-        : "your strategy ranks the roster, then the minute solver minimizes total departure from rescaled workload targets inside observed-workload capacity caps while proving all 240 role minutes."
-      : "open what-if deliberately ignores recorded workload and maximizes game-plan fit inside the hard player limits."),
+        ? "the optional source capacity window remains active, while the minute plan shifts time toward the selected profiles that best match your strategy."
+        : "the strategy score still ranks the roster, then the minute solver minimizes departure from observed workload while proving all 240 role minutes."
+      : "game-plan optimization uses your objective inside the hard player limits; recorded workload has no selection or minute-allocation effect."),
   );
 
   const usesPer36Rates = elements.rotationScoringBasis.value === "per36";
@@ -1959,16 +2005,16 @@ function syncRotationModelControls() {
   elements.rotationRateStability.disabled = !usesPer36Rates;
   elements.rotationRateStabilityField.classList.toggle("is-disabled", !usesPer36Rates);
   elements.rotationRateStabilityField.title = usesPer36Rates
-    ? "Choose whether smaller per-36 samples are stabilized toward a same-season baseline"
+    ? "Choose whether small samples and larger-role projections are stabilized toward a same-season baseline"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "When every eligible player has the matching total-minute or attempt evidence, rate stabilization pulls smaller samples toward the same-season NBA baseline before players are ranked. A metric is kept raw for everyone if its evidence is incomplete, so missing metadata never becomes an advantage."
+    ? "When every eligible player has matching total-minute or shot-attempt evidence, the model first pulls tiny samples toward the same-season NBA baseline. It then tempers a rate only when the rotation asks for a bigger role than the player held in the source. A metric stays raw for everyone if its evidence is incomplete, so missing metadata never becomes an advantage."
     : "Per-game comparison uses each raw historical per-game line. Small-sample stabilization is available only with the per-36 rate comparison.";
   renderRotationEvidencePreview();
 }
 
 function rotationModelSummary() {
-  if (elements.rotationMinutePlan.value === "openWhatIf") return "Open what-if · hard limits only";
+  if (elements.rotationMinutePlan.value === "openWhatIf") return "Game plan · projected rates + hard limits";
   const style = elements.rotationAllocationStyle.value === "strategyFirst"
     ? "strategy-first"
     : "workload-protected";
@@ -1977,10 +2023,23 @@ function rotationModelSummary() {
 
 function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
   const roleMinutes = selectedRotationPositionRequirements();
+  const automatic = elements.rotationPositionProfile.value === "automatic";
+  const positionEvidence = automatic
+    ? assessHistoricalPositionMinuteEvidence(
+      state.dataset?.players || [],
+      historicalMinuteAnchorsForCurrentDataset(),
+    )
+    : null;
+  const estimateCopy = positionEvidence?.fallbackApplied
+    ? "No usable source-listed position-minute evidence was available, so the standard 96 guard / 96 forward / 48 center estimate is used."
+    : `${positionEvidence?.usableRows || 0} of ${positionEvidence?.sourceRows || 0} roster rows have both a source-listed position and recorded minute evidence.`;
   elements.positionCoverageHelp.textContent = isRotation
-    ? `Roster counts are minimum composition requirements. Separately, this plan must cover ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. Source-listed flex players can split their minutes across compatible roles.`
+    ? `Roster balance is a minimum composition rule. The ${automatic ? "source-listed position estimate" : "selected"} is ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. Source-listed multi-position players can split their minutes across compatible roles. ${automatic ? estimateCopy : ""}`
     : "Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required roster slot.";
-  elements.rotationMinutesHelp.textContent = `For every candidate, the optimizer assigns exactly 240 integer minutes while covering ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes.`;
+  elements.rotationMinutesHelp.textContent = `Every candidate receives exactly 240 integer minutes while covering the same ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minute target.`;
+  elements.rotationPositionProfile.title = automatic
+    ? "An estimate from source-listed positions and recorded minutes, derived once from the full loaded team-season so every candidate is tested against the same target"
+    : "A manual advanced position-minute experiment";
 }
 
 function setMobileResultCurrent(current) {
@@ -1989,9 +2048,11 @@ function setMobileResultCurrent(current) {
     elements.mobileSolveLabel.textContent = "Result up to date ✓";
     return;
   }
-  // The compact success treatment changes both shape and copy. Restore the
-  // actionable scenario label as soon as an input changes so mobile users and
-  // assistive technology never hear a stale success message.
+  // The success state becomes an inline confirmation on narrow screens rather
+  // than a persistent overlay, so it cannot cover player cards while someone
+  // reads their result. Restore the actionable scenario label as soon as an
+  // input changes so mobile users and assistive technology never hear stale
+  // success feedback.
   elements.mobileSolveLabel.textContent = elements.mode.value === "rotation"
     ? `${numberFromInput(elements.size, 9)}-player rotation · all 240 team minutes`
     : "Best 5-player group";
@@ -2071,8 +2132,7 @@ function markScenarioChanged() {
   } else {
     setSolverStatus("Ready with your latest settings");
   }
-  const verb = state.lastResult ? "Update" : "Optimize";
-  setOptimizeButtons({ label: `${verb} ${elements.mode.value === "rotation" ? "rotation" : "lineup"}` });
+  setOptimizeButtons({ label: solveActionLabel({ update: Boolean(state.lastResult) }) });
   updateSearchScope();
 }
 
@@ -2111,6 +2171,168 @@ function recommendedMinimumGames(seasonPhase) {
   // most legitimate postseason pools. Keep the defaults phase-aware while
   // preserving any value the user deliberately customized.
   return seasonPhase === "playoffs" ? 3 : 20;
+}
+
+function recommendedMinimumMinutes(mode, seasonPhase) {
+  // A regular-season rotation should be built from players who held a genuine
+  // repeatable role. Postseason samples are shorter and benches tighten, so the
+  // floor is intentionally lower there. Detailed mode still exposes the exact
+  // field for historical edge cases and deliberate experiments.
+  if (seasonPhase === "playoffs") return mode === "rotation" ? 4 : 3;
+  return mode === "rotation" ? 8 : 6;
+}
+
+function solveActionLabel({ busy = false, update = false } = {}) {
+  if (busy) return "Building…";
+  const noun = elements.mode.value === "rotation" ? "rotation" : "lineup";
+  return update ? `Rebuild ${noun}` : `Build ${noun}`;
+}
+
+function captureDetailedSettings() {
+  const fields = [
+    "alternatives",
+    "minGames",
+    "minMinutes",
+    "minGuards",
+    "minForwards",
+    "minCenters",
+    "minPoints",
+    "minRebounds",
+    "minAssists",
+    "minSteals",
+    "minBlocks",
+    "maxTurnovers",
+    "rotationMin",
+    "rotationMax",
+    "rotationMinutePlan",
+    "rotationAllocationStyle",
+    "rotationFlexibility",
+    "rotationRateStability",
+    "rotationScoringBasis",
+    "rotationPositionProfile",
+  ];
+  return {
+    fields: Object.fromEntries(fields.map((name) => [name, elements[name].value])),
+    activePreset: state.activePreset,
+    weights: { ...state.weights },
+    analyticsView: state.analyticsView,
+    simplePresetAtEntry: null,
+  };
+}
+
+function restoreDetailedSettings() {
+  const snapshot = state.detailedSettingsSnapshot;
+  if (!snapshot) return false;
+  for (const [name, value] of Object.entries(snapshot.fields || {})) {
+    const input = elements[name];
+    if (input && value !== undefined) input.value = value;
+  }
+
+  // Presets remain visible in Simple mode. Preserve a game-plan change made
+  // there, but restore custom Detailed weights when the visitor simply returns
+  // without changing that visible choice.
+  if (state.activePreset === snapshot.simplePresetAtEntry) {
+    state.activePreset = snapshot.activePreset;
+    state.weights = { ...snapshot.weights };
+  }
+  state.analyticsView = snapshot.analyticsView;
+  elements.analyticsView.value = state.analyticsView;
+  state.detailedSettingsSnapshot = null;
+  renderPresetState();
+  renderWeightControls();
+  syncRotationModelControls();
+  syncRotationRoleCopy();
+  updateRunSummary();
+  renderPlayerTable();
+  return true;
+}
+
+function applySimpleModelDefaults({ invalidate = false } = {}) {
+  const phase = state.loadedLiveSelection?.seasonPhase
+    || elements.liveSeasonPhase.value
+    || DEFAULT_SEASON_PHASE;
+  const isRotation = elements.mode.value === "rotation";
+
+  // Simple mode is a complete, opinionated model—not a CSS mask over unknown
+  // advanced settings. Reset every hidden input that can change selection so a
+  // visitor never receives a result controlled by an invisible experiment.
+  elements.alternatives.value = "3";
+  elements.minGames.value = String(recommendedMinimumGames(phase));
+  elements.minMinutes.value = String(recommendedMinimumMinutes(elements.mode.value, phase));
+  elements.minGuards.value = isRotation ? "3" : "2";
+  elements.minForwards.value = isRotation ? "3" : "2";
+  elements.minCenters.value = isRotation ? "2" : "1";
+  for (const input of [
+    elements.minPoints,
+    elements.minRebounds,
+    elements.minAssists,
+    elements.minSteals,
+    elements.minBlocks,
+    elements.maxTurnovers,
+  ]) input.value = "";
+  elements.rotationMin.value = "8";
+  elements.rotationMax.value = "40";
+  // Simple mode is purpose-built to answer the user's game-plan question.
+  // Recorded workload remains an opt-in detailed comparison, never a hidden
+  // default that can override a low-minute but well-projected player.
+  elements.rotationMinutePlan.value = "openWhatIf";
+  elements.rotationAllocationStyle.value = "strategyFirst";
+  elements.rotationFlexibility.value = "8";
+  elements.rotationRateStability.value = "sampleAdjusted";
+  elements.rotationScoringBasis.value = "per36";
+  elements.rotationPositionProfile.value = "automatic";
+  state.analyticsView = "perGame";
+  elements.analyticsView.value = "perGame";
+  if (state.activePreset === "custom") applyPreset("balanced", { invalidate: false });
+  $$('details.detailed-only[open]').forEach((details) => details.removeAttribute("open"));
+  syncRotationModelControls();
+  syncRotationRoleCopy(isRotation);
+  updateRunSummary();
+  renderPlayerTable();
+  if (invalidate) markScenarioChanged();
+}
+
+function setExperienceMode(
+  mode,
+  { applyDefaults = true, invalidate = false, announce = false } = {},
+) {
+  const nextMode = mode === "detailed" ? "detailed" : "simple";
+  const priorMode = state.experienceMode;
+  const movingFromDetailedToSimple = nextMode === "simple" && priorMode === "detailed" && applyDefaults;
+  const savedDetailedSettings = movingFromDetailedToSimple;
+  if (movingFromDetailedToSimple) state.detailedSettingsSnapshot = captureDetailedSettings();
+  state.experienceMode = nextMode;
+  const detailed = nextMode === "detailed";
+  document.body.dataset.experienceMode = nextMode;
+  elements.simpleMode.classList.toggle("is-active", !detailed);
+  elements.detailedMode.classList.toggle("is-active", detailed);
+  elements.simpleMode.setAttribute("aria-pressed", String(!detailed));
+  elements.detailedMode.setAttribute("aria-pressed", String(detailed));
+  elements.playersStepNumber.textContent = detailed ? "3" : "2";
+  elements.playersStepNumber.setAttribute("aria-label", `Step ${detailed ? "3" : "2"}`);
+
+  let restoredDetailedSettings = false;
+  if (!detailed) {
+    if ($('[data-view="optimizer"]')?.hidden) switchView("optimizer");
+    if (applyDefaults) {
+      applySimpleModelDefaults({ invalidate });
+      if (state.detailedSettingsSnapshot) {
+        state.detailedSettingsSnapshot.simplePresetAtEntry = state.activePreset;
+      }
+    }
+  } else if (priorMode === "simple") {
+    restoredDetailedSettings = restoreDetailedSettings();
+    if (restoredDetailedSettings) markScenarioChanged();
+  }
+  if (announce) {
+    showToast(restoredDetailedSettings
+      ? "Detailed view restored your prior advanced settings. Rebuild the result to apply them."
+      : detailed
+        ? "Detailed view opened. Every model control and report is available."
+        : savedDetailedSettings
+          ? "Simple view opened with recommended defaults. Your prior detailed settings are saved until you return."
+          : "Simple view uses recommended defaults and keeps the essential controls in focus.");
+  }
 }
 
 function applyLoadedPhaseEligibilityDefault(seasonPhase) {
@@ -2352,27 +2574,27 @@ function renderPlayerTable({ focusTarget = null } = {}) {
     createCell(row, formatNumber(player.points), "", "PTS");
     createCell(row, formatNumber(player.rebounds), "", "REB");
     createCell(row, formatNumber(player.assists), "", "AST");
-    createCell(row, formatNumber(player.steals), "", "STL");
-    createCell(row, formatNumber(player.blocks), "", "BLK");
-    createCell(row, formatNumber(player.turnovers), "", "TOV");
+    createCell(row, formatNumber(player.steals), "detailed-only-column", "STL");
+    createCell(row, formatNumber(player.blocks), "detailed-only-column", "BLK");
+    createCell(row, formatNumber(player.turnovers), "detailed-only-column", "TOV");
 
-    const lockCell = createCell(row, "", "", "Must include");
+    const lockCell = createCell(row, "", "", "Lock");
     lockCell.append(createTableCheckbox(
       player,
       "lock",
-      "Must include",
+      "Lock",
       state.lockedIds.has(player.id),
       state.excludedIds.has(player.id),
     ));
-    const excludeCell = createCell(row, "", "", "Do not use");
+    const excludeCell = createCell(row, "", "", "Exclude");
     excludeCell.append(createTableCheckbox(
       player,
       "exclude",
-      "Do not use",
+      "Exclude",
       state.excludedIds.has(player.id),
       state.lockedIds.has(player.id),
     ));
-    const compareCell = createCell(row, "", "", "Compare");
+    const compareCell = createCell(row, "", "detailed-only-column", "Compare");
     compareCell.append(createTableCheckbox(
       player,
       "compare",
@@ -2380,7 +2602,7 @@ function renderPlayerTable({ focusTarget = null } = {}) {
       state.compareIds.has(player.id),
       state.compareIds.size >= 4 && !state.compareIds.has(player.id),
     ));
-    const watchCell = createCell(row, "", "", "Watch");
+    const watchCell = createCell(row, "", "detailed-only-column", "Save");
     const watchButton = document.createElement("button");
     watchButton.type = "button";
     watchButton.className = "watch-toggle";
@@ -2455,6 +2677,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
     clearRenderedResult();
   }
   applyPendingScenarioPlayerSelections(dataset);
+  if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
   const availableIds = new Set(dataset.players.map((player) => player.id));
   state.compareIds = new Set([...state.compareIds].filter((id) => availableIds.has(id)));
   let migratedWatchlistSnapshot = false;
@@ -2472,7 +2695,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   updateLiveSelectionState({ preserveStatus: true });
   populateOpponentTeamOptions();
   setSolverStatus("Ready to solve");
-  setOptimizeButtons({ label: elements.mode.value === "rotation" ? "Optimize rotation" : "Optimize lineup" });
+  setOptimizeButtons({ label: solveActionLabel() });
   if (notice) showToast(notice);
 }
 
@@ -2619,6 +2842,7 @@ function buildOptimizerConfig() {
     blocks: elements.minBlocks,
   };
   for (const [stat, input] of Object.entries(statInputs)) {
+    if (state.experienceMode === "simple") continue;
     const value = optionalNumber(input);
     if (value !== undefined) statMinimums[stat] = value;
   }
@@ -2638,7 +2862,9 @@ function buildOptimizerConfig() {
     },
     statMinimums,
   };
-  const maxTurnovers = optionalNumber(elements.maxTurnovers);
+  const maxTurnovers = state.experienceMode === "detailed"
+    ? optionalNumber(elements.maxTurnovers)
+    : undefined;
   if (maxTurnovers !== undefined) config.maxTurnovers = maxTurnovers;
   if (config.mode === "rotation") {
     config.rotationOptions = {
@@ -2745,13 +2971,18 @@ function renderExactObjectiveReasons(player, result, insight) {
   const minutePlanExplanation = minutePlan === "historicalAware"
     ? historicalGuidance?.applied
       ? historicalGuidance?.allocationStyleApplied === "preserveWorkload"
-        ? `The roster is ranked by your strategy, then its minute plan stays as close as possible to the displayed rescaled workload targets inside the observed-workload capacity caps${historicalGuidance.status === "expanded-for-role-coverage" ? ", including the disclosed role-coverage expansion" : ""}.`
+        ? `The game-plan score selected this roster. The optional minute guardrail then keeps the plan close to observed workload inside its disclosed capacity window${historicalGuidance.status === "expanded-for-role-coverage" ? ", including the disclosed role-coverage expansion" : ""}.`
         : `${historicalGuidance.allocationStyleReason || "Minutes shift toward the best-fitting profiles inside the displayed observed-workload capacity caps."}`
-      : `Historical workload guardrails could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The result report identifies the missing workload evidence."}`
-    : "Open what-if minutes optimize inside the hard limits you set.";
+      : `The optional workload guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The result report identifies the missing workload evidence."}`
+    : "Game-plan minutes optimize inside the hard limits you set; recorded workload did not affect this result.";
+  const roleProjectionCopy = rateStability?.roleAdjustedPlayerMetricCount > 0
+    ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, rates from smaller source roles are tempered toward the same-season NBA baseline before `
+    : rateStability?.applied
+      ? "Smaller samples are stabilized toward the same-season NBA baseline before "
+      : "";
   const basis = document.createElement("p");
   basis.textContent = rotationBasis === "per36"
-    ? `${rateStability?.applied ? "Smaller samples are stabilized toward the same-season NBA baseline before " : ""}counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
+    ? `${roleProjectionCopy}counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
     : rotationBasis === "perGame"
       ? "This rotation uses the legacy per-game ranking basis; the contribution below also reflects the proposed minutes."
       : "This lineup gives each selected player an equal share of the configured pool-relative objective.";
@@ -2766,11 +2997,11 @@ function renderExactObjectiveReasons(player, result, insight) {
     entries.slice(0, 3).forEach(([metric, item]) => {
       const row = document.createElement("li");
       const percentile = Number(item.percentile);
-      row.textContent = `${METRIC_LABELS[metric] || titleCase(metric)}: ${formatOrdinal(percentile * 100)} percentile, +${formatNumber(item.scoreContribution, 2)} fit-score points.`;
+      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} percentile in this search; ${formatNumber(item.scoreContribution, 2)} points toward this result.`;
       list.append(row);
     });
     const total = document.createElement("li");
-    total.textContent = `Exact objective contribution: +${formatNumber(contribution.scoreContribution, 2)} of the group's ${formatNumber(result.best.score)} fit-score points.`;
+    total.textContent = `Contribution to this result: ${formatNumber(contribution.scoreContribution, 2)} of ${formatNumber(result.best.score)} match-score points in this search.`;
     list.append(total);
   } else {
     // The explanation layer remains useful if a future compatible optimizer
@@ -2863,7 +3094,14 @@ function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
   const rank = document.createElement("span");
   rank.className = "lineup-player__rank";
   rank.textContent = String(index + 1).padStart(2, "0");
-  top.append(position, rank);
+  top.append(position);
+  if (lineup.rotation) {
+    const minutes = document.createElement("strong");
+    minutes.className = "lineup-player__minutes";
+    minutes.textContent = `${Number(lineup.rotation.byId?.[player.id] || 0)} min`;
+    top.append(minutes);
+  }
+  top.append(rank);
   const avatar = createPlayerAvatar(player, "lineup-player__portrait");
   const name = document.createElement("h3");
   name.textContent = player.name;
@@ -2880,16 +3118,28 @@ function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
     wrap.append(dt, dd);
     stats.append(wrap);
   }
+  // Simple mode keeps each card to the facts needed to scan a recommendation.
+  // The audit trail, role proxies, replacement experiment, and inventory link
+  // remain intact in Detailed view without turning the default answer into a
+  // wall of secondary controls.
+  const roleTags = renderRoleTags(insight?.roles);
+  roleTags.classList.add("detailed-only");
+  const exactReasons = renderExactObjectiveReasons(player, result, insight);
+  exactReasons.classList.add("detailed-only");
+  const replacementPanel = renderExactReplacementPanel(player, result, insight);
+  replacementPanel.classList.add("detailed-only");
+  const cardSearch = createCardSearchLink(player);
+  cardSearch.classList.add("detailed-only");
   card.append(top);
   if (avatar) card.append(avatar);
   card.append(
     name,
     renderPlayerSeasonContext(player, insight),
     stats,
-    renderRoleTags(insight?.roles),
-    renderExactObjectiveReasons(player, result, insight),
-    renderExactReplacementPanel(player, result, insight),
-    createCardSearchLink(player),
+    roleTags,
+    exactReasons,
+    replacementPanel,
+    cardSearch,
   );
   return card;
 }
@@ -2905,7 +3155,7 @@ function renderContributionList(breakdown) {
     const item = document.createElement("li");
     item.className = "metric-bar";
     const label = document.createElement("span");
-    label.textContent = METRIC_LABELS[metric] || titleCase(metric);
+    label.textContent = resultMetricLabel(metric);
     const track = document.createElement("span");
     track.className = "metric-bar__track";
     const fill = document.createElement("span");
@@ -3012,7 +3262,7 @@ function renderResultEvidence(result) {
   strip.append(resultEvidenceItem(
     "Historical source",
     `${source.teamName || source.team || "Selected team"} · ${source.season || "Season unavailable"}`,
-    `${phase} team-stint rows from ${source.provider || source.label || "the loaded dataset"}`,
+    `${phase} stats recorded with this team from ${source.provider || source.label || "the loaded dataset"}`,
   ));
 
   const teamGames = Number(source.teamGames);
@@ -3021,14 +3271,14 @@ function renderResultEvidence(result) {
     const hasHistoricalWorkload = guidance?.applied;
     const minuteStyle = guidance?.allocationStyleApplied;
     const value = !hasHistoricalWorkload
-      ? "Hard minute limits only"
+      ? "Game-plan allocation"
       : minuteStyle === "preserveWorkload"
-        ? "Observed workload protected"
-        : "Strategy-first minute plan";
+        ? "Observed-workload guardrail"
+        : "Game-plan-first with guardrail";
     const workloadDetail = !hasHistoricalWorkload
-      ? guidance?.reason || "The selected group did not have complete recorded workload evidence."
+      ? "Recorded workload did not affect selection or minutes; the allocation used your game plan inside the hard player limits."
       : `${guidance.knownAnchorCount || result.best.players.length} of ${guidance.selectedPlayerCount || result.best.players.length} selected players had a workload anchor${Number.isFinite(teamGames) && teamGames > 0 ? ` across ${formatNumber(teamGames, 0)} team games` : ""}. ${guidance.allocationStyleReason || ""}`.trim();
-    strip.append(resultEvidenceItem("Minute realism", value, workloadDetail));
+    strip.append(resultEvidenceItem("Minute planning", value, workloadDetail));
   } else {
     strip.append(resultEvidenceItem(
       "Workload evidence",
@@ -3041,14 +3291,17 @@ function renderResultEvidence(result) {
 
   const rateEvidence = result.diagnostics?.rotationRateStabilityEvidence;
   if (result.best?.rotation && rateEvidence?.applied) {
+    const roleProjectionDetail = rateEvidence.roleAdjustedPlayerMetricCount > 0
+      ? ` ${rateEvidence.roleAdjustedPlayers} player${rateEvidence.roleAdjustedPlayers === 1 ? " also had" : "s also had"} at least one rate adjusted for the ${formatNumber(rateEvidence.roleMinutesTarget, 1)}-minute average rotation role.`
+      : "";
     strip.append(resultEvidenceItem(
-      "Rate confidence",
-      "Sample-adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.`,
+      "Rate projection",
+      rateEvidence.roleAdjustedPlayerMetricCount > 0 ? "Sample + role adjusted" : "Sample-adjusted",
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${roleProjectionDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(
-      "Rate confidence",
+      "Rate projection",
       "Raw source rates",
       rateEvidence?.reason || "The selected source did not provide enough evidence for stabilization.",
     ));
@@ -3105,15 +3358,17 @@ function renderRotationMinutes(rotation) {
   const headingRow = document.createElement("div");
   headingRow.className = "rotation-plan__heading";
   const heading = document.createElement("h3");
-  heading.textContent = "240-minute rotation plan";
+  heading.textContent = "240-minute game-plan allocation";
   const planChip = document.createElement("span");
   planChip.className = "model-status-chip";
   const guidance = rotation.historicalGuidance || {};
   planChip.textContent = rotation.minutePlan === "historicalAware" && guidance.applied
     ? guidance.allocationStyleApplied === "preserveWorkload"
       ? "Workload-protected plan"
-      : "Strategy-first plan"
-    : ROTATION_MINUTE_PLAN_LABELS[rotation.minutePlan] || "Exact minute plan";
+      : "Game-plan-first allocation"
+    : rotation.minutePlan === "openWhatIf"
+      ? "Game-plan allocation"
+      : ROTATION_MINUTE_PLAN_LABELS[rotation.minutePlan] || "Exact minute plan";
   headingRow.append(heading, planChip);
   const note = document.createElement("p");
   note.className = "rotation-plan-note";
@@ -3129,10 +3384,10 @@ function renderRotationMinutes(rotation) {
       ? ` You requested a ±${requestedFlexibility}-minute observed-workload window, and the exact role check widened it to ±${appliedFlexibility} minutes so the group could cover ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`
       : ` Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
     note.textContent = guidance.allocationStyleApplied === "preserveWorkload"
-      ? `Your strategy selected this roster; the minute solver then minimized its total departure from rescaled historical workload targets inside the observed-workload capacity caps and hard limits.${roleCoverageNote}`
+      ? `Your game plan selected this roster; the optional source-workload mode then kept its minute plan close to observed usage inside the displayed capacity caps and hard limits.${roleCoverageNote}`
       : `${guidance.allocationStyleReason || "The minute solver shifted time toward the player profiles that best fit your strategy inside the observed-workload capacity caps."}${roleCoverageNote}`;
   } else if (rotation.minutePlan === "openWhatIf") {
-    note.textContent = `Open what-if mode maximizes strategy fit inside only your hard player limits. It is an experiment, not a reconstruction of the team's historical rotation. Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
+    note.textContent = `This allocation maximizes your game-plan fit inside your hard player limits. It does not try to recreate the source team's rotation. Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   } else {
     note.textContent = `${guidance.reason || "Historical workload evidence was unavailable, so the plan used your hard player limits."} Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   }
@@ -3195,7 +3450,7 @@ function renderHistoricalWorkloadBenchmark(result) {
   const card = document.createElement("section");
   card.className = "result-card historical-benchmark";
   const heading = document.createElement("h3");
-  heading.textContent = "Historical workload benchmark";
+  heading.textContent = "Source workload comparison (optional)";
   const sourceLeaders = Array.isArray(state.dataset?.source?.rotation)
     ? state.dataset.source.rotation
     : [];
@@ -3208,7 +3463,7 @@ function renderHistoricalWorkloadBenchmark(result) {
     return card;
   }
   if (best.rotation.minutePlan === "openWhatIf") {
-    note.textContent = "Open what-if did not use recorded workloads. They are shown below only as a reality check against the unconstrained experiment—not as an optimizer input or a claim that the historical allocation was optimal.";
+    note.textContent = "This game-plan allocation did not use recorded workload. The source minutes below are context only—not an optimizer input and not a claim that the historical allocation was optimal.";
   } else {
     note.textContent = sourceLeaders.length > 0
       ? `${overlap} of ${best.playerIds.length} selected players appear among this source's ${sourceLeaders.length} largest historical minute shares. Recorded minutes are descriptive usage—not a claim that the coach's allocation was optimal.`
@@ -3299,7 +3554,7 @@ function renderAlternatives(alternatives, best) {
   const heading = document.createElement("h3");
   heading.textContent = "Recommended and next-best feasible groups";
   const note = document.createElement("p");
-  note.textContent = `Fit gap shows points below the recommended group's pool-relative score. Roster changes make each tradeoff explicit. ${best.rotation ? "Production columns are minute-weighted from each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
+  note.textContent = `Match score compares these groups only within this exact search; it is not a player rating or win prediction. Roster changes make each tradeoff explicit. ${best.rotation ? "Production columns are minute-weighted from each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
   wrap.className = "alternatives-wrap table-wrap";
   wrap.tabIndex = 0;
@@ -3311,7 +3566,7 @@ function renderAlternatives(alternatives, best) {
   caption.textContent = "Top feasible lineup alternatives";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Rank", "Players", "Fit score", "Fit gap", "Changes from #1", "Main production tradeoff", "PTS", "REB", "AST", "TOV"]) {
+  for (const heading of ["Rank", "Players", "Match score", "Gap from #1", "Changes from #1", "Main production tradeoff", "PTS", "REB", "AST", "TOV"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -3368,7 +3623,7 @@ function renderAnalyticsComparisonChart(best, pool) {
   heading.textContent = "Selected group vs eligible pool";
   const note = document.createElement("p");
   const view = analyticsViewDetail();
-  note.textContent = `${best.rotation ? "Selected values are minute-weighted by the exact 240-minute plan" : "Selected values are averaged across the five selected players"}; pool values are unweighted across ${pool.length} eligible, non-excluded player${pool.length === 1 ? "" : "s"}. ${view.note}`;
+  note.textContent = `${best.rotation ? "Selected values are minute-weighted by the exact 240-minute plan" : "Selected values are averaged across the five selected players"}; pool values are unweighted across ${pool.length} player${pool.length === 1 ? "" : "s"} available in this search. ${view.note}`;
   section.append(heading, note);
 
   const chart = document.createElement("div");
@@ -3433,14 +3688,14 @@ function renderRoleMatrix(roleCoverage) {
   const section = document.createElement("section");
   section.className = "fan-report__matrix";
   const heading = document.createElement("h4");
-  heading.textContent = "Role coverage matrix";
+  heading.textContent = "Player strengths by role";
   const note = document.createElement("p");
-  note.textContent = `Signals are measured against the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ meets the normal sample standard; △ is provisional and does not fill a coverage target. Every mark is a statistical signal, not a scouting certainty.`;
+  note.textContent = `Each mark is a statistical strength compared with the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ has a normal-sized sample; △ is a smaller sample and is shown for context only. These are box-score signals, not scouting certainties.`;
   section.append(heading, note);
   const scroll = document.createElement("div");
   scroll.className = "role-matrix table-wrap";
   scroll.tabIndex = 0;
-  scroll.setAttribute("aria-label", "Statistical role coverage matrix for the selected group");
+  scroll.setAttribute("aria-label", "Selected-player strengths table");
   const table = document.createElement("table");
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
@@ -3488,9 +3743,9 @@ function renderFanScoutingReport(result, explanation) {
   eyebrow.textContent = "Lineup Lab historical scouting report";
   const heading = document.createElement("h3");
   heading.id = "fanReportHeading";
-  heading.textContent = "Fan analytics report";
+  heading.textContent = "Full statistical breakdown";
   const intro = document.createElement("p");
-  intro.textContent = "A transparent explanation layer for the exact result: roles, rate views, sample context, and tradeoffs. It is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
+  intro.textContent = "Explore the evidence behind the exact result: strengths, sample context, player comparisons, and alternatives. This is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
   headerText.append(eyebrow, heading, intro);
   const provenance = document.createElement("p");
   provenance.className = "report-provenance";
@@ -3498,8 +3753,8 @@ function renderFanScoutingReport(result, explanation) {
   provenance.textContent = [
     `${source.teamName || source.team || "Selected team"} · ${source.season || "season unavailable"}`,
     source.seasonPhase === "playoffs" ? "Playoffs" : "Regular season",
-    `${best.players.length} selected team stints`,
-    `${postseasonCount} with a recorded same-team playoff stint`,
+    `${best.players.length} selected players using stats with this team`,
+    `${postseasonCount} with playoff statistics for this team`,
     source.provider || "Source context unavailable",
   ].join(" · ");
   header.append(headerText, provenance);
@@ -3509,12 +3764,12 @@ function renderFanScoutingReport(result, explanation) {
   grid.className = "fan-report__grid";
   grid.append(
     renderInsightList(
-      "Lineup strengths",
+      "What this group does well",
       explanation.roleCoverage.strengths || [],
       { emptyText: "No role signal cleared its configured coverage target in this comparison pool." },
     ),
     renderInsightList(
-      "Watchouts and coverage gaps",
+      "Potential weak spots",
       explanation.roleCoverage.deficiencies || [],
       {
         warning: true,
@@ -3537,79 +3792,182 @@ function renderFanScoutingReport(result, explanation) {
   return report;
 }
 
+function resultMetricLabel(metric) {
+  if (metric === "historicalReadiness") return "Recorded role evidence";
+  if (metric === "efgPct" && state.experienceMode === "simple") return "Shooting efficiency (eFG%)";
+  return METRIC_LABELS[metric] || titleCase(metric);
+}
+
+function simpleRoleConcern(entry) {
+  // Detailed mode retains the complete, statistical role labels. Simple mode
+  // translates the first gap into a basketball question a visitor can act on.
+  const concernByRole = {
+    primaryCreator: "this group does not have a clear lead playmaker based on assists and turnovers.",
+    secondaryCreator: "this group has limited secondary playmaking support.",
+    leadScorer: "this group lacks a clear high-volume scorer in this player pool.",
+    movementShooter: "this group lacks a clear high-volume 3-point shooting option in this player pool.",
+    perimeterShooter: "this group has limited 3-point shooting accuracy in this player pool.",
+    connector: "this group has limited low-turnover passing support.",
+    rimProtector: "this group has limited shot-blocking evidence.",
+    switchDefender: "this group has limited multi-position steals-and-blocks activity.",
+    rebounder: "this group has limited rebounding strength.",
+    disruptor: "this group has limited combined steals-and-blocks activity.",
+  };
+  return concernByRole[entry?.roleId]
+    || "one part of this group has limited box-score evidence.";
+}
+
+function renderSimpleResultOverview(result, fanExplanation) {
+  const best = result.best;
+  const panel = document.createElement("section");
+  panel.className = "simple-result-overview simple-only";
+  const heading = document.createElement("h3");
+  heading.textContent = "Why this group was recommended";
+  const list = document.createElement("ul");
+  list.className = "simple-result-reasons";
+
+  const strongest = Object.entries(best.contributionBreakdown || {})
+    .filter(([metric, detail]) => metric !== "historicalReadiness" && Number(detail.scoreContribution) > 0)
+    .sort((left, right) => Number(right[1].scoreContribution) - Number(left[1].scoreContribution))
+    .slice(0, 3)
+    .map(([metric]) => resultMetricLabel(metric));
+  const fitReason = document.createElement("li");
+  fitReason.textContent = strongest.length
+    ? `It matches your game plan most through ${strongest.join(", ")}.`
+    : "It is the strongest statistical match for the game plan you selected.";
+  list.append(fitReason);
+
+  if (best.rotation) {
+    const readinessReason = document.createElement("li");
+    readinessReason.textContent = result.diagnostics?.rotationHistoricalReadiness?.applied
+      ? "The rotation ranking balances your game plan with each player's recorded workload for this team, then assigns all 240 minutes close to those historical roles."
+      : "This what-if rotation follows your game plan inside the hard player-minute limits; recorded workload does not affect the roster or minutes.";
+    list.append(readinessReason);
+  }
+
+  const exactReason = document.createElement("li");
+  exactReason.textContent = `The exact search ranked it #1 after applying every active player and position rule.`;
+  list.append(exactReason);
+
+  const deficiencies = fanExplanation?.roleCoverage?.deficiencies || [];
+  if (deficiencies.length > 0) {
+    const concern = document.createElement("p");
+    concern.className = "simple-result-concern";
+    concern.textContent = `Possible weakness: ${simpleRoleConcern(deficiencies[0])}`;
+    panel.append(heading, list, concern);
+  } else {
+    panel.append(heading, list);
+  }
+
+  const alternative = result.alternatives?.[1];
+  if (alternative) {
+    const bestIds = new Set(best.playerIds || best.players.map((player) => player.id));
+    const alternativeIds = new Set(alternative.playerIds || alternative.players.map((player) => player.id));
+    const added = alternative.players.filter((player) => !bestIds.has(player.id)).map((player) => player.name);
+    const removed = best.players.filter((player) => !alternativeIds.has(player.id)).map((player) => player.name);
+    const next = document.createElement("p");
+    next.className = "simple-result-next";
+    next.textContent = `Next-best option: ${added.length || removed.length
+      ? `swap ${removed.join(", ") || "the changed player"} for ${added.join(", ") || "the alternative"}.`
+      : "the same player group with a nearly identical plan."} ${summarizeAlternativeTradeoff(alternative, best)}.`;
+    panel.append(next);
+  }
+
+  const detailsButton = document.createElement("button");
+  detailsButton.type = "button";
+  detailsButton.className = "button button--quiet simple-result-details";
+  detailsButton.dataset.action = "show-detailed";
+  detailsButton.textContent = "Open Detailed analysis";
+  panel.append(detailsButton);
+  return panel;
+}
+
 function renderSuccess(result) {
   const best = result.best;
-  const eligibleComparisonPool = comparisonPool();
-  const fitPoolSize = eligibleComparisonPool.length;
+  const comparisonPlayers = comparisonPool();
   // Selection remains entirely inside optimizer-core. This pure explanation
-  // call only translates the returned exact choice into fan-readable roles,
-  // samples, and alternative context; it cannot change feasibility or score.
+  // call translates the returned exact choice into readable strengths, sample
+  // context, and tradeoffs; it cannot alter feasibility, minutes, or ranking.
   const fanExplanation = explainOptimizationSelection(result, {
-    candidatePool: eligibleComparisonPool,
-    referencePlayers: eligibleComparisonPool,
+    candidatePool: comparisonPlayers,
+    referencePlayers: comparisonPlayers,
     weights: state.weights,
-    comparisonLabel: "eligible, non-excluded player pool",
+    comparisonLabel: "players available in this search",
   });
-  const productionExplanation = best.rotation
-    ? "Production is minute-weighted from the exact 240-minute plan; the minute model and evidence status are shown below."
-    : "Profiles add each selected player's per-game averages.";
-  const feasibleCount = result.diagnostics.feasibleCombinations;
-  const possibleCount = result.combinationsEvaluated;
+  const feasibleCount = Number(result.diagnostics.feasibleCombinations || 0);
+  const possibleCount = Number(result.combinationsEvaluated || 0);
   const countIsComplete = result.diagnostics.feasibleCombinationCountComplete !== false;
-  // Bound-pruned rotations do not need full constraint classification once
-  // their best-possible score cannot enter the displayed top results. The
-  // winner and alternatives remain exact, but calling the confirmed feasible
-  // count complete would overstate what the proof established.
-  const feasibilityExplanation = countIsComplete
-    ? `${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} met every requirement after checking ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}.`
-    : `At least ${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} met every requirement. The displayed top results were proven exact after bounding ${result.diagnostics.constraintBoundPruned.toLocaleString()} lower-ceiling group${result.diagnostics.constraintBoundPruned === 1 ? "" : "s"} among ${possibleCount.toLocaleString()} possibilities; bounded groups did not need full constraint classification.`;
-  elements.resultSummary.textContent = `${feasibilityExplanation} The fit score is relative to ${fitPoolSize} eligible, non-excluded players—not a win probability. ${productionExplanation}`;
+  const validLabel = countIsComplete
+    ? `${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule`
+    : `at least ${feasibleCount.toLocaleString()} proven valid group${feasibleCount === 1 ? "" : "s"}`;
+  elements.resultSummary.textContent = `Recommended #1 of ${validLabel}. The solver checked ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}; this is a historical statistical match, not a win prediction.`;
+
   const fragment = document.createDocumentFragment();
-  const scoreboard = document.createElement("div");
-  scoreboard.className = "result-scoreboard";
-  const productionPrefix = best.rotation ? "Projected" : "Combined";
-  scoreboard.append(
-    renderScoreCard("Strategy fit in this eligible pool", `${formatNumber(best.score)} / 100`, true),
-    renderScoreCard(`${productionPrefix} PTS`, formatNumber(best.totals.points)),
-    renderScoreCard(`${productionPrefix} REB`, formatNumber(best.totals.rebounds)),
-    renderScoreCard(`${productionPrefix} AST`, formatNumber(best.totals.assists)),
-    renderScoreCard(`${productionPrefix} TOV`, formatNumber(best.totals.turnovers)),
-  );
   const lineup = document.createElement("div");
   lineup.className = "lineup-grid";
   best.players.forEach((player, index) => lineup.append(renderLineupPlayer(player, best, index, {
     result,
     insight: playerInsightFor(fanExplanation, player.id),
   })));
+  fragment.append(lineup, renderSimpleResultOverview(result, fanExplanation));
+
+  // Detailed view is deliberately progressive: even advanced users see the
+  // actual players first, then choose when to open score math, rule proofs,
+  // alternative tables, and descriptive skill signals.
+  const fullAnalysis = document.createElement("details");
+  fullAnalysis.className = "full-analysis detailed-only";
+  const fullSummary = document.createElement("summary");
+  fullSummary.textContent = "Open full analysis, alternatives, and model checks";
+  const scoreExplanation = document.createElement("p");
+  scoreExplanation.className = "full-analysis__intro";
+  scoreExplanation.textContent = best.rotation
+    ? "Match score is a 0–100 comparison of this game-plan allocation against the eligible players in this exact search. It uses only the priorities you selected, with small-sample and larger-role rate protection when source evidence is available. Compare it only with alternatives from this same search; it is not team quality, player quality, or win probability."
+    : "Match score is a 0–100 comparison of this group against the eligible players in this exact search using the priorities you selected. Compare it only with alternatives from this same search; it is not team quality or win probability.";
+  const scoreboard = document.createElement("div");
+  scoreboard.className = "result-scoreboard";
+  const productionPrefix = best.rotation ? "Projected" : "Combined";
+  scoreboard.append(renderScoreCard(
+    "Match score in this search",
+    `${formatNumber(best.score)} / 100`,
+    true,
+  ));
+  scoreboard.append(
+    renderScoreCard(`${productionPrefix} PTS`, formatNumber(best.totals.points)),
+    renderScoreCard(`${productionPrefix} REB`, formatNumber(best.totals.rebounds)),
+    renderScoreCard(`${productionPrefix} AST`, formatNumber(best.totals.assists)),
+  );
 
   const detailGrid = document.createElement("div");
   detailGrid.className = "result-detail-grid";
   const contributionCard = document.createElement("section");
   contributionCard.className = "result-card";
   const contributionHeading = document.createElement("h3");
-  contributionHeading.textContent = best.rotation && result.diagnostics?.rotationScoringBasis === "per36"
-    ? "Why this group fits your strategy (rate-based rotation scoring)"
-    : "Why this group fits your strategy";
+  contributionHeading.textContent = "What drove this ranking";
   contributionCard.append(contributionHeading, renderContributionList(best.contributionBreakdown));
   const auditCard = document.createElement("section");
   auditCard.className = "result-card";
   const auditHeading = document.createElement("h3");
-  auditHeading.textContent = "Constraint check";
+  auditHeading.textContent = "Rules check";
   auditCard.append(auditHeading, renderAudit(best.constraintAudit));
   detailGrid.append(contributionCard, auditCard);
 
-  // Put the answer ahead of the proof. A visitor should see the recommended
-  // group and its headline production before scrolling through evidence,
-  // ranking context, and model diagnostics.
-  fragment.append(scoreboard, lineup, renderResultEvidence(result), renderResultRankingContext(result), detailGrid);
+  fullAnalysis.append(
+    fullSummary,
+    scoreExplanation,
+    scoreboard,
+    renderResultEvidence(result),
+    renderResultRankingContext(result),
+    detailGrid,
+  );
   if (best.rotation) {
-    fragment.append(renderRotationMinutes(best.rotation));
+    fullAnalysis.append(renderRotationMinutes(best.rotation));
     const historicalBenchmark = renderHistoricalWorkloadBenchmark(result);
-    if (historicalBenchmark) fragment.append(historicalBenchmark);
+    if (historicalBenchmark) fullAnalysis.append(historicalBenchmark);
   }
-  if (result.alternatives.length > 1) fragment.append(renderAlternatives(result.alternatives, best));
+  if (result.alternatives.length > 1) fullAnalysis.append(renderAlternatives(result.alternatives, best));
   const fanReport = renderFanScoutingReport(result, fanExplanation);
-  if (fanReport) fragment.append(fanReport);
+  if (fanReport) fullAnalysis.append(fanReport);
+  fragment.append(fullAnalysis);
   elements.resultContent.replaceChildren(fragment);
   setMobileResultCurrent(true);
 }
@@ -3771,7 +4129,7 @@ async function runOptimizer(event) {
   elements.results.classList.remove("is-stale");
   elements.resultFreshness.hidden = true;
   elements.resultFreshness.textContent = "";
-  setOptimizeButtons({ disabled: true, label: "Solving..." });
+  setOptimizeButtons({ disabled: true, label: solveActionLabel({ busy: true }) });
   elements.form.setAttribute("aria-busy", "true");
   setSolverStatus("Running an exact search...", "working");
   // Yield once so the "Solving" state can paint, then re-check both identities.
@@ -3786,8 +4144,8 @@ async function runOptimizer(event) {
     elements.results.classList.remove("is-stale");
     elements.resultFreshness.hidden = true;
     elements.resultsHeading.textContent = result.mode === "rotation"
-      ? "Best rotation for these settings"
-      : "Best lineup for these settings";
+      ? "Recommended rotation"
+      : "Recommended lineup";
     if (result.ok) renderSuccess(result);
     else renderFailure(result);
     elements.resultActions.hidden = !result.ok;
@@ -3834,11 +4192,7 @@ async function runOptimizer(event) {
     elements.form.removeAttribute("aria-busy");
     setOptimizeButtons({ disabled: false });
     const needsUpdate = !elements.resultFreshness.hidden;
-    setOptimizeButtons({
-      label: elements.mode.value === "rotation"
-        ? (needsUpdate ? "Update rotation" : "Optimize rotation")
-        : (needsUpdate ? "Update lineup" : "Optimize lineup"),
-    });
+    setOptimizeButtons({ label: solveActionLabel({ update: needsUpdate }) });
   }
 }
 
@@ -4016,7 +4370,7 @@ function renderCompare() {
     const heading = document.createElement("h3");
     heading.textContent = selected.length === 1 ? "Choose one more player" : "Choose two to four players";
     const copy = document.createElement("p");
-    copy.textContent = `Use the Compare checkboxes in the optimizer's player table. The current percentile pool contains ${pool.length} eligible, non-excluded player${pool.length === 1 ? "" : "s"}.`;
+    copy.textContent = `Use the Compare checkboxes in the player table. The current comparison contains ${pool.length} player${pool.length === 1 ? "" : "s"} available in this search.`;
     empty.append(heading, copy);
     elements.compareContent.append(empty);
     return;
@@ -4039,7 +4393,7 @@ function renderCompare() {
   const scroll = document.createElement("div");
   scroll.className = "table-wrap";
   scroll.tabIndex = 0;
-  scroll.setAttribute("aria-label", `Percentile comparison across ${pool.length} eligible, non-excluded players`);
+  scroll.setAttribute("aria-label", `Percentile comparison across ${pool.length} players available in this search`);
   const bars = document.createElement("div");
   bars.className = "compare-bars";
   bars.style.padding = "1rem";
@@ -4070,7 +4424,7 @@ function renderCompare() {
       bar.setAttribute("aria-label", `${player.name}: ${labelText}`);
       bar.setAttribute("aria-valuetext", percentile === null
         ? `${player.name}, ${labelText}: unavailable in the selected ${view.shortLabel} view.`
-        : `${player.name}, ${labelText}: ${valueText}; ${formatOrdinal(percentile)} percentile among ${pool.length} eligible, non-excluded players`);
+        : `${player.name}, ${labelText}: ${valueText}; ${formatOrdinal(percentile)} percentile among ${pool.length} players available in this search`);
       const value = document.createElement("span");
       value.className = "compare-player-value";
       value.textContent = valueText;
@@ -4218,9 +4572,9 @@ function resultSummaryText() {
   if (!result?.ok || !elements.resultFreshness.hidden) return "";
   const best = result.best;
   const lines = [
-    `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Optimized rotation roster + minutes plan" : "Optimized lineup"}`,
+    `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Recommended rotation and minutes plan" : "Recommended lineup"}`,
     `Strategy: ${PRESET_LABELS[state.activePreset] || "Custom mix"}`,
-    `Pool-relative fit score: ${formatNumber(best.score)} / 100`,
+    `Match score in this search: ${formatNumber(best.score)} / 100`,
     `Players: ${best.players.map((player) => player.name).join(", ")}`,
     `${best.rotation ? "Minute-weighted projection" : "Combined player profiles"}: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
   ];
@@ -4356,6 +4710,9 @@ function resetScenario() {
     finishPendingReplacement("The scenario was reset. Run a new result before testing replacements.");
   }
   state.scenarioVersion += 1;
+  // Reset is an intentional fresh start, so it also discards any temporary
+  // Detailed-view snapshot that otherwise exists only to survive one view switch.
+  state.detailedSettingsSnapshot = null;
   elements.mode.value = "lineup";
   setMode("lineup");
   elements.alternatives.value = "5";
@@ -4371,11 +4728,11 @@ function resetScenario() {
   elements.maxTurnovers.value = "";
   elements.rotationMin.value = "8";
   elements.rotationMax.value = "40";
-  elements.rotationMinutePlan.value = "historicalAware";
-  elements.rotationAllocationStyle.value = "preserveWorkload";
+  elements.rotationMinutePlan.value = "openWhatIf";
+  elements.rotationAllocationStyle.value = "strategyFirst";
   elements.rotationFlexibility.value = "8";
   elements.rotationRateStability.value = "sampleAdjusted";
-  elements.rotationPositionProfile.value = "traditional";
+  elements.rotationPositionProfile.value = "automatic";
   state.analyticsView = "perGame";
   elements.analyticsView.value = state.analyticsView;
   elements.rotationScoringBasis.value = "per36";
@@ -4384,9 +4741,10 @@ function resetScenario() {
   state.excludedIds.clear();
   state.opponentWeightUndo = null;
   applyPreset("balanced", { invalidate: false });
+  if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
   clearRenderedResult();
   setSolverStatus("Ready to solve");
-  setOptimizeButtons({ label: "Optimize lineup" });
+  setOptimizeButtons({ label: solveActionLabel() });
   renderPlayerTable();
   if (state.opponentDataset) renderOpponentScout();
   showToast("Scenario reset. Your comparison and watchlist were kept.");
@@ -4418,6 +4776,7 @@ function bindEvents() {
   });
   elements.mode.addEventListener("change", () => {
     setMode(elements.mode.value);
+    if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
     markScenarioChanged();
   });
   elements.analyticsView.addEventListener("change", () => {
@@ -4454,10 +4813,30 @@ function bindEvents() {
     markScenarioChanged();
   });
   elements.form.addEventListener("submit", runOptimizer);
+  elements.simpleMode.addEventListener("click", () => {
+    setExperienceMode("simple", { applyDefaults: true, invalidate: true, announce: true });
+  });
+  elements.detailedMode.addEventListener("click", () => {
+    setExperienceMode("detailed", { applyDefaults: false, announce: true });
+  });
   elements.playerTableBody.addEventListener("change", handlePlayerControl);
   elements.playerTableBody.addEventListener("click", handlePlayerControl);
   elements.activeSelectionTray.addEventListener("click", handleActiveSelectionRemoval);
   elements.resultContent.addEventListener("click", (event) => {
+    const detailedButton = event.target.closest('[data-action="show-detailed"]');
+    if (detailedButton) {
+      setExperienceMode("detailed", { applyDefaults: false, announce: true });
+      const analysis = elements.resultContent.querySelector(".full-analysis");
+      if (analysis) {
+        analysis.open = true;
+        analysis.scrollIntoView({ behavior: motionBehavior(), block: "start" });
+        // The source button disappears in Detailed mode. Move focus to the
+        // newly revealed disclosure so keyboard and screen-reader users stay
+        // oriented at the point their action opened.
+        requestAnimationFrame(() => analysis.querySelector("summary")?.focus({ preventScroll: true }));
+      }
+      return;
+    }
     const button = event.target.closest('[data-action="exact-replacement"]');
     if (!button || button.disabled) return;
     runExactReplacement(button.dataset.playerId).catch((error) => {
@@ -4583,8 +4962,10 @@ async function initialize() {
   bindEvents();
   applyPreset("balanced", { invalidate: false });
   setMode("lineup", { preserveSize: true });
+  setExperienceMode(state.experienceMode, { applyDefaults: false });
   const sharedScenario = state.pendingScenario;
   applySharedScenarioControls(sharedScenario);
+  if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
   try {
     await populateLiveDataControls({ sharedScenario });
     if (!datasetLoadIsCurrent(initialLoadGeneration)) return;

@@ -96,8 +96,8 @@ window.DJ = window.DJ || {};
     }
 
     try {
-      const cached = DJ.getPreloadedProductsForSource?.('products.json')
-        || await DJ.loadPreloadedProductsForSource?.('products.json');
+      const cached = DJ.getPreloadedProductsForSource?.('products-public.json')
+        || await DJ.loadPreloadedProductsForSource?.('products-public.json');
       const product = Array.isArray(cached) ? cached.find((item) => Number(item?.id) === numericId) : null;
       return product ? normalProduct(product) : null;
     } catch (error) {

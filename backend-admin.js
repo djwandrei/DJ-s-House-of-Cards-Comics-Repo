@@ -592,7 +592,7 @@ window.DJ = window.DJ || {};
     }
     message.textContent = isSignedIn
       ? `Connected to Supabase as ${state.session.user?.email || 'signed-in user'}. Saves and deletes update the live Supabase catalog immediately.`
-      : 'Project URL and browser key look valid. Sign in below to load live listings, upload photos, import products.json, or run a connection test.';
+      : 'Project URL and browser key look valid. Sign in below to load live listings, upload photos, import the public catalog fallback, or run a connection test.';
     updateBackendOverview();
     syncLocalAdminVisibility();
     syncHeroCopy();
@@ -1158,7 +1158,7 @@ window.DJ = window.DJ || {};
     setBackendStatus('Loading remote products...', 'info');
     try {
       state.remoteProducts = sortRemoteProductsInPlace(
-        (await backend().listProducts({ source: 'products.json', force })).map(prepareRemoteProduct)
+        (await backend().listAdminProducts({ force })).map(prepareRemoteProduct)
       );
       state.remoteVisibleLimit = REMOTE_LIST_RENDER_LIMIT;
       renderRemoteListings();
@@ -1256,18 +1256,18 @@ window.DJ = window.DJ || {};
   async function handleSeedProducts() {
     if (state.isBusy) return;
     if (!state.session) {
-      setBackendStatus('Sign in before importing your current products.json file.', 'error');
+      setBackendStatus('Sign in before importing the current public catalog fallback.', 'error');
       return;
     }
 
-    if (!window.confirm('Import product content from products.json into Supabase? Live quantity, availability, sold, hidden, archived, and deletion state will be preserved.')) {
+    if (!window.confirm('Import product content from the public catalog fallback into Supabase? Existing private metadata and live operational state will be preserved.')) {
       return;
     }
 
     setBusy(true);
     setBackendStatus('Importing current catalog into Supabase...', 'info');
     try {
-      const staticProducts = await loadSeedSource('products.json');
+      const staticProducts = await loadSeedSource('products-public.json');
       const featuredProducts = await loadSeedSource('products-featured.json');
       const total = await backend().seedProducts(staticProducts, {
         chunkSize: 200,

@@ -22,14 +22,14 @@
     analyticsSupabaseUrl: 'https://fbbmuqbdpgsmvnezowwn.supabase.co',
     analyticsSupabasePublishableKey: 'sb_publishable_ZZUUmm65NYHiRtUBHNW0sg_eJXE6KV2',
     productsTable: 'products',
+    storefrontProductsTable: 'storefront_products',
     storageBucket: 'product-images',
     imageFolder: 'products',
     stripeCheckoutEnabled: true,
     stripeCheckoutFunction: 'create-checkout-session',
     checkoutSessionStatusFunction: 'checkout-session-status',
-    // Guest checkout still uses the server-side inventory reservation and Stripe
-    // Checkout flow. Keep this browser flag paired with the server setting so a
-    // disabled server route never presents a broken option to shoppers.
+    // Guest holds use a server-side IP fingerprint, email limit, and global
+    // concurrency cap so changing a guest email cannot bypass reservations.
     stripeGuestCheckoutEnabled: true,
     collectorInquiryFunction: 'collector-inquiry',
     offerWorkflowFunction: 'offer-workflow',

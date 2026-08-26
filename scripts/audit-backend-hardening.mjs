@@ -34,7 +34,9 @@ const requiredBaseMigrations = [
   '20260810020000_checkout_base.sql',
   '20260810030000_marketplace_base.sql',
   '20260815000000_backend_hardening.sql',
-  '20260815010000_operational_resilience.sql'
+  '20260815010000_operational_resilience.sql',
+  '20260825070000_public_catalog_projection.sql',
+  '20260825071000_guest_checkout_reservation_hardening.sql'
 ];
 const migrationDirectory = path.join(ROOT, 'supabase', 'migrations');
 const migrations = existsSync(migrationDirectory)
@@ -51,6 +53,10 @@ if (migrations.indexOf('20260815000000_backend_hardening.sql') <= migrations.ind
 assertions += 1;
 if (migrations.indexOf('20260815010000_operational_resilience.sql') <= migrations.indexOf('20260815000000_backend_hardening.sql')) {
   failures.push('supabase/migrations: operational resilience must run after backend hardening');
+}
+assertions += 1;
+if (migrations.indexOf('20260825071000_guest_checkout_reservation_hardening.sql') <= migrations.indexOf('20260815000000_backend_hardening.sql')) {
+  failures.push('supabase/migrations: guest checkout reservation hardening must run after backend hardening');
 }
 
 assert(
@@ -370,13 +376,75 @@ assert(
 );
 assert(
   'supabase/functions/create-checkout-session/index.ts',
-  'guest checkout reservations must use the request-scoped rate-limit fingerprint',
-  containsAll(
-    'checkoutFingerprint = rateLimit.requestFingerprint',
+  'checkout must preserve signed-in and guest flows while binding guest holds to a server-derived IP fingerprint',
+  (content) => containsAll(
+    "const allowGuestCheckout = Deno.env.get('STRIPE_ALLOW_GUEST_CHECKOUT') === 'true';",
+    'const maxActiveReservationsPerGuest =',
+    'admin.auth.getUser(jwt)',
+    'let buyerUserId: string | null = null;',
+    'const hasValidGuestEmail = allowGuestCheckout && emailPattern.test(email)',
+    "if (!buyerUserId && !allowGuestCheckout)",
+    "if (!buyerUserId && !hasValidGuestEmail)",
+    'const activeReservationLimit = buyerUserId ? maxActiveReservationsPerUser : maxActiveReservationsPerGuest;',
+    'checkoutFingerprint = buyerUserId ? rateLimit.requestFingerprint : rateLimit.ipFingerprint;',
     'p_request_fingerprint: checkoutFingerprint',
     "admin.rpc('reserve_checkout_items'",
     "admin.rpc('reserve_negotiated_offer_checkout'"
+  )(content) && !content.includes('checkoutFingerprint = rateLimit.requestFingerprint')
+);
+assert(
+  'supabase/config.toml',
+  'checkout gateway JWT verification must permit the Edge Function to authenticate signed-in and guest requests itself',
+  /\[functions\.create-checkout-session\]\s*verify_jwt\s*=\s*false/i
+);
+assert(
+  'backend-config.js',
+  'browser guest checkout must be explicitly enabled with server-side reservation controls documented',
+  (content) => /stripeGuestCheckoutEnabled\s*:\s*true/.test(content)
+    && content.includes('server-side IP fingerprint, email limit, and global')
+);
+assert(
+  'payments.js',
+  'shopper guest checkout must be explicit, email-validated, configuration-gated, and omit guest data for signed-in checkout',
+  containsAll(
+    'config.stripeGuestCheckoutEnabled === true',
+    'async function continueAsGuestFromModal()',
+    'EMAIL_PATTERN.test(email)',
+    'guestCheckout: true',
+    'const canUseGuestCheckout = config.stripeGuestCheckoutEnabled === true',
+    'canUseGuestCheckout && !state.session?.user ? { guestEmail: requestedGuestEmail } : {}',
+    "DJ.trackEvent?.('guest_checkout'"
   )
+);
+assert(
+  'supabase/migrations/20260825071000_guest_checkout_reservation_hardening.sql',
+  'guest reservation controls must atomically enforce IP, normalized-email, and global active-hold limits for direct and negotiated checkout',
+  (content) => containsAll(
+    'product_checkout_reservations_guest_email_active_idx',
+    'product_checkout_reservations_guest_expires_active_idx',
+    'create or replace function public.reserve_checkout_items(',
+    'create or replace function public.reserve_negotiated_offer_checkout(',
+    'Anonymous checkout fingerprint is required',
+    "p_expires_at > now() + interval '25 hours'",
+    "pg_advisory_xact_lock(hashtext('checkout-reservations:guest-global'))",
+    "identity_key := 'guest-ip:' || trim(p_request_fingerprint);",
+    'lower(trim(buyer_email)) = normalized_guest_email',
+    'greatest(active_guest_ip_count, active_guest_email_count)',
+    'guest_global_reservation_limit constant integer := 20',
+    'grant execute on function public.reserve_checkout_items(uuid, text, text, jsonb, timestamptz, integer) to service_role',
+    'grant execute on function public.reserve_negotiated_offer_checkout(uuid, uuid, text, text, timestamptz, integer) to service_role'
+  )(content)
+    && (content.match(/checkout-reservations:guest-global/g) || []).length === 2
+    && (content.match(/guest_global_reservation_limit constant integer := 20/g) || []).length === 2
+    && (content.match(/greatest\(active_guest_ip_count, active_guest_email_count\)/g) || []).length === 2
+    && (content.match(/p_expires_at > now\(\) \+ interval '25 hours'/g) || []).length === 2
+);
+assert(
+  'supabase/functions/.env.example',
+  'checkout environment must document the enabled guest flow and bounded signed-in and guest reservation limits',
+  (content) => /^STRIPE_MAX_ACTIVE_RESERVATIONS_PER_USER=20$/m.test(content)
+    && /^STRIPE_ALLOW_GUEST_CHECKOUT=true$/m.test(content)
+    && /^STRIPE_MAX_ACTIVE_RESERVATIONS_PER_GUEST=5$/m.test(content)
 );
 assert(
   'supabase/functions/create-checkout-session/index.ts',
@@ -401,8 +469,45 @@ assert(
     "if (includeOperationalState && (hasOwn('quantityAvailable')",
     "if (includeOperationalState && hasOwn('saleStatus')",
     'toRemoteProduct(product, { includeOperationalState: true })',
-    'mergeRemoteOperationalMetadata(item, currentMetadata.get(Number(item.id)))'
+    'mergeRemoteMetadata(item, currentMetadata.get(Number(item.id)))'
   )
+);
+assert(
+  'supabase/migrations/20260825070000_public_catalog_projection.sql',
+  'public catalog migration must revoke anonymous base-table reads and expose a strict view',
+  (content) => containsAll(
+    'revoke select on table public.products from anon',
+    'create view public.storefront_products',
+    'with (security_barrier = true)',
+    "p.sale_status not in ('hidden', 'archived', 'sold')",
+    'grant select on table public.storefront_products to anon, authenticated'
+  )(content) && !/\bp\.(?:item_photo_url|item_photo_urls|html_full_link|html_image_urls|sold_at|hidden_reason|archived_at)\b/.test(content)
+);
+assert(
+  'supabase-client.js',
+  'storefront and admin catalog reads must use separate public and privileged relations',
+  (content) => {
+    const publicColumns = content.match(/const PUBLIC_REMOTE_LIST_SELECT_COLUMNS = \[([\s\S]*?)\]\.join/)?.[1] || '';
+    return content.includes('.from(config.storefrontProductsTable)')
+      && content.includes('async function listAdminProducts()')
+      && content.includes('.from(config.productsTable)')
+      && !/(?:item_photo_url|item_photo_urls|html_full_link|html_image_urls|sold_at|hidden_reason|archived_at)/.test(publicColumns);
+  }
+);
+assert(
+  'supabase-client.js',
+  'Supabase browser SDK must load only the pinned same-origin vendor bundle',
+  (content) => content.includes("const SUPABASE_LIBRARY_VERSION = '2.49.4'")
+    && content.includes('vendor/supabase.min.js?v=${SUPABASE_LIBRARY_VERSION}')
+    && !content.includes('cdn.jsdelivr.net')
+    && !content.includes('unpkg.com')
+);
+assert(
+  '.htaccess',
+  'CSP and routing must block the rich catalog and remote SDK fallbacks',
+  (content) => content.includes('RewriteRule ^products\\.json$ - [F,L,NC]')
+    && !content.includes('cdn.jsdelivr.net')
+    && !content.includes('unpkg.com')
 );
 assert(
   'scripts/import-products-to-supabase.ps1',

@@ -6,7 +6,11 @@ const root = process.cwd();
 const sourceRoot = path.join(root, "prototypes", "basketball-lineup-optimizer");
 const outputRoot = path.join(root, "lineup-lab");
 const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
-const RELEASE_ASSET_VERSION = "20260825b";
+// Keep Lineup Lab's self-contained assets cache-busted independently of the
+// storefront's shared cache contract. Bump this only when the generated Lab
+// files change so a later reviewed path-list release cannot serve stale model
+// logic or interface copy from a browser cache.
+const RELEASE_ASSET_VERSION = "20260826a";
 const releaseFiles = [
   "index.html",
   "app.js",

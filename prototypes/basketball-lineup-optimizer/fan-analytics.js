@@ -91,19 +91,19 @@ const POSITION_KEYS = new Set(["G", "F", "C"]);
 export const FAN_ROLE_DEFINITIONS = Object.freeze([
   Object.freeze({
     id: "primaryCreator",
-    label: "Primary creator",
-    shortLabel: "Creator",
+    label: "Lead playmaker",
+    shortLabel: "Lead playmaker",
     target: 1,
     evidence: "box-score",
-    description: "Creates a large share of the group's passing and offensive burden.",
+    description: "Carries a large share of the group's playmaking responsibility.",
   }),
   Object.freeze({
     id: "secondaryCreator",
-    label: "Secondary creator",
-    shortLabel: "Secondary creator",
+    label: "Secondary playmaker",
+    shortLabel: "Secondary playmaker",
     target: 1,
     evidence: "box-score",
-    description: "Provides a second credible source of playmaking.",
+    description: "Provides a second dependable source of playmaking.",
   }),
   Object.freeze({
     id: "leadScorer",
@@ -118,46 +118,46 @@ export const FAN_ROLE_DEFINITIONS = Object.freeze([
     // Three-point accuracy and volume are useful, but they cannot identify
     // cuts, relocations, screens, or other off-ball movement without tracking
     // data. Keep the fan-facing label honest about that evidence boundary.
-    label: "Movement-shooting proxy",
-    shortLabel: "Movement proxy",
+    label: "High-volume 3-point shooter",
+    shortLabel: "High-volume 3-point shooter",
     target: 1,
     evidence: "requires-three-point-volume",
-    description: "Combines strong three-point accuracy with verified volume; this is a box-score proxy, not tracking-data proof of off-ball movement.",
+    description: "Combines strong 3-point accuracy with verified attempt volume; it does not claim to measure off-ball movement.",
   }),
   Object.freeze({
     id: "perimeterShooter",
-    label: "Perimeter shooter",
-    shortLabel: "Shooter",
+    label: "Accurate 3-point shooter",
+    shortLabel: "Accurate 3-point shooter",
     target: 1,
     evidence: "box-score",
-    description: "Shows strong three-point accuracy; volume is not required for this lighter label.",
+    description: "Shows strong 3-point accuracy; high attempt volume is not required for this label.",
   }),
   Object.freeze({
     id: "connector",
-    label: "Connector",
-    shortLabel: "Connector",
+    label: "Low-turnover passer",
+    shortLabel: "Low-turnover passer",
     target: 1,
     evidence: "box-score",
-    description: "Adds secondary passing and ball security without needing to be the primary scorer.",
+    description: "Combines secondary passing with reliable ball security.",
   }),
   Object.freeze({
     id: "rimProtector",
-    label: "Rim protector",
-    shortLabel: "Rim protector",
+    label: "Shot blocker",
+    shortLabel: "Shot blocker",
     target: 1,
     evidence: "box-score",
-    description: "Produces blocks at a strong rate from a frontcourt-eligible role.",
+    description: "Produces blocks at a strong rate from a frontcourt position.",
   }),
   Object.freeze({
     id: "switchDefender",
     // Multi-position eligibility and stocks are not proof of matchup
     // assignments. The label therefore describes the signal, not a verified
     // defensive scheme responsibility.
-    label: "Switch-defense proxy",
-    shortLabel: "Switch proxy",
+    label: "Multi-position defensive activity",
+    shortLabel: "Multi-position defensive activity",
     target: 1,
     evidence: "box-score-proxy",
-    description: "A multi-position player with strong stocks; matchup tracking would be needed to verify actual switching ability.",
+    description: "A multi-position player with strong steals-and-blocks activity; this does not prove actual switching ability.",
   }),
   Object.freeze({
     id: "rebounder",
@@ -169,11 +169,11 @@ export const FAN_ROLE_DEFINITIONS = Object.freeze([
   }),
   Object.freeze({
     id: "disruptor",
-    label: "Disruptive defender",
-    shortLabel: "Disruptor",
+    label: "Steals and blocks",
+    shortLabel: "Steals and blocks",
     target: 1,
     evidence: "box-score",
-    description: "Creates defensive events through steals and blocks.",
+    description: "Records steals and blocks at a strong combined rate.",
   }),
 ]);
 
@@ -1112,7 +1112,7 @@ export function classifyPlayerSeasonRolePool(players, options = {}) {
     const roles = classifyProfile(profile, percentiles, allProfiles.length);
     const caveats = [];
     if (!profile.evidence.hasThreePointVolume) {
-      caveats.push("Three-point volume is unavailable, so the movement-shooting proxy is withheld.");
+      caveats.push("Three-point attempt volume is unavailable, so the high-volume 3-point shooter label is withheld.");
     }
     if (!profile.reliability.reliable) caveats.push(profile.reliability.message);
     const record = {
@@ -1160,7 +1160,7 @@ export function analyzeRoleCoverage(players, options = {}) {
   const selected = Array.isArray(players) ? players : [];
   const classification = classifyPlayerSeasonRolePool(selected, options);
   const roleTargets = options.roleTargets && typeof options.roleTargets === "object" ? options.roleTargets : {};
-  // A role inferred from a very short stint can still be useful context on a
+  // A role inferred from a very short sample can still be useful context on a
   // player card, but it should not let a lineup claim a fully covered role.
   // Advanced users can deliberately opt in when comparing a small tournament
   // or postseason sample; the default remains conservative for fan reports.

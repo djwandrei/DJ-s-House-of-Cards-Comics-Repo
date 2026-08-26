@@ -76,8 +76,8 @@ window.DJ = window.DJ || {};
     'football-cards': 'products-football.json',
     comics: 'products-comics.json',
     collectibles: 'products-collectibles.json',
-    wishlist: 'products.json',
-    cart: 'products.json'
+    wishlist: 'products-public.json',
+    cart: 'products-public.json'
   };
   const BOOTSTRAP_SOURCE_BY_SOURCE = {
     'products-baseball.json': 'products-bootstrap-baseball.json',
@@ -87,7 +87,7 @@ window.DJ = window.DJ || {};
     'products-collectibles.json': 'products-bootstrap-collectibles.json'
   };
 
-  const DEFAULT_PRODUCT_SOURCE = 'products.json';
+  const DEFAULT_PRODUCT_SOURCE = 'products-public.json';
   const staticProductCache = new Map();
   const catalogBootstrapCache = new Map();
   const normalizedSourceCache = new Map();
@@ -980,10 +980,9 @@ window.DJ = window.DJ || {};
       const photoHostPageUrl = DJ.safeExternalUrl(item.photoHostPageUrl);
       const image = item.image || DJ.fallbackByCategory[category] || DJ.fallbackByCategory.Other;
       const attributes = deriveProductAttributes(item);
-      // The static catalog carries admin/import-only fields such as raw eBay
-      // HTML and workbook metadata. Use them above for attribute detection, but
-      // do not keep them in storefront product objects because large pages hold
-      // those normalized objects in memory for filtering, sorting, and modals.
+      // Public catalog sources are projected before delivery. Keep this
+      // defensive normalization for old cached data or local admin previews,
+      // without retaining non-shopper fields in long-lived product objects.
       const {
         metadata: _metadata,
         htmlFullLink: _htmlFullLink,

@@ -3,6 +3,7 @@ import test from 'node:test';
 import { assertAnalyticsProjectTarget } from '../lib/nba-analytics-project-target.mjs';
 import {
   analyticsForReconstruction,
+  invokeIngest,
   optionsFromArgs,
   rawSourceDocument,
   runMetadata,
@@ -110,6 +111,25 @@ test('private source documents use the Supabase Storage create-object POST route
   assert.equal(request.options.method, 'POST');
   assert.equal(request.options.headers['x-upsert'], 'true');
   assert.equal(request.options.body, raw.bytes);
+});
+
+test('private game ingest passes its JSONB argument by the RPC parameter name', async () => {
+  const originalFetch = globalThis.fetch;
+  let request = null;
+  globalThis.fetch = async (url, options) => {
+    request = { url: String(url), options };
+    return { ok: true, text: async () => '{"ok":true}' };
+  };
+  const payload = { run: { id: 'fixture-run' }, game: { id: 'fixture-game' } };
+  try {
+    await invokeIngest({
+      projectUrl: 'https://example-project.supabase.co', serviceRoleKey: 'test-service-role', payload,
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+  assert.equal(request.url, 'https://example-project.supabase.co/rest/v1/rpc/ingest_nba_sportradar_game');
+  assert.deepEqual(JSON.parse(request.options.body), { p_payload: payload });
 });
 
 test('analytics payload preserves a completed but ineligible validation result privately', () => {

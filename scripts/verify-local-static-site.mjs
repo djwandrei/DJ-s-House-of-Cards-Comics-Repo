@@ -14,7 +14,7 @@ const CATEGORY_SEGMENTS = {
   'products-featured.json': (product) => product.isFeatured === true
 };
 const BUNDLE_FILES = {
-  'products.json': 'products-data-full.js',
+  'products-public.json': 'products-data-full.js',
   'products-baseball.json': 'products-data-baseball.js',
   'products-basketball.json': 'products-data-basketball.js',
   'products-football.json': 'products-data-football.js',
@@ -142,7 +142,7 @@ function sortByStorefrontRank(items = []) {
 }
 
 function expectedStorefrontRows(canonicalProducts, file) {
-  let raw = file === 'products.json'
+  let raw = file === 'products-public.json'
     ? canonicalProducts
     : canonicalProducts.filter(CATEGORY_SEGMENTS[file]);
   if (file === 'products-featured.json') raw = sortByStorefrontRank(raw);
@@ -161,13 +161,11 @@ function readBundleProducts(file) {
 function verifyGeneratedCatalogParity() {
   const canonicalProducts = readJson('products.json');
   const checked = [];
-  for (const [file, predicate] of Object.entries({ 'products.json': () => true, ...CATEGORY_SEGMENTS })) {
+  for (const [file, predicate] of Object.entries({ 'products-public.json': () => true, ...CATEGORY_SEGMENTS })) {
     const expected = expectedStorefrontRows(canonicalProducts, file);
-    if (file !== 'products.json') {
-      const actualJson = readJson(file);
-      if (!sameJson(actualJson, expected)) throw new Error(`${file}: generated JSON is stale`);
-      checked.push(file);
-    }
+    const actualJson = readJson(file);
+    if (!sameJson(actualJson, expected)) throw new Error(`${file}: generated JSON is stale`);
+    checked.push(file);
     const bundleFile = BUNDLE_FILES[file];
     if (bundleFile) {
       const actualBundle = readBundleProducts(bundleFile);

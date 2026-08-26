@@ -410,7 +410,10 @@ Deno.serve(async (request) => {
       perIdentityLimit: 12,
       windowSeconds: 3600
     });
-    checkoutFingerprint = rateLimit.requestFingerprint;
+    // Signed-in buyers retain a user-scoped request fingerprint. Guest holds
+    // deliberately use the stable IP fingerprint so rotating email addresses
+    // cannot create a new reservation identity.
+    checkoutFingerprint = buyerUserId ? rateLimit.requestFingerprint : rateLimit.ipFingerprint;
   } catch (error) {
     const message = errorMessage(error);
     if (/wait before|rate limit|too many/i.test(message)) {

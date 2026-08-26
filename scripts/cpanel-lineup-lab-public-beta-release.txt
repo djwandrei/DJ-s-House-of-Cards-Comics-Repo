@@ -16,3 +16,4 @@ lineup-lab/scenario-url.js
 lineup-lab/styles.css
 lineup-lab/supabase-nba-data.js
 supabase-client.js
+vendor/supabase.min.js

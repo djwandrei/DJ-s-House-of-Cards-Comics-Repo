@@ -18,7 +18,11 @@ window.DJ = window.DJ || {};
       || (window.location.origin ? `${window.location.origin}/` : 'http://localhost/');
     return adapterScript?.src || new URL('/supabase-client.js', pageUrl).href;
   })();
-  const localSupabaseLibraryUrl = new URL('vendor/supabase.min.js', adapterScriptUrl).href;
+  const SUPABASE_LIBRARY_VERSION = '2.49.4';
+  const localSupabaseLibraryUrl = new URL(
+    `vendor/supabase.min.js?v=${SUPABASE_LIBRARY_VERSION}`,
+    adapterScriptUrl
+  ).href;
 
   // Read user-editable backend settings from backend-config.js and merge them
   // with safe defaults so the site can still run in static-only mode.
@@ -31,6 +35,7 @@ window.DJ = window.DJ || {};
     analyticsSupabaseUrl: '',
     analyticsSupabasePublishableKey: '',
     productsTable: 'products',
+    storefrontProductsTable: 'storefront_products',
     storageBucket: 'product-images',
     imageFolder: 'products',
     siteUrl: window.location.origin || '',
@@ -55,6 +60,7 @@ window.DJ = window.DJ || {};
   config.analyticsSupabaseUrl = String(config.analyticsSupabaseUrl || '').trim();
   config.analyticsSupabasePublishableKey = String(config.analyticsSupabasePublishableKey || '').trim();
   config.productsTable = String(config.productsTable || 'products').trim() || 'products';
+  config.storefrontProductsTable = String(config.storefrontProductsTable || 'storefront_products').trim() || 'storefront_products';
   config.storageBucket = String(config.storageBucket || 'product-images').trim() || 'product-images';
   config.imageFolder = String(config.imageFolder || 'products').trim().replace(/^\/+|\/+$/g, '') || 'products';
   config.siteUrl = String(config.siteUrl || window.location.origin || '').trim();
@@ -89,7 +95,7 @@ window.DJ = window.DJ || {};
     'products-comics.json': ['Comics'],
     'products-collectibles.json': ['Collectibles', 'Other']
   };
-  const REMOTE_LIST_SALE_STATE_COLUMNS = [
+  const ADMIN_REMOTE_LIST_SALE_STATE_COLUMNS = [
     'quantity_available',
     'checkout_enabled',
     'checkout_price',
@@ -98,7 +104,38 @@ window.DJ = window.DJ || {};
     'hidden_reason',
     'archived_at'
   ];
-  const REMOTE_LIST_SELECT_COLUMNS = [
+  const PUBLIC_REMOTE_LIST_SELECT_COLUMNS = [
+    'id',
+    'name',
+    'category',
+    'team',
+    'year',
+    'condition',
+    'price',
+    'price_label',
+    'display_price',
+    'image',
+    'image_gallery',
+    'description',
+    'photo_host_page_url',
+    'legacy_image_label',
+    'source_page',
+    'league',
+    'sport',
+    'player_athlete',
+    'copy_count',
+    'quantity_available',
+    'checkout_enabled',
+    'checkout_price',
+    'sale_status',
+    'metadata',
+    'is_featured',
+    'is_deleted',
+    'sort_rank',
+    'created_at',
+    'updated_at'
+  ].join(',');
+  const ADMIN_REMOTE_LIST_SELECT_COLUMNS = [
     'id',
     'name',
     'category',
@@ -136,11 +173,11 @@ window.DJ = window.DJ || {};
     'created_at',
     'updated_at'
   ].join(',');
-  const LEGACY_REMOTE_LIST_SELECT_COLUMNS = REMOTE_LIST_SELECT_COLUMNS
+  const LEGACY_ADMIN_REMOTE_LIST_SELECT_COLUMNS = ADMIN_REMOTE_LIST_SELECT_COLUMNS
     .split(',')
-    .filter((column) => !REMOTE_LIST_SALE_STATE_COLUMNS.includes(column))
+    .filter((column) => !ADMIN_REMOTE_LIST_SALE_STATE_COLUMNS.includes(column))
     .join(',');
-  let remoteListSelectColumns = REMOTE_LIST_SELECT_COLUMNS;
+  let adminRemoteListSelectColumns = ADMIN_REMOTE_LIST_SELECT_COLUMNS;
 
   function isMissingRemoteListColumnError(error) {
     const code = String(error?.code || error?.status || '').trim();
@@ -400,7 +437,7 @@ window.DJ = window.DJ || {};
       script.addEventListener('load', onLoad, { once: true });
       script.addEventListener('error', onError, { once: true });
       script.dataset.supabaseLoadState = script.dataset.supabaseLoadState || 'loading';
-      script.dataset.supabaseCdnUrl = url;
+      script.dataset.supabaseLibraryUrl = url;
     });
   }
 
@@ -418,36 +455,21 @@ window.DJ = window.DJ || {};
       return supabaseLibraryPromise;
     }
 
-    const sdkVersion = '2.49.4';
-    const candidateUrls = [
-      localSupabaseLibraryUrl,
-      `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@${sdkVersion}/dist/umd/supabase.min.js`,
-      `https://unpkg.com/@supabase/supabase-js@${sdkVersion}/dist/umd/supabase.min.js`
-    ];
-
     supabaseLibraryPromise = (async () => {
-      for (const url of candidateUrls) {
-        const existing = document.querySelector(`script[data-supabase-cdn-url="${url}"]`);
-        if (existing) {
-          if (await waitForSupabaseScript(existing, url)) return true;
-          continue;
-        }
-
-        const script = document.createElement('script');
-        script.src = url;
-        script.defer = true;
-        script.crossOrigin = 'anonymous';
-        script.dataset.supabaseCdn = 'true';
-        const loadResult = waitForSupabaseScript(script, url);
-        document.head.appendChild(script);
-        const loaded = await loadResult;
-
-        if (loaded) {
-          return true;
-        }
+      const existing = document.querySelector(`script[data-supabase-library-url="${localSupabaseLibraryUrl}"]`);
+      if (existing) {
+        if (await waitForSupabaseScript(existing, localSupabaseLibraryUrl)) return true;
+        throw new Error('The local Supabase client library failed to initialize. Check that the pinned vendor bundle was uploaded with the storefront.');
       }
 
-      throw new Error('Failed to load the Supabase client library from the local bundle or the approved fallback CDNs. Check file uploads, network access, or a Content-Security-Policy that blocks those sources.');
+      const script = document.createElement('script');
+      script.src = localSupabaseLibraryUrl;
+      script.defer = true;
+      const loadResult = waitForSupabaseScript(script, localSupabaseLibraryUrl);
+      document.head.appendChild(script);
+      if (await loadResult) return true;
+
+      throw new Error('The local Supabase client library could not be loaded. Check that the pinned vendor bundle was uploaded with the storefront.');
     })().catch((error) => {
       supabaseLibraryPromise = null;
       throw error;
@@ -546,9 +568,16 @@ window.DJ = window.DJ || {};
     )));
   }
 
-  function mergeRemoteOperationalMetadata(payload, remoteMetadata) {
-    const merged = { ...catalogMetadata(payload?.metadata, false) };
-    for (const [key, value] of Object.entries(normalizeObject(remoteMetadata))) {
+  function mergeRemoteMetadata(payload, remoteMetadata) {
+    const current = normalizeObject(remoteMetadata);
+    const incoming = catalogMetadata(payload?.metadata, false);
+    const merged = { ...current, ...incoming };
+    const currentExcelFields = normalizeObject(current.excelFields);
+    const incomingExcelFields = normalizeObject(incoming.excelFields);
+    if (Object.keys(currentExcelFields).length || Object.keys(incomingExcelFields).length) {
+      merged.excelFields = { ...currentExcelFields, ...incomingExcelFields };
+    }
+    for (const [key, value] of Object.entries(current)) {
       if (isOperationalMetadataKey(key)) merged[key] = value;
     }
     payload.metadata = merged;
@@ -814,16 +843,15 @@ window.DJ = window.DJ || {};
   // Read operations used by the storefront
   // ---------------------------------------------------------------------------
 
-  async function runRemoteListQuery(buildQuery) {
-    const selectColumns = remoteListSelectColumns;
+  async function runAdminRemoteListQuery(buildQuery) {
+    const selectColumns = adminRemoteListSelectColumns;
     let { data, error } = await buildQuery(selectColumns);
 
-    if (error && selectColumns === REMOTE_LIST_SELECT_COLUMNS && isMissingRemoteListColumnError(error)) {
-      // Older live databases may not have the sale-state columns yet. The row
-      // mapper already defaults those fields, so storefront reads can continue
-      // while the SQL migration is applied.
-      remoteListSelectColumns = LEGACY_REMOTE_LIST_SELECT_COLUMNS;
-      ({ data, error } = await buildQuery(remoteListSelectColumns));
+    if (error && selectColumns === ADMIN_REMOTE_LIST_SELECT_COLUMNS && isMissingRemoteListColumnError(error)) {
+      // Older databases may not have the sale-state columns yet. The admin row
+      // mapper defaults those fields while the matching migration is applied.
+      adminRemoteListSelectColumns = LEGACY_ADMIN_REMOTE_LIST_SELECT_COLUMNS;
+      ({ data, error } = await buildQuery(adminRemoteListSelectColumns));
     }
 
     return { data: data || [], error };
@@ -846,7 +874,7 @@ window.DJ = window.DJ || {};
     }
 
     const cacheKey = JSON.stringify({
-      source: options.source || 'products.json',
+      source: options.source || 'products-public.json',
       ids: normalizedIds,
       featuredOnly: Boolean(options.featuredOnly)
     });
@@ -861,14 +889,14 @@ window.DJ = window.DJ || {};
         let rows = [];
 
         if (Array.isArray(normalizedIds) && normalizedIds.length) {
-          const { data, error } = await runRemoteListQuery((selectColumns) => client
-            .from(config.productsTable)
-            .select(selectColumns)
+          const { data, error } = await client
+            .from(config.storefrontProductsTable)
+            .select(PUBLIC_REMOTE_LIST_SELECT_COLUMNS)
             .eq('is_deleted', false)
             .in('id', normalizedIds)
             .order('sort_rank', { ascending: true, nullsFirst: false })
             .order('year', { ascending: false, nullsFirst: false })
-            .order('id', { ascending: true }));
+            .order('id', { ascending: true });
 
           if (error) throw createFriendlyError(error, 'listProducts');
           rows = data;
@@ -880,15 +908,15 @@ window.DJ = window.DJ || {};
         }
 
         if (options.featuredOnly) {
-          const { data, error } = await runRemoteListQuery((selectColumns) => client
-            .from(config.productsTable)
-            .select(selectColumns)
+          const { data, error } = await client
+            .from(config.storefrontProductsTable)
+            .select(PUBLIC_REMOTE_LIST_SELECT_COLUMNS)
             .eq('is_deleted', false)
             .eq('is_featured', true)
             .order('sort_rank', { ascending: true, nullsFirst: false })
             .order('year', { ascending: false, nullsFirst: false })
             .order('id', { ascending: true })
-            .limit(12));
+            .limit(12);
 
           if (error) throw error;
           rows = data;
@@ -898,10 +926,10 @@ window.DJ = window.DJ || {};
         const pageSize = 1000;
         let start = 0;
         while (true) {
-          const { data, error } = await runRemoteListQuery((selectColumns) => {
+          const { data, error } = await (() => {
             let query = client
-            .from(config.productsTable)
-            .select(selectColumns)
+            .from(config.storefrontProductsTable)
+            .select(PUBLIC_REMOTE_LIST_SELECT_COLUMNS)
             .eq('is_deleted', false);
 
             query = applySourceFilters(query, options.source)
@@ -911,7 +939,7 @@ window.DJ = window.DJ || {};
               .range(start, start + pageSize - 1);
 
             return query;
-          });
+          })();
 
           if (error) throw error;
 
@@ -953,6 +981,35 @@ window.DJ = window.DJ || {};
       throw new Error('Choose a valid NBA season.');
     }
     return seasonEndYear;
+  }
+
+  /**
+   * Load the full product shape only for the signed-in admin workspace. RLS on
+   * the base products table remains the authorization boundary for this path.
+   */
+  async function listAdminProducts() {
+    const client = await getRequiredClient();
+    const rows = [];
+    const pageSize = 1000;
+    let start = 0;
+
+    while (true) {
+      const { data, error } = await runAdminRemoteListQuery((selectColumns) => client
+        .from(config.productsTable)
+        .select(selectColumns)
+        .eq('is_deleted', false)
+        .order('sort_rank', { ascending: true, nullsFirst: false })
+        .order('year', { ascending: false, nullsFirst: false })
+        .order('id', { ascending: true })
+        .range(start, start + pageSize - 1));
+      if (error) throw createFriendlyError(error, 'listAdminProducts');
+
+      rows.push(...data);
+      if (data.length < pageSize) break;
+      start += pageSize;
+    }
+
+    return rows.map(toLocalProduct);
   }
 
   function normalizeNbaTeamCode(value) {
@@ -1439,7 +1496,7 @@ window.DJ = window.DJ || {};
 
     for (let index = 0; index < normalized.length; index += chunkSize) {
       const slice = normalized.slice(index, index + chunkSize);
-      if (options.includeOperationalState !== true && slice.some((item) => Object.hasOwn(item, 'metadata'))) {
+      if (options.includeOperationalState !== true) {
         const ids = slice.map((item) => Number(item.id)).filter(Number.isSafeInteger);
         const { data: currentRows, error: currentError } = await client
           .from(config.productsTable)
@@ -1447,7 +1504,7 @@ window.DJ = window.DJ || {};
           .in('id', ids);
         if (currentError) throw createFriendlyError(currentError, 'seedProducts');
         const currentMetadata = new Map((currentRows || []).map((row) => [Number(row.id), row.metadata]));
-        slice.forEach((item) => mergeRemoteOperationalMetadata(item, currentMetadata.get(Number(item.id))));
+        slice.forEach((item) => mergeRemoteMetadata(item, currentMetadata.get(Number(item.id))));
       }
       const { error } = await client
         .from(config.productsTable)
@@ -1478,7 +1535,7 @@ window.DJ = window.DJ || {};
     const steps = [{
       name: 'config',
       ok: true,
-      message: `Using ${config.supabaseUrl} with table ${config.productsTable} and bucket ${config.storageBucket}.`
+      message: `Using ${config.supabaseUrl} with public catalog ${config.storefrontProductsTable}, admin table ${config.productsTable}, and bucket ${config.storageBucket}.`
     }];
 
     try {
@@ -1502,12 +1559,12 @@ window.DJ = window.DJ || {};
 
     try {
       const { error } = await client
-        .from(config.productsTable)
+        .from(config.storefrontProductsTable)
         .select('id', { head: true, count: 'exact' })
         .eq('is_deleted', false)
         .limit(1);
       if (error) throw error;
-      steps.push({ name: 'products', ok: true, message: `Reached ${config.productsTable}.` });
+      steps.push({ name: 'products', ok: true, message: `Reached ${config.storefrontProductsTable}.` });
     } catch (error) {
       steps.push({ name: 'products', ok: false, message: describeSupabaseError(error, 'listProducts') });
     }
@@ -1544,6 +1601,7 @@ window.DJ = window.DJ || {};
     onAuthStateChange,
     invokeFunction,
     listProducts,
+    listAdminProducts,
     listNbaLineupSeasons,
     listNbaLineupTeams,
     listNbaTeamSeasonPlayers,

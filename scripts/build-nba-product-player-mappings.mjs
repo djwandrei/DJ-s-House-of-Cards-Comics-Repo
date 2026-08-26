@@ -39,12 +39,21 @@ function configValue(configText, name) {
   return configText.match(new RegExp(`${name}:\\s*'([^']+)'`))?.[1] || '';
 }
 
+export function supabaseApiHeaders(apiKey) {
+  const headers = { apikey: apiKey };
+  // New Supabase secret/publishable keys are opaque values, not JWTs. Sending
+  // them as a Bearer token makes the API gateway reject an otherwise valid key.
+  if (!/^sb_(?:secret|publishable)_/.test(apiKey)) {
+    headers.Authorization = `Bearer ${apiKey}`;
+  }
+  return headers;
+}
+
 async function requestJson(url, apiKey, options = {}) {
   const response = await fetch(url, {
     ...options,
     headers: {
-      apikey: apiKey,
-      Authorization: `Bearer ${apiKey}`,
+      ...supabaseApiHeaders(apiKey),
       ...(options.headers || {}),
     },
   });
@@ -139,32 +148,32 @@ export async function main(argv = process.argv.slice(2)) {
     throw new Error('SUPABASE_URL/backend-config.js and SUPABASE_SERVICE_ROLE_KEY are required.');
   }
 
-  const [aliasRows, athleteRows, membershipRows, existingRows, remoteProductRows] = await Promise.all([
-    fetchAllRows(projectUrl, serviceRoleKey, 'athlete_aliases',
-      'athlete_id,league_code,alias,normalized_alias,alias_type,review_state', {
-        league_code: 'eq.NBA',
-        review_state: 'eq.verified',
-        order: 'normalized_alias.asc',
-      }),
-    fetchAllRows(projectUrl, serviceRoleKey, 'athletes', 'id,identity_status', {
-      order: 'id.asc',
-    }),
-    fetchAllRows(projectUrl, serviceRoleKey, 'athlete_league_memberships',
-      'athlete_id,league_code,membership_status', {
-        league_code: 'eq.NBA',
-        order: 'athlete_id.asc',
-      }),
-    fetchAllRows(projectUrl, serviceRoleKey, 'product_athlete_mappings',
-      'product_id,athlete_id,league_code,review_state,subject_order', {
-        league_code: 'eq.NBA',
-        order: 'product_id.asc,subject_order.asc',
-      }),
-    fetchAllRows(projectUrl, serviceRoleKey, 'products', 'id', {
-      category: 'eq.Basketball',
-      league: 'eq.NBA',
-      order: 'id.asc',
-    }),
-  ]);
+  // Keep the elevated Data API reads serial so the audit and the guarded write
+  // use one deterministic, freshly checked remote state.
+  const aliasRows = await fetchAllRows(projectUrl, serviceRoleKey, 'athlete_aliases',
+    'athlete_id,league_code,alias,normalized_alias,alias_type,review_state', {
+      league_code: 'eq.NBA',
+      review_state: 'eq.verified',
+      order: 'normalized_alias.asc',
+    });
+  const athleteRows = await fetchAllRows(projectUrl, serviceRoleKey, 'athletes', 'id,identity_status', {
+    order: 'id.asc',
+  });
+  const membershipRows = await fetchAllRows(projectUrl, serviceRoleKey, 'athlete_league_memberships',
+    'athlete_id,league_code,membership_status', {
+      league_code: 'eq.NBA',
+      order: 'athlete_id.asc',
+    });
+  const existingRows = await fetchAllRows(projectUrl, serviceRoleKey, 'product_athlete_mappings',
+    'product_id,athlete_id,league_code,review_state,subject_order', {
+      league_code: 'eq.NBA',
+      order: 'product_id.asc,subject_order.asc',
+    });
+  const remoteProductRows = await fetchAllRows(projectUrl, serviceRoleKey, 'products', 'id', {
+    category: 'eq.Basketball',
+    league: 'eq.NBA',
+    order: 'id.asc',
+  });
 
   const identityStatusById = new Map(
     athleteRows.map((athlete) => [String(athlete.id), String(athlete.identity_status || '')])

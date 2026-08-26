@@ -109,6 +109,159 @@ function evaluateSupabaseAdapter() {
   return window.DJ.remoteCatalog;
 }
 
+function evaluateCatalogQueryAdapter() {
+  const queries = [];
+  const publicRow = {
+    id: 71,
+    name: 'Public catalog fixture',
+    category: 'Basketball',
+    price: 12,
+    metadata: { playerAthlete: 'Public Fixture' },
+    is_deleted: false
+  };
+  const adminRow = {
+    ...publicRow,
+    item_photo_url: 'https://example.test/private-import-photo.jpg',
+    item_photo_urls: ['https://example.test/private-import-photo.jpg'],
+    html_full_link: 'https://example.test/private-import.html',
+    html_image_urls: ['https://example.test/private-import-image.html'],
+    sold_at: '2026-08-25T00:00:00.000Z',
+    hidden_reason: 'Admin-only fixture',
+    archived_at: '2026-08-25T01:00:00.000Z'
+  };
+  const client = {
+    from(table) {
+      const queryRecord = { table, selectColumns: '', filters: [] };
+      queries.push(queryRecord);
+      const query = {
+        select(columns) {
+          queryRecord.selectColumns = String(columns || '');
+          return query;
+        },
+        eq(...args) {
+          queryRecord.filters.push(['eq', ...args]);
+          return query;
+        },
+        in(...args) {
+          queryRecord.filters.push(['in', ...args]);
+          return query;
+        },
+        order(...args) {
+          queryRecord.filters.push(['order', ...args]);
+          return query;
+        },
+        range(...args) {
+          queryRecord.filters.push(['range', ...args]);
+          return query;
+        },
+        limit(...args) {
+          queryRecord.filters.push(['limit', ...args]);
+          return query;
+        },
+        then(resolve, reject) {
+          const data = table === 'products' ? [adminRow] : [publicRow];
+          return Promise.resolve({ data, error: null }).then(resolve, reject);
+        }
+      };
+      return query;
+    }
+  };
+  const window = {
+    DJ: {},
+    DJ_BACKEND_CONFIG: {
+      enabled: true,
+      provider: 'supabase',
+      supabaseUrl: 'https://example.supabase.co',
+      supabasePublishableKey: 'test-browser-key',
+      productsTable: 'products',
+      storefrontProductsTable: 'storefront_products'
+    },
+    supabase: { createClient: () => client },
+    location: { origin: 'https://example.test', href: 'https://example.test/shop.html' },
+    addEventListener() {},
+    setTimeout,
+    clearTimeout
+  };
+  const document = {
+    visibilityState: 'visible',
+    scripts: [],
+    addEventListener() {},
+    querySelector() { return null; },
+    createElement() { return { addEventListener() {}, dataset: {} }; },
+    head: { appendChild() {} }
+  };
+  vm.runInNewContext(
+    readFileSync(path.join(root, 'supabase-client.js'), 'utf8'),
+    { window, document, console, URL, setTimeout, clearTimeout },
+    { filename: 'supabase-client.js' }
+  );
+  return { adapter: window.DJ.remoteCatalog, queries };
+}
+
+function evaluatePinnedSupabaseLoaderFailure() {
+  const scripts = [];
+  const window = {
+    DJ: {},
+    DJ_BACKEND_CONFIG: {
+      enabled: true,
+      provider: 'supabase',
+      supabaseUrl: 'https://example.supabase.co',
+      supabasePublishableKey: 'test-browser-key'
+    },
+    location: { origin: 'https://example.test', href: 'https://example.test/shop.html' },
+    addEventListener() {},
+    setTimeout,
+    clearTimeout
+  };
+  const document = {
+    visibilityState: 'visible',
+    addEventListener() {},
+    querySelector(selector) {
+      return scripts.find((script) => selector.includes(script.dataset.supabaseLibraryUrl)) || null;
+    },
+    createElement() {
+      const listeners = new Map();
+      return {
+        dataset: {},
+        addEventListener(type, listener) { listeners.set(type, listener); },
+        removeEventListener(type, listener) {
+          if (listeners.get(type) === listener) listeners.delete(type);
+        },
+        remove() {},
+        dispatch(type) { listeners.get(type)?.(); }
+      };
+    },
+    head: {
+      appendChild(script) {
+        scripts.push(script);
+        setTimeout(() => script.dispatch('error'), 0);
+      }
+    }
+  };
+  vm.runInNewContext(
+    readFileSync(path.join(root, 'supabase-client.js'), 'utf8'),
+    { window, document, console, URL, setTimeout, clearTimeout },
+    { filename: 'supabase-client.js' }
+  );
+  return { adapter: window.DJ.remoteCatalog, scripts };
+}
+
+async function testPinnedSupabaseLoaderFailure() {
+  const { adapter, scripts } = evaluatePinnedSupabaseLoaderFailure();
+  await adapter.listProducts().then(
+    () => { throw new Error('A failed local Supabase bundle must reject the public catalog request.'); },
+    (error) => {
+      assert(/local Supabase client library/i.test(String(error?.message || error)), 'SDK loader failures must name the local pinned bundle.');
+    }
+  );
+  equal(scripts.length, 1, 'A Supabase SDK failure must not try another script host.');
+  equal(
+    scripts[0].src,
+    'https://example.test/vendor/supabase.min.js?v=2.49.4',
+    'The adapter must request only the pinned same-origin Supabase bundle.'
+  );
+}
+
 function testCatalogImportStateIsolation() {
   const adapter = evaluateSupabaseAdapter();
   const product = {
@@ -146,6 +299,38 @@ function testCatalogImportStateIsolation() {
   assert(editorPayload.quantity_available === 0, 'Explicit listing edits must retain quantity changes.');
   assert(editorPayload.sale_status === 'sold' && editorPayload.is_deleted === true, 'Explicit listing edits must retain live state changes.');
   assert(editorPayload.metadata.stripe_session_id === 'stale-static-session', 'Explicit editor saves should retain the complete loaded metadata object.');
+}
+
+async function testPublicAndAdminCatalogFieldSeparation() {
+  const { adapter, queries } = evaluateCatalogQueryAdapter();
+  const publicProducts = await adapter.listProducts({ force: true });
+  const adminProducts = await adapter.listAdminProducts();
+  const publicQuery = queries.find((query) => query.table === 'storefront_products');
+  const adminQuery = queries.find((query) => query.table === 'products');
+
+  assert(publicQuery, 'Storefront catalog reads must use the buyer-safe storefront_products projection.');
+  assert(adminQuery, 'Admin catalog reads must use the protected products table.');
+
+  const publicColumns = publicQuery.selectColumns.split(',');
+  const adminColumns = adminQuery.selectColumns.split(',');
+  const adminOnlyColumns = [
+    'item_photo_url',
+    'item_photo_urls',
+    'html_full_link',
+    'html_image_urls',
+    'sold_at',
+    'hidden_reason',
+    'archived_at'
+  ];
+  for (const column of adminOnlyColumns) {
+    assert(!publicColumns.includes(column), `Public catalog queries must not select private admin field ${column}.`);
+    assert(adminColumns.includes(column), `Admin catalog queries must retain protected field ${column}.`);
+  }
+
+  assert(publicProducts[0].itemPhotoUrl === '', 'Public catalog mapping must not receive import-photo URLs.');
+  assert(publicProducts[0].htmlFullLink === '', 'Public catalog mapping must not receive source HTML links.');
+  assert(adminProducts[0].itemPhotoUrl === 'https://example.test/private-import-photo.jpg', 'Admin catalog mapping must retain private import-photo URLs.');
+  assert(adminProducts[0].htmlFullLink === 'https://example.test/private-import.html', 'Admin catalog mapping must retain private source HTML links.');
 }
 
 function testCartReconciliation() {
@@ -492,8 +677,13 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
     continueAsGuestFromModal,
     continueCheckoutIfExistingSession,
     signInFromModal,
+    startCheckoutItems,
     showCheckoutMessage,
     getState: () => ({ ...state }),
+    setAuthenticatedSession(session) {
+      state.session = session;
+      state.authReady = Boolean(session?.user);
+    },
     setPendingCheckout(request) {
       state.pendingCheckoutRequest = request;
       state.activeCheckoutIntentId = request?.intentId || '';
@@ -514,15 +704,30 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
   };
   const document = {
     readyState: 'loading',
-    body: { classList: createClassList(), dataset: {} },
+    body: {
+      classList: createClassList(),
+      dataset: {},
+      appendChild(element) {
+        if (element?.id) fields[element.id] = element;
+      }
+    },
     activeElement: null,
     addEventListener() {},
     getElementById(id) { return fields[id] || null; },
     querySelector() { return null; },
     querySelectorAll() { return []; },
-    createElement() { return { dataset: {}, setAttribute() {}, classList: createClassList() }; }
+    createElement() {
+      return {
+        dataset: {},
+        classList: createClassList(),
+        setAttribute() {},
+        querySelector() { return null; },
+        querySelectorAll() { return []; }
+      };
+    }
   };
   let invokeCount = 0;
+  const invocations = [];
   const window = {
     DJ: {
       normalizeProductId: (value) => Number.isSafeInteger(Number(value)) && Number(value) > 0 ? Number(value) : null,
@@ -541,6 +746,7 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
         onAuthStateChange() {},
         invokeFunction: async (...args) => {
           invokeCount += 1;
+          invocations.push(args);
           return invokeFunction(...args);
         }
       }
@@ -569,7 +775,50 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
     URLSearchParams
   };
   vm.runInNewContext(hookedSource, context, { filename: 'payments.js' });
-  return { hooks: window.__paymentsTestHooks, cartStatus, getInvokeCount: () => invokeCount };
+  return {
+    hooks: window.__paymentsTestHooks,
+    cartStatus,
+    getInvokeCount: () => invokeCount,
+    getInvocations: () => invocations.map(([name, payload]) => ({ name, payload: { ...payload } })),
+    getAuthModal: () => fields.customerAuthModal || null
+  };
+}
+
+async function testCheckoutIdentityPayloads() {
+  const guest = evaluatePayments({
+    signIn: async () => ({}),
+    getSession: async () => null,
+    invokeFunction: async () => { throw new Error('Mock guest checkout failure.'); }
+  });
+  guest.hooks.setPendingCheckout({
+    items: [{ productId: 2, quantity: 1, product: { id: 2 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: 'checkout-guest-payload'
+  });
+  await guest.hooks.continueAsGuestFromModal();
+  equal(guest.getInvokeCount(), 1, 'Guest checkout must invoke the Edge Function exactly once through the mocked adapter.');
+  const guestRequest = guest.getInvocations()[0];
+  equal(guestRequest.name, 'create-checkout-session', 'Guest checkout must use the configured Edge Function name.');
+  equal(guestRequest.payload.guestEmail, 'collector@example.com', 'Guest checkout must pass the validated email address to the Edge Function.');
+  assert(!Object.prototype.hasOwnProperty.call(guestRequest.payload, 'guestCheckout'), 'The browser-only guest marker must not be sent to the Edge Function.');
+  assert(!Object.prototype.hasOwnProperty.call(guestRequest.payload, 'password'), 'Guest checkout must never send the account password to the Edge Function.');
+
+  const verified = evaluatePayments({
+    signIn: async () => ({}),
+    invokeFunction: async () => { throw new Error('Mock verified checkout failure.'); }
+  });
+  verified.hooks.setAuthenticatedSession({
+    user: { id: 'verified-user', email: 'collector@example.com' }
+  });
+  await verified.hooks.startCheckoutItems([
+    { productId: 3, quantity: 1, product: { id: 3 } }
+  ], {}, '/cart.html');
+  equal(verified.getInvokeCount(), 1, 'Verified checkout must invoke the Edge Function exactly once through the mocked adapter.');
+  const verifiedRequest = verified.getInvocations()[0];
+  equal(verifiedRequest.name, 'create-checkout-session', 'Verified checkout must use the configured Edge Function name.');
+  assert(!Object.prototype.hasOwnProperty.call(verifiedRequest.payload, 'guestEmail'), 'Verified checkout must not send a guest email override to the Edge Function.');
+  assert(!Object.prototype.hasOwnProperty.call(verifiedRequest.payload, 'guestCheckout'), 'Verified checkout must not send browser-only guest state to the Edge Function.');
 }
 
 async function testCheckoutIntentCancellation() {
@@ -613,34 +862,34 @@ async function testCheckoutIntentCancellation() {
   assert(staleAuth.hooks.getState().activeCheckoutIntentId === '', 'Closing the auth modal must invalidate the active checkout intent.');
   assert(/checkout request was canceled/i.test(staleAuth.cartStatus.textContent), 'Canceled authentication must report visible contextual feedback.');
 
-  const guestFailure = evaluatePayments({
+  const unauthenticated = evaluatePayments({
     signIn: async () => ({}),
-    invokeFunction: async () => { throw new Error('Guest checkout verification failure'); }
+    getSession: async () => null,
+    invokeFunction: async () => ({ url: 'https://example.test/should-not-run' })
   });
-  guestFailure.hooks.setPendingCheckout({
-    items: [{ productId: 2, quantity: 1, product: { id: 2 } }],
-    options: {},
-    returnPath: '/cart.html',
-    intentId: 'checkout-guest-error'
-  });
-  await guestFailure.hooks.continueAsGuestFromModal();
-  assert(guestFailure.getInvokeCount() === 1, 'Guest checkout test should make exactly one mocked Edge Function call.');
-  assert(/Guest checkout verification failure/.test(guestFailure.cartStatus.textContent), 'Post-authentication guest checkout errors must be visible after the modal closes.');
-  assert(guestFailure.cartStatus.dataset.tone === 'error', 'Post-authentication checkout errors must use error status styling.');
+  await unauthenticated.hooks.startCheckoutItems([
+    { productId: 2, quantity: 1, product: { id: 2 } }
+  ], {}, '/cart.html');
+  await wait(0);
+  assert(unauthenticated.getInvokeCount() === 0, 'Unauthenticated checkout must never invoke the checkout Edge Function.');
+  assert(unauthenticated.getAuthModal()?.classList.contains('active'), 'Unauthenticated checkout must keep the sign-in modal open.');
 }
 
 async function main() {
   const { DJ } = evaluateCore();
   equal(DJ.escapeHtml(`<>&"'`), '&lt;&gt;&amp;&quot;&#39;', 'HTML escaping must preserve every supported entity.');
   testCatalogImportStateIsolation();
+  await testPublicAndAdminCatalogFieldSeparation();
+  await testPinnedSupabaseLoaderFailure();
   testCartReconciliation();
   await testVerifiedCheckoutReconciliation();
   await testCatalogFallbacks();
   testCatalogSearchUtilities();
   testDeferredAnalyticsPageView();
   testMetricsAggregation();
+  await testCheckoutIdentityPayloads();
   await testCheckoutIntentCancellation();
-  console.log('Correctness regression tests passed: core helpers, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and checkout intent cancellation.');
+  console.log('Correctness regression tests passed: core helpers, public/admin catalog separation, pinned SDK loading, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and guest/verified checkout payloads.');
 }
 
 main().catch((error) => {

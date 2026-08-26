@@ -1905,3 +1905,98 @@ body.dark-mode .modal-listing-nav__button {
     flex-direction:column;
   }
 }
+
+/* Homepage-only mobile finish for the approved header, section, and footer pass. */
+@media (max-width:1040px) {
+  body[data-page="home"] {
+    --header-h:142px;
+  }
+
+  body[data-page="home"] .site-header {
+    --header-h:142px;
+  }
+
+  body[data-page="home"] .header-inner {
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:
+      "brand actions"
+      "search search";
+    min-height:var(--header-h);
+    row-gap:.35rem;
+    padding-block:.34rem .45rem;
+  }
+
+  /* Keep the brand lockup centered instead of top-aligning the wordmark
+     beside the compact logo at tablet widths. */
+  body[data-page="home"] .brand {
+    align-items:center;
+    gap:.72rem;
+  }
+
+  body[data-page="home"] .brand-logo {
+    width:72px;
+    height:72px;
+  }
+
+  body[data-page="home"] .home-header-search {
+    display:block;
+    min-width:0;
+  }
+
+  body[data-page="home"] .home-header-utility {
+    display:none;
+  }
+
+  body[data-page="home"] .home-header-search__bar {
+    min-height:44px;
+  }
+
+  body[data-page="home"] .home-header-search input {
+    height:42px;
+    font-size:.84rem;
+  }
+
+  body[data-page="home"] .home-header-search button {
+    min-width:92px;
+    padding:.52rem .68rem;
+  }
+}
+
+/* The compact homepage has less room to spare than the full desktop shell.
+   Tighten only the tablet-range whitespace, leaving the phone and desktop
+   layouts on their existing spacing systems. */
+@media (min-width:701px) and (max-width:1040px) {
+  body[data-page="home"] .home-category-section,
+  body[data-page="home"] .home-featured-section {
+    padding-bottom:3rem;
+  }
+
+  body[data-page="home"] .home-connect-section {
+    padding-block:3rem;
+  }
+
+  body[data-page="home"] .site-footer .footer-inner {
+    gap:1rem;
+    padding-top:2.75rem !important;
+    padding-bottom:1rem !important;
+  }
+
+  body[data-page="home"] .site-footer .footer-bottom {
+    padding-top:.85rem;
+    padding-bottom:1rem;
+  }
+}
+
+@media (max-width:700px) {
+  body[data-page="home"] .site-footer::before {
+    content:none !important;
+    display:none !important;
+    height:0 !important;
+    background:none !important;
+  }
+
+  body[data-page="home"] .site-footer .footer-inner {
+    padding-top:2.8rem !important;
+    padding-bottom:1.8rem !important;
+  }
+}

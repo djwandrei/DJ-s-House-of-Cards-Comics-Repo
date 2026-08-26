@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260825b';
+  const PRODUCT_ASSET_VERSION = '20260826a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.
@@ -35,7 +35,7 @@ window.DJ = window.DJ || {};
   // Generated fallbacks expose both a script and a global. Keep those names
   // paired so adding a catalog segment cannot update one registry but not the other.
   const PRELOADED_PRODUCT_BUNDLES = {
-    'products.json': ['products-data-full.js', 'DJ_PRODUCTS_FULL'],
+    'products-public.json': ['products-data-full.js', 'DJ_PRODUCTS_FULL'],
     'products-baseball.json': ['products-data-baseball.js', 'DJ_PRODUCTS_BASEBALL'],
     'products-basketball.json': ['products-data-basketball.js', 'DJ_PRODUCTS_BASKETBALL'],
     'products-football.json': ['products-data-football.js', 'DJ_PRODUCTS_FOOTBALL'],

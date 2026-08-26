@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { optionsFromArgs } from '../build-nba-product-player-mappings.mjs';
+import { optionsFromArgs, supabaseApiHeaders } from '../build-nba-product-player-mappings.mjs';
 
 test('mapping CLI defaults to audit-only behavior', () => {
   assert.deepEqual(optionsFromArgs([]), {
@@ -27,4 +27,14 @@ test('mapping CLI parses explicit paths and the two-part apply gate', () => {
 
 test('mapping CLI rejects unknown or misspelled arguments', () => {
   assert.throws(() => optionsFromArgs(['--delete']), /Unknown argument/);
+});
+
+test('mapping API headers support legacy JWT and new opaque Supabase keys', () => {
+  assert.deepEqual(supabaseApiHeaders('legacy-jwt-key'), {
+    apikey: 'legacy-jwt-key',
+    Authorization: 'Bearer legacy-jwt-key',
+  });
+  assert.deepEqual(supabaseApiHeaders('sb_secret_example'), {
+    apikey: 'sb_secret_example',
+  });
 });

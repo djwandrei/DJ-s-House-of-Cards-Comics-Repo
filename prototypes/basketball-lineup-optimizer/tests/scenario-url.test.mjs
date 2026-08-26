@@ -7,6 +7,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     team: "min",
     season: 2026,
     phase: "regular",
+    experience: "detailed",
     mode: "rotation",
     size: 9,
     alternatives: 5,
@@ -25,6 +26,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     rotationHistoricalAllocationStyle: "preserveWorkload",
     rotationMinuteFlexibility: 8,
     rotationRateStability: "sampleAdjusted",
+    rotationPositionProfile: "small",
     rotationPositionMinuteRequirements: { G: 120, F: 96, C: 24 },
     lockedIds: ["edwaran01"],
     excludedIds: ["sample-player"],
@@ -33,6 +35,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.version, SCENARIO_URL_VERSION);
   assert.equal(scenario.team, "MIN");
   assert.equal(scenario.season, 2026);
+  assert.equal(scenario.experience, "detailed");
   assert.equal(scenario.weights.blocks, 18);
   assert.equal(scenario.statMinimums.rebounds, 48);
   assert.equal(scenario.positionMinimums.C, 2);
@@ -42,9 +45,28 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.rotationHistoricalAllocationStyle, "preserveWorkload");
   assert.equal(scenario.rotationMinuteFlexibility, 8);
   assert.equal(scenario.rotationRateStability, "sampleAdjusted");
+  assert.equal(scenario.rotationPositionProfile, "small");
   assert.deepEqual(scenario.rotationPositionMinuteRequirements, { G: 120, F: 96, C: 24 });
   assert.deepEqual(scenario.lockedIds, ["edwaran01"]);
   assert.equal(warnings.length, 0);
+});
+
+test("automatic position balance shares its rule without pinning a stale derived split", () => {
+  const query = encodeScenarioQuery({
+    experience: "simple",
+    mode: "rotation",
+    rotationPositionProfile: "automatic",
+    rotationPositionMinuteRequirements: { G: 96, F: 96, C: 48 },
+  });
+  const params = new URLSearchParams(query);
+  const { scenario, warnings } = decodeScenarioQuery(query);
+
+  assert.equal(params.get("roleProfile"), "automatic");
+  assert.equal(params.has("roleMinutes"), false);
+  assert.equal(scenario.experience, "simple");
+  assert.equal(scenario.rotationPositionProfile, "automatic");
+  assert.equal(scenario.rotationPositionMinuteRequirements, undefined);
+  assert.deepEqual(warnings, []);
 });
 
 test("scenario URL decoder ignores malformed, unsafe, and unsupported entries", () => {

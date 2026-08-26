@@ -18,7 +18,9 @@ This site is a static storefront with Supabase-backed catalog administration and
   `C:\Users\djwan\Downloads\Ebay Bulk Upload - 08-22-2026.xlsx`.
   The workbook's other sheets are review/staging material, not catalog inputs.
 - Live catalog: Supabase `products`.
-- Deployable static fallback: `products.json` and generated category catalog files.
+- Protected local maintenance source: `products.json` (blocked by `.htaccess`
+  and excluded from deployment manifests).
+- Deployable static fallback: generated `products-public.json` and category catalog files.
 - Product display media: local files under `assets/`.
 - Athlete identity and product relationships: Supabase `athletes`, league
   membership/alias tables, and `product_athlete_mappings`. NBA profile and stat
@@ -81,7 +83,9 @@ deletion through the audited Shopify/Supabase Edge workflow.
 
 ## Generated Catalog Files
 
-Do not manually edit `products-data-*.js`, `products-bootstrap-*.json`, or category product JSON files. Regenerate them from `products.json` with:
+Do not manually edit `products-public.json`, `products-data-*.js`,
+`products-bootstrap-*.json`, or category product JSON files. Regenerate them
+from the protected `products.json` maintenance source with:
 
 ```powershell
 node scripts/build-public-catalog.mjs --optimize-segments

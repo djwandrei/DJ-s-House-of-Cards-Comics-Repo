@@ -160,7 +160,7 @@ window.DJ = window.DJ || {};
         <button type="button" class="customer-auth-close" aria-label="Close account panel" data-customer-auth-close>&times;</button>
         <p class="customer-auth-eyebrow">Customer Account</p>
         <h2 id="customerAuthTitle">Sign in, create an account, or check out as a guest</h2>
-        <p class="customer-auth-copy">Accounts keep order history together. Guest checkout still uses the same secure Stripe payment and inventory hold.</p>
+        <p class="customer-auth-copy">Accounts keep order history together. Guest checkout uses a secure, rate-limited inventory hold.</p>
         <form class="customer-auth-form" id="customerAuthForm">
           <label>
             Email

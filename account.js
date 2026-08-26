@@ -9,7 +9,7 @@ window.DJ = window.DJ || {};
 
 (() => {
   const DJ = window.DJ;
-  const PRODUCT_SOURCE = 'products.json';
+  const PRODUCT_SOURCE = 'products-public.json';
   const DEFAULT_PROFILE_FIELD_LENGTH = 240;
   const WISHLIST_PREVIEW_LIMIT = 5;
   let accountProductsPromise = null;
