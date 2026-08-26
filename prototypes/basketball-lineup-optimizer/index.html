@@ -301,44 +301,44 @@
                         <label class="field">
                           <span>Use past minutes?</span>
                           <select id="rotationMinutePlanInput" aria-describedby="rotationMinutePlanHelp">
-                            <option value="openWhatIf" selected>No — optimize only for my game plan (recommended)</option>
-                            <option value="historicalAware">Yes — use past minutes as a guardrail</option>
+                            <option value="openWhatIf" selected>No — game plan only (recommended)</option>
+                            <option value="historicalAware">Yes — past-minutes guardrail</option>
                           </select>
                         </label>
                         <label class="field" id="rotationFlexibilityField">
                           <span>Allowed difference from recorded minutes</span>
                           <select id="rotationFlexibilityInput" aria-describedby="rotationMinutePlanHelp">
-                            <option value="4">Up to ±4 minutes per game</option>
-                            <option value="8" selected>Up to ±8 minutes per game</option>
-                            <option value="12">Up to ±12 minutes per game</option>
-                            <option value="16">Up to ±16 minutes per game</option>
+                            <option value="4">±4 minutes per game</option>
+                            <option value="8" selected>±8 minutes per game</option>
+                            <option value="12">±12 minutes per game</option>
+                            <option value="16">±16 minutes per game</option>
                           </select>
                         </label>
                         <label class="field" id="rotationAllocationStyleField">
                           <span>When using recorded minutes</span>
                           <select id="rotationAllocationStyleInput" aria-describedby="rotationAllocationStyleHelp">
-                            <option value="strategyFirst" selected>Favor my game plan — recommended</option>
-                            <option value="preserveWorkload">Stay closer to recorded minutes</option>
+                            <option value="strategyFirst" selected>Favor game plan — recommended</option>
+                            <option value="preserveWorkload">Stay near recorded minutes</option>
                           </select>
                         </label>
                         <label class="field" id="rotationScoringBasisField">
                           <span>Rate comparison</span>
                           <select id="rotationScoringBasisInput" aria-describedby="rotationScoringBasisHelp">
-                            <option value="per36" selected>Per 36 minutes — fairer rate comparison</option>
+                            <option value="per36" selected>Per 36 — compare rates fairly</option>
                             <option value="perGame">Per game — legacy comparison</option>
                           </select>
                         </label>
                         <label class="field" id="rotationRateStabilityField">
                           <span>Adjust limited-sample rates</span>
                           <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
-                            <option value="sampleAdjusted" selected>Use conservative rate projection — recommended</option>
+                            <option value="sampleAdjusted" selected>Conservative projection — recommended</option>
                             <option value="raw">Use raw rates — advanced</option>
                           </select>
                         </label>
                         <label class="field">
                           <span>Estimated position-minute mix</span>
                           <select id="rotationPositionProfileInput" aria-describedby="rotationPositionProfileHelp">
-                            <option value="automatic" selected>Use the source-listed position estimate — recommended</option>
+                            <option value="automatic" selected>Source-listed positions — recommended</option>
                             <option value="traditional">Traditional — two guards, two forwards, one center</option>
                             <option value="small">Small — more guard time, less center time</option>
                             <option value="big">Big — more forward time, standard center time</option>
