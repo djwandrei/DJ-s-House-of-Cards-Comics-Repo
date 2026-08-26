@@ -29,6 +29,8 @@ lineup-lab/app.js
 lineup-lab/fan-analytics.js
 lineup-lab/fixtures/timberwolves-2021-22.json
 lineup-lab/index.html
+lineup-lab/lineup-cache.js
+lineup-lab/optimizer-config.js
 lineup-lab/optimizer-core.js
 lineup-lab/optimizer-worker.js
 lineup-lab/player-data.js

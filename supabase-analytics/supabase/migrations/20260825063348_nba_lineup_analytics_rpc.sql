@@ -491,10 +491,14 @@ begin
 end;
 $$;
 
-revoke all on function public.nba_lineup_metric_payload(numeric, integer, numeric, numeric, numeric, numeric) from public;
-revoke all on function public.nba_invert_home_score_state_v1(text) from public;
-revoke all on function public.get_nba_lineup_analytics(smallint, text, text, uuid[], text) from public;
-revoke all on function public.get_nba_lineup_analytics_players(smallint, text, text) from public;
+revoke all on function public.nba_lineup_metric_payload(numeric, integer, numeric, numeric, numeric, numeric)
+  from public, anon, authenticated;
+revoke all on function public.nba_invert_home_score_state_v1(text)
+  from public, anon, authenticated;
+revoke all on function public.get_nba_lineup_analytics(smallint, text, text, uuid[], text)
+  from public, anon, authenticated;
+revoke all on function public.get_nba_lineup_analytics_players(smallint, text, text)
+  from public, anon, authenticated;
 
 grant execute on function public.get_nba_lineup_analytics(smallint, text, text, uuid[], text) to anon, authenticated;
 grant execute on function public.get_nba_lineup_analytics_players(smallint, text, text) to anon, authenticated;

@@ -5,15 +5,19 @@ import process from "node:process";
 const root = process.cwd();
 const sourceRoot = path.join(root, "prototypes", "basketball-lineup-optimizer");
 const outputRoot = path.join(root, "lineup-lab");
+const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
+const RELEASE_ASSET_VERSION = "20260825b";
 const releaseFiles = [
   "index.html",
   "app.js",
+  "optimizer-config.js",
   "optimizer-core.js",
   "optimizer-worker.js",
   "player-data.js",
   "supabase-nba-data.js",
   "fan-analytics.js",
   "scenario-url.js",
+  "lineup-cache.js",
   "styles.css",
   "fixtures/timberwolves-2021-22.json",
 ];
@@ -28,11 +32,18 @@ function readSource(relativePath) {
 }
 
 function transform(relativePath, source) {
-  if (relativePath !== "index.html" && relativePath !== "styles.css") return source;
-  let output = source.toString("utf8")
+  if (path.extname(relativePath) === ".json") return source;
+  const sourceText = source.toString("utf8");
+  if (/\?v=\d{8}[a-z0-9]+/i.test(sourceText)) {
+    throw new Error(`Hard-coded Lineup Lab asset revision in source file: ${relativePath}`);
+  }
+  let output = sourceText
+    .replaceAll(SOURCE_ASSET_VERSION_TOKEN, RELEASE_ASSET_VERSION);
+  if (relativePath === "index.html" || relativePath === "styles.css") {
     // The source prototype is nested two directories deep; the deployable page
     // is nested once. Keep all storefront references local to the public page.
-    .replaceAll("../../assets/", "../assets/");
+    output = output.replaceAll("../../assets/", "../assets/");
+  }
   if (relativePath === "index.html") {
     output = output
       .replaceAll("../../backend-config.js", "../backend-config.js")
@@ -65,5 +76,6 @@ console.log(JSON.stringify({
   mode: checkOnly ? "check" : "build",
   files: releaseFiles.length,
   updated: checkOnly ? 0 : stale.length,
+  assetVersion: RELEASE_ASSET_VERSION,
   status: "ok",
 }, null, 2));

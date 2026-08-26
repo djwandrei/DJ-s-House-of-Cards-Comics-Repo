@@ -230,9 +230,12 @@ as $$
   );
 $$;
 
-revoke all on function public.get_nba_rapm_stints(smallint, text) from public;
-revoke all on function public.ingest_nba_rapm_model(jsonb) from public;
-revoke all on function public.get_nba_adjusted_impacts(smallint, text, text) from public;
+revoke all on function public.get_nba_rapm_stints(smallint, text)
+  from public, anon, authenticated;
+revoke all on function public.ingest_nba_rapm_model(jsonb)
+  from public, anon, authenticated;
+revoke all on function public.get_nba_adjusted_impacts(smallint, text, text)
+  from public, anon, authenticated;
 grant execute on function public.get_nba_rapm_stints(smallint, text) to service_role;
 grant execute on function public.ingest_nba_rapm_model(jsonb) to service_role;
 grant execute on function public.get_nba_adjusted_impacts(smallint, text, text) to anon, authenticated;

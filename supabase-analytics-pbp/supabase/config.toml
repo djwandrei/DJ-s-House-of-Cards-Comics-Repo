@@ -1,7 +1,0 @@
-project_id = "djhc-nba-analytics-pbp"
-
-# This is a deliberately separate migration track for licensed Sportradar raw
-# play-by-play, derived lineup stints, and RAPM. It targets the dedicated NBA
-# analytics project only after the base NBA-copy transition has passed parity.
-# Keeping it apart from ../supabase-analytics prevents a base-copy rerun from
-# accidentally applying the heavier PBP schema.

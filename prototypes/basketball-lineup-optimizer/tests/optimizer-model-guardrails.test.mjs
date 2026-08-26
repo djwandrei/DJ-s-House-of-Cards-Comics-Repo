@@ -1,13 +1,8 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { loadOptimizerCore } from "./load-optimizer-core.mjs";
 
-// This project serves browser modules directly and intentionally has no
-// package.json. A data URL lets Node exercise the exact shipped module.
-const moduleSource = await readFile(new URL("../optimizer-core.js", import.meta.url), "utf8");
-const { allocateRotationMinutes, optimizeLineups } = await import(
-  `data:text/javascript;base64,${Buffer.from(moduleSource, "utf8").toString("base64")}`
-);
+const { allocateRotationMinutes, optimizeLineups } = await loadOptimizerCore();
 
 function player(id, overrides = {}) {
   return {

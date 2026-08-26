@@ -33,6 +33,9 @@ begin
 end;
 $$;
 
+revoke all on function public.set_nba_records_updated_at()
+  from public, anon, authenticated;
+
 create table if not exists public.nba_pbp_import_runs (
   id uuid primary key default gen_random_uuid(),
   source_name text not null default 'sportradar_nba'

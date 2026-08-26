@@ -1,15 +1,9 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
 import test from "node:test";
+import { loadOptimizerCore } from "./load-optimizer-core.mjs";
 
-// The repository is intentionally package-free and serves browser ES modules
-// directly. Loading through a data URL lets `node --test` verify that module
-// without adding a package.json solely for Node's .js module classification.
-const moduleSource = await readFile(new URL("../optimizer-core.js", import.meta.url), "utf8");
-const optimizer = await import(
-  `data:text/javascript;base64,${Buffer.from(moduleSource, "utf8").toString("base64")}`
-);
+const optimizer = await loadOptimizerCore();
 
 const {
   allocateRotationMinutes,

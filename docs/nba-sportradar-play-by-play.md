@@ -80,23 +80,24 @@ silently rewritten as provider state.
 
 ## Install the schema
 
-Apply the PBP/RAPM migrations in the isolated `supabase-analytics-pbp` track
-after the NBA base-copy transition is verified. This is a production database
-change, so review the migration diff and use the project team's normal release
-procedure:
+Apply the PBP/RAPM migrations from the dedicated analytics project's canonical
+`supabase-analytics` migration track after the NBA base-copy transition is
+verified. This is a production database change, so review the migration diff
+and use the project team's normal release procedure:
 
 ```powershell
-supabase db push --workdir .\supabase-analytics-pbp --project-ref <analytics-project-ref>
+supabase db push --workdir .\supabase-analytics --project-ref <analytics-project-ref>
 ```
 
 Do not run a root-level `supabase db push` for this pipeline: that directory is
 linked to the commerce project and must never receive raw PBP, lineup-stint, or
-RAPM tables. The PBP track is also separate from `supabase-analytics` so a
-base-data copy can be rerun without applying PBP migrations.
+RAPM tables. Supabase maintains one migration ledger per project, so all
+analytics schema migrations share this one canonical directory. Re-running a
+verified base-data copy does not reapply migrations that are already recorded.
 
-For the split analytics deployment, do this only from the isolated analytics
-project migration context, after its NBA base dimensions have been copied. Do
-not run a root-level migration push against the commerce project.
+For the split commerce/analytics deployment, do this only from the dedicated
+analytics-project migration context, after its NBA base dimensions have been
+copied. Do not run a root-level migration push against the commerce project.
 
 The migrations create the private raw-response bucket and tables, the private
 atomic ingest/RAPM functions, and the three derived read RPCs. They do not

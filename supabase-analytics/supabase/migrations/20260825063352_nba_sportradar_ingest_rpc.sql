@@ -711,7 +711,8 @@ begin
 end;
 $$;
 
-revoke all on function public.ingest_nba_sportradar_game(jsonb) from public;
+revoke all on function public.ingest_nba_sportradar_game(jsonb)
+  from public, anon, authenticated;
 grant execute on function public.ingest_nba_sportradar_game(jsonb) to service_role;
 
 comment on function public.ingest_nba_sportradar_game(jsonb) is

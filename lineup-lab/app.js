@@ -2,37 +2,58 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-core.js?v=20260825a";
+} from "./optimizer-config.js?v=20260825b";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260825a";
+} from "./player-data.js?v=20260825b";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260825a";
+} from "./supabase-nba-data.js?v=20260825b";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260825a";
+} from "./fan-analytics.js?v=20260825b";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260825a";
+} from "./scenario-url.js?v=20260825b";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260825b";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260825a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260825a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260825b";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260825b", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
+const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
+  "id",
+  "name",
+  "team",
+  "positions",
+  "age",
+  "games",
+  "starts",
+  "minutes",
+  "fgPct",
+  "threePct",
+  "efgPct",
+  "ftPct",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "turnovers",
+  "points",
+]);
 // Bump this when the normalized live payload changes materially. In this
 // release, cached team stints can be missing newly imported media and the
 // reconstructed team-average/rotation summary. A new prefix makes the browser
@@ -40,6 +61,7 @@ const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 // 24-hour entry to expire.
 const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v5";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const NBA_CACHE_MAX_ENTRIES = 24;
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
 const UI_TO_ENGINE_PRESET = Object.freeze({
@@ -121,6 +143,7 @@ const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
 ]);
+const TRUSTED_SOURCE_HOSTS = new Set(["www.basketball-reference.com"]);
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -268,7 +291,36 @@ const state = {
   replacementAnalyses: new Map(),
   replacementRunToken: null,
   replacementPlayerId: null,
+  datasetLoadGeneration: 0,
 };
+
+function compactWatchlistPlayer(player, fallbackId = "") {
+  if (!player || typeof player !== "object") return null;
+  const id = String(player.id || fallbackId).trim();
+  const name = String(player.name || "").trim();
+  if (!id || !name) return null;
+
+  const snapshot = {};
+  for (const field of WATCHLIST_SNAPSHOT_FIELDS) {
+    if (Object.hasOwn(player, field)) snapshot[field] = player[field];
+  }
+  snapshot.id = id;
+  snapshot.name = name;
+  snapshot.positions = Array.isArray(player.positions)
+    ? [...new Set(player.positions.map(String).filter(Boolean))]
+    : [];
+  snapshot.headshotUrl = safeExternalImageUrl(player.headshotUrl);
+  const context = player.watchlistContext;
+  if (context && typeof context === "object" && !Array.isArray(context)) {
+    snapshot.watchlistContext = {
+      team: String(context.team || ""),
+      season: String(context.season || ""),
+      sourceLabel: String(context.sourceLabel || ""),
+      savedAt: String(context.savedAt || ""),
+    };
+  }
+  return snapshot;
+}
 
 function loadWatchlist() {
   try {
@@ -283,7 +335,11 @@ function loadWatchlistSnapshots() {
   try {
     const saved = JSON.parse(localStorage.getItem(WATCHLIST_SNAPSHOTS_KEY) || "{}");
     if (!saved || typeof saved !== "object" || Array.isArray(saved)) return new Map();
-    return new Map(Object.entries(saved).filter(([, player]) => player && typeof player === "object"));
+    return new Map(
+      Object.entries(saved)
+        .map(([id, player]) => [String(id), compactWatchlistPlayer(player, id)])
+        .filter(([, player]) => Boolean(player)),
+    );
   } catch {
     return new Map();
   }
@@ -305,9 +361,8 @@ function rememberWatchlistPlayer(playerId) {
   const player = currentPlayer(playerId);
   if (!player || state.watchlistSnapshots.has(playerId)) return;
   const source = state.dataset?.source || {};
-  state.watchlistSnapshots.set(playerId, {
+  const snapshot = compactWatchlistPlayer({
     ...player,
-    headshotUrl: safeExternalImageUrl(player.headshotUrl),
     watchlistContext: {
       team: player.team,
       season: source.season || "Custom season",
@@ -315,6 +370,7 @@ function rememberWatchlistPlayer(playerId) {
       savedAt: new Date().toISOString(),
     },
   });
+  if (snapshot) state.watchlistSnapshots.set(playerId, snapshot);
 }
 
 function showToast(message) {
@@ -447,8 +503,42 @@ function safeExternalImageUrl(value) {
   }
 }
 
+function safeExternalSourceUrl(value) {
+  try {
+    const url = new URL(String(value ?? "").trim());
+    return url.protocol === "https:" && TRUSTED_SOURCE_HOSTS.has(url.hostname)
+      ? url.href
+      : "";
+  } catch {
+    return "";
+  }
+}
+
 function liveCacheKey(team, season, seasonPhase) {
   return `${NBA_CACHE_PREFIX}:${season}:${seasonPhase}:${team}`;
+}
+
+function pruneLiveDatasetCache(preserveKey = "") {
+  return pruneLineupLabDatasetCache(localStorage, {
+    activePrefix: `${NBA_CACHE_PREFIX}:`,
+    maxEntries: NBA_CACHE_MAX_ENTRIES,
+    preserveKey,
+  });
+}
+
+function beginDatasetLoadIntent() {
+  state.datasetLoadGeneration += 1;
+  return state.datasetLoadGeneration;
+}
+
+function datasetLoadIsCurrent(generation) {
+  return generation === state.datasetLoadGeneration;
+}
+
+function beginNonLiveDatasetLoad() {
+  const generation = beginDatasetLoadIntent();
+  if (state.liveDataLoading) setLiveDataLoading(false);
+  return generation;
 }
 
 function setLiveDataStatus(message, tone = "") {
@@ -1199,6 +1289,7 @@ function readCachedLiveDataset(team, season, seasonPhase) {
       localStorage.removeItem(key);
       return null;
     }
+    pruneLiveDatasetCache(key);
     return {
       dataset,
       fresh: Date.now() - entry.cachedAt <= NBA_CACHE_MAX_AGE_MS,
@@ -1214,24 +1305,29 @@ function readCachedLiveDataset(team, season, seasonPhase) {
 }
 
 function cacheLiveDataset(team, season, seasonPhase, dataset) {
+  const key = liveCacheKey(team, season, seasonPhase);
   try {
     localStorage.setItem(
-      liveCacheKey(team, season, seasonPhase),
+      key,
       JSON.stringify({ cachedAt: Date.now(), dataset }),
     );
+    pruneLiveDatasetCache(key);
   } catch {
     // Caching is an optional request-saving optimization.
   }
 }
 
-async function loadLiveDataset({ force = false } = {}) {
+async function loadLiveDataset({ force = false, intentGeneration = null } = {}) {
   if (state.liveDataLoading) return;
+  const loadGeneration = intentGeneration ?? beginDatasetLoadIntent();
+  if (!datasetLoadIsCurrent(loadGeneration)) return;
   const team = elements.liveTeam.value;
   const season = Number(elements.liveSeason.value);
   const seasonPhase = elements.liveSeasonPhase.value;
   const teamName = selectedLiveTeamName();
   const cached = force ? null : readCachedLiveDataset(team, season, seasonPhase);
   if (cached?.fresh) {
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
     setDataset(cached.dataset, {
       liveSelection: { team, season, seasonPhase },
       notice: "",
@@ -1247,6 +1343,7 @@ async function loadLiveDataset({ force = false } = {}) {
   setLiveDataStatus(`Loading ${teamName} ${nbaSeasonLabel(season)} ${selectedLivePhaseLabel()} totals...`);
   try {
     const dataset = await fetchSupabaseNbaTeamDataset({ team, season, seasonPhase, force });
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
     cacheLiveDataset(team, season, seasonPhase, dataset);
     setDataset(dataset, {
       liveSelection: { team, season, seasonPhase },
@@ -1257,6 +1354,7 @@ async function loadLiveDataset({ force = false } = {}) {
       "success",
     );
   } catch (error) {
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
     const detail = error instanceof Error ? error.message : "The saved Basketball Reference data could not be reached.";
     const stale = cached || readCachedLiveDataset(team, season, seasonPhase);
     if (stale) {
@@ -1273,7 +1371,7 @@ async function loadLiveDataset({ force = false } = {}) {
     setLiveDataStatus(`${detail} The demo and CSV tools remain available.`, "error");
     throw error;
   } finally {
-    setLiveDataLoading(false);
+    if (datasetLoadIsCurrent(loadGeneration)) setLiveDataLoading(false);
   }
 }
 
@@ -2434,9 +2532,10 @@ function renderDatasetMeta() {
     `${source.label || "Current dataset"}${source.snapshotDate ? `, ${dateLabel} ${source.snapshotDate}` : ""}. `,
   );
   elements.sourceAttribution.append(lead);
-  if (source.url) {
+  const sourceUrl = safeExternalSourceUrl(source.url);
+  if (sourceUrl) {
     const link = document.createElement("a");
-    link.href = source.url;
+    link.href = sourceUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = source.provider ? "View the cited source table" : "View the cited source page";
@@ -2447,11 +2546,19 @@ function renderDatasetMeta() {
 }
 
 async function loadFixture({ notice = "" } = {}) {
-  const response = await fetch(FIXTURE_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Demo data could not be loaded (${response.status}).`);
-  const rawDataset = await response.json();
-  const dataset = normalizeDataset(rawDataset, { strict: true, warnOnGeneratedId: false });
-  setDataset(dataset, { notice });
+  const loadGeneration = beginNonLiveDatasetLoad();
+  try {
+    const response = await fetch(FIXTURE_URL, { cache: "no-store" });
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
+    if (!response.ok) throw new Error(`Demo data could not be loaded (${response.status}).`);
+    const rawDataset = await response.json();
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
+    const dataset = normalizeDataset(rawDataset, { strict: true, warnOnGeneratedId: false });
+    setDataset(dataset, { notice });
+  } catch (error) {
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
+    throw error;
+  }
 }
 
 function handlePlayerControl(event) {
@@ -4211,7 +4318,15 @@ function downloadWatchlist() {
 }
 
 async function importCsvFile(file) {
-  const text = await file.text();
+  const loadGeneration = beginNonLiveDatasetLoad();
+  let text;
+  try {
+    text = await file.text();
+  } catch (error) {
+    if (!datasetLoadIsCurrent(loadGeneration)) return;
+    throw error;
+  }
+  if (!datasetLoadIsCurrent(loadGeneration)) return;
   const defaultTeam = teamValues()[0] || undefined;
   const dataset = parsePlayerCsv(text, {
     defaultTeam,
@@ -4226,6 +4341,7 @@ async function importCsvFile(file) {
     const details = dataset.diagnostics.errors.slice(0, 3).map((item) => item.message).join(" ");
     throw new Error(details || "The CSV could not be validated.");
   }
+  if (!datasetLoadIsCurrent(loadGeneration)) return;
   const warningCount = dataset.diagnostics.warnings.length;
   setDataset(dataset, {
     notice: `${dataset.players.length} players imported${warningCount ? ` with ${warningCount} warning${warningCount === 1 ? "" : "s"}` : ""}.`,
@@ -4462,6 +4578,8 @@ function bindEvents() {
 }
 
 async function initialize() {
+  const initialLoadGeneration = beginDatasetLoadIntent();
+  pruneLiveDatasetCache();
   bindEvents();
   applyPreset("balanced", { invalidate: false });
   setMode("lineup", { preserveSize: true });
@@ -4469,9 +4587,12 @@ async function initialize() {
   applySharedScenarioControls(sharedScenario);
   try {
     await populateLiveDataControls({ sharedScenario });
-    await loadLiveDataset();
+    if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
+    await loadLiveDataset({ intentGeneration: initialLoadGeneration });
+    if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
     await replaySharedScenarioAfterLoad(sharedScenario);
   } catch (error) {
+    if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
     try {
       await loadFixture({ notice: "Historical data was unavailable, so the course-project demo was loaded." });
       setLiveDataStatus("Using the stable course-project demo. Historical team data could not be loaded.", "warning");

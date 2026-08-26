@@ -1,8 +1,10 @@
 # DJ's Lineup Lab prototype
 
-This folder is the source for an unlinked Lineup Lab private beta. Its
-deployable release is generated into `lineup-lab/`, which remains outside the
-storefront navigation, sitemap, service worker shell, and search discovery.
+This folder is the canonical source for the public Lineup Lab beta. Its
+deployable release is generated into `lineup-lab/`. The homepage and eligible
+NBA product panels link to the tool, while it intentionally remains outside
+the primary navigation, sitemap, service-worker shell, and search index during
+the beta.
 
 ## What the prototype proves
 
@@ -169,7 +171,8 @@ Required secrets are
 
 ## Production promotion checklist
 
-Run `node .\scripts\build-lineup-lab-release.mjs` before a private-beta
-deployment, then verify it with `--check`. Keep it unlinked until a fan-tools
-hub, navigation, sitemap, structured data, and broader discovery are explicitly
-approved.
+Run `node .\scripts\build-lineup-lab-release.mjs` before every deployment, then
+verify it with `--check`. The builder owns the deployable cache token and fails
+if source files bypass its version placeholder. Keep broader navigation,
+sitemap, structured data, and search discovery approval-gated while the page is
+labelled public beta.

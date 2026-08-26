@@ -28,6 +28,7 @@ const crawlableNoindex = new Set([
   'checkout-success.html',
   'account.html',
   'offer.html',
+  'lineup-lab/index.html',
   'offline.html'
 ]);
 const authenticationProtected = new Set(['admin.html', 'inbox.html', 'metrics.html']);
@@ -57,6 +58,7 @@ function canonicalHref(html) {
 }
 
 function expectedCanonical(file) {
+  if (file === 'lineup-lab/index.html') return `${SITE_ORIGIN}/lineup-lab/`;
   return file === 'index.html' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}/${file}`;
 }
 
@@ -70,7 +72,10 @@ function readSitemapEntries() {
     .map((match) => ({ loc: match[1].trim(), lastmod: match[2].trim() }));
 }
 
-const htmlFiles = readdirSync(root).filter((file) => file.endsWith('.html')).sort();
+const htmlFiles = [
+  ...readdirSync(root).filter((file) => file.endsWith('.html')),
+  'lineup-lab/index.html'
+].sort();
 assert(htmlFiles.length === allPolicyFiles.size, 'Search policy matrix does not cover every HTML page.');
 for (const file of htmlFiles) {
   assert(allPolicyFiles.has(file), `${file}: missing from search policy matrix.`);
