@@ -1159,7 +1159,14 @@ window.DJ = window.DJ || {};
           'league_efg_pct',
           'league_three_pct',
           'advanced_metrics',
-          'postseason_available'
+          'postseason_available',
+          // Career-profile positions are narrow, source-backed flexibility for
+          // the Lineup Lab solver. They complement the selected season's
+          // `listed_position`; the page retains both rather than treating a
+          // player's multi-position career profile as a season-role rewrite.
+          'career_profile_positions',
+          'career_profile_position_text',
+          'career_profile_source_url'
         ].join(','))
         .eq('season_end_year', seasonEndYear)
         .eq('team_code', teamCode)

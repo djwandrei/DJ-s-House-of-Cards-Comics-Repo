@@ -77,6 +77,28 @@ test("automatic position-minute balance derives one stable 240-minute team profi
   assert.deepEqual(fallback.requirements, STANDARD_ROLE_MINUTES);
 });
 
+test("verified career flexibility does not rewrite the historical position-minute estimate", () => {
+  const players = [
+    player("career-hybrid", {
+      // The solver can use every verified role below, but this stint was
+      // season-listed as a forward. Dividing the 120 historical minutes among
+      // G/F/C would manufacture a guard and center minute history.
+      positions: ["G", "F", "C"],
+      positionEvidence: { seasonListed: ["F"] },
+    }),
+    player("season-guard", {
+      positions: ["G"],
+      positionEvidence: { seasonListed: ["G"] },
+    }),
+  ];
+  const anchors = { "career-hybrid": 120, "season-guard": 120 };
+
+  const evidence = assessHistoricalPositionMinuteEvidence(players, anchors);
+  assert.equal(evidence.fallbackApplied, false);
+  assert.equal(evidence.sourceListedPositionRows, 2);
+  assert.deepEqual(evidence.requirements, { G: 120, F: 120, C: 0 });
+});
+
 test("historical-aware allocation honors exact workload anchors while open what-if ignores them", () => {
   const players = Array.from({ length: 8 }, (_, index) => player(`p${index + 1}`));
   const historicalMinuteAnchors = {

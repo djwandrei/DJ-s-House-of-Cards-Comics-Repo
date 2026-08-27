@@ -1,0 +1,80 @@
+name: NBA position-profile backfill
+
+on:
+  # Small, checkpointed passes build the historical profile coverage without
+  # competing with the weekly season-stat refresh or exceeding source cadence.
+  schedule:
+    - cron: '43 12 * * *'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Write this bounded profile batch to Supabase
+        required: true
+        default: false
+        type: boolean
+      limit:
+        description: Optional profile count (1-500; default 100)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nba-position-profile-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill-verified-profile-positions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Link the dedicated NBA analytics project for the candidate lookup
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.NBA_ANALYTICS_SUPABASE_DB_PASSWORD }}
+        shell: bash
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_DB_PASSWORD"
+          npx --yes supabase@2.115.0 link \
+            --workdir supabase-analytics \
+            --project-ref fbbmuqbdpgsmvnezowwn \
+            --yes
+
+      - name: Inspect a bounded profile batch without writing
+        if: ${{ github.event_name != 'schedule' && !inputs.apply }}
+        env:
+          BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
+          REQUESTED_LIMIT: ${{ inputs.limit }}
+        shell: bash
+        run: |
+          args=(node scripts/import-nba-basketball-reference-positions.mjs)
+          if [[ -n "$REQUESTED_LIMIT" ]]; then
+            args+=(--limit "$REQUESTED_LIMIT")
+          fi
+          "${args[@]}"
+
+      - name: Backfill verified Basketball Reference profile positions
+        if: ${{ github.event_name == 'schedule' || inputs.apply }}
+        env:
+          BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
+          NBA_WEEKLY_UPDATE_ALLOW_WRITE: ${{ secrets.NBA_WEEKLY_UPDATE_ALLOW_WRITE }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.NBA_ANALYTICS_SUPABASE_DB_PASSWORD }}
+          REQUESTED_LIMIT: ${{ inputs.limit }}
+        shell: bash
+        run: |
+          args=(
+            node scripts/import-nba-basketball-reference-positions.mjs
+            --apply
+            --limit "${REQUESTED_LIMIT:-100}"
+            --batch-size 25
+            --request-delay-ms 4000
+          )
+          "${args[@]}"

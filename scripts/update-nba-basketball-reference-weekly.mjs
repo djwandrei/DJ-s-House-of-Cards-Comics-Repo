@@ -44,7 +44,7 @@ Usage:
   node .\\scripts\\update-nba-basketball-reference-weekly.mjs [options]
 
 Options:
-  --apply                     Write the refreshed snapshot to linked Supabase
+  --apply                     Write the refreshed snapshot to dedicated NBA analytics Supabase
   --season-end-year <year>    Override the automatically selected NBA season
   --phase <regular|playoffs|both>
                               Refresh phase(s); default: both
@@ -256,6 +256,10 @@ export function buildImporterArgs(options, { now = new Date() } = {}) {
   const year = String(options.seasonEndYear);
   const args = [
     IMPORTER_PATH,
+    // The season-stat importer rejects a write unless this explicit target
+    // guard is present. The repository root is linked to commerce, while
+    // Lineup Lab facts belong only in supabase-analytics.
+    '--analytics',
     '--season-start', year,
     '--season-end', year,
     '--phase', options.phase,

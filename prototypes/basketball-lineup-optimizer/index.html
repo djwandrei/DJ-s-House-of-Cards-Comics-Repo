@@ -263,7 +263,7 @@
                         <label class="field"><span>Forwards</span><input id="minForwardsInput" type="number" min="0" max="12" step="1" value="2"></label>
                         <label class="field"><span>Centers</span><input id="minCentersInput" type="number" min="0" max="12" step="1" value="1"></label>
                       </div>
-                      <p class="helper" id="positionCoverageHelp">Players can fill every position listed in the source. For example, a PF-C may satisfy either a forward or center requirement, but each player fills only one required lineup spot.</p>
+                      <p class="helper" id="positionCoverageHelp">Players can fill their season-listed role plus any verified Basketball Reference career-profile position. For example, a PF-C may satisfy either a forward or center requirement, but each player fills only one required lineup spot.</p>
                     </fieldset>
 
                     <fieldset>
@@ -338,7 +338,7 @@
                         <label class="field">
                           <span>Estimated position-minute mix</span>
                           <select id="rotationPositionProfileInput" aria-describedby="rotationPositionProfileHelp">
-                            <option value="automatic" selected>Source-listed positions — recommended</option>
+                            <option value="automatic" selected>Season-listed minute mix — recommended</option>
                             <option value="traditional">Traditional — two guards, two forwards, one center</option>
                             <option value="small">Small — more guard time, less center time</option>
                             <option value="big">Big — more forward time, standard center time</option>
@@ -349,7 +349,7 @@
                       <p class="field__help" id="rotationAllocationStyleHelp">These extra controls appear only when you use past minutes as a guardrail. They affect minute feasibility, not the game-plan fit score.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
                       <p class="field__help" id="rotationRateStabilityHelp">When enough minutes and shot attempts are available, the model pulls extreme limited-sample rates toward the same-season NBA baseline. If it assigns a player beyond his established role, those extra minutes use that baseline too. This changes projected value—not a player’s minute cap.</p>
-                      <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from the selected team's listed positions and recorded usage. It is an estimate, not tracking data.</p>
+                      <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from the selected team's season-listed positions and recorded usage. Verified career positions improve eligibility, but do not rewrite this historical estimate.</p>
                       <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking recorded-minutes and rate evidence for this roster…</p>
                       <div class="rotation-hard-limits">
                         <strong>Hard player limits</strong>

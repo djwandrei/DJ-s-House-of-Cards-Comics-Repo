@@ -2,7 +2,7 @@
 
 /**
  * Import NBA player-team-season statistics from Basketball Reference into the
- * DJHC Supabase project.
+ * dedicated DJHC NBA analytics Supabase project.
  *
  * The importer deliberately uses the already-linked Supabase CLI for writes
  * rather than a browser key. That keeps NBA-table RLS read-only and avoids
@@ -61,6 +61,13 @@ import {
 } from './lib/nba-media-backfill.mjs';
 
 const ROOT = process.cwd();
+// NBA player/team/season facts deliberately live outside the commerce project.
+// Keep the identifier and working directory adjacent to the importer so an
+// operator cannot accidentally write a full Basketball Reference refresh into
+// the storefront database merely because that is the repository's root link.
+const ANALYTICS_PROJECT_REF = 'fbbmuqbdpgsmvnezowwn';
+const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-analytics');
+const ANALYTICS_CLI_VERSION = '2.115.0';
 // Basketball Reference currently declares Crawl-delay: 3 and Sports Reference
 // documents a 20-request-per-minute ceiling for its non-FBref sites. Four
 // seconds leaves margin beneath both limits while keeping a one-season refresh
@@ -127,7 +134,8 @@ Options:
   --season-end <year>        Ending year of the last season (default: current year)
   --phase <regular|playoffs|both>
                               Import one phase or both (default: both)
-  --apply                     Write to the linked Supabase project; otherwise dry-run
+  --apply                     Write to the dedicated NBA analytics project; otherwise dry-run
+  --analytics                 Confirm the dedicated NBA analytics target for --apply
   --request-delay-ms <ms>     Delay between uncached source requests (default: 4000; minimum: 3000)
   --refresh-cache             Re-fetch pages instead of using the local source cache
   --allow-missing-playoffs    Skip an unavailable/empty playoffs phase (current-season refreshes only)
@@ -152,6 +160,8 @@ Notes:
   * A full run requests about five source pages per season and is rate-limited.
   * Resume the same range with --apply after interruption; the checkpoint and
     source cache make data writes idempotent.
+  * --apply always requires --analytics. The repository root is linked to the
+    commerce project, which must never receive duplicate Lineup Lab facts.
   * Media-only checkpoints skip found/no-image candidates and retry temporary
     failures. Use --new-run with --refresh-cache to intentionally recheck
     previously confirmed no-image pages.
@@ -230,13 +240,18 @@ function optionsFromArgs(argv) {
   }
   const mediaBatchSize = readInteger(options.get('media-batch-size') ?? 25, '--media-batch-size', { min: 1, max: 100 });
   const apply = flags.has('apply');
+  const analytics = flags.has('analytics');
   const mediaOnly = flags.has('media-only');
+  if (apply && !analytics) {
+    throw new Error('--apply requires --analytics because Lineup Lab facts belong only in the dedicated NBA analytics project.');
+  }
   if (mediaOnly && !apply) throw new Error('--media-only requires --apply because it writes confirmed media rows.');
   if (mediaOnly && mediaRequestLimit < 1) {
     throw new Error('--media-only requires a positive --media-request-limit (or deprecated --media-limit alias).');
   }
   return {
     apply,
+    analytics,
     start,
     end,
     phases: [...new Set(phases)],
@@ -251,6 +266,36 @@ function optionsFromArgs(argv) {
     mediaOnly,
     mediaTeamCode: readOptionalTeamCode(options.get('media-team-code')),
   };
+}
+
+/**
+ * Return the one allowed database destination for Basketball Reference NBA
+ * writes. The explicit linked-project check protects against a stale local
+ * Supabase CLI link as well as the root commerce project's normal link.
+ */
+function analyticsDatabaseTarget() {
+  const configPath = path.join(ANALYTICS_WORKDIR, 'supabase', 'config.toml');
+  const linkedProjectPath = path.join(ANALYTICS_WORKDIR, 'supabase', '.temp', 'project-ref');
+  if (!fs.existsSync(configPath)) {
+    throw new Error('Dedicated NBA analytics Supabase configuration is missing. Refusing to target another project.');
+  }
+  if (!fs.existsSync(linkedProjectPath)) {
+    throw new Error(
+      `Dedicated NBA analytics project is not linked. Run \`supabase link --workdir supabase-analytics --project-ref ${ANALYTICS_PROJECT_REF}\` before an apply run.`
+    );
+  }
+  const linkedProjectRef = fs.readFileSync(linkedProjectPath, 'utf8').trim();
+  if (linkedProjectRef !== ANALYTICS_PROJECT_REF) {
+    throw new Error(
+      `Dedicated NBA analytics workdir is linked to ${linkedProjectRef || 'no project'}, not ${ANALYTICS_PROJECT_REF}. Refusing to write.`
+    );
+  }
+  return Object.freeze({
+    label: 'dedicated NBA analytics project',
+    projectRef: ANALYTICS_PROJECT_REF,
+    workdir: ANALYTICS_WORKDIR,
+    cliVersion: ANALYTICS_CLI_VERSION,
+  });
 }
 
 function sleep(milliseconds) {
@@ -1062,16 +1107,26 @@ function parseCliJson(stdout) {
   return null;
 }
 
-async function executeLinkedSql(sql, label) {
+async function executeLinkedSql(sql, label, databaseTarget = null) {
+  const target = databaseTarget || Object.freeze({
+    label: 'repository-root linked project',
+    workdir: ROOT,
+    cliVersion: '2.84.2',
+  });
+  if (!path.isAbsolute(target.workdir) || !fs.existsSync(target.workdir)) {
+    throw new Error(`Linked Supabase SQL target is not an existing absolute workdir for ${label}.`);
+  }
   const workDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-import-work'));
   const sqlPath = path.join(workDirectory, `${safeFileSegment(label)}.sql`);
   fs.writeFileSync(sqlPath, sql, 'utf8');
   const npxArgs = [
     '--yes',
-    'supabase@2.84.2',
+    `supabase@${target.cliVersion}`,
     'db',
     'query',
     '--linked',
+    '--workdir',
+    target.workdir,
     '--file',
     sqlPath,
     '--output',
@@ -1086,7 +1141,7 @@ async function executeLinkedSql(sql, label) {
   const args = useInstalledNpxCli ? [installedNpxCli, ...npxArgs] : npxArgs;
   const result = await new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      cwd: ROOT,
+      cwd: target.workdir,
       windowsHide: true,
       shell: !useInstalledNpxCli && process.platform === 'win32',
       stdio: ['ignore', 'pipe', 'pipe']
@@ -1121,9 +1176,10 @@ async function executeLinkedSql(sql, label) {
   return payload.rows;
 }
 
-function checkpointPath({ start, end, phases }) {
+function checkpointPath({ start, end, phases, analytics = false }) {
   const checkpointDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-import-checkpoints'));
-  return path.join(checkpointDirectory, `bref-${start}-${end}-${phases.join('-')}.json`);
+  const targetPrefix = analytics ? 'bref-analytics' : 'bref';
+  return path.join(checkpointDirectory, `${targetPrefix}-${start}-${end}-${phases.join('-')}.json`);
 }
 
 function blankCheckpoint({ runId, start, end, phases }) {
@@ -1380,7 +1436,8 @@ function mediaCheckpointPath(options) {
   const checkpointDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-import-checkpoints'));
   const phaseKey = options.phases.join('-');
   const teamKey = options.mediaTeamCode || 'all-teams';
-  return path.join(checkpointDirectory, `media-bref-${options.start}-${options.end}-${phaseKey}-${teamKey}.json`);
+  const targetPrefix = options.analytics ? 'media-bref-analytics' : 'media-bref';
+  return path.join(checkpointDirectory, `${targetPrefix}-${options.start}-${options.end}-${phaseKey}-${teamKey}.json`);
 }
 
 function saveMediaCheckpoint(filePath, checkpoint) {
@@ -1470,7 +1527,7 @@ function cachedAllowedLeagueHtmlBySeason({
  * discovery and database write safely retries from the checkpoint/source
  * caches without claiming an uncommitted asset.
  */
-async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget, robots }) {
+async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaRequestBudget, robots, databaseTarget }) {
   if (!options.apply) throw new Error('--media-only requires --apply because it writes confirmed media rows.');
   if (!options.mediaRequestLimit || !mediaRequestBudget) {
     throw new Error('--media-only requires a positive --media-request-limit (or deprecated --media-limit alias).');
@@ -1481,7 +1538,7 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     end: options.end,
     phases: options.phases,
     teamCode: options.mediaTeamCode,
-  }), `media-candidates-${options.start}-${options.end}-${options.mediaTeamCode || 'all'}`);
+  }), `media-candidates-${options.start}-${options.end}-${options.mediaTeamCode || 'all'}`, databaseTarget);
   const candidates = normalizeMediaCandidateRows(candidateRows);
   if (!candidates.length) {
     throw new Error(`No media candidates exist for ${options.start}-${options.end}${options.mediaTeamCode ? ` and ${options.mediaTeamCode}` : ''}.`);
@@ -1519,7 +1576,7 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
     const batch = pendingBatch.splice(0, options.mediaBatchSize);
     try {
       await executeLinkedSql(buildMediaSql({ mediaRows: batch.map((item) => item.mediaRow) }),
-        `media-batch-${options.start}-${options.end}-${Date.now()}`);
+        `media-batch-${options.start}-${options.end}-${Date.now()}`, databaseTarget);
     } catch (error) {
       for (const item of batch) {
         recordMediaCandidateStatus(checkpoint, item.candidate, 'retry', {
@@ -1709,6 +1766,10 @@ async function runMediaBackfill({ options, fetchPage, cacheDirectory, mediaReque
 
 async function run() {
   const options = optionsFromArgs(process.argv.slice(2));
+  // Dry-runs do not need a linked database at all. Apply runs resolve the
+  // target before touching Basketball Reference so an invalid destination
+  // cannot consume source requests or create a misleading checkpoint.
+  const databaseTarget = options.apply ? analyticsDatabaseTarget() : null;
   const sourcePolicy = await verifySourceAutomation(options);
   options.requestDelayMs = sourcePolicy.effectiveDelayMs;
   const cacheDirectory = ensureDirectory(path.join(ROOT, 'outputs', 'nba-basketball-reference-cache'));
@@ -1729,6 +1790,7 @@ async function run() {
       cacheDirectory,
       mediaRequestBudget,
       robots: sourcePolicy.robots,
+      databaseTarget,
     });
     return;
   }
@@ -1746,12 +1808,13 @@ async function run() {
     skipAdvanced: options.skipAdvanced,
     skipRaw: options.skipRaw,
     requestDelayMs: options.requestDelayMs,
+    destination: databaseTarget?.label || 'source-only dry-run',
     resumedRun: Boolean(options.apply && validateCheckpoint(existingCheckpoint, options)),
     importRunId: options.apply ? checkpoint.runId : null
   }, null, 2));
 
   if (options.apply) {
-    await executeLinkedSql(buildCreateRunSql({ runId: checkpoint.runId, start: options.start, end: options.end }), 'create-run');
+    await executeLinkedSql(buildCreateRunSql({ runId: checkpoint.runId, start: options.start, end: options.end }), 'create-run', databaseTarget);
     saveCheckpoint(checkpointFile, checkpoint);
   }
 
@@ -1819,7 +1882,7 @@ async function run() {
           playerRows: players,
           teamRows: teams,
           skipRaw: options.skipRaw
-        }), `import-${checkpoint.runId}-${seasonEndYear}-${seasonPhase}`);
+        }), `import-${checkpoint.runId}-${seasonEndYear}-${seasonPhase}`, databaseTarget);
         const result = rows[0]?.result ?? {};
         checkpoint.playersCreated += Number(result.players_created) || 0;
         checkpoint.completed[completedKey] = {
@@ -1837,7 +1900,7 @@ async function run() {
           status: 'running',
           playersCreated: checkpoint.playersCreated,
           skipRaw: options.skipRaw
-        }), `update-run-${checkpoint.runId}`);
+        }), `update-run-${checkpoint.runId}`, databaseTarget);
         console.log(JSON.stringify({ seasonEndYear, seasonPhase, ...checkpoint.completed[completedKey], importRun: runRows[0] ?? null }, null, 2));
 
       }
@@ -1852,6 +1915,7 @@ async function run() {
         cacheDirectory,
         mediaRequestBudget,
         robots: sourcePolicy.robots,
+        databaseTarget,
       });
     }
     if (options.apply) {
@@ -1862,7 +1926,7 @@ async function run() {
         status: 'completed',
         playersCreated: checkpoint.playersCreated,
         skipRaw: options.skipRaw
-      }), `complete-run-${checkpoint.runId}`);
+      }), `complete-run-${checkpoint.runId}`, databaseTarget);
       console.log(JSON.stringify({ mode: 'apply', checkpoint: checkpointFile, importRun: finalRows[0] ?? null }, null, 2));
     } else {
       console.log('Dry-run completed; no Supabase rows were written.');
@@ -1879,7 +1943,7 @@ async function run() {
           playersCreated: checkpoint.playersCreated,
           errorSummary: checkpoint.error,
           skipRaw: options.skipRaw
-        }), `fail-run-${checkpoint.runId}`);
+        }), `fail-run-${checkpoint.runId}`, databaseTarget);
       } catch (updateError) {
         console.error(`Could not mark import run failed: ${String(updateError?.message ?? updateError)}`);
       }
@@ -1898,4 +1962,11 @@ if (import.meta.url === invokedModuleUrl) {
 
 // Export the smallest useful seam for offline tests. Importing this module no
 // longer launches a crawl because the entrypoint above is guarded explicitly.
-export { buildMediaSql, createPageFetcher, optionsFromArgs, parseCliJson };
+export {
+  analyticsDatabaseTarget,
+  buildMediaSql,
+  createPageFetcher,
+  executeLinkedSql,
+  optionsFromArgs,
+  parseCliJson,
+};

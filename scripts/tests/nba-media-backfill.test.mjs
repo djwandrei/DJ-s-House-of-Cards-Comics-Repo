@@ -363,16 +363,19 @@ test('media SQL is a small-batch idempotent update-or-insert transaction', () =>
 
 test('CLI exposes bounded requests, bounded batches, and the legacy alias', () => {
   const current = optionsFromArgs([
-    '--media-only', '--apply', '--media-request-limit', '75', '--media-batch-size', '20',
+    '--media-only', '--apply', '--analytics', '--media-request-limit', '75', '--media-batch-size', '20',
     '--season-start', '1980', '--season-end', '2026',
   ]);
   assert.equal(current.mediaRequestLimit, 75);
   assert.equal(current.mediaBatchSize, 20);
+  assert.equal(current.analytics, true);
   assert.equal(optionsFromArgs(['--media-limit', '8']).mediaRequestLimit, 8);
   assert.throws(() => optionsFromArgs(['--media-limit', '8', '--media-request-limit', '9']));
   assert.throws(() => optionsFromArgs(['--media-batch-size', '101']));
   assert.throws(() => optionsFromArgs(['--media-only', '--media-request-limit', '1']), /requires --apply/);
-  assert.throws(() => optionsFromArgs(['--media-only', '--apply']), /positive --media-request-limit/);
+  assert.throws(() => optionsFromArgs(['--media-only', '--apply']), /requires --analytics/);
+  assert.throws(() => optionsFromArgs(['--media-only', '--apply', '--analytics']), /positive --media-request-limit/);
+  assert.throws(() => optionsFromArgs(['--apply']), /requires --analytics/);
 });
 
 test('linked CLI JSON parser accepts piped arrays and wrapped response envelopes', () => {

@@ -53,20 +53,22 @@ jobs:
             nba-media-checkpoint-${{ github.ref_name }}-
             nba-media-checkpoint-
 
-      - name: Link the approved Supabase project for an apply run
+      - name: Link the dedicated NBA analytics project for an apply run
         if: ${{ github.event_name == 'schedule' || inputs.apply }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          # The project reference is deliberately checked in below: it is a
+          # public identifier and prevents a generic commerce-project secret
+          # from steering Lineup Lab imports to the wrong database.
+          SUPABASE_DB_PASSWORD: ${{ secrets.NBA_ANALYTICS_SUPABASE_DB_PASSWORD }}
         shell: bash
         run: |
           test -n "$SUPABASE_ACCESS_TOKEN"
-          test -n "$SUPABASE_PROJECT_REF"
           test -n "$SUPABASE_DB_PASSWORD"
-          npx --yes supabase@2.84.2 link \
-            --project-ref "$SUPABASE_PROJECT_REF" \
-            --password "$SUPABASE_DB_PASSWORD"
+          npx --yes supabase@2.115.0 link \
+            --workdir supabase-analytics \
+            --project-ref fbbmuqbdpgsmvnezowwn \
+            --yes
 
       - name: Download and validate without database credentials
         if: ${{ github.event_name != 'schedule' && !inputs.apply }}
@@ -92,7 +94,7 @@ jobs:
           BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
           NBA_WEEKLY_UPDATE_ALLOW_WRITE: ${{ secrets.NBA_WEEKLY_UPDATE_ALLOW_WRITE }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.NBA_ANALYTICS_SUPABASE_DB_PASSWORD }}
           REQUESTED_SEASON_END_YEAR: ${{ inputs.season_end_year }}
           REQUESTED_PHASE: ${{ inputs.phase }}
         shell: bash
@@ -114,7 +116,7 @@ jobs:
           BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED: ${{ secrets.BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED }}
           NBA_WEEKLY_UPDATE_ALLOW_WRITE: ${{ secrets.NBA_WEEKLY_UPDATE_ALLOW_WRITE }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.NBA_ANALYTICS_SUPABASE_DB_PASSWORD }}
           REQUESTED_PHASE: ${{ inputs.phase }}
         shell: bash
         run: |
@@ -125,6 +127,7 @@ jobs:
           season_end_year="$(node -p "require('./outputs/nba-weekly-update/report.json').seasonEndYear")"
           node scripts/import-nba-basketball-reference.mjs \
             --apply \
+            --analytics \
             --media-only \
             --season-start "$season_end_year" \
             --season-end "$season_end_year" \

@@ -4,36 +4,36 @@ import {
   DEFAULT_PRESETS,
   assessHistoricalPositionMinuteEvidence,
   deriveHistoricalPositionMinuteRequirements,
-} from "./optimizer-config.js?v=20260826d";
+} from "./optimizer-config.js?v=20260827a";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260826d";
+} from "./player-data.js?v=20260827a";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260826d";
+} from "./supabase-nba-data.js?v=20260827a";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260826d";
+} from "./fan-analytics.js?v=20260827a";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260826d";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260826d";
+} from "./scenario-url.js?v=20260827a";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260827a";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260826d";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260826d", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260827a";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260827a", import.meta.url);
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
@@ -2039,11 +2039,11 @@ function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
     ? "No usable source-listed position-minute evidence was available, so the standard 96 guard / 96 forward / 48 center estimate is used."
     : `${positionEvidence?.usableRows || 0} of ${positionEvidence?.sourceRows || 0} roster rows have both a source-listed position and recorded minute evidence.`;
   elements.positionCoverageHelp.textContent = isRotation
-    ? `Roster balance is a minimum composition rule. The ${automatic ? "source-listed position estimate" : "selected"} is ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. Source-listed multi-position players can split their minutes across compatible roles. ${automatic ? estimateCopy : ""}`
-    : "Players can cover every source-listed role. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required roster slot.";
+    ? `Roster balance is a minimum composition rule. The ${automatic ? "season-listed position estimate" : "selected"} is ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. Players can fill verified compatible roles, including Basketball Reference career-profile positions when available. The historical mix still uses the season listing, not an equal split across career roles. ${automatic ? estimateCopy : ""}`
+    : "Players can cover their season-listed role plus any verified Basketball Reference career-profile position. For example, a PF-C may fill a forward or center requirement, but each selected player fills only one required roster slot.";
   elements.rotationMinutesHelp.textContent = `Every candidate receives exactly 240 integer minutes while covering the same ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minute target.`;
   elements.rotationPositionProfile.title = automatic
-    ? "An estimate from source-listed positions and recorded minutes, derived once from the full loaded team-season so every candidate is tested against the same target"
+    ? "An estimate from season-listed positions and recorded minutes. Career-profile eligibility can satisfy solver roles, but it does not rewrite this historical team mix."
     : "A manual advanced position-minute experiment";
 }
 
@@ -3102,6 +3102,16 @@ function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
   const position = document.createElement("span");
   position.className = "position-pill";
   position.textContent = assignedPosition(lineup, player.id);
+  const positionEvidence = player.positionEvidence;
+  if (positionEvidence?.usesCareerProfile) {
+    const seasonRoles = Array.isArray(positionEvidence.seasonListed) && positionEvidence.seasonListed.length
+      ? positionEvidence.seasonListed.join("/")
+      : "not supplied";
+    const eligibleRoles = Array.isArray(positionEvidence.eligible) && positionEvidence.eligible.length
+      ? positionEvidence.eligible.join("/")
+      : player.positions.join("/");
+    position.title = `Assigned ${position.textContent}. Eligible ${eligibleRoles}; season listing ${seasonRoles}; verified career-profile roles are available for this scenario.`;
+  }
   const rank = document.createElement("span");
   rank.className = "lineup-player__rank";
   rank.textContent = String(index + 1).padStart(2, "0");

@@ -72,6 +72,33 @@ test("maps a saved team stint to source-neutral per-game optimizer fields", () =
   });
 });
 
+test("combines a season-listed role with verified Basketball Reference career eligibility", () => {
+  const row = savedRow({
+    listed_position: "PF",
+    career_profile_positions: ["PF", "C"],
+    career_profile_position_text: "Power Forward and Center",
+    career_profile_source_url: "https://www.basketball-reference.com/players/r/reidna01.html",
+  });
+  const mapped = mapSupabaseNbaPlayer(row, { team: "MIN", season: 2025, seasonPhase: "regular" });
+  assert.equal(mapped.positions, "PF/C");
+
+  const dataset = createSupabaseNbaTeamDataset([row], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+  });
+  const [player] = dataset.players;
+  assert.deepEqual(player.positions, ["F", "C"]);
+  assert.deepEqual(player.positionEvidence, {
+    seasonListed: ["F"],
+    careerProfile: ["F", "C"],
+    eligible: ["F", "C"],
+    sourceText: "Power Forward and Center",
+    sourceUrl: "https://www.basketball-reference.com/players/r/reidna01.html",
+    usesCareerProfile: true,
+  });
+});
+
 test("accepts missing historical starts and zero shooting attempts without fabricating percentages", () => {
   const player = mapSupabaseNbaPlayer(savedRow({
     games_started: null,

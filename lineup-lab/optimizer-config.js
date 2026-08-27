@@ -39,8 +39,18 @@ export function assessHistoricalPositionMinuteEvidence(
 
   for (const player of roster) {
     const anchor = Number(sourceValue(player?.id));
+    // The exact solver may use a verified career-profile alternate (for
+    // example, a forward who can also cover center).  That flexibility should
+    // not be treated as proof that half of the player's recorded season
+    // minutes were played at each role.  When available, use the original
+    // season-listed buckets to estimate the team's historical G/F/C mix; old
+    // fixtures and imported CSV files retain their existing `positions` path.
+    const historicalPositions = Array.isArray(player?.positionEvidence?.seasonListed)
+      && player.positionEvidence.seasonListed.length > 0
+      ? player.positionEvidence.seasonListed
+      : player?.positions;
     const eligiblePositions = [...new Set(
-      (Array.isArray(player?.positions) ? player.positions : [])
+      (Array.isArray(historicalPositions) ? historicalPositions : [])
         .map((position) => String(position).toUpperCase())
         .filter((position) => positions.includes(position)),
     )];

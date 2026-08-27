@@ -30,6 +30,9 @@ the beta.
 - Imported Basketball Reference team-season player pools from 1980 forward,
   with team-stint totals normalized to per-game values and a 24-hour device
   cache.
+- Verified Basketball Reference player-profile positions as extra lineup
+  eligibility (for example, a documented PF-C can cover either role). The
+  selected season's listed position remains the historical role reference.
 - Historical team identities, such as the San Diego Clippers and New Jersey
   Nets, rather than retroactively mapped current franchises.
 - A safe exact-search cap that asks visitors to narrow large rotation pools
@@ -122,6 +125,53 @@ historical database cannot be reached. The browser also keeps a matching
 team-season snapshot for 24 hours and can use an older saved snapshot during an
 interruption.
 
+### Position eligibility
+
+The position constraint has two deliberately separate inputs:
+
+- **Season-listed role** is the `Pos` value supplied with the selected player
+  team-season. Lineup Lab uses it to describe the historical rotation and to
+  estimate the team's guard/forward/center minute mix.
+- **Verified career eligibility** comes only from the player's Basketball
+  Reference profile. It lets the exact solver use documented alternate roles
+  when satisfying a lineup or rotation constraint. It never treats career
+  flexibility as evidence that a player split every season's minutes evenly
+  across those roles.
+
+`scripts/import-nba-basketball-reference-positions.mjs` is the guarded,
+checkpointed backfill for this evidence. It queries only imported Basketball
+Reference player IDs, rechecks robots.txt, keeps the same four-second minimum
+source cadence, caches successful profile pages, and records a terminal or
+retry status in `nba_player_position_profiles`. A stopped pass therefore
+continues with its unfinished profiles on the next run instead of starting
+over. The normal pass never guesses from height, box-score statistics, or a
+player's name.
+
+Both the profile backfill and the season-stat importer are hard-bound to the
+dedicated NBA analytics project. Before a local write, link that exact project
+from its separate migration directory; the repository root's Supabase link is
+the commerce project and is intentionally rejected for these imports:
+
+```powershell
+supabase link --workdir .\supabase-analytics --project-ref fbbmuqbdpgsmvnezowwn
+```
+
+After source permission is reconfirmed, a bounded local apply pass is:
+
+```powershell
+$env:BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED = 'confirmed'
+$env:NBA_WEEKLY_UPDATE_ALLOW_WRITE = 'confirmed'
+node .\scripts\import-nba-basketball-reference-positions.mjs --apply --limit 100
+Remove-Item Env:\BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED
+Remove-Item Env:\NBA_WEEKLY_UPDATE_ALLOW_WRITE
+```
+
+`.github/workflows/nba-position-profile-backfill.yml` repeats a bounded,
+resumable pass daily after the default branch is published. It uses the same
+reviewed secrets and source gates as the weekly stats updater; once coverage
+catches up, the pending query returns no candidates until newly imported
+players appear.
+
 Do not add a browser-side Basketball Reference scraper. The Lineup Lab only
 uses the confirmed, server-side import and its browser-safe Supabase reads.
 Confirmed player headshots and team logos are optional external media URLs; the
@@ -148,8 +198,9 @@ node .\scripts\update-nba-basketball-reference-weekly.mjs
 Remove-Item Env:\BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED
 ```
 
-An approved Supabase refresh requires the existing linked Supabase CLI plus a
-second write gate:
+An approved Supabase refresh requires the dedicated analytics-project link
+above plus a second write gate. The wrapper supplies the importer's explicit
+analytics-target guard automatically:
 
 ```powershell
 $env:BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED = 'confirmed'
@@ -176,12 +227,14 @@ permission changes:
 
 `.github/workflows/nba-weekly-update.yml` contains a Tuesday schedule plus a
 manual dry-run/apply control. It remains inert outside GitHub and cannot access
-the source or write Supabase until the five documented repository secrets are
+the source or write Supabase until the four documented repository secrets are
 configured. Before publishing it on the default branch, review the cron time.
 Required secrets are
 `BASKETBALL_REFERENCE_AUTOMATION_CONFIRMED=confirmed`,
 `NBA_WEEKLY_UPDATE_ALLOW_WRITE=confirmed`, `SUPABASE_ACCESS_TOKEN`,
-`SUPABASE_PROJECT_REF`, and `SUPABASE_DB_PASSWORD` (five values total).
+and `NBA_ANALYTICS_SUPABASE_DB_PASSWORD` (four values total). The workflows
+check in the public analytics project reference so a generic commerce-project
+secret cannot redirect a Lineup Lab data import.
 
 ## Production promotion checklist
 

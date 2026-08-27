@@ -308,6 +308,63 @@ export function basketballReferencePlayerPageUrl(externalId) {
   return id ? `${BASKETBALL_REFERENCE_BASE_URL}/players/${id[0]}/${id}.html` : '';
 }
 
+// Basketball Reference's season tables expose one `Pos` value for each player
+// row. Player profiles, however, can name every real NBA position the player
+// has been listed at during his career (for example, "Power Forward and
+// Center"). Keep that broader profile evidence separate from a season's
+// source-listed role: it is appropriate for eligibility, but it is not a
+// possession-level record of where the player played in one specific season.
+const PROFILE_POSITION_PATTERNS = Object.freeze([
+  ['PG', /\bpoint\s+guard\b/i],
+  ['SG', /\bshooting\s+guard\b/i],
+  ['SF', /\bsmall\s+forward\b/i],
+  ['PF', /\bpower\s+forward\b/i],
+  ['C', /\bcenter\b/i],
+]);
+
+function playerProfilePositionText(html = '') {
+  const source = String(html);
+  // A profile starts its fact line with a bold "Position:" label and normally
+  // ends it with a second bold "Shoots:" label. Stop at either that next
+  // semantic label or the enclosing paragraph so a biography cannot be
+  // mistaken for a position.
+  const label = /<strong\b[^>]*>\s*Position:\s*<\/strong>/i.exec(source);
+  if (!label || label.index === undefined) return '';
+  const afterLabel = source.slice(label.index + label[0].length);
+  const boundary = /<strong\b[^>]*>\s*(?:Shoots|Bats):\s*<\/strong>|<\/p\s*>/i.exec(afterLabel);
+  const fragment = boundary?.index === undefined
+    ? afterLabel.slice(0, 700)
+    : afterLabel.slice(0, boundary.index);
+  return stripHtml(fragment)
+    // Profile fact lines use a diamond between fields; it is not a position.
+    .replace(/\s*[◆♦▪]\s*.*/u, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Parse Basketball Reference's career-profile position fact into canonical NBA
+ * codes. The result deliberately retains the original text for auditability.
+ * A broad "Guard" or "Forward" profile is preserved only when the page does
+ * not name a narrower role, so "Shooting Guard" never becomes two positions.
+ */
+export function parseBasketballReferencePlayerProfilePositions(html = '') {
+  const positionText = playerProfilePositionText(html);
+  const matches = PROFILE_POSITION_PATTERNS
+    .map(([code, pattern]) => ({ code, index: positionText.search(pattern) }))
+    .filter(({ index }) => index >= 0)
+    .sort((left, right) => left.index - right.index || left.code.localeCompare(right.code));
+  const positions = [...new Set(matches.map(({ code }) => code))];
+  if (!positions.length) {
+    // Older pages occasionally describe a player only as a generic guard or
+    // forward. That is still evidence for the optimizer's broad G/F buckets,
+    // but it must not invent a point, shooting, small, or power distinction.
+    if (/\bguard\b/i.test(positionText)) positions.push('G');
+    if (/\bforward\b/i.test(positionText)) positions.push('F');
+  }
+  return { positionText, positions };
+}
+
 export function basketballReferenceTeamPageUrl(teamCode, seasonEndYear) {
   const code = String(teamCode).trim().toUpperCase();
   return code ? `${BASKETBALL_REFERENCE_BASE_URL}/teams/${code}/${Number(seasonEndYear)}.html` : '';

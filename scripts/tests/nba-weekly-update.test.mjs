@@ -77,6 +77,7 @@ test('builds a fresh one-season importer command with no media crawl', () => {
   assert.equal(options.phase, 'both');
   assert.equal(options.requestDelayMs, DEFAULT_REQUEST_DELAY_MS);
   assert.deepEqual(args.slice(1), [
+    '--analytics',
     '--season-start', '2026',
     '--season-end', '2026',
     '--phase', 'both',
@@ -85,6 +86,7 @@ test('builds a fresh one-season importer command with no media crawl', () => {
     '--new-run'
   ]);
   assert.equal(args.includes('--apply'), false);
+  assert.equal(args.includes('--analytics'), true);
   assert.equal(args.includes('--allow-missing-playoffs'), false);
   assert.equal(args.some((argument) => argument.includes('media')), false);
 });

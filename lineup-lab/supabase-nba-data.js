@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260826d";
+import { normalizeDataset } from "./player-data.js?v=20260827a";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -105,6 +105,17 @@ function phaseLabel(seasonPhase) {
   return seasonPhase === "playoffs" ? "Playoffs" : "Regular season";
 }
 
+function sourcePositionCodes(value) {
+  // Supabase returns `career_profile_positions` as an array, while the season
+  // table's `listed_position` is text. Accept both shapes at this boundary so
+  // one malformed optional profile field cannot make a valid team stint fail.
+  const values = Array.isArray(value) ? value : [value];
+  return [...new Set(values.flatMap((entry) => String(entry ?? "")
+    .toUpperCase()
+    .split(/[\s/,|;+\-]+/)
+    .filter(Boolean)))];
+}
+
 function normalizedRotationPositions(value) {
   // Rotation previews use the same three broad position buckets as the
   // optimizer. Keeping every eligible bucket matters for hybrid listings such
@@ -119,12 +130,38 @@ function normalizedRotationPositions(value) {
     PF: "F",
     C: "C",
   };
-  const positions = String(value ?? "")
-    .toUpperCase()
-    .split(/[\s/,|;+\-]+/)
+  const positions = sourcePositionCodes(value)
     .map((token) => positionMap[token])
     .filter(Boolean);
   return [...new Set(positions)];
+}
+
+function positionEvidenceForRow(row) {
+  // The profile's career positions are verified player-level eligibility. The
+  // season table's `Pos` is still retained separately because it is the only
+  // source in this model that describes the selected historical stint.
+  const seasonListedCodes = sourcePositionCodes(row.listed_position || row.player_primary_position);
+  const careerProfileCodes = sourcePositionCodes(row.career_profile_positions);
+  const eligibleCodes = [...new Set([...seasonListedCodes, ...careerProfileCodes])];
+  return {
+    seasonListed: normalizedRotationPositions(seasonListedCodes),
+    careerProfile: normalizedRotationPositions(careerProfileCodes),
+    eligible: normalizedRotationPositions(eligibleCodes),
+    sourceText: String(row.career_profile_position_text ?? "").trim(),
+    sourceUrl: safeHttpsUrl(row.career_profile_source_url),
+    usesCareerProfile: careerProfileCodes.length > 0,
+  };
+}
+
+function eligiblePositionTextForRow(row) {
+  const evidence = positionEvidenceForRow(row);
+  if (!evidence.eligible.length) return "";
+  // `normalizeDataset()` owns conversion from exact source labels (PG, PF,
+  // etc.) to broad G/F/C buckets. Pass all verified labels through unchanged
+  // so an alternate position reaches the exact constraint solver.
+  const seasonListedCodes = sourcePositionCodes(row.listed_position || row.player_primary_position);
+  const careerProfileCodes = sourcePositionCodes(row.career_profile_positions);
+  return [...new Set([...seasonListedCodes, ...careerProfileCodes])].join("/");
 }
 
 function defaultBasketballReferenceTotalsUrl(seasonEndYear, seasonPhase) {
@@ -181,7 +218,7 @@ export function mapSupabaseNbaPlayer(row, options = {}) {
     id: requireText(row.player_id, "Player ID"),
     name: requireText(row.player_name, "Player name"),
     team,
-    positions: requireText(row.listed_position || row.player_primary_position, "Player position"),
+    positions: requireText(eligiblePositionTextForRow(row), "Player position"),
     age: requireNonNegativeNumber(row.player_age, "Player age", { integer: true }),
     games,
     starts,
@@ -380,7 +417,12 @@ export function summarizeSupabaseNbaTeamRows(rows) {
     .map(({ row, games, starts }) => ({
       id: requireText(row.player_id, "Player ID"),
       name: requireText(row.player_name, "Player name"),
-      positions: normalizedRotationPositions(row.listed_position || row.player_primary_position),
+      // This preview describes the selected historical team stint, so it
+      // deliberately displays the season table's listed role. Career-profile
+      // flexibility is available to the optimizer, but presenting it here as
+      // if it were a season-specific assignment would overstate what the
+      // public historical data can prove.
+      positions: positionEvidenceForRow(row).seasonListed,
       headshotUrl: safeHttpsUrl(row.player_headshot_url),
       games,
       starts,
@@ -444,10 +486,18 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
     const id = requireText(row.player_id, "Player ID");
     return [id, fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl })];
   }));
+  const positionEvidenceById = new Map(rows.map((row) => {
+    const id = requireText(row.player_id, "Player ID");
+    return [id, positionEvidenceForRow(row)];
+  }));
   dataset.players = dataset.players.map((player) => ({
     ...player,
     headshotUrl: headshots.get(player.id) || "",
     analytics: analyticsById.get(player.id) || null,
+    // Keep solver-facing eligibility (`positions`) narrow and normalized, then
+    // retain source provenance separately for UI copy and the automatic
+    // historical position-minute estimate.
+    positionEvidence: positionEvidenceById.get(player.id) || null,
   }));
   return dataset;
 }

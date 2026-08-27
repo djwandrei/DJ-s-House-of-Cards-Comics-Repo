@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   extractHeadshotAsset,
   extractTeamLogoAsset,
+  parseBasketballReferencePlayerProfilePositions,
   parseAdvancedPage,
   parseLeagueTeamsPage,
   parseTotalsPage
@@ -148,4 +149,22 @@ test('reads historical teams and remote media URLs from source markup', () => {
     extractTeamLogoAsset('https://cdn.ssref.net/req/202608202/tlogo/bbr/LAL-1980.png', 'LAL', 1980),
     'https://cdn.ssref.net/req/202608202/tlogo/bbr/LAL-1980.png'
   );
+});
+
+test('parses every explicit Basketball Reference career-profile position without inventing a role', () => {
+  const profile = parseBasketballReferencePlayerProfilePositions(`
+    <p><strong>Position:</strong> Small Forward, Power Forward, Point Guard, Center, and Shooting Guard
+      &#9642; <strong>Shoots:</strong> Right</p>
+  `);
+  assert.equal(profile.positionText, 'Small Forward, Power Forward, Point Guard, Center, and Shooting Guard');
+  assert.deepEqual(profile.positions, ['SF', 'PF', 'PG', 'C', 'SG']);
+
+  const generic = parseBasketballReferencePlayerProfilePositions(`
+    <p><strong>Position:</strong> Guard &#9642; <strong>Shoots:</strong> Left</p>
+  `);
+  assert.equal(generic.positionText, 'Guard');
+  assert.deepEqual(generic.positions, ['G']);
+
+  const missing = parseBasketballReferencePlayerProfilePositions('<p><strong>College:</strong> Example State</p>');
+  assert.deepEqual(missing, { positionText: '', positions: [] });
 });
