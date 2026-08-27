@@ -517,7 +517,7 @@ window.DJ = window.DJ || {};
   }
 
   function getProductActionLabel(product = {}, context = 'card') {
-    if (isDirectCheckoutCandidate(product)) return 'Buy Now';
+    if (isDirectCheckoutCandidate(product)) return 'Buy It Now';
     return context === 'modal' ? 'Ask About This Item' : 'Ask DJ';
   }
 
