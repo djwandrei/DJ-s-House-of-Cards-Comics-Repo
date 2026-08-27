@@ -319,6 +319,12 @@ function Test-DeployablePath {
     return @(".html", ".js", ".css", ".json") -contains $extension
   }
 
+  # The public Fan Tools hub is a separate, browser-only surface. Keep its
+  # release paths narrow and exclude any future private tool workspaces.
+  if ($normalizedPath.StartsWith("tools/", [System.StringComparison]::OrdinalIgnoreCase)) {
+    return @(".html", ".js", ".css") -contains $extension
+  }
+
   $allowedRootFiles = @(
     ".htaccess",
     "account.html",
