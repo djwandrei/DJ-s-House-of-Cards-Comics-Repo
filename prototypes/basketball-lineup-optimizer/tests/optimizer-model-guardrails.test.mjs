@@ -491,7 +491,7 @@ test("role-expansion projection prevents a low-usage scoring spike from winning 
   assert.equal(adjusted.diagnostics.rotationHistoricalReadiness.applied, false);
 });
 
-test("assigned-role scoring values extra minutes at baseline without capping a low-role player", () => {
+test("assigned-role scoring smoothly reduces extra-minute value without capping a low-role player", () => {
   const lowRoleStar = player("low-role-star", { minutes: 8 });
   const standardPlayers = Array.from({ length: 7 }, (_, index) => player(`standard-${index + 1}`, {
     minutes: 30,
@@ -505,9 +505,9 @@ test("assigned-role scoring values extra minutes at baseline without capping a l
     referenceMinutes: 30,
     evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
     establishedScoresById: scores,
-    // After the established role, every player is valued at the neutral
-    // same-season baseline. The low-role player can still earn 30 minutes—well
-    // above his recorded 8 MPG—but no longer receives his spike for all 48.
+    // After the established role, marginal value decays toward the neutral
+    // same-season baseline. The player can still earn a larger role, but no
+    // longer receives his spike unchanged for all 48 minutes.
     expandedScoresById: Object.fromEntries(players.map((item) => [item.id, 0.5])),
     activeMetrics: ["points"],
   };
@@ -531,12 +531,52 @@ test("assigned-role scoring values extra minutes at baseline without capping a l
   assert.equal(linear.ok, true);
   assert.equal(roleConditioned.ok, true);
   assert.equal(linear.byId["low-role-star"], 48);
-  assert.equal(roleConditioned.byId["low-role-star"], 30);
+  assert.ok(roleConditioned.byId["low-role-star"] > 30);
+  assert.ok(roleConditioned.byId["low-role-star"] < linear.byId["low-role-star"]);
   assert.ok(roleConditioned.byId["low-role-star"] > lowRoleStar.minutes);
   assert.equal(roleConditioned.strategy, "objective-role-conditioned");
   assert.equal(roleConditioned.diagnostics.roleConditionedScoring.applied, true);
   assert.equal(roleConditioned.totalMinutes, 240);
   assert.deepEqual(roleConditioned.positionMinutes.actual, STANDARD_ROLE_MINUTES);
+});
+
+test("career-only position minute caps remain exact rotation constraints", () => {
+  const players = [
+    ...Array.from({ length: 2 }, (_, index) => player(`guard-${index + 1}`, { positions: ["G"] })),
+    ...Array.from({ length: 5 }, (_, index) => player(`forward-${index + 1}`, { positions: ["F"] })),
+    player("career-center", {
+      positions: ["F", "C"],
+      // This models the UI's recommended policy: F was listed this season; C
+      // is verified on the career profile but conservatively limited to half a
+      // regulation game's center role.
+      positionMinuteCaps: { C: 24 },
+    }),
+  ];
+  const common = {
+    minMinutes: 0,
+    maxMinutes: 48,
+    scores: Object.fromEntries(players.map((item) => [item.id, 1])),
+    strategy: "objective",
+  };
+
+  const recommendedTraditional = allocateRotationMinutes(players, {
+    ...common,
+    positionMinuteRequirements: { G: 96, F: 96, C: 48 },
+  });
+  const recommendedSmall = allocateRotationMinutes(players, {
+    ...common,
+    positionMinuteRequirements: { G: 96, F: 120, C: 24 },
+  });
+  const openTraditional = allocateRotationMinutes(
+    players.map((item) => ({ ...item, positionMinuteCaps: {} })),
+    { ...common, positionMinuteRequirements: { G: 96, F: 96, C: 48 } },
+  );
+
+  assert.equal(recommendedTraditional.ok, false);
+  assert.equal(recommendedSmall.ok, true);
+  assert.equal(recommendedSmall.positionMinutes.byPlayer["career-center"].C, 24);
+  assert.equal(openTraditional.ok, true);
+  assert.equal(openTraditional.positionMinutes.byPlayer["career-center"].C, 48);
 });
 
 test("assigned-role projection lowers extra-role totals without changing a required minute assignment", () => {
@@ -610,6 +650,66 @@ test("assigned-role projection lowers extra-role totals without changing a requi
   const contributionTotal = Object.values(roleConditioned.best.playerContributions)
     .reduce((total, entry) => total + Number(entry.scoreContribution), 0);
   assert.ok(Math.abs(contributionTotal - roleConditioned.best.score) < 0.01);
+});
+
+test("role expansion never improves a below-baseline scorer", () => {
+  const belowBaseline = player("below-baseline", {
+    minutes: 8,
+    points: 2,
+    analytics: {
+      totals: { minutes: 560 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const established = Array.from({ length: 7 }, (_, index) => player(`established-${index + 1}`, {
+    minutes: 30,
+    points: 18,
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const players = [belowBaseline, ...established];
+  const playerBounds = Object.fromEntries(players.map((item, index) => [
+    item.id,
+    index === 0
+      ? { min: 40, max: 40 }
+      : index <= 4
+        ? { min: 29, max: 29 }
+        : { min: 28, max: 28 },
+  ]));
+  const baseConfig = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      playerBounds,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+  const roleConditioned = optimizeLineups(players, baseConfig);
+  const commonRoleOnly = optimizeLineups(players, {
+    ...baseConfig,
+    rotationOptions: {
+      ...baseConfig.rotationOptions,
+      scores: Object.fromEntries(players.map((item) => [item.id, 1])),
+    },
+  });
+
+  assert.equal(roleConditioned.ok, true);
+  assert.equal(commonRoleOnly.ok, true);
+  assert.equal(roleConditioned.best.rotation.byId["below-baseline"], 40);
+  // Expansion cannot replace a weak established projection with the better
+  // league baseline. It therefore matches—not exceeds—the common-role control.
+  assert.equal(roleConditioned.best.totals.points, commonRoleOnly.best.totals.points);
 });
 
 test("role-adjusted production is used for projected 240-minute totals, not just roster ranking", () => {

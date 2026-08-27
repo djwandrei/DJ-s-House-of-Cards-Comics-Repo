@@ -94,6 +94,154 @@ test("returns exact-size lineups and evaluates every combination", () => {
   assert.ok(result.alternatives.every((lineup) => lineup.constraintAudit.exactSize.passed));
 });
 
+test("Plan Fit Index stays anchored when an irrelevant eligible player changes pool percentiles", () => {
+  const withLeagueEvidence = (id, points) => player(id, {
+    minutes: 30,
+    points,
+    analytics: {
+      totals: { minutes: 1800 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const basePlayers = Array.from({ length: 6 }, (_, index) => (
+    withLeagueEvidence(`p${index + 1}`, 12 + index)
+  ));
+  const config = {
+    size: 5,
+    alternatives: 2,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+  };
+  const base = optimizeLineups(basePlayers, config);
+  const expandedPool = optimizeLineups([
+    withLeagueEvidence("irrelevant", 1),
+    ...basePlayers,
+  ], config);
+
+  assert.equal(base.ok, true);
+  assert.equal(expandedPool.ok, true);
+  assert.deepEqual(expandedPool.best.playerIds, base.best.playerIds);
+  assert.equal(expandedPool.best.planFitIndex, base.best.planFitIndex);
+  assert.equal(expandedPool.best.offenseIndex, base.best.offenseIndex);
+  assert.notEqual(expandedPool.best.score, base.best.score);
+  assert.equal(base.best.benchmarkMetricCount, 1);
+  assert.equal(base.best.benchmarkMetricIndexes.points > 100, true);
+});
+
+test("complete Basketball Reference impact evidence can refine offense and defense priorities", () => {
+  const offense = optimizeLineups([
+    player("positive-offense", {
+      analytics: { advanced: { offensive_box_plus_minus: 4 } },
+    }),
+    player("negative-offense", {
+      analytics: { advanced: { offensive_box_plus_minus: -4 } },
+    }),
+  ], {
+    size: 1,
+    alternatives: 2,
+    weights: { offensiveImpact: 1 },
+  });
+  const defense = optimizeLineups([
+    player("positive-defense", {
+      analytics: { advanced: { defensive_box_plus_minus: 3 } },
+    }),
+    player("negative-defense", {
+      analytics: { advanced: { defensive_box_plus_minus: -3 } },
+    }),
+  ], {
+    size: 1,
+    alternatives: 2,
+    weights: { defensiveImpact: 1 },
+  });
+
+  assert.equal(offense.ok, true);
+  assert.equal(defense.ok, true);
+  assert.equal(offense.best.playerIds[0], "positive-offense");
+  assert.equal(defense.best.playerIds[0], "positive-defense");
+  assert.equal(offense.best.planFitIndex > 100, true);
+  assert.equal(defense.best.planFitIndex > 100, true);
+});
+
+test("incomplete impact evidence is disabled for the entire eligible pool", () => {
+  const result = optimizeLineups([
+    player("high-points", {
+      points: 20,
+      analytics: { advanced: { offensive_box_plus_minus: -8 } },
+    }),
+    player("high-obpm", {
+      points: 15,
+      analytics: { advanced: { offensive_box_plus_minus: 8 } },
+    }),
+    player("missing-obpm", { points: 5 }),
+  ], {
+    size: 1,
+    alternatives: 3,
+    weights: { points: 1, offensiveImpact: 9 },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.best.playerIds[0], "high-points");
+  assert.equal(result.weights.offensiveImpact, 9);
+  assert.equal(result.effectiveWeights.offensiveImpact, 0);
+  assert.deepEqual(
+    result.diagnostics.objectiveMetricEvidence.disabledRequestedMetrics,
+    ["offensiveImpact"],
+  );
+  assert.equal(result.diagnostics.objectiveMetricEvidence.renormalized, true);
+});
+
+test("team-stint games and totals do not change an otherwise identical rotation projection", () => {
+  const rotationPlayer = (id, index, games) => player(id, {
+    positions: ["G", "F", "C"],
+    games,
+    starts: 0,
+    minutes: 12 + (index * 4),
+    points: 8 + (index * 3),
+    analytics: {
+      totals: { minutes: (12 + (index * 4)) * games },
+      leaguePer36: { points: 18 },
+    },
+  });
+  const pool = (changedGames) => Array.from({ length: 9 }, (_, index) => rotationPlayer(
+    `rotation-${index + 1}`,
+    index,
+    index === 0 ? changedGames : 70,
+  ));
+  const config = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      minutePlan: "openWhatIf",
+      positionMinuteRequirements: { G: 80, F: 80, C: 80 },
+    },
+  };
+  const fiveGameStint = optimizeLineups(pool(5), config);
+  const seventyGameStint = optimizeLineups(pool(70), config);
+
+  assert.equal(fiveGameStint.ok, true);
+  assert.equal(seventyGameStint.ok, true);
+  assert.deepEqual(fiveGameStint.best.playerIds, seventyGameStint.best.playerIds);
+  assert.deepEqual(fiveGameStint.best.rotation.byId, seventyGameStint.best.rotation.byId);
+  assert.equal(fiveGameStint.best.score, seventyGameStint.best.score);
+  assert.equal(
+    fiveGameStint.diagnostics.objectiveMetricEvidence.teamStintLengthAffectsProjection,
+    false,
+  );
+  assert.equal(
+    fiveGameStint.diagnostics.rotationRateStabilityEvidence.teamStintLengthAffectsProjection,
+    false,
+  );
+});
+
 test("honors locked and excluded players", () => {
   const players = Array.from({ length: 7 }, (_, index) =>
     player(`p${index + 1}`, { points: 10 + index }),

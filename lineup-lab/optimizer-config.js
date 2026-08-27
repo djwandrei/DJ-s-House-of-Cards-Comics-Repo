@@ -118,65 +118,162 @@ export function deriveHistoricalPositionMinuteRequirements(
   return assessHistoricalPositionMinuteEvidence(players, historicalMinuteAnchors).requirements;
 }
 
-export const DEFAULT_PRESETS = Object.freeze({
-  balanced: Object.freeze({
-    points: 1.4,
-    efgPct: 1.2,
-    threePct: 0.7,
-    rebounds: 1,
-    assists: 1,
-    steals: 0.8,
-    blocks: 0.8,
-    ballSecurity: 1,
-  }),
+/**
+ * Fan-facing skill families translated into the solver's measurable inputs.
+ *
+ * The family layer is intentionally UI-only: the exact solver still sees the
+ * same transparent metric weights it has always understood. Most of each
+ * family remains a familiar box-score statistic. A deliberately small share
+ * is reserved for Basketball Reference OBPM/DBPM when every eligible player
+ * has the matching source value. Those impact checks keep one isolated event
+ * stat (for example, steals) from standing in for an entire side of the ball.
+ * The solver disables an incomplete impact metric for the whole pool and
+ * redistributes its share; missing data can never become a hidden advantage.
+ * Coefficients within a family add to one, so moving a family slider changes
+ * emphasis rather than changing the total scale.
+ */
+export const OBJECTIVE_FAMILY_DEFINITIONS = Object.freeze({
   scoring: Object.freeze({
-    points: 2.4,
-    efgPct: 1.5,
-    threePct: 1.2,
-    rebounds: 0.5,
-    assists: 0.7,
-    steals: 0.3,
-    blocks: 0.3,
-    ballSecurity: 0.6,
+    label: "Scoring",
+    description: "Points and efficient finishing, checked against overall offensive impact",
+    metrics: Object.freeze({ points: 0.55, efgPct: 0.3, offensiveImpact: 0.15 }),
   }),
-  shooting: Object.freeze({
-    points: 1,
-    efgPct: 2.3,
-    threePct: 2,
-    rebounds: 0.3,
-    assists: 0.6,
-    steals: 0.3,
-    blocks: 0.2,
-    ballSecurity: 0.8,
+  spacing: Object.freeze({
+    label: "Spacing",
+    description: "Three-point accuracy, shot efficiency, and offensive impact",
+    metrics: Object.freeze({ threePct: 0.6, efgPct: 0.3, offensiveImpact: 0.1 }),
   }),
-  playmaking: Object.freeze({
-    points: 0.9,
-    efgPct: 0.7,
-    threePct: 0.4,
-    rebounds: 0.5,
-    assists: 2.5,
-    steals: 0.8,
-    blocks: 0.2,
-    ballSecurity: 1.6,
-  }),
-  defense: Object.freeze({
-    points: 0.5,
-    efgPct: 0.5,
-    threePct: 0.3,
-    rebounds: 1.4,
-    assists: 0.4,
-    steals: 2.2,
-    blocks: 2.2,
-    ballSecurity: 0.5,
+  creation: Object.freeze({
+    label: "Creation",
+    description: "Playmaking, turnover control, and overall offensive impact",
+    metrics: Object.freeze({ assists: 0.6, ballSecurity: 0.25, offensiveImpact: 0.15 }),
   }),
   rebounding: Object.freeze({
-    points: 0.6,
-    efgPct: 0.6,
-    threePct: 0.2,
-    rebounds: 3,
-    assists: 0.3,
-    steals: 0.5,
-    blocks: 1,
-    ballSecurity: 0.5,
+    label: "Rebounding",
+    description: "Finish defensive possessions and create extra chances",
+    metrics: Object.freeze({ rebounds: 1 }),
+  }),
+  perimeterDefense: Object.freeze({
+    label: "Perimeter Defense",
+    description: "Disrupt ballhandlers without treating steals as complete defense",
+    metrics: Object.freeze({ steals: 0.75, defensiveImpact: 0.25 }),
+  }),
+  interiorDefense: Object.freeze({
+    label: "Interior Defense",
+    description: "Protect the rim, control the glass, and support team defense",
+    metrics: Object.freeze({ blocks: 0.55, rebounds: 0.3, defensiveImpact: 0.15 }),
   }),
 });
+
+/**
+ * Strategy presets are expressed in the six visible families. They do not
+ * need to add to 100; only their proportions matter. Balanced, Offense, and
+ * Defense are the three primary choices in Simple view. The specialized
+ * presets remain available in Detailed view.
+ */
+export const DEFAULT_FAMILY_PRESETS = Object.freeze({
+  balanced: Object.freeze({
+    scoring: 20,
+    spacing: 15,
+    creation: 15,
+    rebounding: 15,
+    perimeterDefense: 18,
+    interiorDefense: 17,
+  }),
+  scoring: Object.freeze({
+    scoring: 30,
+    spacing: 25,
+    creation: 25,
+    rebounding: 8,
+    perimeterDefense: 6,
+    interiorDefense: 6,
+  }),
+  defense: Object.freeze({
+    scoring: 8,
+    spacing: 7,
+    creation: 10,
+    rebounding: 22,
+    perimeterDefense: 27,
+    interiorDefense: 26,
+  }),
+  shooting: Object.freeze({
+    scoring: 20,
+    spacing: 40,
+    creation: 18,
+    rebounding: 7,
+    perimeterDefense: 8,
+    interiorDefense: 7,
+  }),
+  playmaking: Object.freeze({
+    scoring: 16,
+    spacing: 12,
+    creation: 42,
+    rebounding: 8,
+    perimeterDefense: 14,
+    interiorDefense: 8,
+  }),
+  rebounding: Object.freeze({
+    scoring: 12,
+    spacing: 7,
+    creation: 8,
+    rebounding: 43,
+    perimeterDefense: 10,
+    interiorDefense: 20,
+  }),
+});
+
+const OBJECTIVE_METRIC_KEYS = Object.freeze([
+  "points",
+  "efgPct",
+  "threePct",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "ballSecurity",
+  "offensiveImpact",
+  "defensiveImpact",
+]);
+
+/** Convert six understandable priorities into exact-solver metric weights. */
+export function weightsFromSkillFamilies(familyWeights = {}) {
+  const metricWeights = Object.fromEntries(OBJECTIVE_METRIC_KEYS.map((metric) => [metric, 0]));
+  for (const [family, definition] of Object.entries(OBJECTIVE_FAMILY_DEFINITIONS)) {
+    const familyWeight = Math.max(0, Number(familyWeights?.[family]) || 0);
+    for (const [metric, coefficient] of Object.entries(definition.metrics)) {
+      metricWeights[metric] += familyWeight * coefficient;
+    }
+  }
+  // Shared scenarios historically store integer metric weights. Rounding here
+  // keeps those URLs compact and deterministic while preserving the intended
+  // family proportions closely enough for a 0–100 slider.
+  return Object.fromEntries(
+    Object.entries(metricWeights).map(([metric, value]) => [metric, Math.round(value)]),
+  );
+}
+
+/**
+ * Approximate family controls for legacy links that contain only raw metrics.
+ * This is a display bridge, not an inverse of the many-to-one family mapping;
+ * the decoded raw weights remain the actual solver input until a slider moves.
+ */
+export function skillFamiliesFromMetricWeights(metricWeights = {}) {
+  const value = (metric) => Math.max(0, Number(metricWeights?.[metric]) || 0);
+  return {
+    scoring: Math.round((value("points") + value("efgPct") + value("offensiveImpact")) / 3),
+    spacing: Math.round((value("threePct") + value("efgPct") + value("offensiveImpact")) / 3),
+    creation: Math.round((value("assists") + value("ballSecurity") + value("offensiveImpact")) / 3),
+    rebounding: Math.round(value("rebounds")),
+    perimeterDefense: Math.round((value("steals") + value("defensiveImpact")) / 2),
+    interiorDefense: Math.round((value("blocks") + value("rebounds") + value("defensiveImpact")) / 3),
+  };
+}
+
+// Preserve the public raw-metric preset contract for the optimizer and any
+// external callers. The UI now authors these values through skill families.
+export const DEFAULT_PRESETS = Object.freeze(Object.fromEntries(
+  Object.entries(DEFAULT_FAMILY_PRESETS).map(([name, familyWeights]) => [
+    name,
+    Object.freeze(weightsFromSkillFamilies(familyWeights)),
+  ]),
+));

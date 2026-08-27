@@ -794,7 +794,7 @@ function sampleReliability(sample, options) {
     minMinutes,
     message: reliable
       ? "Meets the selected sample-size guardrail."
-      : `Small-sample flag: compare carefully below ${minGames} games and ${minMinutes} total minutes.`,
+      : `Limited-evidence flag: compare carefully below ${minGames} games and ${minMinutes} total minutes.`,
   };
 }
 
@@ -1195,7 +1195,7 @@ export function analyzeRoleCoverage(players, options = {}) {
           ? `No selected player reaches the current ${definition.label.toLowerCase()} signal.`
           : `${definition.label} is not assessed because required source evidence is unavailable.`;
     const message = provisionalMatches.length > 0 && !includeProvisionalRoleCoverage
-      ? `${baseMessage} ${provisionalMatches.length} provisional small-sample signal${provisionalMatches.length === 1 ? " is" : "s are"} shown in the matrix but not counted toward coverage.`
+      ? `${baseMessage} ${provisionalMatches.length} limited-evidence signal${provisionalMatches.length === 1 ? " is" : "s are"} shown in the matrix but not counted toward coverage.`
       : baseMessage;
     return {
       roleId: definition.id,
@@ -1225,7 +1225,7 @@ export function analyzeRoleCoverage(players, options = {}) {
   const caveats = [...new Set([
     ...classification.records.flatMap((record) => record.caveats),
     ...(provisionalSignalCount > 0 && !includeProvisionalRoleCoverage
-      ? [`${provisionalSignalCount} provisional small-sample role signal${provisionalSignalCount === 1 ? " is" : "s are"} visible but excluded from role-coverage strengths by default.`]
+      ? [`${provisionalSignalCount} limited-evidence role signal${provisionalSignalCount === 1 ? " is" : "s are"} visible but excluded from role-coverage strengths by default.`]
       : []),
   ])];
   return {

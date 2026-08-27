@@ -30,6 +30,7 @@ window.DJ = window.DJ || {};
     inbox: { target: 'admin.html', label: 'Admin Inbox' },
     metrics: { target: 'admin.html', label: 'Conversion & Performance Metrics' },
     offer: { target: 'shop.html', label: 'Make an Offer' },
+    'fan-tools': { target: '/tools/', label: 'Fan Tools' },
     policies: { target: 'about.html', label: 'Policies & Authenticity' },
     policy: { target: 'about.html', label: 'Policies & Authenticity' },
     'sell-trade-want-list': { target: 'contact.html', label: 'Sell, Trade & Want List' }
@@ -73,6 +74,29 @@ window.DJ = window.DJ || {};
 
       seen.add(key);
     });
+  }
+
+  /**
+   * Keep the future tools area discoverable without copying another link into
+   * every static page template. The hub owns the roadmap; this link only
+   * provides a stable entry point from the shared storefront header.
+   */
+  function ensureFanToolsLink() {
+    const navList = document.querySelector('.site-nav .primary-nav__list');
+    if (!navList || navList.querySelector('[data-fan-tools-link="true"]')) return;
+
+    const item = document.createElement('li');
+    item.className = 'primary-nav__item';
+
+    const link = document.createElement('a');
+    link.className = 'primary-nav__link';
+    link.href = '/tools/';
+    link.dataset.fanToolsLink = 'true';
+    link.textContent = 'Fan Tools';
+    item.append(link);
+
+    const aboutItem = navList.querySelector('a[href="about.html"]')?.closest('.primary-nav__item');
+    navList.insertBefore(item, aboutItem || null);
   }
 
   // ---------------------------------------------------------------------------
@@ -159,7 +183,7 @@ window.DJ = window.DJ || {};
       title.textContent = getCurrentPageLabel();
 
       const copy = document.createElement('p');
-      copy.textContent = 'Move between sports cards, comics, collectibles, wishlist, and account tools.';
+      copy.textContent = 'Move between sports cards, comics, collectibles, fan tools, wishlist, and account tools.';
 
       mobileHeader.append(eyebrow, title, copy);
       nav.insertBefore(mobileHeader, nav.firstChild);
@@ -547,6 +571,7 @@ window.DJ = window.DJ || {};
   // already-interactive documents makes the menu resilient if this deferred
   // script is restored from cache after DOMContentLoaded has already fired.
   function bootNavigation() {
+    ensureFanToolsLink();
     applyActiveNavState();
     initPrimaryNav();
     initSubmenuToggles();

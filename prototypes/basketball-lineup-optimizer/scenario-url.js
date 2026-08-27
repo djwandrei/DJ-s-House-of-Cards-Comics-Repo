@@ -11,7 +11,8 @@ export const SCENARIO_URL_VERSION = "1";
 const MODE_VALUES = new Set(["lineup", "rotation"]);
 const EXPERIENCE_VALUES = new Set(["simple", "detailed"]);
 const PHASE_VALUES = new Set(["regular", "playoffs"]);
-const PRESET_VALUES = new Set(["balanced", "defense", "offense", "shooting", "playmaking", "custom"]);
+const PRESET_VALUES = new Set(["balanced", "defense", "offense", "shooting", "playmaking", "rebounding", "custom"]);
+const POSITION_FLEXIBILITY_VALUES = new Set(["recommended", "open", "seasonOnly"]);
 const ROTATION_MINUTE_PLAN_VALUES = new Set(["historicalAware", "openWhatIf"]);
 const ROTATION_ALLOCATION_STYLE_VALUES = new Set(["preserveWorkload", "strategyFirst"]);
 const ROTATION_RATE_STABILITY_VALUES = new Set(["sampleAdjusted", "raw"]);
@@ -33,6 +34,8 @@ const WEIGHT_CODES = Object.freeze({
   steals: "s",
   blocks: "b",
   ballSecurity: "t",
+  offensiveImpact: "o",
+  defensiveImpact: "d",
 });
 const WEIGHT_FIELDS = Object.freeze(Object.fromEntries(
   Object.entries(WEIGHT_CODES).map(([field, code]) => [code, field]),
@@ -147,6 +150,9 @@ export function encodeScenarioQuery(input = {}) {
   addFiniteParameter(params, "size", input.size, { minimum: 5, maximum: 12, integer: true });
   addFiniteParameter(params, "alts", input.alternatives, { minimum: 1, maximum: 50, integer: true });
   if (PRESET_VALUES.has(input.preset)) params.set("preset", input.preset);
+  if (POSITION_FLEXIBILITY_VALUES.has(input.positionFlexibility)) {
+    params.set("positionFlex", input.positionFlexibility);
+  }
   const weights = encodeWeights(input.weights);
   if (weights) params.set("w", weights);
   addFiniteParameter(params, "games", input.minGames, { minimum: 0, maximum: 200, integer: true });
@@ -332,6 +338,14 @@ export function decodeScenarioQuery(search = "") {
       scenario.rotationPositionProfile = rotationPositionProfile;
     } else {
       warnings.push("Ignored an invalid rotation position profile from the shared link.");
+    }
+  }
+  const positionFlexibility = params.get("positionFlex");
+  if (positionFlexibility) {
+    if (POSITION_FLEXIBILITY_VALUES.has(positionFlexibility)) {
+      scenario.positionFlexibility = positionFlexibility;
+    } else {
+      warnings.push("Ignored an invalid position-flexibility policy from the shared link.");
     }
   }
   const rotationPositionMinuteRequirements = {};

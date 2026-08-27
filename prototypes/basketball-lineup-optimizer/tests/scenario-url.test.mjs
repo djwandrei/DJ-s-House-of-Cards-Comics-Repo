@@ -12,7 +12,13 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     size: 9,
     alternatives: 5,
     preset: "defense",
-    weights: { points: 4, blocks: 18, ballSecurity: 7 },
+    weights: {
+      points: 4,
+      blocks: 18,
+      ballSecurity: 7,
+      offensiveImpact: 6,
+      defensiveImpact: 9,
+    },
     minGames: 20,
     minMinutes: 8.5,
     positionMinimums: { G: 3, F: 3, C: 2 },
@@ -28,6 +34,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     rotationRateStability: "sampleAdjusted",
     rotationPositionProfile: "small",
     rotationPositionMinuteRequirements: { G: 120, F: 96, C: 24 },
+    positionFlexibility: "recommended",
     lockedIds: ["edwaran01"],
     excludedIds: ["sample-player"],
   });
@@ -37,6 +44,8 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.season, 2026);
   assert.equal(scenario.experience, "detailed");
   assert.equal(scenario.weights.blocks, 18);
+  assert.equal(scenario.weights.offensiveImpact, 6);
+  assert.equal(scenario.weights.defensiveImpact, 9);
   assert.equal(scenario.statMinimums.rebounds, 48);
   assert.equal(scenario.positionMinimums.C, 2);
   assert.equal(scenario.analyticsView, "eraRelative");
@@ -47,6 +56,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.rotationRateStability, "sampleAdjusted");
   assert.equal(scenario.rotationPositionProfile, "small");
   assert.deepEqual(scenario.rotationPositionMinuteRequirements, { G: 120, F: 96, C: 24 });
+  assert.equal(scenario.positionFlexibility, "recommended");
   assert.deepEqual(scenario.lockedIds, ["edwaran01"]);
   assert.equal(warnings.length, 0);
 });
@@ -101,17 +111,33 @@ test("scenario URL codec rejects assumptions the visible controls cannot represe
     rotationMinuteFlexibility: 7,
     rotationHistoricalAllocationStyle: "unsupported-style",
     rotationPositionMinuteRequirements: { G: 80, F: 80, C: 80 },
+    positionFlexibility: "invented",
   });
   const encodedParams = new URLSearchParams(encoded);
   assert.equal(encodedParams.has("minuteFlex"), false);
   assert.equal(encodedParams.has("minuteStyle"), false);
   assert.equal(encodedParams.has("roleMinutes"), false);
+  assert.equal(encodedParams.has("positionFlex"), false);
 
-  const { scenario, warnings } = decodeScenarioQuery("?v=1&mode=rotation&minuteFlex=7&minuteStyle=unsupported-style&roleMinutes=g%3A80%2Cf%3A80%2Cc%3A80");
+  const { scenario, warnings } = decodeScenarioQuery("?v=1&mode=rotation&minuteFlex=7&minuteStyle=unsupported-style&roleMinutes=g%3A80%2Cf%3A80%2Cc%3A80&positionFlex=invented");
   assert.equal(scenario.rotationMinuteFlexibility, undefined);
   assert.equal(scenario.rotationHistoricalAllocationStyle, undefined);
   assert.equal(scenario.rotationPositionMinuteRequirements, undefined);
-  assert.equal(warnings.length, 3);
+  assert.equal(scenario.positionFlexibility, undefined);
+  assert.equal(warnings.length, 4);
+});
+
+test("rebounding preset and each position-flexibility policy survive a shared link", () => {
+  for (const positionFlexibility of ["recommended", "open", "seasonOnly"]) {
+    const query = encodeScenarioQuery({
+      preset: "rebounding",
+      positionFlexibility,
+    });
+    const { scenario, warnings } = decodeScenarioQuery(query);
+    assert.equal(scenario.preset, "rebounding");
+    assert.equal(scenario.positionFlexibility, positionFlexibility);
+    assert.deepEqual(warnings, []);
+  }
 });
 
 test("unsupported shared-link versions are not partially applied", () => {
