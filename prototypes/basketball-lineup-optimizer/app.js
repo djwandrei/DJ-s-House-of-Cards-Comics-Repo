@@ -2013,7 +2013,7 @@ function syncRotationModelControls() {
     ? "Choose whether limited samples and larger-role projections are adjusted toward a same-season baseline"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "When the source has matching minutes or shot attempts for every eligible player, the model pulls extreme limited-sample rates toward the same-season NBA baseline. It also tempers a rate when the rotation asks for a larger role. If evidence is incomplete, that stat stays raw for everyone."
+    ? "When the source has matching minutes or shot attempts for every eligible player, the model pulls extreme limited-sample rates toward the same-season NBA baseline. If a player is assigned beyond his established role, those extra minutes use that baseline too. This changes projected value—not a minute cap. If evidence is incomplete, that stat stays raw for everyone."
     : "Per-game comparison uses raw historical per-game lines. Limited-sample adjustment is available only with per-36 comparison.";
   renderRotationEvidencePreview();
 }
@@ -2980,11 +2980,14 @@ function renderExactObjectiveReasons(player, result, insight) {
         : `${historicalGuidance.allocationStyleReason || "Minutes shift toward the best-fitting profiles inside the displayed recorded-minutes capacity caps."}`
       : `The optional past-minutes guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The report identifies the missing minutes evidence."}`
     : "Game-plan minutes optimize inside the hard limits you set; recorded minutes did not affect this result.";
-  const roleProjectionCopy = rateStability?.roleAdjustedPlayerMetricCount > 0
-    ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline before `
-    : rateStability?.applied
-      ? "Smaller samples are stabilized toward the same-season NBA baseline before "
-      : "";
+  const assignedRoleScoring = result?.best?.rotation?.diagnostics?.roleConditionedScoring;
+  const roleProjectionCopy = assignedRoleScoring?.applied
+    ? `Rates are stabilized toward the same-season NBA baseline, and the ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles are valued at that baseline before `
+    : rateStability?.roleAdjustedPlayerMetricCount > 0
+      ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline before `
+      : rateStability?.applied
+        ? "Smaller samples are stabilized toward the same-season NBA baseline before "
+        : "";
   const basis = document.createElement("p");
   basis.textContent = rotationBasis === "per36"
     ? `${roleProjectionCopy}counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
@@ -3002,7 +3005,10 @@ function renderExactObjectiveReasons(player, result, insight) {
     entries.slice(0, 3).forEach(([metric, item]) => {
       const row = document.createElement("li");
       const percentile = Number(item.percentile);
-      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} percentile in this search; ${formatNumber(item.scoreContribution, 2)} points toward this result.`;
+      const percentileContext = item.assignedRoleAdjusted
+        ? "percentile after the extra-minute adjustment"
+        : "percentile in this search";
+      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} ${percentileContext}; ${formatNumber(item.scoreContribution, 2)} points toward this result.`;
       list.append(row);
     });
     const total = document.createElement("li");
@@ -3295,14 +3301,22 @@ function renderResultEvidence(result) {
   }
 
   const rateEvidence = result.diagnostics?.rotationRateStabilityEvidence;
+  const assignedRoleScoring = result.best?.rotation?.diagnostics?.roleConditionedScoring;
   if (result.best?.rotation && rateEvidence?.applied) {
     const roleProjectionDetail = rateEvidence.roleAdjustedPlayerMetricCount > 0
       ? ` ${rateEvidence.roleAdjustedPlayers} player${rateEvidence.roleAdjustedPlayers === 1 ? " also had" : "s also had"} at least one rate adjusted for the ${formatNumber(rateEvidence.roleMinutesTarget, 1)}-minute average rotation role.`
       : "";
+    const assignedRoleDetail = assignedRoleScoring?.applied
+      ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles use the same-season baseline. This changes projected value, not player availability or a minute cap.`
+      : "";
     strip.append(resultEvidenceItem(
       "Rate projection",
-      rateEvidence.roleAdjustedPlayerMetricCount > 0 ? "Sample + role adjusted" : "Sample-adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${roleProjectionDetail}`,
+      assignedRoleScoring?.applied
+        ? "Sample + role + assigned minutes"
+        : rateEvidence.roleAdjustedPlayerMetricCount > 0
+          ? "Sample + role adjusted"
+          : "Sample-adjusted",
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${roleProjectionDetail}${assignedRoleDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(

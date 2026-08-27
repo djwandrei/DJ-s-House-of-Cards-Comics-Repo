@@ -469,6 +469,127 @@ test("role-expansion projection prevents a low-usage scoring spike from winning 
   assert.equal(adjusted.diagnostics.rotationHistoricalReadiness.applied, false);
 });
 
+test("assigned-role scoring values extra minutes at baseline without capping a low-role player", () => {
+  const lowRoleStar = player("low-role-star", { minutes: 8 });
+  const standardPlayers = Array.from({ length: 7 }, (_, index) => player(`standard-${index + 1}`, {
+    minutes: 30,
+  }));
+  const players = [lowRoleStar, ...standardPlayers];
+  const scores = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id === "low-role-star" ? 0.98 : 0.7,
+  ]));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 30,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    // After the established role, every player is valued at the neutral
+    // same-season baseline. The low-role player can still earn 30 minutes—well
+    // above his recorded 8 MPG—but no longer receives his spike for all 48.
+    expandedScoresById: Object.fromEntries(players.map((item) => [item.id, 0.5])),
+    activeMetrics: ["points"],
+  };
+
+  const linear = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+  });
+  const roleConditioned = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+  });
+
+  assert.equal(linear.ok, true);
+  assert.equal(roleConditioned.ok, true);
+  assert.equal(linear.byId["low-role-star"], 48);
+  assert.equal(roleConditioned.byId["low-role-star"], 30);
+  assert.ok(roleConditioned.byId["low-role-star"] > lowRoleStar.minutes);
+  assert.equal(roleConditioned.strategy, "objective-role-conditioned");
+  assert.equal(roleConditioned.diagnostics.roleConditionedScoring.applied, true);
+  assert.equal(roleConditioned.totalMinutes, 240);
+  assert.deepEqual(roleConditioned.positionMinutes.actual, STANDARD_ROLE_MINUTES);
+});
+
+test("assigned-role projection lowers extra-role totals without changing a required minute assignment", () => {
+  const lowRoleScorer = player("low-role-scorer", {
+    minutes: 8,
+    points: 14,
+    analytics: {
+      totals: { minutes: 560 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const standardPlayers = Array.from({ length: 7 }, (_, index) => player(`standard-${index + 1}`, {
+    minutes: 30,
+    points: 18 + (index * 0.01),
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const players = [lowRoleScorer, ...standardPlayers];
+  // Fix the minute plan so the comparison isolates the projection itself. The
+  // low-role scorer must still play 40 minutes in both runs; only his estimated
+  // production beyond the established 30-minute role is tempered.
+  const playerBounds = Object.fromEntries(players.map((item, index) => [
+    item.id,
+    index === 0
+      ? { min: 40, max: 40 }
+      : index <= 4
+        ? { min: 29, max: 29 }
+        : { min: 28, max: 28 },
+  ]));
+  const baseConfig = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      playerBounds,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+  const roleConditioned = optimizeLineups(players, baseConfig);
+  const staticAdjusted = optimizeLineups(players, {
+    ...baseConfig,
+    rotationOptions: {
+      ...baseConfig.rotationOptions,
+      // A caller-owned score map intentionally retains the static projection.
+      // With every minute fixed, it makes a clean like-for-like control case.
+      scores: Object.fromEntries(players.map((item) => [item.id, 1])),
+    },
+  });
+
+  assert.equal(roleConditioned.ok, true);
+  assert.equal(staticAdjusted.ok, true);
+  assert.equal(roleConditioned.best.rotation.byId["low-role-scorer"], 40);
+  assert.equal(staticAdjusted.best.rotation.byId["low-role-scorer"], 40);
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.applied, true);
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.expandedMinutes, 10);
+  assert.ok(roleConditioned.best.totals.points < staticAdjusted.best.totals.points);
+  assert.equal(
+    roleConditioned.best.playerContributions["low-role-scorer"].metrics.points.assignedRoleAdjusted,
+    true,
+  );
+  const contributionTotal = Object.values(roleConditioned.best.playerContributions)
+    .reduce((total, entry) => total + Number(entry.scoreContribution), 0);
+  assert.ok(Math.abs(contributionTotal - roleConditioned.best.score) < 0.01);
+});
+
 test("role-adjusted production is used for projected 240-minute totals, not just roster ranking", () => {
   const lowRoleScorer = player("low-role-scorer", {
     minutes: 8,

@@ -16,9 +16,10 @@ the beta.
   optional production floors, and a turnover ceiling.
 - Top alternatives, score contributions, constraint checks, and an optional
   240-minute rotation plan.
-- Per-36 rotation ranking with an evidence-gated small-sample and larger-role
-  rate projection that prevents low-usage spikes from being extrapolated as if
-  they were already star-sized roles.
+- Per-36 rotation ranking with evidence-gated small-sample and larger-role
+  projections. Extra assigned minutes beyond a player's established role are
+  valued at the same-season baseline, preventing a low-usage spike from being
+  repeated as if it were already star-sized production.
 - Game-plan-first minute allocation by default, with an optional
   recorded-minutes guardrail and auditable guard, forward, and center
   role-minute profiles.
@@ -93,10 +94,12 @@ production so their units do not get mixed:
 - Every successful rotation assigns exactly 240 integer player-minutes and the
   selected role profile's exact G/F/C totals. Custom role totals are used in
   both the allocation and every projected-stat feasibility proof.
-- Projected box-score totals use the same conservative per-minute rate
-  projection that ranked the rotation, multiplied by assigned minutes. They
-  are descriptive estimates, not game, injury, availability, matchup, or
-  betting predictions.
+- When the exact assigned-role model is available, projected box-score totals
+  use the same piecewise rate projection that ranked the rotation: established
+  minutes use the adjusted player rate, while only additional expansion minutes
+  use the same-season baseline. Otherwise they retain the static conservative
+  rate used by the exact threshold solver. They are descriptive estimates, not
+  game, injury, availability, matchup, or betting predictions.
 
 Imported play-by-play, reconstructed lineup stints, and RAPM are not inputs to
 this box-score objective yet. The interface must continue to label observed

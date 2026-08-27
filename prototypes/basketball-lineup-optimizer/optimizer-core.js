@@ -97,6 +97,17 @@ const RATE_STABILITY_PRIOR_MINUTES = 600;
 const RATE_STABILITY_PRIOR_FIELD_GOAL_ATTEMPTS = 500;
 const RATE_STABILITY_PRIOR_THREE_POINT_ATTEMPTS = 180;
 
+// The default rate correction compares every player at the rotation's average
+// workload. A second, minute-aware layer uses this scale to value any minutes
+// beyond a player's established role. Costs remain safely below Number's exact
+// integer ceiling even across a full 240-minute regulation allocation.
+const ROLE_CONDITIONED_UTILITY_COST_SCALE = 1_000_000_000;
+// The minute-aware allocator is an exact min-cost flow rather than a heuristic,
+// but it solves one 240-unit network for each roster combination. Retain the
+// existing linear exact model for unusually broad searches so the browser's
+// watchdog remains a safety boundary, not a source of partial answers.
+const MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS = 2_000;
+
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
 // A regulation NBA game contains five simultaneous court roles for 48 minutes:
 // two guard roles, two forward roles, and one center role. Rotation roster
@@ -840,6 +851,14 @@ function buildNormalizedMetrics(
   // the score could discount a tiny-role outlier while the output still
   // promised his raw per-minute production at starter minutes.
   const projectedRatesByPlayerId = new Map(players.map((player) => [player.id, {}]));
+  // The static projected rates above evaluate every player at a common rotation
+  // role. These companion maps retain the same-season baseline behind each
+  // supported metric, so the exact minute allocator can value only the *extra*
+  // minutes beyond a player's established role at that baseline. Keeping these
+  // separate avoids mutating the canonical player rows or inventing a rate when
+  // the source did not supply the required evidence.
+  const baselineProjectedRatesByPlayerId = new Map(players.map((player) => [player.id, {}]));
+  const baselinePercentilesByPlayerId = new Map(players.map((player) => [player.id, {}]));
   const adjustedPlayerIds = new Set();
   const roleAdjustedPlayerIds = new Set();
   let adjustedPlayerMetricCount = 0;
@@ -892,6 +911,14 @@ function buildNormalizedMetrics(
           scoringBasis === ROTATION_SCORING_BASES.PER_36
             ? value.value / 36
             : rawPerMinute;
+        if (canStabilizeMetric) {
+          // `evidence.baseline` is in the same per-36 unit as `value`. Preserve
+          // the baseline per-minute rate separately; it is used only for an
+          // assigned minute above the player's established role, never as a
+          // fabricated source stat or a restriction on playing time.
+          baselineProjectedRatesByPlayerId.get(player.id)[field] =
+            evidenceByPlayer[index].baseline / 36;
+        }
       }
       return { id: player.id, value: value.value };
     });
@@ -899,6 +926,22 @@ function buildNormalizedMetrics(
       measured,
       { lowerIsBetter: metric === "ballSecurity" },
     );
+    if (canStabilizeMetric) {
+      // A baseline can sit above or below a particular team pool. Convert it to
+      // the same pool-relative percentile scale as the player values instead of
+      // assuming that league average always means the 50th percentile locally.
+      // The source normally supplies one league value for every row; evaluating
+      // each row independently keeps the result safe if a future adapter mixes
+      // otherwise compatible evidence envelopes.
+      players.forEach((player, index) => {
+        const baselineId = `\u0000league-baseline-${index}`;
+        const baselinePercentiles = percentileNormalize(
+          [...measured, { id: baselineId, value: evidenceByPlayer[index].baseline }],
+          { lowerIsBetter: metric === "ballSecurity" },
+        );
+        baselinePercentilesByPlayerId.get(player.id)[metric] = baselinePercentiles.get(baselineId);
+      });
+    }
     for (const player of players) {
       byPlayerId.get(player.id)[metric] = percentiles.get(player.id);
     }
@@ -906,6 +949,8 @@ function buildNormalizedMetrics(
   return {
     metrics: byPlayerId,
     projectedRatesByPlayerId,
+    baselineProjectedRatesByPlayerId,
+    baselinePercentilesByPlayerId,
     rateStability: {
       requested: rateStability,
       applied: adjustedPlayerMetricCount > 0,
@@ -935,6 +980,91 @@ function buildNormalizedMetrics(
                   : null
               : "The current player source does not include complete same-season rate evidence for any metric, so every eligible player was compared on the same raw per-36 basis.",
     },
+  };
+}
+
+/**
+ * Build the minute-aware companion to the ordinary per-36 score. The static
+ * score remains the expected profile at the rotation's common workload. When a
+ * player receives more minutes than that profile is established for, only the
+ * added minute units regress to the same-season baseline. That is deliberately
+ * different from a historical-minute cap: a low-minute player can still earn a
+ * large role, but the model does not repeat an unproven rate unchanged for all
+ * of those extra minutes.
+ *
+ * The plan is calculated once over the full eligible pool, not separately for
+ * each candidate lineup. That keeps percentile comparisons fair and lets the
+ * exact combination search compare every roster under the same assumptions.
+ */
+function buildRoleConditionedProjectionPlan(
+  players,
+  normalizedMetrics,
+  normalizedWeights,
+  metricResult,
+) {
+  const referenceMinutes = finiteNonNegative(metricResult?.rateStability?.roleMinutesTarget);
+  const stabilizedMetrics = Array.isArray(metricResult?.rateStability?.stabilizedMetrics)
+    ? metricResult.rateStability.stabilizedMetrics
+    : [];
+  const activeMetrics = stabilizedMetrics.filter(
+    (metric) => Number(normalizedWeights?.[metric]) > 1e-12,
+  );
+  if (!(referenceMinutes > 0) || activeMetrics.length === 0) return null;
+
+  const evidenceMinutesById = new Map();
+  const establishedScoresById = new Map();
+  const expandedScoresById = new Map();
+  const expandedMetricPercentilesById = new Map();
+  let changesAnyScore = false;
+
+  for (const player of players) {
+    const id = player.id;
+    const metrics = normalizedMetrics.get(id) ?? {};
+    const baselineMetrics = metricResult.baselinePercentilesByPlayerId?.get(id) ?? {};
+    const sourceRoleMinutes = finiteNonNegative(player.minutes);
+    // A player who has already carried more than the average role retains his
+    // established score through that larger observed workload. A low-role player
+    // is first projected to the common rotation role, then only the additional
+    // minutes beyond it receive the neutral baseline estimate.
+    const establishedRoleMinutes = Math.max(
+      referenceMinutes,
+      Math.min(48, sourceRoleMinutes ?? referenceMinutes),
+    );
+    evidenceMinutesById.set(id, establishedRoleMinutes);
+
+    const expandedMetrics = {};
+    let establishedScore = 0;
+    let expandedScore = 0;
+    for (const metric of OBJECTIVE_METRICS) {
+      const weight = Number(normalizedWeights?.[metric]) || 0;
+      const establishedPercentile = Number(metrics[metric]) || 0;
+      const baselinePercentile = activeMetrics.includes(metric)
+        ? finiteNonNegative(baselineMetrics[metric])
+        : null;
+      const expandedPercentile = baselinePercentile ?? establishedPercentile;
+      expandedMetrics[metric] = expandedPercentile;
+      establishedScore += establishedPercentile * weight;
+      expandedScore += expandedPercentile * weight;
+    }
+    establishedScoresById.set(id, establishedScore);
+    expandedScoresById.set(id, expandedScore);
+    expandedMetricPercentilesById.set(id, expandedMetrics);
+    if (Math.abs(establishedScore - expandedScore) > 1e-12) changesAnyScore = true;
+  }
+
+  // Do not spend an exact min-cost solve on a curve that is mathematically
+  // identical to the ordinary fixed-rate objective (for example, when every
+  // selected metric is exactly league-average in the current pool).
+  if (!changesAnyScore) return null;
+
+  return {
+    referenceMinutes,
+    activeMetrics,
+    evidenceMinutesById,
+    establishedScoresById,
+    expandedScoresById,
+    expandedMetricPercentilesById,
+    baselineProjectedRatesByPlayerId: metricResult.baselineProjectedRatesByPlayerId,
   };
 }
 
@@ -1030,10 +1160,75 @@ function calculateLineupTotals(players) {
  * minutes that will actually be played. When the rotation model supplies a
  * conservative projected-rate map, use it here too: the same small-sample and
  * role-expansion correction that ranks a player must also temper what the
- * output promises at a larger proposed role. A zero-minute source row
+ * output promises at a larger proposed role. When the exact allocator applies
+ * the minute-aware role curve, only assigned minutes beyond that player's
+ * established role use the same-season baseline rate. A zero-minute source row
  * contributes zero rather than manufacturing an undefined rate.
  */
-function calculateRotationTotals(players, rotationAllocation, projectedRates = null) {
+function roleConditionedMinuteSplit(playerId, assignedMinutes, roleProjectionPlan) {
+  const allocated = Math.max(0, Number(assignedMinutes) || 0);
+  const establishedRoleMinutes = finiteNonNegative(
+    roleProjectionPlan?.evidenceMinutesById?.get(playerId),
+  );
+  if (!(establishedRoleMinutes >= 0)) return { established: allocated, expanded: 0 };
+  const established = Math.min(allocated, establishedRoleMinutes);
+  return { established, expanded: Math.max(0, allocated - established) };
+}
+
+function roleConditionedScoreUnits(playerId, assignedMinutes, roleProjectionPlan) {
+  const establishedScore = finiteNonNegative(
+    roleProjectionPlan?.establishedScoresById?.get(playerId),
+  );
+  const expandedScore = finiteNonNegative(
+    roleProjectionPlan?.expandedScoresById?.get(playerId),
+  );
+  if (establishedScore === null || expandedScore === null) return null;
+  const split = roleConditionedMinuteSplit(playerId, assignedMinutes, roleProjectionPlan);
+  return split.established * establishedScore + split.expanded * expandedScore;
+}
+
+function roleConditionedMetricScoreUnits(
+  player,
+  metric,
+  assignedMinutes,
+  normalizedMetrics,
+  roleProjectionPlan,
+) {
+  const establishedPercentile = Number(normalizedMetrics.get(player.id)?.[metric]) || 0;
+  const expandedPercentile = finiteNonNegative(
+    roleProjectionPlan?.expandedMetricPercentilesById?.get(player.id)?.[metric],
+  );
+  if (expandedPercentile === null) return establishedPercentile * assignedMinutes;
+  const split = roleConditionedMinuteSplit(player.id, assignedMinutes, roleProjectionPlan);
+  return split.established * establishedPercentile + split.expanded * expandedPercentile;
+}
+
+function projectedStatTotalForAssignedMinutes(
+  player,
+  field,
+  assignedMinutes,
+  projectedRates = null,
+  roleProjectionPlan = null,
+) {
+  const staticRate = playerPerMinuteRate(player, field, projectedRates);
+  const split = roleConditionedMinuteSplit(player.id, assignedMinutes, roleProjectionPlan);
+  const baselineRate = finiteNonNegative(
+    roleProjectionPlan?.baselineProjectedRatesByPlayerId?.get(player.id)?.[field],
+  );
+  // A metric without complete source evidence remains on the same static rate
+  // for every assigned minute. This mirrors the all-or-nothing evidence policy
+  // used by the percentile layer, so a missing baseline cannot silently become
+  // an advantage or a made-up projection.
+  if (baselineRate === null || split.expanded <= 0) return staticRate * assignedMinutes;
+  return staticRate * split.established + baselineRate * split.expanded;
+}
+
+function calculateRotationTotals(
+  players,
+  rotationAllocation,
+  projectedRates = null,
+  roleProjectionPlan = null,
+) {
   const totals = {
     points: 0,
     rebounds: 0,
@@ -1043,10 +1238,20 @@ function calculateRotationTotals(players, rotationAllocation, projectedRates = n
     turnovers: 0,
   };
 
+  const usesAssignedRoleProjection = Boolean(
+    rotationAllocation?.diagnostics?.roleConditionedScoring?.applied &&
+      roleProjectionPlan,
+  );
   for (const player of players) {
     const allocatedMinutes = Number(rotationAllocation.byId[player.id] ?? 0);
     for (const field of Object.keys(totals)) {
-      totals[field] += playerPerMinuteRate(player, field, projectedRates) * allocatedMinutes;
+      totals[field] += projectedStatTotalForAssignedMinutes(
+        player,
+        field,
+        allocatedMinutes,
+        projectedRates,
+        usesAssignedRoleProjection ? roleProjectionPlan : null,
+      );
     }
   }
   for (const field of Object.keys(totals)) totals[field] = round(totals[field]);
@@ -1068,6 +1273,7 @@ function calculateObjective(
   normalizedWeights,
   rotationAllocation = null,
   rotationRankingModel = null,
+  roleProjectionPlan = null,
 ) {
   const contributionBreakdown = {};
   // Keep the group-level breakdown for the existing UI, while also retaining
@@ -1084,16 +1290,29 @@ function calculateObjective(
   // Historical workload can be displayed as context or used by an explicit
   // advanced capacity mode, but it never receives hidden objective weight.
   const strategyShare = ROTATION_STRATEGY_SHARE;
+  const usesAssignedRoleProjection = Boolean(
+    rotationAllocation?.diagnostics?.roleConditionedScoring?.applied &&
+      roleProjectionPlan,
+  );
+  const totalAssignedMinutes = rotationAllocation?.totalMinutes ?? 0;
 
   for (const metric of OBJECTIVE_METRICS) {
     const averagePercentile = rotationAllocation
       ? players.reduce(
           (total, player) =>
             total +
-            normalizedMetrics.get(player.id)[metric] *
-              objectiveShare(player.id, players, rotationAllocation),
+            (usesAssignedRoleProjection
+              ? roleConditionedMetricScoreUnits(
+                player,
+                metric,
+                Number(rotationAllocation.byId[player.id] ?? 0),
+                normalizedMetrics,
+                roleProjectionPlan,
+              )
+              : normalizedMetrics.get(player.id)[metric] *
+                Number(rotationAllocation.byId[player.id] ?? 0)),
           0,
-        )
+        ) / totalAssignedMinutes
       : players.reduce(
           (total, player) => total + normalizedMetrics.get(player.id)[metric],
           0,
@@ -1103,14 +1322,38 @@ function calculateObjective(
     rawScore += scoreContribution;
     for (const player of players) {
       const percentile = normalizedMetrics.get(player.id)[metric];
-      const share = rotationAllocation
-        ? objectiveShare(player.id, players, rotationAllocation)
-        : 1 / players.length;
+      const playerMetricUnits = rotationAllocation
+        ? usesAssignedRoleProjection
+          ? roleConditionedMetricScoreUnits(
+            player,
+            metric,
+            Number(rotationAllocation.byId[player.id] ?? 0),
+            normalizedMetrics,
+            roleProjectionPlan,
+          )
+          : percentile * Number(rotationAllocation.byId[player.id] ?? 0)
+        : percentile;
+      const assignedMinutes = rotationAllocation
+        ? Number(rotationAllocation.byId[player.id] ?? 0)
+        : 0;
+      // In a minute-aware result, expose the actual average percentile that
+      // contributed across this player's assigned minutes. Leaving the original
+      // static percentile here would make the explanation say an extra baseline
+      // minute was still valued at the player's initial outlier rate.
+      const appliedPercentile = rotationAllocation && assignedMinutes > 0
+        ? playerMetricUnits / assignedMinutes
+        : percentile;
       const playerScoreContribution =
-        percentile * normalizedWeights[metric] * strategyShare * 100 * share;
+        (playerMetricUnits / (rotationAllocation ? totalAssignedMinutes : players.length)) *
+        normalizedWeights[metric] *
+        strategyShare *
+        100;
       const playerEntry = playerContributions[player.id];
       playerEntry.metrics[metric] = {
-        percentile: round(percentile),
+        percentile: round(appliedPercentile),
+        ...(usesAssignedRoleProjection && Math.abs(appliedPercentile - percentile) > 1e-12
+          ? { assignedRoleAdjusted: true, establishedRolePercentile: round(percentile) }
+          : {}),
         scoreContribution: round(playerScoreContribution),
       };
       playerEntry.scoreContribution += playerScoreContribution;
@@ -1153,6 +1396,7 @@ function calculateObjectiveScore(
   playerStrategyScores,
   rotationAllocation = null,
   rotationRankingModel = null,
+  roleProjectionPlan = null,
 ) {
   // Each player's weighted percentile contribution is independent of the rest
   // of the candidate. Lineup mode keeps the original equal-player average;
@@ -1163,13 +1407,19 @@ function calculateObjectiveScore(
     for (const player of players) scoreTotal += playerStrategyScores.get(player.id);
     return (scoreTotal / players.length) * 100;
   }
+  const usesAssignedRoleProjection = Boolean(
+    rotationAllocation.diagnostics?.roleConditionedScoring?.applied &&
+      roleProjectionPlan,
+  );
   let strategyScore = 0;
   for (const player of players) {
-    strategyScore +=
-      playerStrategyScores.get(player.id) *
-      objectiveShare(player.id, players, rotationAllocation);
+    const assignedMinutes = Number(rotationAllocation.byId[player.id] ?? 0);
+    const scoreUnits = usesAssignedRoleProjection
+      ? roleConditionedScoreUnits(player.id, assignedMinutes, roleProjectionPlan)
+      : playerStrategyScores.get(player.id) * assignedMinutes;
+    strategyScore += scoreUnits ?? 0;
   }
-  return strategyScore * 100;
+  return (strategyScore / rotationAllocation.totalMinutes) * 100;
 }
 
 function buildConstraintAudit(
@@ -1321,6 +1571,58 @@ function normalizeProjectedRateMap(players, source, reasons) {
     normalized.set(id, rates);
   }
   return normalized;
+}
+
+/**
+ * Validate the private minute-aware score payload that `optimizeLineups`
+ * supplies to the public allocator. Keeping this normalization at the public
+ * boundary prevents a malformed future caller from silently changing an exact
+ * minute allocation into an unexplained heuristic.
+ */
+function normalizeRoleConditionedScorePlan(players, source, reasons) {
+  if (source === undefined || source === null) return null;
+  if (!isPlainObject(source)) {
+    reasons.push("roleConditionedScorePlan must be an object when provided.");
+    return null;
+  }
+  const referenceMinutes = Number(source.referenceMinutes);
+  if (!Number.isFinite(referenceMinutes) || referenceMinutes <= 0 || referenceMinutes > 48) {
+    reasons.push("roleConditionedScorePlan.referenceMinutes must be between 0 and 48.");
+    return null;
+  }
+  const fields = [
+    ["evidenceMinutesById", 0, 48],
+    ["establishedScoresById", 0, 1],
+    ["expandedScoresById", 0, 1],
+  ];
+  const normalized = {};
+  for (const [field, minimum, maximum] of fields) {
+    const raw = source[field];
+    if (!(raw instanceof Map) && !isPlainObject(raw)) {
+      reasons.push(`roleConditionedScorePlan.${field} must be an object or Map keyed by player id.`);
+      continue;
+    }
+    const values = new Map();
+    for (const player of players) {
+      const id = canonicalId(player?.id);
+      const value = Number(getMapLikeValue(raw, id, `roleConditionedScorePlan.${field}`, reasons));
+      if (!Number.isFinite(value) || value < minimum || value > maximum) {
+        reasons.push(`roleConditionedScorePlan.${field} for ${id} must be between ${minimum} and ${maximum}.`);
+      } else {
+        values.set(id, value);
+      }
+    }
+    normalized[field] = values;
+  }
+  if (reasons.length > 0) return null;
+  return {
+    ...source,
+    referenceMinutes,
+    ...normalized,
+    activeMetrics: Array.isArray(source.activeMetrics)
+      ? source.activeMetrics.filter((metric) => OBJECTIVE_METRICS.includes(metric))
+      : [],
+  };
 }
 
 function rotationFailure(reasons, diagnostics = {}) {
@@ -1994,6 +2296,113 @@ function historicalContinuityPositionAllocation(
     continuityApplied: true,
     continuityDeviation: totalDeviation,
     continuityUtilityTieBreakApplied: true,
+  };
+}
+
+/**
+ * Maximize the minute-aware game-plan score while proving the full G/F/C role
+ * shape. Each source-to-player edge represents one additional minute and uses
+ * that minute's marginal value: established-rate minutes first, then the
+ * same-season baseline for any unestablished expansion. Because the network
+ * has integral capacities and solves every path to minimum cost, this remains
+ * an exact allocation for the stated piecewise rate model—not an after-the-fact
+ * reduction in a player's minutes.
+ */
+function roleConditionedPositionAllocation(players, bounds, requirements, scorePlan) {
+  const feasibility = findPositionMinuteFlow(players, bounds, requirements);
+  if (!feasibility.feasible) return feasibility;
+
+  const sortedPlayers = players.slice().sort(comparePlayersById);
+  const source = 0;
+  const playerStart = 1;
+  const positionStart = playerStart + sortedPlayers.length;
+  const sink = positionStart + POSITION_KEYS.length;
+  const superSource = sink + 1;
+  const superSink = sink + 2;
+  const network = createMinCostFlowNetwork(superSink + 1);
+  const totalRequired = POSITION_KEYS.reduce(
+    (total, position) => total + requirements[position],
+    0,
+  );
+  const minimumTotal = sortedPlayers.reduce(
+    (total, player) => total + bounds.get(player.id).min,
+    0,
+  );
+  const roleEdges = new Map();
+
+  sortedPlayers.forEach((player, index) => {
+    const playerNode = playerStart + index;
+    const playerBounds = bounds.get(player.id);
+    network.addEdge(superSource, playerNode, playerBounds.min, 0);
+    for (let minute = playerBounds.min + 1; minute <= playerBounds.max; minute += 1) {
+      const previousScore = roleConditionedScoreUnits(player.id, minute - 1, scorePlan);
+      const nextScore = roleConditionedScoreUnits(player.id, minute, scorePlan);
+      const marginalScore = Math.max(0, (nextScore ?? 0) - (previousScore ?? 0));
+      network.addEdge(
+        source,
+        playerNode,
+        1,
+        -Math.round(marginalScore * ROLE_CONDITIONED_UTILITY_COST_SCALE),
+      );
+    }
+
+    const playerRoleEdges = new Map();
+    const eligiblePositions = Array.isArray(player.positions) ? player.positions : [];
+    for (const position of POSITION_KEYS) {
+      if (!eligiblePositions.includes(position)) continue;
+      const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+      playerRoleEdges.set(
+        position,
+        network.addEdge(playerNode, positionNode, playerBounds.max, 0),
+      );
+    }
+    roleEdges.set(player.id, playerRoleEdges);
+  });
+
+  network.addEdge(superSource, source, totalRequired - minimumTotal, 0);
+  for (const position of POSITION_KEYS) {
+    const positionNode = positionStart + POSITION_KEYS.indexOf(position);
+    network.addEdge(positionNode, sink, requirements[position], 0);
+  }
+  network.addEdge(sink, superSink, totalRequired, 0);
+
+  const solved = network.minCostFlow(superSource, superSink, totalRequired);
+  if (solved.delivered !== totalRequired) {
+    // Feasibility was already established. Retain that exact static allocation
+    // as a defensive fallback rather than returning a partial role curve and
+    // falsely claiming that it optimized the minute-aware objective.
+    return {
+      ...feasibility,
+      roleConditionedScoringApplied: false,
+      roleConditionedScoringReason: "The assigned-role projection could not be solved exactly, so the static rate projection was retained.",
+    };
+  }
+
+  const byPlayer = {};
+  const totalsByPlayer = {};
+  const actual = { G: 0, F: 0, C: 0 };
+  for (const player of sortedPlayers) {
+    const roleMinutes = { G: 0, F: 0, C: 0 };
+    for (const [position, edge] of roleEdges.get(player.id)) {
+      const minutes = edge.initialCapacity - edge.capacity;
+      roleMinutes[position] = minutes;
+      actual[position] += minutes;
+    }
+    byPlayer[player.id] = roleMinutes;
+    totalsByPlayer[player.id] = POSITION_KEYS.reduce(
+      (total, position) => total + roleMinutes[position],
+      0,
+    );
+  }
+  return {
+    feasible: POSITION_KEYS.every((position) => actual[position] === requirements[position]),
+    required: { ...requirements },
+    actual,
+    byPlayer,
+    totalsByPlayer,
+    delivered: solved.delivered,
+    balanceDemand: totalRequired,
+    roleConditionedScoringApplied: true,
   };
 }
 
@@ -2676,6 +3085,8 @@ function constrainedPositionAllocation(
  * - projectedRates: optional object/Map of conservative per-minute counting
  *   projections keyed by player id; this is how the full optimizer carries its
  *   small-sample and larger-role correction into threshold feasibility
+ * - roleConditionedScorePlan: internal exact minute-value curve supplied by
+ *   `optimizeLineups`; direct callers can omit it and retain linear scoring
  */
 export function allocateRotationMinutes(players, options = {}) {
   const reasons = [];
@@ -2719,6 +3130,11 @@ export function allocateRotationMinutes(players, options = {}) {
   const projectedRates = normalizeProjectedRateMap(
     rotationPlayers,
     options.projectedRates,
+    reasons,
+  );
+  const roleConditionedScorePlan = normalizeRoleConditionedScorePlan(
+    rotationPlayers,
+    options.roleConditionedScorePlan,
     reasons,
   );
   const rawStrategy = options.strategy ?? options.allocationStrategy ?? "balanced";
@@ -3058,6 +3474,18 @@ export function allocateRotationMinutes(players, options = {}) {
     (minutePlan === ROTATION_MINUTE_PLANS.HISTORICAL_AWARE &&
       historicalGuidance.applied &&
       historicalGuidance.allocationStyleApplied === HISTORICAL_ALLOCATION_STYLES.STRATEGY_FIRST);
+  // The curve is a separable minute-value objective, so min-cost flow can solve
+  // it exactly alongside the G/F/C role requirements. Hard production
+  // thresholds use a different exact linear proof path; they deliberately keep
+  // the already conservative common-role projection until that nonlinear proof
+  // is added and independently tested.
+  const usesRoleConditionedScoring = Boolean(
+    roleConditionedScorePlan &&
+      positionRequirements &&
+      !hasProjectedConstraints &&
+      !usesHistoricalContinuity &&
+      (strategy === "objective" || usesStrategyFirstAllocation),
+  );
   if (positionRequirements) {
     // Historical continuity is an exact secondary objective: it minimizes the
     // total deviation from recorded workload after the roster itself has been
@@ -3071,6 +3499,13 @@ export function allocateRotationMinutes(players, options = {}) {
         positionRequirements,
         scores,
       )
+      : usesRoleConditionedScoring
+        ? roleConditionedPositionAllocation(
+          rotationPlayers,
+          effectiveBounds,
+          positionRequirements,
+          roleConditionedScorePlan,
+        )
       : strategy === "objective" || usesStrategyFirstAllocation
         ? objectivePositionAllocation(rotationPlayers, effectiveBounds, scores, positionRequirements)
         : balancedPositionAllocation(rotationPlayers, effectiveBounds, balancedTargets, positionRequirements);
@@ -3168,6 +3603,42 @@ export function allocateRotationMinutes(players, options = {}) {
     ...(positionFlow ? { roleMinutes: { ...positionFlow.byPlayer[id] } } : {}),
   }));
   const totalMinutes = allocations.reduce((total, allocation) => total + allocation.minutes, 0);
+  const roleConditionedScoring = {
+    requested: Boolean(roleConditionedScorePlan),
+    applied: Boolean(positionFlow?.roleConditionedScoringApplied),
+    referenceMinutes: roleConditionedScorePlan?.referenceMinutes ?? null,
+    activeMetrics: roleConditionedScorePlan?.activeMetrics ?? [],
+    expandedMinutes: roleConditionedScorePlan
+      ? round(allocations.reduce(
+        (total, allocation) =>
+          total + roleConditionedMinuteSplit(
+            allocation.id,
+            allocation.minutes,
+            roleConditionedScorePlan,
+          ).expanded,
+        0,
+      ))
+      : 0,
+    selectedPlayersWithExpandedMinutes: roleConditionedScorePlan
+      ? allocations.filter((allocation) => (
+        roleConditionedMinuteSplit(
+          allocation.id,
+          allocation.minutes,
+          roleConditionedScorePlan,
+        ).expanded > 1e-12
+      )).length
+      : 0,
+    reason: !roleConditionedScorePlan
+      ? "No assigned-role score projection was supplied."
+      : hasProjectedConstraints
+        ? "Hard production thresholds retain the static common-role projection so feasibility remains exactly proven."
+        : usesHistoricalContinuity
+          ? "Recorded-minutes continuity was selected as the allocation objective."
+          : !positionRequirements
+            ? "Assigned-role scoring requires an exact G/F/C minute profile."
+            : positionFlow?.roleConditionedScoringReason ??
+              "Additional minutes beyond a player's established role use the same-season baseline in the exact allocation.",
+  };
 
   return {
     ok: true,
@@ -3178,8 +3649,10 @@ export function allocateRotationMinutes(players, options = {}) {
         ? balancedAdjusted
           ? "historical-workload-continuity-adjusted-for-positions"
           : "historical-workload-continuity"
-        : strategy === "objective" || usesStrategyFirstAllocation
-          ? "objective-maximizing"
+        : usesRoleConditionedScoring && roleConditionedScoring.applied
+          ? "objective-role-conditioned"
+          : strategy === "objective" || usesStrategyFirstAllocation
+            ? "objective-maximizing"
           : balancedAdjusted
             ? "balanced-proportional-adjusted-for-positions"
             : "balanced-proportional",
@@ -3187,8 +3660,9 @@ export function allocateRotationMinutes(players, options = {}) {
     allocations,
     byId: Object.fromEntries(allocations.map((allocation) => [allocation.id, allocation.minutes])),
     minutePlan,
-    historicalGuidance,
-    positionMinutes: positionFlow
+      historicalGuidance,
+      roleConditionedScoring,
+      positionMinutes: positionFlow
       ? {
           enforced: true,
           required: { ...positionFlow.required },
@@ -3204,8 +3678,9 @@ export function allocateRotationMinutes(players, options = {}) {
       allocationStrategy: strategy,
       historicalAllocationStyle: historicalGuidance.allocationStyleApplied,
       balancedAdjustedForPositions: balancedAdjusted,
-      minutePlan,
-      historicalGuidance,
+        minutePlan,
+        historicalGuidance,
+        roleConditionedScoring,
       projectedConstraints: {
         statMinimums: { ...projectedConstraints.statMinimums },
         maxTurnovers: Number.isFinite(projectedConstraints.maxTurnovers)
@@ -3598,6 +4073,42 @@ export function optimizeLineups(players, config = {}) {
     normalizedConfig.mode === "rotation" &&
     (Object.keys(normalizedConfig.statMinimums).length > 0 ||
       Number.isFinite(normalizedConfig.maxTurnovers));
+  const roleConditionedProjectionPlan =
+    normalizedConfig.mode === "rotation" && !callerRotationScores
+      ? buildRoleConditionedProjectionPlan(
+        eligiblePlayers,
+        normalizedMetrics,
+        normalizedConfig.normalizedWeights,
+        normalizedMetricResult,
+      )
+      : null;
+  const usesRoleConditionedProjection = Boolean(
+    roleConditionedProjectionPlan &&
+      !hasRotationProjectedConstraints &&
+      estimatedCombinations <= MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS,
+  );
+  const assignedRoleProjectionReason = callerRotationScores
+    ? "A custom minute-score map was supplied, so the optimizer retained that caller-defined allocation objective."
+    : !roleConditionedProjectionPlan
+      ? "The loaded evidence did not support a minute-aware same-season baseline for an active game-plan priority."
+      : hasRotationProjectedConstraints
+        ? "Hard production thresholds retain the static common-role projection so feasibility remains exactly proven."
+        : estimatedCombinations > MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS
+          ? `The exact minute-aware projection is available for searches through ${MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS.toLocaleString()} groups; this broader search retained the static conservative projection for browser safety.`
+          : "Extra minutes beyond each player's established role use the same-season baseline in the exact minute allocation.";
+  if (normalizedConfig.mode === "rotation") {
+    baseDiagnostics.rotationRateStabilityEvidence = {
+      ...normalizedMetricResult.rateStability,
+      assignedRoleProjection: {
+        requested: Boolean(roleConditionedProjectionPlan),
+        enabledForExactSearch: usesRoleConditionedProjection,
+        referenceMinutes: roleConditionedProjectionPlan?.referenceMinutes ?? null,
+        activeMetrics: roleConditionedProjectionPlan?.activeMetrics ?? [],
+        maximumExactCombinations: MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS,
+        reason: assignedRoleProjectionReason,
+      },
+    };
+  }
   // One mutable allowance is deliberately shared by every candidate roster.
   // A per-candidate cap still permits N hard candidates to exceed the Worker's
   // timeout. The exact solver aborts globally when this allowance is spent.
@@ -3644,6 +4155,12 @@ export function optimizeLineups(players, config = {}) {
       // solver. This does not cap a low-minute player; it simply avoids
       // extrapolating an unproven raw rate unchanged into a starter-sized role.
       projectedRates: rotationProjectedRates,
+      // This exact min-cost curve is intentionally omitted for hard production
+      // thresholds and large searches; those paths retain their existing exact
+      // linear proof with the same conservative common-role rate projection.
+      roleConditionedScorePlan: usesRoleConditionedProjection
+        ? roleConditionedProjectionPlan
+        : null,
       // The optimizer's default is the exact objective allocation. The public
       // allocator retains an explicitly named balanced strategy for callers
       // that prefer workload proportionality over objective maximization.
@@ -3830,18 +4347,21 @@ export function optimizeLineups(players, config = {}) {
         selectedPlayers,
         baselineRotation,
         rotationProjectedRates,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
       );
       const rawUpperBound = calculateObjectiveScore(
         selectedPlayers,
         playerStrategyScores,
         rankingBoundRotation,
         rotationRankingModel,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
       );
       const baselineRawScore = calculateObjectiveScore(
         selectedPlayers,
         playerStrategyScores,
         baselineRotation,
         rotationRankingModel,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
       );
       const tieKey = selectedPlayers.map((player) => player.id).join("\u0001");
       const status = projectedConstraintStatus(totals, projectedRotationConstraints);
@@ -3918,7 +4438,12 @@ export function optimizeLineups(players, config = {}) {
       }
     }
     const totals = rotation
-      ? calculateRotationTotals(selectedPlayers, rotation, rotationProjectedRates)
+      ? calculateRotationTotals(
+        selectedPlayers,
+        rotation,
+        rotationProjectedRates,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+      )
       : calculateLineupTotals(selectedPlayers);
 
     for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
@@ -3943,6 +4468,7 @@ export function optimizeLineups(players, config = {}) {
         playerStrategyScores,
         rotation,
         rotation ? rotationRankingModel : null,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
       ),
     );
   }
@@ -4033,6 +4559,7 @@ export function optimizeLineups(players, config = {}) {
         candidate.players,
         rotation,
         rotationProjectedRates,
+        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
       );
       const status = projectedConstraintStatus(totals, projectedRotationConstraints);
       if (!status.passed) {
@@ -4055,6 +4582,7 @@ export function optimizeLineups(players, config = {}) {
           playerStrategyScores,
           rotation,
           rotationRankingModel,
+          usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
         ),
       );
     }
@@ -4176,6 +4704,7 @@ export function optimizeLineups(players, config = {}) {
       normalizedConfig.normalizedWeights,
       rotation,
       rotation ? rotationRankingModel : null,
+      usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
     );
     const constraintAudit = buildConstraintAudit(
       alternative.players,
