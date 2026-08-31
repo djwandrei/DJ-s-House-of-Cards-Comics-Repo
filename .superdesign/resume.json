@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "/lineup-lab/": {
+      "targetKind": "existing-ui",
+      "projectId": "2f8c52b7-1e8f-411f-a74d-db238afe485c",
+      "baselineDraftId": "1b9ada26-13f5-46ac-bb31-05886eb4ad97",
+      "activeDraftId": "1b9ada26-13f5-46ac-bb31-05886eb4ad97",
+      "designSystemPath": ".superdesign/lineup-lab-design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/2f8c52b7-1e8f-411f-a74d-db238afe485c/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/lineup-lab-design-system.md",
+        "prototypes/basketball-lineup-optimizer/index.html",
+        "prototypes/basketball-lineup-optimizer/styles.css:1:720",
+        "prototypes/basketball-lineup-optimizer/styles.css:850:1350",
+        "prototypes/basketball-lineup-optimizer/styles.css:2250:2460",
+        "prototypes/basketball-lineup-optimizer/styles.css:3440:3860"
+      ],
+      "fingerprints": {
+        ".superdesign/lineup-lab-design-system.md": "32B04B9628BB968A14C9FCF87E757462E89FF84BB20C5045A634ADD342B2DD47",
+        "prototypes/basketball-lineup-optimizer/index.html": "07BF594D59CE45A11086DC3903AA8EB308C2978645BCD2A8E42310CF63B81E3C",
+        "prototypes/basketball-lineup-optimizer/styles.css": "3786649BFDBBFB55C921E8DB70036789E5703609A710817C6D847EE787E53BBC"
+      },
+      "components": [],
+      "drafts": {
+        "1b9ada26-13f5-46ac-bb31-05886eb4ad97": {
+          "title": "DJ's Lineup Lab Baseline",
+          "visualDirection": "guided build flow with clear model definitions and progressive detail",
+          "parentDraftId": null,
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-08-27T09:11:32.261Z"
+    },
+    "/tools/": {
+      "targetKind": "existing-ui",
+      "projectId": "8ca1ba0a-48a6-41e3-898a-5eaf86732679",
+      "baselineDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "activeDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8ca1ba0a-48a6-41e3-898a-5eaf86732679/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "tools/index.html",
+        "tools/registry.js",
+        "tools/fan-tools.js",
+        "tools/fan-tools.css",
+        "nav.js",
+        "core.js:1:180",
+        "core.js:776:910",
+        "core.js:1190:1420",
+        "styles.css:1:344",
+        "styles.css:3113:3224",
+        "styles.css:3394:3626",
+        "styles.css:5710:6380",
+        "styles-mobile-overrides.css:1:700",
+        "styles-mobile-overrides.css:1340:1530"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
+        "tools/index.html": "a5802a0835223e5ab29f7a3c07f6f7cb7d395a2ec811d7d159c4b353720ec14d",
+        "tools/registry.js": "c0248920d740babe52dd2ceb9f4b457458deccc205fa1ac40924ae0664a5afcb",
+        "tools/fan-tools.js": "d7670f68b3db5ab100e6c13e7478979e5d99c6a85415a71f4e2b54d3b71375cf",
+        "tools/fan-tools.css": "bf5f3b4be8f8b3dfd75237c67667c6073453ec77aaea8b40a99d39e807aab57f",
+        "nav.js": "69101b4b5217783222a24cd29f677973a883406a2aafa7895b48bfad51c78645",
+        "core.js": "f5ae87152e66345c73592c3761ff2873865fc837e0155b1612dfbb026531ea67",
+        "styles.css": "9028c22311b853fd5b558a8eaf9439ea33f3f93210acf87fb743aefe5d1622ca",
+        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+      },
+      "components": [],
+      "drafts": {
+        "a29a08bd-68dd-4759-af0d-3c8ef7af9c96": {
+          "title": "Current DJHC Fan Tools",
+          "visualDirection": "approved live-first roadmap baseline with status summary, featured live tool, compact planned cards, research gate, exact DJHC shell, and exact brand logo",
+          "parentDraftId": null,
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-31T12:30:32.6950572Z"
+    },
+    "/tools/player-card-matchups/": {
+      "targetKind": "new-ui",
+      "projectId": "8ca1ba0a-48a6-41e3-898a-5eaf86732679",
+      "baselineDraftId": "5037c510-df6c-4422-9412-496f9a74376e",
+      "activeDraftId": "5037c510-df6c-4422-9412-496f9a74376e",
+      "sourceTarget": "/tools/",
+      "sourceDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8ca1ba0a-48a6-41e3-898a-5eaf86732679/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "tools/index.html",
+        "tools/registry.js",
+        "tools/fan-tools.js",
+        "tools/fan-tools.css",
+        "nav.js",
+        "core.js:1:180",
+        "core.js:776:910",
+        "core.js:1190:1420",
+        "styles.css:1:344",
+        "styles.css:3113:3224",
+        "styles.css:3394:3626",
+        "styles.css:5710:6380",
+        "styles-mobile-overrides.css:1:700",
+        "styles-mobile-overrides.css:1340:1530"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
+        "tools/index.html": "a5802a0835223e5ab29f7a3c07f6f7cb7d395a2ec811d7d159c4b353720ec14d",
+        "tools/registry.js": "c0248920d740babe52dd2ceb9f4b457458deccc205fa1ac40924ae0664a5afcb",
+        "tools/fan-tools.js": "d7670f68b3db5ab100e6c13e7478979e5d99c6a85415a71f4e2b54d3b71375cf",
+        "tools/fan-tools.css": "bf5f3b4be8f8b3dfd75237c67667c6073453ec77aaea8b40a99d39e807aab57f",
+        "nav.js": "69101b4b5217783222a24cd29f677973a883406a2aafa7895b48bfad51c78645",
+        "core.js": "f5ae87152e66345c73592c3761ff2873865fc837e0155b1612dfbb026531ea67",
+        "styles.css": "9028c22311b853fd5b558a8eaf9439ea33f3f93210acf87fb743aefe5d1622ca",
+        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+      },
+      "components": [],
+      "drafts": {
+        "5037c510-df6c-4422-9412-496f9a74376e": {
+          "title": "Player & Card Matchups Explorer",
+          "visualDirection": "verified-only player search with mapped athlete context, exact card results, honest no-match state, Lineup Lab bridge, and read-only commerce guardrails",
+          "parentDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-31T12:30:32.6950572Z"
+    },
+    "/": {
+      "targetKind": "existing-ui",
+      "projectId": "f6d6bcb5-d64f-4761-91ea-78e5050d5b56",
+      "baselineDraftId": "e52dd1d4-859d-42b5-863a-0e441f120818",
+      "activeDraftId": "7b06035e-59cb-44cb-903a-fd86979c989c",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "74fda1ae-7567-4c91-9df1-fd1a4ae42dbf",
+        "c69bf3af-8dec-47b6-be10-31d7adcb098c",
+        "assets-dj-logo.png",
+        "fdf8bf59-8698-4e2b-ae3d-2c2a3ed10597",
+        "c946493d-472d-4812-ab80-2e1f7c507131",
+        "050ab5ac-2a03-464e-880a-d06e4f470ccc",
+        "c807cec8-2ec5-4cc2-99b6-d27deef9fa86",
+        "bf636ac2-43b1-4c7a-8e6b-be7ff813db00",
+        "b2220f13-b1c8-4817-8e9f-d2a3af9a5155",
+        "d60bf8b5-019e-414d-ac4d-457197216653",
+        "1591f39a-47e6-4f15-ad6b-ab0b5c6aeb18"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/f6d6bcb5-d64f-4761-91ea-78e5050d5b56/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "index.html",
+        "nav.js",
+        "core.js:776:886",
+        "core.js:967:1380",
+        "styles.css:1:344",
+        "styles.css:404:520",
+        "styles.css:809:939",
+        "styles.css:5710:6237",
+        "styles.css:7002:7338",
+        "styles.css:7766:7848",
+        "styles.css:9952:10280",
+        "styles.css:12960:13280",
+        "styles-mobile-overrides.css:1:700",
+        "styles-mobile-overrides.css:794:1010",
+        "styles-mobile-overrides.css:1133:1450",
+        "styles-mobile-overrides.css:2240:2310"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
+        "index.html": "77983db66b1db820dc20ed85134580704d0c60003b25f881a5e89298a9c4c514",
+        "nav.js": "301cddffec2cfaf71130a84dd6247a9edea87638f62a3767e13673b4e817debb",
+        "core.js": "62abb23b8564f4e9f9a48a008c7bdb2155535dd810dc0572a9ef64279b63b522",
+        "styles.css": "71e6b2592d9c1fe57e5d320df4d57ac285b020fc9dfc74906783442037b64807",
+        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+      },
+      "components": [],
+      "drafts": {
+        "e52dd1d4-859d-42b5-863a-0e441f120818": {
+          "title": "DJ's House of Cards & Comics Homepage",
+          "visualDirection": "faithful current homepage reproduction",
+          "parentDraftId": null,
+          "currentVersion": 1
+        },
+        "b34fce0b-fb77-43e5-830d-3269a2790560": {
+          "title": "Modern Clubhouse Vault",
+          "visualDirection": "premium search-first collector clubhouse",
+          "parentDraftId": "e52dd1d4-859d-42b5-863a-0e441f120818",
+          "currentVersion": 1
+        },
+        "7b06035e-59cb-44cb-903a-fd86979c989c": {
+          "title": "DJHC Homepage Evolution",
+          "visualDirection": "current-homepage foundation with restrained Collector Archive editorial accents, original category imagery, deep current-site navy header and footer, red-blue commerce CTAs, three-action product cards, and a responsive search-first menu",
+          "parentDraftId": "e52dd1d4-859d-42b5-863a-0e441f120818",
+          "currentVersion": 11
+        }
+      },
+      "updatedAt": "2026-08-31T03:47:50.3512921Z"
+    },
+    "/homepage-navigation/": {
+      "targetKind": "new-ui",
+      "projectId": "a89611b9-b9f0-4cb3-8b2a-9e2b3b3c7d0c",
+      "baselineDraftId": "05e57604-f503-4128-b63a-0a284804a857",
+      "activeDraftId": "05e57604-f503-4128-b63a-0a284804a857",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/tmp/homepage-nav-refinement.html"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/tmp/homepage-nav-refinement.html": "CD2788CC2B4A386A2B69D5DBD921E9D562A78AA215DBE65720DF1EFAE99AA43A"
+      },
+      "components": [],
+      "drafts": {
+        "05e57604-f503-4128-b63a-0a284804a857": {
+          "title": "Centered navigation and unified Shop hub",
+          "visualDirection": "centered navy storefront header, compact menu/search rail, and unified collector browse hub",
+          "parentDraftId": null,
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-31T13:53:30.000Z"
+    }
+  }
+}
