@@ -35,8 +35,10 @@ the beta.
   selected season's listed position remains the historical role reference.
 - Historical team identities, such as the San Diego Clippers and New Jersey
   Nets, rather than retroactively mapped current franchises.
-- A safe exact-search cap that asks visitors to narrow large rotation pools
-  before synchronous browser work could freeze the page.
+- Uncapped exact rotation enumeration in a background Worker. Every eligible
+  candidate group is checked, even when the pool is broader than a normal NBA
+  team roster; changing the scenario cancels the active Worker cleanly.
+- A separate candidate-count safeguard remains for five-player lineup mode.
 
 ## Run locally
 
@@ -60,10 +62,11 @@ node --test .\prototypes\basketball-lineup-optimizer\tests\*.test.mjs
 
 The tests cover data normalization and CSV compatibility, the Supabase
 Basketball Reference adapter, deterministic optimization, locks/exclusions,
-positional assignment, safe search limits, infeasible scenarios, alternative
-ordering, 240-minute allocation, optional recorded-minutes guardrails, small-sample
-and role-expansion rate projections, custom role-minute proofs, and the legacy
-local-server safeguards.
+positional assignment, uncapped rotation enumeration, the separate lineup-mode
+search safeguard, infeasible scenarios, alternative ordering, 240-minute
+allocation, optional recorded-minutes guardrails, small-sample and role-expansion
+rate projections, custom role-minute proofs, and the legacy local-server
+safeguards.
 
 ## Rotation model contract
 
@@ -75,17 +78,22 @@ production so their units do not get mixed:
   comparison mode.
 - When same-season evidence exists, `sampleAdjusted` first blends each observed
   rate toward the imported league baseline before percentile ranking:
-  `baseline + n / (n + k) * (observed - baseline)`. It then applies the
-  distinct larger-role projection: only when the rotation's average role
-  (`240 / selected roster size`) exceeds the player's source MPG, the
-  unobserved share is blended again toward that baseline. This never caps a
-  player's minutes or rewards past minutes; it asks how much of a rate has
-  actually been demonstrated at the role the plan requests. The evidence
-  sample `n` is total minutes for counting stats and turnovers, field-goal
-  attempts for eFG%, and three-point attempts for 3P%. The current conservative
-  guardrail constants are `k=600`, `k=500`, and `k=180`, respectively. These
-  constants are transparent model settings, not fitted player-impact
-  coefficients.
+  `baseline + n / (n + k) * (observed - baseline)`. The sample `n` uses
+  standardized per-appearance opportunity over 50 appearances so a trade or
+  short team stint cannot reduce a player's projection. True season-wide totals
+  take precedence when available. Metric-specific conservative priors are 750
+  minutes for points, 500 for rebounds, 700 for assists and ball security, 900
+  for steals and blocks, 500 field-goal attempts for eFG%, 180 three-point
+  attempts for 3P%, and 1,200 minutes for OBPM/DBPM. These are transparent model
+  settings, not fitted player-impact coefficients.
+- The distinct larger-role projection removes only unproven upside beyond an
+  established role and never improves a below-baseline player. A shared
+  workload-saturation curve begins after `240 / selected roster size` minutes:
+  extra minutes still add positive value, but their marginal fit moves smoothly
+  toward 35% over an eight-minute transition. This prevents an otherwise linear
+  objective from placing most players at their minimum or maximum. It is not a
+  historical-minute target, availability rule, or hard cap; a sufficiently
+  better player can still reach the visitor's maximum.
 - Metric weights are normalized into relative shares. Each candidate's fit is
   the weighted, eligible-pool percentile profile, and rotation fit is then
   weighted by the exact minutes assigned to each selected player.
@@ -97,12 +105,25 @@ production so their units do not get mixed:
 - Every successful rotation assigns exactly 240 integer player-minutes and the
   selected role profile's exact G/F/C totals. Custom role totals are used in
   both the allocation and every projected-stat feasibility proof.
+- Rotation candidate count never changes the model or causes a fallback. The
+  outer exact enumeration has no count or elapsed-time cutoff and remains in a
+  background Worker. Optional production thresholds retain a per-candidate
+  state guard only for a single unusually difficult proof; that guard cannot be
+  consumed merely because the outer search contains more candidate rotations.
+- Optional production thresholds preserve the same diminishing-return minute
+  objective used by an ordinary rotation. Their feasibility test deliberately
+  uses conservative static common-role rates so each hard rule remains a linear,
+  auditable inequality; enabling a floor never restores the retired linear
+  minute-fill behavior.
 - When the exact assigned-role model is available, projected box-score totals
-  use the same piecewise rate projection that ranked the rotation: established
-  minutes use the adjusted player rate, while only additional expansion minutes
-  use the same-season baseline. Otherwise they retain the static conservative
-  rate used by the exact threshold solver. They are descriptive estimates, not
-  game, injury, availability, matchup, or betting predictions.
+  use the evidence-based role-expansion projection: established minutes use the
+  adjusted player rate, while additional expansion minutes move smoothly toward
+  the same-season bound. Workload saturation affects allocation utility and the
+  search-relative score only; it does not arbitrarily erase projected points or
+  change the meaning of 100 in the Plan Fit Index. Otherwise totals retain the
+  static conservative rate used by the exact threshold solver. They are
+  descriptive estimates, not game, injury, availability, matchup, or betting
+  predictions.
 
 Imported play-by-play, reconstructed lineup stints, and RAPM are not inputs to
 this box-score objective yet. The interface must continue to label observed

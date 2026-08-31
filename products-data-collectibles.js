@@ -437,9 +437,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Boxing",
     "playerAthlete": "Manny Pacquiao",
     "copyCount": 2,
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -447,7 +445,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Manny Pacquiao",
       "excelFields": {
         "Title": "2011 Topps Allen & Ginter Manny Pacquiao #262",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },

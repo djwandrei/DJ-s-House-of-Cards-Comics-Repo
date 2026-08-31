@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260830a';
+  const PRODUCT_ASSET_VERSION = '20260831a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.
@@ -86,6 +86,23 @@ window.DJ = window.DJ || {};
   const thumbnailAssetUrlCache = new Map();
   const thumbnailAssetCandidatesCache = new Map();
 
+  // Shared scripts are stored beside core.js, including when a page lives in a
+  // nested route such as /tools/. Resolve local dependencies from that stable
+  // site root instead of from the current document directory.
+  const SITE_ROOT_URL = (() => {
+    const scripts = Array.from(document.scripts || []);
+    const coreScript = document.currentScript || scripts.find((script) => (
+      /(?:^|\/)core\.js(?:[?#]|$)/i.test(String(script?.src || script?.getAttribute?.('src') || ''))
+    ));
+    const source = coreScript?.src || coreScript?.getAttribute?.('src') || '';
+
+    try {
+      return new URL('.', source ? new URL(source, window.location.href) : new URL('/', window.location.href));
+    } catch {
+      return null;
+    }
+  })();
+
   function setBoundedCacheValue(cache, key, value) {
     if (!cache.has(key) && cache.size >= ASSET_HELPER_CACHE_LIMIT) {
       const oldestKey = cache.keys().next().value;
@@ -106,8 +123,29 @@ window.DJ = window.DJ || {};
     return setBoundedCacheValue(cache, key, createValue());
   }
 
+  function resolveSitePath(path) {
+    const value = String(path || '').trim();
+    if (
+      !value
+      || value.startsWith('/')
+      || value.startsWith('#')
+      || /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(value)
+      || !SITE_ROOT_URL
+    ) {
+      return value;
+    }
+
+    try {
+      const resolved = new URL(value, SITE_ROOT_URL);
+      return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+    } catch {
+      return value;
+    }
+  }
+
   function versionedProductAsset(path) {
-    return `${path}${path.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
+    const resolvedPath = resolveSitePath(path);
+    return `${resolvedPath}${resolvedPath.includes('?') ? '&' : '?'}v=${PRODUCT_ASSET_VERSION}`;
   }
 
   function versionedLocalProductImage(path) {
@@ -725,8 +763,14 @@ window.DJ = window.DJ || {};
     }
 
     let scheduled = false;
+    let fallbackTimer = 0;
     const flush = () => {
+      if (!scheduled) {
+        return;
+      }
       scheduled = false;
+      window.clearTimeout(fallbackTimer);
+      fallbackTimer = 0;
       callback();
     };
 
@@ -736,10 +780,12 @@ window.DJ = window.DJ || {};
       }
 
       scheduled = true;
+      // Background tabs and a few embedded browsers can throttle animation
+      // frames indefinitely. Keep a bounded timer fallback so accessibility
+      // state still follows a completed resize or device rotation.
+      fallbackTimer = window.setTimeout(flush, 100);
       if (typeof window.requestAnimationFrame === 'function') {
         window.requestAnimationFrame(flush);
-      } else {
-        window.setTimeout(flush, 16);
       }
     };
 
@@ -763,7 +809,7 @@ window.DJ = window.DJ || {};
   }
 
   function isMobileThemeLayout() {
-    return MOBILE_THEME_QUERY ? MOBILE_THEME_QUERY.matches : window.innerWidth <= MOBILE_THEME_BREAKPOINT;
+    return window.innerWidth <= MOBILE_THEME_BREAKPOINT;
   }
 
   // ---------------------------------------------------------------------------
@@ -1247,9 +1293,10 @@ window.DJ = window.DJ || {};
 
       if (footerLinks && !footerLinks.querySelector('.footer-link-groups')) {
         FOOTER_POLICY_LINKS.forEach(([label, href]) => {
-          if (footerLinks.querySelector(`a[href="${href}"]`)) return;
+          const resolvedHref = resolveSitePath(href);
+          if (footerLinks.querySelector(`a[href="${href}"], a[href="${resolvedHref}"]`)) return;
           const link = document.createElement('a');
-          link.href = href;
+          link.href = resolvedHref;
           link.textContent = label;
           footerLinks.appendChild(link);
         });
@@ -1349,9 +1396,8 @@ window.DJ = window.DJ || {};
 
     if (themeToggle.dataset.responsivePlacementBound !== 'true') {
       themeToggle.dataset.responsivePlacementBound = 'true';
-      if (!bindMediaQueryChange(MOBILE_THEME_QUERY, placeToggle)) {
-        addRafResizeListener(placeToggle, { runImmediately: false });
-      }
+      bindMediaQueryChange(MOBILE_THEME_QUERY, placeToggle);
+      addRafResizeListener(placeToggle, { runImmediately: false });
       window.addEventListener('pageshow', placeToggle);
     }
 

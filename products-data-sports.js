@@ -14104,9 +14104,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -14114,7 +14112,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dwight Clark|Kellen Winslow",
       "excelFields": {
         "Title": "1982 Topps Receiving Leaders Kellen Winslow + Dwight Clark #258",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -14141,9 +14138,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Magic Johnson|Michael Jordan",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -14151,7 +14146,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Magic Johnson|Michael Jordan",
       "excelFields": {
         "Title": "1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + /1990 Hoops Set",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -19944,9 +19938,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -19954,7 +19946,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
       "excelFields": {
         "Title": "2013 Bowman JJ Watt DeAndre Hopkins Arian Foster Andre Johnson Texans Set (x36)",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -24004,7 +23995,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "Karl-Anthony Towns",
     "attributes": [
-      "Base Set",
       "Insert"
     ],
     "isFeatured": false,
@@ -24014,7 +24004,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Karl-Anthony Towns",
       "excelFields": {
         "Title": "2016-17 Panini Contenders Karl-Anthony Towns Old School Colors + Base",
-        "C:Features": "Base Set|Insert",
+        "C:Features": "Insert",
         "C:Autographed": "No"
       }
     },
@@ -24192,9 +24182,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -24202,7 +24190,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "LeBron James",
       "excelFields": {
         "Title": "2018 Upper Deck Goodwin Champions #50 LeBron James CSG 9.5 Mint",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -56789,9 +56776,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Aaron Rodgers",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -56799,7 +56784,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Aaron Rodgers",
       "excelFields": {
         "Title": "2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (2)",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -94224,9 +94208,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Hassan Whiteside",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -94234,7 +94216,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Hassan Whiteside",
       "excelFields": {
         "Title": "2015-16 Panini Prestige Hassan Whiteside #125",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -97667,9 +97648,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Cameron Brink",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -97677,7 +97656,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Cameron Brink",
       "excelFields": {
         "Title": "2025 Upper Deck Goodwin Champions Cameron Brink Set (x2)",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -105040,9 +105018,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "Giannis Antetokounmpo",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -105050,7 +105026,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Giannis Antetokounmpo",
       "excelFields": {
         "Title": "2014-15 Panini NBA Hoops Giannis Antetokounmpo #62",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -105226,9 +105201,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NBA",
     "sport": "Basketball",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -105236,7 +105209,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "LeBron James",
       "excelFields": {
         "Title": "2004-05 Upper Deck Lebron James #26",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     }
@@ -110564,9 +110536,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Carl Yastrzemski",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -110574,7 +110544,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Carl Yastrzemski",
       "excelFields": {
         "Title": "1973 Topps Carl Yastrzemski #245 PSA 4",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -110601,9 +110570,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Brooks Robinson",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -110611,7 +110578,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brooks Robinson",
       "excelFields": {
         "Title": "1973 Topps Brooks Robinson #90 PSA 4",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -110760,7 +110726,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110771,7 +110736,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -110800,7 +110765,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110811,7 +110775,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Los Angeles Lakers Base + SP + Insert Lot (x237)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -110843,7 +110807,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110854,7 +110817,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -110886,7 +110849,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110897,7 +110859,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -110925,7 +110887,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110936,7 +110897,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Milwaukee Bucks Base + SP + Insert Lot (x184)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -110965,7 +110926,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -110976,7 +110936,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini New York Knicks Base + SP + Insert Lot (x210)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111006,7 +110966,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111017,7 +110976,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111047,7 +111006,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111058,7 +111016,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111086,7 +111044,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111097,7 +111054,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Orlando Magic Base + SP + Insert Lot (x184)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111131,7 +111088,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111142,7 +111098,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111171,7 +111127,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111182,7 +111137,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Phoenix Suns Base + SP + Insert Lot (x217)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111212,7 +111167,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111223,7 +111177,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111251,7 +111205,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111262,7 +111215,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Sacramento Kings Base + SP + Insert Lot (x193)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111290,7 +111243,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111301,7 +111253,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini San Antonio Spurs Base + SP + Insert Lot (x154)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111333,7 +111285,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111344,7 +111295,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111374,7 +111325,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111385,7 +111335,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },
@@ -111415,7 +111365,6 @@ window.DJ_PRELOADED_PRODUCTS = [
     "sport": "Basketball",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -111426,7 +111375,7 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "",
       "excelFields": {
         "Title": "2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171)",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:Autographed": "No"
       }
     },

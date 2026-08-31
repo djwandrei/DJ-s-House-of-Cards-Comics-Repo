@@ -10,10 +10,12 @@
 // pools. These guards prevent broad requests from tying up a browser.
 export const DEFAULT_MAX_EXACT_COMBINATIONS = 200000;
 
-// Rotation candidates also solve an integer G/F/C minute-flow problem. Browser
-// benchmarking put 24,310 all-flex candidates beyond the 30-second watchdog,
-// while 6,435 stayed comfortably below it; 10,000 leaves a practical margin.
-export const DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS = 10000;
+// Rotation mode intentionally has no candidate-count ceiling. Its exact search
+// runs inside a background Worker, so a broad roster can take longer without
+// freezing the page or being silently replaced by a heuristic answer. Keep this
+// compatibility export as `null` so older callers can detect the uncapped
+// contract without interpreting an arbitrarily large number as a real limit.
+export const DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS = null;
 
 // Basketball Reference lists a player's eligible positions, not tracked
 // possession-level assignments. This helper therefore builds a transparent

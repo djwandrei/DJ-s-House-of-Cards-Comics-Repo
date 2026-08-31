@@ -489,22 +489,25 @@ test("rejects an unbounded alternatives request", () => {
   assert.match(result.reasons[0], /alternatives cannot exceed/);
 });
 
-test("uses a lower browser-safe exact-search ceiling for flow-heavy rotations", () => {
-  const players = Array.from({ length: 19 }, (_, index) =>
+test("rotation exact search ignores legacy candidate-count ceilings", () => {
+  const players = Array.from({ length: 9 }, (_, index) =>
     player(`p${index + 1}`, { positions: ["G", "F", "C"] }),
   );
   const result = optimizeLineups(players, {
     mode: "rotation",
-    size: 10,
+    size: 8,
     weights: { points: 1 },
     positionMinimums: { G: 2, F: 2, C: 1 },
+    // This retired compatibility option is deliberately ignored in rotation
+    // mode. The nine candidate groups must all be evaluated exactly.
+    maxCombinations: 1,
   });
 
-  assert.equal(result.ok, false);
-  assert.equal(result.diagnostics.category, "performance");
-  assert.equal(result.diagnostics.estimatedCombinations, 92378);
-  assert.equal(result.diagnostics.maxCombinations, 10000);
-  assert.equal(result.combinationsEvaluated, 0);
+  assert.equal(result.ok, true);
+  assert.equal(result.diagnostics.estimatedCombinations, 9);
+  assert.equal(result.diagnostics.maxCombinations, null);
+  assert.equal(result.diagnostics.candidateCombinationLimitApplied, false);
+  assert.equal(result.combinationsEvaluated, 9);
 });
 
 test("allocates exactly 240 integer minutes within player bounds", () => {
@@ -596,7 +599,8 @@ test("rotation optimization includes a feasible 240-minute allocation", () => {
 
   assert.equal(result.ok, true);
   assert.equal(result.best.rotation.totalMinutes, 240);
-  assert.equal(result.best.rotation.strategy, "objective-maximizing");
+  assert.equal(result.best.rotation.strategy, "objective-role-conditioned");
+  assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.applied, true);
   assert.deepEqual(result.best.rotation.positionMinutes.actual, { G: 96, F: 96, C: 48 });
   assert.equal(result.best.rotation.positionMinutes.passed, true);
   assert.equal(result.best.constraintAudit.rotationPositionMinutes.passed, true);
@@ -739,7 +743,7 @@ test("shifts exactly one minute to satisfy the reviewer rebound threshold repro"
   assert.equal(result.best.rotation.diagnostics.projectedConstraints.adjustedAllocation, true);
 });
 
-test("uses a zero-cost equal-objective minute exchange to meet a rebound threshold", () => {
+test("equal-fit players share workloads and satisfy a rebound threshold without a repair", () => {
   const players = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id, index) =>
     player(id, {
       positions: ["G", "F", "C"],
@@ -758,15 +762,21 @@ test("uses a zero-cost equal-objective minute exchange to meet a rebound thresho
   });
 
   assert.equal(result.ok, true);
-  assert.equal(result.best.totals.rebounds, 1);
+  // The old linear objective arbitrarily put 239 minutes on five equal scorers,
+  // then moved one minute to a rebounder. Workload saturation correctly treats
+  // all eight equal-fit players alike, so each receives 30 minutes and the
+  // vacuous floor is already satisfied by the ordinary exact optimum.
+  assert.equal(result.best.totals.rebounds, 90);
   assert.equal(result.best.score, 50);
   assert.equal(
     ["f", "g", "h"].reduce(
       (total, id) => total + result.best.rotation.byId[id],
       0,
     ),
-    1,
+    90,
   );
+  assert.ok(Object.values(result.best.rotation.byId).every((minutes) => minutes === 30));
+  assert.equal(result.best.rotation.diagnostics.projectedConstraints.adjustedAllocation, false);
 });
 
 test("shifts one minute to satisfy a projected turnover ceiling before ranking", () => {
@@ -1205,7 +1215,7 @@ test("reports every candidate as infeasible when its minute capacity is below 24
   assert.match(result.reasons.at(-1), /could not be allocated exactly 240 minutes/);
 });
 
-test("does not spend constrained-search budget on a zero minimum that every initial plan passes", {
+test("checks more than the former rotation ceiling without downgrading the minute model", {
   timeout: 30000,
 }, () => {
   const players = Array.from({ length: 16 }, (_, index) =>
@@ -1221,12 +1231,22 @@ test("does not spend constrained-search budget on a zero minimum that every init
     alternatives: 1,
     weights: { points: 1 },
     statMinimums: { points: 0 },
-    maxCombinations: 15000,
+    // The legacy limit is intentionally ignored for rotation mode. This also
+    // exceeds the retired 6,500-group rich-model cutoff, proving that candidate
+    // count cannot switch the solver back to the boundary-heavy linear model.
+    maxCombinations: 1,
     rotationOptions: { minMinutes: 0, maxMinutes: 48 },
   });
 
   assert.equal(result.ok, true);
   assert.equal(result.combinationsEvaluated, 12870);
+  assert.equal(result.diagnostics.maxCombinations, null);
+  assert.equal(result.diagnostics.candidateCombinationLimitApplied, false);
+  assert.equal(
+    result.diagnostics.rotationRateStabilityEvidence.assignedRoleProjection.enabledForExactSearch,
+    true,
+  );
+  assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.applied, true);
   assert.equal(result.diagnostics.constraintSearchStatesUsed, 0);
   assert.equal(result.diagnostics.rejectedByConstraint.constraintSearchLimit, 0);
 });
@@ -1309,12 +1329,17 @@ test("prunes a low-upper-bound hard roster after proving an exact top result", (
   assert.equal(result.diagnostics.exactTopKProven, true);
 });
 
-test("still aborts when an unresolved high-upper-bound roster could displace a feasible seed", () => {
+test("certifies a high-upper-bound constrained roster without spending its state budget", () => {
   const players = ["a", "b", "c", "d", "e", "f", "g", "h", "i"].map((id, index) =>
     player(id, {
       positions: ["G", "F", "C"],
       minutes: 48,
-      points: 10,
+      // Five high-fit scorers can consume all 240 minutes. Candidate groups
+      // missing one scorer are baseline-feasible because the bench must play.
+      // The group containing all five needs a three-minute constraint repair,
+      // which exceeds the two-state enumeration budget but has a closed
+      // Lagrangian upper bound and should therefore still be proven exactly.
+      points: index < 5 ? 10 : 0,
       rebounds: index >= 5 ? 48 : 0,
     }),
   );
@@ -1328,38 +1353,43 @@ test("still aborts when an unresolved high-upper-bound roster could displace a f
     rotationOptions: { minMinutes: 0, maxMinutes: 48 },
   });
 
-  assert.equal(result.ok, false);
-  assert.equal(result.best, null);
-  assert.deepEqual(result.alternatives, []);
-  assert.equal(result.diagnostics.category, "performance");
-  assert.equal(result.diagnostics.subcategory, "constraint-search-limit");
-  assert.ok(result.diagnostics.feasibleCombinationsBeforeAbort > 0);
-  assert.equal(result.diagnostics.constrainedCandidatesSearched, 1);
+  assert.equal(result.ok, true);
+  assert.ok(result.best);
+  assert.equal(result.best.totals.rebounds, 3);
+  assert.equal(
+    result.best.rotation.diagnostics.projectedConstraints.lagrangianCertificateApplied,
+    true,
+  );
+  assert.equal(
+    result.best.rotation.diagnostics.projectedConstraints.lagrangianCertificateRule,
+    "minimum-rebounds",
+  );
+  assert.ok(result.diagnostics.constrainedCandidatesSearched > 0);
   assert.equal(result.diagnostics.constraintBoundPruned, 0);
-  assert.equal(result.diagnostics.constraintSearchStatesUsed, 2);
+  assert.equal(result.diagnostics.constraintSearchStatesUsed, 0);
   assert.equal(result.diagnostics.constraintSearchStateLimit, 2);
-  assert.equal(result.diagnostics.exactSearchCompleted, false);
-  assert.equal(result.diagnostics.exactTopKProven, false);
-  assert.match(result.reason, /No lineup was returned/);
+  assert.equal(result.diagnostics.exactTopKProven, true);
+  assert.equal(result.diagnostics.exactAlternativeRankingCompleted, true);
 });
 
-test("stops an unsafe exact search before enumerating combinations", () => {
+test("keeps the separate candidate-count safeguard for five-player lineup mode", () => {
   const result = optimizeLineups(
-    Array.from({ length: 25 }, (_, index) => player(`p${index + 1}`, {
+    Array.from({ length: 12 }, (_, index) => player(`p${index + 1}`, {
       positions: index % 3 === 0 ? ["G"] : index % 3 === 1 ? ["F"] : ["C"],
     })),
     {
-      mode: "rotation",
-      size: 12,
+      mode: "lineup",
+      size: 5,
       weights: { points: 1 },
       positionMinimums: { G: 2, F: 2, C: 1 },
-      maxCombinations: 1000,
+      maxCombinations: 100,
     },
   );
 
   assert.equal(result.ok, false);
   assert.equal(result.diagnostics.category, "performance");
   assert.equal(result.combinationsEvaluated, 0);
+  assert.equal(result.diagnostics.candidateCombinationLimitApplied, true);
   assert.ok(result.diagnostics.estimatedCombinations > result.diagnostics.maxCombinations);
   assert.match(result.reasons[0], /safe limit/);
 });

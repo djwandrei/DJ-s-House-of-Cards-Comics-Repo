@@ -3816,7 +3816,7 @@ Thank you.`
     const mobileDrawerQuery = typeof window.matchMedia === 'function'
       ? window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
       : null;
-    const isMobileDrawerViewport = () => mobileDrawerQuery ? mobileDrawerQuery.matches : window.innerWidth <= MOBILE_BREAKPOINT;
+    const isMobileDrawerViewport = () => window.innerWidth <= MOBILE_BREAKPOINT;
     let drawerFocusTimer = 0;
 
     filterPanel.dataset.mobileDrawerBound = 'true';
@@ -3958,9 +3958,11 @@ Thank you.`
       syncDrawerAccessibility();
     };
 
-    if (!DJ.bindMediaQueryChange(mobileDrawerQuery, handleViewportChange)) {
-      DJ.addSharedResizeListener(handleViewportChange, { runImmediately: false });
-    }
+    // Keep a resize fallback even when MediaQueryList events are available;
+    // mobile webviews and device rotation can otherwise leave dialog semantics
+    // attached after the viewport has crossed back into the desktop sidebar.
+    DJ.bindMediaQueryChange(mobileDrawerQuery, handleViewportChange);
+    DJ.addSharedResizeListener(handleViewportChange, { runImmediately: false });
 
     document.addEventListener('keydown', (event) => {
       if (!isMobileDrawerViewport() || !document.body.classList.contains('filters-open')) return;

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE_ORIGIN = 'https://www.djshouseofcards-comics.com';
 const SITEMAP_LASTMOD = '2026-08-13';
+const NESTED_HTML_ROOTS = ['tools', 'lineup-lab'];
 const publicIndexable = new Set([
   'index.html',
   'shop.html',
@@ -29,6 +30,8 @@ const crawlableNoindex = new Set([
   'account.html',
   'offer.html',
   'lineup-lab/index.html',
+  'tools/index.html',
+  'tools/player-card-matchups/index.html',
   'offline.html'
 ]);
 const authenticationProtected = new Set(['admin.html', 'inbox.html', 'metrics.html']);
@@ -40,6 +43,14 @@ function assert(condition, message) {
 
 function read(file) {
   return readFileSync(path.join(root, file), 'utf8');
+}
+
+function discoverNestedHtml(relativeDirectory) {
+  return readdirSync(path.join(root, relativeDirectory), { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(relativeDirectory.replaceAll('\\', '/'), entry.name);
+    if (entry.isDirectory()) return discoverNestedHtml(relativePath);
+    return entry.isFile() && entry.name.endsWith('.html') ? [relativePath] : [];
+  });
 }
 
 function attributes(tag = '') {
@@ -59,6 +70,8 @@ function canonicalHref(html) {
 
 function expectedCanonical(file) {
   if (file === 'lineup-lab/index.html') return `${SITE_ORIGIN}/lineup-lab/`;
+  if (file === 'tools/index.html') return `${SITE_ORIGIN}/tools/`;
+  if (file === 'tools/player-card-matchups/index.html') return `${SITE_ORIGIN}/tools/player-card-matchups/`;
   return file === 'index.html' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}/${file}`;
 }
 
@@ -74,7 +87,7 @@ function readSitemapEntries() {
 
 const htmlFiles = [
   ...readdirSync(root).filter((file) => file.endsWith('.html')),
-  'lineup-lab/index.html'
+  ...NESTED_HTML_ROOTS.flatMap(discoverNestedHtml)
 ].sort();
 assert(htmlFiles.length === allPolicyFiles.size, 'Search policy matrix does not cover every HTML page.');
 for (const file of htmlFiles) {

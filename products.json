@@ -23685,9 +23685,7 @@
     "sport": "Football",
     "league": "NFL",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/1982-topps-receiving-leaders-kellen-winslow-plus-dwight-clark-258-2.BuckIEX\"><img src=\"https://iili.io/BuckIEX.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/BuckIEX.md.jpg"
@@ -23754,7 +23752,7 @@
         "C:Year Manufactured": 1982,
         "C:Player/Athlete": "Dwight Clark|Kellen Winslow",
         "C:Sport": "Football",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NFL",
         "C:Team": "San Francisco 49ers|Tampa Bay Buccaneers",
         "C:Autographed": "No",
@@ -23788,9 +23786,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "Magic Johnson|Michael Jordan",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/1991-92-upper-deck-confrontation-michael-jordan-magic-johnson-plus-1990-hoops-set-1.CZ0AWl4\"><img src=\"https://iili.io/CZ0AWl4.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/1991-92-upper-deck-confrontation-michael-jordan-magic-johnson-plus-1990-hoops-set-2.CZ0AjJ2\"><img src=\"https://iili.io/CZ0AjJ2.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CZ0AWl4.md.jpg",
@@ -23861,7 +23857,7 @@
         "C:Year Manufactured": 1991,
         "C:Player/Athlete": "Magic Johnson|Michael Jordan",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "Los Angeles Lakers|Chicago Bulls",
         "C:Autographed": "No",
@@ -40281,9 +40277,7 @@
     "sport": "Football",
     "league": "NFL",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2013-bowman-jj-watt-deandre-hopkins-arian-foster-andre-johnson-texans-set-x36.BuaFbiN\"><img src=\"https://iili.io/BuaFbiN.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/BuaFbiN.md.jpg"
@@ -40350,7 +40344,7 @@
         "C:Year Manufactured": 2013,
         "C:Player/Athlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
         "C:Sport": "Football",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NFL",
         "C:Team": "Houston Texans",
         "C:Autographed": "No",
@@ -51832,7 +51826,6 @@
     "league": "NBA",
     "playerAthlete": "Karl-Anthony Towns",
     "attributes": [
-      "Base Set",
       "Insert"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2016-17-panini-contenders-karl-anthony-towns-old-school-colors-plus-base-1.BuGM1wB\"><img src=\"https://iili.io/BuGM1wB.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2016-17-panini-contenders-karl-anthony-towns-old-school-colors-plus-base-2.BuGMYaj\"><img src=\"https://iili.io/BuGMYaj.md.jpg\" border=\"0\"></a>",
@@ -51905,7 +51898,7 @@
         "C:Year Manufactured": 2016,
         "C:Player/Athlete": "Karl-Anthony Towns",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert",
+        "C:Features": "Insert",
         "C:League": "NBA",
         "C:Team": "New York Knicks",
         "C:Autographed": "No",
@@ -52366,9 +52359,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2018-upper-deck-goodwin-champions-50-lebron-james-csg-95-mint-1.BuExn0g\"><img src=\"https://iili.io/BuExn0g.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2018-upper-deck-goodwin-champions-50-lebron-james-csg-95-mint-2.BuExd5x\"><img src=\"https://iili.io/BuExd5x.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/BuExn0g.md.jpg",
@@ -52439,7 +52430,7 @@
         "C:Year Manufactured": 2018,
         "C:Player/Athlete": "LeBron James",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "Los Angeles Lakers",
         "C:Autographed": "No",
@@ -144209,9 +144200,7 @@
     "sport": "Football",
     "league": "NFL",
     "playerAthlete": "Aaron Rodgers",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/Bu1cw3N\"><img src=\"https://iili.io/Bu1cw3N.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/Bu1cXGR\"><img src=\"https://iili.io/Bu1cXGR.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/Bu1cw3N.md.jpg",
@@ -144282,7 +144271,7 @@
         "C:Year Manufactured": 2023,
         "C:Player/Athlete": "Aaron Rodgers",
         "C:Sport": "Football",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NFL",
         "C:Team": "Green Bay Packers",
         "C:Autographed": "No",
@@ -240683,9 +240672,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "Hassan Whiteside",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2O9FWX\"><img src=\"https://iili.io/C2O9FWX.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2O9Ksn\"><img src=\"https://iili.io/C2O9Ksn.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2O9FWX.md.jpg",
@@ -240756,7 +240743,7 @@
         "C:Year Manufactured": 2015,
         "C:Player/Athlete": "Hassan Whiteside",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "",
         "C:Autographed": "No",
@@ -250696,9 +250683,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "Cameron Brink",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2O3TPt\"><img src=\"https://iili.io/C2O3TPt.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2O3AKX\"><img src=\"https://iili.io/C2O3AKX.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2O3TPt.md.jpg",
@@ -250769,7 +250754,7 @@
         "C:Year Manufactured": 2025,
         "C:Player/Athlete": "Cameron Brink",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "",
         "C:Autographed": "No",
@@ -255143,9 +255128,7 @@
     "sport": "Boxing",
     "league": "",
     "playerAthlete": "Manny Pacquiao",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2eq1Ag\"><img src=\"https://iili.io/C2eq1Ag.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2eq0HF\"><img src=\"https://iili.io/C2eq0HF.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2eq1Ag.md.jpg",
@@ -255216,7 +255199,7 @@
         "C:Year Manufactured": 2011,
         "C:Player/Athlete": "Manny Pacquiao",
         "C:Sport": "Boxing",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "",
         "C:Team": "",
         "C:Autographed": "No",
@@ -272124,9 +272107,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "Giannis Antetokounmpo",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2PjVv1\"><img src=\"https://iili.io/C2PjVv1.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2PjhTg\"><img src=\"https://iili.io/C2PjhTg.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2PjVv1.md.jpg",
@@ -272197,7 +272178,7 @@
         "C:Year Manufactured": 2014,
         "C:Player/Athlete": "Giannis Antetokounmpo",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "",
         "C:Autographed": "No",
@@ -272677,9 +272658,7 @@
     "sport": "Basketball",
     "league": "NBA",
     "playerAthlete": "LeBron James",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2PjRpe\"><img src=\"https://iili.io/C2PjRpe.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2PjuY7\"><img src=\"https://iili.io/C2PjuY7.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2PjRpe.md.jpg",
@@ -272750,7 +272729,7 @@
         "C:Year Manufactured": 2004,
         "C:Player/Athlete": "LeBron James",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "NBA",
         "C:Team": "",
         "C:Autographed": "No",
@@ -287918,9 +287897,7 @@
     "sport": "Baseball",
     "league": "MLB",
     "playerAthlete": "Carl Yastrzemski",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2PBOjR\"><img src=\"https://iili.io/C2PBOjR.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2PBjyJ\"><img src=\"https://iili.io/C2PBjyJ.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2PBOjR.md.jpg",
@@ -287991,7 +287968,7 @@
         "C:Year Manufactured": 1973,
         "C:Player/Athlete": "Carl Yastrzemski",
         "C:Sport": "Baseball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "MLB",
         "C:Team": "",
         "C:Autographed": "No",
@@ -288025,9 +288002,7 @@
     "sport": "Baseball",
     "league": "MLB",
     "playerAthlete": "Brooks Robinson",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/C2PBNTv\"><img src=\"https://iili.io/C2PBNTv.md.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/C2PBhva\"><img src=\"https://iili.io/C2PBhva.md.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/C2PBNTv.md.jpg",
@@ -288098,7 +288073,7 @@
         "C:Year Manufactured": 1973,
         "C:Player/Athlete": "Brooks Robinson",
         "C:Sport": "Baseball",
-        "C:Features": "Base Set",
+        "C:Features": "",
         "C:League": "MLB",
         "C:Team": "",
         "C:Autographed": "No",
@@ -288467,27 +288442,20 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CoywEBV\"><img src=\"https://iili.io/CoywEBV.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CQEQeZ7\"><img src=\"https://iili.io/CQEQeZ7.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-2.CoywMrP\"><img src=\"https://iili.io/CoywMrP.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-2.CQEQNu2\"><img src=\"https://iili.io/CQEQNu2.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-3.Coywlhx\"><img src=\"https://iili.io/Coywlhx.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-3.CQEQ8Ge\"><img src=\"https://iili.io/CQEQ8Ge.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoywEBV.jpg",
-      "https://iili.io/CQEQeZ7.jpg",
       "https://iili.io/CoywMrP.jpg",
-      "https://iili.io/CQEQNu2.jpg",
-      "https://iili.io/Coywlhx.jpg",
-      "https://iili.io/CQEQ8Ge.jpg"
+      "https://iili.io/Coywlhx.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoywEBV.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoywEBV.jpg",
-      "https://iili.io/CQEQeZ7.jpg",
       "https://iili.io/CoywMrP.jpg",
-      "https://iili.io/CQEQNu2.jpg",
-      "https://iili.io/Coywlhx.jpg",
-      "https://iili.io/CQEQ8Ge.jpg"
+      "https://iili.io/Coywlhx.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CoywEBV",
     "sourcePage": "Non-Legacy Listings",
@@ -288499,19 +288467,13 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CoywEBV",
       "itemPhotoUrls": [
         "https://iili.io/CoywEBV.jpg",
-        "https://iili.io/CQEQeZ7.jpg",
         "https://iili.io/CoywMrP.jpg",
-        "https://iili.io/CQEQNu2.jpg",
-        "https://iili.io/Coywlhx.jpg",
-        "https://iili.io/CQEQ8Ge.jpg"
+        "https://iili.io/Coywlhx.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoywEBV.jpg",
-        "https://iili.io/CQEQeZ7.jpg",
         "https://iili.io/CoywMrP.jpg",
-        "https://iili.io/CQEQNu2.jpg",
-        "https://iili.io/Coywlhx.jpg",
-        "https://iili.io/CQEQ8Ge.jpg"
+        "https://iili.io/Coywlhx.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -288528,7 +288490,7 @@
         "Title": "2020-2025 Panini Golden State Warriors Base + SP + Insert Lot (x233)",
         "Start price": 89.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoywEBV.jpg|https://iili.io/CQEQeZ7.jpg|https://iili.io/CoywMrP.jpg|https://iili.io/CQEQNu2.jpg|https://iili.io/Coywlhx.jpg|https://iili.io/CQEQ8Ge.jpg",
+        "Item photo URL": "https://iili.io/CoywEBV.jpg|https://iili.io/CoywMrP.jpg|https://iili.io/Coywlhx.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CoywEBV\"><img src=\"https://iili.io/CoywEBV.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-1.CQEQeZ7\"><img src=\"https://iili.io/CQEQeZ7.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-2.CoywMrP\"><img src=\"https://iili.io/CoywMrP.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-2.CQEQNu2\"><img src=\"https://iili.io/CQEQNu2.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-3.Coywlhx\"><img src=\"https://iili.io/Coywlhx.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-golden-state-warriors-base-plus-sp-plus-insert-lot-x233-3.CQEQ8Ge\"><img src=\"https://iili.io/CQEQ8Ge.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -288557,7 +288519,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Golden State Warriors",
         "C:Autographed": "No",
@@ -288593,7 +288555,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -288671,7 +288632,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Los Angeles Lakers",
         "C:Autographed": "No",
@@ -288710,27 +288671,20 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CoywNTJ\"><img src=\"https://iili.io/CoywNTJ.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CQEQZn1\"><img src=\"https://iili.io/CQEQZn1.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-2.CoyweQR\"><img src=\"https://iili.io/CoyweQR.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-2.CQEQtMF\"><img src=\"https://iili.io/CQEQtMF.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-3.CoywvBp\"><img src=\"https://iili.io/CoywvBp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-3.CQEQS6u\"><img src=\"https://iili.io/CQEQS6u.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoywNTJ.jpg",
-      "https://iili.io/CQEQZn1.jpg",
       "https://iili.io/CoyweQR.jpg",
-      "https://iili.io/CQEQtMF.jpg",
-      "https://iili.io/CoywvBp.jpg",
-      "https://iili.io/CQEQS6u.jpg"
+      "https://iili.io/CoywvBp.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoywNTJ.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoywNTJ.jpg",
-      "https://iili.io/CQEQZn1.jpg",
       "https://iili.io/CoyweQR.jpg",
-      "https://iili.io/CQEQtMF.jpg",
-      "https://iili.io/CoywvBp.jpg",
-      "https://iili.io/CQEQS6u.jpg"
+      "https://iili.io/CoywvBp.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CoywNTJ",
     "sourcePage": "Non-Legacy Listings",
@@ -288742,19 +288696,13 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CoywNTJ",
       "itemPhotoUrls": [
         "https://iili.io/CoywNTJ.jpg",
-        "https://iili.io/CQEQZn1.jpg",
         "https://iili.io/CoyweQR.jpg",
-        "https://iili.io/CQEQtMF.jpg",
-        "https://iili.io/CoywvBp.jpg",
-        "https://iili.io/CQEQS6u.jpg"
+        "https://iili.io/CoywvBp.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoywNTJ.jpg",
-        "https://iili.io/CQEQZn1.jpg",
         "https://iili.io/CoyweQR.jpg",
-        "https://iili.io/CQEQtMF.jpg",
-        "https://iili.io/CoywvBp.jpg",
-        "https://iili.io/CQEQS6u.jpg"
+        "https://iili.io/CoywvBp.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -288771,7 +288719,7 @@
         "Title": "2020-2025 Panini Memphis Grizzlies Base + SP + Insert Lot (x269)",
         "Start price": 91.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoywNTJ.jpg|https://iili.io/CQEQZn1.jpg|https://iili.io/CoyweQR.jpg|https://iili.io/CQEQtMF.jpg|https://iili.io/CoywvBp.jpg|https://iili.io/CQEQS6u.jpg",
+        "Item photo URL": "https://iili.io/CoywNTJ.jpg|https://iili.io/CoyweQR.jpg|https://iili.io/CoywvBp.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CoywNTJ\"><img src=\"https://iili.io/CoywNTJ.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-1.CQEQZn1\"><img src=\"https://iili.io/CQEQZn1.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-2.CoyweQR\"><img src=\"https://iili.io/CoyweQR.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-2.CQEQtMF\"><img src=\"https://iili.io/CQEQtMF.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-3.CoywvBp\"><img src=\"https://iili.io/CoywvBp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-memphis-grizzlies-base-plus-sp-plus-insert-lot-x269-3.CQEQS6u\"><img src=\"https://iili.io/CQEQS6u.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -288800,7 +288748,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Memphis Grizzlies",
         "C:Autographed": "No",
@@ -288839,27 +288787,20 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.Coyw8EN\"><img src=\"https://iili.io/Coyw8EN.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.CQEQYpp\"><img src=\"https://iili.io/CQEQYpp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-2.CoywrYX\"><img src=\"https://iili.io/CoywrYX.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-2.CQEQECX\"><img src=\"https://iili.io/CQEQECX.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-3.Coyw4vn\"><img src=\"https://iili.io/Coyw4vn.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-3.CQEQGGn\"><img src=\"https://iili.io/CQEQGGn.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/Coyw8EN.jpg",
-      "https://iili.io/CQEQYpp.jpg",
       "https://iili.io/CoywrYX.jpg",
-      "https://iili.io/CQEQECX.jpg",
-      "https://iili.io/Coyw4vn.jpg",
-      "https://iili.io/CQEQGGn.jpg"
+      "https://iili.io/Coyw4vn.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/Coyw8EN.jpg",
     "htmlImageUrls": [
       "https://iili.io/Coyw8EN.jpg",
-      "https://iili.io/CQEQYpp.jpg",
       "https://iili.io/CoywrYX.jpg",
-      "https://iili.io/CQEQECX.jpg",
-      "https://iili.io/Coyw4vn.jpg",
-      "https://iili.io/CQEQGGn.jpg"
+      "https://iili.io/Coyw4vn.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.Coyw8EN",
     "sourcePage": "Non-Legacy Listings",
@@ -288871,19 +288812,13 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.Coyw8EN",
       "itemPhotoUrls": [
         "https://iili.io/Coyw8EN.jpg",
-        "https://iili.io/CQEQYpp.jpg",
         "https://iili.io/CoywrYX.jpg",
-        "https://iili.io/CQEQECX.jpg",
-        "https://iili.io/Coyw4vn.jpg",
-        "https://iili.io/CQEQGGn.jpg"
+        "https://iili.io/Coyw4vn.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/Coyw8EN.jpg",
-        "https://iili.io/CQEQYpp.jpg",
         "https://iili.io/CoywrYX.jpg",
-        "https://iili.io/CQEQECX.jpg",
-        "https://iili.io/Coyw4vn.jpg",
-        "https://iili.io/CQEQGGn.jpg"
+        "https://iili.io/Coyw4vn.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -288900,7 +288835,7 @@
         "Title": "2020-2025 Panini Miami Heat Base + SP + Insert Lot (x258)",
         "Start price": 84.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/Coyw8EN.jpg|https://iili.io/CQEQYpp.jpg|https://iili.io/CoywrYX.jpg|https://iili.io/CQEQECX.jpg|https://iili.io/Coyw4vn.jpg|https://iili.io/CQEQGGn.jpg",
+        "Item photo URL": "https://iili.io/Coyw8EN.jpg|https://iili.io/CoywrYX.jpg|https://iili.io/Coyw4vn.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.Coyw8EN\"><img src=\"https://iili.io/Coyw8EN.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-1.CQEQYpp\"><img src=\"https://iili.io/CQEQYpp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-2.CoywrYX\"><img src=\"https://iili.io/CoywrYX.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-2.CQEQECX\"><img src=\"https://iili.io/CQEQECX.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-3.Coyw4vn\"><img src=\"https://iili.io/Coyw4vn.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-miami-heat-base-plus-sp-plus-insert-lot-x258-3.CQEQGGn\"><img src=\"https://iili.io/CQEQGGn.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -288929,7 +288864,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Miami Heat",
         "C:Autographed": "No",
@@ -288964,7 +288899,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -289038,7 +288972,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Milwaukee Bucks",
         "C:Autographed": "No",
@@ -289074,7 +289008,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -289152,7 +289085,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "New York Knicks",
         "C:Autographed": "No",
@@ -289189,23 +289122,18 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.Coywsjf\"><img src=\"https://iili.io/Coywsjf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.CQEQy8v\"><img src=\"https://iili.io/CQEQy8v.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-2.CoywZCl\"><img src=\"https://iili.io/CoywZCl.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-2.CQEQLZP\"><img src=\"https://iili.io/CQEQLZP.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/Coywsjf.jpg",
-      "https://iili.io/CQEQy8v.jpg",
-      "https://iili.io/CoywZCl.jpg",
-      "https://iili.io/CQEQLZP.jpg"
+      "https://iili.io/CoywZCl.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/Coywsjf.jpg",
     "htmlImageUrls": [
       "https://iili.io/Coywsjf.jpg",
-      "https://iili.io/CQEQy8v.jpg",
-      "https://iili.io/CoywZCl.jpg",
-      "https://iili.io/CQEQLZP.jpg"
+      "https://iili.io/CoywZCl.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.Coywsjf",
     "sourcePage": "Non-Legacy Listings",
@@ -289217,15 +289145,11 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.Coywsjf",
       "itemPhotoUrls": [
         "https://iili.io/Coywsjf.jpg",
-        "https://iili.io/CQEQy8v.jpg",
-        "https://iili.io/CoywZCl.jpg",
-        "https://iili.io/CQEQLZP.jpg"
+        "https://iili.io/CoywZCl.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/Coywsjf.jpg",
-        "https://iili.io/CQEQy8v.jpg",
-        "https://iili.io/CoywZCl.jpg",
-        "https://iili.io/CQEQLZP.jpg"
+        "https://iili.io/CoywZCl.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -289242,7 +289166,7 @@
         "Title": "2020-2025 Panini New Orleans Pelicans Base + SP + Insert Lot (x225)",
         "Start price": 77.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/Coywsjf.jpg|https://iili.io/CQEQy8v.jpg|https://iili.io/CoywZCl.jpg|https://iili.io/CQEQLZP.jpg",
+        "Item photo URL": "https://iili.io/Coywsjf.jpg|https://iili.io/CoywZCl.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.Coywsjf\"><img src=\"https://iili.io/Coywsjf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-1.CQEQy8v\"><img src=\"https://iili.io/CQEQy8v.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-2.CoywZCl\"><img src=\"https://iili.io/CoywZCl.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-new-orleans-pelicans-base-plus-sp-plus-insert-lot-x225-2.CQEQLZP\"><img src=\"https://iili.io/CQEQLZP.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -289271,7 +289195,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "New Orleans Pelicans",
         "C:Autographed": "No",
@@ -289308,23 +289232,18 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CoyNjFS\"><img src=\"https://iili.io/CoyNjFS.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CQEQljI\"><img src=\"https://iili.io/CQEQljI.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-2.CoyNLHF\"><img src=\"https://iili.io/CoyNLHF.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-2.CQEQ5Yv\"><img src=\"https://iili.io/CQEQ5Yv.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyNjFS.jpg",
-      "https://iili.io/CQEQljI.jpg",
-      "https://iili.io/CoyNLHF.jpg",
-      "https://iili.io/CQEQ5Yv.jpg"
+      "https://iili.io/CoyNLHF.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyNjFS.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyNjFS.jpg",
-      "https://iili.io/CQEQljI.jpg",
-      "https://iili.io/CoyNLHF.jpg",
-      "https://iili.io/CQEQ5Yv.jpg"
+      "https://iili.io/CoyNLHF.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CoyNjFS",
     "sourcePage": "Non-Legacy Listings",
@@ -289336,15 +289255,11 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CoyNjFS",
       "itemPhotoUrls": [
         "https://iili.io/CoyNjFS.jpg",
-        "https://iili.io/CQEQljI.jpg",
-        "https://iili.io/CoyNLHF.jpg",
-        "https://iili.io/CQEQ5Yv.jpg"
+        "https://iili.io/CoyNLHF.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyNjFS.jpg",
-        "https://iili.io/CQEQljI.jpg",
-        "https://iili.io/CoyNLHF.jpg",
-        "https://iili.io/CQEQ5Yv.jpg"
+        "https://iili.io/CoyNLHF.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -289361,7 +289276,7 @@
         "Title": "2020-2025 Panini Oklahoma City Thunder Base + SP + Insert Lot (x224)",
         "Start price": 99.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyNjFS.jpg|https://iili.io/CQEQljI.jpg|https://iili.io/CoyNLHF.jpg|https://iili.io/CQEQ5Yv.jpg",
+        "Item photo URL": "https://iili.io/CoyNjFS.jpg|https://iili.io/CoyNLHF.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CoyNjFS\"><img src=\"https://iili.io/CoyNjFS.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-1.CQEQljI\"><img src=\"https://iili.io/CQEQljI.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-2.CoyNLHF\"><img src=\"https://iili.io/CoyNLHF.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-oklahoma-city-thunder-base-plus-sp-plus-insert-lot-x224-2.CQEQ5Yv\"><img src=\"https://iili.io/CQEQ5Yv.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -289390,7 +289305,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Oklahoma City Thunder",
         "C:Autographed": "No",
@@ -289425,7 +289340,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -289499,7 +289413,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Orlando Magic",
         "C:Autographed": "No",
@@ -289540,31 +289454,22 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CoyOKDG\"><img src=\"https://iili.io/CoyOKDG.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CQEQOjS\"><img src=\"https://iili.io/CQEQOjS.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-2.CoyOqxf\"><img src=\"https://iili.io/CoyOqxf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-2.CQEQraj\"><img src=\"https://iili.io/CQEQraj.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-3.CoyOBV4\"><img src=\"https://iili.io/CoyOBV4.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-3.CQEQW3G\"><img src=\"https://iili.io/CQEQW3G.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-4.CoyOCil\"><img src=\"https://iili.io/CoyOCil.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-4.CQEQhv4\"><img src=\"https://iili.io/CQEQhv4.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyOKDG.jpg",
-      "https://iili.io/CQEQOjS.jpg",
       "https://iili.io/CoyOqxf.jpg",
-      "https://iili.io/CQEQraj.jpg",
       "https://iili.io/CoyOBV4.jpg",
-      "https://iili.io/CQEQW3G.jpg",
-      "https://iili.io/CoyOCil.jpg",
-      "https://iili.io/CQEQhv4.jpg"
+      "https://iili.io/CoyOCil.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyOKDG.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyOKDG.jpg",
-      "https://iili.io/CQEQOjS.jpg",
       "https://iili.io/CoyOqxf.jpg",
-      "https://iili.io/CQEQraj.jpg",
       "https://iili.io/CoyOBV4.jpg",
-      "https://iili.io/CQEQW3G.jpg",
-      "https://iili.io/CoyOCil.jpg",
-      "https://iili.io/CQEQhv4.jpg"
+      "https://iili.io/CoyOCil.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CoyOKDG",
     "sourcePage": "Non-Legacy Listings",
@@ -289576,23 +289481,15 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CoyOKDG",
       "itemPhotoUrls": [
         "https://iili.io/CoyOKDG.jpg",
-        "https://iili.io/CQEQOjS.jpg",
         "https://iili.io/CoyOqxf.jpg",
-        "https://iili.io/CQEQraj.jpg",
         "https://iili.io/CoyOBV4.jpg",
-        "https://iili.io/CQEQW3G.jpg",
-        "https://iili.io/CoyOCil.jpg",
-        "https://iili.io/CQEQhv4.jpg"
+        "https://iili.io/CoyOCil.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyOKDG.jpg",
-        "https://iili.io/CQEQOjS.jpg",
         "https://iili.io/CoyOqxf.jpg",
-        "https://iili.io/CQEQraj.jpg",
         "https://iili.io/CoyOBV4.jpg",
-        "https://iili.io/CQEQW3G.jpg",
-        "https://iili.io/CoyOCil.jpg",
-        "https://iili.io/CQEQhv4.jpg"
+        "https://iili.io/CoyOCil.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -289609,7 +289506,7 @@
         "Title": "2020-2025 Panini Philadelphia 76ers Base + SP + Insert Lot (x325)",
         "Start price": 124.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyOKDG.jpg|https://iili.io/CQEQOjS.jpg|https://iili.io/CoyOqxf.jpg|https://iili.io/CQEQraj.jpg|https://iili.io/CoyOBV4.jpg|https://iili.io/CQEQW3G.jpg|https://iili.io/CoyOCil.jpg|https://iili.io/CQEQhv4.jpg",
+        "Item photo URL": "https://iili.io/CoyOKDG.jpg|https://iili.io/CoyOqxf.jpg|https://iili.io/CoyOBV4.jpg|https://iili.io/CoyOCil.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CoyOKDG\"><img src=\"https://iili.io/CoyOKDG.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-1.CQEQOjS\"><img src=\"https://iili.io/CQEQOjS.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-2.CoyOqxf\"><img src=\"https://iili.io/CoyOqxf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-2.CQEQraj\"><img src=\"https://iili.io/CQEQraj.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-3.CoyOBV4\"><img src=\"https://iili.io/CoyOBV4.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-3.CQEQW3G\"><img src=\"https://iili.io/CQEQW3G.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-4.CoyOCil\"><img src=\"https://iili.io/CoyOCil.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-philadelphia-76ers-base-plus-sp-plus-insert-lot-x325-4.CQEQhv4\"><img src=\"https://iili.io/CQEQhv4.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -289638,7 +289535,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Philadelphia 76ers",
         "C:Autographed": "No",
@@ -289674,7 +289571,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -289752,7 +289648,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Phoenix Suns",
         "C:Autographed": "No",
@@ -289789,23 +289685,18 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CoyORDb\"><img src=\"https://iili.io/CoyORDb.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CQEQjyl\"><img src=\"https://iili.io/CQEQjyl.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-2.CoyOYWx\"><img src=\"https://iili.io/CoyOYWx.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-2.CQEQ0Qt\"><img src=\"https://iili.io/CQEQ0Qt.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyORDb.jpg",
-      "https://iili.io/CQEQjyl.jpg",
-      "https://iili.io/CoyOYWx.jpg",
-      "https://iili.io/CQEQ0Qt.jpg"
+      "https://iili.io/CoyOYWx.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyORDb.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyORDb.jpg",
-      "https://iili.io/CQEQjyl.jpg",
-      "https://iili.io/CoyOYWx.jpg",
-      "https://iili.io/CQEQ0Qt.jpg"
+      "https://iili.io/CoyOYWx.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CoyORDb",
     "sourcePage": "Non-Legacy Listings",
@@ -289817,15 +289708,11 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CoyORDb",
       "itemPhotoUrls": [
         "https://iili.io/CoyORDb.jpg",
-        "https://iili.io/CQEQjyl.jpg",
-        "https://iili.io/CoyOYWx.jpg",
-        "https://iili.io/CQEQ0Qt.jpg"
+        "https://iili.io/CoyOYWx.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyORDb.jpg",
-        "https://iili.io/CQEQjyl.jpg",
-        "https://iili.io/CoyOYWx.jpg",
-        "https://iili.io/CQEQ0Qt.jpg"
+        "https://iili.io/CoyOYWx.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -289842,7 +289729,7 @@
         "Title": "2020-2025 Panini Portland Trail Blazers Base + SP + Insert Lot (x232)",
         "Start price": 79.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyORDb.jpg|https://iili.io/CQEQjyl.jpg|https://iili.io/CoyOYWx.jpg|https://iili.io/CQEQ0Qt.jpg",
+        "Item photo URL": "https://iili.io/CoyORDb.jpg|https://iili.io/CoyOYWx.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CoyORDb\"><img src=\"https://iili.io/CoyORDb.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-1.CQEQjyl\"><img src=\"https://iili.io/CQEQjyl.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-2.CoyOYWx\"><img src=\"https://iili.io/CoyOYWx.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-portland-trail-blazers-base-plus-sp-plus-insert-lot-x232-2.CQEQ0Qt\"><img src=\"https://iili.io/CQEQ0Qt.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -289871,7 +289758,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Portland Trail Blazers",
         "C:Autographed": "No",
@@ -289906,7 +289793,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -289980,7 +289866,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Sacramento Kings",
         "C:Autographed": "No",
@@ -290015,7 +289901,6 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
@@ -290089,7 +289974,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "San Antonio Spurs",
         "C:Autographed": "No",
@@ -290128,27 +290013,20 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CoyOhzJ\"><img src=\"https://iili.io/CoyOhzJ.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CQEZFnt\"><img src=\"https://iili.io/CQEZFnt.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-2.CoyOwsR\"><img src=\"https://iili.io/CoyOwsR.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-2.CQEZBFs\"><img src=\"https://iili.io/CQEZBFs.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-3.CoyOjWv\"><img src=\"https://iili.io/CoyOjWv.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-3.CQEZ2tI\"><img src=\"https://iili.io/CQEZ2tI.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyOhzJ.jpg",
-      "https://iili.io/CQEZFnt.jpg",
       "https://iili.io/CoyOwsR.jpg",
-      "https://iili.io/CQEZBFs.jpg",
-      "https://iili.io/CoyOjWv.jpg",
-      "https://iili.io/CQEZ2tI.jpg"
+      "https://iili.io/CoyOjWv.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyOhzJ.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyOhzJ.jpg",
-      "https://iili.io/CQEZFnt.jpg",
       "https://iili.io/CoyOwsR.jpg",
-      "https://iili.io/CQEZBFs.jpg",
-      "https://iili.io/CoyOjWv.jpg",
-      "https://iili.io/CQEZ2tI.jpg"
+      "https://iili.io/CoyOjWv.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CoyOhzJ",
     "sourcePage": "Non-Legacy Listings",
@@ -290160,19 +290038,13 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CoyOhzJ",
       "itemPhotoUrls": [
         "https://iili.io/CoyOhzJ.jpg",
-        "https://iili.io/CQEZFnt.jpg",
         "https://iili.io/CoyOwsR.jpg",
-        "https://iili.io/CQEZBFs.jpg",
-        "https://iili.io/CoyOjWv.jpg",
-        "https://iili.io/CQEZ2tI.jpg"
+        "https://iili.io/CoyOjWv.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyOhzJ.jpg",
-        "https://iili.io/CQEZFnt.jpg",
         "https://iili.io/CoyOwsR.jpg",
-        "https://iili.io/CQEZBFs.jpg",
-        "https://iili.io/CoyOjWv.jpg",
-        "https://iili.io/CQEZ2tI.jpg"
+        "https://iili.io/CoyOjWv.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -290189,7 +290061,7 @@
         "Title": "2020-2025 Panini Toronto Raptors Base + SP + Insert Lot (x203)",
         "Start price": 69.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyOhzJ.jpg|https://iili.io/CQEZFnt.jpg|https://iili.io/CoyOwsR.jpg|https://iili.io/CQEZBFs.jpg|https://iili.io/CoyOjWv.jpg|https://iili.io/CQEZ2tI.jpg",
+        "Item photo URL": "https://iili.io/CoyOhzJ.jpg|https://iili.io/CoyOwsR.jpg|https://iili.io/CoyOjWv.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CoyOhzJ\"><img src=\"https://iili.io/CoyOhzJ.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-1.CQEZFnt\"><img src=\"https://iili.io/CQEZFnt.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-2.CoyOwsR\"><img src=\"https://iili.io/CoyOwsR.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-2.CQEZBFs\"><img src=\"https://iili.io/CQEZBFs.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-3.CoyOjWv\"><img src=\"https://iili.io/CoyOjWv.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-toronto-raptors-base-plus-sp-plus-insert-lot-x203-3.CQEZ2tI\"><img src=\"https://iili.io/CQEZ2tI.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -290218,7 +290090,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Toronto Raptors",
         "C:Autographed": "No",
@@ -290255,23 +290127,18 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CoyOOfp\"><img src=\"https://iili.io/CoyOOfp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CQEZnSf\"><img src=\"https://iili.io/CQEZnSf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-2.CoyO8Jt\"><img src=\"https://iili.io/CoyO8Jt.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-2.CQEZCcG\"><img src=\"https://iili.io/CQEZCcG.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyOOfp.jpg",
-      "https://iili.io/CQEZnSf.jpg",
-      "https://iili.io/CoyO8Jt.jpg",
-      "https://iili.io/CQEZCcG.jpg"
+      "https://iili.io/CoyO8Jt.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyOOfp.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyOOfp.jpg",
-      "https://iili.io/CQEZnSf.jpg",
-      "https://iili.io/CoyO8Jt.jpg",
-      "https://iili.io/CQEZCcG.jpg"
+      "https://iili.io/CoyO8Jt.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CoyOOfp",
     "sourcePage": "Non-Legacy Listings",
@@ -290283,15 +290150,11 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CoyOOfp",
       "itemPhotoUrls": [
         "https://iili.io/CoyOOfp.jpg",
-        "https://iili.io/CQEZnSf.jpg",
-        "https://iili.io/CoyO8Jt.jpg",
-        "https://iili.io/CQEZCcG.jpg"
+        "https://iili.io/CoyO8Jt.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyOOfp.jpg",
-        "https://iili.io/CQEZnSf.jpg",
-        "https://iili.io/CoyO8Jt.jpg",
-        "https://iili.io/CQEZCcG.jpg"
+        "https://iili.io/CoyO8Jt.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -290308,7 +290171,7 @@
         "Title": "2020-2025 Panini Utah Jazz Base + SP + Insert Lot (x147)",
         "Start price": 57.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyOOfp.jpg|https://iili.io/CQEZnSf.jpg|https://iili.io/CoyO8Jt.jpg|https://iili.io/CQEZCcG.jpg",
+        "Item photo URL": "https://iili.io/CoyOOfp.jpg|https://iili.io/CoyO8Jt.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CoyOOfp\"><img src=\"https://iili.io/CoyOOfp.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-1.CQEZnSf\"><img src=\"https://iili.io/CQEZnSf.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-2.CoyO8Jt\"><img src=\"https://iili.io/CoyO8Jt.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-utah-jazz-base-plus-sp-plus-insert-lot-x147-2.CQEZCcG\"><img src=\"https://iili.io/CQEZCcG.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -290337,7 +290200,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Utah Jazz",
         "C:Autographed": "No",
@@ -290374,23 +290237,18 @@
     "league": "NBA",
     "playerAthlete": "",
     "attributes": [
-      "Base Set",
       "Insert",
       "Short Print"
     ],
     "htmlFullLink": "<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CoyOPs4\"><img src=\"https://iili.io/CoyOPs4.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CQEZdwN\"><img src=\"https://iili.io/CQEZdwN.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-2.CoyOsql\"><img src=\"https://iili.io/CoyOsql.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-2.CQEQiuV\"><img src=\"https://iili.io/CQEQiuV.jpg\" border=\"0\"></a>",
     "itemPhotoUrls": [
       "https://iili.io/CoyOPs4.jpg",
-      "https://iili.io/CQEZdwN.jpg",
-      "https://iili.io/CoyOsql.jpg",
-      "https://iili.io/CQEQiuV.jpg"
+      "https://iili.io/CoyOsql.jpg"
     ],
     "itemPhotoUrl": "https://iili.io/CoyOPs4.jpg",
     "htmlImageUrls": [
       "https://iili.io/CoyOPs4.jpg",
-      "https://iili.io/CQEZdwN.jpg",
-      "https://iili.io/CoyOsql.jpg",
-      "https://iili.io/CQEQiuV.jpg"
+      "https://iili.io/CoyOsql.jpg"
     ],
     "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CoyOPs4",
     "sourcePage": "Non-Legacy Listings",
@@ -290402,15 +290260,11 @@
       "photoHostPageUrl": "https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CoyOPs4",
       "itemPhotoUrls": [
         "https://iili.io/CoyOPs4.jpg",
-        "https://iili.io/CQEZdwN.jpg",
-        "https://iili.io/CoyOsql.jpg",
-        "https://iili.io/CQEQiuV.jpg"
+        "https://iili.io/CoyOsql.jpg"
       ],
       "htmlImageUrls": [
         "https://iili.io/CoyOPs4.jpg",
-        "https://iili.io/CQEZdwN.jpg",
-        "https://iili.io/CoyOsql.jpg",
-        "https://iili.io/CQEQiuV.jpg"
+        "https://iili.io/CoyOsql.jpg"
       ],
       "sourceWorkbook": "Ebay Bulk Upload - 08-22-2026.xlsx",
       "sourceSheet": "Listings",
@@ -290427,7 +290281,7 @@
         "Title": "2020-2025 Panini Washington Wizards Base + SP + Insert Lot (x171)",
         "Start price": 62.95,
         "Quantity": 1,
-        "Item photo URL": "https://iili.io/CoyOPs4.jpg|https://iili.io/CQEZdwN.jpg|https://iili.io/CoyOsql.jpg|https://iili.io/CQEQiuV.jpg",
+        "Item photo URL": "https://iili.io/CoyOPs4.jpg|https://iili.io/CoyOsql.jpg",
         "HTML Full Link": "<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CoyOPs4\"><img src=\"https://iili.io/CoyOPs4.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-1.CQEZdwN\"><img src=\"https://iili.io/CQEZdwN.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-2.CoyOsql\"><img src=\"https://iili.io/CoyOsql.jpg\" border=\"0\"></a>|<a href=\"https://freeimage.host/i/2020-2025-panini-washington-wizards-base-plus-sp-plus-insert-lot-x171-2.CQEQiuV\"><img src=\"https://iili.io/CQEQiuV.jpg\" border=\"0\"></a>",
         "Condition ID": "4000-Ungraded",
         "CD:Professional Grader - (ID: 27501)": "",
@@ -290456,7 +290310,7 @@
         "C:Year Manufactured": "",
         "C:Player/Athlete": "",
         "C:Sport": "Basketball",
-        "C:Features": "Base Set|Insert|Short Print",
+        "C:Features": "Insert|Short Print",
         "C:League": "NBA",
         "C:Team": "Washington Wizards",
         "C:Autographed": "No",

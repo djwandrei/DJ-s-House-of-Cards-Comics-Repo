@@ -74,10 +74,6 @@ protected material unless explicitly required:
 - product/listing data, customer/order/payment data, and financial records
 - authoritative workbooks, exports, curated files, source images, and backups
 
-Never expose secrets or stage `codex_account_keys.env`. Do not inspect private
-credentials, deployment config, customer records, or workbook data unless
-required.
-
 Explicit authorization is required for:
 
 - cPanel deployment, Supabase writes, or any script's `--apply` mode

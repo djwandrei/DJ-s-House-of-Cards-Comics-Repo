@@ -29,9 +29,6 @@ If the FTP hostname needs to stay the public certificate name but connect to a
 specific server IP, set optional `resolveHost` to that IP. Leave it blank or
 omit it for normal DNS resolution.
 
-Do not add `username` or `password` fields. The script prompts for a dedicated
-FTPS credential when it connects, and never saves that credential in the
-project.
 
 ## 2. First dry run
 

@@ -12,11 +12,11 @@
   <meta content="Explore DJHC sports-fan tools, collector games, the NBA Lineup Lab, and the roadmap for future interactive experiences." property="og:description"/>
   <meta content="https://www.djshouseofcards-comics.com/tools/" property="og:url"/>
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image"/>
-  <link href="../styles.css?v=20260830a" rel="stylesheet"/>
-  <link href="../styles-mobile-overrides.css?v=20260830a" rel="stylesheet"/>
-  <link href="./fan-tools.css?v=20260830a" rel="stylesheet"/>
+  <link href="../styles.css?v=20260831a" rel="stylesheet"/>
+  <link href="../styles-mobile-overrides.css?v=20260831a" rel="stylesheet"/>
+  <link href="./fan-tools.css?v=20260831a" rel="stylesheet"/>
   <link href="https://www.djshouseofcards-comics.com/tools/" rel="canonical"/>
-  <link href="../site.webmanifest?v=20260830a" rel="manifest"/>
+  <link href="../site.webmanifest?v=20260831a" rel="manifest"/>
   <link href="../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
   <link href="../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.djshouseofcards-comics.com/tools/#webpage","url":"https://www.djshouseofcards-comics.com/tools/","name":"Fan Tools & Games | DJ's House of Cards & Comics","description":"Explore DJHC sports-fan tools, collector games, the NBA Lineup Lab, and the roadmap for future interactive experiences.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
@@ -69,58 +69,84 @@
        <li class="breadcrumb-list__item"><span aria-current="page" class="breadcrumb-current">Fan Tools</span></li>
       </ol>
      </nav>
-     <span class="kicker">Fan Tools &amp; Games</span>
-     <h1 class="page-title">Play with the game. Explore the numbers. Find the cards.</h1>
-     <p>A separate home for sports-fan experiments and collector-friendly games. Live tools are ready to use; planned ideas stay clearly labeled while their data and rules are being prepared.</p>
-     <div class="utility-row" aria-label="Fan tool principles">
-      <span class="utility-chip">Source-aware</span>
-      <span class="utility-chip">Local-first game state</span>
-      <span class="utility-chip">No checkout changes</span>
+     <div class="tools-hero-layout">
+      <div class="tools-hero-copy">
+       <span class="kicker">Fan Tools &amp; Games</span>
+       <h1 class="page-title">More ways to play with the hobby.</h1>
+       <p>Try the live NBA Lineup Lab today, then follow a clear roadmap of games and collector tools being built around trusted data and simple rules.</p>
+       <div class="tools-hero-actions">
+        <a class="button" href="../lineup-lab/">Open NBA Lineup Lab</a>
+        <a class="button-secondary tools-hero-secondary" href="#toolsRoadmap">Explore the roadmap</a>
+       </div>
+      </div>
+      <aside aria-label="Live fan tool spotlight" class="tools-live-panel" id="toolsLiveSpotlight">
+       <div class="tools-live-panel__top">
+        <span class="tools-live-label"><span aria-hidden="true" class="tools-live-dot"></span>Live now</span>
+        <span class="tools-live-marker" data-live-marker>NBA</span>
+       </div>
+       <h2 data-live-title>NBA Lineup Lab</h2>
+       <p data-live-summary>Build five-player lineups, compare combinations, and explore roster construction in a focused basketball sandbox.</p>
+       <div aria-label="Live tool capabilities" class="tools-live-capabilities" data-live-capabilities>
+        <span>Lineup builder</span>
+        <span>Local state</span>
+        <span>No checkout impact</span>
+       </div>
+      </aside>
      </div>
     </div>
    </section>
-   <section class="section section-top">
+   <section aria-label="Fan tool release status" class="container tools-status-strip">
+    <div class="tools-status-item tools-status-item--live">
+     <strong data-status-count="live">1</strong>
+     <span><b>Live experience</b><small>Ready to use now</small></span>
+    </div>
+    <div class="tools-status-item tools-status-item--planned">
+     <strong data-status-count="planned">4</strong>
+     <span><b>Planned tools</b><small>Sequenced for development</small></span>
+    </div>
+    <div class="tools-status-item tools-status-item--research">
+     <strong data-status-count="research">1</strong>
+     <span><b>Research gated</b><small>Waiting on verified data</small></span>
+    </div>
+   </section>
+   <section class="section section-top tools-roadmap" id="toolsRoadmap">
     <div class="container">
      <div class="section-heading">
       <div>
-       <span class="kicker">The tool shelf</span>
-       <h2 class="section-title">Choose an experience</h2>
+       <span class="kicker">The build queue</span>
+       <h2 class="section-title">What comes next</h2>
       </div>
-      <p class="tools-intro">Every entry has an explicit status, capability list, and implementation boundary so a future game can grow without coupling itself to catalog, checkout, or private data.</p>
+      <p class="tools-intro">Each idea has a visible release state and a narrow dependency, so new experiences can grow without crossing into catalog, checkout, or private account data.</p>
      </div>
-     <div aria-label="Filter fan tools" class="tools-filters" role="group">
-      <button aria-pressed="true" class="tools-filter" data-tool-filter="all" type="button">All</button>
-      <button aria-pressed="false" class="tools-filter" data-tool-filter="live" type="button">Live now</button>
-      <button aria-pressed="false" class="tools-filter" data-tool-filter="planned" type="button">Planned</button>
-      <button aria-pressed="false" class="tools-filter" data-tool-filter="research" type="button">Research gated</button>
-     </div>
-     <p aria-live="polite" class="tools-status" id="toolsStatus">Showing all fan tools.</p>
-     <div class="tools-grid" id="toolsGrid"></div>
+     <p aria-live="polite" class="sr-only" id="toolsStatus">6 fan experiences: 1 live, 4 planned, and 1 research gated.</p>
+     <div class="tools-featured" id="toolsFeatured"></div>
+     <div aria-label="Planned fan tools" class="tools-grid" id="toolsGrid"></div>
+     <div aria-label="Research-gated fan tools" class="tools-research" id="toolsResearch"></div>
      <noscript>
-      <p class="noscript">The tool shelf needs JavaScript to show its full roadmap. You can still open the <a href="../lineup-lab/">NBA Lineup Lab</a>.</p>
+      <p class="noscript">The roadmap needs JavaScript to show every planned experience. You can still open the <a href="../lineup-lab/">NBA Lineup Lab</a>.</p>
      </noscript>
     </div>
    </section>
-   <section class="section section-top">
+   <section class="section section-top tools-guardrails">
     <div class="container">
      <div class="section-heading">
       <div>
-       <span class="kicker">Shared guardrails</span>
-       <h2 class="section-title">A safe place to experiment</h2>
+       <span class="kicker">Built to stay dependable</span>
+       <h2 class="section-title">Foundation guardrails</h2>
       </div>
      </div>
      <div class="tools-boundary">
       <article class="feature-card">
-       <h3>Evidence before scoring</h3>
-       <p>Player, team, card, and analytics claims stay tied to a source and confidence label. Unknown identities remain unknown.</p>
+       <h3>One registry, clear states</h3>
+       <p>Every tool declares whether it is live, planned, or waiting on research.</p>
       </article>
       <article class="feature-card">
-       <h3>Games stay reversible</h3>
-       <p>Scenario and collection play should default to the visitor’s browser. A game never changes sale state, quantity, pricing, or checkout.</p>
+       <h3>Shop stays isolated</h3>
+       <p>Games cannot alter product, pricing, checkout, order, or customer records.</p>
       </article>
       <article class="feature-card">
-       <h3>One clear boundary</h3>
-       <p>Each tool gets its own folder, entry point, tests, and release paths. Shared helpers are reused; private backend access stays centralized.</p>
+       <h3>Verified data first</h3>
+       <p>Player and card analytics remain gated until their source mapping is trustworthy.</p>
       </article>
      </div>
     </div>
@@ -169,8 +195,8 @@
   </div>
 </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../core.js?v=20260830a"></script>
-  <script defer src="../nav.js?v=20260830a"></script>
-  <script type="module" src="./fan-tools.js?v=20260830a"></script>
+  <script defer src="../core.js?v=20260831a"></script>
+  <script defer src="../nav.js?v=20260831a"></script>
+  <script type="module" src="./fan-tools.js?v=20260831a"></script>
  </body>
 </html>

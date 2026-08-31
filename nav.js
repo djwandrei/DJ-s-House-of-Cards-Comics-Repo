@@ -52,7 +52,9 @@ window.DJ = window.DJ || {};
   }
 
   function isCompactNavViewport() {
-    return COMPACT_NAV_QUERY ? COMPACT_NAV_QUERY.matches : window.innerWidth <= COMPACT_NAV_BREAKPOINT;
+    // innerWidth remains current even in webviews where an existing
+    // MediaQueryList object's .matches value can lag after rotation.
+    return window.innerWidth <= COMPACT_NAV_BREAKPOINT;
   }
 
   function dedupePrimaryNavLinks() {
@@ -97,6 +99,121 @@ window.DJ = window.DJ || {};
 
     const aboutItem = navList.querySelector('a[href="about.html"]')?.closest('.primary-nav__item');
     navList.insertBefore(item, aboutItem || null);
+  }
+
+  /**
+   * Give every storefront page the same header search surface as the
+   * homepage. The static templates intentionally keep their lightweight
+   * fallback header; this enhancement adds the richer search chooser whenever
+   * JavaScript is available without changing page-specific content.
+   */
+  function ensureSharedHeaderSearch() {
+    const headerInner = document.querySelector('.site-header .header-inner');
+    if (!headerInner) return null;
+
+    const existing = headerInner.querySelector('.home-header-search');
+    if (existing) return existing;
+
+    const form = document.createElement('form');
+    form.className = 'home-header-search shared-header-search';
+    form.id = 'siteHeaderSearch';
+    form.setAttribute('role', 'search');
+    form.innerHTML = `
+      <label class="sr-only" for="siteHeaderSearchInput">Search the DJHC catalog</label>
+      <div class="home-header-search__bar">
+        <svg aria-hidden="true" class="home-header-search__icon" focusable="false" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="6.5"></circle>
+          <path d="m16 16 4 4"></path>
+        </svg>
+        <input autocomplete="off" id="siteHeaderSearchInput" name="search" placeholder="Search player, title, year, set, or category" type="search">
+        <button aria-controls="siteHeaderSearchScope" aria-expanded="false" id="siteHeaderSearchSubmit" type="submit">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="m16 16 4 4"></path>
+          </svg>
+          <span>Search</span>
+        </button>
+      </div>
+      <div class="home-search-scope" hidden id="siteHeaderSearchScope">
+        <p class="sr-only" id="siteHeaderSearchStatus" role="status"></p>
+        <div class="home-search-scope__heading">
+          <span>Choose where to search</span>
+          <strong id="siteHeaderSearchScopeTerm"></strong>
+        </div>
+        <div class="home-search-scope__links">
+          <a data-search-base="baseball-cards.html" href="baseball-cards.html">Baseball</a>
+          <a data-search-base="basketball-cards.html" href="basketball-cards.html">Basketball</a>
+          <a data-search-base="football-cards.html" href="football-cards.html">Football</a>
+          <a data-search-base="comics.html" href="comics.html">Comics</a>
+          <a data-search-base="collectibles.html" href="collectibles.html">Collectibles</a>
+        </div>
+      </div>`;
+
+    const nav = headerInner.querySelector('.site-nav');
+    headerInner.insertBefore(form, nav || null);
+    return form;
+  }
+
+  function initSharedHeaderSearch(form) {
+    if (!form || form.id === 'homeCatalogSearch' || form.dataset.searchBound === 'true') {
+      return;
+    }
+
+    const input = form.querySelector('input[type="search"]');
+    const submit = form.querySelector('button[type="submit"]');
+    const scope = form.querySelector('.home-search-scope');
+    const term = form.querySelector('.home-search-scope__heading strong');
+    const status = form.querySelector('[role="status"]');
+    if (!input || !submit || !scope || !term || !status) return;
+    form.dataset.searchBound = 'true';
+
+    const closeScope = () => {
+      scope.hidden = true;
+      submit.setAttribute('aria-expanded', 'false');
+      status.textContent = '';
+    };
+
+    const updateScope = ({ announce = false } = {}) => {
+      const query = input.value.trim();
+      if (!query) {
+        closeScope();
+        input.focus();
+        status.textContent = 'Enter a search term before choosing a department.';
+        return false;
+      }
+
+      term.textContent = `“${query}”`;
+      scope.querySelectorAll('[data-search-base]').forEach((link) => {
+        link.href = `${link.dataset.searchBase}?search=${encodeURIComponent(query)}`;
+      });
+      scope.hidden = false;
+      submit.setAttribute('aria-expanded', 'true');
+      if (announce) status.textContent = `Choose a department to search for ${query}.`;
+      return true;
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      updateScope({ announce: true });
+    });
+
+    input.addEventListener('input', () => {
+      if (!scope.hidden) updateScope();
+    });
+
+    form.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        updateScope({ announce: true });
+      } else if (event.key === 'Escape' && !scope.hidden) {
+        closeScope();
+        input.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!form.contains(event.target)) closeScope();
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -210,9 +327,8 @@ window.DJ = window.DJ || {};
      * Keep the off-canvas menu hidden from keyboard and assistive-tech users
      * while it is visually closed on small screens, without affecting desktop.
      */
-    const syncMenuAccessibility = () => {
+    const syncMenuAccessibility = (compactNav = isCompactNavViewport()) => {
       const isOpen = nav.classList.contains('open');
-      const compactNav = isCompactNavViewport();
       const shouldHide = compactNav && !isOpen;
       nav.setAttribute('aria-hidden', String(shouldHide));
 
@@ -237,7 +353,7 @@ window.DJ = window.DJ || {};
       }
     };
 
-    const closeMenu = ({ restoreFocus = false } = {}) => {
+    const closeMenu = ({ restoreFocus = false, compactNav } = {}) => {
       nav.classList.remove('open');
       updateMenuToggleState(false);
       document.body.classList.remove('menu-open');
@@ -253,7 +369,7 @@ window.DJ = window.DJ || {};
       }
 
       lastFocusedBeforeOpen = null;
-      syncMenuAccessibility();
+      syncMenuAccessibility(compactNav);
     };
 
     const openMenu = () => {
@@ -298,18 +414,28 @@ window.DJ = window.DJ || {};
       closeMenu({ restoreFocus: true });
     });
 
-    const handleViewportChange = () => {
-      if (!isCompactNavViewport()) {
-        closeMenu();
+    const handleViewportChange = (event) => {
+      // MediaQueryList events carry the settled breakpoint state even in
+      // browsers where innerWidth is updated a moment after the resize event.
+      // The window-resize fallback has no `matches` property and uses the live
+      // viewport width instead.
+      const compactNav = typeof event?.matches === 'boolean'
+        ? event.matches
+        : isCompactNavViewport();
+      if (!compactNav) {
+        closeMenu({ compactNav: false });
         return;
       }
 
-      syncMenuAccessibility();
+      syncMenuAccessibility(true);
     };
 
-    if (!DJ.bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange)) {
-      DJ.addSharedResizeListener(handleViewportChange, { runImmediately: false });
-    }
+    // Some embedded browsers and device-emulation environments do not emit a
+    // reliable MediaQueryList change event. Accessibility state is inexpensive
+    // to synchronize, so update it directly instead of risking a throttled frame
+    // leaving desktop navigation hidden after a rotate or window resize.
+    DJ.bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange);
+    window.addEventListener('resize', handleViewportChange, { passive: true });
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
@@ -571,6 +697,8 @@ window.DJ = window.DJ || {};
   // already-interactive documents makes the menu resilient if this deferred
   // script is restored from cache after DOMContentLoaded has already fired.
   function bootNavigation() {
+    const headerSearch = ensureSharedHeaderSearch();
+    initSharedHeaderSearch(headerSearch);
     ensureFanToolsLink();
     applyActiveNavState();
     initPrimaryNav();

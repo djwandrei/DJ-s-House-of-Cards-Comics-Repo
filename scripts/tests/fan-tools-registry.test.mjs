@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { filterRegistry } from '../../tools/fan-tools.js';
+import { countRegistryByStatus, filterRegistry, formatToolsStatus } from '../../tools/fan-tools.js';
 import { TOOL_REGISTRY, TOOL_STATUSES } from '../../tools/registry.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -15,15 +15,21 @@ test('fan tool registry has unique, complete metadata', () => {
   TOOL_REGISTRY.forEach((tool) => {
     assert.match(tool.id, /^[a-z0-9-]+$/);
     assert.ok(['tool', 'game'].includes(tool.kind));
+    assert.match(tool.marker, /^[A-Za-z0-9 ]{2,8}$/);
     assert.ok(Object.values(TOOL_STATUSES).includes(tool.status));
     assert.ok(tool.summary.length > 20);
     assert.ok(tool.capabilities.length > 0);
     assert.ok(tool.dependencies.length > 0);
     assert.ok(tool.implementationNotes.length > 20);
 
-    if (tool.status === TOOL_STATUSES.LIVE) {
-      assert.ok(tool.href, `${tool.id} is live but has no route`);
-      assert.ok(fs.existsSync(path.resolve(root, 'tools', tool.href)), `${tool.id} route does not exist`);
+    if (tool.href) {
+      const routePath = path.resolve(root, 'tools', tool.href);
+      const relativeRoute = path.relative(root, routePath);
+      assert.ok(relativeRoute && !relativeRoute.startsWith('..') && !path.isAbsolute(relativeRoute), `${tool.id} route escapes the site root`);
+      const routeEntry = fs.statSync(routePath).isDirectory() ? path.join(routePath, 'index.html') : routePath;
+      assert.ok(fs.existsSync(routeEntry) && fs.statSync(routeEntry).isFile(), `${tool.id} route has no page entry file`);
+    } else if (tool.status === TOOL_STATUSES.LIVE) {
+      assert.fail(`${tool.id} is live but has no route`);
     } else {
       assert.equal(tool.href, null, `${tool.id} is not live but exposes a route`);
     }
@@ -35,8 +41,25 @@ test('fan tools page keeps the roadmap isolated and accessible', () => {
   assert.match(html, /data-page="fan-tools"/);
   assert.match(html, /(?:name="robots"[^>]+content="noindex,follow|content="noindex,follow[^>]+name="robots")/i);
   assert.match(html, /id="toolsGrid"/);
+  assert.match(html, /id="toolsFeatured"/);
+  assert.match(html, /id="toolsResearch"/);
+  assert.match(html, /data-status-count="live"/);
+  assert.match(html, /href="#toolsRoadmap"/);
   assert.match(html, /type="module"[^>]+fan-tools\.js/);
   assert.match(html, /href="\/tools\/"[^>]+data-fan-tools-link="true"|data-fan-tools-link="true"[^>]+href="\/tools\/"/);
+});
+
+test('fan tools stylesheet asset URLs resolve from the nested tools directory', () => {
+  const stylesheetPath = path.join(root, 'tools', 'fan-tools.css');
+  const stylesheet = fs.readFileSync(stylesheetPath, 'utf8');
+  const localAssetUrls = Array.from(stylesheet.matchAll(/url\(["']?([^"')]+)["']?\)/g), (match) => match[1])
+    .filter((url) => !/^(?:data:|https?:|#)/i.test(url));
+
+  assert.ok(localAssetUrls.length > 0, 'fan tools stylesheet has no local asset URLs to verify');
+  localAssetUrls.forEach((url) => {
+    const assetPath = path.resolve(path.dirname(stylesheetPath), url.split(/[?#]/, 1)[0]);
+    assert.ok(fs.existsSync(assetPath), `fan tools stylesheet asset does not exist: ${url}`);
+  });
 });
 
 test('fan tool filters preserve registry order and status boundaries', () => {
@@ -47,4 +70,15 @@ test('fan tool filters preserve registry order and status boundaries', () => {
   );
   assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 4);
   assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 1);
+  assert.equal(formatToolsStatus('all', TOOL_REGISTRY.length), `Showing ${TOOL_REGISTRY.length} fan tools.`);
+  assert.equal(formatToolsStatus(TOOL_STATUSES.LIVE, 1), 'Showing 1 live fan tool.');
+  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 4), 'Showing 4 planned fan tools.');
+});
+
+test('fan tool status summary is derived from the registry', () => {
+  assert.deepEqual(countRegistryByStatus(), {
+    [TOOL_STATUSES.LIVE]: 1,
+    [TOOL_STATUSES.PLANNED]: 4,
+    [TOOL_STATUSES.RESEARCH]: 1
+  });
 });

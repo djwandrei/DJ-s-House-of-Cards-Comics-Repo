@@ -239,7 +239,7 @@
                     <span class="simple-model-summary__mark" aria-hidden="true">✓</span>
                     <div>
                       <strong id="simpleModelSummaryHeading">Accuracy safeguards are on</strong>
-                      <p id="simpleModelSummaryCopy">The optimizer uses stats recorded with this team, applies the visible sample filter, and protects against low-opportunity rate spikes. In rotation mode, it compares rates fairly before assigning all 240 minutes.</p>
+                      <p id="simpleModelSummaryCopy">The optimizer uses stats recorded with this team, applies the visible sample filter, and protects against low-opportunity rate spikes. In rotation mode, it compares rates fairly and gradually reduces the value of extra workload before assigning all 240 minutes.</p>
                       <small id="simpleModelSummaryNote">Past team games and total minutes do not affect selection or assigned minutes. Open Detailed only when you want to change advanced rules.</small>
                     </div>
                   </aside>
@@ -276,10 +276,10 @@
                     <fieldset>
                       <legend>Sample filter</legend>
                       <div class="compact-fields compact-fields--two">
-                        <label class="field"><span>Minimum games</span><input id="minGamesInput" type="number" min="0" max="82" step="1" value="20"></label>
+                        <label class="field"><span>Minimum games with this team</span><input id="minGamesInput" type="number" min="0" max="82" step="1" value="20"></label>
                         <label class="field"><span>Minimum MPG</span><input id="minMinutesInput" type="number" min="0" max="48" step="0.5" value="6"></label>
                       </div>
-                      <p class="helper">A player must meet both requirements to enter the search. This controls evidence quality; it does not assign minutes. Recommended defaults are 20 regular-season games and 3 playoff games.</p>
+                      <p class="helper" id="sampleFilterHelp">A player must meet both requirements to enter the search. These filters control evidence quality; neither one assigns model minutes. Starting-five defaults are 20 regular-season games with this team and 6 MPG.</p>
                     </fieldset>
 
                     <fieldset class="constraint-group--wide" aria-describedby="productionRulesHelp">
@@ -300,7 +300,7 @@
                       <div class="rotation-model-intro">
                         <div>
                           <strong>Assign minutes to match your game plan.</strong>
-                          <p>The optimizer gives the best-fitting group all 240 game minutes. Past team usage is context only; low-opportunity rates are projected conservatively as roles expand.</p>
+                          <p>The optimizer gives the best-fitting group all 240 game minutes. Better players can earn larger roles, but extra minutes gradually provide less added value so small rating gaps do not force everyone to a minimum or maximum.</p>
                         </div>
                         <span class="model-status-chip">Exact 240-minute plan</span>
                       </div>
@@ -335,9 +335,9 @@
                           </select>
                         </label>
                         <label class="field" id="rotationRateStabilityField">
-                          <span>Protect against small-role spikes</span>
+                          <span>Use realistic rate and workload scaling</span>
                           <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
-                            <option value="sampleAdjusted" selected>Conservative projection — recommended</option>
+                            <option value="sampleAdjusted" selected>Conservative rates + diminishing returns — recommended</option>
                             <option value="raw">Use raw rates — advanced</option>
                           </select>
                         </label>
@@ -351,10 +351,10 @@
                           </select>
                         </label>
                       </div>
-                      <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> past team games and total minutes never restrict the plan. The model stays inside your hard player limits and prevents low-opportunity spikes from being treated like proven starter production.</p>
+                      <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> past team games and total minutes never restrict the plan. The model stays inside your hard limits, protects against low-opportunity spikes, and gradually tapers marginal fit above the rotation’s average workload.</p>
                       <p class="field__help" id="rotationAllocationStyleHelp">Past usage is context only. Lineup Lab does not use source totals as a minute cap, target, or scoring input.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
-                      <p class="field__help" id="rotationRateStabilityHelp">The model uses metric-specific opportunity requirements, then smoothly reduces any unproven advantage as a player expands beyond his established role. A larger role can never improve a below-baseline projection. Past team totals do not change this estimate or the player’s minute limits.</p>
+                      <p class="field__help" id="rotationRateStabilityHelp">Two safeguards work together. Unproven per-36 advantages move toward a same-season baseline as a role expands, while each extra minute above the rotation’s average workload adds slightly less lineup value. Better players can still earn more minutes or reach your maximum. Neither safeguard uses past team totals as a cap or target.</p>
                       <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from season-listed positions and minutes per appearance. Games played and source totals are excluded. Verified career positions still improve eligibility.</p>
                       <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking rate and impact evidence for this roster…</p>
                       <div class="rotation-hard-limits">
@@ -365,7 +365,7 @@
                         <label class="field"><span>Minimum minutes per selected player</span><input id="rotationMinInput" type="number" min="0" max="30" step="1" value="8"></label>
                         <label class="field"><span>Maximum minutes per selected player</span><input id="rotationMaxInput" type="number" min="20" max="48" step="1" value="40"></label>
                       </div>
-                      <p class="helper" id="rotationMinutesHelp">The solver creates an exact 240-minute plan for every eligible group.</p>
+                      <p class="helper" id="rotationMinutesHelp">The solver creates an exact 240-minute plan for every eligible group. These are hard limits; the diminishing-return curve only decides which allowed extra minute helps the game plan most.</p>
                     </fieldset>
                   </div>
                 </section>
@@ -525,13 +525,13 @@
             <article class="panel model-card">
               <span class="model-card__number">03</span>
               <h3>Exact constraints</h3>
-              <p>The solver checks every eligible combination within a safe browser limit. Locked and excluded players, position assignments, production floors, and turnover ceilings are hard rules.</p>
+              <p>Rotation mode checks every eligible combination with no candidate-count cutoff; the work continues in the background until it finishes or you change the scenario. Five-player lineup mode keeps a separate browser safeguard. Locked and excluded players, position assignments, production floors, and turnover ceilings are hard rules.</p>
             </article>
             <article class="panel model-card">
               <span class="model-card__number">04</span>
               <h3>Honest limitations</h3>
               <p>The selected team-season pool shows players who appeared for that team; it is not a current depth chart or injury report. Box scores do not directly measure chemistry, matchups, role changes, or on-court possessions. Any per-100 view is clearly labelled as an estimate.</p>
-              <p>Rotation mode gives every candidate an exact 240-minute plan. The recommended model first stabilizes each metric using its own role/attempt-volume requirement, then smoothly regresses an unproven advantage as a role expands. Past team games and total minutes never restrict the rotation, and a below-baseline player never improves simply because more minutes were assigned. Past team usage is display context only.</p>
+              <p>Rotation mode gives every candidate an exact 240-minute plan. The recommended model first stabilizes each metric using its own role or attempt-volume requirement, then smoothly regresses an unproven advantage as a role expands. It also applies diminishing marginal fit above the average workload for the selected rotation size, preventing a linear score difference from automatically pushing most players to their minimum or maximum. Optional production rules keep this same minute logic while testing conservative static rates, so adding a floor does not quietly change the objective. Better players can still earn larger roles, and only your displayed minimum and maximum are hard caps. Past team usage is display context only.</p>
               <p>OBPM and DBPM are player-season box-score estimates, not proof of five-player chemistry or lineup impact. Verified play-by-play impact can be added as a separate evidence layer when coverage exists; it is not inferred from raw plus-minus or team totals.</p>
             </article>
           </div>

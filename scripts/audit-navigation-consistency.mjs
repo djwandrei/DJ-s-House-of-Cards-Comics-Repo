@@ -12,9 +12,22 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const write = process.argv.includes('--write');
-const htmlFiles = fs.readdirSync(root)
-  .filter((name) => name.endsWith('.html'))
-  .sort();
+
+function discoverToolsHtml(relativeDirectory = 'tools') {
+  const absoluteDirectory = path.join(root, relativeDirectory);
+  if (!fs.existsSync(absoluteDirectory)) return [];
+
+  return fs.readdirSync(absoluteDirectory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(relativeDirectory.replaceAll('\\', '/'), entry.name);
+    if (entry.isDirectory()) return discoverToolsHtml(relativePath);
+    return entry.isFile() && entry.name.endsWith('.html') ? [relativePath] : [];
+  });
+}
+
+const htmlFiles = [
+  ...fs.readdirSync(root).filter((name) => name.endsWith('.html')),
+  ...discoverToolsHtml()
+].sort();
 const excludedPages = new Set(['offline']);
 const canonicalNav = `<nav aria-label="Primary navigation" class="site-nav" id="siteNav">
      <ul class="primary-nav__list">
@@ -103,6 +116,42 @@ function verifyCanonicalNav(html, file) {
   }
 }
 
+function verifyNestedNav(html, file) {
+  const navMarkup = getNavMarkup(html, file);
+  const resolvedPaths = [...navMarkup.matchAll(/href="([^"]+)"/g)].map((match) => (
+    new URL(match[1], `https://local.djhc.test/${file}`).pathname
+  ));
+  const requiredPaths = [
+    '/shop.html',
+    '/sports-cards.html',
+    '/baseball-cards.html',
+    '/basketball-cards.html',
+    '/football-cards.html',
+    '/comics.html',
+    '/collectibles.html',
+    '/tools/',
+    '/about.html',
+    '/wishlist.html',
+    '/cart.html',
+    '/account.html'
+  ];
+
+  requiredPaths.forEach((requiredPath) => {
+    if (!resolvedPaths.includes(requiredPath)) {
+      throw new Error(`${file}: primary navigation is missing ${requiredPath}.`);
+    }
+  });
+  if ((navMarkup.match(/data-cart-link/g) || []).length !== 1) {
+    throw new Error(`${file}: Cart link is missing or duplicated.`);
+  }
+  if ((navMarkup.match(/data-fan-tools-link/g) || []).length !== 1) {
+    throw new Error(`${file}: Fan Tools link is missing or duplicated.`);
+  }
+  if ((navMarkup.match(/id="sportsCardsSubmenu"/g) || []).length !== 1) {
+    throw new Error(`${file}: Sports Cards submenu is missing or duplicated.`);
+  }
+}
+
 const navConfig = loadNavConfig();
 let changed = 0;
 
@@ -116,12 +165,16 @@ for (const file of htmlFiles) {
     throw new Error(`${file}: PAGE_NAV_CONFIG has no entry for "${pageKey}".`);
   }
 
-  const next = write ? applyCanonicalNav(original, file) : original;
+  // Nested routes need page-relative hrefs, so --write remains intentionally
+  // limited to the canonical root shell while nested shells are verified.
+  const nested = file.includes('/');
+  const next = write && !nested ? applyCanonicalNav(original, file) : original;
   if (next !== original) {
     fs.writeFileSync(filePath, next, 'utf8');
     changed += 1;
   }
-  verifyCanonicalNav(next, file);
+  if (nested) verifyNestedNav(next, file);
+  else verifyCanonicalNav(next, file);
 }
 
 console.log(`Navigation consistency check passed for ${htmlFiles.length - excludedPages.size} pages.${write ? ` Updated ${changed} header${changed === 1 ? '' : 's'}.` : ''}`);

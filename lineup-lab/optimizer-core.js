@@ -10,7 +10,7 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260827a";
+} from "./optimizer-config.js?v=20260831a";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,
@@ -141,12 +141,18 @@ const PLAN_FIT_INDEX_POINTS_PER_BPM = 5;
 // beyond a player's established role. Costs remain safely below Number's exact
 // integer ceiling even across a full 240-minute regulation allocation.
 const ROLE_CONDITIONED_UTILITY_COST_SCALE = 1_000_000_000;
-// The minute-aware allocator is an exact min-cost flow rather than a heuristic,
-// but it solves one 240-unit network for each roster combination. Retain the
-// existing linear exact model for unusually broad searches so the browser's
-// watchdog remains a safety boundary, not a source of partial answers.
-const MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS = 2_000;
-
+// Weighted percentiles are excellent for comparing player profiles, but a
+// linear "one percentile point per minute" objective has an undesirable
+// mathematical side effect: the exact optimizer fills the best player to his
+// maximum, then the next-best player, while leaving the rest at their minimums.
+// That boundary-heavy answer is correct for the *linear* equation but is a poor
+// representation of marginal basketball value. After the rotation's average
+// workload, each additional minute now retains a smaller share of its prior
+// marginal fit. The curve is deliberately independent of recorded MPG, games,
+// or team-stint totals; it models workload saturation, not coaching history.
+// A 35% floor still lets a truly dominant player reach the user's maximum.
+const WORKLOAD_SATURATION_MARGINAL_FLOOR = 0.35;
+const WORKLOAD_SATURATION_TRANSITION_MINUTES = 8;
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
 // A regulation NBA game contains five simultaneous court roles for 48 minutes:
 // two guard roles, two forward roles, and one center role. Rotation roster
@@ -178,8 +184,9 @@ const PLAYER_NUMERIC_FIELDS = Object.freeze([
 ]);
 
 // A constrained minute state costs roughly 0.4 ms on the slow path observed in
-// browser QA. This solve-wide ceiling leaves substantial room below the
-// Worker's 30-second watchdog even when several candidate rosters are hard.
+// browser QA. This is a per-candidate proof guard for an unusually difficult
+// set of production thresholds; it is not a ceiling on how many candidate
+// rotations the outer exact search may inspect.
 export const DEFAULT_MAX_CONSTRAINED_SOLVE_STATES = 10000;
 export const MAX_CONSTRAINED_SOLVE_STATES = 15000;
 // The browser only needs a handful of alternatives. Capping this protects the
@@ -515,16 +522,23 @@ function normalizeConfig(config = {}) {
     reasons.push(`alternatives cannot exceed ${MAX_EXACT_ALTERNATIVES}.`);
   }
 
-  const maxCombinations = normalizeNonNegativeNumber(
-    config.maxCombinations,
-    mode === "rotation"
-      ? DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS
-      : DEFAULT_MAX_EXACT_COMBINATIONS,
-    "maxCombinations",
-    reasons,
-    true,
-  );
-  if (maxCombinations < 1) reasons.push("maxCombinations must be at least 1.");
+  // Rotation enumeration is deliberately uncapped by candidate count. Ignore
+  // the legacy maxCombinations option in that mode so an older shared config
+  // cannot accidentally reintroduce the retired cutoff. Five-player lineup
+  // mode keeps its separate browser safeguard because it does not use the
+  // rotation Worker's long-running-search contract.
+  const maxCombinations = mode === "rotation"
+    ? null
+    : normalizeNonNegativeNumber(
+      config.maxCombinations,
+      DEFAULT_MAX_EXACT_COMBINATIONS,
+      "maxCombinations",
+      reasons,
+      true,
+    );
+  if (mode !== "rotation" && maxCombinations < 1) {
+    reasons.push("maxCombinations must be at least 1.");
+  }
   const maxConstraintSearchStates = normalizeNonNegativeNumber(
     config.maxConstraintSearchStates,
     DEFAULT_MAX_CONSTRAINED_SOLVE_STATES,
@@ -1243,10 +1257,12 @@ function buildEffectiveObjectiveWeights(requestedWeights, availableMetrics) {
  * Build the minute-aware companion to the ordinary per-36 score. The static
  * score remains the expected profile at the rotation's common workload. When a
  * player receives more minutes than that profile is established for, only the
- * added minute units decay toward a conservative same-season bound. That is deliberately
- * different from a historical-minute cap: a low-minute player can still earn a
- * large role, but the model does not repeat an unproven rate unchanged for all
- * of those extra minutes.
+ * added minute units decay toward a conservative same-season bound. A second
+ * shared workload curve starts after the rotation's average role so a linear
+ * percentile difference cannot force every player to a minimum or maximum.
+ * Both corrections are deliberately different from a historical-minute cap: a
+ * low-minute player can still earn a large role, and a dominant player can
+ * still reach the user's maximum.
  *
  * The plan is calculated once over the full eligible pool, not separately for
  * each candidate lineup. That keeps percentile comparisons fair and lets the
@@ -1262,10 +1278,16 @@ function buildRoleConditionedProjectionPlan(
   const stabilizedMetrics = Array.isArray(metricResult?.rateStability?.stabilizedMetrics)
     ? metricResult.rateStability.stabilizedMetrics
     : [];
+  const objectiveMetrics = OBJECTIVE_METRICS.filter(
+    (metric) => Number(normalizedWeights?.[metric]) > 1e-12,
+  );
   const activeMetrics = stabilizedMetrics.filter(
     (metric) => Number(normalizedWeights?.[metric]) > 1e-12,
   );
-  if (!(referenceMinutes > 0) || activeMetrics.length === 0) return null;
+  // Workload saturation corrects the linear minute objective independently of
+  // sample adjustment. Keep the plan available in advanced raw-rate mode too;
+  // `activeMetrics` then remains empty, so no evidence-based rate is altered.
+  if (!(referenceMinutes > 0) || objectiveMetrics.length === 0) return null;
 
   const evidenceMinutesById = new Map();
   const establishedScoresById = new Map();
@@ -1363,13 +1385,9 @@ function buildRoleConditionedProjectionPlan(
     if (Math.abs(establishedScore - expandedScore) > 1e-12) changesAnyScore = true;
   }
 
-  // Do not spend an exact min-cost solve on a curve that is mathematically
-  // identical to the ordinary fixed-rate objective (for example, when every
-  // selected metric is exactly league-average in the current pool).
-  if (!changesAnyScore) return null;
-
   return {
     referenceMinutes,
+    objectiveMetrics,
     activeMetrics,
     evidenceMinutesById,
     establishedScoresById,
@@ -1379,6 +1397,12 @@ function buildRoleConditionedProjectionPlan(
     establishedBenchmarkIndexesById,
     expandedBenchmarkIndexesById,
     transitionMinutesById,
+    // Workload saturation applies even when the role-expansion bound happens
+    // to equal every established score. That is intentional: a fixed linear
+    // percentile objective is precisely what created the min/max clustering.
+    workloadSaturationMarginalFloor: WORKLOAD_SATURATION_MARGINAL_FLOOR,
+    workloadSaturationTransitionMinutes: WORKLOAD_SATURATION_TRANSITION_MINUTES,
+    roleExpansionChangesAnyScore: changesAnyScore,
   };
 }
 
@@ -1500,15 +1524,15 @@ function roleConditionedMinuteSplit(playerId, assignedMinutes, roleProjectionPla
 }
 
 /**
- * Integrate a smooth marginal-value curve over every assigned minute.
+ * Integrate only the evidence-based role-expansion curve.
  *
- * Before `establishedRoleMinutes`, each minute receives the player's stabilized
- * established value. Beyond it, marginal value starts at that same point and
- * decays exponentially toward the conservative expansion bound. The formula
- * is continuous, monotone, and deterministic, so the integer min-cost flow can
- * still compare the exact value of adding minute N versus minute N + 1.
+ * Projected box-score totals and the league-anchored Plan Fit Index use this
+ * helper because the new workload-saturation term is an allocation utility,
+ * not a claim that a 36th minute literally erases a fixed share of a player's
+ * points or rebounds. Keeping those concepts separate preserves both honest
+ * production estimates and the meaning of 100 as the league baseline.
  */
-function roleConditionedValueUnits(
+function roleExpansionValueUnits(
   playerId,
   assignedMinutes,
   establishedValue,
@@ -1530,6 +1554,116 @@ function roleConditionedValueUnits(
     split.expanded * expandedValue +
     decayingAdvantageUnits
   );
+}
+
+/**
+ * Return the non-historical workload multiplier for one discrete player-minute.
+ *
+ * The curve begins after `referenceMinutes`, which is exactly 240 divided by
+ * the requested rotation size. It therefore adapts to an eight-player or
+ * twelve-player rotation without importing the source team's minute choices.
+ * Evaluating at the minute midpoint keeps the function smooth when the average
+ * workload is fractional (for example, 26.67 minutes in a nine-player group).
+ */
+function workloadSaturationMultiplier(assignedMinute, roleProjectionPlan) {
+  const referenceMinutes = finiteNonNegative(roleProjectionPlan?.referenceMinutes);
+  if (!(referenceMinutes > 0)) return 1;
+  const minuteMidpoint = Math.max(0, Number(assignedMinute) - 0.5);
+  const excess = Math.max(0, minuteMidpoint - referenceMinutes);
+  if (excess <= 0) return 1;
+  const transition = Math.max(
+    0.000001,
+    Number(roleProjectionPlan?.workloadSaturationTransitionMinutes) ||
+      WORKLOAD_SATURATION_TRANSITION_MINUTES,
+  );
+  const floor = Math.max(
+    0,
+    Math.min(
+      1,
+      Number(roleProjectionPlan?.workloadSaturationMarginalFloor) ||
+        WORKLOAD_SATURATION_MARGINAL_FLOOR,
+    ),
+  );
+  return floor + ((1 - floor) * Math.exp(-excess / transition));
+}
+
+/**
+ * Compute the value of one additional integer minute under both corrections.
+ *
+ * First, minutes beyond an unproven role decay toward the same-season bound.
+ * Second, minutes beyond the rotation's average workload receive the shared
+ * workload-saturation multiplier above. Multiplying the two marginal curves
+ * keeps the objective separable and concave, so min-cost flow still returns an
+ * exact global optimum for the stated model rather than a post-solve rebalance.
+ */
+function roleConditionedMarginalValueUnits(
+  playerId,
+  assignedMinute,
+  establishedValue,
+  expandedValue,
+  roleProjectionPlan,
+) {
+  const minute = Math.max(1, Math.floor(Number(assignedMinute) || 1));
+  const establishedRoleMinutes = finiteNonNegative(
+    roleProjectionPlan?.evidenceMinutesById?.get(playerId),
+  );
+  let marginalValue = establishedValue;
+  if (establishedRoleMinutes !== null && minute > establishedRoleMinutes) {
+    const transition = Math.max(
+      0.000001,
+      Number(roleProjectionPlan?.transitionMinutesById?.get(playerId)) || 8,
+    );
+    const expandedStart = Math.max(0, (minute - 1) - establishedRoleMinutes);
+    const expandedEnd = Math.max(0, minute - establishedRoleMinutes);
+    // This is the exact integral of the existing exponential role-expansion
+    // curve over one minute. Summing these units reproduces the prior closed
+    // form before the workload multiplier is applied.
+    const decayingAdvantage =
+      (establishedValue - expandedValue) *
+      transition *
+      (Math.exp(-expandedStart / transition) - Math.exp(-expandedEnd / transition));
+    marginalValue = expandedValue + decayingAdvantage;
+  }
+  return marginalValue * workloadSaturationMultiplier(minute, roleProjectionPlan);
+}
+
+/**
+ * Sum the exact discrete marginal-value curve over assigned minutes.
+ *
+ * Rotation allocations are integers, but the fractional tail keeps this helper
+ * safe for reporting callers. No player is capped by this calculation: hard
+ * minimums and maximums remain the only availability limits.
+ */
+function roleConditionedValueUnits(
+  playerId,
+  assignedMinutes,
+  establishedValue,
+  expandedValue,
+  roleProjectionPlan,
+) {
+  const allocated = Math.max(0, Number(assignedMinutes) || 0);
+  const wholeMinutes = Math.floor(allocated);
+  let total = 0;
+  for (let minute = 1; minute <= wholeMinutes; minute += 1) {
+    total += roleConditionedMarginalValueUnits(
+      playerId,
+      minute,
+      establishedValue,
+      expandedValue,
+      roleProjectionPlan,
+    );
+  }
+  const fractionalMinute = allocated - wholeMinutes;
+  if (fractionalMinute > 1e-12) {
+    total += fractionalMinute * roleConditionedMarginalValueUnits(
+      playerId,
+      wholeMinutes + 1,
+      establishedValue,
+      expandedValue,
+      roleProjectionPlan,
+    );
+  }
+  return total;
 }
 
 function roleConditionedScoreUnits(playerId, assignedMinutes, roleProjectionPlan) {
@@ -1587,7 +1721,7 @@ function projectedStatTotalForAssignedMinutes(
   // used by the percentile layer, so a missing baseline cannot silently become
   // an advantage or a made-up projection.
   if (expandedRate === null || split.expanded <= 0) return staticRate * assignedMinutes;
-  return roleConditionedValueUnits(
+  return roleExpansionValueUnits(
     player.id,
     assignedMinutes,
     staticRate,
@@ -1698,7 +1832,7 @@ function calculateBenchmarkFit(
           && Number.isFinite(expandedIndex),
       );
       const appliedIndex = usesAssignedRoleProjection
-        ? roleConditionedValueUnits(
+        ? roleExpansionValueUnits(
           player.id,
           assignedMinutes,
           index,
@@ -2125,12 +2259,37 @@ function normalizeRoleConditionedScorePlan(players, source, reasons) {
       transitionMinutesById.set(id, rawValue);
     }
   }
+  const workloadSaturationMarginalFloor = Number(
+    source.workloadSaturationMarginalFloor ?? WORKLOAD_SATURATION_MARGINAL_FLOOR,
+  );
+  if (
+    !Number.isFinite(workloadSaturationMarginalFloor) ||
+    workloadSaturationMarginalFloor < 0 ||
+    workloadSaturationMarginalFloor > 1
+  ) {
+    reasons.push("roleConditionedScorePlan.workloadSaturationMarginalFloor must be between 0 and 1.");
+  }
+  const workloadSaturationTransitionMinutes = Number(
+    source.workloadSaturationTransitionMinutes ?? WORKLOAD_SATURATION_TRANSITION_MINUTES,
+  );
+  if (
+    !Number.isFinite(workloadSaturationTransitionMinutes) ||
+    workloadSaturationTransitionMinutes <= 0 ||
+    workloadSaturationTransitionMinutes > 48
+  ) {
+    reasons.push("roleConditionedScorePlan.workloadSaturationTransitionMinutes must be above 0 and at most 48.");
+  }
   if (reasons.length > 0) return null;
   return {
     ...source,
     referenceMinutes,
     ...normalized,
     transitionMinutesById,
+    workloadSaturationMarginalFloor,
+    workloadSaturationTransitionMinutes,
+    objectiveMetrics: Array.isArray(source.objectiveMetrics)
+      ? source.objectiveMetrics.filter((metric) => OBJECTIVE_METRICS.includes(metric))
+      : [],
     activeMetrics: Array.isArray(source.activeMetrics)
       ? source.activeMetrics.filter((metric) => OBJECTIVE_METRICS.includes(metric))
       : [],
@@ -2835,17 +2994,95 @@ function historicalContinuityPositionAllocation(
 /**
  * Maximize the minute-aware game-plan score while proving the full G/F/C role
  * shape. Each source-to-player edge represents one additional minute and uses
- * that minute's marginal value: established-rate minutes first, then a smooth
- * decay toward the conservative bound for unestablished expansion. Because the network
- * has integral capacities and solves every path to minimum cost, this remains
- * an exact allocation for the stated piecewise rate model—not an after-the-fact
- * reduction in a player's minutes.
+ * that minute's marginal value: established-rate minutes first, a smooth decay
+ * toward the conservative bound for unestablished expansion, and a shared
+ * workload-saturation curve after the rotation's average role. Because the
+ * network has integral capacities and solves every path to minimum cost, this
+ * remains an exact allocation for the stated diminishing-return model—not an
+ * after-the-fact reduction in a player's minutes.
  */
-function roleConditionedPositionAllocation(players, bounds, requirements, scorePlan) {
-  const feasibility = findPositionMinuteFlow(players, bounds, requirements);
-  if (!feasibility.feasible) return feasibility;
-
+function roleConditionedPositionAllocation(
+  players,
+  bounds,
+  requirements,
+  scorePlan,
+  marginalAdjustmentById = null,
+) {
   const sortedPlayers = players.slice().sort(comparePlayersById);
+  // Production-constraint certification occasionally adds a constant linear
+  // value to every minute assigned to a player (for example, lambda times that
+  // player's rebound rate). A player-specific constant preserves the decreasing
+  // marginal curve, so both the relaxed greedy path and the role-flow network
+  // remain exact for the adjusted objective. Ordinary allocation passes no map
+  // and therefore retains its established behavior and integer-scaled tie rules.
+  const usesExactMarginalAdjustment = marginalAdjustmentById instanceof Map;
+  const marginalAdjustment = (playerId) => {
+    const value = Number(marginalAdjustmentById?.get(playerId));
+    return Number.isFinite(value) ? value : 0;
+  };
+  // First solve the relaxed problem that ignores G/F/C labels. Because each
+  // player's marginal curve is non-increasing, repeatedly selecting the best
+  // available next minute is the exact optimum for the separable concave
+  // workload objective. If those player totals can also be split across the
+  // required roles, they are automatically the exact constrained optimum—no
+  // role-feasible plan could beat the relaxed upper bound. This common fast
+  // path avoids building a 240-edge cost network for thousands of ordinary
+  // roster combinations while preserving the same mathematical answer.
+  const relaxedMinutes = new Map(
+    sortedPlayers.map((player) => [player.id, bounds.get(player.id).min]),
+  );
+  let relaxedRemaining = POSITION_KEYS.reduce(
+    (total, position) => total + requirements[position],
+    0,
+  ) - [...relaxedMinutes.values()].reduce((total, minutes) => total + minutes, 0);
+  while (relaxedRemaining > 0) {
+    let bestPlayer = null;
+    let bestMarginal = Number.NEGATIVE_INFINITY;
+    for (const player of sortedPlayers) {
+      const nextMinute = relaxedMinutes.get(player.id) + 1;
+      if (nextMinute > bounds.get(player.id).max) continue;
+      const establishedScore = finiteNonNegative(
+        scorePlan?.establishedScoresById?.get(player.id),
+      ) ?? 0;
+      const expandedScore = finiteNonNegative(
+        scorePlan?.expandedScoresById?.get(player.id),
+      ) ?? establishedScore;
+      const marginal =
+        roleConditionedMarginalValueUnits(
+          player.id,
+          nextMinute,
+          establishedScore,
+          expandedScore,
+          scorePlan,
+        ) + marginalAdjustment(player.id);
+      if (
+        marginal > bestMarginal + 1e-15 ||
+        (Math.abs(marginal - bestMarginal) <= 1e-15 &&
+          (!bestPlayer || compareIds(player.id, bestPlayer.id) < 0))
+      ) {
+        bestPlayer = player;
+        bestMarginal = marginal;
+      }
+    }
+    if (!bestPlayer) break;
+    relaxedMinutes.set(bestPlayer.id, relaxedMinutes.get(bestPlayer.id) + 1);
+    relaxedRemaining -= 1;
+  }
+  if (relaxedRemaining === 0) {
+    const relaxedRoleFlow = findPositionMinuteFlow(
+      sortedPlayers,
+      fixedBoundsFrom(relaxedMinutes),
+      requirements,
+    );
+    if (relaxedRoleFlow.feasible) {
+      return {
+        ...relaxedRoleFlow,
+        roleConditionedScoringApplied: true,
+        roleConditionedFastPathApplied: true,
+      };
+    }
+  }
+
   const source = 0;
   const playerStart = 1;
   const positionStart = playerStart + sortedPlayers.length;
@@ -2868,14 +3105,37 @@ function roleConditionedPositionAllocation(players, bounds, requirements, scoreP
     const playerBounds = bounds.get(player.id);
     network.addEdge(superSource, playerNode, playerBounds.min, 0);
     for (let minute = playerBounds.min + 1; minute <= playerBounds.max; minute += 1) {
-      const previousScore = roleConditionedScoreUnits(player.id, minute - 1, scorePlan);
-      const nextScore = roleConditionedScoreUnits(player.id, minute, scorePlan);
-      const marginalScore = Math.max(0, (nextScore ?? 0) - (previousScore ?? 0));
+      // Read the one-minute marginal directly. This is equivalent to
+      // subtracting adjacent cumulative scores, but avoids repeatedly summing
+      // the first N minutes for every edge in every candidate rotation.
+      const establishedScore = finiteNonNegative(
+        scorePlan?.establishedScoresById?.get(player.id),
+      ) ?? 0;
+      const expandedScore = finiteNonNegative(
+        scorePlan?.expandedScoresById?.get(player.id),
+      ) ?? establishedScore;
+      const baseMarginalScore = Math.max(
+        0,
+        roleConditionedMarginalValueUnits(
+          player.id,
+          minute,
+          establishedScore,
+          expandedScore,
+          scorePlan,
+        ),
+      );
+      const marginalScore = baseMarginalScore + marginalAdjustment(player.id);
       network.addEdge(
         source,
         playerNode,
         1,
-        -Math.round(marginalScore * ROLE_CONDITIONED_UTILITY_COST_SCALE),
+        // The ordinary model keeps its established scaled-integer cost for
+        // deterministic browser parity. A Lagrangian proof uses the raw double
+        // so rounding cannot understate its upper bound by a fraction of a
+        // model point. The min-cost implementation accepts finite real costs.
+        usesExactMarginalAdjustment
+          ? -marginalScore
+          : -Math.round(marginalScore * ROLE_CONDITIONED_UTILITY_COST_SCALE),
       );
     }
 
@@ -2906,12 +3166,17 @@ function roleConditionedPositionAllocation(players, bounds, requirements, scoreP
 
   const solved = network.minCostFlow(superSource, superSink, totalRequired);
   if (solved.delivered !== totalRequired) {
-    // Feasibility was already established. Retain that exact static allocation
-    // as a defensive fallback rather than returning a partial role curve and
-    // falsely claiming that it optimized the minute-aware objective.
+    // The min-cost network encodes the same hard bounds and role capacities as
+    // the ordinary flow oracle, so an incomplete flow normally proves the
+    // request infeasible. Run the cheaper oracle only on this exceptional path:
+    // it preserves a defensive fallback without paying for two full flow solves
+    // for every feasible candidate in a broad exact roster search.
+    const feasibility = findPositionMinuteFlow(players, bounds, requirements);
+    if (!feasibility.feasible) return feasibility;
     return {
       ...feasibility,
       roleConditionedScoringApplied: false,
+      roleConditionedFastPathApplied: false,
       roleConditionedScoringReason: "The assigned-role projection could not be solved exactly, so the static rate projection was retained.",
     };
   }
@@ -2941,6 +3206,7 @@ function roleConditionedPositionAllocation(players, bounds, requirements, scoreP
     delivered: solved.delivered,
     balanceDemand: totalRequired,
     roleConditionedScoringApplied: true,
+    roleConditionedFastPathApplied: false,
   };
 }
 
@@ -3257,6 +3523,19 @@ const ROTATION_CONSTRAINT_TOLERANCE = 1e-9;
 // Reaching either limit remains a truthful exact-search abort, never a heuristic
 // answer mislabeled as optimal.
 const MAX_CONSTRAINED_ALLOCATION_STATES = 5000;
+// A constraint-targeted seed is a performance aid, not a fallback answer. It
+// walks at most this many strictly improving violation steps, then inserts any
+// feasible plan into the ordinary best-first proof queue. The queue must still
+// prove that no higher-objective state exists before the seed can be returned.
+const MAX_CONSTRAINT_FEASIBLE_SEED_STEPS = 64;
+// A single hard floor can often be certified without enumerating thousands of
+// nearly tied minute vectors. The Lagrangian dual below is convex in its one
+// multiplier, so a short doubling phase brackets the sign change and bisection
+// approaches its best upper bound. These are performance limits only: failure
+// to close the bound falls back to the existing exact state search.
+const MAX_LAGRANGIAN_BRACKET_STEPS = 24;
+const MAX_LAGRANGIAN_BISECTION_STEPS = 32;
+const LAGRANGIAN_CERTIFICATE_TOLERANCE = 1e-7;
 
 /**
  * Read a conservative, model-owned rate when the solve supplied one; otherwise
@@ -3378,10 +3657,48 @@ function proveProjectedConstraintInfeasibility(
   return { impossibleStats, impossibleTurnovers };
 }
 
-function allocationObjective(minutes, scores) {
+function allocationObjective(minutes, scores, roleConditionedScorePlan = null) {
   let value = 0;
-  for (const [id, minuteTotal] of minutes) value += scores.get(id) * minuteTotal;
+  for (const [id, minuteTotal] of minutes) {
+    const roleConditionedUnits = roleConditionedScorePlan
+      ? roleConditionedScoreUnits(id, minuteTotal, roleConditionedScorePlan)
+      : null;
+    value += roleConditionedUnits ?? (scores.get(id) * minuteTotal);
+  }
   return value;
+}
+
+/**
+ * Read one discrete minute's objective value for the constrained-state graph.
+ *
+ * The linear model has a constant marginal score. The improved rotation model
+ * instead reads the same role-expansion and workload-saturation marginal used
+ * by the unconstrained min-cost flow. Keeping this in one helper prevents the
+ * optional production rules from quietly optimizing a different equation.
+ */
+function allocationMarginalValue(
+  playerId,
+  assignedMinute,
+  scores,
+  roleConditionedScorePlan = null,
+) {
+  if (!roleConditionedScorePlan) return scores.get(playerId);
+  const establishedScore = finiteNonNegative(
+    roleConditionedScorePlan.establishedScoresById?.get(playerId),
+  );
+  const expandedScore = finiteNonNegative(
+    roleConditionedScorePlan.expandedScoresById?.get(playerId),
+  );
+  if (establishedScore === null || expandedScore === null) {
+    return scores.get(playerId);
+  }
+  return roleConditionedMarginalValueUnits(
+    playerId,
+    assignedMinute,
+    establishedScore,
+    expandedScore,
+    roleConditionedScorePlan,
+  );
 }
 
 function minuteStateKey(sortedIds, minutes) {
@@ -3434,6 +3751,325 @@ function createAllocationMaxHeap() {
 }
 
 /**
+ * Construct a good feasible lower bound for the exact constrained search.
+ *
+ * Best-first enumeration is mathematically clean, but a modest production
+ * floor can have thousands of almost-tied minute vectors above the first
+ * feasible one. This bounded repair walk starts at the unconstrained optimum
+ * and chooses the role-feasible one-minute exchange with the smallest objective
+ * loss per unit of normalized constraint improvement. It only accepts steps
+ * that strictly reduce the visible violation and never increase the model
+ * objective.
+ *
+ * Crucially, this helper does not certify optimality. A feasible result is
+ * inserted into the same max-heap as every other state. Because exchange paths
+ * are non-increasing in objective value, the seed can be popped only after all
+ * reachable higher-valued states have been examined. It therefore accelerates
+ * the proof without changing which allocation is exact.
+ */
+function buildConstraintFeasibleSeed(
+  players,
+  bounds,
+  scores,
+  requirements,
+  initialFlow,
+  constraints,
+  projectedRates = null,
+  roleConditionedScorePlan = null,
+) {
+  const sortedIds = players.map((player) => player.id).sort(compareIds);
+  const statFields = ["points", "rebounds", "assists", "steals", "blocks", "turnovers"];
+  const rateVectors = new Map(players.map((player) => [
+    player.id,
+    Object.fromEntries(
+      statFields.map((field) => [field, playerPerMinuteRate(player, field, projectedRates)]),
+    ),
+  ]));
+  let current = {
+    key: minuteStateKey(
+      sortedIds,
+      new Map(sortedIds.map((id) => [id, initialFlow.totalsByPlayer[id]])),
+    ),
+    minutes: new Map(sortedIds.map((id) => [id, initialFlow.totalsByPlayer[id]])),
+    flow: initialFlow,
+    totals: null,
+    status: null,
+    objective: 0,
+    repairSteps: 0,
+  };
+  current.totals = projectedTotalsForMinutes(players, current.minutes, projectedRates);
+  current.status = projectedConstraintStatus(current.totals, constraints);
+  current.objective = allocationObjective(current.minutes, scores, roleConditionedScorePlan);
+  if (current.status.passed) return current;
+
+  const visited = new Set([current.key]);
+  for (let repairStep = 1; repairStep <= MAX_CONSTRAINT_FEASIBLE_SEED_STEPS; repairStep += 1) {
+    let best = null;
+    for (const donorId of sortedIds) {
+      if (current.minutes.get(donorId) <= bounds.get(donorId).min) continue;
+      for (const receiverId of sortedIds) {
+        if (donorId === receiverId) continue;
+        if (current.minutes.get(receiverId) >= bounds.get(receiverId).max) continue;
+
+        const donorMarginal = allocationMarginalValue(
+          donorId,
+          current.minutes.get(donorId),
+          scores,
+          roleConditionedScorePlan,
+        );
+        const receiverMarginal = allocationMarginalValue(
+          receiverId,
+          current.minutes.get(receiverId) + 1,
+          scores,
+          roleConditionedScorePlan,
+        );
+        const objective = current.objective - donorMarginal + receiverMarginal;
+        if (objective > current.objective + 1e-12) continue;
+
+        // Update the six projected totals arithmetically before paying for a
+        // role-flow proof. Most exchanges do not improve the active rule and
+        // can be rejected here without building another network.
+        const totals = { ...current.totals };
+        for (const field of statFields) {
+          totals[field] +=
+            rateVectors.get(receiverId)[field] - rateVectors.get(donorId)[field];
+        }
+        const status = projectedConstraintStatus(totals, constraints);
+        const violationImprovement =
+          current.status.normalizedViolation - status.normalizedViolation;
+        if (violationImprovement <= ROTATION_CONSTRAINT_TOLERANCE) continue;
+
+        const minutes = new Map(current.minutes);
+        minutes.set(donorId, minutes.get(donorId) - 1);
+        minutes.set(receiverId, minutes.get(receiverId) + 1);
+        const key = minuteStateKey(sortedIds, minutes);
+        if (visited.has(key)) continue;
+        const flow = findPositionMinuteFlow(players, fixedBoundsFrom(minutes), requirements);
+        if (!flow.feasible) continue;
+
+        const objectiveLoss = Math.max(0, current.objective - objective);
+        const lossPerImprovement = objectiveLoss / violationImprovement;
+        const candidate = {
+          key,
+          minutes,
+          flow,
+          totals,
+          status,
+          objective,
+          repairSteps: repairStep,
+          lossPerImprovement,
+        };
+        const candidateIsBetter = !best ||
+          candidate.lossPerImprovement < best.lossPerImprovement - 1e-12 ||
+          (Math.abs(candidate.lossPerImprovement - best.lossPerImprovement) <= 1e-12 &&
+            candidate.status.normalizedViolation < best.status.normalizedViolation - 1e-12) ||
+          (Math.abs(candidate.lossPerImprovement - best.lossPerImprovement) <= 1e-12 &&
+            Math.abs(candidate.status.normalizedViolation - best.status.normalizedViolation) <= 1e-12 &&
+            candidate.objective > best.objective + 1e-12) ||
+          (Math.abs(candidate.lossPerImprovement - best.lossPerImprovement) <= 1e-12 &&
+            Math.abs(candidate.status.normalizedViolation - best.status.normalizedViolation) <= 1e-12 &&
+            Math.abs(candidate.objective - best.objective) <= 1e-12 &&
+            compareIds(candidate.key, best.key) < 0);
+        if (candidateIsBetter) best = candidate;
+      }
+    }
+
+    if (!best) return null;
+    current = best;
+    visited.add(current.key);
+    if (current.status.passed) return current;
+  }
+  return null;
+}
+
+/**
+ * Try to certify a feasible seed with a one-rule Lagrangian upper bound.
+ *
+ * For a minimum such as rebounds >= 44 and any lambda >= 0:
+ *
+ *   original objective <= max_x(objective(x) + lambda * (rebounds(x) - 44))
+ *
+ * for every feasible x. The same transformation uses -turnovers for a maximum
+ * turnover rule. The inner maximum is still a separable concave minute model:
+ * lambda merely adds a constant player-specific amount to each marginal minute,
+ * so the existing role-feasible network solves it exactly.
+ *
+ * When the smallest upper bound reaches the feasible seed's objective, the seed
+ * is proven optimal without walking every higher-scoring-but-infeasible minute
+ * vector. If the integer side constraint has a duality gap, this helper returns
+ * an unsuccessful audit and the exhaustive best-first proof remains authoritative.
+ */
+function certifyConstraintFeasibleSeedWithLagrangian(
+  players,
+  bounds,
+  scores,
+  requirements,
+  constraints,
+  initialTotals,
+  feasibleSeed,
+  projectedRates = null,
+  roleConditionedScorePlan = null,
+) {
+  if (!feasibleSeed?.status?.passed) {
+    return { attempted: false, certified: false, evaluations: 0 };
+  }
+
+  const rules = [];
+  for (const [stat, required] of Object.entries(constraints.statMinimums)) {
+    if (initialTotals[stat] + ROTATION_CONSTRAINT_TOLERANCE >= required) continue;
+    rules.push({
+      key: `minimum-${stat}`,
+      field: stat,
+      sign: 1,
+      threshold: required,
+    });
+  }
+  if (
+    Number.isFinite(constraints.maxTurnovers) &&
+    initialTotals.turnovers - ROTATION_CONSTRAINT_TOLERANCE > constraints.maxTurnovers
+  ) {
+    // Rewriting turnovers <= maximum as -turnovers >= -maximum lets the same
+    // mathematically transparent lower-bound certificate handle both senses.
+    rules.push({
+      key: "maximum-turnovers",
+      field: "turnovers",
+      sign: -1,
+      threshold: -constraints.maxTurnovers,
+    });
+  }
+  if (rules.length === 0) {
+    return { attempted: false, certified: false, evaluations: 0 };
+  }
+
+  let totalEvaluations = 0;
+  let bestAudit = null;
+  for (const rule of rules) {
+    const rateById = new Map(players.map((player) => [
+      player.id,
+      rule.sign * playerPerMinuteRate(player, rule.field, projectedRates),
+    ]));
+    const seedQuantity = [...feasibleSeed.minutes].reduce(
+      (total, [id, minutes]) => total + rateById.get(id) * minutes,
+      0,
+    );
+    if (seedQuantity + ROTATION_CONSTRAINT_TOLERANCE < rule.threshold) continue;
+
+    let evaluations = 0;
+    let best = null;
+    const evaluateMultiplier = (multiplier) => {
+      evaluations += 1;
+      totalEvaluations += 1;
+      const marginalAdjustmentById = new Map(
+        players.map((player) => [player.id, multiplier * rateById.get(player.id)]),
+      );
+      let flow;
+      if (roleConditionedScorePlan) {
+        flow = roleConditionedPositionAllocation(
+          players,
+          bounds,
+          requirements,
+          roleConditionedScorePlan,
+          marginalAdjustmentById,
+        );
+      } else {
+        const adjustedScores = new Map(players.map((player) => [
+          player.id,
+          (Number(scores.get(player.id)) || 0) + marginalAdjustmentById.get(player.id),
+        ]));
+        flow = objectivePositionAllocation(players, bounds, adjustedScores, requirements);
+      }
+      if (!flow.feasible) return null;
+
+      const minutes = new Map(
+        players.map((player) => [player.id, flow.totalsByPlayer[player.id]]),
+      );
+      const objective = allocationObjective(minutes, scores, roleConditionedScorePlan);
+      const quantity = [...minutes].reduce(
+        (total, [id, minuteTotal]) => total + rateById.get(id) * minuteTotal,
+        0,
+      );
+      const upperBound = objective + multiplier * (quantity - rule.threshold);
+
+      // The seed itself is a legal point in every relaxed inner problem. This
+      // defensive inequality detects a future regression in the adjusted flow
+      // before an underestimated value could ever be accepted as a certificate.
+      const seedAdjustedObjective =
+        feasibleSeed.objective + multiplier * (seedQuantity - rule.threshold);
+      if (upperBound + LAGRANGIAN_CERTIFICATE_TOLERANCE < seedAdjustedObjective) {
+        return null;
+      }
+
+      const evaluation = {
+        flow,
+        minutes,
+        multiplier,
+        objective,
+        quantity,
+        slack: quantity - rule.threshold,
+        upperBound,
+      };
+      if (!best || evaluation.upperBound < best.upperBound) best = evaluation;
+      return evaluation;
+    };
+
+    // Lambda zero is the already-computed unconstrained optimum and has a
+    // negative rule slack. Start at one, then double until an adjusted optimum
+    // reaches the requested side of the floor (or the generous numeric bracket
+    // is exhausted). This avoids guessing a sport-specific penalty scale.
+    let lowMultiplier = 0;
+    let highMultiplier = 1;
+    let high = null;
+    for (let step = 0; step < MAX_LAGRANGIAN_BRACKET_STEPS; step += 1) {
+      high = evaluateMultiplier(highMultiplier);
+      if (!high) break;
+      if (high.slack >= -ROTATION_CONSTRAINT_TOLERANCE) break;
+      lowMultiplier = highMultiplier;
+      highMultiplier *= 2;
+    }
+
+    if (high && high.slack >= -ROTATION_CONSTRAINT_TOLERANCE) {
+      for (let step = 0; step < MAX_LAGRANGIAN_BISECTION_STEPS; step += 1) {
+        const midpoint = (lowMultiplier + highMultiplier) / 2;
+        const evaluation = evaluateMultiplier(midpoint);
+        if (!evaluation) break;
+        if (evaluation.slack >= -ROTATION_CONSTRAINT_TOLERANCE) {
+          highMultiplier = midpoint;
+        } else {
+          lowMultiplier = midpoint;
+        }
+      }
+    }
+
+    if (best) {
+      const audit = {
+        attempted: true,
+        certified:
+          best.upperBound <= feasibleSeed.objective + LAGRANGIAN_CERTIFICATE_TOLERANCE,
+        rule: rule.key,
+        multiplier: best.multiplier,
+        upperBound: best.upperBound,
+        seedObjective: feasibleSeed.objective,
+        upperBoundGap: Math.max(0, best.upperBound - feasibleSeed.objective),
+        evaluations,
+      };
+      if (
+        !bestAudit ||
+        audit.upperBoundGap < bestAudit.upperBoundGap - LAGRANGIAN_CERTIFICATE_TOLERANCE
+      ) {
+        bestAudit = audit;
+      }
+      if (audit.certified) {
+        return { ...audit, evaluations: totalEvaluations };
+      }
+    }
+  }
+
+  return bestAudit
+    ? { ...bestAudit, evaluations: totalEvaluations }
+    : { attempted: true, certified: false, evaluations: totalEvaluations };
+}
+
+/**
  * Find the highest-objective role-feasible minute vector that also satisfies
  * the requested projected box-score constraints.
  *
@@ -3456,6 +4092,7 @@ function constrainedPositionAllocation(
   constraints,
   sharedBudget = null,
   projectedRates = null,
+  roleConditionedScorePlan = null,
 ) {
   const sortedIds = players.map((player) => player.id).sort(compareIds);
   const initialMinutes = new Map(
@@ -3464,6 +4101,12 @@ function constrainedPositionAllocation(
   const initialTotals = projectedTotalsForMinutes(players, initialMinutes, projectedRates);
   const initialStatus = projectedConstraintStatus(initialTotals, constraints);
   let statesExamined = 0;
+  let feasibleSeed = null;
+  let lagrangianCertificate = {
+    attempted: false,
+    certified: false,
+    evaluations: 0,
+  };
   const sharedLimitReached = () =>
     sharedBudget && sharedBudget.used >= sharedBudget.limit;
   const consumeState = () => {
@@ -3485,6 +4128,13 @@ function constrainedPositionAllocation(
     constraintSearchStates: statesExamined,
     solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
     solveConstraintSearchStateLimit: sharedBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+    constraintFeasibleSeedFound: Boolean(feasibleSeed),
+    constraintFeasibleSeedRepairSteps: feasibleSeed?.repairSteps ?? 0,
+    constraintLagrangianCertificateAttempted: lagrangianCertificate.attempted,
+    constraintLagrangianCertificateApplied: lagrangianCertificate.certified,
+    constraintLagrangianCertificateRule: lagrangianCertificate.rule ?? null,
+    constraintLagrangianCertificateEvaluations: lagrangianCertificate.evaluations ?? 0,
+    constraintLagrangianUpperBoundGap: lagrangianCertificate.upperBoundGap ?? null,
   });
 
   // The unconstrained allocation and its first constraint check are required
@@ -3498,6 +4148,14 @@ function constrainedPositionAllocation(
       constraintSearchStates: 0,
       solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
       constraintsAdjusted: false,
+      constraintFeasibleSeedFound: false,
+      constraintFeasibleSeedRepairSteps: 0,
+      constraintFeasibleSeedUsed: false,
+      constraintLagrangianCertificateAttempted: false,
+      constraintLagrangianCertificateApplied: false,
+      constraintLagrangianCertificateRule: null,
+      constraintLagrangianCertificateEvaluations: 0,
+      constraintLagrangianUpperBoundGap: null,
     };
   }
 
@@ -3522,6 +4180,13 @@ function constrainedPositionAllocation(
       projectedTotals: initialTotals,
       constraintSearchStates: 0,
       solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+      constraintFeasibleSeedFound: false,
+      constraintFeasibleSeedRepairSteps: 0,
+      constraintLagrangianCertificateAttempted: false,
+      constraintLagrangianCertificateApplied: false,
+      constraintLagrangianCertificateRule: null,
+      constraintLagrangianCertificateEvaluations: 0,
+      constraintLagrangianUpperBoundGap: null,
     };
   }
 
@@ -3531,9 +4196,73 @@ function constrainedPositionAllocation(
     key: initialKey,
     minutes: initialMinutes,
     flow: initialFlow,
-    objective: allocationObjective(initialMinutes, scores),
+    objective: allocationObjective(initialMinutes, scores, roleConditionedScorePlan),
+    isFeasibleSeed: false,
   });
   const visited = new Set([initialKey]);
+  feasibleSeed = buildConstraintFeasibleSeed(
+    players,
+    bounds,
+    scores,
+    requirements,
+    initialFlow,
+    constraints,
+    projectedRates,
+    roleConditionedScorePlan,
+  );
+  if (feasibleSeed && feasibleSeed.key !== initialKey) {
+    // Inserting the seed directly is safe because the heap still ranks it by
+    // the exact same objective. It cannot jump ahead of any better state.
+    heap.push({
+      key: feasibleSeed.key,
+      minutes: feasibleSeed.minutes,
+      flow: feasibleSeed.flow,
+      objective: feasibleSeed.objective,
+      isFeasibleSeed: true,
+    });
+    visited.add(feasibleSeed.key);
+  }
+  if (feasibleSeed) {
+    lagrangianCertificate = certifyConstraintFeasibleSeedWithLagrangian(
+      players,
+      bounds,
+      scores,
+      requirements,
+      constraints,
+      initialTotals,
+      feasibleSeed,
+      projectedRates,
+      roleConditionedScorePlan,
+    );
+    if (lagrangianCertificate.certified) {
+      // The dual upper bound and the feasible seed now meet at the same model
+      // value, so no unseen allocation can score higher. Returning the seed is
+      // exact; the certificate replaces only the enumeration proof, not the
+      // objective, production projection, role flow, or hard minute bounds.
+      return {
+        ...feasibleSeed.flow,
+        ...(roleConditionedScorePlan
+          ? {
+              roleConditionedScoringApplied: true,
+              roleConditionedFastPathApplied: false,
+              roleConditionedScoringReason: "The exact constrained solve preserved the diminishing-return minute objective and used a production-floor upper-bound certificate.",
+            }
+          : {}),
+        projectedTotals: feasibleSeed.totals,
+        constraintSearchStates: 0,
+        solveConstraintSearchStatesUsed: sharedBudget?.used ?? 0,
+        constraintsAdjusted: true,
+        constraintFeasibleSeedFound: true,
+        constraintFeasibleSeedRepairSteps: feasibleSeed.repairSteps,
+        constraintFeasibleSeedUsed: true,
+        constraintLagrangianCertificateAttempted: true,
+        constraintLagrangianCertificateApplied: true,
+        constraintLagrangianCertificateRule: lagrangianCertificate.rule,
+        constraintLagrangianCertificateEvaluations: lagrangianCertificate.evaluations,
+        constraintLagrangianUpperBoundGap: lagrangianCertificate.upperBoundGap,
+      };
+    }
+  }
   let closest = {
     status: initialStatus,
     totals: initialTotals,
@@ -3552,10 +4281,27 @@ function constrainedPositionAllocation(
     if (status.passed) {
       return {
         ...state.flow,
+        ...(roleConditionedScorePlan
+          ? {
+              roleConditionedScoringApplied: true,
+              roleConditionedFastPathApplied: false,
+              roleConditionedScoringReason: state.key === initialKey
+                ? "The unconstrained diminishing-return optimum already satisfied every production rule."
+                : "The exact constrained search preserved the diminishing-return minute objective while satisfying the requested production rules.",
+            }
+          : {}),
         projectedTotals: totals,
         constraintSearchStates: statesExamined,
         solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
         constraintsAdjusted: state.key !== initialKey,
+        constraintFeasibleSeedFound: Boolean(feasibleSeed),
+        constraintFeasibleSeedRepairSteps: feasibleSeed?.repairSteps ?? 0,
+        constraintFeasibleSeedUsed: Boolean(state.isFeasibleSeed),
+        constraintLagrangianCertificateAttempted: lagrangianCertificate.attempted,
+        constraintLagrangianCertificateApplied: false,
+        constraintLagrangianCertificateRule: lagrangianCertificate.rule ?? null,
+        constraintLagrangianCertificateEvaluations: lagrangianCertificate.evaluations ?? 0,
+        constraintLagrangianUpperBoundGap: lagrangianCertificate.upperBoundGap ?? null,
       };
     }
     if (status.normalizedViolation < closest.status.normalizedViolation) {
@@ -3567,10 +4313,26 @@ function constrainedPositionAllocation(
       for (const receiverId of sortedIds) {
         if (donorId === receiverId) continue;
         if (state.minutes.get(receiverId) >= bounds.get(receiverId).max) continue;
-        // Moving a minute uphill cannot be part of a path away from a proven
-        // unconstrained maximum; skipping it prevents cycles and preserves the
-        // objective-ordered search invariant.
-        if (scores.get(donorId) + 1e-12 < scores.get(receiverId)) continue;
+        // Feasible player-minute totals form an integer exchange family. With
+        // a separable concave objective, every lower-valued feasible total can
+        // be reached from the global maximum through non-increasing one-minute
+        // exchanges. Compare the *current marginal minutes* here—not the two
+        // players' static scores—so the proof remains valid after workload
+        // saturation changes marginal value at different minute counts.
+        const donorMarginal = allocationMarginalValue(
+          donorId,
+          state.minutes.get(donorId),
+          scores,
+          roleConditionedScorePlan,
+        );
+        const receiverMarginal = allocationMarginalValue(
+          receiverId,
+          state.minutes.get(receiverId) + 1,
+          scores,
+          roleConditionedScorePlan,
+        );
+        const nextObjective = state.objective - donorMarginal + receiverMarginal;
+        if (nextObjective > state.objective + 1e-12) continue;
         const minutes = new Map(state.minutes);
         minutes.set(donorId, minutes.get(donorId) - 1);
         minutes.set(receiverId, minutes.get(receiverId) + 1);
@@ -3583,7 +4345,8 @@ function constrainedPositionAllocation(
           key,
           minutes,
           flow,
-          objective: allocationObjective(minutes, scores),
+          objective: nextObjective,
+          isFeasibleSeed: false,
         });
       }
     }
@@ -3599,6 +4362,13 @@ function constrainedPositionAllocation(
     projectedTotals: closest.totals,
     constraintSearchStates: statesExamined,
     solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
+    constraintFeasibleSeedFound: Boolean(feasibleSeed),
+    constraintFeasibleSeedRepairSteps: feasibleSeed?.repairSteps ?? 0,
+    constraintLagrangianCertificateAttempted: lagrangianCertificate.attempted,
+    constraintLagrangianCertificateApplied: false,
+    constraintLagrangianCertificateRule: lagrangianCertificate.rule ?? null,
+    constraintLagrangianCertificateEvaluations: lagrangianCertificate.evaluations ?? 0,
+    constraintLagrangianUpperBoundGap: lagrangianCertificate.upperBoundGap ?? null,
   };
 }
 
@@ -4013,22 +4783,22 @@ export function allocateRotationMinutes(players, options = {}) {
       historicalGuidance.applied &&
       historicalGuidance.allocationStyleApplied === HISTORICAL_ALLOCATION_STYLES.STRATEGY_FIRST);
   // The curve is a separable minute-value objective, so min-cost flow can solve
-  // it exactly alongside the G/F/C role requirements. Hard production
-  // thresholds use a different exact linear proof path; they deliberately keep
-  // the already conservative common-role projection until that nonlinear proof
-  // is added and independently tested.
+  // it exactly alongside the G/F/C role requirements. Optional production
+  // rules now start from that same optimum and search the integer exchange
+  // graph with its actual marginal values. The production *rates* remain the
+  // conservative common-role estimates so those hard inequalities stay linear
+  // and independently auditable.
   const usesRoleConditionedScoring = Boolean(
     roleConditionedScorePlan &&
       positionRequirements &&
-      !hasProjectedConstraints &&
       !usesHistoricalContinuity &&
       (strategy === "objective" || usesStrategyFirstAllocation),
   );
   if (positionRequirements) {
     // Historical continuity is an exact secondary objective: it minimizes the
     // total deviation from recorded workload after the roster itself has been
-    // chosen. Strategy-first and hard-production modes intentionally retain the
-    // exact linear score maximizer used by the existing constrained search.
+    // chosen. Every game-plan path—including hard production rules—starts from
+    // the same exact diminishing-return objective when its plan is available.
     positionFlow = usesHistoricalContinuity
       ? historicalContinuityPositionAllocation(
         rotationPlayers,
@@ -4071,6 +4841,7 @@ export function allocateRotationMinutes(players, options = {}) {
         projectedConstraints,
         sharedConstraintSearchBudget,
         projectedRates,
+        usesRoleConditionedScoring ? roleConditionedScorePlan : null,
       );
       if (!constrainedFlow.feasible) {
         const reason = constrainedFlow.constraintSearchLimitReached
@@ -4089,6 +4860,19 @@ export function allocateRotationMinutes(players, options = {}) {
           solveConstraintSearchStateLimit: constrainedFlow.solveConstraintSearchStateLimit,
           solveWideConstraintSearchLimitReached:
             constrainedFlow.solveWideConstraintSearchLimitReached,
+          constraintFeasibleSeedFound: constrainedFlow.constraintFeasibleSeedFound,
+          constraintFeasibleSeedRepairSteps:
+            constrainedFlow.constraintFeasibleSeedRepairSteps,
+          constraintLagrangianCertificateAttempted:
+            constrainedFlow.constraintLagrangianCertificateAttempted,
+          constraintLagrangianCertificateApplied:
+            constrainedFlow.constraintLagrangianCertificateApplied,
+          constraintLagrangianCertificateRule:
+            constrainedFlow.constraintLagrangianCertificateRule,
+          constraintLagrangianCertificateEvaluations:
+            constrainedFlow.constraintLagrangianCertificateEvaluations,
+          constraintLagrangianUpperBoundGap:
+            constrainedFlow.constraintLagrangianUpperBoundGap,
           historicalGuidance,
         });
       }
@@ -4144,9 +4928,39 @@ export function allocateRotationMinutes(players, options = {}) {
   const roleConditionedScoring = {
     requested: Boolean(roleConditionedScorePlan),
     applied: Boolean(positionFlow?.roleConditionedScoringApplied),
+    relaxedFastPathApplied: Boolean(positionFlow?.roleConditionedFastPathApplied),
     referenceMinutes: roleConditionedScorePlan?.referenceMinutes ?? null,
+    objectiveMetrics: roleConditionedScorePlan?.objectiveMetrics ?? [],
     activeMetrics: roleConditionedScorePlan?.activeMetrics ?? [],
-    expandedMinutes: roleConditionedScorePlan
+    roleExpansionApplied: Boolean(roleConditionedScorePlan?.roleExpansionChangesAnyScore),
+    workloadSaturation: roleConditionedScorePlan
+      ? {
+          applied: Boolean(positionFlow?.roleConditionedScoringApplied),
+          startsAfterMinutes: roleConditionedScorePlan.referenceMinutes,
+          transitionMinutes: roleConditionedScorePlan.workloadSaturationTransitionMinutes,
+          marginalFloor: roleConditionedScorePlan.workloadSaturationMarginalFloor,
+          minutesBeyondReference: round(allocations.reduce(
+            (total, allocation) => total + Math.max(
+              0,
+              allocation.minutes - roleConditionedScorePlan.referenceMinutes,
+            ),
+            0,
+          )),
+          playersBeyondReference: allocations.filter(
+            (allocation) => allocation.minutes > roleConditionedScorePlan.referenceMinutes,
+          ).length,
+          sourceMinutesAffectCurve: false,
+        }
+      : {
+          applied: false,
+          startsAfterMinutes: null,
+          transitionMinutes: null,
+          marginalFloor: null,
+          minutesBeyondReference: 0,
+          playersBeyondReference: 0,
+          sourceMinutesAffectCurve: false,
+        },
+    expandedMinutes: roleConditionedScorePlan?.roleExpansionChangesAnyScore
       ? round(allocations.reduce(
         (total, allocation) =>
           total + roleConditionedMinuteSplit(
@@ -4157,7 +4971,7 @@ export function allocateRotationMinutes(players, options = {}) {
         0,
       ))
       : 0,
-    selectedPlayersWithExpandedMinutes: roleConditionedScorePlan
+    selectedPlayersWithExpandedMinutes: roleConditionedScorePlan?.roleExpansionChangesAnyScore
       ? allocations.filter((allocation) => (
         roleConditionedMinuteSplit(
           allocation.id,
@@ -4169,13 +4983,14 @@ export function allocateRotationMinutes(players, options = {}) {
     reason: !roleConditionedScorePlan
       ? "No assigned-role score projection was supplied."
       : hasProjectedConstraints
-        ? "Hard production thresholds retain the static common-role projection so feasibility remains exactly proven."
+        ? positionFlow?.roleConditionedScoringReason ??
+          "Hard production rules use conservative common-role stat rates for feasibility while the minute allocation retains the exact diminishing-return game-plan objective."
         : usesHistoricalContinuity
           ? "Recorded-minutes continuity was selected as the allocation objective."
           : !positionRequirements
             ? "Assigned-role scoring requires an exact G/F/C minute profile."
             : positionFlow?.roleConditionedScoringReason ??
-              "Additional minutes beyond a player's established role smoothly reduce any unproven advantage toward a same-season bound.",
+              "Additional minutes use two transparent diminishing-return curves: unproven role expansion moves toward a same-season bound, and workload beyond the rotation's average role gradually receives less marginal fit. Neither curve is a minute cap or a reconstruction of historical usage.",
   };
 
   return {
@@ -4227,6 +5042,21 @@ export function allocateRotationMinutes(players, options = {}) {
         projectedRatesApplied: Boolean(projectedRates && projectedRates.size > 0),
         adjustedAllocation: Boolean(positionFlow?.constraintsAdjusted),
         searchStates: positionFlow?.constraintSearchStates ?? 0,
+        feasibleSeedFound: Boolean(positionFlow?.constraintFeasibleSeedFound),
+        feasibleSeedRepairSteps: positionFlow?.constraintFeasibleSeedRepairSteps ?? 0,
+        feasibleSeedUsed: Boolean(positionFlow?.constraintFeasibleSeedUsed),
+        lagrangianCertificateAttempted: Boolean(
+          positionFlow?.constraintLagrangianCertificateAttempted,
+        ),
+        lagrangianCertificateApplied: Boolean(
+          positionFlow?.constraintLagrangianCertificateApplied,
+        ),
+        lagrangianCertificateRule:
+          positionFlow?.constraintLagrangianCertificateRule ?? null,
+        lagrangianCertificateEvaluations:
+          positionFlow?.constraintLagrangianCertificateEvaluations ?? 0,
+        lagrangianUpperBoundGap:
+          positionFlow?.constraintLagrangianUpperBoundGap ?? null,
         solveSearchStatesUsed: positionFlow?.solveConstraintSearchStatesUsed ?? 0,
         solveSearchStateLimit:
           sharedConstraintSearchBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
@@ -4486,6 +5316,7 @@ export function optimizeLineups(players, config = {}) {
     eligibilityRejected,
     estimatedCombinations,
     maxCombinations: normalizedConfig.maxCombinations,
+    candidateCombinationLimitApplied: normalizedConfig.mode !== "rotation",
     requestedAlternatives: normalizedConfig.alternatives,
     // This is intentionally absent from lineup mode: its equal-player profile
     // keeps the historical per-game comparison users already expect.
@@ -4507,7 +5338,10 @@ export function optimizeLineups(players, config = {}) {
     });
   }
 
-  if (estimatedCombinations > normalizedConfig.maxCombinations) {
+  if (
+    normalizedConfig.mode !== "rotation" &&
+    estimatedCombinations > normalizedConfig.maxCombinations
+  ) {
     return failureResult(mode, size, [
       `The exact solver would evaluate ${estimatedCombinations.toLocaleString()} combinations, above this page's ${normalizedConfig.maxCombinations.toLocaleString()} safe limit. Increase the minimum games or minutes filter, lock players, exclude players, or choose a smaller group.`,
     ], {
@@ -4645,39 +5479,45 @@ export function optimizeLineups(players, config = {}) {
         normalizedMetricResult,
       )
       : null;
-  const usesRoleConditionedProjection = Boolean(
-    roleConditionedProjectionPlan &&
-      !hasRotationProjectedConstraints &&
-      estimatedCombinations <= MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS,
+  // Keep the allocation objective and descriptive production projection as two
+  // explicit switches. Production floors remain linear in conservative
+  // common-role rates, but they no longer turn off the workload-saturation
+  // utility that prevents boundary-heavy minute plans.
+  const usesRoleConditionedObjective = Boolean(roleConditionedProjectionPlan);
+  const usesRoleConditionedProductionProjection = Boolean(
+    roleConditionedProjectionPlan && !hasRotationProjectedConstraints,
   );
   const assignedRoleProjectionReason = callerRotationScores
     ? "A custom minute-score map was supplied, so the optimizer retained that caller-defined allocation objective."
     : !roleConditionedProjectionPlan
       ? "The loaded evidence did not support a minute-aware same-season baseline for an active game-plan priority."
       : hasRotationProjectedConstraints
-        ? "Hard production thresholds retain the static common-role projection so feasibility remains exactly proven."
-        : estimatedCombinations > MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS
-          ? `The exact minute-aware projection is available for searches through ${MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS.toLocaleString()} groups; this broader search retained the static conservative projection for browser safety.`
-          : "Extra minutes beyond each player's established role smoothly reduce any unproven advantage toward a same-season bound in the exact minute allocation.";
+        ? "The exact diminishing-return minute objective remains active. Hard production rules use the conservative common-role stat projection so their feasibility inequalities remain linear and auditable."
+        : "The exact minute allocation reduces unproven role-expansion advantages and gradually tapers marginal fit above the rotation's average workload, without using source minutes as a cap or target.";
   if (normalizedConfig.mode === "rotation") {
     baseDiagnostics.rotationRateStabilityEvidence = {
       ...normalizedMetricResult.rateStability,
       assignedRoleProjection: {
         requested: Boolean(roleConditionedProjectionPlan),
-        enabledForExactSearch: usesRoleConditionedProjection,
+        enabledForExactSearch: usesRoleConditionedObjective,
+        productionProjectionEnabled: usesRoleConditionedProductionProjection,
         referenceMinutes: roleConditionedProjectionPlan?.referenceMinutes ?? null,
         activeMetrics: roleConditionedProjectionPlan?.activeMetrics ?? [],
-        maximumExactCombinations: MAX_ROLE_CONDITIONED_EXACT_COMBINATIONS,
+        maximumExactCombinations: null,
+        candidateCombinationLimitApplied: false,
         reason: assignedRoleProjectionReason,
       },
     };
   }
-  // One mutable allowance is deliberately shared by every candidate roster.
-  // A per-candidate cap still permits N hard candidates to exceed the Worker's
-  // timeout. The exact solver aborts globally when this allowance is spent.
-  const solveConstraintSearchBudget = hasRotationProjectedConstraints
-    ? { limit: normalizedConfig.maxConstraintSearchStates, used: 0 }
-    : null;
+  // Production-threshold proofs retain a bounded state search *inside each
+  // individual candidate*. The allowance is intentionally recreated per
+  // roster: the number of candidate rotations can never exhaust a shared
+  // solve-wide budget or become a hidden candidate-count cap.
+  const perCandidateConstraintSearchLimit = Math.min(
+    normalizedConfig.maxConstraintSearchStates,
+    MAX_CONSTRAINED_ALLOCATION_STATES,
+  );
+  let constraintSearchStatesUsed = 0;
   let rotationAllocationsComputed = 0;
   let rotationBaselineAllocationsComputed = 0;
   let rotationRankingBoundAllocationsComputed = 0;
@@ -4704,7 +5544,10 @@ export function optimizeLineups(players, config = {}) {
     if (includeProjectedConstraints) rotationConstrainedAllocationsComputed += 1;
     else if (rankingUpperBound) rotationRankingBoundAllocationsComputed += 1;
     else rotationBaselineAllocationsComputed += 1;
-    return allocateRotationMinutes(selectedPlayers, {
+    const candidateConstraintSearchBudget = includeProjectedConstraints
+      ? { limit: perCandidateConstraintSearchLimit, used: 0 }
+      : null;
+    const rotation = allocateRotationMinutes(selectedPlayers, {
       ...normalizedConfig.rotationOptions,
       // The normal allocation honors an explicit caller workload objective.
       // When that differs from the model's ranking objective, pass 1 requests
@@ -4718,10 +5561,12 @@ export function optimizeLineups(players, config = {}) {
       // solver. This does not cap a low-minute player; it simply avoids
       // extrapolating an unproven raw rate unchanged into a starter-sized role.
       projectedRates: rotationProjectedRates,
-      // This exact min-cost curve is intentionally omitted for hard production
-      // thresholds and large searches; those paths retain their existing exact
-      // linear proof with the same conservative common-role rate projection.
-      roleConditionedScorePlan: usesRoleConditionedProjection
+      // Keep the same diminishing-return workload utility when optional hard
+      // production thresholds are active. Constraint feasibility still uses
+      // the conservative common-role rates above, so every visible threshold
+      // remains a linear, auditable inequality even though the optimizer ranks
+      // feasible minute plans by the more realistic concave workload curve.
+      roleConditionedScorePlan: usesRoleConditionedObjective
         ? roleConditionedProjectionPlan
         : null,
       // The optimizer's default is the exact objective allocation. The public
@@ -4751,9 +5596,20 @@ export function optimizeLineups(players, config = {}) {
         ? normalizedConfig.maxTurnovers
         : Number.POSITIVE_INFINITY,
       sharedConstraintSearchBudget: includeProjectedConstraints
-        ? solveConstraintSearchBudget
+        ? candidateConstraintSearchBudget
         : null,
     });
+    if (candidateConstraintSearchBudget) {
+      constraintSearchStatesUsed += candidateConstraintSearchBudget.used;
+      // `allocateRotationMinutes` keeps the older public diagnostic name for
+      // API compatibility. At this solve boundary the budget is per candidate,
+      // never solve-wide, so expose the accurate meaning alongside it.
+      if (!rotation.ok && rotation.diagnostics?.category === "constraint-search-limit") {
+        rotation.diagnostics.solveWideConstraintSearchLimitReached = false;
+        rotation.diagnostics.candidateConstraintSearchLimitReached = true;
+      }
+    }
+    return rotation;
   }
 
   const topAlternatives = [];
@@ -4832,8 +5688,12 @@ export function optimizeLineups(players, config = {}) {
           ),
           adjustedAllocation: false,
           searchStates: 0,
-          solveSearchStatesUsed: solveConstraintSearchBudget.used,
-          solveSearchStateLimit: solveConstraintSearchBudget.limit,
+          // This candidate's unconstrained optimum already satisfies the
+          // production rules, so it spent no per-roster proof states. The
+          // solve-wide diagnostic separately reports states spent by other
+          // candidates and must not leak into this rotation's audit.
+          solveSearchStatesUsed: 0,
+          solveSearchStateLimit: perCandidateConstraintSearchLimit,
         },
       },
     };
@@ -4910,21 +5770,21 @@ export function optimizeLineups(players, config = {}) {
         selectedPlayers,
         baselineRotation,
         rotationProjectedRates,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedProductionProjection ? roleConditionedProjectionPlan : null,
       );
       const rawUpperBound = calculateObjectiveScore(
         selectedPlayers,
         playerStrategyScores,
         rankingBoundRotation,
         rotationRankingModel,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedObjective ? roleConditionedProjectionPlan : null,
       );
       const baselineRawScore = calculateObjectiveScore(
         selectedPlayers,
         playerStrategyScores,
         baselineRotation,
         rotationRankingModel,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedObjective ? roleConditionedProjectionPlan : null,
       );
       const tieKey = selectedPlayers.map((player) => player.id).join("\u0001");
       const status = projectedConstraintStatus(totals, projectedRotationConstraints);
@@ -5005,7 +5865,7 @@ export function optimizeLineups(players, config = {}) {
         selectedPlayers,
         rotation,
         rotationProjectedRates,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedProductionProjection ? roleConditionedProjectionPlan : null,
       )
       : calculateLineupTotals(selectedPlayers);
 
@@ -5031,7 +5891,7 @@ export function optimizeLineups(players, config = {}) {
         playerStrategyScores,
         rotation,
         rotation ? rotationRankingModel : null,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedObjective ? roleConditionedProjectionPlan : null,
       ),
     );
   }
@@ -5122,7 +5982,7 @@ export function optimizeLineups(players, config = {}) {
         candidate.players,
         rotation,
         rotationProjectedRates,
-        usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+        usesRoleConditionedProductionProjection ? roleConditionedProjectionPlan : null,
       );
       const status = projectedConstraintStatus(totals, projectedRotationConstraints);
       if (!status.passed) {
@@ -5145,7 +6005,7 @@ export function optimizeLineups(players, config = {}) {
           playerStrategyScores,
           rotation,
           rotationRankingModel,
-          usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+          usesRoleConditionedObjective ? roleConditionedProjectionPlan : null,
         ),
       );
     }
@@ -5162,8 +6022,10 @@ export function optimizeLineups(players, config = {}) {
             rotationAllocationStrategy: "per-candidate-minute-weighted",
             rotationAllocationsComputed,
             requiredPositionMinutes: { ...rotationPositionMinuteRequirements },
-            constraintSearchStatesUsed: solveConstraintSearchBudget?.used ?? 0,
-            constraintSearchStateLimit: solveConstraintSearchBudget?.limit ?? null,
+            constraintSearchStatesUsed,
+            constraintSearchStateLimit: hasRotationProjectedConstraints
+              ? perCandidateConstraintSearchLimit
+              : null,
             ...(hasRotationProjectedConstraints
               ? {
                   constrainedRotationSearchStrategy: "two-pass-exact-upper-bound",
@@ -5191,27 +6053,20 @@ export function optimizeLineups(players, config = {}) {
 
   let diagnostics = buildDiagnostics();
   if (exactSearchAbort) {
-    const hitSolveWideLimit = Boolean(
-      exactSearchAbort.diagnostics.solveWideConstraintSearchLimitReached,
-    );
-    const triggeredLimit = hitSolveWideLimit
-      ? solveConstraintSearchBudget.limit
-      : MAX_CONSTRAINED_ALLOCATION_STATES;
-    const safeLimitDescription = hitSolveWideLimit
-      ? `the solve-wide browser-safe limit of ${triggeredLimit.toLocaleString()}`
-      : `the per-roster browser-safe limit of ${triggeredLimit.toLocaleString()}`;
+    const triggeredLimit = perCandidateConstraintSearchLimit;
     return failureResult(mode, size, [
-      `Exact constrained rotation search stopped after ${solveConstraintSearchBudget.used.toLocaleString()} solve-wide states when a candidate reached ${safeLimitDescription}. No lineup was returned because an unproven remaining candidate could be better than the feasible candidates already found.`,
+      `One candidate reached the per-roster ${triggeredLimit.toLocaleString()}-state production-constraint proof limit. No lineup was returned because that unresolved candidate could still be better than the feasible candidates already found. The outer rotation search has no candidate-count cap.`,
     ], {
       ...diagnostics,
       category: "performance",
       subcategory: "constraint-search-limit",
       exactSearchCompleted: false,
       feasibleCombinationsBeforeAbort: feasibleCombinations,
-      constraintSearchStatesUsed: solveConstraintSearchBudget.used,
+      constraintSearchStatesUsed,
       constraintSearchStateLimit: triggeredLimit,
-      solveConstraintSearchStateLimit: solveConstraintSearchBudget.limit,
-      solveWideConstraintSearchLimitReached: hitSolveWideLimit,
+      solveConstraintSearchStateLimit: triggeredLimit,
+      solveWideConstraintSearchLimitReached: false,
+      candidateConstraintSearchLimitReached: true,
       allocationDiagnostics: exactSearchAbort.diagnostics,
     });
   }
@@ -5267,7 +6122,7 @@ export function optimizeLineups(players, config = {}) {
       effectiveObjective.normalizedWeights,
       rotation,
       rotation ? rotationRankingModel : null,
-      usesRoleConditionedProjection ? roleConditionedProjectionPlan : null,
+      usesRoleConditionedObjective ? roleConditionedProjectionPlan : null,
       normalizedMetricResult.benchmarkIndexesByPlayerId,
     );
     const constraintAudit = buildConstraintAudit(

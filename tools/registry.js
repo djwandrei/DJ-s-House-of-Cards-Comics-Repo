@@ -15,13 +15,15 @@ export const TOOL_STATUSES = Object.freeze({
 const freezeTool = (tool) => Object.freeze({
   ...tool,
   capabilities: Object.freeze([...tool.capabilities]),
-  dependencies: Object.freeze([...tool.dependencies])
+  dependencies: Object.freeze([...tool.dependencies]),
+  highlights: Object.freeze([...(tool.highlights || [])])
 });
 
 export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'lineup-lab',
     kind: 'tool',
+    marker: 'NBA',
     title: 'NBA Lineup Lab',
     eyebrow: 'Live fan tool',
     status: TOOL_STATUSES.LIVE,
@@ -32,6 +34,11 @@ export const TOOL_REGISTRY = Object.freeze([
       'Game-plan presets and custom priorities',
       'Locks, exclusions, role coverage, alternatives, and shareable scenarios'
     ],
+    highlights: [
+      'Lineup builder',
+      'Local game state',
+      'No checkout impact'
+    ],
     dependencies: [
       'Verified NBA player and team-season data',
       'Browser-safe read-only analytics views'
@@ -41,10 +48,11 @@ export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'card-matchup-explorer',
     kind: 'tool',
+    marker: 'Cards',
     title: 'Player & Card Matchups',
     eyebrow: 'Planned collector tool',
     status: TOOL_STATUSES.PLANNED,
-    href: null,
+    href: './player-card-matchups/',
     summary: 'Connect a player or Lineup Lab scenario to verified cards in the DJHC catalog and show useful season context.',
     capabilities: [
       'Exact player-to-card matches',
@@ -60,6 +68,7 @@ export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'collection-lineup-builder',
     kind: 'game',
+    marker: 'My 5',
     title: 'Build from Your Collection',
     eyebrow: 'Planned collector game',
     status: TOOL_STATUSES.PLANNED,
@@ -79,6 +88,7 @@ export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'era-roster-challenges',
     kind: 'game',
+    marker: 'Era',
     title: 'Era & Roster Challenges',
     eyebrow: 'Planned history game',
     status: TOOL_STATUSES.PLANNED,
@@ -98,6 +108,7 @@ export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'trade-package-builder',
     kind: 'tool',
+    marker: 'Trade',
     title: 'Trade & Package Builder',
     eyebrow: 'Planned what-if tool',
     status: TOOL_STATUSES.PLANNED,
@@ -117,6 +128,7 @@ export const TOOL_REGISTRY = Object.freeze([
   freezeTool({
     id: 'nba-analytics-explorer',
     kind: 'tool',
+    marker: 'Data',
     title: 'NBA Analytics Explorer',
     eyebrow: 'Research-gated tool',
     status: TOOL_STATUSES.RESEARCH,

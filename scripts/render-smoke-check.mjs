@@ -34,6 +34,8 @@ const PUBLIC_PAGE_PATHS = [
   '/shipping.html',
   '/returns.html',
   '/offline.html',
+  '/tools/index.html',
+  '/tools/player-card-matchups/index.html',
   '/lineup-lab/index.html'
 ];
 const VISUAL_MATRIX_VIEWPORTS = [
@@ -176,6 +178,12 @@ function delay(ms) {
   });
 }
 
+function traceSmoke(message) {
+  if (process.env.DJHC_SMOKE_TRACE === '1') {
+    console.error(`[render-smoke] ${message}`);
+  }
+}
+
 function edgePath() {
   const configured = process.env.EDGE_PATH || process.env.CHROME_PATH || '';
   if (configured && existsSync(configured)) return configured;
@@ -273,6 +281,7 @@ class CdpClient {
   }
 
   async evaluate(expression) {
+    traceSmoke(`evaluate ${String(expression).replace(/\s+/g, ' ').trim().slice(0, 120)}`);
     const result = await this.send('Runtime.evaluate', {
       expression,
       awaitPromise: true,
@@ -312,7 +321,28 @@ async function connectBrowser(debugUrl) {
   return client;
 }
 
+async function stopBrowserTree(browser) {
+  if (!browser?.pid) return;
+  if (process.platform !== 'win32') {
+    browser.kill();
+    return;
+  }
+
+  await new Promise((resolve) => {
+    const taskkill = spawn('taskkill.exe', ['/PID', String(browser.pid), '/T', '/F'], {
+      stdio: 'ignore',
+      windowsHide: true
+    });
+    taskkill.once('error', () => {
+      browser.kill();
+      resolve();
+    });
+    taskkill.once('exit', resolve);
+  });
+}
+
 async function navigate(client, url) {
+  traceSmoke(`navigate ${url}`);
   await client.send('Page.navigate', { url });
   for (let attempt = 0; attempt < 120; attempt += 1) {
     if (await client.evaluate('document.readyState') === 'complete') break;
@@ -332,7 +362,10 @@ function eventFailures(events) {
       if (event.method === 'Network.responseReceived') {
         return `${event.params.response.status} ${event.params.response.url}`;
       }
-      return event.params?.entry?.text || event.params?.exceptionDetails?.text || event.method;
+      return event.params?.entry?.text
+        || event.params?.exceptionDetails?.exception?.description
+        || event.params?.exceptionDetails?.text
+        || event.method;
     })
     .slice(0, 10);
 }
@@ -462,7 +495,25 @@ async function setViewport(client, width) {
     screenHeight: 900
   });
   await client.send('Emulation.setTouchEmulationEnabled', { enabled: width <= 900 });
-  await delay(240);
+  // CDP can acknowledge the metrics override before the renderer exposes the
+  // new innerWidth. Wait for that settled state before synthesizing the resize
+  // event, otherwise the application correctly reads the *previous* breakpoint
+  // and the harness records a false stale-drawer failure.
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const actualWidth = await client.evaluate('window.innerWidth');
+    if (actualWidth === width) break;
+    await delay(25);
+  }
+  // The emulation command may also queue an early resize using the previous
+  // width. Let the application's 100ms batched fallback finish first, then
+  // deliver one event against the verified current width.
+  await delay(150);
+  // CDP's device-metrics override does not consistently emit the window event
+  // that a real resize or device rotation produces.
+  await client.evaluate('window.dispatchEvent(new Event("resize"))');
+  // Allow both the animation-frame path and its 100ms timer fallback to settle
+  // even when the page is busy finishing catalog/image work.
+  await delay(500);
 }
 
 async function inspectResponsiveDrawerContracts(client, baseUrl) {
@@ -477,6 +528,10 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       const focusable = (container) => Array.from(container?.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])') || [])
         .filter((element) => element.getClientRects().length > 0 && !element.closest('[hidden]'));
       const key = (keyName, shiftKey = false) => document.dispatchEvent(new KeyboardEvent('keydown', { key: keyName, shiftKey, bubbles: true }));
+      // Keep the renderer active long enough for any breakpoint work queued by
+      // the emulation resize to finish before the initial state snapshot.
+      window.dispatchEvent(new Event('resize'));
+      await pause(150);
       const width = ${width};
       const compactNav = width <= 1180;
       const mobileFilters = width <= 900;
@@ -487,6 +542,9 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       const navToggleVisible = !!navToggle && getComputedStyle(navToggle).display !== 'none' && !navToggle.hidden;
       const outcome = {
         width,
+        actualWidth: window.innerWidth,
+        compactNavMatches: window.matchMedia('(max-width: 1180px)').matches,
+        mobileFiltersMatch: window.matchMedia('(max-width: 900px)').matches,
         navToggleVisible,
         navClosedHidden: !!nav?.hidden,
         navClosedAriaHidden: nav?.getAttribute('aria-hidden') || '',
@@ -498,6 +556,9 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
         navFocusRestored: false,
         navOutsideClosed: false,
         filterTriggerVisible: !!filterTrigger && !filterTrigger.hidden && getComputedStyle(filterTrigger).display !== 'none',
+        filterPanelHidden: !!filterPanel?.hidden,
+        filterPanelRole: filterPanel?.getAttribute('role') || '',
+        filterPanelAriaModal: filterPanel?.getAttribute('aria-modal') || '',
         filterDialogOpen: false,
         filterBackgroundInert: false,
         filterTabTrapped: false,
@@ -627,6 +688,8 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       for (const key of ['navOpen', 'navFocusEntered', 'navTabTrapped', 'navShiftTabTrapped', 'navEscapeClosed', 'navFocusRestored', 'navOutsideClosed']) {
         if (!state[key]) failures.push(`${key} failed at ${width}px`);
       }
+    } else if (state.navClosedHidden || state.navClosedAriaHidden !== 'false') {
+      failures.push(`desktop nav accessibility state is wrong at ${width}px`);
     }
     if (state.filterTriggerVisible !== mobileFilters) failures.push(`filter trigger visibility does not match 900px contract at ${width}px`);
     if (mobileFilters) {
@@ -907,6 +970,26 @@ async function main() {
       if (!summary.ok) process.exitCode = 1;
       return;
     }
+    if (process.argv.includes('--interaction-only')) {
+      const mobile = await inspectMobileFlow(client, baseUrl);
+      const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
+      client.websocket.close();
+      const failures = [
+        ...mobile.failures.map((failure) => `${mobile.label}: ${failure}`),
+        ...mobile.badEvents.map((event) => `${mobile.label}: ${event}`),
+        ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`))
+      ];
+      const summary = {
+        ok: failures.length === 0,
+        baseUrl,
+        mobile,
+        responsive,
+        failures
+      };
+      console.log(JSON.stringify(summary, null, 2));
+      if (!summary.ok) process.exitCode = 1;
+      return;
+    }
     const desktopPages = [
       { label: 'home', path: '/', expect: { minCards: 7 } },
       { label: 'baseball category', path: '/baseball-cards.html?search=rookie', expect: { catalog: true } },
@@ -916,11 +999,14 @@ async function main() {
       { label: 'policies and authenticity', path: '/policies.html', expect: { policy: true } },
       { label: 'private metrics', path: '/metrics.html', expect: { metrics: true } }
     ];
+    // Run the module-isolated Slab-to-Stats fixture before the catalog-heavy
+    // page sweep. This avoids letting dozens of prior image/cache requests make
+    // a deterministic component check depend on browser cache scheduling.
+    const slabStats = await inspectNbaSlabStatsPanel(client, baseUrl);
     const desktop = [];
     for (const page of desktopPages) {
       desktop.push(await inspectDesktopPage(client, baseUrl, page));
     }
-    const slabStats = await inspectNbaSlabStatsPanel(client, baseUrl);
     const mobile = await inspectMobileFlow(client, baseUrl);
     const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
     const visualMatrix = await inspectEveryPageVisualMatrix(client, baseUrl);
@@ -948,7 +1034,7 @@ async function main() {
     console.log(JSON.stringify(summary, null, 2));
     if (!summary.ok) process.exitCode = 1;
   } finally {
-    browser.kill();
+    await stopBrowserTree(browser);
     await new Promise((resolve) => {
       server.close(resolve);
     });

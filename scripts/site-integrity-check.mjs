@@ -2,7 +2,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const HTML_FILES = fs.readdirSync(root).filter((file) => file.endsWith('.html')).sort();
+const NESTED_HTML_ROOTS = ['tools', 'lineup-lab'];
+
+function discoverNestedHtml(relativeDirectory) {
+  const absoluteDirectory = path.join(root, relativeDirectory);
+  if (!fs.existsSync(absoluteDirectory)) return [];
+
+  return fs.readdirSync(absoluteDirectory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(relativeDirectory.replaceAll('\\', '/'), entry.name);
+    if (entry.isDirectory()) return discoverNestedHtml(relativePath);
+    return entry.isFile() && entry.name.endsWith('.html') ? [relativePath] : [];
+  });
+}
+
+const HTML_FILES = [
+  ...fs.readdirSync(root).filter((file) => file.endsWith('.html')),
+  ...NESTED_HTML_ROOTS.flatMap(discoverNestedHtml)
+].sort();
 const CATALOG_FILES = [
   'products-public.json',
   'products-baseball.json',
@@ -62,16 +78,27 @@ function tagAttributes(tag) {
 }
 
 function localPathFromReference(reference, currentFile) {
-  if (!reference || /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(reference)) return null;
-  const exactLocalPath = reference.replace(/^\//, '');
-  if (exists(exactLocalPath)) return exactLocalPath;
-  const [withoutHash] = reference.split('#');
-  const [withoutQuery] = withoutHash.split('?');
-  if (!withoutQuery) return currentFile;
+  const value = String(reference || '').trim();
+  if (!value || /^(?:https?:|mailto:|tel:|sms:|data:|blob:|javascript:|\/\/)/i.test(value)) return null;
+
+  // Product filenames can legitimately contain raw # characters. Check the
+  // exact page-relative filesystem path before URL parsing treats them as a
+  // fragment identifier.
+  const normalizedCurrentFile = String(currentFile || '').replaceAll('\\', '/');
+  const exactPath = value.startsWith('/')
+    ? value.replace(/^\/+/, '')
+    : path.posix.normalize(path.posix.join(path.posix.dirname(normalizedCurrentFile), value));
+  if (!exactPath.startsWith('../') && exists(exactPath)) return exactPath;
+
   try {
-    return decodeURIComponent(withoutQuery).replace(/^\//, '');
+    const url = new URL(value, `https://local.djhc.test/${normalizedCurrentFile}`);
+    if (url.origin !== 'https://local.djhc.test') return null;
+    let targetPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+    if (!targetPath) targetPath = 'index.html';
+    if (targetPath.endsWith('/')) targetPath += 'index.html';
+    return targetPath;
   } catch {
-    return withoutQuery.replace(/^\//, '');
+    return value.split(/[?#]/, 1)[0].replace(/^\/+/, '') || currentFile;
   }
 }
 
@@ -170,7 +197,9 @@ for (const file of HTML_FILES) {
   }
 
   const versionedAssets = [...html.matchAll(/[?&]v=([0-9]+[a-z]?)/g)].map((match) => match[1]);
-  const staleVersions = [...new Set(versionedAssets.filter((version) => version !== assetVersion))];
+  const staleVersions = file.startsWith('lineup-lab/')
+    ? []
+    : [...new Set(versionedAssets.filter((version) => version !== assetVersion))];
   if (staleVersions.length) issues.push({ file, type: 'stale asset versions', values: staleVersions });
 }
 

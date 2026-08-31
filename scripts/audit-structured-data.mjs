@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import vm from 'node:vm';
 
 const HTML_PAGES = [
@@ -50,6 +51,19 @@ const EXPECTED_PAGE_TYPES = {
   'shipping.html': 'WebPage',
   'returns.html': 'WebPage'
 };
+
+const NESTED_PAGE_TYPES = {
+  'tools/index.html': 'CollectionPage',
+  'tools/player-card-matchups/index.html': 'CollectionPage'
+};
+
+function discoverToolsHtml(relativeDirectory = 'tools') {
+  return readdirSync(relativeDirectory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(relativeDirectory.replaceAll('\\', '/'), entry.name);
+    if (entry.isDirectory()) return discoverToolsHtml(relativePath);
+    return entry.isFile() && entry.name.endsWith('.html') ? [relativePath] : [];
+  });
+}
 
 function assert(condition, message) {
   if (!condition) {
@@ -171,6 +185,23 @@ function validateStaticPage(fileName) {
   };
 }
 
+function validateNestedPage(fileName) {
+  const items = readJsonLd(fileName).flatMap(graphItems);
+  const expectedType = NESTED_PAGE_TYPES[fileName];
+  const page = findType(items, expectedType);
+
+  assert(page, `${fileName}: missing ${expectedType}`);
+  validateAbsoluteUrl(page.url, `${fileName}: page URL`);
+  validateAbsoluteUrl(page['@id'], `${fileName}: page @id`);
+  assert(page.isPartOf?.['@id'], `${fileName}: page must identify its parent website`);
+  validateAbsoluteUrl(page.isPartOf['@id'], `${fileName}: parent website @id`);
+
+  return {
+    fileName,
+    types: uniqueTypes(items)
+  };
+}
+
 function installProductSchemaRuntime() {
   global.window = {
     DJ: {
@@ -223,7 +254,14 @@ function validateProductRuntime() {
   };
 }
 
+const discoveredToolsPages = discoverToolsHtml();
+assert(discoveredToolsPages.length === Object.keys(NESTED_PAGE_TYPES).length, 'Structured-data audit does not cover every Fan Tools page');
+discoveredToolsPages.forEach((fileName) => {
+  assert(NESTED_PAGE_TYPES[fileName], `${fileName}: missing from nested structured-data audit registry`);
+});
+
 const results = HTML_PAGES.map(validateStaticPage);
+results.push(...Object.keys(NESTED_PAGE_TYPES).map(validateNestedPage));
 results.push(validateProductRuntime());
 
 console.log('Structured data audit passed');

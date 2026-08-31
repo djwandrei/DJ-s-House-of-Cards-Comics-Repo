@@ -315,7 +315,16 @@ function localTargetForReference(rawReference, sourceFile) {
 }
 
 function verifyLocalHtmlReferences() {
-  const htmlFiles = readdirSync(ROOT).filter((file) => file.endsWith('.html'));
+  // Root storefront pages plus the two deployable nested experiences. Prototype
+  // and output folders intentionally stay outside the production reference audit.
+  const htmlDirectories = ['', 'tools', 'lineup-lab'];
+  const htmlFiles = htmlDirectories.flatMap((directory) => {
+    const absoluteDirectory = path.join(ROOT, directory);
+    if (!existsSync(absoluteDirectory)) return [];
+    return readdirSync(absoluteDirectory, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
+      .map((entry) => path.join(directory, entry.name).replaceAll('\\', '/'));
+  });
   const missing = [];
   let references = 0;
   for (const file of htmlFiles) {

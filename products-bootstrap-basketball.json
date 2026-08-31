@@ -811,9 +811,7 @@
       "league": "NBA",
       "sport": "Basketball",
       "playerAthlete": "Magic Johnson|Michael Jordan",
-      "attributes": [
-        "Base Set"
-      ],
+      "attributes": [],
       "isFeatured": false,
       "isDeleted": false,
       "sortRank": 0,
@@ -821,7 +819,6 @@
         "playerAthlete": "Magic Johnson|Michael Jordan",
         "excelFields": {
           "Title": "1991-92 Upper Deck Confrontation Michael Jordan Magic Johnson + /1990 Hoops Set",
-          "C:Features": "Base Set",
           "C:Autographed": "No"
         }
       }

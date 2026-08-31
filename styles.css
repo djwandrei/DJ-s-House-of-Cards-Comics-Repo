@@ -55,17 +55,17 @@
    * original JPG/PNG files remain as fallbacks for older browsers and for
    * any host-level caching edge cases.
    */
-  --image-grass:image-set(url("assets/grass.webp") type("image/webp"),url("assets/grass.jpg") type("image/jpeg"));
-  --image-baseball-main:image-set(url("assets/baseball-main.webp") type("image/webp"),url("assets/baseball-main.jpg") type("image/jpeg"));
-  --image-basketball-main:image-set(url("assets/basketball-main.webp") type("image/webp"),url("assets/basketball-main.jpg") type("image/jpeg"));
-  --image-football-main:image-set(url("assets/football-main.webp") type("image/webp"),url("assets/football-main.jpg") type("image/jpeg"));
-  --image-comics-main:image-set(url("assets/comics-main.webp") type("image/webp"),url("assets/comics-main.jpeg") type("image/jpeg"));
-  --image-jordan:image-set(url("assets/Jordan.webp") type("image/webp"),url("assets/Jordan.jpg") type("image/jpeg"));
-  --image-clubhouse:image-set(url("assets/clubhouse-sign.webp?v=20260530a") type("image/webp"),url("assets/clubhouse-sign.png?v=20260530a") type("image/png"));
-  --image-baseball-footer:image-set(url("assets/baseball-footer.webp") type("image/webp"),url("assets/baseball-footer.jpg") type("image/jpeg"));
-  --image-basketball-footer:image-set(url("assets/basketball-footer.webp") type("image/webp"),url("assets/basketball-footer.jpg") type("image/jpeg"));
-  --image-football-footer:image-set(url("assets/football-footer.webp") type("image/webp"),url("assets/football-footer.jpg") type("image/jpeg"));
-  --image-comics-footer:image-set(url("assets/comics-footer.webp") type("image/webp"),url("assets/comics-footer.jpeg") type("image/jpeg"));
+  --image-grass:image-set(url("/assets/grass.webp") type("image/webp"),url("/assets/grass.jpg") type("image/jpeg"));
+  --image-baseball-main:image-set(url("/assets/baseball-main.webp") type("image/webp"),url("/assets/baseball-main.jpg") type("image/jpeg"));
+  --image-basketball-main:image-set(url("/assets/basketball-main.webp") type("image/webp"),url("/assets/basketball-main.jpg") type("image/jpeg"));
+  --image-football-main:image-set(url("/assets/football-main.webp") type("image/webp"),url("/assets/football-main.jpg") type("image/jpeg"));
+  --image-comics-main:image-set(url("/assets/comics-main.webp") type("image/webp"),url("/assets/comics-main.jpeg") type("image/jpeg"));
+  --image-jordan:image-set(url("/assets/Jordan.webp") type("image/webp"),url("/assets/Jordan.jpg") type("image/jpeg"));
+  --image-clubhouse:image-set(url("/assets/clubhouse-sign.webp?v=20260530a") type("image/webp"),url("/assets/clubhouse-sign.png?v=20260530a") type("image/png"));
+  --image-baseball-footer:image-set(url("/assets/baseball-footer.webp") type("image/webp"),url("/assets/baseball-footer.jpg") type("image/jpeg"));
+  --image-basketball-footer:image-set(url("/assets/basketball-footer.webp") type("image/webp"),url("/assets/basketball-footer.jpg") type("image/jpeg"));
+  --image-football-footer:image-set(url("/assets/football-footer.webp") type("image/webp"),url("/assets/football-footer.jpg") type("image/jpeg"));
+  --image-comics-footer:image-set(url("/assets/comics-footer.webp") type("image/webp"),url("/assets/comics-footer.jpeg") type("image/jpeg"));
   --page-bg:#f3f6fb;
   --surface:rgba(255, 255, 255, 0.94);
   --surface-strong:#ffffff;
@@ -13214,4 +13214,86 @@ body[data-page="home"] .site-footer .footer-link-group strong,
 body[data-page="home"] .site-footer .footer-link-group a:hover,
 body[data-page="home"] .site-footer .footer-link-group a:focus-visible {
   color:var(--brand-gold);
+}
+
+/* Shared header refinement: keep the search surface and centered navigation
+   consistent on every storefront page, while leaving the homepage utility
+   cluster in its established slot. */
+@media (min-width:1181px) {
+  .site-header .header-inner {
+    row-gap:.5rem !important;
+  }
+
+  .site-header .site-nav {
+    justify-self:center !important;
+  }
+
+  .site-header .site-nav .primary-nav__list {
+    justify-content:center !important;
+  }
+
+  body[data-page="home"] .site-header .site-nav {
+    transform:translateX(clamp(3rem,10vw,8rem));
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    min-height:96px;
+    grid-template-columns:minmax(220px,260px) minmax(320px,1fr) auto;
+    grid-template-rows:50px 34px;
+    grid-template-areas:
+      "brand search theme"
+      "nav nav nav";
+    align-content:center;
+    column-gap:.75rem;
+    padding-block:.32rem;
+  }
+
+  body:not([data-page="home"]) .site-header .brand {
+    grid-area:brand;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-search {
+    grid-area:search;
+    display:block;
+    min-width:0;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav {
+    grid-area:nav;
+  }
+
+  body:not([data-page="home"]) .site-header .theme-toggle {
+    grid-area:theme;
+    justify-self:end;
+    min-height:38px;
+    height:38px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-actions {
+    grid-area:theme;
+    justify-self:end;
+  }
+
+  body:not([data-page="home"]) .site-header .nav-toggle {
+    display:none !important;
+  }
+
+  body:not([data-page="home"]) .site-header .brand-logo {
+    width:58px;
+    height:58px;
+  }
+
+body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
+    min-height:34px;
+    padding-inline:.72rem;
+    font-size:.86rem;
+  }
+}
+
+#sports-cards {
+  scroll-margin-top:calc(var(--header-h, 6rem) + 1rem);
+}
+
+.shop-sports-section {
+  padding-top:2.25rem;
 }

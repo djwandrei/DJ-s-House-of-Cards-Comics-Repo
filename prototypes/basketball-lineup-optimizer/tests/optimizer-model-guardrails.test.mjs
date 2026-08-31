@@ -540,6 +540,318 @@ test("assigned-role scoring smoothly reduces extra-minute value without capping 
   assert.deepEqual(roleConditioned.positionMinutes.actual, STANDARD_ROLE_MINUTES);
 });
 
+test("workload saturation avoids min/max pileups without flattening player quality", () => {
+  const scoreValues = [0.95, 0.88, 0.80, 0.72, 0.64, 0.56, 0.48, 0.40, 0.32];
+  const players = scoreValues.map((score, index) => player(`quality-${index + 1}`, {
+    // Deliberately give every player the same source role. The test isolates
+    // the new non-historical workload curve from role-expansion evidence.
+    minutes: 28,
+  }));
+  const scores = Object.fromEntries(players.map((item, index) => [
+    item.id,
+    scoreValues[index],
+  ]));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 240 / players.length,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    expandedScoresById: scores,
+    activeMetrics: ["points"],
+  };
+
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 8,
+    maxMinutes: 40,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.totalMinutes, 240);
+  assert.deepEqual(result.positionMinutes.actual, STANDARD_ROLE_MINUTES);
+  assert.ok(result.byId["quality-1"] > result.byId["quality-5"]);
+  assert.ok(result.byId["quality-5"] > result.byId["quality-9"]);
+  assert.ok(result.byId["quality-1"] < 40, "the best profile should not hit its maximum in this ordinary quality spread");
+  const hardBoundaryCount = result.allocations.filter(
+    (allocation) => allocation.minutes === allocation.minimum || allocation.minutes === allocation.maximum,
+  ).length;
+  assert.ok(hardBoundaryCount <= 3, `expected at most three hard-bound players, received ${hardBoundaryCount}`);
+  assert.equal(result.diagnostics.roleConditionedScoring.workloadSaturation.applied, true);
+  assert.equal(
+    result.diagnostics.roleConditionedScoring.workloadSaturation.startsAfterMinutes,
+    240 / players.length,
+  );
+  assert.equal(
+    result.diagnostics.roleConditionedScoring.workloadSaturation.sourceMinutesAffectCurve,
+    false,
+  );
+});
+
+test("production thresholds preserve diminishing-return minutes while proving exact feasibility", () => {
+  // Six fixed players isolate a two-player exchange. The unconstrained workload
+  // objective prefers four extra minutes for the stronger all-around profile;
+  // the rebound floor requires exactly three of those minutes to move to the
+  // specialist. A regression to the old linear path would still satisfy the
+  // floor, but its diagnostics and marginal search would no longer match the
+  // ordinary rotation objective.
+  const flexiblePlayers = [
+    player("quality", { minutes: 30, rebounds: 0 }),
+    player("rebounder", { minutes: 30, rebounds: 30 }),
+  ];
+  const fixedPlayers = Array.from({ length: 6 }, (_, index) => player(`fixed-${index + 1}`, {
+    minutes: 30,
+    rebounds: 0,
+  }));
+  const players = [...flexiblePlayers, ...fixedPlayers];
+  const scores = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id === "quality" ? 0.9 : item.id === "rebounder" ? 0.6 : 0.5,
+  ]));
+  const playerBounds = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id.startsWith("fixed-")
+      ? { min: 30, max: 30 }
+      : { min: 28, max: 32 },
+  ]));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 30,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    expandedScoresById: scores,
+    objectiveMetrics: ["points"],
+    activeMetrics: ["points"],
+  };
+
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    playerBounds,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+    projectedStatMinimums: { rebounds: 31 },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.totalMinutes, 240);
+  assert.equal(result.strategy, "objective-constrained");
+  assert.equal(result.byId.quality, 29);
+  assert.equal(result.byId.rebounder, 31);
+  // The specialist's source line is exactly one rebound per minute, so the
+  // minute assertion above is also the transparent projected-total proof.
+  assert.equal(result.diagnostics.projectedConstraints.adjustedAllocation, true);
+  assert.equal(result.diagnostics.projectedConstraints.searchStates, 0);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateApplied, true);
+  assert.equal(
+    result.diagnostics.projectedConstraints.lagrangianCertificateRule,
+    "minimum-rebounds",
+  );
+  assert.equal(result.diagnostics.roleConditionedScoring.applied, true);
+  assert.match(
+    result.diagnostics.roleConditionedScoring.reason,
+    /preserved the diminishing-return minute objective/i,
+  );
+});
+
+test("constraint seed matches an exhaustive diminishing-return minute oracle", () => {
+  const scoreValues = [0.92, 0.81, 0.72, 0.63, 0.54, 0.45, 0.36, 0.27];
+  const players = scoreValues.map((score, index) => player(`oracle-${index + 1}`, {
+    minutes: 30,
+    // Lower game-plan scores deliberately carry more rebounding. Reaching the
+    // floor therefore requires a multi-minute tradeoff rather than a vacuous
+    // baseline pass.
+    rebounds: index * 3,
+  }));
+  const scores = Object.fromEntries(players.map((item, index) => [
+    item.id,
+    scoreValues[index],
+  ]));
+  const playerBounds = Object.fromEntries(players.map((item) => [
+    item.id,
+    { min: 29, max: 31 },
+  ]));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 30,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    expandedScoresById: scores,
+    objectiveMetrics: ["points"],
+    activeMetrics: ["points"],
+  };
+  const reboundFloor = 85;
+
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    playerBounds,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+    projectedStatMinimums: { rebounds: reboundFloor },
+  });
+
+  // Independently enumerate all 3^8 narrow-bound vectors, retaining only the
+  // 1,107 vectors that sum to 240. All players are G/F/C eligible, so each such
+  // vector has an exact role split. The oracle deliberately re-expresses the
+  // public workload curve instead of calling an optimizer helper.
+  const minutesById = new Map();
+  let oracle = null;
+  const objectiveFor = (item, minutes) => {
+    let value = 0;
+    for (let minute = 1; minute <= minutes; minute += 1) {
+      const excess = Math.max(0, (minute - 0.5) - 30);
+      const multiplier = excess <= 0
+        ? 1
+        : 0.35 + (0.65 * Math.exp(-excess / 8));
+      value += scores[item.id] * multiplier;
+    }
+    return value;
+  };
+  const enumerate = (index, remaining) => {
+    if (index === players.length) {
+      if (remaining !== 0) return;
+      const rebounds = players.reduce(
+        (total, item) => total + ((item.rebounds / item.minutes) * minutesById.get(item.id)),
+        0,
+      );
+      if (rebounds + 1e-9 < reboundFloor) return;
+      const objective = players.reduce(
+        (total, item) => total + objectiveFor(item, minutesById.get(item.id)),
+        0,
+      );
+      const key = players.map((item) => minutesById.get(item.id)).join(",");
+      if (
+        !oracle ||
+        objective > oracle.objective + 1e-12 ||
+        (Math.abs(objective - oracle.objective) <= 1e-12 && key < oracle.key)
+      ) {
+        oracle = {
+          objective,
+          key,
+          minutes: Object.fromEntries(minutesById),
+        };
+      }
+      return;
+    }
+    const slotsAfter = players.length - index - 1;
+    for (let minutes = 29; minutes <= 31; minutes += 1) {
+      const nextRemaining = remaining - minutes;
+      if (nextRemaining < slotsAfter * 29 || nextRemaining > slotsAfter * 31) continue;
+      minutesById.set(players[index].id, minutes);
+      enumerate(index + 1, nextRemaining);
+    }
+  };
+  enumerate(0, 240);
+
+  assert.equal(result.ok, true);
+  assert.ok(oracle);
+  assert.deepEqual(result.byId, oracle.minutes);
+  assert.equal(result.diagnostics.projectedConstraints.feasibleSeedFound, true);
+  assert.equal(result.diagnostics.projectedConstraints.feasibleSeedUsed, true);
+  assert.equal(result.diagnostics.projectedConstraints.feasibleSeedRepairSteps, 6);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateApplied, true);
+  assert.equal(result.diagnostics.projectedConstraints.searchStates, 0);
+});
+
+test("falls back to exact state enumeration when the Lagrangian bound has an integer gap", () => {
+  // A two-rebound-per-minute specialist creates a deliberately coarse lattice:
+  // 59 rebounds requires the same integer minute plan as 60, while the relaxed
+  // Lagrangian problem can price a fractional boundary between them. The dual
+  // therefore cannot close completely, and the solver must use its ordinary
+  // best-first proof rather than accepting the feasible seed on faith.
+  const flexiblePlayers = [
+    player("quality-gap", { minutes: 30, rebounds: 0 }),
+    player("rebounder-gap", { minutes: 30, rebounds: 60 }),
+  ];
+  const fixedPlayers = Array.from({ length: 6 }, (_, index) => player(`gap-fixed-${index + 1}`, {
+    minutes: 30,
+    rebounds: 0,
+  }));
+  const players = [...flexiblePlayers, ...fixedPlayers];
+  const scores = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id === "quality-gap" ? 0.9 : item.id === "rebounder-gap" ? 0.6 : 0.5,
+  ]));
+  const playerBounds = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id.startsWith("gap-fixed-")
+      ? { min: 30, max: 30 }
+      : { min: 28, max: 32 },
+  ]));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 30,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    expandedScoresById: scores,
+    objectiveMetrics: ["points"],
+    activeMetrics: ["points"],
+  };
+
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    playerBounds,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+    projectedStatMinimums: { rebounds: 59 },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.byId["quality-gap"], 30);
+  assert.equal(result.byId["rebounder-gap"], 30);
+  assert.equal(result.diagnostics.projectedConstraints.feasibleSeedFound, true);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateAttempted, true);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateApplied, false);
+  assert.ok(result.diagnostics.projectedConstraints.lagrangianUpperBoundGap > 0);
+  assert.ok(result.diagnostics.projectedConstraints.searchStates > 0);
+  assert.equal(result.diagnostics.projectedConstraints.feasibleSeedUsed, true);
+});
+
+test("workload saturation preserves league-baseline Plan Fit and box-score totals", () => {
+  const players = Array.from({ length: 8 }, (_, index) => player(`baseline-${index + 1}`, {
+    minutes: 30,
+    points: 15,
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 18 },
+    },
+  }));
+  const fixedMinutes = [40, 29, 29, 29, 29, 28, 28, 28];
+  const playerBounds = Object.fromEntries(players.map((item, index) => [
+    item.id,
+    { min: fixedMinutes[index], max: fixedMinutes[index] },
+  ]));
+  const result = optimizeLineups(players, {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      playerBounds,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.best.planFitIndex, 100);
+  assert.equal(result.best.totals.points, 120);
+  assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied, true);
+  assert.ok(result.best.score < 100, "workload utility should remain distinct from the league-anchored index");
+});
+
 test("career-only position minute caps remain exact rotation constraints", () => {
   const players = [
     ...Array.from({ length: 2 }, (_, index) => player(`guard-${index + 1}`, { positions: ["G"] })),
@@ -708,7 +1020,8 @@ test("role expansion never improves a below-baseline scorer", () => {
   assert.equal(commonRoleOnly.ok, true);
   assert.equal(roleConditioned.best.rotation.byId["below-baseline"], 40);
   // Expansion cannot replace a weak established projection with the better
-  // league baseline. It therefore matches—not exceeds—the common-role control.
+  // league baseline. Workload saturation changes allocation utility—not the
+  // displayed box-score rate—so the production estimate matches the control.
   assert.equal(roleConditioned.best.totals.points, commonRoleOnly.best.totals.points);
 });
 
@@ -951,6 +1264,8 @@ test("open what-if rotation uses game-plan fit only for both roster ranking and 
     rotationOptions,
   };
 
+  let ordinaryMinutes = null;
+  let ordinaryStrategyFit = null;
   for (const [label, config] of [
     ["ordinary", baseConfig],
     ["projected-constraint", { ...baseConfig, statMinimums: { points: 1 } }],
@@ -961,16 +1276,11 @@ test("open what-if rotation uses game-plan fit only for both roster ranking and 
     // roster score nor the minute plan may let it steal proposed minutes from
     // the higher-fitting player.
     assert.equal(result.best.rotation.byId["a-best-strategy"], 48, label);
-    assert.equal(
-      ["p2", "p3", "p4", "p5", "p6"]
-        .filter((id) => result.best.rotation.byId[id] === 48)
-        .length,
-      4,
+    assert.equal(result.best.historicalReadinessIndex, null, label);
+    assert.ok(
+      Math.abs(result.best.score - result.best.strategyFitScore) < 0.00001,
       label,
     );
-    assert.ok(Math.abs(result.best.strategyFitScore - 78.181818) < 0.00001, label);
-    assert.equal(result.best.historicalReadinessIndex, null, label);
-    assert.ok(Math.abs(result.best.score - 78.181818) < 0.00001, label);
     assert.equal(result.diagnostics.rotationHistoricalReadiness.applied, false, label);
     assert.match(
       result.diagnostics.rotationHistoricalReadiness.reason,
@@ -978,7 +1288,45 @@ test("open what-if rotation uses game-plan fit only for both roster ranking and 
       label,
     );
     if (label === "projected-constraint") {
+      // A vacuous production floor must not select a different minute equation.
+      // It keeps the same diminishing-return optimum, then records that the
+      // conservative static production projection was used for the hard rule.
+      assert.deepEqual(result.best.rotation.byId, ordinaryMinutes);
+      assert.ok(Math.abs(result.best.strategyFitScore - ordinaryStrategyFit) < 0.00001);
       assert.equal(result.best.rotation.strategy, "objective-constrained");
+      assert.equal(
+        result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied,
+        true,
+      );
+      assert.equal(
+        result.diagnostics.rotationRateStabilityEvidence.assignedRoleProjection.enabledForExactSearch,
+        true,
+      );
+      assert.equal(
+        result.diagnostics.rotationRateStabilityEvidence.assignedRoleProjection.productionProjectionEnabled,
+        false,
+      );
+    } else {
+      // The ordinary what-if model now uses diminishing marginal workload
+      // value. It still gives the best player the largest role, but no longer
+      // sends four merely tied second-tier players to their hard maximum.
+      assert.equal(
+        ["p2", "p3", "p4", "p5", "p6"]
+          .filter((id) => result.best.rotation.byId[id] === 48)
+          .length,
+        0,
+      );
+      assert.ok(
+        ["p2", "p3", "p4", "p5", "p6"]
+          .every((id) => result.best.rotation.byId[id] >= 38),
+      );
+      assert.equal(result.best.rotation.strategy, "objective-role-conditioned");
+      assert.equal(
+        result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied,
+        true,
+      );
+      ordinaryMinutes = result.best.rotation.byId;
+      ordinaryStrategyFit = result.best.strategyFitScore;
     }
   }
 });

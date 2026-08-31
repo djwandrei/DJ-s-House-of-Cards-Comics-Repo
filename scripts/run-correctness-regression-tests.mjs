@@ -10,6 +10,8 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const coreAssetVersion = readFileSync(path.join(root, 'core.js'), 'utf8')
+  .match(/PRODUCT_ASSET_VERSION\s*=\s*'([^']+)'/)?.[1] || '';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -46,12 +48,18 @@ function createClassList() {
   };
 }
 
-function evaluateCore() {
+function evaluateCore({
+  pageHref = 'https://example.test/cart.html',
+  coreScriptSrc = '/core.js?v=test'
+} = {}) {
   const localStorage = createStorage();
   const sessionStorage = createStorage();
+  const coreScript = { src: new URL(coreScriptSrc, pageHref).href };
   const document = {
     readyState: 'loading',
     body: { dataset: {}, classList: createClassList() },
+    currentScript: coreScript,
+    scripts: [coreScript],
     addEventListener() {},
     getElementById() { return null; },
     querySelector() { return null; },
@@ -59,7 +67,11 @@ function evaluateCore() {
   };
   const window = {
     DJ: {},
-    location: { pathname: '/cart.html', search: '', href: 'https://example.test/cart.html' },
+    location: {
+      pathname: new URL(pageHref).pathname,
+      search: new URL(pageHref).search,
+      href: pageHref
+    },
     matchMedia() { return { matches: false, addEventListener() {} }; },
     addEventListener() {},
     dispatchEvent() {},
@@ -81,6 +93,29 @@ function evaluateCore() {
   };
   vm.runInNewContext(readFileSync(path.join(root, 'core.js'), 'utf8'), context, { filename: 'core.js' });
   return { DJ: window.DJ };
+}
+
+function testSharedAssetResolution() {
+  const { DJ } = evaluateCore({
+    pageHref: 'https://example.test/tools/index.html',
+    coreScriptSrc: '../core.js?v=existing'
+  });
+
+  equal(
+    DJ.versionedProductAsset('backend-config.js'),
+    `/backend-config.js?v=${coreAssetVersion}`,
+    'Nested pages must load shared scripts from the site root.'
+  );
+  equal(
+    DJ.versionedProductAsset('products-public.json?segment=all'),
+    `/products-public.json?segment=all&v=${coreAssetVersion}`,
+    'Root resolution must preserve an existing query string before adding the cache version.'
+  );
+  equal(
+    DJ.versionedProductAsset('/analytics.js'),
+    `/analytics.js?v=${coreAssetVersion}`,
+    'Already root-relative shared paths must remain stable.'
+  );
 }
 
 function checkoutSessionId(name) {
@@ -878,6 +913,7 @@ async function testCheckoutIntentCancellation() {
 async function main() {
   const { DJ } = evaluateCore();
   equal(DJ.escapeHtml(`<>&"'`), '&lt;&gt;&amp;&quot;&#39;', 'HTML escaping must preserve every supported entity.');
+  testSharedAssetResolution();
   testCatalogImportStateIsolation();
   await testPublicAndAdminCatalogFieldSeparation();
   await testPinnedSupabaseLoaderFailure();
@@ -889,7 +925,7 @@ async function main() {
   testMetricsAggregation();
   await testCheckoutIdentityPayloads();
   await testCheckoutIntentCancellation();
-  console.log('Correctness regression tests passed: core helpers, public/admin catalog separation, pinned SDK loading, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and guest/verified checkout payloads.');
+  console.log('Correctness regression tests passed: core helpers and nested asset paths, public/admin catalog separation, pinned SDK loading, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and guest/verified checkout payloads.');
 }
 
 main().catch((error) => {

@@ -1,6 +1,6 @@
 // Match the app shell's revision so the worker cannot run an older solver from
 // an existing browser cache after a targeted cPanel release.
-import { optimizeLineups } from "./optimizer-core.js?v=20260827a";
+import { optimizeLineups } from "./optimizer-core.js?v=20260831a";
 
 self.addEventListener("message", (event) => {
   const { requestId, players, config } = event.data || {};

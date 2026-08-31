@@ -2484,9 +2484,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Dwight Clark|Kellen Winslow",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -2494,7 +2492,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Dwight Clark|Kellen Winslow",
       "excelFields": {
         "Title": "1982 Topps Receiving Leaders Kellen Winslow + Dwight Clark #258",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -4887,9 +4884,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -4897,7 +4892,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Andre Johnson|Arian Foster|DeAndre Hopkins|J.J. Watt",
       "excelFields": {
         "Title": "2013 Bowman JJ Watt DeAndre Hopkins Arian Foster Andre Johnson Texans Set (x36)",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -7366,9 +7360,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "NFL",
     "sport": "Football",
     "playerAthlete": "Aaron Rodgers",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -7376,7 +7368,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Aaron Rodgers",
       "excelFields": {
         "Title": "2023 Panini Clear Vision Aaron Rodgers + Donruss Clearly Joe Namath Jets Set (2)",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },

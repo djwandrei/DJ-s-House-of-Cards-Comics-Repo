@@ -24973,9 +24973,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Carl Yastrzemski",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -24983,7 +24981,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Carl Yastrzemski",
       "excelFields": {
         "Title": "1973 Topps Carl Yastrzemski #245 PSA 4",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },
@@ -25010,9 +25007,7 @@ window.DJ_PRELOADED_PRODUCTS = [
     "league": "MLB",
     "sport": "Baseball",
     "playerAthlete": "Brooks Robinson",
-    "attributes": [
-      "Base Set"
-    ],
+    "attributes": [],
     "isFeatured": false,
     "isDeleted": false,
     "sortRank": 0,
@@ -25020,7 +25015,6 @@ window.DJ_PRELOADED_PRODUCTS = [
       "playerAthlete": "Brooks Robinson",
       "excelFields": {
         "Title": "1973 Topps Brooks Robinson #90 PSA 4",
-        "C:Features": "Base Set",
         "C:Autographed": "No"
       }
     },

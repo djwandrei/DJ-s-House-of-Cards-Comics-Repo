@@ -2352,3 +2352,159 @@ body.dark-mode .modal-listing-nav__button {
     grid-template-columns:1fr;
   }
 }
+
+/* Shared compact header: logo, menu, and search stay on one stable rail from
+   phone through tablet widths. The same rules apply to the injected search
+   surface on interior pages and the existing homepage search form. */
+@media (max-width:1180px) {
+  .site-header .header-inner {
+    min-height:70px !important;
+    grid-template-columns:auto auto minmax(0,1fr) !important;
+    grid-template-rows:1fr !important;
+    grid-template-areas:"brand menu search" !important;
+    align-items:center !important;
+    gap:.35rem !important;
+    padding-block:.3rem !important;
+  }
+
+  .site-header .brand {
+    grid-area:brand !important;
+    min-width:0;
+  }
+
+  .site-header .brand-logo {
+    width:58px !important;
+    height:58px !important;
+  }
+
+  .site-header .nav-toggle {
+    grid-area:menu !important;
+    display:inline-flex !important;
+    position:relative !important;
+    inset:auto !important;
+    justify-self:stretch !important;
+    width:76px;
+    min-width:76px !important;
+    min-height:42px;
+    height:42px;
+    padding-inline:.65rem;
+    border-radius:14px;
+    font-size:.82rem;
+    white-space:nowrap;
+  }
+
+  .site-header .header-actions {
+    grid-area:menu !important;
+    display:flex;
+    align-items:center;
+    min-width:0;
+    gap:0;
+  }
+
+  .site-header .home-header-search {
+    grid-area:search !important;
+    display:block;
+    min-width:0;
+  }
+
+  .site-header .home-header-search__bar {
+    min-height:42px;
+    border-left:0;
+    border-radius:0 14px 14px 0;
+  }
+
+  .site-header .home-header-search input {
+    height:40px;
+    font-size:.84rem;
+  }
+
+  .site-header .theme-toggle:not(.theme-toggle--footer) {
+    display:none !important;
+  }
+}
+
+@media (max-width:760px) {
+  :root {
+    --header-h:64px;
+  }
+
+  .site-header,
+  .site-header .header-inner {
+    --header-h:64px;
+    min-height:64px !important;
+  }
+
+  .site-header .brand-logo {
+    width:56px !important;
+    height:56px !important;
+  }
+
+  .site-header .brand {
+    gap:.38rem;
+    margin-right:0;
+  }
+
+  .site-header .nav-toggle {
+    min-width:62px !important;
+    width:62px !important;
+    min-height:40px;
+    height:40px;
+    padding-inline:.42rem;
+    font-size:.78rem;
+  }
+
+  .site-header .home-header-search__bar {
+    min-height:40px;
+  }
+
+  .site-header .home-header-search input {
+    height:38px;
+    font-size:.78rem;
+  }
+
+  .site-header .home-header-search button {
+    min-width:52px;
+    padding-inline:.45rem;
+  }
+
+  .site-header .home-header-search button span {
+    display:none;
+  }
+}
+
+@media (max-width:520px) {
+  .site-header .header-inner {
+    grid-template-columns:56px 46px minmax(0,1fr) !important;
+    column-gap:0 !important;
+  }
+
+  .site-header .brand-copy {
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    clip-path:inset(50%);
+    white-space:nowrap;
+  }
+
+  .site-header .nav-toggle {
+    min-width:46px !important;
+    width:46px !important;
+    padding-inline:0;
+  }
+
+  .site-header .home-header-search input {
+    padding-inline:.62rem .2rem;
+    font-size:.76rem;
+  }
+
+  .site-header .home-header-search input::placeholder {
+    font-size:.73rem;
+  }
+
+  .site-header .home-header-search button {
+    min-width:44px;
+    padding-inline:.35rem;
+  }
+}

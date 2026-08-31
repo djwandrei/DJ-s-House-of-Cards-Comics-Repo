@@ -5,6 +5,7 @@
 .codex/
 .codex_tmp/
 .codex-screenshots/
+.superdesign/tmp/
 
 # Secrets and machine-local configuration
 .env

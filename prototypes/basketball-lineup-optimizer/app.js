@@ -1,6 +1,5 @@
 import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
-  DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_FAMILY_PRESETS,
   OBJECTIVE_FAMILY_DEFINITIONS,
   assessHistoricalPositionMinuteEvidence,
@@ -37,6 +36,11 @@ import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=__LINEUP_LAB_ASS
 // dataset adapter, worker, or course-fixture response.
 const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=__LINEUP_LAB_ASSET_VERSION__";
 const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=__LINEUP_LAB_ASSET_VERSION__", import.meta.url);
+// Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
+// intentionally different: it has no candidate-count cutoff and therefore no
+// elapsed-time cutoff. That work stays in a background Worker until it finishes
+// or the visitor changes the scenario, which calls cancelOptimization().
+const LINEUP_OPTIMIZER_WORKER_TIMEOUT_MS = 45_000;
 const WATCHLIST_KEY = "djhc-lineup-lab-watchlist-v1";
 const WATCHLIST_SNAPSHOTS_KEY = "djhc-lineup-lab-watchlist-snapshots-v2";
 const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
@@ -187,6 +191,7 @@ const elements = {
   minCenters: $("#minCentersInput"),
   minGames: $("#minGamesInput"),
   minMinutes: $("#minMinutesInput"),
+  sampleFilterHelp: $("#sampleFilterHelp"),
   minPoints: $("#minPointsInput"),
   minRebounds: $("#minReboundsInput"),
   minAssists: $("#minAssistsInput"),
@@ -717,12 +722,17 @@ function updateSearchScope() {
 
   const estimatedCombinations = chooseCount(availablePlayers.length, slotsToChoose);
   const groupLabel = estimatedCombinations === 1 ? "possible group" : "possible groups";
-  const safeLimit = elements.mode.value === "rotation"
-    ? DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS
-    : DEFAULT_MAX_EXACT_COMBINATIONS;
-  if (estimatedCombinations > safeLimit) {
+  if (elements.mode.value === "rotation") {
     setSearchScope(
-      `${estimatedCombinations.toLocaleString()} ${groupLabel} exceed the ${safeLimit.toLocaleString()} browser-safe limit. Narrow the eligible roster.`,
+      `${estimatedCombinations.toLocaleString()} ${groupLabel} · no candidate-count cap; every group will be checked in the background. Larger pools can take longer.`,
+      "success",
+      true,
+    );
+    return;
+  }
+  if (estimatedCombinations > DEFAULT_MAX_EXACT_COMBINATIONS) {
+    setSearchScope(
+      `${estimatedCombinations.toLocaleString()} ${groupLabel} exceed the ${DEFAULT_MAX_EXACT_COMBINATIONS.toLocaleString()} browser-safe lineup limit. Narrow the eligible roster.`,
       "warning",
       false,
     );
@@ -2036,8 +2046,8 @@ function renderRotationEvidencePreview() {
     elements.simpleModelSummaryCopy.textContent = "The optimizer uses stats recorded with this team, applies the visible sample filter, and compares five-player profiles under your game plan.";
     elements.simpleModelSummaryNote.textContent = "Recommended sample and position rules are already active. Open Detailed only to change them.";
   } else {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It adjusts low-opportunity rates instead of assuming they scale unchanged to a larger role.";
-    elements.simpleModelSummaryNote.textContent = "Past team games and total minutes never restrict selection or assigned minutes; source MPG only helps describe the role being expanded.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It adjusts low-opportunity rates and gradually tapers the added value of workload above the rotation's average role.";
+    elements.simpleModelSummaryNote.textContent = "Better players can still earn larger roles. Past team games and total minutes never restrict selection or assigned minutes; source MPG only helps describe whether a statistical role is proven.";
   }
 }
 
@@ -2102,16 +2112,16 @@ function syncRotationModelControls() {
   elements.rotationRateStability.disabled = !usesPer36Rates;
   elements.rotationRateStabilityField.classList.toggle("is-disabled", !usesPer36Rates);
   elements.rotationRateStabilityField.title = usesPer36Rates
-    ? "Choose whether limited role/attempt volume and larger-role projections are adjusted toward a same-season baseline"
+    ? "Choose whether limited evidence, larger roles, and above-average workloads receive the recommended conservative projection"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "When the source has matching evidence for every eligible player, the model stabilizes each stat with its own role-or-attempt-volume requirement. Past team totals are excluded. As a player expands beyond an established role, only an unproven advantage decays smoothly toward a conservative same-season bound; a below-baseline projection never improves just because more minutes were assigned. If evidence is incomplete, that stat stays raw for everyone."
+    ? "Two safeguards work together. Each stat uses its own opportunity requirement, and any unproven advantage moves toward a same-season baseline as a role expands. Above the rotation's average workload, each extra minute also adds gradually less game-plan fit. Better players can still earn larger roles or reach your maximum. Past team totals are excluded, and an incomplete stat stays raw for everyone."
     : "Per-game comparison uses raw historical per-game lines. Limited-role adjustment is available only with per-36 comparison.";
   renderRotationEvidencePreview();
 }
 
 function rotationModelSummary() {
-  return "Game plan · projected rates + hard limits";
+  return "Game plan · conservative rates + diminishing returns + hard limits";
 }
 
 function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
@@ -2141,6 +2151,7 @@ function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
   elements.rotationPositionProfile.title = automatic
     ? "An estimate from season-listed positions and minutes per appearance. Games played and source totals are excluded."
     : "A manual advanced position-minute experiment";
+  syncSampleFilterHelp();
 }
 
 function setMobileResultCurrent(current) {
@@ -2249,7 +2260,7 @@ function setMode(mode, { preserveSize = false } = {}) {
     productionQualifier,
   );
   elements.productionRulesHelp.textContent = isRotation
-    ? "For every candidate, these rules use the exact 240-minute plan to create minute-weighted per-game team projections. They are historical-stat estimates, not game predictions."
+    ? "For every candidate, these hard rules test conservative per-minute rates against its exact 240-minute plan. They do not switch off the model's diminishing-return minute logic. The totals are historical-stat estimates, not game predictions."
     : "In lineup mode, these rules add each selected player's historical per-game line. They describe the five-player profile; they do not forecast one team box score.";
   syncRotationRoleCopy(isRotation);
   elements.size.min = isRotation ? "8" : "5";
@@ -2286,6 +2297,39 @@ function recommendedMinimumMinutes(mode, seasonPhase) {
   // field for historical edge cases and deliberate experiments.
   if (seasonPhase === "playoffs") return mode === "rotation" ? 4 : 3;
   return mode === "rotation" ? 8 : 6;
+}
+
+/**
+ * Explain the sample filters in the context of the active build type.
+ *
+ * Games and source MPG decide who is eligible for the player pool; they never
+ * become minute assignments. Rotation mode deliberately recommends zero games
+ * with the selected team because a midseason trade should not suppress or
+ * remove a player's role. Its conservative per-36 projection handles limited
+ * opportunity separately, while the MPG floor screens out extremely small
+ * appearances. Starting-five mode retains a visible phase-aware games floor.
+ */
+function syncSampleFilterHelp(seasonPhase = null) {
+  if (!elements.sampleFilterHelp) return;
+  const phase = seasonPhase
+    || state.loadedLiveSelection?.seasonPhase
+    || elements.liveSeasonPhase?.value
+    || DEFAULT_SEASON_PHASE;
+  const phaseLabel = phase === "playoffs" ? "playoffs" : "regular season";
+  const mode = elements.mode.value;
+  const games = recommendedMinimumGames(phase, mode);
+  const minutes = recommendedMinimumMinutes(mode, phase);
+  const activeGames = numberFromInput(elements.minGames, games);
+  const activeMinutes = numberFromInput(elements.minMinutes, minutes);
+  const activeGameRequirement = activeGames > 0
+    ? `at least ${activeGames} game${activeGames === 1 ? "" : "s"} with this team`
+    : "no minimum number of games with this team";
+  const recommendedGameRequirement = games > 0
+    ? `${games} game${games === 1 ? "" : "s"} with this team`
+    : "no games-with-this-team minimum";
+  elements.sampleFilterHelp.textContent = mode === "rotation"
+    ? `Players currently need ${activeGameRequirement} and at least ${activeMinutes} MPG to enter the search. These are eligibility filters only; neither one assigns model minutes. Recommended rotation defaults for the ${phaseLabel}: ${recommendedGameRequirement} and ${minutes} MPG. Conservative rate scaling handles limited opportunity without excluding a traded player solely for fewer games with this team.`
+    : `Players currently need ${activeGameRequirement} and at least ${activeMinutes} MPG to enter the search. These are eligibility filters only; neither one assigns model minutes. Recommended starting-five defaults for the ${phaseLabel}: ${recommendedGameRequirement} and ${minutes} MPG.`;
 }
 
 function solveActionLabel({ busy = false, update = false } = {}) {
@@ -2459,6 +2503,7 @@ function applyLoadedPhaseEligibilityDefault(seasonPhase) {
     elements.minGames.value = String(nextDefault);
   }
   state.recommendedMinGames = nextDefault;
+  syncSampleFilterHelp(seasonPhase);
 }
 
 function isPlayerEligible(player) {
@@ -3090,16 +3135,17 @@ function renderExactObjectiveReasons(player, result, insight) {
       : `The optional past-minutes guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The report identifies the missing minutes evidence."}`
     : "Game-plan minutes optimize inside the hard limits you set; source usage did not affect this result.";
   const assignedRoleScoring = result?.best?.rotation?.diagnostics?.roleConditionedScoring;
+  const workloadSaturation = assignedRoleScoring?.workloadSaturation;
   const roleProjectionCopy = assignedRoleScoring?.applied
-    ? `Rates are stabilized toward the same-season NBA baseline, and the ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles are valued at that baseline before `
+    ? `Rates are stabilized toward the same-season NBA baseline. The ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles lose only unproven upside, and marginal lineup fit gradually tapers above ${formatNumber(workloadSaturation?.startsAfterMinutes, 1)} minutes per player on average. `
     : rateStability?.roleAdjustedPlayerMetricCount > 0
-      ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline before `
+      ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline. `
       : rateStability?.applied
-        ? "Smaller samples are stabilized toward the same-season NBA baseline before "
+        ? "Smaller samples are stabilized toward the same-season NBA baseline. "
         : "";
   const basis = document.createElement("p");
   basis.textContent = rotationBasis === "per36"
-    ? `${roleProjectionCopy}counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
+    ? `${roleProjectionCopy}Counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
     : rotationBasis === "perGame"
       ? "This rotation uses the raw per-game comparison; the contribution below also reflects the proposed minutes."
       : "This lineup gives each selected player an equal share of the configured pool-relative objective.";
@@ -3416,12 +3462,12 @@ function renderResultEvidence(result) {
       ? ` ${rateEvidence.roleAdjustedPlayers} player${rateEvidence.roleAdjustedPlayers === 1 ? " also had" : "s also had"} at least one rate adjusted for the ${formatNumber(rateEvidence.roleMinutesTarget, 1)}-minute average rotation role.`
       : "";
     const assignedRoleDetail = assignedRoleScoring?.applied
-      ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles use the same-season baseline. This changes projected value, not player availability or a minute cap.`
+      ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond established roles. Marginal fit also tapers above ${formatNumber(assignedRoleScoring.workloadSaturation?.startsAfterMinutes, 1)} minutes, the average workload for this rotation size. These are value adjustments—not player availability rules or minute caps.`
       : "";
     strip.append(resultEvidenceItem(
       "Rate projection",
       assignedRoleScoring?.applied
-        ? "Opportunity + role + assigned minutes"
+        ? "Opportunity + role + workload adjusted"
         : rateEvidence.roleAdjustedPlayerMetricCount > 0
           ? "Opportunity + role adjusted"
           : "Opportunity-adjusted",
@@ -3547,7 +3593,11 @@ function renderRotationMinutes(rotation) {
       ? `Your game plan selected this roster; the optional recorded-minutes mode then kept its minute plan close to past usage inside the displayed caps and hard limits.${roleCoverageNote}`
       : `${guidance.allocationStyleReason || "The minute solver shifted time toward the player profiles that best fit your strategy inside the recorded-minutes caps."}${roleCoverageNote}`;
   } else if (rotation.minutePlan === "openWhatIf") {
-    note.textContent = `This allocation maximizes your game-plan fit inside your hard player limits. It does not try to recreate the source team's rotation. Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
+    const workload = rotation.diagnostics?.roleConditionedScoring?.workloadSaturation;
+    const workloadCopy = workload?.applied
+      ? ` Extra minutes above ${formatNumber(workload.startsAfterMinutes, 1)} per player gradually add less marginal fit, preventing small rating gaps from automatically forcing min/max roles.`
+      : "";
+    note.textContent = `This allocation maximizes your game-plan fit inside your hard player limits.${workloadCopy} It does not try to recreate the source team's rotation. Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   } else {
     note.textContent = `${guidance.reason || "Recorded-minutes evidence was unavailable, so the plan used your hard player limits."} Role splits prove ${required.G} guard, ${required.F} forward, and ${required.C} center minutes.`;
   }
@@ -4118,7 +4168,7 @@ function renderSuccess(result) {
   const scoreExplanation = document.createElement("p");
   scoreExplanation.className = "full-analysis__intro";
   scoreExplanation.textContent = best.rotation
-    ? "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score below ranks only this eligible pool. Rotation projections stabilize limited samples and smoothly reduce unproven advantages as roles expand; neither score is team quality or win probability."
+    ? "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score ranks only this eligible pool and uses diminishing marginal fit above the rotation's average workload to avoid artificial min/max minute pileups. Role expansion also reduces unproven rate advantages. Neither score is team quality or win probability."
     : "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score ranks only this eligible pool; neither score is team quality or win probability.";
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";
@@ -4218,7 +4268,7 @@ function renderFailure(result) {
   // Groups-to-evaluate readout lets them confirm the effect before rerunning.
   if (category === "performance") {
     const recovery = document.createElement("li");
-    recovery.textContent = "Try raising Minimum games or MPG, excluding nonessential players, or loosening the production threshold. Check Groups to evaluate, then run the exact search again.";
+    recovery.textContent = "Try raising Minimum games with this team or Minimum MPG, excluding nonessential players, or loosening the production threshold. Check Groups to evaluate, then run the exact search again.";
     list.append(recovery);
   }
   card.append(heading, list);
@@ -4265,16 +4315,19 @@ function runOptimization(players, config, jobToken) {
     state.optimizationWorker = worker;
     let settled = false;
     let rejectCurrent = null;
-    const timeout = window.setTimeout(() => {
-      const error = new Error("The exact search took too long. Narrow the player pool and try again.");
-      error.name = "TimeoutError";
-      rejectCurrent?.(error);
-    }, 30000);
+    const timeout = config.mode === "rotation"
+      ? null
+      : window.setTimeout(() => {
+        const error = new Error("The exact lineup search took too long. Narrow the player pool and try again.");
+        error.name = "TimeoutError";
+        rejectCurrent?.(error);
+      }, LINEUP_OPTIMIZER_WORKER_TIMEOUT_MS);
     // Keep every Worker exit path in one cleanup function. A thrown postMessage,
     // timeout, error event, or normal result must all terminate the Worker and
     // clear the matching timeout/reject handles before the next solve begins.
+    // Rotation has no timer, so null is a deliberate and testable state.
     const cleanup = () => {
-      window.clearTimeout(timeout);
+      if (timeout !== null) window.clearTimeout(timeout);
       worker.terminate();
       if (state.optimizationWorker === worker) state.optimizationWorker = null;
       if (state.optimizationReject === rejectCurrent) state.optimizationReject = null;
@@ -5080,6 +5133,10 @@ function bindEvents() {
   });
   elements.playerSearch.addEventListener("input", () => renderPlayerTable());
   [elements.minGames, elements.minMinutes].forEach((input) => input.addEventListener("input", () => {
+    // Keep the explanation factual when Detailed mode preserves a custom value
+    // or a visitor edits either field. Recommended defaults remain visible as
+    // guidance, but are never described as though they were already active.
+    syncSampleFilterHelp();
     renderPlayerTable();
     markScenarioChanged();
   }));
