@@ -13480,3 +13480,82 @@ body:not([data-page="home"]) .site-header .home-header-utility__icon[data-cart-l
     background:linear-gradient(90deg,rgba(244,199,102,.14),rgba(81,110,234,.12));
   }
 }
+
+/* Final shell polish: give every desktop control an explicit grid track so
+   the brand, search, navigation, shopper tools, and theme control never
+   compete for the same space. */
+@media (min-width:1181px) {
+  body[data-page="home"],
+  body[data-page="home"] .site-header {
+    --header-h:102px;
+  }
+
+  body[data-page="home"] .site-header .header-inner {
+    --header-h:102px;
+    min-height:var(--header-h);
+    grid-template-columns:minmax(220px,260px) minmax(340px,1fr) auto auto;
+    grid-template-rows:50px 34px;
+    grid-template-areas:
+      "brand search utility theme"
+      ". nav nav .";
+    align-content:center;
+    align-items:center;
+    column-gap:.75rem;
+    row-gap:.28rem !important;
+    padding-block:.28rem;
+  }
+
+  body[data-page="home"] .site-header .brand {
+    grid-area:brand;
+    min-width:0;
+  }
+
+  body[data-page="home"] .site-header .home-header-search {
+    grid-area:search;
+    width:100%;
+    min-width:0;
+  }
+
+  body[data-page="home"] .site-header .home-header-utility {
+    grid-area:utility;
+  }
+
+  body[data-page="home"] .site-header .theme-toggle {
+    justify-self:end;
+    margin-left:0;
+  }
+
+  body[data-page="home"] .site-header .header-actions {
+    grid-area:theme;
+    justify-self:end;
+  }
+
+  body[data-page="home"] .site-header .site-nav {
+    grid-area:nav;
+    align-self:center;
+    justify-self:center !important;
+    transform:none;
+  }
+
+  body[data-page="home"] .site-header .site-nav .primary-nav__list {
+    justify-content:center !important;
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    grid-template-columns:minmax(220px,260px) minmax(0,1fr) auto auto;
+    grid-template-areas:"brand nav utility theme";
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav {
+    align-self:center;
+  }
+
+  body:not([data-page="home"]) .site-header .theme-toggle {
+    grid-area:theme;
+    margin-left:0;
+  }
+
+  body:not([data-page="home"]) .site-header .header-actions {
+    grid-area:theme;
+  }
+}

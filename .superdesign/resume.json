@@ -242,18 +242,18 @@
       ],
       "fingerprints": {
         ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
-        ".superdesign/tmp/homepage-nav-refinement.html": "CD2788CC2B4A386A2B69D5DBD921E9D562A78AA215DBE65720DF1EFAE99AA43A"
+        ".superdesign/tmp/homepage-nav-refinement.html": "D54D02B48B1B58B6A26FCC9954CC2FF7402BAB2E8ED95EAAE8B3F28FA81B99AE"
       },
       "components": [],
       "drafts": {
         "05e57604-f503-4128-b63a-0a284804a857": {
           "title": "Centered navigation and unified Shop hub",
-          "visualDirection": "centered navy storefront header, compact menu/search rail, and unified collector browse hub",
+          "visualDirection": "collision-free navy storefront header, balanced utility controls, restrained gold and red-blue accents, unified connect surface, and simplified sport browsing",
           "parentDraftId": null,
-          "currentVersion": 1
+          "currentVersion": 2
         }
       },
-      "updatedAt": "2026-08-31T13:53:30.000Z"
+      "updatedAt": "2026-08-31T17:05:30.1557528Z"
     }
   }
 }

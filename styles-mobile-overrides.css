@@ -2573,3 +2573,37 @@ body.dark-mode .modal-listing-nav__button {
     padding-inline:.35rem;
   }
 }
+
+/* Keep the compact drawer content-led on phones instead of stretching into a
+   mostly empty panel. The same destinations and submenu behavior are kept. */
+@media (max-width:700px) {
+  .site-header .site-nav {
+    bottom:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:calc(100dvh - var(--header-h) - 1.1rem);
+    align-content:start;
+    padding:.82rem;
+    border-radius:24px;
+  }
+
+  .site-header .site-nav__mobile-header {
+    gap:.34rem;
+    margin-bottom:.62rem;
+    padding:.12rem .12rem .72rem;
+  }
+
+  .site-header .site-nav__mobile-header p {
+    font-size:.86rem;
+    line-height:1.35;
+  }
+
+  .site-header .site-nav .primary-nav__list {
+    flex:0 0 auto;
+    gap:.4rem;
+  }
+
+  .site-header .site-nav .primary-nav__link {
+    min-height:46px;
+  }
+}
