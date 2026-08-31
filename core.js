@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260827b';
+  const PRODUCT_ASSET_VERSION = '20260830a';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.

@@ -2169,15 +2169,24 @@ body.dark-mode .modal-listing-nav__button {
     inset:auto;
     z-index:1005;
     grid-area:menu;
-    width:78px;
-    min-width:78px;
+    width:76px;
+    min-width:76px;
     min-height:44px;
     height:44px;
     margin:0 -1px 0 0;
-    padding-inline:.62rem;
+    gap:.42rem;
+    padding-inline:.58rem;
     border-radius:14px 0 0 14px;
-    border-right-color:rgba(244,199,102,.7);
+    border-color:rgba(228,177,65,.72);
+    border-right:0;
+    background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.055));
+    box-shadow:0 8px 20px rgba(1,6,18,.22),inset 0 1px 0 rgba(255,255,255,.1);
     justify-content:center;
+  }
+
+  body[data-page="home"] .nav-toggle[data-state="open"] {
+    background:rgba(228,177,65,.18);
+    color:var(--brand-gold);
   }
 
   body[data-page="home"] .home-header-search {
@@ -2189,7 +2198,9 @@ body.dark-mode .modal-listing-nav__button {
 
   body[data-page="home"] .home-header-search__bar {
     min-height:44px;
+    border-left:0;
     border-radius:0 14px 14px 0;
+    box-shadow:0 8px 20px rgba(1,6,18,.22),inset 0 1px 0 rgba(255,255,255,.94);
   }
 
   body[data-page="home"] .home-header-search input {
@@ -2229,15 +2240,20 @@ body.dark-mode .modal-listing-nav__button {
   }
 
   body[data-page="home"] .nav-toggle {
-    width:70px;
-    min-width:70px;
+    width:68px;
+    min-width:68px;
     min-height:42px;
     height:42px;
     padding-inline:.42rem;
   }
 
   body[data-page="home"] .home-header-search__bar {
+    grid-template-columns:minmax(0,1fr) auto;
     min-height:42px;
+  }
+
+  body[data-page="home"] .home-header-search__icon {
+    display:none;
   }
 
   body[data-page="home"] .home-header-search input {
@@ -2252,5 +2268,87 @@ body.dark-mode .modal-listing-nav__button {
 
   body[data-page="home"] .home-header-search button span {
     display:none;
+  }
+}
+
+@media (max-width:520px) {
+  body[data-page="home"] .site-header .header-inner {
+    column-gap:0;
+  }
+
+  body[data-page="home"] .brand {
+    margin-right:.34rem;
+  }
+
+  body[data-page="home"] .brand-logo {
+    width:44px !important;
+    height:44px !important;
+  }
+
+  body[data-page="home"] .nav-toggle {
+    width:46px;
+    min-width:46px;
+    padding-inline:0;
+  }
+
+  body[data-page="home"] .nav-toggle .button-label {
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+  }
+
+  body[data-page="home"] .home-header-search input {
+    padding-inline:.65rem .25rem;
+    font-size:.82rem;
+  }
+
+  body[data-page="home"] .home-header-search button {
+    min-width:46px;
+    padding-inline:.42rem;
+  }
+}
+
+/* Shared canonical footer on narrow storefront pages. Keep the photo
+   separator prominent while removing the old card-box padding below it. */
+@media (max-width:700px) {
+  .footer.site-footer .footer-inner {
+    grid-template-columns:1fr;
+    gap:.78rem;
+    padding-inline:.75rem;
+    padding-top:calc(clamp(9.5rem,42vw,12.25rem) + 1.15rem) !important;
+    padding-bottom:1.2rem !important;
+  }
+
+  .footer.site-footer .footer-brand {
+    padding-left:.9rem;
+  }
+
+  .footer.site-footer .footer-link-groups {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.52rem;
+  }
+
+  .footer.site-footer .footer-link-group {
+    gap:.42rem;
+    padding:.52rem 0 0;
+  }
+
+  .footer.site-footer .footer-link-group a {
+    padding:.38rem 0;
+    font-size:.84rem;
+  }
+
+  .footer.site-footer .footer-bottom {
+    padding-top:.82rem;
+    padding-bottom:calc(1.05rem + env(safe-area-inset-bottom,0));
+  }
+}
+
+@media (max-width:420px) {
+  .footer.site-footer .footer-link-groups {
+    grid-template-columns:1fr;
   }
 }
