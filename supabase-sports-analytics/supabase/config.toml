@@ -1,0 +1,4 @@
+project_id = "rioxosivyhczxshhmaen"
+
+# This project is the isolated MLB/NFL analytics warehouse. It must not receive
+# storefront products, customers, orders, payments, or commerce credentials.

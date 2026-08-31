@@ -771,12 +771,51 @@ where not exists (
     and external_ids.external_id = stage.external_id
 );
 
+-- The NBA base schema keeps a universal athlete identity alongside the
+-- sport-specific nba_players row. Older imports predated that constraint, so
+-- every newly discovered historical player must create the identity and its
+-- NBA membership before the sport row is inserted.
+insert into public.athletes (id, canonical_name, normalized_name)
+select player_id, full_name, normalized_name
+from _nba_bref_new_players
+on conflict (id) do update set
+  canonical_name = excluded.canonical_name,
+  normalized_name = excluded.normalized_name,
+  updated_at = now();
+
+insert into public.athlete_league_memberships (
+  athlete_id, league_code, membership_status, source_name, evidence
+)
+select player_id, 'NBA', 'verified', ${sourceSql}, jsonb_build_object('external_id', external_id)
+from _nba_bref_new_players
+on conflict (athlete_id, league_code) do update set
+  membership_status = 'verified', source_name = excluded.source_name,
+  evidence = excluded.evidence, updated_at = now();
+
+insert into public.athlete_aliases (
+  athlete_id, league_code, alias, normalized_alias, alias_type, review_state, source_name, evidence
+)
+select player_id, 'NBA', full_name, normalized_name, 'canonical', 'verified', ${sourceSql},
+  jsonb_build_object('external_id', external_id)
+from _nba_bref_new_players
+on conflict (athlete_id, league_code, normalized_alias) do update set
+  alias = excluded.alias, review_state = 'verified', source_name = excluded.source_name,
+  evidence = excluded.evidence, updated_at = now();
+
+insert into public.athlete_external_ids (
+  athlete_id, league_code, source_name, external_id, is_primary_for_source
+)
+select player_id, 'NBA', ${sourceSql}, external_id, true
+from _nba_bref_new_players
+on conflict (league_code, source_name, external_id) do update set
+  athlete_id = excluded.athlete_id, is_primary_for_source = true, updated_at = now();
+
 insert into public.nba_players (
-  id, full_name, normalized_name, primary_position,
+  id, athlete_id, full_name, normalized_name, primary_position,
   debut_season_end_year, final_season_end_year
 )
 select
-  player_id, full_name, normalized_name, primary_position,
+  player_id, player_id, full_name, normalized_name, primary_position,
   ${year}, ${year}
 from _nba_bref_new_players;
 
@@ -1799,6 +1838,10 @@ async function run() {
   const checkpoint = options.apply && validateCheckpoint(existingCheckpoint, options)
     ? existingCheckpoint
     : blankCheckpoint({ runId: crypto.randomUUID(), ...options });
+  // A resumed run has already passed any prior transient failure; keep the
+  // checkpoint's status/error fields truthful while it advances.
+  checkpoint.error = '';
+  checkpoint.status = 'running';
 
   console.log(JSON.stringify({
     mode: options.apply ? 'apply' : 'dry-run',
