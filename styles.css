@@ -11267,9 +11267,9 @@ body[data-page="home"] .home-connect-section {
   overflow:hidden;
   color:#fff;
   background:
-    radial-gradient(circle at 10% 10%,rgba(36,72,218,.26),transparent 30%),
-    radial-gradient(circle at 92% 84%,rgba(239,24,35,.16),transparent 31%),
-    linear-gradient(135deg,#0a1432 0%,#15266b 54%,#101d4d 100%);
+    radial-gradient(circle at 10% 10%,rgba(31,95,255,.18),transparent 30%),
+    radial-gradient(circle at 92% 84%,rgba(239,24,35,.1),transparent 31%),
+    linear-gradient(135deg,#08132d 0%,#101d4d 54%,#15266b 100%);
 }
 
 body[data-page="home"] .home-connect-section::before {
@@ -13133,8 +13133,9 @@ body[data-page="home"] .home-section-kicker i {
 
 body[data-page="home"] .home-connect-section {
   background:
-    radial-gradient(circle at 10% 10%,rgba(36,72,218,.17),transparent 30%),
-    linear-gradient(135deg,#0a1432 0%,#15266b 54%,#101d4d 100%);
+    radial-gradient(circle at 10% 10%,rgba(31,95,255,.18),transparent 30%),
+    radial-gradient(circle at 92% 84%,rgba(239,24,35,.1),transparent 31%),
+    linear-gradient(135deg,#08132d 0%,#101d4d 54%,#15266b 100%);
 }
 
 body[data-page="home"] .home-connect-section .home-section-kicker,
@@ -13216,9 +13217,9 @@ body[data-page="home"] .site-footer .footer-link-group a:focus-visible {
   color:var(--brand-gold);
 }
 
-/* Shared header refinement: keep the search surface and centered navigation
-   consistent on every storefront page, while leaving the homepage utility
-   cluster in its established slot. */
+/* Shared header refinement: keep the centered menu treatment consistent on
+   every storefront page while keeping catalog search exclusive to the home
+   header. */
 @media (min-width:1181px) {
   .site-header .header-inner {
     row-gap:.5rem !important;
@@ -13238,11 +13239,9 @@ body[data-page="home"] .site-footer .footer-link-group a:focus-visible {
 
   body:not([data-page="home"]) .site-header .header-inner {
     min-height:96px;
-    grid-template-columns:minmax(220px,260px) minmax(320px,1fr) auto;
-    grid-template-rows:50px 34px;
-    grid-template-areas:
-      "brand search theme"
-      "nav nav nav";
+    grid-template-columns:minmax(220px,260px) minmax(0,1fr) auto auto;
+    grid-template-rows:minmax(0,1fr);
+    grid-template-areas:"brand nav utility actions";
     align-content:center;
     column-gap:.75rem;
     padding-block:.32rem;
@@ -13252,10 +13251,22 @@ body[data-page="home"] .site-footer .footer-link-group a:focus-visible {
     grid-area:brand;
   }
 
-  body:not([data-page="home"]) .site-header .home-header-search {
-    grid-area:search;
-    display:block;
+body:not([data-page="home"]) .site-header .home-header-search {
+    display:none !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    grid-area:utility;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:.38rem;
     min-width:0;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility a {
+    min-width:36px;
+    min-height:36px;
   }
 
   body:not([data-page="home"]) .site-header .site-nav {
@@ -13270,7 +13281,7 @@ body[data-page="home"] .site-footer .footer-link-group a:focus-visible {
   }
 
   body:not([data-page="home"]) .site-header .header-actions {
-    grid-area:theme;
+    grid-area:actions;
     justify-self:end;
   }
 
@@ -13296,4 +13307,176 @@ body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
 
 .shop-sports-section {
   padding-top:2.25rem;
+}
+
+/* Bring the homepage navigation finish to every interior header. */
+@media (min-width:1181px) {
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
+    position:relative;
+    min-height:30px;
+    padding:.24rem .62rem;
+    border:1px solid transparent;
+    background:rgba(255,255,255,.025);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+    font-size:.86rem;
+    transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link::after {
+    content:"";
+    position:absolute;
+    right:1rem;
+    bottom:.42rem;
+    left:1rem;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--brand-red),var(--brand-gold) 48%,#516eea);
+    box-shadow:0 0 10px rgba(244,199,102,.28);
+    opacity:0;
+    transform:scaleX(.35);
+    transition:opacity .2s ease,transform .2s ease;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link:hover,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link:focus-visible,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__link,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__item-group > .primary-nav__link {
+    border-color:rgba(244,199,102,.34);
+    background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(81,110,234,.08));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 16px rgba(0,0,0,.12);
+    transform:translateY(-1px);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link:hover::after,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link:focus-visible::after,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__link::after,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__item-group > .primary-nav__link::after {
+    opacity:1;
+    transform:scaleX(1);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .submenu-toggle[aria-expanded="true"] {
+    border-color:rgba(244,199,102,.8);
+    background:rgba(244,199,102,.16);
+    color:#ffe2a0;
+    transform:translateY(-1px) rotate(180deg);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu {
+    min-width:16.2rem;
+    overflow:hidden;
+    padding:.72rem .55rem .55rem;
+    border-color:rgba(255,255,255,.16);
+    border-top-color:rgba(244,199,102,.78);
+    background:
+      radial-gradient(circle at 90% 0,rgba(81,110,234,.25),transparent 40%),
+      linear-gradient(180deg,rgba(10,18,41,.99),rgba(16,31,71,.99));
+    box-shadow:0 25px 44px rgba(2,7,20,.34),inset 0 1px 0 rgba(255,255,255,.1);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu::before {
+    content:"";
+    position:absolute;
+    top:0;
+    left:.7rem;
+    right:.7rem;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--brand-red),var(--brand-gold) 49%,#516eea);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a {
+    position:relative;
+    padding-left:1.15rem;
+    border-color:transparent;
+    color:#f4f7ff;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a::before {
+    content:"";
+    position:absolute;
+    top:50%;
+    left:.55rem;
+    width:.35rem;
+    height:.35rem;
+    border-radius:50%;
+    background:var(--brand-gold);
+    box-shadow:0 0 0 3px rgba(244,199,102,.13);
+    transform:translateY(-50%);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a:hover,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a:focus-visible,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a.active {
+    border-color:rgba(244,199,102,.38);
+    background:linear-gradient(90deg,rgba(244,199,102,.14),rgba(81,110,234,.12));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 16px rgba(0,0,0,.12);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .header-wishlist-item,
+  body:not([data-page="home"]) .site-header .site-nav .header-cart-item,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item:last-child {
+    display:none;
+  }
+}
+
+body:not([data-page="home"]) .site-header .home-header-utility__icon[href$="account.html"]:hover,
+body:not([data-page="home"]) .site-header .home-header-utility__icon[href$="account.html"]:focus-visible {
+  border-color:rgba(170,190,255,.7);
+  color:#c7d3ff;
+}
+
+body:not([data-page="home"]) .site-header .home-header-utility__icon[href$="wishlist.html"]:hover,
+body:not([data-page="home"]) .site-header .home-header-utility__icon[href$="wishlist.html"]:focus-visible {
+  border-color:rgba(255,122,130,.72);
+  color:#ff9ca3;
+}
+
+body:not([data-page="home"]) .site-header .home-header-utility__icon[data-cart-link]:hover,
+body:not([data-page="home"]) .site-header .home-header-utility__icon[data-cart-link]:focus-visible {
+  border-color:rgba(244,199,102,.78);
+  color:#ffe19a;
+}
+
+@media (max-width:1180px) {
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    display:none !important;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item-group {
+    justify-content:space-between;
+    padding:.2rem;
+    border-radius:20px;
+    background:rgba(255,255,255,.04);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
+    min-height:50px;
+    padding:0 1rem;
+    border-radius:17px;
+    background:rgba(255,255,255,.055);
+    color:#fff;
+    font-size:1rem;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__link,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__item.is-current-section > .primary-nav__item-group > .primary-nav__link {
+    border:1px solid rgba(244,199,102,.7);
+    background:linear-gradient(90deg,rgba(244,199,102,.16),rgba(81,110,234,.13));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 8px 16px rgba(0,0,0,.12);
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a {
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    background:rgba(255,255,255,.055);
+    color:#fff;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a:hover,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a:focus-visible,
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__submenu a.active {
+    border-color:rgba(244,199,102,.42);
+    background:linear-gradient(90deg,rgba(244,199,102,.14),rgba(81,110,234,.12));
+  }
 }

@@ -9,15 +9,17 @@
 window.DJ = window.DJ || {};
 
 (() => {
+  const SPORTS_CARDS_HUB_TARGET = 'shop.html#sports-cards';
+
   // Keep each page's active navigation target and drawer label together.
   const PAGE_NAV_CONFIG = Object.freeze({
     home: { target: 'index.html', label: 'Home' },
     shop: { target: 'shop.html', label: 'Shop' },
     'shop-hub': { target: 'shop.html', label: 'Shop' },
-    'sports-hub': { target: 'sports-cards.html', label: 'Sports Cards' },
-    'baseball-cards': { target: 'sports-cards.html', label: 'Baseball Cards' },
-    'basketball-cards': { target: 'sports-cards.html', label: 'Basketball Cards' },
-    'football-cards': { target: 'sports-cards.html', label: 'Football Cards' },
+    'sports-hub': { target: SPORTS_CARDS_HUB_TARGET, label: 'Sports Cards' },
+    'baseball-cards': { target: SPORTS_CARDS_HUB_TARGET, label: 'Baseball Cards' },
+    'basketball-cards': { target: SPORTS_CARDS_HUB_TARGET, label: 'Basketball Cards' },
+    'football-cards': { target: SPORTS_CARDS_HUB_TARGET, label: 'Football Cards' },
     comics: { target: 'comics.html', label: 'Comics' },
     collectibles: { target: 'collectibles.html', label: 'Collectibles' },
     wishlist: { target: 'wishlist.html', label: 'Wishlist' },
@@ -102,56 +104,72 @@ window.DJ = window.DJ || {};
   }
 
   /**
-   * Give every storefront page the same header search surface as the
-   * homepage. The static templates intentionally keep their lightweight
-   * fallback header; this enhancement adds the richer search chooser whenever
-   * JavaScript is available without changing page-specific content.
+   * Keep the legacy Sports Cards page available for old bookmarks while
+   * sending the shared menu directly to the unified Shop sports section.
    */
-  function ensureSharedHeaderSearch() {
+  function normalizeSportsCardsHubLinks() {
+    const sportsItem = document.querySelector('.site-nav .primary-nav__item--has-submenu');
+    if (!sportsItem) return;
+
+    const links = sportsItem.querySelectorAll(
+      ':scope > .primary-nav__item-group > a[href="sports-cards.html"], :scope > .primary-nav__submenu > li:first-child > a[href="sports-cards.html"]'
+    );
+    links.forEach((link) => {
+      link.setAttribute('href', SPORTS_CARDS_HUB_TARGET);
+    });
+  }
+
+  /**
+   * Keep the account and shopping shortcuts from the homepage available in
+   * every shared header. The compact drawer still exposes the full text links
+   * from the primary navigation, while desktop headers get the same icon rail.
+   */
+  function ensureSharedHeaderUtility() {
     const headerInner = document.querySelector('.site-header .header-inner');
-    if (!headerInner) return null;
+    if (!headerInner || document.body.dataset.page === 'home') return null;
 
-    const existing = headerInner.querySelector('.home-header-search');
-    if (existing) return existing;
+    const existingUtility = headerInner.querySelector('.home-header-utility');
+    if (existingUtility) return existingUtility;
 
-    const form = document.createElement('form');
-    form.className = 'home-header-search shared-header-search';
-    form.id = 'siteHeaderSearch';
-    form.setAttribute('role', 'search');
-    form.innerHTML = `
-      <label class="sr-only" for="siteHeaderSearchInput">Search the DJHC catalog</label>
-      <div class="home-header-search__bar">
-        <svg aria-hidden="true" class="home-header-search__icon" focusable="false" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="6.5"></circle>
-          <path d="m16 16 4 4"></path>
-        </svg>
-        <input autocomplete="off" id="siteHeaderSearchInput" name="search" placeholder="Search player, title, year, set, or category" type="search">
-        <button aria-controls="siteHeaderSearchScope" aria-expanded="false" id="siteHeaderSearchSubmit" type="submit">
-          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="6.5"></circle>
-            <path d="m16 16 4 4"></path>
-          </svg>
-          <span>Search</span>
-        </button>
-      </div>
-      <div class="home-search-scope" hidden id="siteHeaderSearchScope">
-        <p class="sr-only" id="siteHeaderSearchStatus" role="status"></p>
-        <div class="home-search-scope__heading">
-          <span>Choose where to search</span>
-          <strong id="siteHeaderSearchScopeTerm"></strong>
-        </div>
-        <div class="home-search-scope__links">
-          <a data-search-base="baseball-cards.html" href="baseball-cards.html">Baseball</a>
-          <a data-search-base="basketball-cards.html" href="basketball-cards.html">Basketball</a>
-          <a data-search-base="football-cards.html" href="football-cards.html">Football</a>
-          <a data-search-base="comics.html" href="comics.html">Comics</a>
-          <a data-search-base="collectibles.html" href="collectibles.html">Collectibles</a>
-        </div>
-      </div>`;
+    const utility = document.createElement('div');
+    utility.className = 'home-header-utility';
+    utility.setAttribute('aria-label', 'Account and shopping tools');
+    utility.setAttribute('role', 'navigation');
+    const getSharedHeaderHref = (filename) => (
+      headerInner.querySelector(`.site-nav a[href$="${filename}"]`)?.getAttribute('href')
+      || filename
+    );
+    const accountHref = getSharedHeaderHref('account.html');
+    const wishlistHref = getSharedHeaderHref('wishlist.html');
+    const cartHref = getSharedHeaderHref('cart.html');
+    utility.innerHTML = `
+      <a aria-label="Account" class="home-header-utility__icon" href="${accountHref}" title="Account">
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+      </a>
+      <a aria-label="Wishlist" class="home-header-utility__icon" href="${wishlistHref}" title="Wishlist">
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M20.8 4.8a5.5 5.5 0 0 0-7.8 0L12 5.9l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z"></path></svg>
+        <span class="home-header-utility__count" data-wishlist-count="0">0</span>
+      </a>
+      <a aria-label="Cart" class="home-header-utility__icon" data-cart-link href="${cartHref}" title="Cart">
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 7h16l-1.2 13H5.2L4 7Z"></path><path d="M9 7V5a3 3 0 0 1 6 0v2"></path></svg>
+        <span class="home-header-utility__count" data-cart-count="0">(0)</span>
+      </a>
+    `;
 
     const nav = headerInner.querySelector('.site-nav');
-    headerInner.insertBefore(form, nav || null);
-    return form;
+    headerInner.insertBefore(utility, nav || headerInner.firstElementChild);
+    window.DJ.updateWishlistCount?.();
+    window.DJ.updateCartCount?.();
+    return utility;
+  }
+
+  /**
+   * Bind only the homepage's existing search surface. Interior templates use
+   * the shared menu treatment without receiving a second search field.
+   */
+  function ensureSharedHeaderSearch() {
+    if (document.body.dataset.page !== 'home') return null;
+    return document.querySelector('.site-header .home-header-search');
   }
 
   function initSharedHeaderSearch(form) {
@@ -699,7 +717,9 @@ window.DJ = window.DJ || {};
   function bootNavigation() {
     const headerSearch = ensureSharedHeaderSearch();
     initSharedHeaderSearch(headerSearch);
+    ensureSharedHeaderUtility();
     ensureFanToolsLink();
+    normalizeSportsCardsHubLinks();
     applyActiveNavState();
     initPrimaryNav();
     initSubmenuToggles();
