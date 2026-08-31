@@ -56,12 +56,21 @@ const GAME_STATUS_STORAGE_MAP = Object.freeze({
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export class SportradarNbaError extends Error {
-  constructor(message, { code = 'SPORTRADAR_NBA_ERROR', status = null, retryable = false, cause } = {}) {
+  constructor(message, {
+    code = 'SPORTRADAR_NBA_ERROR',
+    status = null,
+    retryable = false,
+    providerLimit = null,
+    retryAfterMs = null,
+    cause,
+  } = {}) {
     super(message, cause === undefined ? undefined : { cause });
     this.name = 'SportradarNbaError';
     this.code = code;
     this.status = status;
     this.retryable = retryable;
+    this.providerLimit = providerLimit;
+    this.retryAfterMs = retryAfterMs;
   }
 }
 
@@ -345,6 +354,25 @@ function retryableHttpStatus(status) {
   return status === 408 || status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
 }
 
+function classifyProviderLimit(status, responseText) {
+  if (status !== 429) return null;
+  const text = String(responseText ?? '').toLowerCase();
+  if (/\bquota\b[\s\S]{0,80}\b(exceed|exhaust|limit)/.test(text) || /\b(exceed|exhaust)\w*\b[\s\S]{0,80}\bquota\b/.test(text)) {
+    return 'quota_exceeded';
+  }
+  if (/\bthrottl/.test(text) || /\brate[\s_-]*limit/.test(text)) return 'throttled';
+  return 'rate_limited_unknown';
+}
+
+async function readProviderErrorText(response) {
+  if (typeof response?.text !== 'function') return '';
+  try {
+    return String(await response.text()).slice(0, 4096);
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Fetch a JSON document from the official Sportradar NBA API.  The return
  * value deliberately includes ordinary HTTP provenance but never the key.
@@ -387,19 +415,23 @@ export async function fetchSportradarNbaJson(url, {
       const status = Number(response?.status ?? 0);
       if (!response?.ok) {
         const retryable = retryableHttpStatus(status);
+        const retryAfterMs = retryAfterMilliseconds(response?.headers?.get?.('retry-after'));
         if (retryable && attempt < attempts) {
           const retryDelay = Math.max(
             baseDelayMs,
-            retryAfterMilliseconds(response?.headers?.get?.('retry-after')),
+            retryAfterMs,
             Math.min(120000, 1000 * (2 ** (attempt - 1)))
           );
           if (retryDelay > 0) await sleepImpl(retryDelay);
           continue;
         }
+        const providerLimit = classifyProviderLimit(status, await readProviderErrorText(response));
         throw new SportradarNbaError(`Sportradar NBA request returned HTTP ${status || 'unknown'}.`, {
           code: 'SPORTRADAR_NBA_HTTP_ERROR',
           status: status || null,
-          retryable
+          retryable,
+          providerLimit,
+          retryAfterMs,
         });
       }
       let payload;

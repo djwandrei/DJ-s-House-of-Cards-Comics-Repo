@@ -274,3 +274,33 @@ test('uses an injected fetch implementation, retries transient provider response
     SportradarNbaError
   );
 });
+
+test('classifies final provider 429 responses without retaining provider body text', async () => {
+  const responseHeaders = { get: () => null };
+  for (const [responseText, providerLimit] of [
+    ['Quota Exceeded for this usage plan.', 'quota_exceeded'],
+    ['Request Throttled. Maximum requests per second exceeded.', 'throttled'],
+    ['A generic HTTP 429 response.', 'rate_limited_unknown'],
+  ]) {
+    await assert.rejects(
+      fetchSportradarNbaJson(buildSportradarNbaSummaryUrl({ gameId: IDS.game }), {
+        apiKey: 'test-provider-key',
+        maxAttempts: 1,
+        fetchImpl: async () => ({
+          ok: false,
+          status: 429,
+          headers: responseHeaders,
+          text: async () => responseText,
+        }),
+      }),
+      (error) => {
+        assert.equal(error instanceof SportradarNbaError, true);
+        assert.equal(error.status, 429);
+        assert.equal(error.providerLimit, providerLimit);
+        assert.equal(error.retryAfterMs, 0);
+        assert.equal(error.message.includes(responseText), false);
+        return true;
+      },
+    );
+  }
+});
