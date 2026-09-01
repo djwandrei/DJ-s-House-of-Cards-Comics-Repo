@@ -152,7 +152,7 @@ window.DJ = window.DJ || {};
       </a>
       <a aria-label="Cart" class="home-header-utility__icon" data-cart-link href="${cartHref}" title="Cart">
         <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 7h16l-1.2 13H5.2L4 7Z"></path><path d="M9 7V5a3 3 0 0 1 6 0v2"></path></svg>
-        <span class="home-header-utility__count" data-cart-count="0">(0)</span>
+        <span class="home-header-utility__count" data-cart-count="0">0</span>
       </a>
     `;
 

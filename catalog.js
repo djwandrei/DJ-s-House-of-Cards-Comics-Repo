@@ -4589,6 +4589,11 @@ Thank you.`
               `).join('')}
             </div>
           ` : ''}
+          ${isNbaSlabStatsCandidate(product) ? `
+            <section class="nba-slab-stats" id="nbaSlabStatsPanel" aria-label="NBA player statistics for this product" aria-busy="true">
+              <p class="slab-stats-loading" role="status">Matching this card to verified NBA statistics&hellip;</p>
+            </section>
+          ` : ''}
         </div>
         <div class="modal-copy">
           <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
@@ -4599,11 +4604,6 @@ Thank you.`
           ${renderAttributeTags(product.attributes, { className: 'modal-attribute-list' })}
           ${product.description ? `<div class="modal-description"><strong>Description</strong><p>${DJ.escapeHtml(product.description)}</p></div>` : ''}
           ${product.photoHostPageUrl ? `<p><strong>Hosted photos:</strong> <a class="product-host-link" href="${DJ.escapeHtml(product.photoHostPageUrl)}" target="_blank" rel="noopener noreferrer">Open photo host page</a></p>` : ''}
-          ${isNbaSlabStatsCandidate(product) ? `
-            <section class="nba-slab-stats" id="nbaSlabStatsPanel" aria-label="NBA player statistics for this product" aria-busy="true">
-              <p class="slab-stats-loading" role="status">Matching this card to verified NBA statistics&hellip;</p>
-            </section>
-          ` : ''}
           ${isDirectCheckout ? `
             <div class="modal-quantity-row">
               <label for="modalQuantity">Quantity</label>

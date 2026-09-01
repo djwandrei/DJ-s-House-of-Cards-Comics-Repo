@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260831i';
+  const PRODUCT_ASSET_VERSION = '20260901e';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.
@@ -323,7 +323,9 @@ window.DJ = window.DJ || {};
    */
   function updateCountElements(selector, count) {
     document.querySelectorAll(selector).forEach((element) => {
-      element.textContent = `(${count})`;
+      element.textContent = element.classList.contains('home-header-utility__count')
+        ? String(count)
+        : `(${count})`;
     });
   }
 

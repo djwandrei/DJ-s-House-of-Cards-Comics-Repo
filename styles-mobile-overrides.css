@@ -2607,3 +2607,118 @@ body.dark-mode .modal-listing-nav__button {
     min-height:46px;
   }
 }
+
+/* Keep the shared interior finish compact on phones. */
+@media (max-width:700px) {
+  body:not([data-page="home"]) .page-hero {
+    padding-top:1.15rem;
+  }
+
+  body:not([data-page="home"]) .page-hero-card {
+    padding:1.2rem;
+    border-radius:24px;
+  }
+
+  body:not([data-page="home"]) .page-hero-card .breadcrumb-nav {
+    padding:.36rem .58rem;
+  }
+
+  body:not([data-page="home"]) main :is(
+    .story-card,
+    .brand-card,
+    .contact-card,
+    .policy-summary-card,
+    .account-panel,
+    .feature-card,
+    .stat-card,
+    .about-archive-panel
+  ) {
+    border-radius:20px;
+    box-shadow:inset 0 3px 0 rgba(244,199,102,.52),0 14px 28px rgba(16,27,57,.09);
+  }
+}
+
+/* Interior headers keep the homepage's generous identity and shopper tools on
+   compact screens while leaving search exclusive to the homepage. */
+@media (max-width:1180px) {
+  body:not([data-page="home"]),
+  body:not([data-page="home"]) .site-header,
+  body:not([data-page="home"]) .site-header .header-inner {
+    --header-h:84px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-areas:"brand utility menu" !important;
+    gap:.55rem !important;
+    padding-block:.48rem !important;
+  }
+
+  body:not([data-page="home"]) .site-header .brand-logo {
+    width:64px !important;
+    height:64px !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    grid-area:utility;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+    gap:.36rem;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility a {
+    min-width:40px;
+    min-height:40px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-actions {
+    grid-area:menu !important;
+    justify-self:end;
+  }
+}
+
+@media (max-width:760px) {
+  body:not([data-page="home"]),
+  body:not([data-page="home"]) .site-header,
+  body:not([data-page="home"]) .site-header .header-inner {
+    --header-h:78px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    gap:.42rem !important;
+    padding-block:.4rem !important;
+  }
+
+  body:not([data-page="home"]) .site-header .brand-logo {
+    width:60px !important;
+    height:60px !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility__icon[href$="wishlist.html"] {
+    display:none;
+  }
+}
+
+@media (max-width:520px) {
+  body:not([data-page="home"]) .site-header .header-inner {
+    grid-template-columns:60px minmax(0,1fr) auto !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility a {
+    min-width:38px;
+    min-height:38px;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    gap:.28rem;
+  }
+
+  body:not([data-page="home"]) .site-header .nav-toggle {
+    width:62px !important;
+    min-width:62px !important;
+    padding-inline:.42rem;
+  }
+}
