@@ -2722,3 +2722,166 @@ body.dark-mode .modal-listing-nav__button {
     padding-inline:.42rem;
   }
 }
+
+/* The home page needs more than a compressed logo and search rail on phones.
+   Keep its identity and essential shopper actions visible above a full-width
+   catalog search, while retaining the same menu drawer and visual language. */
+@media (max-width:760px) {
+  body[data-page="home"],
+  body[data-page="home"] .site-header,
+  body[data-page="home"] .site-header .header-inner {
+    --header-h:118px;
+  }
+
+  body[data-page="home"] .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:48px 44px !important;
+    grid-template-areas:
+      "brand utility menu"
+      "search search search" !important;
+    column-gap:.48rem !important;
+    row-gap:.34rem !important;
+    padding-block:.42rem !important;
+  }
+
+  body[data-page="home"] .brand {
+    grid-area:brand !important;
+    margin-right:0;
+  }
+
+  body[data-page="home"] .brand-logo {
+    width:52px !important;
+    height:52px !important;
+  }
+
+  body[data-page="home"] .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    gap:.3rem;
+  }
+
+  body[data-page="home"] .home-header-utility__sell,
+  body[data-page="home"] .home-header-utility__icon[href$="wishlist.html"] {
+    display:none !important;
+  }
+
+  body[data-page="home"] .home-header-utility__icon {
+    min-width:38px !important;
+    min-height:38px !important;
+  }
+
+  body[data-page="home"] .nav-toggle {
+    grid-area:menu !important;
+    width:68px !important;
+    min-width:68px !important;
+    min-height:40px !important;
+    height:40px !important;
+    margin:0;
+    padding-inline:.46rem;
+    border-radius:13px !important;
+    border-right:1px solid rgba(228,177,65,.72) !important;
+  }
+
+  body[data-page="home"] .home-header-search {
+    grid-area:search !important;
+    width:100%;
+    padding-left:0 !important;
+  }
+
+  body[data-page="home"] .home-header-search__bar {
+    grid-template-columns:2.7rem minmax(0,1fr) auto !important;
+    grid-template-rows:42px !important;
+    min-height:44px !important;
+    border-left:1px solid rgba(23,44,92,.18) !important;
+    border-radius:14px !important;
+  }
+
+  body[data-page="home"] .home-header-search__icon {
+    display:block !important;
+  }
+
+  body[data-page="home"] .home-header-search input {
+    grid-column:2;
+    grid-row:1;
+    height:42px !important;
+    font-size:.86rem !important;
+  }
+
+  body[data-page="home"] .home-header-search button {
+    grid-column:3;
+    grid-row:1;
+    min-width:82px !important;
+    min-height:42px;
+    height:42px;
+  }
+
+  body[data-page="home"] .home-header-search button span {
+    display:inline !important;
+  }
+}
+
+@media (min-width:521px) and (max-width:760px) {
+  body[data-page="home"] .brand-copy {
+    display:grid !important;
+  }
+}
+
+@media (min-width:361px) and (max-width:520px) {
+  body[data-page="home"] .nav-toggle .button-label {
+    position:static;
+    width:auto;
+    height:auto;
+    overflow:visible;
+    clip:auto;
+    clip-path:none;
+    white-space:nowrap;
+  }
+}
+
+@media (max-width:360px) {
+  body[data-page="home"] .site-header .header-inner {
+    column-gap:.3rem !important;
+  }
+
+  body[data-page="home"] .brand-logo {
+    width:48px !important;
+    height:48px !important;
+  }
+
+  body[data-page="home"] .home-header-utility__icon {
+    min-width:36px !important;
+    min-height:36px !important;
+  }
+
+  body[data-page="home"] .nav-toggle {
+    width:50px !important;
+    min-width:50px !important;
+    padding-inline:0;
+  }
+
+  body[data-page="home"] .home-header-search button {
+    min-width:52px !important;
+  }
+
+  body[data-page="home"] .home-header-search button span {
+    display:none !important;
+  }
+}
+
+/* When the desktop filter rail is first introduced, the bottom pagination has
+   a narrow results column. Let its per-page selector take a second row rather
+   than creating a horizontal page scroll. */
+@media (min-width:861px) and (max-width:960px) {
+  .catalog-pagination--bottom .catalog-pagination__inner {
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .catalog-pagination--bottom .catalog-pagination__per-page {
+    flex:1 1 100%;
+    margin-left:0;
+    justify-content:center;
+  }
+}

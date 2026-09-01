@@ -13614,7 +13614,8 @@ body.dark-mode:not([data-page="home"]) main :is(
 
 /* Responsive catalog and shared-header corrections. Cards retain comfortable
    actions beside the desktop filter rail, player data follows the photo stack,
-   and interior headers use the same two-tier rhythm as the homepage shell. */
+   and interior headers keep navigation, branding, and shopper tools on one
+   intentional desktop rail. */
 @media (min-width:901px) {
   .catalog-browse-shell:not(.filters-collapsed) .catalog-results-column .products-grid {
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr)) !important;
@@ -13648,26 +13649,24 @@ body.dark-mode:not([data-page="home"]) main :is(
 @media (min-width:1181px) {
   body:not([data-page="home"]),
   body:not([data-page="home"]) .site-header {
-    --header-h:112px;
+    --header-h:88px;
   }
 
   body:not([data-page="home"]) .site-header .header-inner {
     min-height:var(--header-h);
-    grid-template-columns:minmax(235px,1fr) auto auto;
-    grid-template-rows:54px 38px;
-    grid-template-areas:
-      "brand utility theme"
-      "nav nav nav";
+    grid-template-columns:minmax(220px,.72fr) minmax(580px,1.75fr) auto auto;
+    grid-template-rows:minmax(0,1fr);
+    grid-template-areas:"brand nav utility theme";
     align-content:center;
     align-items:center;
-    column-gap:.9rem;
-    row-gap:.22rem !important;
-    padding-block:.4rem;
+    column-gap:.72rem;
+    row-gap:0 !important;
+    padding-block:.3rem;
   }
 
   body:not([data-page="home"]) .site-header .brand-logo {
-    width:68px;
-    height:68px;
+    width:62px;
+    height:62px;
   }
 
   body:not([data-page="home"]) .site-header .home-header-utility {
@@ -13681,6 +13680,7 @@ body.dark-mode:not([data-page="home"]) main :is(
 
   body:not([data-page="home"]) .site-header .site-nav {
     width:100%;
+    max-width:680px;
     align-self:center;
     justify-self:center !important;
   }
@@ -13691,12 +13691,42 @@ body.dark-mode:not([data-page="home"]) main :is(
 
   body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
     min-height:36px;
-    padding:.3rem .72rem;
+    padding:.3rem .58rem;
   }
 
   body:not([data-page="home"]) .site-header .header-actions {
     grid-area:theme;
     justify-self:end;
+  }
+}
+
+@media (min-width:1181px) and (max-width:1280px) {
+  body:not([data-page="home"]) .site-header .header-inner {
+    grid-template-columns:minmax(260px,.72fr) minmax(560px,1.75fr) auto auto;
+  }
+
+  body:not([data-page="home"]) .site-header .brand {
+    gap:.45rem;
+  }
+
+  body:not([data-page="home"]) .site-header .brand-script {
+    font-size:1.45rem;
+    white-space:nowrap;
+  }
+
+  body:not([data-page="home"]) .site-header .brand-kicker {
+    font-size:.62rem;
+    letter-spacing:.075em;
+    white-space:nowrap;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav {
+    max-width:600px;
+  }
+
+  body:not([data-page="home"]) .site-header .site-nav .primary-nav__link {
+    padding-inline:.48rem;
+    font-size:.83rem;
   }
 }
 
