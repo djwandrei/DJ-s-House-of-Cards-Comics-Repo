@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260831a">
+  <link rel="stylesheet" href="styles.css?v=20260901b">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -354,7 +354,7 @@
                       <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> past team games and total minutes never restrict the plan. The model stays inside your hard limits, protects against low-opportunity spikes, and gradually tapers marginal fit above the rotation’s average workload.</p>
                       <p class="field__help" id="rotationAllocationStyleHelp">Past usage is context only. Lineup Lab does not use source totals as a minute cap, target, or scoring input.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
-                      <p class="field__help" id="rotationRateStabilityHelp">Two safeguards work together. Unproven per-36 advantages move toward a same-season baseline as a role expands, while each extra minute above the rotation’s average workload adds slightly less lineup value. Better players can still earn more minutes or reach your maximum. Neither safeguard uses past team totals as a cap or target.</p>
+                      <p class="field__help" id="rotationRateStabilityHelp">Three safeguards work together. Complete all-team season evidence is preferred when available; otherwise the model uses a fair per-appearance fallback. Limited-opportunity rates receive a modest confidence reserve, unproven advantages move toward a same-season baseline as a role expands, and extra workload gradually adds less lineup value. Team-stint games and totals are never minute caps or targets.</p>
                       <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from season-listed positions and minutes per appearance. Games played and source totals are excluded. Verified career positions still improve eligibility.</p>
                       <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking rate and impact evidence for this roster…</p>
                       <div class="rotation-hard-limits">
@@ -520,7 +520,7 @@
             <article class="panel model-card">
               <span class="model-card__number">02</span>
               <h3>Two scores with different jobs</h3>
-              <p><strong>Search-relative score</strong> ranks groups inside one exact search and should only be compared with its alternatives. <strong>Plan Fit Index</strong> is the clearer headline: 100 equals the same-season NBA baseline for your selected priorities. Complete Basketball Reference OBPM/DBPM values provide a small offense/defense cross-check; they never replace your priorities. Neither score is a win probability or overall player rating.</p>
+              <p><strong>Search-relative score</strong> ranks groups inside one exact search and cautiously accounts for limited evidence; compare it only with alternatives from that run. <strong>Plan Fit Index</strong> is the clearer headline: 100 equals the expected same-season NBA baseline for your selected priorities. Complete Basketball Reference OBPM/DBPM values provide a small offense/defense cross-check; they never replace your priorities. Neither score is a win probability or overall player rating.</p>
             </article>
             <article class="panel model-card">
               <span class="model-card__number">03</span>
@@ -553,8 +553,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260831a"></script>
-  <script defer src="../supabase-client.js?v=20260831a"></script>
-  <script type="module" src="app.js?v=20260831a"></script>
+  <script defer src="../backend-config.js?v=20260901b"></script>
+  <script defer src="../supabase-client.js?v=20260901b"></script>
+  <script type="module" src="app.js?v=20260901b"></script>
 </body>
 </html>

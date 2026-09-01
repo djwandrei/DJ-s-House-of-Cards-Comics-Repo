@@ -20,9 +20,9 @@ the beta.
   projections. Extra assigned minutes beyond a player's established role are
   valued at the same-season baseline, preventing a low-usage spike from being
   repeated as if it were already star-sized production.
-- Game-plan-first minute allocation by default, with an optional
-  recorded-minutes guardrail and auditable guard, forward, and center
-  role-minute profiles.
+- Game-plan-first minute allocation with auditable guard, forward, and center
+  role-minute profiles. Historical games and total minutes are descriptive
+  context only in the public product; they do not set minute targets or caps.
 - CSV import/export, side-by-side player comparison, and a device-local player
   watchlist.
 - A source-neutral player schema and provider adapter that keep the optimizer
@@ -87,8 +87,22 @@ production so their units do not get mixed:
   attempts for 3P%, and 1,200 minutes for OBPM/DBPM. These are transparent model
   settings, not fitted player-impact coefficients.
 - The distinct larger-role projection removes only unproven upside beyond an
-  established role and never improves a below-baseline player. A shared
-  workload-saturation curve begins after `240 / selected roster size` minutes:
+  established role and never improves a below-baseline player.
+- After that expected larger-role estimate is calculated, the exact decision
+  holds back a modest evidence-confidence reserve. At zero supporting
+  opportunity, ordinary box-score rates move another 8% of the same-season
+  baseline in the conservative direction; that reserve fades linearly with the
+  metric-specific reliability above. Applying it last prevents role expansion
+  from accidentally blending the caution away. The reserve uses per-appearance
+  opportunity (or true season-wide totals when the adapter supplies them), never
+  selected-team games or total stint minutes. It changes the projected rate
+  rather than restricting the player to a past role. Signed BPM inputs retain
+  their separate 1,200-minute shrinkage prior but no invented variance reserve.
+  The reserve affects exact ranking and conservative production totals; Plan Fit
+  keeps the expected posterior-mean projection so 100 retains its league-baseline
+  meaning.
+- A shared workload-saturation curve begins after
+  `240 / selected roster size` minutes:
   extra minutes still add positive value, but their marginal fit moves smoothly
   toward 35% over an eight-minute transition. This prevents an otherwise linear
   objective from placing most players at their minimum or maximum. It is not a
@@ -97,11 +111,11 @@ production so their units do not get mixed:
 - Metric weights are normalized into relative shares. Each candidate's fit is
   the weighted, eligible-pool percentile profile, and rotation fit is then
   weighted by the exact minutes assigned to each selected player.
-- The default game-plan plan uses only the visitor's hard player bounds and
-  objective. `historicalAware` is an explicit optional recorded-minutes
-  guardrail that rescales the selected players' team-stint minute
-  shares to 240 and builds visible per-player bands around those targets. It
-  never contributes a second roster-ranking score.
+- The public game-plan plan uses only the visitor's hard player bounds and
+  objective. A legacy `historicalAware` route remains in the core for backward
+  compatibility and regression tests, but the interface no longer exposes or
+  serializes it because team-stint workload should not steer the proposed
+  rotation. It never contributes a second roster-ranking score.
 - Every successful rotation assigns exactly 240 integer player-minutes and the
   selected role profile's exact G/F/C totals. Custom role totals are used in
   both the allocation and every projected-stat feasibility proof.
@@ -115,6 +129,15 @@ production so their units do not get mixed:
   uses conservative static common-role rates so each hard rule remains a linear,
   auditable inequality; enabling a floor never restores the retired linear
   minute-fill behavior.
+- A hard production rule is proved in stages rather than trusted after finding
+  the first feasible plan. The solver first applies inexpensive feasibility
+  bounds and a constructive seed, then tries a Lagrangian upper-bound
+  certificate. If the rule falls between attainable integer totals, a
+  fixed-position candidate with at most four players in each role is solved by
+  exact G/F/C Pareto-frontier composition. Flexible-position and larger role
+  groups retain the general exact exchange search. Every route either proves
+  the best feasible minute plan or fails closed; none silently accepts an
+  approximate incumbent as optimal.
 - When the exact assigned-role model is available, projected box-score totals
   use the evidence-based role-expansion projection: established minutes use the
   adjusted player rate, while additional expansion minutes move smoothly toward
@@ -125,20 +148,48 @@ production so their units do not get mixed:
   descriptive estimates, not game, injury, availability, matchup, or betting
   predictions.
 
-Imported play-by-play, reconstructed lineup stints, and RAPM are not inputs to
-this box-score objective yet. The interface must continue to label observed
-five-player impact as unavailable until a separately validated, adequately
-sampled play-by-play layer is approved for model use.
+## Model boundary for Scout analytics
+
+The current production model is deliberately named the **Historical Rates**
+model. It uses season box scores, the user's visible priorities, and the exact
+constraint/minute layer described above. Imported play-by-play, reconstructed
+lineup stints, RAPM, and observed five-player synergy are not inputs to its Plan
+Fit score. This protects the stable meaning of 100 and prevents a partially
+available Scout feed from changing an answer without telling the visitor.
+
+The planned **Scout Impact** model should be a separate, versioned scoring
+layer rather than a silent extra weight. Its input contract should include
+offensive and defensive impact separately, possession sample size, reliability
+or shrinkage strength, source/model version, and season/phase coverage. A
+future hybrid mode may combine Historical Rates and Scout Impact only with a
+visible blend control and separate offense/defense contributions in the result
+explanation.
+
+Observed five-player synergy requires an even stricter rule: use a
+possession-shrunk adjustment only when that exact unit has adequate evidence.
+For an unseen or tiny-sample unit, start from the selected players' stabilized
+individual impact instead of treating missing synergy as either zero or proof
+of chemistry. The existing exact roster, position, minute, and production-rule
+solver remains the shared constraint layer for every model. Until this separate
+layer is validated and approved, the interface must continue to label Scout
+impact as not active.
 
 ## Data boundary
 
 The default player pool comes from the approved Basketball Reference import in
 Supabase. The browser reads one season, phase, and team at a time through the
-read-only `nba_lineup_player_pool` view. This keeps a traded player scoped to
-the selected team stint instead of blending in a multi-team aggregate. Counting
-stats are converted to per-game values; shooting percentages and eFG% are
-derived from makes and attempts. A team-season response is not a current
-roster, depth chart, or injury report.
+read-only `nba_lineup_player_pool` view. This keeps a traded player on the team
+whose roster the visitor selected. Counting stats are converted to per-game
+values; shooting percentages and eFG% are derived from makes and attempts. A
+team-season response is not a current roster, depth chart, or injury report.
+
+When the shared data adapter supplies a separate, audited all-team player-season
+record, Lineup Lab uses that record's numerator and denominator together for
+rate stabilization and role-size evidence. It never combines season minutes
+with a selected-team numerator, and it never lets games or total minutes from a
+team stint set a player's proposed minutes. If season evidence is missing or
+ambiguous, the adapter fails closed to the standardized per-appearance fallback
+and reports that limitation in the interface.
 
 The checked-in fixture remains the 15-player 2021-22 Timberwolves snapshot from
 the original course workbook. It is the stable test/demo fallback if the

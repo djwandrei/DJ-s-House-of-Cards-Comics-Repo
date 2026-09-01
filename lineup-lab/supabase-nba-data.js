@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260831a";
+import { normalizeDataset } from "./player-data.js?v=20260901b";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -69,6 +69,107 @@ function safeMetricObject(value) {
       .map(([key, metric]) => [String(key), optionalFiniteNumber(metric)])
       .filter(([, metric]) => metric !== null),
   );
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+/**
+ * Normalize the optional player-season evidence contract.
+ *
+ * The selected player-pool row remains a real team stint because that answers
+ * "who played for this team?". Reliability is a different question. A traded
+ * player's complete season across every team is the better sample for judging
+ * whether his rate is established, so the shared data layer may supply one
+ * aggregate row from `nba_player_season_totals` for each selected player.
+ *
+ * Missing optional columns stay missing rather than becoming zero. That lets
+ * the optimizer fall back metric by metric without treating an incomplete
+ * future import as evidence that the player produced nothing.
+ */
+function seasonEvidenceForRow(row) {
+  if (!isPlainObject(row)) return null;
+  const aliases = {
+    games: ["games_played", "games"],
+    minutes: ["minutes_played", "minutes"],
+    fieldGoalsMade: ["field_goals_made", "fieldGoalsMade"],
+    fieldGoalsAttempted: ["field_goals_attempted", "fieldGoalsAttempted"],
+    threePointFieldGoalsMade: ["three_point_field_goals_made", "threePointFieldGoalsMade"],
+    threePointFieldGoalsAttempted: ["three_point_field_goals_attempted", "threePointFieldGoalsAttempted"],
+    freeThrowsMade: ["free_throws_made", "freeThrowsMade"],
+    freeThrowsAttempted: ["free_throws_attempted", "freeThrowsAttempted"],
+    totalRebounds: ["total_rebounds", "totalRebounds", "rebounds"],
+    assists: ["assists"],
+    steals: ["steals"],
+    blocks: ["blocks"],
+    turnovers: ["turnovers"],
+    points: ["points"],
+  };
+  const totals = {};
+  for (const [target, candidates] of Object.entries(aliases)) {
+    const source = candidates.find((key) => row[key] !== null && row[key] !== undefined && row[key] !== "");
+    if (!source) continue;
+    const value = optionalNonNegativeNumber(row[source], null);
+    if (value !== null) totals[target] = value;
+  }
+
+  // A season-wide claim needs both an appearance count and total minutes.
+  // Without those anchors, a partial payload cannot safely replace the
+  // selected-team rate or establish a season-level role size.
+  if (!(totals.games > 0) || !(totals.minutes >= 0)) return null;
+
+  const advanced = safeMetricObject(
+    isPlainObject(row.season_advanced_metrics)
+      ? row.season_advanced_metrics
+      : row.advanced_metrics,
+  );
+  const playerPossessions = optionalNonNegativeNumber(
+    row.player_possessions ?? row.estimated_player_possessions ?? row.possessions,
+    null,
+  );
+  const playerPossessionsPerGame = optionalNonNegativeNumber(
+    row.player_possessions_per_game ?? row.estimated_player_possessions_per_game ?? row.possessions_per_game,
+    null,
+  );
+  return {
+    totals,
+    advanced,
+    teamStintCount: optionalNonNegativeNumber(row.team_stint_count, null),
+    playerPossessions,
+    playerPossessionsPerGame,
+    source: {
+      scope: "season-wide",
+      method: "aggregate of every non-provider-aggregate team stint for this player, season, and phase",
+    },
+  };
+}
+
+/**
+ * Build one strict evidence row per player. Extra player rows are ignored so a
+ * future batched endpoint may safely return a superset, but duplicate or
+ * cross-season rows fail closed instead of silently attaching the wrong sample.
+ */
+function seasonEvidenceByPlayerId(rows, { playerIds, season, seasonPhase }) {
+  const evidence = new Map();
+  if (!Array.isArray(rows)) return evidence;
+  const allowedIds = new Set(playerIds.map((id) => String(id)));
+  for (const row of rows) {
+    if (!isPlainObject(row)) throw new Error("Season-wide evidence rows must be objects.");
+    const playerId = requireText(row.player_id ?? row.playerId, "Season evidence player ID");
+    if (!allowedIds.has(playerId)) continue;
+    const rowSeason = requireSeasonEndYear(row.season_end_year ?? row.seasonEndYear);
+    const rowPhase = requireSeasonPhase(row.season_phase ?? row.seasonPhase);
+    if (rowSeason !== season || rowPhase !== seasonPhase) {
+      throw new Error(`Season-wide evidence for ${playerId} does not match the selected season and phase.`);
+    }
+    if (evidence.has(playerId)) {
+      throw new Error(`Duplicate season-wide evidence was returned for ${playerId}.`);
+    }
+    const normalized = seasonEvidenceForRow(row);
+    if (normalized) evidence.set(playerId, normalized);
+  }
+  return evidence;
 }
 
 function safeHttpsUrl(value) {
@@ -243,7 +344,7 @@ export function mapSupabaseNbaPlayer(row, options = {}) {
  * and deliberately strips unknown columns, so layering this object afterward
  * prevents a reporting feature from quietly changing exact-solver inputs.
  */
-function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl }) {
+function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl, seasonEvidence = null }) {
   const totals = {
     minutes: optionalNonNegativeNumber(row.minutes_played),
     fieldGoalsMade: optionalNonNegativeNumber(row.field_goals_made),
@@ -277,9 +378,29 @@ function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl }) {
     threePct: optionalNonNegativeNumber(row.league_three_pct, null),
   };
 
+  const teamStintAdvanced = safeMetricObject(row.advanced_metrics);
   return {
     totals,
-    advanced: safeMetricObject(row.advanced_metrics),
+    // When present, season-wide advanced values override the selected-team
+    // version for model evidence. The raw team-stint values remain available
+    // above in `totals` for clear on-page context and source auditing.
+    advanced: {
+      ...teamStintAdvanced,
+      ...(seasonEvidence?.advanced || {}),
+    },
+    ...(seasonEvidence ? {
+      seasonTotals: seasonEvidence.totals,
+      seasonAdvanced: seasonEvidence.advanced,
+      seasonEvidence: {
+        ...seasonEvidence.source,
+        teamStintCount: seasonEvidence.teamStintCount,
+        playerPossessions: seasonEvidence.playerPossessions,
+        playerPossessionsPerGame: seasonEvidence.playerPossessionsPerGame,
+        hasReportedPossessions:
+          seasonEvidence.playerPossessions !== null
+          || seasonEvidence.playerPossessionsPerGame !== null,
+      },
+    } : {}),
     teamTotalMinutes: optionalNonNegativeNumber(row.team_total_minutes, null),
     estimatedTeamPossessions: optionalNonNegativeNumber(row.estimated_team_possessions, null),
     leaguePer36,
@@ -455,6 +576,12 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
     || defaultBasketballReferenceTotalsUrl(season, seasonPhase);
   const teamLogoUrl = safeHttpsUrl(options.teamLogoUrl || rows.find((row) => safeHttpsUrl(row?.team_logo_url))?.team_logo_url);
   const teamSummary = summarizeSupabaseNbaTeamRows(rows);
+  const playerIds = rows.map((row) => requireText(row.player_id, "Player ID"));
+  const seasonEvidence = seasonEvidenceByPlayerId(options.seasonEvidenceRows || [], {
+    playerIds,
+    season,
+    seasonPhase,
+  });
   const source = {
     label: `${teamName} ${nbaSeasonLabel(season)} ${phaseLabel(seasonPhase)} player pool`,
     provider: "Basketball Reference via DJHC database",
@@ -472,6 +599,10 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
     analytics: {
       per100Method: "Estimated team offensive possessions = FGA + 0.44 × FTA − offensive rebounds + turnovers. Individual exposure is estimated from that team's possession total and the player's share of team minutes.",
       leagueBaselineMethod: "Same-season, same-phase NBA team-stint totals weighted by player minutes and expressed per 36 minutes. It is a historical context index, not an all-in-one player rating.",
+      seasonEvidencePlayers: seasonEvidence.size,
+      seasonEvidenceStatus: options.seasonEvidenceStatus
+        || (seasonEvidence.size > 0 ? "available" : "not-supplied"),
+      seasonEvidenceMethod: "Player-season aggregates across every non-provider-aggregate team stint; team-stint length never becomes a minute target or cap.",
     },
     note: "Basketball Reference team-stint totals, converted to per-game values. Players who changed teams are scoped only to this team stint.",
   };
@@ -484,7 +615,13 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
   const headshots = new Map(rawPlayers.map((player) => [player.id, player.headshotUrl]));
   const analyticsById = new Map(rows.map((row) => {
     const id = requireText(row.player_id, "Player ID");
-    return [id, fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl })];
+    return [id, fanAnalyticsForRow(row, {
+      team,
+      season,
+      seasonPhase,
+      sourceUrl,
+      seasonEvidence: seasonEvidence.get(id) || null,
+    })];
   }));
   const positionEvidenceById = new Map(rows.map((row) => {
     const id = requireText(row.player_id, "Player ID");
@@ -547,10 +684,37 @@ export async function fetchSupabaseNbaTeamDataset(options = {}) {
   if (!Array.isArray(rows) || rows.length === 0) {
     throw new Error(`No ${phaseLabel(seasonPhase).toLowerCase()} player totals were found for ${team} in ${nbaSeasonLabel(season)}.`);
   }
+  // The shared Supabase boundary may expose this method once the dedicated
+  // analytics project publishes its reviewed season-evidence view. Keeping the
+  // call feature-detected makes today's live player-pool contract backward
+  // compatible while allowing the stronger evidence model to activate without
+  // another Lineup Lab rewrite. A temporary evidence failure never blocks the
+  // core team-stint dataset; the UI reports the fallback honestly.
+  let seasonEvidenceRows = [];
+  let seasonEvidenceStatus = "shared-reader-not-available";
+  if (typeof catalog.listNbaPlayerSeasonEvidence === "function") {
+    try {
+      seasonEvidenceRows = await catalog.listNbaPlayerSeasonEvidence({
+        playerIds: rows.map((row) => requireText(row.player_id, "Player ID")),
+        seasonEndYear: season,
+        seasonPhase,
+        force: options.force,
+      });
+      seasonEvidenceStatus = Array.isArray(seasonEvidenceRows)
+        ? "available"
+        : "invalid-response";
+      if (!Array.isArray(seasonEvidenceRows)) seasonEvidenceRows = [];
+    } catch {
+      seasonEvidenceRows = [];
+      seasonEvidenceStatus = "temporarily-unavailable";
+    }
+  }
   return createSupabaseNbaTeamDataset(rows, {
     team,
     season,
     seasonPhase,
     snapshotDate: options.snapshotDate,
+    seasonEvidenceRows,
+    seasonEvidenceStatus,
   });
 }

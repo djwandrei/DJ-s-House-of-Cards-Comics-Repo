@@ -2039,15 +2039,24 @@ function renderRotationEvidencePreview() {
     Number.isFinite(Number(player.analytics?.advanced?.offensive_box_plus_minus))
     && Number.isFinite(Number(player.analytics?.advanced?.defensive_box_plus_minus))
   )).length;
+  const seasonEvidenceCount = players.filter((player) => (
+    player.analytics?.seasonEvidence?.scope === "season-wide"
+    && player.analytics?.seasonTotals
+  )).length;
   const rateCopy = `${rateEvidenceCount} of ${players.length} have same-season rate evidence`;
   const impactCopy = `${impactEvidenceCount} of ${players.length} have OBPM and DBPM`;
-  elements.rotationEvidencePreview.textContent = `Source check: ${rateCopy}; ${impactCopy}. Past team games and total minutes do not change the proposed allocation.`;
+  const seasonCopy = seasonEvidenceCount > 0
+    ? `${seasonEvidenceCount} of ${players.length} use complete all-team season evidence; the rest use the per-appearance fallback`
+    : "complete all-team season evidence is not in this loaded snapshot, so the fair per-appearance fallback is active";
+  elements.rotationEvidencePreview.textContent = `Source check: ${rateCopy}; ${impactCopy}; ${seasonCopy}. Past team games and total minutes do not change the proposed allocation. Scout-level possession analytics are reserved for a separate model.`;
   if (elements.mode.value !== "rotation") {
     elements.simpleModelSummaryCopy.textContent = "The optimizer uses stats recorded with this team, applies the visible sample filter, and compares five-player profiles under your game plan.";
     elements.simpleModelSummaryNote.textContent = "Recommended sample and position rules are already active. Open Detailed only to change them.";
   } else {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It adjusts low-opportunity rates and gradually tapers the added value of workload above the rotation's average role.";
-    elements.simpleModelSummaryNote.textContent = "Better players can still earn larger roles. Past team games and total minutes never restrict selection or assigned minutes; source MPG only helps describe whether a statistical role is proven.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer uses your game plan and hard player-minute limits. It gives uncertain rates a modest confidence reserve and gradually tapers the added value of above-average workload.";
+    elements.simpleModelSummaryNote.textContent = seasonEvidenceCount > 0
+      ? "Complete all-team season evidence is used when available; team-stint games and totals never restrict selection or assigned minutes."
+      : "Better players can still earn larger roles. Until complete all-team evidence is available, the model uses a fair per-appearance opportunity fallback—never team-stint length."
   }
 }
 
@@ -2115,7 +2124,7 @@ function syncRotationModelControls() {
     ? "Choose whether limited evidence, larger roles, and above-average workloads receive the recommended conservative projection"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "Two safeguards work together. Each stat uses its own opportunity requirement, and any unproven advantage moves toward a same-season baseline as a role expands. Above the rotation's average workload, each extra minute also adds gradually less game-plan fit. Better players can still earn larger roles or reach your maximum. Past team totals are excluded, and an incomplete stat stays raw for everyone."
+    ? "Three safeguards work together. The model prefers complete all-team season totals when they are available and otherwise uses a fair per-appearance evidence estimate. Each stat has its own opportunity requirement and a modest confidence reserve. Any remaining unproven advantage moves toward a same-season baseline as a role expands, while extra workload gradually adds less game-plan fit. Better players can still earn larger roles or reach your maximum. A player's games or total minutes with the selected team never set the plan."
     : "Per-game comparison uses raw historical per-game lines. Limited-role adjustment is available only with per-36 comparison.";
   renderRotationEvidencePreview();
 }
@@ -3049,6 +3058,19 @@ function buildOptimizerConfig() {
 }
 
 function assignedPosition(lineup, playerId) {
+  // A rotation covers positions minute by minute, so it does not use the
+  // one-player-per-slot assignment returned for a five-player lineup. Read the
+  // exact G/F/C minute flow instead of labelling every rotation player "UTIL".
+  // Multiple labels are intentional: G/F means this exact plan actually used
+  // the player in both role families, not merely that his career profile lists
+  // both as possibilities.
+  const rotationRoleMinutes = lineup.rotation?.positionMinutes?.byPlayer?.[playerId];
+  if (rotationRoleMinutes && typeof rotationRoleMinutes === "object") {
+    const activeRoles = ["G", "F", "C"].filter(
+      (position) => Number(rotationRoleMinutes[position]) > 0,
+    );
+    if (activeRoles.length > 0) return activeRoles.join("/");
+  }
   for (const [position, ids] of Object.entries(lineup.positionAssignment || {})) {
     if (ids.includes(playerId)) return position;
   }
@@ -3078,15 +3100,34 @@ function renderPlayerSeasonContext(player, insight) {
   const phase = source.phase === "playoffs" || source.seasonPhase === "playoffs"
     ? "Playoffs"
     : "Regular season";
-  const parts = [
+  const basicParts = [
     source.season || state.dataset?.source?.season,
     source.team || player.team,
     phase,
-    Number.isFinite(Number(sample.games)) ? `${formatNumber(sample.games, 0)} source games` : "",
-    Number.isFinite(Number(sample.totalMinutes)) ? `${formatNumber(sample.totalMinutes, 0)} source minutes` : "",
   ].filter(Boolean);
-  if (player.analytics?.postseasonAvailable === true) parts.push("Playoff stats available");
-  context.textContent = parts.join(" · ");
+  const teamLabel = source.team || player.team || "this team";
+  const detailedParts = [
+    ...basicParts,
+    Number.isFinite(Number(sample.games))
+      ? `${formatNumber(sample.games, 0)} games for ${teamLabel}`
+      : "",
+    Number.isFinite(Number(sample.totalMinutes))
+      ? `${formatNumber(sample.totalMinutes, 0)} total minutes for ${teamLabel}`
+      : "",
+  ].filter(Boolean);
+  if (player.analytics?.postseasonAvailable === true) detailedParts.push("Playoff stats available");
+
+  // Simple mode needs only enough context to identify the season/team row.
+  // Detailed mode exposes the full evidence envelope in plain language. Both
+  // live in the same card so switching modes never requires re-running the
+  // optimizer or reconstructing its result.
+  const simple = document.createElement("span");
+  simple.className = "simple-only";
+  simple.textContent = basicParts.join(" · ");
+  const detailed = document.createElement("span");
+  detailed.className = "detailed-only";
+  detailed.textContent = detailedParts.join(" · ");
+  context.append(simple, detailed);
   return context;
 }
 
@@ -3136,12 +3177,15 @@ function renderExactObjectiveReasons(player, result, insight) {
     : "Game-plan minutes optimize inside the hard limits you set; source usage did not affect this result.";
   const assignedRoleScoring = result?.best?.rotation?.diagnostics?.roleConditionedScoring;
   const workloadSaturation = assignedRoleScoring?.workloadSaturation;
+  const confidenceReserveCopy = rateStability?.uncertaintyAdjustedPlayerMetricCount > 0
+    ? " Limited-opportunity rates also receive a modest lower-confidence reserve; team-stint length is not part of that calculation."
+    : "";
   const roleProjectionCopy = assignedRoleScoring?.applied
-    ? `Rates are stabilized toward the same-season NBA baseline. The ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles lose only unproven upside, and marginal lineup fit gradually tapers above ${formatNumber(workloadSaturation?.startsAfterMinutes, 1)} minutes per player on average. `
+    ? `Rates are stabilized toward the same-season NBA baseline.${confidenceReserveCopy} The ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} beyond established roles lose only unproven upside, and marginal lineup fit gradually tapers above ${formatNumber(workloadSaturation?.startsAfterMinutes, 1)} minutes per player on average. `
     : rateStability?.roleAdjustedPlayerMetricCount > 0
       ? `Because this rotation asks players to carry about ${formatNumber(rateStability.roleMinutesTarget, 1)} minutes each on average, limited-role rates are adjusted toward the same-season NBA baseline. `
       : rateStability?.applied
-        ? "Smaller samples are stabilized toward the same-season NBA baseline. "
+        ? `Smaller opportunity samples are stabilized toward the same-season NBA baseline.${confidenceReserveCopy} `
         : "";
   const basis = document.createElement("p");
   basis.textContent = rotationBasis === "per36"
@@ -3258,6 +3302,11 @@ function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
   position.className = "position-pill";
   position.textContent = assignedPosition(lineup, player.id);
   const positionEvidence = player.positionEvidence;
+  const assignedRoleMinutes = lineup.rotation?.positionMinutes?.byPlayer?.[player.id];
+  const assignedRoleDetail = roleMinuteSummary(assignedRoleMinutes);
+  const positionTitleParts = assignedRoleDetail
+    ? [`Assigned role minutes: ${assignedRoleDetail}.`]
+    : [`Assigned position: ${position.textContent}.`];
   if (positionEvidence?.usesCareerProfile) {
     const seasonRoles = Array.isArray(positionEvidence.seasonListed) && positionEvidence.seasonListed.length
       ? positionEvidence.seasonListed.join("/")
@@ -3265,8 +3314,9 @@ function renderLineupPlayer(player, lineup, index, { result, insight } = {}) {
     const eligibleRoles = Array.isArray(positionEvidence.eligible) && positionEvidence.eligible.length
       ? positionEvidence.eligible.join("/")
       : player.positions.join("/");
-    position.title = `Assigned ${position.textContent}. Eligible ${eligibleRoles}; season listing ${seasonRoles}; verified career-profile roles are available for this scenario.`;
+    positionTitleParts.push(`Eligible ${eligibleRoles}; season listing ${seasonRoles}; verified career-profile roles are available for this scenario.`);
   }
+  position.title = positionTitleParts.join(" ");
   const rank = document.createElement("span");
   rank.className = "lineup-player__rank";
   rank.textContent = String(index + 1).padStart(2, "0");
@@ -3464,14 +3514,17 @@ function renderResultEvidence(result) {
     const assignedRoleDetail = assignedRoleScoring?.applied
       ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond established roles. Marginal fit also tapers above ${formatNumber(assignedRoleScoring.workloadSaturation?.startsAfterMinutes, 1)} minutes, the average workload for this rotation size. These are value adjustments—not player availability rules or minute caps.`
       : "";
+    const seasonEvidenceDetail = rateEvidence.seasonWideEvidencePlayers > 0
+      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used complete all-team season evidence; ${rateEvidence.perAppearanceEvidencePlayers || 0} used the per-appearance fallback for at least one metric.`
+      : " Complete all-team season evidence was unavailable for this pool, so supported metrics used the per-appearance fallback.";
     strip.append(resultEvidenceItem(
       "Rate projection",
       assignedRoleScoring?.applied
-        ? "Opportunity + role + workload adjusted"
+        ? "Evidence confidence + role + workload adjusted"
         : rateEvidence.roleAdjustedPlayerMetricCount > 0
-          ? "Opportunity + role adjusted"
-          : "Opportunity-adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized. Past team totals were excluded.${roleProjectionDetail}${assignedRoleDetail}`,
+          ? "Evidence confidence + role adjusted"
+          : "Evidence-confidence adjusted",
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail} ${rateEvidence.uncertaintyAdjustedPlayers || 0} received a modest lower-confidence reserve. Team-stint games and totals were excluded.${roleProjectionDetail}${assignedRoleDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(
@@ -3504,10 +3557,14 @@ function renderResultEvidence(result) {
         ? "The incomplete impact signal was disabled for every eligible player and its small weight was redistributed across the remaining priorities."
         : "Basketball Reference OBPM/DBPM supplied a modest individual offense/defense check; the exact result still follows your visible priorities.",
   ));
+  const modelIdentity = result.diagnostics?.modelIdentity;
   strip.append(resultEvidenceItem(
-    "Lineup chemistry data",
-    "Not included",
-    "OBPM/DBPM are individual box estimates, not lineup chemistry. Verified play-by-play must be a separate sourced layer.",
+    "Scout-level impact model",
+    modelIdentity?.scoutImpactLayer === "reserved-not-active"
+      ? "Separate layer · not active"
+      : "Unavailable",
+    modelIdentity?.scoutSeparationReason
+      || "OBPM/DBPM are individual box estimates, not lineup chemistry. Verified play-by-play must be a separate sourced layer.",
   ));
   return strip;
 }
@@ -3528,7 +3585,7 @@ function renderResultRankingContext(result) {
       "Exact rank",
       feasibleCountComplete
         ? `#1 of ${feasibleCount.toLocaleString()} confirmed feasible groups`
-        : `#1; at least ${feasibleCount.toLocaleString()} feasible groups confirmed`,
+        : `#1 · ${feasibleCount.toLocaleString()}+ valid groups confirmed; remaining groups could not change the displayed ranks`,
     ],
     ["How close is #2?", next ? fitGapSummary(fitGap) : "No second feasible result returned"],
     ["Stable core", `${coreIds.length} of ${best.playerIds.length} players appear in every displayed result`],
@@ -3648,62 +3705,53 @@ function renderRotationMinutes(rotation) {
 function renderHistoricalWorkloadBenchmark(result) {
   const best = result.best;
   if (!best?.rotation) return null;
-  const guidance = best.rotation.historicalGuidance || {};
-  // Open what-if intentionally tells optimizer-core not to use anchors, so its
-  // guidance envelope is empty even when the loaded source has workload data.
-  // Rebuild those anchors for this descriptive comparison only; they do not
-  // alter the exact result or imply that historical guardrails were enforced.
-  const optimizerAnchors = guidance.anchorsById || {};
-  const benchmarkAnchors = Object.keys(optimizerAnchors).length > 0
-    ? optimizerAnchors
-    : historicalMinuteAnchorsForCurrentDataset();
-  const card = document.createElement("section");
+  // This is deliberately an optional, collapsed reality check. Earlier builds
+  // compared the proposal with total minutes divided by estimated *team* games,
+  // then called that value "recorded minutes." That was technically auditable
+  // but easy to mistake for player MPG—and it made a four-game stint look like
+  // a 0.4-minute role. Compare with the familiar Basketball Reference MPG field
+  // instead: average minutes in games the player actually appeared. MPG remains
+  // descriptive here and is never sent back into the exact allocation.
+  const recordedMpgById = Object.fromEntries(
+    best.players
+      .map((player) => [player.id, Number(player.minutes)])
+      .filter(([, minutes]) => Number.isFinite(minutes) && minutes >= 0),
+  );
+  const card = document.createElement("details");
   card.className = "result-card historical-benchmark";
-  const heading = document.createElement("h3");
-  heading.textContent = "Recorded minutes comparison (optional)";
-  const sourceLeaders = Array.isArray(state.dataset?.source?.rotation)
-    ? state.dataset.source.rotation
-    : [];
-  const sourceLeaderIds = new Set(sourceLeaders.map((player) => player.id));
-  const overlap = best.playerIds.filter((id) => sourceLeaderIds.has(id)).length;
+  const heading = document.createElement("summary");
+  heading.textContent = "Compare with recorded MPG (optional)";
   const note = document.createElement("p");
-  if (Object.keys(benchmarkAnchors).length === 0) {
-    note.textContent = "Recorded team-game minutes are unavailable for this source, so a past-minutes comparison cannot be shown. The exact result above remains valid under the displayed hard limits.";
+  if (Object.keys(recordedMpgById).length === 0) {
+    note.textContent = "Recorded minutes per game are unavailable for this source. The exact result above remains valid under the displayed hard limits.";
     card.append(heading, note);
     return card;
   }
-  if (best.rotation.minutePlan === "openWhatIf") {
-    note.textContent = "This game-plan allocation did not use source usage. The source minutes below are context only—not an optimizer input and not a claim that the historical allocation was optimal.";
-  } else {
-    note.textContent = sourceLeaders.length > 0
-      ? `${overlap} of ${best.playerIds.length} selected players appear among this source's ${sourceLeaders.length} largest historical minute shares. Recorded minutes describe past usage—not a claim that the coach's allocation was optimal.`
-      : "Recorded team-game minutes are compared with the proposal below. They describe past usage—not a claim that the historical allocation was optimal.";
-  }
+  note.textContent = "Recorded MPG is the player's average in games he appeared for this team. It is context only: it did not cap, target, or otherwise change the optimized minutes.";
 
   // A mathematically legal plan can still be a large departure from the
-  // player's observed team-stint role—especially after the selected group's
-  // workload is rescaled to 240 minutes. Flag large departures before the
-  // table so fans do not mistake an aggressive strategy-fit result for a
-  // faithful reconstruction of the coach's actual rotation.
+  // player's observed per-appearance role. Flag large departures before the
+  // table so fans do not mistake an aggressive game-plan result for a likely
+  // coaching rotation. This warning is descriptive and cannot affect ranking.
   const workloadStretches = best.rotation.allocations.filter((allocation) => {
-    const recorded = Number(benchmarkAnchors[allocation.id]);
+    const recorded = Number(recordedMpgById[allocation.id]);
     return Number.isFinite(recorded) && Math.abs(allocation.minutes - recorded) >= 12;
   });
   const stretchNote = document.createElement("p");
   stretchNote.className = "workload-stretch-note";
   stretchNote.hidden = workloadStretches.length === 0;
   stretchNote.textContent = workloadStretches.length > 0
-    ? `Reality check: ${workloadStretches.length} selected player${workloadStretches.length === 1 ? " is" : "s are"} at least 12 minutes from recorded team-game usage. Treat this as a game-plan result, not a likely real-world rotation.`
+    ? `Reality check: ${workloadStretches.length} selected player${workloadStretches.length === 1 ? " is" : "s are"} at least 12 minutes from recorded MPG. Treat this as a game-plan result, not a likely real-world rotation.`
     : "";
 
   const wrap = document.createElement("div");
   wrap.className = "table-wrap historical-benchmark__table";
   wrap.tabIndex = 0;
-  wrap.setAttribute("aria-label", "Recorded and proposed rotation minutes");
+  wrap.setAttribute("aria-label", "Recorded minutes per game and proposed rotation minutes");
   const table = document.createElement("table");
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const label of ["Player", "Recorded team-game min", "Rescaled target", "Proposed", "Change vs recorded"]) {
+  for (const label of ["Player", "Recorded MPG", "Proposed", "Difference"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = label;
@@ -3715,12 +3763,10 @@ function renderHistoricalWorkloadBenchmark(result) {
     .sort((left, right) => right.minutes - left.minutes)
     .forEach((allocation) => {
       const player = currentPlayer(allocation.id);
-      const recorded = Number(benchmarkAnchors[allocation.id]);
-      const target = Number(guidance.targetsById?.[allocation.id]);
+      const recorded = Number(recordedMpgById[allocation.id]);
       const row = document.createElement("tr");
       createCell(row, player?.name || allocation.name || allocation.id);
       createCell(row, Number.isFinite(recorded) ? formatNumber(recorded) : "Unavailable");
-      createCell(row, Number.isFinite(target) ? formatNumber(target, 0) : "Not used");
       createCell(row, `${allocation.minutes} min`);
       createCell(row, Number.isFinite(recorded) ? formatSignedDifference(allocation.minutes - recorded) : "—");
       body.append(row);
@@ -3764,7 +3810,7 @@ function renderAlternatives(alternatives, best) {
   const heading = document.createElement("h3");
   heading.textContent = "Next-best groups under the same rules";
   const note = document.createElement("p");
-  note.textContent = `Plan Fit Index uses the same-season NBA baseline (100), while the search score only ranks groups inside this exact run. Neither is a player rating or win prediction. ${best.rotation ? "Production columns use each group's own 240-minute plan." : "Production columns add the selected players' per-game profiles."}`;
+  note.textContent = `Plan Fit Index uses expected rates against the same-season NBA baseline (100), while the search score only ranks groups inside this exact run and is more cautious with limited evidence. Neither is a player rating or win prediction. ${best.rotation ? "Production columns use each group's conservative 240-minute projection." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
   wrap.className = "alternatives-wrap table-wrap";
   wrap.tabIndex = 0;
@@ -4044,7 +4090,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
     );
     const benchmarkHelp = document.createElement("p");
     benchmarkHelp.className = "simple-benchmark__help";
-    benchmarkHelp.textContent = "100 is the same-season NBA baseline. Higher means this group is stronger in the priorities you selected; it is not a win probability or overall team rating.";
+    benchmarkHelp.textContent = "100 is the expected same-season NBA baseline. Higher means this group is stronger in the priorities you selected. The exact ranking separately uses a small caution adjustment when evidence is limited; neither number is a win probability or overall team rating.";
     benchmark.append(benchmarkHelp);
   } else {
     const unavailable = document.createElement("p");
@@ -4139,15 +4185,18 @@ function renderSuccess(result) {
   const feasibleCount = Number(result.diagnostics.feasibleCombinations || 0);
   const possibleCount = Number(result.combinationsEvaluated || 0);
   const countIsComplete = result.diagnostics.feasibleCombinationCountComplete !== false;
-  const validLabel = countIsComplete
-    ? `${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule`
-    : `at least ${feasibleCount.toLocaleString()} proven valid group${feasibleCount === 1 ? "" : "s"}`;
   // Keep the headline plain: this is the highest-scoring fit inside this exact
-  // search, not a prediction of wins or an assertion about a real team's depth chart.
+  // search, not a prediction of wins or an assertion about a real team's depth
+  // chart. When the exact upper bound proves that an unresolved group cannot
+  // enter the requested top results, say so directly instead of making the
+  // smaller confirmed-feasible count sound like a candidate-search cutoff.
+  const exactSearchHeadline = countIsComplete
+    ? `Recommended #1 of ${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule after checking all ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}.`
+    : `Recommended #1 after checking all ${possibleCount.toLocaleString()} possible groups. At least ${feasibleCount.toLocaleString()} met every rule; the rest could not change the displayed rankings.`;
   const planFitHeadline = Number.isFinite(Number(best.planFitIndex))
     ? ` Plan Fit Index ${formatNumber(best.planFitIndex)}, where 100 is the same-season NBA baseline for the selected priorities.`
     : " A same-season Plan Fit Index was unavailable for this source.";
-  elements.resultSummary.textContent = `Recommended #1 of ${validLabel}.${planFitHeadline} The solver checked ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}. This is an optimizer result—not a win prediction or real-world depth chart.`;
+  elements.resultSummary.textContent = `${exactSearchHeadline}${planFitHeadline} This is an optimizer result—not a win prediction or real-world depth chart.`;
 
   const fragment = document.createDocumentFragment();
   const lineup = document.createElement("div");
@@ -4168,7 +4217,7 @@ function renderSuccess(result) {
   const scoreExplanation = document.createElement("p");
   scoreExplanation.className = "full-analysis__intro";
   scoreExplanation.textContent = best.rotation
-    ? "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score ranks only this eligible pool and uses diminishing marginal fit above the rotation's average workload to avoid artificial min/max minute pileups. Role expansion also reduces unproven rate advantages. Neither score is team quality or win probability."
+    ? "Plan Fit Index compares the expected rates with the same-season NBA baseline (100) using the priorities you selected. The technical search-relative score ranks only this eligible pool and is more cautious with limited evidence, larger projected roles, and extra workload; it also uses diminishing marginal fit to avoid artificial min/max minute pileups. Neither score is team quality or win probability."
     : "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score ranks only this eligible pool; neither score is team quality or win probability.";
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";

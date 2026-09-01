@@ -2523,6 +2523,21 @@ body[data-experience-mode="simple"] .simple-model-summary {
   padding-top: 0.18rem;
 }
 
+.historical-benchmark > summary {
+  cursor: pointer;
+  color: var(--navy);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.historical-benchmark > summary::marker {
+  color: var(--blue);
+}
+
+.historical-benchmark[open] > summary {
+  margin-bottom: 0.25rem;
+}
+
 .historical-benchmark > p {
   margin: 0.35rem 0 0;
   color: var(--muted);
@@ -2545,7 +2560,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
 
 .historical-benchmark table {
   width: 100%;
-  min-width: 680px;
+  min-width: 520px;
   border-collapse: collapse;
   font-size: 0.75rem;
 }

@@ -435,6 +435,261 @@ test("sample adjustment keeps a tiny-sample rate spike from outranking proven pr
   assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.adjustedPlayers, 9);
 });
 
+test("season-wide rates replace a traded player's team-stint spike without using stint length", () => {
+  // Seven clearly superior core players reduce the exact roster choice to the
+  // final two candidates. The first candidate posted an extreme rate in one
+  // short team stint, but his audited all-team season aggregate was ordinary.
+  // The second candidate owns the better full-role rate. Rotation mode should
+  // compare the internally consistent season numerator/denominator pair, not
+  // combine a four-game spike with a full-season confidence sample.
+  const core = Array.from({ length: 7 }, (_, index) => player(`season-core-${index + 1}`, {
+    minutes: 30,
+    points: 30 + (index * 0.01),
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const teamStintSpike = player("team-stint-spike", {
+    games: 4,
+    minutes: 30,
+    points: 30,
+    analytics: {
+      totals: { minutes: 120 },
+      seasonTotals: {
+        games: 82,
+        minutes: 2460,
+        points: 1230,
+      },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const provenCandidate = player("proven-season-rate", {
+    games: 70,
+    minutes: 30,
+    points: 20,
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const config = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 8,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+
+  const seasonAware = optimizeLineups([...core, teamStintSpike, provenCandidate], config);
+  const fallbackOnly = optimizeLineups([
+    ...core,
+    { ...teamStintSpike, analytics: {
+      totals: teamStintSpike.analytics.totals,
+      leaguePer36: teamStintSpike.analytics.leaguePer36,
+    } },
+    provenCandidate,
+  ], config);
+
+  assert.equal(seasonAware.ok, true);
+  assert.equal(fallbackOnly.ok, true);
+  assert.ok(!seasonAware.best.playerIds.includes("team-stint-spike"));
+  assert.ok(seasonAware.best.playerIds.includes("proven-season-rate"));
+  assert.ok(fallbackOnly.best.playerIds.includes("team-stint-spike"));
+  assert.equal(
+    seasonAware.diagnostics.rotationRateStabilityEvidence.modelVersion,
+    "historical-rates-v3-season-evidence",
+  );
+  assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
+  assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideRatePlayers, 1);
+  assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.teamStintLengthAffectsProjection, false);
+});
+
+test("season-wide MPG establishes role evidence without becoming a minute target", () => {
+  const basePlayers = Array.from({ length: 8 }, (_, index) => player(`season-role-${index + 1}`, {
+    games: index === 0 ? 4 : 70,
+    minutes: index === 0 ? 8 : 30,
+    points: index === 0 ? (24 / 36) * 8 : 20,
+    analytics: {
+      totals: { minutes: index === 0 ? 32 : 2100 },
+      ...(index === 0 ? {
+        seasonTotals: {
+          games: 82,
+          minutes: 2460,
+          points: 1640,
+        },
+      } : {}),
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const config = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+  const seasonAware = optimizeLineups(basePlayers, config);
+  const fallbackOnly = optimizeLineups(basePlayers.map((entry, index) => (
+    index === 0
+      ? { ...entry, analytics: {
+          totals: entry.analytics.totals,
+          leaguePer36: entry.analytics.leaguePer36,
+        } }
+      : entry
+  )), config);
+
+  assert.equal(seasonAware.ok, true);
+  assert.equal(fallbackOnly.ok, true);
+  assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
+  assert.ok(fallbackOnly.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount > 0);
+  assert.equal(seasonAware.best.rotation.totalMinutes, 240);
+  // The model is free to assign a different result from the 30-MPG evidence;
+  // the evidence only controls rate projection, never a target or hard limit.
+  assert.notEqual(seasonAware.best.rotation.byId["season-role-1"], 30);
+});
+
+test("season-wide minutes cannot grant confidence to a team-stint impact estimate", () => {
+  const players = Array.from({ length: 8 }, (_, index) => player(`impact-scope-${index + 1}`, {
+    minutes: 24,
+    analytics: {
+      totals: { minutes: 300 },
+      seasonTotals: { games: 82, minutes: 2460 },
+      advanced: {
+        offensive_box_plus_minus: index,
+        defensive_box_plus_minus: 0,
+      },
+      ...(index === 0 ? {
+        seasonAdvanced: {
+          offensive_box_plus_minus: 0.5,
+          defensive_box_plus_minus: 0,
+        },
+      } : {}),
+    },
+  }));
+  const result = optimizeLineups(players, {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { offensiveImpact: 1 },
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
+  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v3-season-evidence");
+  assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "reserved-not-active");
+});
+
+test("evidence-confidence reserve breaks an equal-rate tie without using team-stint length", () => {
+  // Both marginal candidates produce exactly the league baseline of 15 points
+  // per 36. Posterior-mean shrinkage alone therefore leaves them tied even
+  // though one rate was observed in an eight-minute role and the other in a
+  // 30-minute role. The conservative model should prefer the better-supported
+  // rate through its small confidence reserve—not through games played, total
+  // stint minutes, a historical minute target, or a hard availability rule.
+  const strongPlayers = Array.from({ length: 7 }, (_, index) => player(`reserve-core-${index + 1}`, {
+    minutes: 30,
+    points: (20 / 36) * 30,
+    analytics: {
+      totals: { minutes: 2400 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const lowOpportunity = player("a-low-opportunity", {
+    games: 82,
+    minutes: 8,
+    points: (15 / 36) * 8,
+    analytics: {
+      // Deliberately enormous team-stint totals prove that those totals do not
+      // override the per-appearance opportunity used by the confidence model.
+      totals: { minutes: 5000 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const establishedOpportunity = player("z-established-opportunity", {
+    games: 3,
+    minutes: 30,
+    points: (15 / 36) * 30,
+    analytics: {
+      // Deliberately tiny totals and games prove that stint length is not the
+      // reason this otherwise equal rate receives more confidence.
+      totals: { minutes: 90 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const players = [...strongPlayers, lowOpportunity, establishedOpportunity];
+  const baseConfig = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      // Require every selected player to contribute. With a zero-minute floor,
+      // the eighth roster spot is mathematically irrelevant and cannot prove
+      // that the confidence reserve changed the decision.
+      minMinutes: 8,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+
+  const raw = optimizeLineups(players, {
+    ...baseConfig,
+    rotationOptions: { ...baseConfig.rotationOptions, rateStability: "raw" },
+  });
+  const adjusted = optimizeLineups(players, {
+    ...baseConfig,
+    rotationOptions: { ...baseConfig.rotationOptions, rateStability: "sampleAdjusted" },
+  });
+
+  assert.equal(raw.ok, true);
+  assert.equal(adjusted.ok, true);
+  assert.ok(raw.best.playerIds.includes("a-low-opportunity"));
+  assert.ok(!raw.best.playerIds.includes("z-established-opportunity"));
+  assert.ok(!adjusted.best.playerIds.includes("a-low-opportunity"));
+  assert.ok(adjusted.best.playerIds.includes("z-established-opportunity"));
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayers, 9);
+  assert.equal(
+    adjusted.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayerMetricCount,
+    9,
+  );
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.uncertaintyReserveShare, 0.08);
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.teamStintLengthAffectsProjection, false);
+});
+
 test("role-expansion projection prevents a low-usage scoring spike from winning a star-sized role", () => {
   // Every standard player has a credible 30-minute source role. The low-role
   // scorer's raw 54 points per 36 looks extraordinary, but it came in only
@@ -813,7 +1068,128 @@ test("falls back to exact state enumeration when the Lagrangian bound has an int
   assert.equal(result.diagnostics.projectedConstraints.feasibleSeedUsed, true);
 });
 
-test("workload saturation preserves league-baseline Plan Fit and box-score totals", () => {
+test("fixed-role Pareto proof closes a one-threshold integer gap without generic state search", () => {
+  // This is the fixed-position counterpart to the all-flex integer-gap case
+  // above. The production floor still lands between two attainable integer
+  // rebound totals, so the relaxed Lagrangian certificate cannot prove the
+  // answer by itself. However, each player belongs to exactly one G/F/C bucket
+  // and no bucket has more than four players. The specialized proof can
+  // therefore enumerate each role independently, discard dominated
+  // production/objective pairs, and combine the three exact Pareto frontiers.
+  //
+  // Keeping this fixture tiny is intentional: it proves that the specialized
+  // route returns the exact same integer-minute answer while consuming zero
+  // states from the browser's general best-first proof budget.
+  const players = [
+    player("fixed-role-quality-gap", {
+      positions: ["G"],
+      minutes: 30,
+      rebounds: 0,
+      turnovers: 60,
+    }),
+    player("fixed-role-rebounder-gap", {
+      positions: ["G"],
+      minutes: 30,
+      rebounds: 60,
+      turnovers: 0,
+    }),
+    player("fixed-role-guard-1", {
+      positions: ["G"], minutes: 18, rebounds: 0, turnovers: 0,
+    }),
+    player("fixed-role-guard-2", {
+      positions: ["G"], minutes: 18, rebounds: 0, turnovers: 0,
+    }),
+    player("fixed-role-forward-1", {
+      positions: ["F"], minutes: 48, rebounds: 0, turnovers: 0,
+    }),
+    player("fixed-role-forward-2", {
+      positions: ["F"], minutes: 48, rebounds: 0, turnovers: 0,
+    }),
+    player("fixed-role-center-1", {
+      positions: ["C"], minutes: 24, rebounds: 0, turnovers: 0,
+    }),
+    player("fixed-role-center-2", {
+      positions: ["C"], minutes: 24, rebounds: 0, turnovers: 0,
+    }),
+  ];
+  const scores = Object.fromEntries(players.map((item) => [
+    item.id,
+    item.id === "fixed-role-quality-gap"
+      ? 0.9
+      : item.id === "fixed-role-rebounder-gap"
+        ? 0.6
+        : 0.5,
+  ]));
+  const playerBounds = Object.fromEntries(players.map((item) => {
+    if (item.id === "fixed-role-quality-gap" || item.id === "fixed-role-rebounder-gap") {
+      return [item.id, { min: 28, max: 32 }];
+    }
+    return [item.id, { min: item.minutes, max: item.minutes }];
+  }));
+  const roleConditionedScorePlan = {
+    referenceMinutes: 30,
+    evidenceMinutesById: Object.fromEntries(players.map((item) => [item.id, 30])),
+    establishedScoresById: scores,
+    expandedScoresById: scores,
+    objectiveMetrics: ["points"],
+    activeMetrics: ["points"],
+  };
+
+  const result = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    playerBounds,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+    projectedStatMinimums: { rebounds: 59 },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.totalMinutes, 240);
+  assert.equal(result.byId["fixed-role-quality-gap"], 30);
+  assert.equal(result.byId["fixed-role-rebounder-gap"], 30);
+  assert.deepEqual(result.positionMinutes.actual, STANDARD_ROLE_MINUTES);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateAttempted, true);
+  assert.equal(result.diagnostics.projectedConstraints.lagrangianCertificateApplied, false);
+  assert.ok(result.diagnostics.projectedConstraints.lagrangianUpperBoundGap > 0);
+  assert.equal(result.diagnostics.projectedConstraints.partitionedExactApplied, true);
+  assert.ok(result.diagnostics.projectedConstraints.partitionedExactPlansEnumerated > 0);
+  assert.ok(result.diagnostics.projectedConstraints.partitionedExactFrontierStates > 0);
+  assert.equal(
+    result.diagnostics.projectedConstraints.feasibleSeedSource,
+    "fixed-role-pareto-proof",
+  );
+  assert.equal(result.diagnostics.projectedConstraints.searchStates, 0);
+
+  // A turnover ceiling is internally rewritten as negative turnovers >= a
+  // negative limit. Exercise that sign conversion explicitly so the Pareto
+  // dominance rule cannot accidentally favor the highest-turnover plan.
+  const turnoverResult = allocateRotationMinutes(players, {
+    minMinutes: 0,
+    maxMinutes: 48,
+    playerBounds,
+    scores,
+    strategy: "objective",
+    positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    roleConditionedScorePlan,
+    projectedMaxTurnovers: 61,
+  });
+
+  assert.equal(turnoverResult.ok, true);
+  assert.equal(turnoverResult.byId["fixed-role-quality-gap"], 30);
+  assert.equal(turnoverResult.byId["fixed-role-rebounder-gap"], 30);
+  assert.equal(turnoverResult.diagnostics.projectedConstraints.partitionedExactApplied, true);
+  assert.equal(turnoverResult.diagnostics.projectedConstraints.searchStates, 0);
+  const projectedTurnovers = players.reduce(
+    (total, item) => total + ((item.turnovers / item.minutes) * turnoverResult.byId[item.id]),
+    0,
+  );
+  assert.ok(projectedTurnovers <= 61);
+});
+
+test("workload saturation preserves league-baseline Plan Fit while totals remain conservative", () => {
   const players = Array.from({ length: 8 }, (_, index) => player(`baseline-${index + 1}`, {
     minutes: 30,
     points: 15,
@@ -847,9 +1223,63 @@ test("workload saturation preserves league-baseline Plan Fit and box-score total
 
   assert.equal(result.ok, true);
   assert.equal(result.best.planFitIndex, 100);
-  assert.equal(result.best.totals.points, 120);
+  // Plan Fit reports the posterior-mean expectation, while the displayed
+  // production projection retains the same modest downside reserve used by
+  // the exact decision. This keeps 100 intuitive without promising the full
+  // average rate as if limited evidence carried no risk.
+  assert.equal(result.best.totals.points, 116.8);
   assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied, true);
   assert.ok(result.best.score < 100, "workload utility should remain distinct from the league-anchored index");
+});
+
+test("confidence reserve remains intact after the expected larger-role projection", () => {
+  // This fixture makes the adjustment order auditable with closed-form math.
+  // Seven players sit exactly at the 15-point league baseline in established
+  // 30-minute roles. The eighth produced 30 points per 36 in an eight-minute
+  // role. With a 750-minute prior and the 50-appearance equal-treatment sample:
+  //   sample reliability = 400 / (400 + 750)
+  //   expected 30-minute rate = 15 + (8 / 30) * reliability * (30 - 15)
+  //   decision rate = expected rate - 15 * 8% * (1 - reliability)
+  // Applying the reserve before role expansion would incorrectly blend most
+  // of that final subtraction away and produce a higher team projection.
+  const baselinePlayers = Array.from({ length: 7 }, (_, index) => player(`reserve-baseline-${index + 1}`, {
+    minutes: 30,
+    points: 12.5,
+    analytics: {
+      totals: { minutes: 2100 },
+      leaguePer36: { points: 15 },
+    },
+  }));
+  const lowRoleScorer = player("reserve-low-role", {
+    minutes: 8,
+    points: (30 / 36) * 8,
+    analytics: {
+      totals: { minutes: 560 },
+      leaguePer36: { points: 15 },
+    },
+  });
+  const result = optimizeLineups([lowRoleScorer, ...baselinePlayers], {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { points: 1 },
+    rotationOptions: {
+      minMinutes: 30,
+      maxMinutes: 30,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "sampleAdjusted",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.best.totals.points, 98.173913);
+  assert.equal(result.best.planFitIndex, 101.2);
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayers, 1);
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayers, 8);
 });
 
 test("career-only position minute caps remain exact rotation constraints", () => {
@@ -955,10 +1385,7 @@ test("assigned-role projection lowers extra-role totals without changing a requi
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.applied, true);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.expandedMinutes, 10);
   assert.ok(roleConditioned.best.totals.points < staticAdjusted.best.totals.points);
-  assert.equal(
-    roleConditioned.best.playerContributions["low-role-scorer"].metrics.points.assignedRoleAdjusted,
-    true,
-  );
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, true);
   const contributionTotal = Object.values(roleConditioned.best.playerContributions)
     .reduce((total, entry) => total + Number(entry.scoreContribution), 0);
   assert.ok(Math.abs(contributionTotal - roleConditioned.best.score) < 0.01);
@@ -1128,6 +1555,12 @@ test("role-expansion projection also tempers tiny-sample shooting efficiency", (
   assert.equal(adjusted.ok, true);
   assert.ok(raw.best.playerIds.includes("low-usage-shooter"));
   assert.ok(!adjusted.best.playerIds.includes("low-usage-shooter"));
+  // The expected rate is adjusted for the larger role first; the separate
+  // decision reserve is then applied once and must remain visible rather than
+  // being partially blended away by role expansion.
+  assert.ok(
+    adjusted.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayerMetricCount > 0,
+  );
   assert.ok(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount > 0);
 });
 

@@ -349,6 +349,116 @@ test("attaches a source-backed fan analytics envelope from optional player-pool 
   });
 });
 
+test("attaches audited season-wide evidence without replacing team membership context", () => {
+  const dataset = createSupabaseNbaTeamDataset([savedRow({
+    games_played: 4,
+    games_started: 4,
+    minutes_played: 120,
+    points: 100,
+    advanced_metrics: {
+      usage_percentage: 0.41,
+      offensive_box_plus_minus: 7.5,
+    },
+  })], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+    seasonEvidenceRows: [{
+      player_id: "edwaran01",
+      season_end_year: 2025,
+      season_phase: "regular",
+      team_stint_count: 2,
+      games_played: 82,
+      minutes_played: 2460,
+      field_goals_made: 600,
+      field_goals_attempted: 1320,
+      three_point_field_goals_made: 210,
+      three_point_field_goals_attempted: 600,
+      free_throws_made: 280,
+      free_throws_attempted: 350,
+      total_rebounds: 410,
+      assists: 390,
+      steals: 80,
+      blocks: 45,
+      turnovers: 210,
+      points: 1690,
+      player_possessions: 5080,
+      season_advanced_metrics: {
+        usage_percentage: 0.29,
+        offensive_box_plus_minus: 4.2,
+      },
+    }],
+  });
+
+  const [player] = dataset.players;
+  // The visible team line stays scoped to Minnesota, while the separate
+  // evidence envelope supplies the all-team season sample used by rotation
+  // reliability and role projection.
+  assert.equal(player.team, "MIN");
+  assert.equal(player.games, 4);
+  assert.equal(player.points, 25);
+  assert.deepEqual(player.analytics.seasonTotals, {
+    games: 82,
+    minutes: 2460,
+    fieldGoalsMade: 600,
+    fieldGoalsAttempted: 1320,
+    threePointFieldGoalsMade: 210,
+    threePointFieldGoalsAttempted: 600,
+    freeThrowsMade: 280,
+    freeThrowsAttempted: 350,
+    totalRebounds: 410,
+    assists: 390,
+    steals: 80,
+    blocks: 45,
+    turnovers: 210,
+    points: 1690,
+  });
+  assert.deepEqual(player.analytics.seasonEvidence, {
+    scope: "season-wide",
+    method: "aggregate of every non-provider-aggregate team stint for this player, season, and phase",
+    teamStintCount: 2,
+    playerPossessions: 5080,
+    playerPossessionsPerGame: null,
+    hasReportedPossessions: true,
+  });
+  assert.deepEqual(player.analytics.seasonAdvanced, {
+    usage_percentage: 0.29,
+    offensive_box_plus_minus: 4.2,
+  });
+  assert.equal(player.analytics.advanced.usage_percentage, 0.29);
+  assert.equal(player.analytics.advanced.offensive_box_plus_minus, 4.2);
+  assert.equal(dataset.source.analytics.seasonEvidencePlayers, 1);
+  assert.equal(dataset.source.analytics.seasonEvidenceStatus, "available");
+});
+
+test("rejects duplicate or cross-season evidence instead of attaching an ambiguous sample", () => {
+  const validEvidence = {
+    player_id: "edwaran01",
+    season_end_year: 2025,
+    season_phase: "regular",
+    games_played: 82,
+    minutes_played: 2460,
+  };
+  assert.throws(
+    () => createSupabaseNbaTeamDataset([savedRow()], {
+      team: "MIN",
+      season: 2025,
+      seasonPhase: "regular",
+      seasonEvidenceRows: [validEvidence, { ...validEvidence }],
+    }),
+    /Duplicate season-wide evidence/,
+  );
+  assert.throws(
+    () => createSupabaseNbaTeamDataset([savedRow()], {
+      team: "MIN",
+      season: 2025,
+      seasonPhase: "regular",
+      seasonEvidenceRows: [{ ...validEvidence, season_end_year: 2024 }],
+    }),
+    /does not match the selected season and phase/,
+  );
+});
+
 test("keeps legacy player-pool rows compatible when fan analytics fields are absent", () => {
   const dataset = createSupabaseNbaTeamDataset([savedRow()], {
     team: "MIN",
@@ -462,6 +572,58 @@ test("loads through the shared remote catalog boundary with constrained paramete
       seasonPhase: "regular",
       force: true,
     }]);
+  } finally {
+    if (originalDJ === undefined) delete globalThis.DJ;
+    else globalThis.DJ = originalDJ;
+  }
+});
+
+test("loads optional season evidence through the shared reader when it becomes available", async () => {
+  const originalDJ = globalThis.DJ;
+  const calls = [];
+  globalThis.DJ = {
+    remoteCatalog: {
+      async listNbaTeamSeasonPlayers(options) {
+        calls.push(["team", options]);
+        return [savedRow({ games_played: 4, games_started: 4, minutes_played: 120 })];
+      },
+      async listNbaPlayerSeasonEvidence(options) {
+        calls.push(["season", options]);
+        return [{
+          player_id: "edwaran01",
+          season_end_year: 2025,
+          season_phase: "regular",
+          games_played: 82,
+          minutes_played: 2460,
+          points: 1690,
+        }];
+      },
+    },
+  };
+
+  try {
+    const dataset = await fetchSupabaseNbaTeamDataset({
+      team: "MIN",
+      season: 2025,
+      seasonPhase: "regular",
+      force: true,
+    });
+    assert.equal(dataset.players[0].analytics.seasonTotals.games, 82);
+    assert.equal(dataset.source.analytics.seasonEvidenceStatus, "available");
+    assert.deepEqual(calls, [
+      ["team", {
+        teamCode: "MIN",
+        seasonEndYear: 2025,
+        seasonPhase: "regular",
+        force: true,
+      }],
+      ["season", {
+        playerIds: ["edwaran01"],
+        seasonEndYear: 2025,
+        seasonPhase: "regular",
+        force: true,
+      }],
+    ]);
   } finally {
     if (originalDJ === undefined) delete globalThis.DJ;
     else globalThis.DJ = originalDJ;
