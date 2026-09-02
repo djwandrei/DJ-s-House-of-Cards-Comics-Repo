@@ -38,3 +38,31 @@ test("benchmark result copy defines the 100-point index and its limits", async (
   assert.match(html, /How to read the game-plan fit index/);
   assert.match(html, /not the solver score/);
 });
+
+test("fan-first layout keeps the functional optimizer in a clear numbered flow", async () => {
+  const html = await sourceFile("index.html");
+  const css = await sourceFile("styles.css");
+  const app = await sourceFile("app.js");
+
+  // The hero's outcome panel replaces decorative-only court artwork with an
+  // explanation of what the exact optimizer can actually answer.
+  assert.match(html, /class="hero-outcomes" aria-label="What your Lineup Lab result answers"/);
+  assert.match(html, /Which team and season should the model use\?/);
+  assert.match(html, /id="runStepNumber" aria-label="Step 4">4/);
+  assert.match(html, /Your recommended group will appear here/);
+
+  // CSS changes presentation only: IDs, submit controls, and source order
+  // remain stable while the desktop builder becomes a readable vertical flow.
+  assert.match(css, /\.builder-grid\s*\{\s*display:\s*block;/);
+  assert.match(css, /\.hero-outcomes\s*\{/);
+  assert.match(css, /\.simple-result-insights\s*\{/);
+  assert.match(css, /@media \(max-width: 520px\)[\s\S]*?\.simple-result-insights/);
+
+  // Simple results place the concise explanation before the individual cards;
+  // the exact selected players and detailed audit are still rendered afterward.
+  assert.match(app, /const playerStep = detailed \? "4" : "3";/);
+  assert.match(app, /const buildStep = detailed \? "5" : "4";/);
+  assert.match(app, /insights\.className = "simple-result-insights"/);
+  assert.match(app, /fragment\.append\(renderSimpleResultOverview\(result, fanExplanation\), lineup\);/);
+  assert.match(app, /\? "Your recommended rotation"\s*:\s*"Your recommended lineup"/);
+});

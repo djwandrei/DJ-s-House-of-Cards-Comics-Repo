@@ -188,6 +188,7 @@ const elements = {
   simpleMode: $("#simpleModeButton"),
   detailedMode: $("#detailedModeButton"),
   playersStepNumber: $("#playersStepNumber"),
+  runStepNumber: $("#runStepNumber"),
   simpleModelSummaryCopy: $("#simpleModelSummaryCopy"),
   simpleModelSummaryNote: $("#simpleModelSummaryNote"),
   playerTableBody: $("#playerTableBody"),
@@ -2549,13 +2550,22 @@ function setExperienceMode(
   elements.detailedMode.classList.toggle("is-active", detailed);
   elements.simpleMode.setAttribute("aria-pressed", String(!detailed));
   elements.detailedMode.setAttribute("aria-pressed", String(detailed));
-  elements.playersStepNumber.textContent = detailed ? "3" : "2";
+  // Data selection is now the visible first step for both modes. Detailed
+  // exposes an extra advanced-rules card, so retain a truthful numbered path:
+  // Simple = data, game plan, player choices, build; Detailed adds rules
+  // between the game plan and player choices. These labels are presentation
+  // only—they never affect the solver's inputs, feasibility, or ranking.
+  const playerStep = detailed ? "4" : "3";
+  const buildStep = detailed ? "5" : "4";
+  elements.playersStepNumber.textContent = playerStep;
+  elements.runStepNumber.textContent = buildStep;
   // Player locks are useful but optional. Keep the roster open for analysts in
   // Detailed mode and collapsed in Simple mode so a 15-player mobile pool does
   // not turn the main workflow into several screens of controls before the
   // result. Existing selections remain visible in the tray above this panel.
   elements.playerPoolDetails.open = detailed;
-  elements.playersStepNumber.setAttribute("aria-label", `Step ${detailed ? "3" : "2"}`);
+  elements.playersStepNumber.setAttribute("aria-label", `Step ${playerStep}`);
+  elements.runStepNumber.setAttribute("aria-label", `Step ${buildStep}`);
 
   let restoredDetailedSettings = false;
   if (!detailed) {
@@ -4340,8 +4350,6 @@ function renderSimpleResultOverview(result, fanExplanation) {
   const best = result.best;
   const panel = document.createElement("section");
   panel.className = "simple-result-overview simple-only";
-  const heading = document.createElement("h3");
-  heading.textContent = "Why this group fits";
   const benchmark = document.createElement("div");
   benchmark.className = "simple-benchmark";
   if (hasFiniteNumber(best.planFitIndex)) {
@@ -4360,49 +4368,52 @@ function renderSimpleResultOverview(result, fanExplanation) {
     unavailable.textContent = "This source does not include enough same-season evidence to calculate game-plan fit (NBA = 100). The exact #1 ranking is still available.";
     benchmark.append(unavailable);
   }
-  const list = document.createElement("ul");
-  list.className = "simple-result-reasons";
 
   const strongest = Object.entries(best.contributionBreakdown || {})
     .filter(([metric, detail]) => metric !== "historicalReadiness" && Number(detail.scoreContribution) > 0)
     .sort((left, right) => Number(right[1].scoreContribution) - Number(left[1].scoreContribution))
     .slice(0, 3)
     .map(([metric]) => resultMetricLabel(metric));
-  const fitReason = document.createElement("li");
-  fitReason.textContent = strongest.length
-    ? `What it does best: ${strongest.join(", ")}.`
-    : "It is the strongest game-plan fit under the rules you selected.";
-  list.append(fitReason);
-
-  if (best.rotation) {
-    const readinessReason = document.createElement("li");
-    readinessReason.textContent = "This rotation follows your game plan inside the hard player-minute limits; past team games and total minutes did not affect the roster or assigned minutes.";
-    list.append(readinessReason);
-  }
-
-  const requestedImpact = ["offensiveImpact", "defensiveImpact"]
-    .filter((metric) => Number(result.weights?.[metric]) > 0);
-  const disabledImpact = (result.diagnostics?.objectiveMetricEvidence?.disabledRequestedMetrics || [])
-    .filter((metric) => metric === "offensiveImpact" || metric === "defensiveImpact");
-  if (requestedImpact.length > 0) {
-    const impactReason = document.createElement("li");
-    impactReason.textContent = disabledImpact.length > 0
-      ? "OBPM/DBPM was incomplete for this pool, so the model omitted that check for everyone and redistributed its small share across the remaining priorities."
-      : "Complete OBPM/DBPM supplied a small offense/defense cross-check; your visible game-plan priorities still drove the ranking.";
-    list.append(impactReason);
-  }
-
   const deficiencies = fanExplanation?.roleCoverage?.deficiencies || [];
-  if (deficiencies.length > 0) {
-    const concern = document.createElement("p");
-    concern.className = "simple-result-concern";
-    concern.textContent = `Biggest concern: ${simpleRoleConcern(deficiencies[0])}`;
-    panel.append(benchmark, heading, list, concern);
-  } else {
-    panel.append(benchmark, heading, list);
-  }
-
   const alternative = result.alternatives?.[1];
+  // Keep Simple view answer-first. The four cards below deliberately reuse
+  // evidence already produced by the exact search and explanation layer; they
+  // never calculate a second score or change the selected lineup.
+  const insights = document.createElement("div");
+  insights.className = "simple-result-insights";
+  insights.setAttribute("aria-label", "Why this recommended group fits");
+  const addInsight = (title, copy, tone = "") => {
+    const card = document.createElement("article");
+    card.className = `simple-result-insight${tone ? ` simple-result-insight--${tone}` : ""}`;
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    const body = document.createElement("p");
+    body.textContent = copy;
+    card.append(heading, body);
+    insights.append(card);
+  };
+
+  addInsight(
+    "Why this group fits",
+    best.rotation
+      ? "It is the highest-ranked eligible rotation after every displayed rule, with all 240 minutes assigned inside your hard player limits."
+      : "It is the highest-ranked eligible starting five after every displayed rule was checked.",
+  );
+  addInsight(
+    "What it does best",
+    strongest.length
+      ? `Its strongest game-plan contributions are ${strongest.join(", ")}.`
+      : "It is the strongest available fit for the priorities you selected.",
+    "strength",
+  );
+  addInsight(
+    "Biggest concern",
+    deficiencies.length > 0
+      ? simpleRoleConcern(deficiencies[0])
+      : "The descriptive role screen did not flag a major coverage gap for this group.",
+    "concern",
+  );
+
   if (alternative) {
     const bestIds = new Set(best.playerIds || best.players.map((player) => player.id));
     const alternativeIds = new Set(alternative.playerIds || alternative.players.map((player) => player.id));
@@ -4411,13 +4422,29 @@ function renderSimpleResultOverview(result, fanExplanation) {
     const indexGap = hasFiniteNumber(best.planFitIndex) && hasFiniteNumber(alternative.planFitIndex)
       ? Math.max(0, Number(best.planFitIndex) - Number(alternative.planFitIndex))
       : null;
-    const next = document.createElement("p");
-    next.className = "simple-result-next";
-    next.textContent = `Closest alternative${indexGap === null ? "" : ` · ${fitGapSummary(Math.max(0, Number(best.score) - Number(alternative.score)))}`}: ${added.length || removed.length
+    addInsight("Closest alternative", `Closest alternative${indexGap === null ? "" : ` · ${fitGapSummary(Math.max(0, Number(best.score) - Number(alternative.score)))}`}: ${added.length || removed.length
       ? `swap ${removed.join(", ") || "the changed player"} for ${added.join(", ") || "the alternative"}.`
-      : "the same player group with a nearly identical plan."} ${summarizeAlternativeTradeoff(alternative, best)}.`;
-    panel.append(next);
+      : "the same player group with a nearly identical plan."} ${summarizeAlternativeTradeoff(alternative, best)}.`, "alternative");
+  } else {
+    addInsight("Closest alternative", "No separate next-best group was returned for this completed search.", "alternative");
   }
+
+  const requestedImpact = ["offensiveImpact", "defensiveImpact"]
+    .filter((metric) => Number(result.weights?.[metric]) > 0);
+  const disabledImpact = (result.diagnostics?.objectiveMetricEvidence?.disabledRequestedMetrics || [])
+    .filter((metric) => metric === "offensiveImpact" || metric === "defensiveImpact");
+  const modelNote = document.createElement("p");
+  modelNote.className = "simple-result-model-note";
+  if (requestedImpact.length > 0) {
+    modelNote.textContent = disabledImpact.length > 0
+      ? "Model note: OBPM/DBPM was incomplete for this pool, so that cross-check was omitted for everyone instead of being guessed."
+      : "Model note: complete OBPM/DBPM supplied a small offense/defense cross-check; your visible game-plan priorities still drove the ranking.";
+  } else if (best.rotation) {
+    modelNote.textContent = "Model note: past team games and total minutes did not affect the roster or assigned minutes in this game-plan rotation.";
+  } else {
+    modelNote.textContent = "Model note: this is an exact optimizer result under your displayed rules, not a win forecast or real-world depth chart.";
+  }
+  panel.append(benchmark, insights, modelNote);
 
   const detailsButton = document.createElement("button");
   detailsButton.type = "button";
@@ -4463,7 +4490,11 @@ function renderSuccess(result) {
     result,
     insight: playerInsightFor(fanExplanation, player.id),
   })));
-  fragment.append(lineup, renderSimpleResultOverview(result, fanExplanation));
+  // In Simple view, answer the visitor's main question before asking them to
+  // inspect five individual stat cards. The lineup itself remains immediately
+  // below this overview, and Detailed mode still adds the complete audit trail
+  // after it. No result data or ranking changes—only the reading order does.
+  fragment.append(renderSimpleResultOverview(result, fanExplanation), lineup);
 
   // Detailed view is deliberately progressive: even advanced users see the
   // actual players first, then choose when to open score math, rule proofs,
@@ -4698,9 +4729,12 @@ async function runOptimizer(event) {
     state.lastResult = result;
     elements.results.classList.remove("is-stale");
     elements.resultFreshness.hidden = true;
+    // Results should read like a recommendation to the visitor—not a generic
+    // system status. Keep the familiar basketball nouns while making the
+    // personal, game-plan-specific outcome clear at the top of the report.
     elements.resultsHeading.textContent = result.mode === "rotation"
-      ? "Recommended rotation"
-      : "Recommended lineup";
+      ? "Your recommended rotation"
+      : "Your recommended lineup";
     if (result.ok) renderSuccess(result);
     else renderFailure(result);
     elements.resultActions.hidden = !result.ok;

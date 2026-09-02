@@ -1,7 +1,7 @@
-# Reviewed Lineup Lab release: public UI, exact solver, projection helpers,
-# and source fixture only. This path-list release has no deletes and deliberately
-# excludes unrelated storefront, analytics-pipeline, Supabase schema, and
-# security-hardening files.
+# Reviewed 2026-09-02f Lineup Lab redesign release: public UI, exact solver,
+# projection helpers, and source fixture only. This path-list release has no
+# deletes and deliberately excludes unrelated storefront, analytics-pipeline,
+# Supabase schema, and security-hardening files.
 lineup-lab/index.html
 lineup-lab/app.js
 lineup-lab/optimizer-config.js

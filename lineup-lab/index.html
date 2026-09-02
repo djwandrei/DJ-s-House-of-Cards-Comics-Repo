@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260901e">
+  <link rel="stylesheet" href="styles.css?v=20260902f">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -51,33 +51,27 @@
     <section class="hero">
       <div class="shell hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow">Inspired by the original R + lpSolve course project</p>
-          <h1><span class="hero__title-primary">Build the lineup.</span><span>See every tradeoff.</span></h1>
-          <p class="hero__lede">Choose a historical team, pick what the group should do well, and let the model build the best eligible lineup or rotation.</p>
+          <p class="eyebrow">Historical NBA lineup optimizer</p>
+          <h1><span class="hero__title-primary">Build the best group</span><span>for your game plan.</span></h1>
+          <p class="hero__lede">Choose a historical team, decide what matters most, and get the best eligible lineup or 240-minute rotation with the tradeoffs explained in plain English.</p>
           <div class="hero__actions">
-            <a class="button" href="#workspace">Open the optimizer</a>
-            <button class="button button--quiet detailed-only" type="button" data-view-target="model">How scoring works</button>
+            <a class="button" href="#workspace">Open the builder</a>
+            <button class="button button--quiet detailed-only" type="button" data-view-target="model">How the model works</button>
           </div>
           <ul class="hero__proof" aria-label="How to use Lineup Lab">
-            <li>Choose a team-season</li>
-            <li>Set your game plan</li>
-            <li>Build and explain the best group</li>
+            <li>Pick a team-season</li>
+            <li>Set the game plan</li>
+            <li>See the best fit and tradeoffs</li>
           </ul>
         </div>
-        <div class="court-card" aria-hidden="true">
-          <div class="court-card__score"><span>DJHC</span><strong>05</strong><span>OPT</span></div>
-          <div class="court">
-            <span class="court__arc"></span>
-            <span class="court__paint"></span>
-            <span class="court__circle"></span>
-            <i class="court__player court__player--1">1</i>
-            <i class="court__player court__player--2">2</i>
-            <i class="court__player court__player--3">3</i>
-            <i class="court__player court__player--4">4</i>
-            <i class="court__player court__player--5">5</i>
-          </div>
-          <p>Scenario: balanced closing five</p>
-        </div>
+        <aside class="hero-outcomes" aria-label="What your Lineup Lab result answers">
+          <p class="hero-outcomes__eyebrow">What your result answers</p>
+          <ol class="hero-outcomes__list">
+            <li><strong>Who fits your plan?</strong><span>The highest-ranked eligible group under the exact rules you set.</span></li>
+            <li><strong>Why did it win?</strong><span>Its strongest skills, role coverage, and every constraint check.</span></li>
+            <li><strong>What would change?</strong><span>The next-best alternative and the specific tradeoff it creates.</span></li>
+          </ol>
+        </aside>
       </div>
     </section>
 
@@ -103,8 +97,13 @@
 
         <section class="panel live-data-panel" id="liveDataPanel" aria-labelledby="liveDataHeading" aria-busy="false">
           <div class="live-data-panel__intro">
-            <p class="eyebrow">Historical NBA database</p>
-            <h2 id="liveDataHeading">Choose your data set</h2>
+            <div class="workflow-heading">
+              <span class="step-number" aria-hidden="true">1</span>
+              <div>
+                <p class="eyebrow">Choose the data</p>
+                <h2 id="liveDataHeading">Which team and season should the model use?</h2>
+              </div>
+            </div>
             <p>Select an imported NBA team-season from 1980 forward. If a player changed teams, the tool uses the stats recorded with the team you selected. Past team usage is context only—it does not set a player’s proposed minutes. The data is saved on this device for faster repeat visits.</p>
           </div>
           <div class="live-data-panel__controls">
@@ -159,7 +158,7 @@
               <div class="builder-main">
                 <section class="panel step-panel" aria-labelledby="scenarioHeading">
                   <div class="step-heading">
-                    <span class="step-number">1</span>
+                    <span class="step-number">2</span>
                     <div>
                       <p class="eyebrow">Set the game plan</p>
                       <h2 id="scenarioHeading">What should this group do best?</h2>
@@ -263,7 +262,7 @@
 
                 <section class="panel step-panel detailed-only" aria-labelledby="constraintsHeading">
                   <div class="step-heading">
-                    <span class="step-number">2</span>
+                    <span class="step-number">3</span>
                     <div>
                       <p class="eyebrow">Advanced rules</p>
                       <h2 id="constraintsHeading">Edit who qualifies and what the plan must include</h2>
@@ -471,8 +470,14 @@
                    on smaller screens. -->
               <aside class="builder-sidebar" aria-label="Optimization controls">
                 <div class="panel run-card">
-                  <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to solve</p>
-                <h2>Ready to build the best fit.</h2>
+                  <div class="step-heading run-card__heading">
+                    <span class="step-number" id="runStepNumber" aria-label="Step 4">4</span>
+                    <div>
+                      <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to build</p>
+                      <h2>Find the best eligible group.</h2>
+                      <p class="run-card__intro">Every possible group is checked against the rules you can see.</p>
+                    </div>
+                  </div>
                   <dl class="run-card__summary">
                   <div><dt>Build</dt><dd id="runModeSummary">Starting five</dd></div>
                     <div><dt>Strategy</dt><dd id="runPresetSummary">Balanced</dd></div>
@@ -484,7 +489,7 @@
                     <span>Groups to evaluate</span>
                     <strong id="searchScopeValue">Loading the player pool…</strong>
                   </div>
-                  <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Build lineup</button>
+                  <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Build the lineup</button>
                   <button class="text-button text-button--center" id="resetScenarioButton" type="button">Reset scenario</button>
                   <p class="run-card__note" id="runCardNote">Historical stats support exploration—not predictions or betting.</p>
                 </div>
@@ -501,8 +506,8 @@
             <div class="result-freshness" id="resultFreshness" role="status" aria-live="polite" hidden></div>
             <div class="results__heading">
               <div>
-                <p class="eyebrow">Optimizer result</p>
-                <h2 id="resultsHeading" tabindex="-1">Recommended lineup</h2>
+                <p class="eyebrow">Recommended group</p>
+                <h2 id="resultsHeading" tabindex="-1">Your best fit</h2>
                 <p id="resultSummary"></p>
               </div>
               <div class="results__actions">
@@ -518,8 +523,8 @@
           <section class="panel empty-result" id="emptyResult">
             <span class="empty-result__mark" aria-hidden="true">05</span>
             <div>
-              <h2>Your result will appear here</h2>
-              <p>Choose a goal, make any optional player changes, and build the best group that meets your rules.</p>
+              <h2>Your recommended group will appear here</h2>
+              <p>Choose a team, set the game plan, make any optional player choices, and build the best group that meets your rules.</p>
             </div>
           </section>
         </section>
@@ -598,8 +603,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260901e"></script>
-  <script defer src="../supabase-client.js?v=20260901e"></script>
-  <script type="module" src="app.js?v=20260901e"></script>
+  <script defer src="../backend-config.js?v=20260902f"></script>
+  <script defer src="../supabase-client.js?v=20260902f"></script>
+  <script type="module" src="app.js?v=20260902f"></script>
 </body>
 </html>

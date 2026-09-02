@@ -34,9 +34,9 @@
       "fingerprints": {
         ".superdesign/lineup-lab-design-system.md": "32B04B9628BB968A14C9FCF87E757462E89FF84BB20C5045A634ADD342B2DD47",
         ".superdesign/tmp/lineup-lab-model-ux-upgrade.html": "008B500CAAB4B63D2DE9E6F6CC9D436351BD4C23B37A9256220F40C01E372F59",
-        "prototypes/basketball-lineup-optimizer/index.html": "F060BE8FA2B98C1D4CDA83EC98104D5D980263DEC3EED962051487E753548CC2",
-        "prototypes/basketball-lineup-optimizer/app.js": "C238D091E10AB8B062A16CC277840781B4683D62E43185AE94BF92840701B875",
-        "prototypes/basketball-lineup-optimizer/styles.css": "BA8651C149AECFD52C2BB5D54418E070ECAB715CD710217832F69C3E62548BA5",
+        "prototypes/basketball-lineup-optimizer/index.html": "955A5489159200ACE8786286974DA57C8077CE94A8E89D20FC768ED5F7255EEE",
+        "prototypes/basketball-lineup-optimizer/app.js": "994465612D577500D39AA437FB37492CB0021EF1B44A93BBA741F592A94BFAE1",
+        "prototypes/basketball-lineup-optimizer/styles.css": "64000E0D36713E24EC0D4D721E5796B244BAFDDF2A548E68CA9FC843DB7190A2",
         "prototypes/basketball-lineup-optimizer/optimizer-core.js": "B065F7F26B61195BE212A6B63B9845CC91FEBC1885447810E2967A6C5C23DB77"
       },
       "components": [],
@@ -48,7 +48,7 @@
           "currentVersion": 2
         }
       },
-      "updatedAt": "2026-09-02T00:34:58.0803635-05:00"
+      "updatedAt": "2026-09-02T03:01:42.4747425-05:00"
     },
     "/tools/": {
       "targetKind": "existing-ui",
