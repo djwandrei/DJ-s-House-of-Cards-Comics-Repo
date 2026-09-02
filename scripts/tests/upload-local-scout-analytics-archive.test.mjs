@@ -7,6 +7,7 @@ import test from 'node:test';
 import { gzipSync } from 'node:zlib';
 import {
   buildArchiveUploadPlan,
+  ensurePrivateBucket,
   getBucket,
   optionsFromArgs,
   validateLocalArchivePlan,
@@ -87,4 +88,32 @@ test('bucket lookup recognizes the Storage API missing-bucket response shape', a
     }),
   });
   assert.equal(bucket, null);
+});
+
+test('new private bucket limit is rounded only to the largest archive artifact', async () => {
+  const calls = [];
+  const fetchImpl = async (url, options = {}) => {
+    calls.push({ url, options });
+    if (calls.length === 1) {
+      return {
+        ok: false,
+        status: 400,
+        text: async () => '{"statusCode":"404","code":"NoSuchBucket","message":"Bucket not found"}',
+      };
+    }
+    return {
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ id: 'nba-scout-analytics-archive', public: false, file_size_limit: 33554432 }),
+    };
+  };
+  const result = await ensurePrivateBucket({
+    projectUrl: 'https://analytics-project.supabase.co',
+    serviceRoleKey: 'test-service-role',
+    apply: true,
+    maxArtifactBytes: 33433588,
+    fetchImpl,
+  });
+  assert.equal(result.status, 'ready');
+  assert.equal(JSON.parse(calls[1].options.body).file_size_limit, 32 * 1024 * 1024);
 });

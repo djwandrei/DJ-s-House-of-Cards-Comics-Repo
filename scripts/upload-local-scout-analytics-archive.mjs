@@ -345,6 +345,10 @@ export async function ensurePrivateBucket({ projectUrl, serviceRoleKey, bucket =
   let current = await getBucket({ projectUrl, serviceRoleKey, bucket, fetchImpl });
   if (!current) {
     if (!apply) return { status: 'would-create', bucket: null };
+    // Some plans cap a bucket's configured object size below 100 MB. Configure
+    // only the smallest whole-MiB limit that admits this immutable package,
+    // rather than assuming a higher plan entitlement.
+    const requiredFileLimit = Math.ceil(maxArtifactBytes / (1024 * 1024)) * 1024 * 1024;
     current = await requestJson(fetchImpl, storageApiUrl(projectUrl, '/bucket'), {
       method: 'POST',
       headers: storageHeaders(serviceRoleKey, { 'Content-Type': 'application/json' }),
@@ -352,7 +356,7 @@ export async function ensurePrivateBucket({ projectUrl, serviceRoleKey, bucket =
         id: bucket,
         name: bucket,
         public: false,
-        file_size_limit: 104857600,
+        file_size_limit: requiredFileLimit,
         allowed_mime_types: ['application/gzip', 'application/json', 'text/markdown'],
       }),
     }, 'Create private Scout archive bucket');
