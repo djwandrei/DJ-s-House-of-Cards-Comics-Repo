@@ -1,7 +1,6 @@
 const MAX_CANDIDATES = 24;
 const MAX_RESULTS = 12;
 const RPC_CONCURRENCY = 4;
-const STATIC_CATALOG_VERSION = '20260831a';
 const VERIFIED_REVIEW_STATES = new Set(['auto_verified', 'human_verified']);
 
 /** Normalize search text without turning a title similarity into a mapping. */
@@ -36,6 +35,13 @@ function isNbaCatalogProduct(product = {}) {
   if (sport && sport !== 'basketball') return false;
   if (product.isDeleted === true) return false;
   return !['hidden', 'archived', 'sold'].includes(normalizeSearchText(product.saleStatus));
+}
+
+function getStaticCatalogFallbackUrl(DJ = globalThis.window?.DJ || {}) {
+  if (typeof DJ.versionedProductAsset === 'function') {
+    return DJ.versionedProductAsset('products-basketball.json');
+  }
+  return '../../products-basketball.json';
 }
 
 /**
@@ -281,6 +287,21 @@ function showEmptyState(title, description) {
   state.hidden = false;
 }
 
+function setLabHandoffEnabled(enabled) {
+  const handoff = document.getElementById('labHandoff');
+  if (!handoff) return;
+  handoff.classList.toggle('is-disabled', !enabled);
+  if (enabled) {
+    handoff.removeAttribute('aria-disabled');
+    handoff.removeAttribute('tabindex');
+    handoff.href = '../../lineup-lab/';
+    return;
+  }
+  handoff.setAttribute('aria-disabled', 'true');
+  handoff.setAttribute('tabindex', '-1');
+  handoff.removeAttribute('href');
+}
+
 function resetResults() {
   const summary = document.getElementById('playerSummary');
   const resultSection = document.getElementById('matchupResultsSection');
@@ -291,12 +312,7 @@ function resetResults() {
   if (results) results.replaceChildren();
   if (count) count.textContent = '';
   showEmptyState('No verified mapping selected', 'Search above to check the buyer-safe catalog. If an item appears in the Shop but not here, its player relationship is still unmatched, ambiguous, or outside this NBA mapping release.');
-  const handoff = document.getElementById('labHandoff');
-  if (handoff) {
-    handoff.classList.add('is-disabled');
-    handoff.setAttribute('aria-disabled', 'true');
-    handoff.href = '../../lineup-lab/';
-  }
+  setLabHandoffEnabled(false);
 }
 
 function renderResults(matches, DJ = {}) {
@@ -342,7 +358,7 @@ async function loadCatalogProducts() {
     }
   }
 
-  const response = await fetch(`../../products-public.json?v=${STATIC_CATALOG_VERSION}`, { cache: 'no-store' });
+  const response = await fetch(getStaticCatalogFallbackUrl(DJ), { cache: 'no-store' });
   if (!response.ok) throw new Error(`Catalog fallback returned ${response.status}.`);
   const products = await response.json();
   if (!Array.isArray(products)) throw new Error('Catalog fallback was not an array.');
@@ -424,20 +440,9 @@ async function runSearch(query, token) {
     setStatus(uniquePlayers.length === 1
       ? `${rendered.length} verified card${rendered.length === 1 ? '' : 's'} found for ${playerName}.`
       : `${rendered.length} verified cards found across ${uniquePlayers.length} exact athletes.`, '');
-    const handoff = document.getElementById('labHandoff');
-    if (handoff) {
-      if (uniquePlayers.length === 1) {
-        handoff.classList.remove('is-disabled');
-        handoff.removeAttribute('aria-disabled');
-        // Lineup Lab currently accepts scenario links, not a player-only
-        // parameter, so keep this handoff honest and avoid a no-op query.
-        handoff.href = '../../lineup-lab/';
-      } else {
-        handoff.classList.add('is-disabled');
-        handoff.setAttribute('aria-disabled', 'true');
-        handoff.href = '../../lineup-lab/';
-      }
-    }
+    // Lineup Lab currently accepts scenario links, not a player-only
+    // parameter, so keep this handoff honest and avoid a no-op query.
+    setLabHandoffEnabled(uniquePlayers.length === 1);
   } catch (error) {
     if (token !== searchState.token) return;
     console.error('Player & Card Matchups lookup failed.', error);
@@ -471,6 +476,7 @@ function boot() {
 export {
   buildCandidateProducts,
   extractVerifiedMatches,
+  getStaticCatalogFallbackUrl,
   isNbaCatalogProduct,
   matchesSearch,
   normalizeSearchText

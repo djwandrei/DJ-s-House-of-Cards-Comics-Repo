@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   chooseDefaultProSportsSeason,
+  mountProSportsSlabStatsPanel,
   normalizeProSportsSlabStatsPayload,
   renderProSportsSeasonStats,
   renderProSportsSlabStatsPanel,
@@ -159,4 +160,34 @@ test('a player with no valid season payload is retained but renders an explicit 
   const normalized = normalizeProSportsSlabStatsPayload(raw, 202);
   assert.equal(normalized.players[0].seasons.length, 0);
   assert.match(renderProSportsSeasonStats(normalized.players[0], normalized.provider), /not available/);
+});
+
+test('a no-match mount clears its loading state before hiding the panel', async () => {
+  const previousHTMLElement = globalThis.HTMLElement;
+  class FakeHTMLElement {
+    constructor() {
+      this.hidden = false;
+      this.isConnected = true;
+      this.attributes = new Map();
+      this.innerHTML = '';
+    }
+    setAttribute(name, value) { this.attributes.set(name, String(value)); }
+    removeAttribute(name) { this.attributes.delete(name); }
+    getAttribute(name) { return this.attributes.get(name) ?? null; }
+    replaceChildren() { this.innerHTML = ''; }
+  }
+  globalThis.HTMLElement = FakeHTMLElement;
+  try {
+    const container = new FakeHTMLElement();
+    const mounted = await mountProSportsSlabStatsPanel(container, { id: 202 }, {
+      requestStats: async () => null,
+      isCurrent: () => true,
+    });
+    assert.equal(mounted, false);
+    assert.equal(container.hidden, true);
+    assert.equal(container.getAttribute('aria-busy'), null);
+  } finally {
+    if (previousHTMLElement === undefined) delete globalThis.HTMLElement;
+    else globalThis.HTMLElement = previousHTMLElement;
+  }
 });

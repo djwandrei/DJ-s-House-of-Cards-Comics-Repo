@@ -86,6 +86,10 @@ window.DJ = window.DJ || {};
   // keep hitting the backend during a single page lifetime.
   const remoteCache = new Map();
   const REMOTE_CACHE_TTL_MS = 2 * 60 * 1000;
+  // Product panels can produce a unique key per listing. Bound the long-lived
+  // tab cache so an extended browse session cannot retain every historical
+  // payload; Map insertion order makes eviction deterministic and inexpensive.
+  const REMOTE_CACHE_MAX_ENTRIES = 128;
 
   const SOURCE_CATEGORY_FILTERS = {
     'products-sports.json': ['Baseball', 'Basketball', 'Football'],
@@ -355,6 +359,21 @@ window.DJ = window.DJ || {};
     remoteCache.clear();
   }
 
+  function pruneRemoteCache(now = Date.now()) {
+    for (const [cacheKey, entry] of remoteCache) {
+      const age = now - Number(entry?.createdAt || 0);
+      if (!Number.isFinite(age) || age > REMOTE_CACHE_TTL_MS) {
+        remoteCache.delete(cacheKey);
+      }
+    }
+
+    while (remoteCache.size > REMOTE_CACHE_MAX_ENTRIES) {
+      const oldestKey = remoteCache.keys().next().value;
+      if (oldestKey === undefined) break;
+      remoteCache.delete(oldestKey);
+    }
+  }
+
   /**
    * Keep the in-memory remote cache fresh when the browser reconnects, restores
    * a cached page, or regains focus after the user has been away for a while.
@@ -399,10 +418,12 @@ window.DJ = window.DJ || {};
   }
 
   function setCachedRemotePromise(cacheKey, promise) {
+    pruneRemoteCache();
     remoteCache.set(cacheKey, {
       createdAt: Date.now(),
       promise
     });
+    pruneRemoteCache();
   }
 
   let supabaseLibraryPromise = null;

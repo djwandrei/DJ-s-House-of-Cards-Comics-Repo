@@ -17,10 +17,17 @@ test('media options default to both sports and 2010 headshots', () => {
     start: 1950,
     end: new Date().getUTCFullYear(),
     profileStart: 2010,
+    externalIds: [],
     cacheOnly: false,
     apply: false,
     analytics: false,
   });
+});
+
+test('headshot ID filters are trimmed and de-duplicated before a media query', () => {
+  const options = parseArgs(['--sport', 'nfl', '--external-ids', 'PaytoWa00, PaytoWa00,BradyTo00']);
+  assert.deepEqual(options.sports, ['nfl']);
+  assert.deepEqual(options.externalIds, ['PaytoWa00', 'BradyTo00']);
 });
 
 test('team logo templates preserve historical season and source codes', () => {

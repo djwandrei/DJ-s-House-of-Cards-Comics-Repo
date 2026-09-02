@@ -2,9 +2,9 @@
  * Production stylesheet bundle
  * --------------------------------------------------------------------------
  * This file is the browser-facing CSS entry point. It is kept as a single
- * file so the deployed site only needs one stylesheet request, but the code
- * is still organized into logical sections with comments so it remains easy
- * to maintain by hand. The more detailed source modules live in /css.
+ * file so the deployed site only needs one stylesheet request. It is the
+ * authoritative desktop/shared source; logical section comments keep it
+ * maintainable without relying on a separate, unpublished CSS directory.
  */
 
 /* 00-site-base.css | Generated for maintainability step 6 */

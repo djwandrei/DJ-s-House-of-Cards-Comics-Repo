@@ -928,7 +928,22 @@ async function inspectNbaSlabStatsPanel(client, baseUrl) {
   return results;
 }
 
+function usage() {
+  return [
+    'Usage: node scripts/render-smoke-check.mjs [--interaction-only|--nba-slab-stats-only]',
+    '',
+    'Runs local rendered storefront checks with an isolated headless browser.',
+    '  --interaction-only     Check mobile navigation, filters, gallery, and cart interactions.',
+    '  --nba-slab-stats-only  Check the isolated NBA Slab-to-Stats panel fixture.',
+    '  --help, -h             Show this usage text without starting a server or browser.'
+  ].join('\n');
+}
+
 async function main() {
+  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+    console.log(usage());
+    return;
+  }
   const server = await startStaticServer();
   const port = server.address().port;
   const debugPort = 9400 + Math.floor(Math.random() * 300);
@@ -936,6 +951,9 @@ async function main() {
   const browser = spawn(edgePath(), [
     '--headless=new',
     '--disable-gpu',
+    // Host-installed extensions can emit unrelated console errors into CDP.
+    // The smoke browser needs to exercise only the storefront's own scripts.
+    '--disable-extensions',
     '--no-first-run',
     '--no-default-browser-check',
     `--remote-debugging-port=${debugPort}`,

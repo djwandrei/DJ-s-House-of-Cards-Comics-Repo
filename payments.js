@@ -119,9 +119,13 @@ window.DJ = window.DJ || {};
     return Boolean(config.stripeCheckoutEnabled && config.stripeCheckoutFunction);
   }
 
-  function timeoutAfter(milliseconds, message) {
-    return new Promise((_, reject) => {
-      window.setTimeout(() => reject(new Error(message)), milliseconds);
+  function withTimeout(promise, milliseconds, message) {
+    let timeoutId = 0;
+    const timeout = new Promise((_, reject) => {
+      timeoutId = window.setTimeout(() => reject(new Error(message)), milliseconds);
+    });
+    return Promise.race([Promise.resolve(promise), timeout]).finally(() => {
+      window.clearTimeout(timeoutId);
     });
   }
 
@@ -509,10 +513,11 @@ window.DJ = window.DJ || {};
   }
 
   function continueCheckoutIfExistingSession(options = {}, returnPath = '', intentId = '') {
-    Promise.race([
+    withTimeout(
       ensureAuthSession(),
-      timeoutAfter(AUTH_SESSION_CHECK_TIMEOUT_MS, 'Customer account check timed out.')
-    ])
+      AUTH_SESSION_CHECK_TIMEOUT_MS,
+      'Customer account check timed out.'
+    )
       .then((session) => {
         const pending = state.pendingCheckoutRequest || restorePendingCheckout();
         if (

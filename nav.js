@@ -304,6 +304,17 @@ window.DJ = window.DJ || {};
     let lastFocusedBeforeOpen = null;
     const submenuItems = [...nav.querySelectorAll('.primary-nav__item--has-submenu')];
     const submenuToggleButtons = [...nav.querySelectorAll('.submenu-toggle')];
+    // CSS collapses closed submenus without adding `hidden` to every child.
+    // Keep keyboard focus in the open drawer by considering only elements the
+    // browser can actually render and focus at the current breakpoint.
+    const getVisibleFocusableMenuElements = () => [...nav.querySelectorAll(FOCUSABLE_SELECTOR)].filter((element) => (
+      element instanceof HTMLElement
+      && !element.hasAttribute('hidden')
+      && !element.closest('[hidden]')
+      && getComputedStyle(element).display !== 'none'
+      && getComputedStyle(element).visibility !== 'hidden'
+      && element.getClientRects().length > 0
+    ));
 
     if (!nav.querySelector('.site-nav__mobile-header')) {
       const mobileHeader = document.createElement('div');
@@ -399,8 +410,8 @@ window.DJ = window.DJ || {};
       syncMenuAccessibility();
 
       if (isCompactNavViewport()) {
-        const firstFocusable = nav.querySelector(FOCUSABLE_SELECTOR);
-        if (firstFocusable instanceof HTMLElement) {
+        const firstFocusable = getVisibleFocusableMenuElements()[0];
+        if (firstFocusable) {
           window.setTimeout(() => {
             firstFocusable.focus();
           }, 40);
@@ -467,11 +478,7 @@ window.DJ = window.DJ || {};
         return;
       }
 
-      const focusableElements = [...nav.querySelectorAll(FOCUSABLE_SELECTOR)].filter((element) => (
-        element instanceof HTMLElement
-        && !element.hasAttribute('hidden')
-        && !element.closest('[hidden]')
-      ));
+      const focusableElements = getVisibleFocusableMenuElements();
 
       if (!focusableElements.length) {
         return;

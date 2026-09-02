@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   chooseDefaultNbaSeason,
   deriveNbaSeasonMetrics,
+  mountNbaSlabStatsPanel,
   normalizeNbaSlabStatsPayload,
   renderNbaSeasonStats,
   renderNbaSlabStatsPanel,
@@ -135,4 +136,34 @@ test('season rendering handles unavailable advanced metrics without fabricating 
   assert.match(markup, /<span>TS%<\/span>\s*<strong>&mdash;<\/strong>/);
   assert.match(markup, /<span>BPM<\/span>\s*<strong>&mdash;<\/strong>/);
   assert.match(markup, /<span>VORP<\/span>\s*<strong>&mdash;<\/strong>/);
+});
+
+test('a no-match mount clears its loading state before hiding the panel', async () => {
+  const previousHTMLElement = globalThis.HTMLElement;
+  class FakeHTMLElement {
+    constructor() {
+      this.hidden = false;
+      this.isConnected = true;
+      this.attributes = new Map();
+      this.innerHTML = '';
+    }
+    setAttribute(name, value) { this.attributes.set(name, String(value)); }
+    removeAttribute(name) { this.attributes.delete(name); }
+    getAttribute(name) { return this.attributes.get(name) ?? null; }
+    replaceChildren() { this.innerHTML = ''; }
+  }
+  globalThis.HTMLElement = FakeHTMLElement;
+  try {
+    const container = new FakeHTMLElement();
+    const mounted = await mountNbaSlabStatsPanel(container, { id: 101 }, {
+      requestStats: async () => null,
+      isCurrent: () => true,
+    });
+    assert.equal(mounted, false);
+    assert.equal(container.hidden, true);
+    assert.equal(container.getAttribute('aria-busy'), null);
+  } finally {
+    if (previousHTMLElement === undefined) delete globalThis.HTMLElement;
+    else globalThis.HTMLElement = previousHTMLElement;
+  }
 });

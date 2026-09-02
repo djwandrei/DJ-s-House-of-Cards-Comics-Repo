@@ -64,9 +64,9 @@ window.DJ = window.DJ || {};
     }
   };
 
-  // Each page reads from a smaller source file where possible so the storefront
-  // only downloads the data needed for that page. Wishlist intentionally uses the
-  // full catalog so saved items can always be resolved.
+  // Each browse page reads from a smaller source file where possible. Saved
+  // carts and wishlists use an ID-filtered remote lookup first, retaining this
+  // full source only as their resilient static/offline fallback.
   const PRODUCT_SOURCE_BY_PAGE = {
     home: 'products-featured.json',
     'shop-hub': 'products-sports.json',
@@ -93,6 +93,7 @@ window.DJ = window.DJ || {};
   const normalizedSourceCache = new Map();
   const catalogPageCache = new Map();
   const filteredCatalogResultsCache = new Map();
+  const CATALOG_CACHE_TTL_MS = 2 * 60 * 1000;
   const catalogProductsSignatureCache = new WeakMap();
   const productCardGalleryCache = new WeakMap();
   const FILTERED_RESULTS_CACHE_LIMIT = 18;
@@ -145,6 +146,42 @@ window.DJ = window.DJ || {};
   let nbaSlabStatsModulePromise = null;
   let proSportsSlabStatsModulePromise = null;
   let cartActionFeedbackTimer = 0;
+  let catalogCacheLifecycleBound = false;
+  let catalogHiddenAt = 0;
+
+  function clearCatalogDataCaches() {
+    staticProductCache.clear();
+    catalogBootstrapCache.clear();
+    normalizedSourceCache.clear();
+    catalogPageCache.clear();
+    filteredCatalogResultsCache.clear();
+  }
+
+  /**
+   * Catalog pages retain normalized objects for fast filtering. Match the
+   * remote adapter's freshness lifecycle so a restored or long-idle tab does
+   * not continue reusing that first page-load snapshot on later interactions.
+   */
+  function bindCatalogCacheLifecycle() {
+    if (catalogCacheLifecycleBound || typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
+    catalogCacheLifecycleBound = true;
+    window.addEventListener('online', clearCatalogDataCaches);
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) clearCatalogDataCaches();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        catalogHiddenAt = Date.now();
+        return;
+      }
+      if (document.visibilityState === 'visible' && Date.now() - catalogHiddenAt >= CATALOG_CACHE_TTL_MS) {
+        clearCatalogDataCaches();
+      }
+    });
+  }
 
   function setFilterPanelDescendantsFocusable(filterPanel, enabled) {
     if (!filterPanel) return;
@@ -1340,8 +1377,7 @@ window.DJ = window.DJ || {};
   }
 
   function hasMissingCatalogPrice(product = {}) {
-    return parseCatalogPriceValue(product.price) == null
-      || /contact/i.test(String(product.priceLabel || product.displayPrice || ''));
+    return parseCatalogPriceValue(product.price) == null;
   }
 
   function hasUsableStaticPrice(product = {}) {
@@ -1350,28 +1386,6 @@ window.DJ = window.DJ || {};
 
   function getCatalogPriceDisplay(product = {}) {
     return String(product.priceLabel || product.displayPrice || '').trim();
-  }
-
-  function shouldOverlayStaticPrice(product = {}, staticProduct = {}) {
-    const staticPrice = parseCatalogPriceValue(staticProduct.price);
-    if (staticPrice == null) {
-      return false;
-    }
-
-    const remotePrice = parseCatalogPriceValue(product.price);
-    if (remotePrice == null || Math.abs(remotePrice - staticPrice) > 0.001) {
-      return true;
-    }
-
-    const staticDisplay = getCatalogPriceDisplay(staticProduct);
-    const remoteDisplay = getCatalogPriceDisplay(product);
-    if (!staticDisplay) {
-      return false;
-    }
-
-    return !remoteDisplay
-      || /contact/i.test(remoteDisplay)
-      || remoteDisplay !== staticDisplay;
   }
 
   async function applyStaticLegacyListingOverlay(source, remoteProducts = []) {
@@ -1410,9 +1424,11 @@ window.DJ = window.DJ || {};
         && (product.legacyImageLabel || !staticProduct.legacyImageLabel)
       ) && isLegacyStaticProduct(staticProduct);
       const shouldOverlayImage = hasPlaceholderCatalogImage(product) && hasUsableStaticImage(staticProduct);
+      // Supabase is the current checkout authority. Static catalog data may
+      // fill a genuinely absent remote price during a staged rollout, but it
+      // must never replace a valid live admin price or its display label.
       const shouldOverlayPrice = hasMissingCatalogPrice(product)
-        ? hasUsableStaticPrice(staticProduct)
-        : shouldOverlayStaticPrice(product, staticProduct);
+        && hasUsableStaticPrice(staticProduct);
 
       if (!shouldOverlayLegacyFields && !shouldOverlayImage && !shouldOverlayPrice) {
         return staticProduct.hasThumbnail === true && product.hasThumbnail !== true
@@ -1622,6 +1638,61 @@ window.DJ = window.DJ || {};
       return 4;
     }
     return 0;
+  }
+
+  /**
+   * Resolve only a shopper's saved listings when the live catalog is available.
+   * The static catalog remains the failure-safe path, but a small cart or
+   * wishlist should not require a full catalog transfer in normal remote mode.
+   */
+  async function loadSavedProductsByIds(productIds = []) {
+    const requestedIds = [...new Set(
+      (Array.isArray(productIds) ? productIds : [])
+        .map((productId) => Number(productId))
+        .filter((productId) => Number.isSafeInteger(productId) && productId > 0)
+    )];
+    if (!requestedIds.length) {
+      return { products: [], isUsable: true, origin: 'empty' };
+    }
+
+    const canUseRemoteIds = window.location.protocol !== 'file:'
+      && window.DJ_BACKEND_CONFIG?.preferStaticCatalog !== true
+      && DJ.remoteCatalog?.isConfigured()
+      && typeof DJ.remoteCatalog.listProducts === 'function';
+    if (canUseRemoteIds) {
+      const remoteCatalogTimeoutMs = getCatalogTimingValue('remoteCatalogTimeoutMs', 3200, 800, 10000);
+      try {
+        const remoteProducts = await withTimeout(
+          DJ.remoteCatalog.listProducts({ ids: requestedIds }),
+          remoteCatalogTimeoutMs,
+          'Saved catalog lookup'
+        );
+        if (!Array.isArray(remoteProducts)) {
+          throw new Error('Remote saved catalog lookup did not return a product list.');
+        }
+        const normalizedRemoteProducts = normalizeProducts(filterStorefrontProducts(remoteProducts));
+        return {
+          products: sortProductsByIdOrder(normalizedRemoteProducts, requestedIds),
+          isUsable: true,
+          origin: 'remote-ids'
+        };
+      } catch (error) {
+        console.warn('Remote saved catalog lookup was not ready; using the static catalog fallback.', error);
+      }
+    }
+
+    try {
+      const staticResult = await getStaticSourceResult(DEFAULT_PRODUCT_SOURCE, 'static-saved-fallback');
+      const normalizedStaticProducts = normalizeProducts(filterStorefrontProducts(staticResult.products));
+      return {
+        products: sortProductsByIdOrder(normalizedStaticProducts, requestedIds),
+        isUsable: true,
+        origin: staticResult.origin
+      };
+    } catch (error) {
+      console.error('Saved catalog lookup failed for both remote and static sources.', error);
+      return { products: [], isUsable: false, origin: 'unavailable' };
+    }
   }
 
   function getProductCardGallery(product = {}) {
@@ -4367,13 +4438,9 @@ Thank you.`
       count: Math.min(6, Math.max(2, storedWishlist.length))
     });
 
-    // Use the same resilient source selection as every catalog page. This keeps
-    // local/custom listings available, honors static-first mode, and preserves
-    // the remote timeout plus static fallback instead of leaving the wishlist
-    // blocked on a direct backend request.
-    const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    const savedCatalog = await loadSavedProductsByIds(storedWishlist);
     if (renderRequestId !== wishlistRenderRequestId) return;
-    if (!hasUsableCatalogSnapshot(allProducts)) {
+    if (!savedCatalog.isUsable) {
       if (wishlistPageCount) {
         wishlistPageCount.textContent = `${storedWishlist.length} saved item${storedWishlist.length === 1 ? '' : 's'} still stored`;
       }
@@ -4385,10 +4452,7 @@ Thank you.`
       );
       return;
     }
-    const wishlistIdSet = new Set(storedWishlist);
-    let wishlistProducts = allProducts.filter((product) => wishlistIdSet.has(Number(product.id)));
-
-    wishlistProducts = sortProductsByIdOrder(wishlistProducts, storedWishlist);
+    let wishlistProducts = savedCatalog.products;
 
     const availableIds = new Set(wishlistProducts.map((product) => Number(product.id)).filter(Number.isFinite));
     const reconciledWishlist = storedWishlist.filter((productId) => availableIds.has(productId));
@@ -4455,9 +4519,9 @@ Thank you.`
     }
 
     renderProductGridLoadingState(container, { count: Math.min(4, storedCart.length) });
-    const allProducts = await loadProducts({ source: DEFAULT_PRODUCT_SOURCE });
+    const savedCatalog = await loadSavedProductsByIds(storedCart.map((item) => item.productId));
     if (renderRequestId !== cartRenderRequestId) return;
-    if (!hasUsableCatalogSnapshot(allProducts)) {
+    if (!savedCatalog.isUsable) {
       clearProductGridLoadingState(container);
       container.innerHTML = renderSavedCatalogUnavailableState(
         'Cart details could not load',
@@ -4466,7 +4530,7 @@ Thank you.`
       );
       return;
     }
-    const productsById = createProductLookup(allProducts);
+    const productsById = createProductLookup(savedCatalog.products);
     const cartItems = storedCart
       .map((item) => ({ ...item, product: productsById.get(Number(item.productId)) }))
       .filter((item) => item.product);
@@ -4576,7 +4640,7 @@ Thank you.`
         return;
       }
 
-      if (target.closest('[data-cart-checkout]')) checkoutCart(allProducts);
+      if (target.closest('[data-cart-checkout]')) checkoutCart(activeItems.map((item) => item.product));
     };
     DJ.applyLazyLoading(container);
   }
@@ -5048,6 +5112,7 @@ Thank you.`
     if (document.body.dataset.catalogBooted === 'true') return;
     document.body.dataset.catalogBooted = 'true';
     const page = document.body.dataset.page;
+    bindCatalogCacheLifecycle();
     bindWishlistStateSync();
     bindCartStateSync();
     hydrateCustomerAccountAfterPaint();

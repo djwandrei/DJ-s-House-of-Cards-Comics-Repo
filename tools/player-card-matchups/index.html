@@ -12,12 +12,12 @@
   <meta content="Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260902a" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260902a" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260902a" rel="stylesheet">
-  <link href="./player-card-matchups.css?v=20260902a" rel="stylesheet">
+  <link href="../../styles.css?v=20260902b" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260902b" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260902b" rel="stylesheet">
+  <link href="./player-card-matchups.css?v=20260902b" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260902a" rel="manifest">
+  <link href="../../site.webmanifest?v=20260902b" rel="manifest">
   <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/#webpage","url":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/","name":"Player & Card Matchups | DJ's House of Cards & Comics","description":"Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
@@ -95,7 +95,7 @@
        </div>
        <form class="matchup-search-form" id="playerSearchForm">
         <label for="playerSearch">Player name</label>
-        <div class="matchup-search-row"><input autocomplete="off" id="playerSearch" minlength="2" name="player" placeholder="Search NBA players…" spellcheck="false" type="search"><button class="button" type="submit">Find verified cards</button></div>
+        <div class="matchup-search-row"><input aria-describedby="playerSearchHelp" autocomplete="off" id="playerSearch" minlength="2" name="player" placeholder="Search NBA players…" spellcheck="false" type="search"><button class="button" type="submit">Find verified cards</button></div>
         <p class="matchup-search-help" id="playerSearchHelp">Try a full or partial name such as “Curry” or “Garnett.” Ambiguous or unmatched names stay excluded.</p>
        </form>
       </section>
@@ -103,7 +103,7 @@
       <section aria-labelledby="playerSummaryHeading" class="matchup-player-card" hidden id="playerSummary"></section>
       <section aria-labelledby="resultsHeading" class="matchup-results-section" hidden id="matchupResultsSection">
        <div class="matchup-results-heading"><h2 id="resultsHeading">Verified card results</h2><span class="matchup-result-count" id="matchupResultCount"></span></div>
-       <div aria-live="polite" class="matchup-results-grid" id="matchupResults"></div>
+       <div class="matchup-results-grid" id="matchupResults"></div>
       </section>
       <section aria-labelledby="noMatchHeading" class="matchup-empty-state" id="noMatchState">
        <div aria-hidden="true" class="matchup-empty-icon">⌕</div>
@@ -124,7 +124,7 @@
       <section class="matchup-handoff" id="labHandoffPanel">
        <div class="matchup-handoff-heading"><span aria-hidden="true">⌁</span><h2>NBA Lab handoff</h2></div>
        <p>After a verified player is found, open the NBA Lineup Lab for a separate historical team-season scenario.</p>
-       <a aria-disabled="true" class="button-secondary is-disabled" href="../../lineup-lab/" id="labHandoff">Open in Lineup Lab</a>
+       <a aria-disabled="true" class="button-secondary is-disabled" id="labHandoff" tabindex="-1">Open in Lineup Lab</a>
       </section>
      </aside>
     </div>
@@ -145,10 +145,10 @@
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics &bull; Independent collector storefront</span><span>Actual-item photography &bull; Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../../core.js?v=20260902a"></script>
-  <script defer src="../../nav.js?v=20260902a"></script>
-  <script defer src="../../backend-config.js?v=20260902a"></script>
-  <script defer src="../../supabase-client.js?v=20260902a"></script>
-  <script type="module" src="./player-card-matchups.js?v=20260902a"></script>
+  <script defer src="../../core.js?v=20260902b"></script>
+  <script defer src="../../nav.js?v=20260902b"></script>
+  <script defer src="../../backend-config.js?v=20260902b"></script>
+  <script defer src="../../supabase-client.js?v=20260902b"></script>
+  <script type="module" src="./player-card-matchups.js?v=20260902b"></script>
  </body>
 </html>

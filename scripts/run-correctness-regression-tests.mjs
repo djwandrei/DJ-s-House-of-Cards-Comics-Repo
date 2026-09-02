@@ -368,6 +368,29 @@ async function testPublicAndAdminCatalogFieldSeparation() {
   assert(adminProducts[0].htmlFullLink === 'https://example.test/private-import.html', 'Admin catalog mapping must retain private source HTML links.');
 }
 
+async function testBoundedRemoteCatalogCache() {
+  const { adapter, queries } = evaluateCatalogQueryAdapter();
+  // Each direct ID lookup has its own cache key. Sequential requests represent
+  // a long browsing session without relying on timing-sensitive TTL expiry.
+  for (let productId = 1; productId <= 129; productId += 1) {
+    await adapter.listProducts({ ids: [productId] });
+  }
+
+  const queriesBeforeOldestRetry = queries.length;
+  await adapter.listProducts({ ids: [1] });
+  assert(
+    queries.length === queriesBeforeOldestRetry + 1,
+    'The oldest remote cache entry must be evicted once the bounded cache is full.'
+  );
+
+  const queriesBeforeRecentRetry = queries.length;
+  await adapter.listProducts({ ids: [129] });
+  assert(
+    queries.length === queriesBeforeRecentRetry,
+    'A recent remote cache entry must remain available after oldest-entry eviction.'
+  );
+}
+
 function testCartReconciliation() {
   const { DJ } = evaluateCore();
 
@@ -451,7 +474,7 @@ function evaluateCatalog({ remoteListProducts, staticFetch, backendConfig = {}, 
   const source = readFileSync(path.join(root, 'catalog.js'), 'utf8');
   const hookedSource = source.replace(
     /\n  window\.closeModal = closeModal;[\s\S]*?\n\}\)\(\);\s*$/,
-    `\n  window.__catalogTestHooks = {\n    getBestAvailableSourceResult,\n    firstSuccessfulResult,\n    getRankedSearchSuggestions,\n    sortProductAttributes,\n    normalizeTeamFacetValue,\n    normalizeProducts,\n    buildFacetSummary,\n    toCountedFacetOptions,\n    hasUsableCatalogSnapshot,\n    reconcileWishlistIds,\n    getTestWishlist: () => DJ.getWishlist()\n  };\n  window.closeModal = closeModal;\n  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;\n})();\n`
+    `\n  window.__catalogTestHooks = {\n    getBestAvailableSourceResult,\n    firstSuccessfulResult,\n    getRankedSearchSuggestions,\n    sortProductAttributes,\n    normalizeTeamFacetValue,\n    normalizeProducts,\n    buildFacetSummary,\n    toCountedFacetOptions,\n    hasUsableCatalogSnapshot,\n    reconcileWishlistIds,\n    applyStaticLegacyListingOverlay,\n    loadProducts,\n    loadSavedProductsByIds,\n    clearCatalogDataCaches,\n    getTestWishlist: () => DJ.getWishlist()\n  };\n  window.closeModal = closeModal;\n  DJ.ensureCustomerAccountBridge = ensureCustomerAccountBridge;\n})();\n`
   );
   assert(hookedSource !== source, 'Could not install catalog test hooks.');
   const document = {
@@ -637,6 +660,124 @@ function testCatalogSearchUtilities() {
     [42],
     'A usable catalog snapshot should still remove genuinely stale wishlist ids.'
   );
+}
+
+async function testCatalogStaticOverlayPricePrecedence() {
+  const catalog = evaluateCatalog({
+    remoteListProducts: async () => [],
+    staticFetch: async () => staticResponse([{
+      id: 801,
+      price: 12,
+      priceLabel: '$12.00',
+      displayPrice: '$12.00',
+      description: 'Legacy fixture',
+      legacyImageLabel: 'legacy-photo.jpg'
+    }])
+  });
+  const livePrice = {
+    id: 801,
+    price: 18.5,
+    priceLabel: '$18.50',
+    displayPrice: '$18.50',
+    description: 'Legacy fixture',
+    legacyImageLabel: 'legacy-photo.jpg'
+  };
+  const [preserved] = await catalog.applyStaticLegacyListingOverlay('overlay-price.json', [livePrice]);
+  equal(
+    {
+      price: preserved.price,
+      priceLabel: preserved.priceLabel,
+      displayPrice: preserved.displayPrice
+    },
+    { price: 18.5, priceLabel: '$18.50', displayPrice: '$18.50' },
+    'A valid live catalog price must not be overwritten by a stale static fallback.'
+  );
+
+  const [recovered] = await catalog.applyStaticLegacyListingOverlay('overlay-price.json', [{
+    ...livePrice,
+    price: null,
+    priceLabel: '',
+    displayPrice: ''
+  }]);
+  equal(
+    {
+      price: recovered.price,
+      priceLabel: recovered.priceLabel,
+      displayPrice: recovered.displayPrice
+    },
+    { price: 12, priceLabel: '$12.00', displayPrice: '$12.00' },
+    'Static data may recover a price only when the live row has no numeric price.'
+  );
+}
+
+async function testCatalogCacheInvalidation() {
+  let requestCount = 0;
+  const catalog = evaluateCatalog({
+    remoteListProducts: async () => [{
+      id: 901,
+      name: `Cache fixture ${++requestCount}`,
+      category: 'Basketball',
+      price: 10
+    }],
+    staticFetch: async () => staticResponse([])
+  });
+
+  const first = await catalog.loadProducts({ source: 'cache-fixture.json' });
+  const cached = await catalog.loadProducts({ source: 'cache-fixture.json' });
+  assert(requestCount === 1, 'A fresh catalog source should reuse its normalized in-memory result.');
+  assert(first[0].name === cached[0].name, 'Cached catalog reads must preserve the first normalized snapshot.');
+
+  catalog.clearCatalogDataCaches();
+  const refreshed = await catalog.loadProducts({ source: 'cache-fixture.json' });
+  assert(requestCount === 2, 'Catalog cache invalidation must request a new remote snapshot.');
+  assert(refreshed[0].name === 'Cache fixture 2', 'A refreshed catalog read must not reuse the pre-invalidation object.');
+}
+
+async function testSavedProductIdLookup() {
+  const remoteRequests = [];
+  let staticFetches = 0;
+  const remoteFirst = evaluateCatalog({
+    remoteListProducts: async (options) => {
+      remoteRequests.push(options);
+      return [
+        { id: 12, name: 'Twelve fixture', category: 'Basketball', price: 12 },
+        { id: 7, name: 'Seven fixture', category: 'Basketball', price: 7 }
+      ];
+    },
+    staticFetch: async () => {
+      staticFetches += 1;
+      return staticResponse([]);
+    }
+  });
+  const remoteResult = await remoteFirst.loadSavedProductsByIds([12, 7, 12]);
+  equal(remoteRequests, [{ ids: [12, 7] }], 'Saved product lookup must make one de-duplicated direct-ID remote request.');
+  equal(remoteResult.products.map((product) => product.id), [12, 7], 'Saved product lookup must preserve shopper-saved ID order.');
+  assert(remoteResult.isUsable && remoteResult.origin === 'remote-ids', 'A successful direct-ID response is authoritative even for a small saved set.');
+  assert(staticFetches === 0, 'A successful direct-ID remote lookup must not fetch the full static catalog.');
+
+  const noLongerAvailable = evaluateCatalog({
+    remoteListProducts: async () => [],
+    staticFetch: async () => {
+      throw new Error('Static data must not revive a product omitted by the authoritative remote lookup.');
+    }
+  });
+  const emptyResult = await noLongerAvailable.loadSavedProductsByIds([44]);
+  assert(emptyResult.isUsable && emptyResult.products.length === 0, 'An empty successful remote lookup must be treated as a valid current inventory answer.');
+
+  let fallbackFetches = 0;
+  const staticFallback = evaluateCatalog({
+    remoteListProducts: async () => { throw new Error('Remote unavailable'); },
+    staticFetch: async () => {
+      fallbackFetches += 1;
+      return staticResponse([
+        { id: 22, name: 'Twenty-two fixture', category: 'Basketball', price: 22 },
+        { id: 31, name: 'Thirty-one fixture', category: 'Basketball', price: 31 }
+      ]);
+    }
+  });
+  const fallbackResult = await staticFallback.loadSavedProductsByIds([31]);
+  equal(fallbackResult.products.map((product) => product.id), [31], 'Static fallback must still resolve requested saved IDs when remote catalog access fails.');
+  assert(fallbackResult.isUsable && fallbackFetches === 1, 'Static fallback should be attempted once after a direct-ID remote failure.');
 }
 
 function evaluateDeferredAnalytics(origin) {
@@ -916,11 +1057,15 @@ async function main() {
   testSharedAssetResolution();
   testCatalogImportStateIsolation();
   await testPublicAndAdminCatalogFieldSeparation();
+  await testBoundedRemoteCatalogCache();
   await testPinnedSupabaseLoaderFailure();
   testCartReconciliation();
   await testVerifiedCheckoutReconciliation();
   await testCatalogFallbacks();
   testCatalogSearchUtilities();
+  await testCatalogStaticOverlayPricePrecedence();
+  await testCatalogCacheInvalidation();
+  await testSavedProductIdLookup();
   testDeferredAnalyticsPageView();
   testMetricsAggregation();
   await testCheckoutIdentityPayloads();

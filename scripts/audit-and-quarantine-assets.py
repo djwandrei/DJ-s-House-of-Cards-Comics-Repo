@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify current local asset references and quarantine deleted-product-only assets."""
+"""Verify current local asset references and review deleted-product-only assets."""
 
 from __future__ import annotations
 
@@ -18,15 +18,57 @@ ASSET_RE = re.compile(r"""(?P<path>assets/[A-Za-z0-9_@%+.,'()&/#\- ]+\.(?:avif|g
 TEXT_SUFFIXES = {
     ".css", ".html", ".js", ".json", ".mjs", ".txt", ".webmanifest", ".xml"
 }
-PRODUCT_ASSET_FIELDS = (
+DISPLAY_PRODUCT_ASSET_FIELDS = (
     "image",
     "imageGallery",
+)
+OPERATIONAL_PRODUCT_ASSET_FIELDS = (
     "itemPhotoUrl",
     "itemPhotoUrls",
     "htmlImageUrls",
     "legacyImageLabel",
 )
-RASTER_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+PRODUCT_ASSET_FIELDS = DISPLAY_PRODUCT_ASSET_FIELDS + OPERATIONAL_PRODUCT_ASSET_FIELDS
+THUMBNAIL_ELIGIBLE_ROOTS = {
+    "baseball-cards",
+    "basketball-cards",
+    "collectibles",
+    "comics",
+    "ebay listing photos",
+    "personal collection",
+    "football-cards",
+}
+IGNORED_REFERENCE_ROOTS = {
+    ".codex",
+    ".deploy",
+    ".git",
+    ".superdesign",
+    "assets",
+    "dist",
+    "node_modules",
+    "output",
+    "outputs",
+    "supabase-analytics",
+    "supabase-sports-analytics",
+    "tmp",
+    ".tmp",
+}
+NON_STOREFRONT_REFERENCE_ROOTS = {
+    ".github",
+    ".githooks",
+    ".shopify",
+    "docs",
+    "Optimization Research",
+    "prototypes",
+    "reports",
+    "scripts",
+    "supabase",
+    "supabase-analytics-pbp",
+}
+# Catalog data is handled separately below.  Other text files should be small
+# source/configuration files; skipping oversized exports avoids reading private
+# analytics dumps that cannot be deployed as storefront source.
+MAX_REFERENCE_FILE_BYTES = 2 * 1024 * 1024
 
 
 def parse_args() -> argparse.Namespace:
@@ -53,34 +95,75 @@ def normalize_asset_path(value: Any) -> str:
     return raw if raw.lower().startswith("assets/") else ""
 
 
-def product_asset_paths(product: dict[str, Any]) -> set[str]:
+def product_asset_paths(
+    product: dict[str, Any], fields: tuple[str, ...] = PRODUCT_ASSET_FIELDS
+) -> set[str]:
     output: set[str] = set()
-    for field in PRODUCT_ASSET_FIELDS:
+    for field in fields:
         value = product.get(field)
         values = value if isinstance(value, list) else [value]
         for item in values:
             path = normalize_asset_path(item)
             if path:
                 output.add(path)
-                path_object = Path(path)
-                if (
-                    path_object.suffix.lower() in RASTER_SUFFIXES
-                    and not path.lower().startswith("assets/thumbnails/")
-                ):
-                    relative = path_object.relative_to("assets")
-                    output.add((Path("assets/thumbnails") / relative).with_suffix(".webp").as_posix())
     return output
 
 
-def scan_site_references(root: Path) -> dict[str, set[str]]:
-    references: dict[str, set[str]] = defaultdict(set)
-    ignored_roots = {".git", "assets", "dist", "outputs"}
-    for path in root.rglob("*"):
-        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+def generated_thumbnail_path(asset: str) -> str:
+    """Mirror the optional storefront thumbnail convention from core.js."""
+    path = Path(asset)
+    if (
+        not asset.lower().startswith("assets/")
+        or asset.lower().startswith("assets/thumbnails/")
+        or len(path.parts) < 3
+        or path.parts[1].lower() not in THUMBNAIL_ELIGIBLE_ROOTS
+        or path.suffix.lower() == ".svg"
+    ):
+        return ""
+    return (Path("assets/thumbnails") / Path(*path.parts[1:])).with_suffix(".webp").as_posix()
+
+
+def source_text_files(root: Path) -> list[Path]:
+    """Return tracked or unignored source files without walking bulk-data trees."""
+    result = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    files: list[Path] = []
+    seen: set[Path] = set()
+    for raw_path in result.stdout.decode("utf-8", errors="surrogateescape").split("\0"):
+        if not raw_path:
             continue
+        path = root / raw_path
         relative = path.relative_to(root)
-        if relative.parts and relative.parts[0] in ignored_roots:
+        if (
+            not path.is_file()
+            or path.suffix.lower() not in TEXT_SUFFIXES
+            or (
+                relative.parts
+                and relative.parts[0]
+                in IGNORED_REFERENCE_ROOTS | NON_STOREFRONT_REFERENCE_ROOTS
+            )
+        ):
             continue
+        try:
+            if path.stat().st_size > MAX_REFERENCE_FILE_BYTES:
+                continue
+        except OSError:
+            continue
+        if path not in seen:
+            seen.add(path)
+            files.append(path)
+    return files
+
+
+def scan_site_references(root: Path) -> tuple[dict[str, set[str]], int]:
+    references: dict[str, set[str]] = defaultdict(set)
+    source_files = source_text_files(root)
+    for path in source_files:
+        relative = path.relative_to(root)
         if relative.name.startswith("products") and relative.suffix.lower() in {".js", ".json"}:
             continue
         try:
@@ -91,7 +174,7 @@ def scan_site_references(root: Path) -> dict[str, set[str]]:
             asset = normalize_asset_path(match.group("path"))
             if asset:
                 references[asset].add(relative.as_posix())
-    return references
+    return references, len(source_files)
 
 
 def load_old_products(root: Path, explicit_path: str) -> list[dict[str, Any]]:
@@ -125,18 +208,30 @@ def main() -> int:
     removed_ids = sorted(set(old_by_id) - set(current_by_id))
 
     current_product_refs: dict[str, set[int]] = defaultdict(set)
+    current_operational_refs: dict[str, set[int]] = defaultdict(set)
     for product_id, product in current_by_id.items():
-        for asset in product_asset_paths(product):
+        for asset in product_asset_paths(product, DISPLAY_PRODUCT_ASSET_FIELDS):
             current_product_refs[asset].add(product_id)
-    site_refs = scan_site_references(root)
+        for asset in product_asset_paths(product, OPERATIONAL_PRODUCT_ASSET_FIELDS):
+            current_operational_refs[asset].add(product_id)
+    site_refs, scanned_source_file_count = scan_site_references(root)
     required_assets = set(current_product_refs) | set(site_refs)
     missing_required = sorted(
         asset for asset in required_assets if not (root / asset).is_file()
     )
+    optional_thumbnail_assets = sorted(
+        thumbnail
+        for asset in current_product_refs
+        if (thumbnail := generated_thumbnail_path(asset))
+        and not (root / thumbnail).is_file()
+    )
+    missing_operational_assets = sorted(
+        asset for asset in current_operational_refs if not (root / asset).is_file()
+    )
 
     deleted_refs: dict[str, set[int]] = defaultdict(set)
     for product_id in removed_ids:
-        for asset in product_asset_paths(old_by_id[product_id]):
+        for asset in product_asset_paths(old_by_id[product_id], DISPLAY_PRODUCT_ASSET_FIELDS):
             deleted_refs[asset].add(product_id)
     quarantine_candidates = sorted(
         asset
@@ -181,10 +276,14 @@ def main() -> int:
         "oldProductCount": len(old),
         "removedProductIds": removed_ids,
         "currentProductAssetReferenceCount": len(current_product_refs),
+        "currentOperationalAssetReferenceCount": len(current_operational_refs),
         "siteAssetReferenceCount": len(site_refs),
+        "scannedSourceFileCount": scanned_source_file_count,
         "requiredLocalAssetCount": len(required_assets),
         "requiredAssets": sorted(required_assets),
         "missingRequiredAssets": missing_required,
+        "missingOperationalAssets": missing_operational_assets,
+        "missingOptionalThumbnailAssets": optional_thumbnail_assets,
         "deletedProductAssetReferenceCount": len(deleted_refs),
         "quarantineCandidateCount": len(quarantine_candidates),
         "protectedDeletedAssetCount": len(protected_deleted_assets),
@@ -198,10 +297,21 @@ def main() -> int:
             {
                 key: value
                 for key, value in report.items()
-                if key not in {"moves", "protectedDeletedAssets", "removedProductIds", "requiredAssets"}
+                if key not in {
+                    "moves",
+                    "protectedDeletedAssets",
+                    "removedProductIds",
+                    "requiredAssets",
+                    "missingRequiredAssets",
+                    "missingOperationalAssets",
+                    "missingOptionalThumbnailAssets",
+                }
             }
             | {
                 "removedProductIdCount": len(removed_ids),
+                "missingRequiredAssetCount": len(missing_required),
+                "missingOperationalAssetCount": len(missing_operational_assets),
+                "missingOptionalThumbnailCount": len(optional_thumbnail_assets),
                 "moveSample": moves[:5],
             },
             indent=2,

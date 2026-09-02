@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildCandidateProducts,
   extractVerifiedMatches,
+  getStaticCatalogFallbackUrl,
   isNbaCatalogProduct,
   matchesSearch,
   normalizeSearchText
@@ -28,6 +29,14 @@ test('candidate narrowing preserves only buyer-safe NBA catalog products', () =>
   assert.equal(isNbaCatalogProduct(products[3]), false);
   assert.equal(isNbaCatalogProduct(products[4]), false);
   assert.deepEqual(buildCandidateProducts(products, 'curry').map((product) => product.id), [2, 1]);
+});
+
+test('static fallback uses the current shared catalog version and basketball segment', () => {
+  assert.equal(
+    getStaticCatalogFallbackUrl({ versionedProductAsset: (path) => `/resolved/${path}?v=current` }),
+    '/resolved/products-basketball.json?v=current'
+  );
+  assert.equal(getStaticCatalogFallbackUrl({}), '../../products-basketball.json');
 });
 
 test('verified extraction rejects title-only and wrong-product payloads', () => {

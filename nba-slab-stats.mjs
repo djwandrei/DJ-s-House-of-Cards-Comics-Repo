@@ -434,6 +434,7 @@ export async function mountNbaSlabStatsPanel(container, product, options = {}) {
   if (!Number.isSafeInteger(productId) || productId <= 0 || typeof requestStats !== 'function') {
     container.hidden = true;
     container.replaceChildren();
+    container.removeAttribute('aria-busy');
     return false;
   }
 
@@ -449,6 +450,7 @@ export async function mountNbaSlabStatsPanel(container, product, options = {}) {
     if (!markup) {
       container.hidden = true;
       container.replaceChildren();
+      container.removeAttribute('aria-busy');
       return false;
     }
 
