@@ -2885,3 +2885,327 @@ body.dark-mode .modal-listing-nav__button {
     justify-content:center;
   }
 }
+
+/* Product filters use the same deliberate card language as the catalog while
+   remaining a true dialog on narrow viewports. */
+@media (max-width:900px) {
+  .catalog-results-column .mobile-filter-trigger,
+  .mobile-filter-trigger {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    width:100%;
+    min-height:68px;
+    margin:0 0 .85rem;
+    padding:.76rem .84rem;
+    border:1px solid rgba(31,47,163,.2);
+    border-radius:18px;
+    background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(235,241,255,.96));
+    box-shadow:0 12px 24px rgba(16,27,57,.1);
+    color:var(--text);
+  }
+
+  .mobile-filter-trigger__copy {
+    gap:.16rem;
+  }
+
+  .mobile-filter-trigger__title {
+    color:var(--text);
+    font-size:1rem;
+    font-weight:900;
+  }
+
+  .mobile-filter-trigger__meta {
+    color:var(--muted);
+    font-size:.76rem;
+    font-weight:800;
+  }
+
+  .mobile-filter-trigger__icon {
+    display:grid;
+    width:1.35rem;
+    gap:.22rem;
+    padding:.12rem;
+  }
+
+  .mobile-filter-trigger__icon span {
+    position:relative;
+    display:block;
+    height:2px;
+    border-radius:999px;
+    background:var(--brand-blue);
+  }
+
+  .mobile-filter-trigger__icon span::after {
+    position:absolute;
+    top:50%;
+    width:.34rem;
+    height:.34rem;
+    border:2px solid var(--brand-red);
+    border-radius:50%;
+    background:#fff;
+    content:"";
+    transform:translateY(-50%);
+  }
+
+  .mobile-filter-trigger__icon span:nth-child(1)::after {
+    left:.15rem;
+  }
+
+  .mobile-filter-trigger__icon span:nth-child(2)::after {
+    right:.12rem;
+  }
+
+  .mobile-filter-trigger__icon span:nth-child(3)::after {
+    left:.52rem;
+  }
+
+  .filter-panel--drawer {
+    width:min(91vw,380px) !important;
+    max-width:calc(100vw - .6rem) !important;
+    padding:1rem .82rem calc(1rem + env(safe-area-inset-bottom,0)) !important;
+    border:1px solid rgba(31,47,163,.17) !important;
+    border-left:0 !important;
+    border-radius:0 26px 26px 0 !important;
+    background:linear-gradient(180deg,rgba(255,255,255,.99),rgba(242,246,255,.99)) !important;
+    box-shadow:0 24px 48px rgba(16,27,57,.25) !important;
+  }
+
+  .filter-panel--drawer .filter-panel-dismiss {
+    top:.78rem;
+    right:.78rem;
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    font-size:1.75rem;
+  }
+
+  .filter-panel--drawer .filter-panel-header {
+    display:grid;
+    gap:.42rem;
+    margin:0 0 .78rem;
+    padding:0 3.5rem .78rem 0 !important;
+    border-bottom:1px solid rgba(31,47,163,.13);
+  }
+
+  .filter-panel--drawer .filter-panel-header h2 {
+    color:var(--text);
+    font-size:1.28rem;
+    letter-spacing:-.02em;
+  }
+
+  .filter-panel--drawer .filter-panel-status {
+    padding:.58rem .62rem;
+  }
+
+  .filter-panel--drawer .filter-panel-status-copy {
+    font-size:.74rem;
+  }
+
+  .filter-panel--drawer .filter-grid {
+    display:grid;
+    gap:.62rem;
+  }
+
+  .filter-panel--drawer .field-group {
+    margin:0;
+    padding:.64rem;
+    border:1px solid rgba(16,27,57,.1);
+    border-radius:16px;
+    background:rgba(255,255,255,.76);
+    box-shadow:0 8px 18px rgba(16,27,57,.045);
+  }
+
+  .filter-panel--drawer .field-group > label:not(.facet-label-row),
+  .filter-panel--drawer .range-grid .field-group > label {
+    color:var(--text);
+    font-size:.68rem;
+    font-weight:900;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+  }
+
+  .filter-panel--drawer .facet-label-row {
+    align-items:center;
+    margin-bottom:.46rem;
+  }
+
+  .filter-panel--drawer .facet-label-row > span:first-child {
+    color:var(--text);
+    font-size:.86rem;
+    font-weight:900;
+  }
+
+  .filter-panel--drawer .facet-label-meta {
+    display:inline-flex;
+    min-height:21px;
+    padding:.13rem .38rem;
+    border-radius:999px;
+    background:rgba(31,47,163,.08);
+    color:var(--brand-blue);
+    font-size:.62rem;
+    font-weight:900;
+  }
+
+  .filter-panel--drawer .facet-group {
+    display:grid;
+    gap:.38rem;
+    padding:0;
+  }
+
+  .filter-panel--drawer .facet-options {
+    gap:.3rem;
+  }
+
+  .filter-panel--drawer .facet-option {
+    display:grid;
+    grid-template-columns:1rem minmax(0,1fr);
+    align-items:center;
+    min-height:42px;
+    gap:.5rem;
+    padding:.48rem .5rem;
+    border:1px solid transparent;
+    border-radius:12px;
+    font-size:.78rem;
+  }
+
+  .filter-panel--drawer .facet-option:has(input:checked) {
+    border-color:rgba(31,47,163,.2);
+    background:linear-gradient(135deg,rgba(31,47,163,.1),rgba(255,255,255,.88));
+  }
+
+  .filter-panel--drawer .facet-option input {
+    width:1rem;
+    height:1rem;
+    margin:0;
+    accent-color:var(--brand-blue);
+  }
+
+  .filter-panel--drawer .facet-option > span {
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:.4rem;
+    min-width:0;
+    color:var(--text);
+    font-size:.78rem;
+    font-weight:750;
+  }
+
+  .filter-panel--drawer .facet-option-text {
+    overflow-wrap:anywhere;
+  }
+
+  .filter-panel--drawer .facet-option-count {
+    flex:0 0 auto;
+    color:var(--muted);
+    font-size:.67rem;
+    font-weight:850;
+  }
+
+  .filter-panel--drawer .facet-toggle {
+    width:100%;
+    min-height:36px;
+    padding:.36rem .52rem;
+    border:1px dashed rgba(31,47,163,.26);
+    border-radius:11px;
+    background:rgba(31,47,163,.035);
+    color:var(--brand-blue);
+    font-size:.72rem;
+    font-weight:900;
+    text-decoration:none;
+  }
+
+  .filter-panel--drawer .range-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.54rem;
+    margin:0 !important;
+    padding:.64rem;
+    border:1px solid rgba(16,27,57,.1);
+    border-radius:16px;
+    background:rgba(255,255,255,.76);
+    box-shadow:0 8px 18px rgba(16,27,57,.045);
+  }
+
+  .filter-panel--drawer .range-grid .field-group {
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+  }
+
+  .filter-panel--drawer :is(input[type="number"], select) {
+    min-height:40px;
+    border-radius:11px;
+  }
+
+  body.filters-open .filter-panel--drawer .mobile-filter-actions {
+    display:grid !important;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.25fr);
+    gap:.52rem;
+    position:sticky;
+    bottom:0;
+    margin:.85rem -.08rem -.08rem;
+    padding:.82rem .08rem calc(.1rem + env(safe-area-inset-bottom,0));
+    border-top:1px solid rgba(31,47,163,.13);
+    background:linear-gradient(180deg,rgba(242,246,255,.9),rgba(255,255,255,.99) 45%);
+    box-shadow:0 -10px 22px rgba(16,27,57,.06);
+  }
+
+  .filter-panel--drawer .mobile-filter-actions :is(.button,.button-secondary) {
+    min-height:46px;
+    padding-inline:.56rem;
+    border-radius:13px;
+    font-size:.78rem;
+    font-weight:900;
+  }
+
+  body.dark-mode .mobile-filter-trigger {
+    border-color:rgba(141,183,255,.26);
+    background:linear-gradient(135deg,rgba(20,32,60,.98),rgba(12,21,42,.98));
+    box-shadow:0 12px 24px rgba(0,0,0,.24);
+  }
+
+  body.dark-mode .mobile-filter-trigger__title,
+  body.dark-mode .filter-panel--drawer .filter-panel-header h2,
+  body.dark-mode .filter-panel--drawer .facet-label-row > span:first-child,
+  body.dark-mode .filter-panel--drawer .facet-option > span {
+    color:#f5f8ff;
+  }
+
+  body.dark-mode .mobile-filter-trigger__icon span::after {
+    background:#13203d;
+  }
+
+  body.dark-mode .filter-panel--drawer {
+    border-color:rgba(255,255,255,.12) !important;
+    background:linear-gradient(180deg,rgba(16,25,47,.99),rgba(10,17,33,.99)) !important;
+    box-shadow:0 24px 48px rgba(0,0,0,.42) !important;
+  }
+
+  body.dark-mode .filter-panel--drawer .filter-panel-header,
+  body.dark-mode .filter-panel--drawer .mobile-filter-actions {
+    border-color:rgba(255,255,255,.12);
+  }
+
+  body.dark-mode .filter-panel--drawer .filter-panel-status,
+  body.dark-mode .filter-panel--drawer .field-group,
+  body.dark-mode .filter-panel--drawer .range-grid,
+  body.dark-mode .filter-panel--drawer .mobile-filter-actions {
+    background:rgba(255,255,255,.055);
+    box-shadow:none;
+  }
+
+  body.dark-mode .filter-panel--drawer .facet-option:has(input:checked) {
+    border-color:rgba(141,183,255,.28);
+    background:rgba(141,183,255,.11);
+  }
+}
+
+@media (max-width:370px) {
+  .filter-panel--drawer .range-grid {
+    grid-template-columns:1fr;
+  }
+}

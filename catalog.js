@@ -2443,13 +2443,41 @@ Thank you.`
     return activeFilters;
   }
 
+  function updateFilterPanelStatus(filters, count, config = {}, activeFilters = renderActiveFilters(filters, config)) {
+    const filterPanel = document.querySelector('.filter-panel--drawer');
+    if (!filterPanel) return;
+
+    const countNode = filterPanel.querySelector('.filter-panel-status__count');
+    const activeNode = filterPanel.querySelector('.filter-panel-status__active');
+    const contextNode = filterPanel.querySelector('.filter-panel-status-copy');
+    const resetButton = filterPanel.querySelector('[data-filter-panel-reset]');
+    const resultCount = Number.isFinite(Number(count)) ? Number(count) : 0;
+    const activeCount = activeFilters.length;
+
+    if (countNode) {
+      countNode.textContent = resultCount + ' item' + (resultCount === 1 ? '' : 's') + ' available';
+    }
+    if (activeNode) {
+      activeNode.textContent = activeCount ? activeCount + ' active' : 'All items';
+    }
+    if (contextNode) {
+      contextNode.textContent = activeCount
+        ? 'Refine the collection or reset your current selection.'
+        : 'Choose the details that matter to your collection.';
+    }
+    if (resetButton) {
+      resetButton.hidden = activeCount === 0;
+    }
+  }
+
   function updateResultsMeta(filters, count, config = {}, renderState = {}) {
     const resultsSummary = document.getElementById('resultsSummary');
     const activeFiltersWrap = document.getElementById('activeFilters');
     const resultsLive = document.getElementById('resultsLive');
+    const activeFilters = renderActiveFilters(filters, config);
+    updateFilterPanelStatus(filters, count, config, activeFilters);
     if (!resultsSummary && !activeFiltersWrap && !resultsLive) return;
 
-    const activeFilters = renderActiveFilters(filters, config);
     const totalCount = Number.isFinite(Number(renderState.totalCount)) ? Number(renderState.totalCount) : count;
     const pageStart = Number(renderState.pageStart);
     const pageEnd = Number(renderState.pageEnd);
@@ -2699,15 +2727,53 @@ Thank you.`
     const searchLabel = document.querySelector('label[for="searchInput"]');
     const clearButton = document.getElementById('clearFilters');
     const sortSelect = document.getElementById('sortSelect');
+    const filterContextByPage = {
+      shop: 'Browse inventory',
+      'sports-hub': 'Sports card inventory',
+      comics: 'Comic inventory',
+      collectibles: 'Collectibles inventory',
+      'baseball-cards': 'Baseball inventory',
+      'basketball-cards': 'Basketball inventory',
+      'football-cards': 'Football inventory'
+    };
 
     if (filterPanelTitle) filterPanelTitle.textContent = 'Filters';
     filterPanelDescription?.remove();
+    if (filterPanelHeader) {
+      let eyebrow = filterPanelHeader.querySelector('.filter-panel-eyebrow');
+      if (!eyebrow) {
+        eyebrow = document.createElement('span');
+        eyebrow.className = 'filter-panel-eyebrow';
+        filterPanelHeader.prepend(eyebrow);
+      }
+      eyebrow.textContent = filterContextByPage[document.body.dataset.page || ''] || 'Browse inventory';
+
+      if (!filterPanelHeader.querySelector('.filter-panel-status')) {
+        filterPanelHeader.insertAdjacentHTML('beforeend',
+          '<div class="filter-panel-status">'
+          + '<span class="filter-panel-status__summary">'
+          + '<strong class="filter-panel-status__count">Loading inventory</strong>'
+          + '<span class="filter-panel-status__active">All items</span>'
+          + '</span>'
+          + '<button type="button" class="filter-panel-status__reset" data-filter-panel-reset hidden>Reset</button>'
+          + '</div>'
+          + '<p class="filter-panel-status-copy">Choose the details that matter to your collection.</p>'
+        );
+      }
+
+      const panelResetButton = filterPanelHeader.querySelector('[data-filter-panel-reset]');
+      if (panelResetButton && panelResetButton.dataset.bound !== 'true') {
+        panelResetButton.dataset.bound = 'true';
+        panelResetButton.addEventListener('click', () => clearButton?.click());
+      }
+    }
     removeCategoryField();
     if (searchLabel && config.searchLabel) searchLabel.textContent = config.searchLabel;
     if (searchInput && config.searchPlaceholder) searchInput.placeholder = config.searchPlaceholder;
     if (filterHelp && config.helperText) filterHelp.textContent = config.helperText;
     if (clearButton) clearButton.textContent = 'Reset all filters';
     if (sortSelect) {
+      sortSelect.closest('.field-group')?.classList.add('field-group--sort-source');
       Array.from(sortSelect.options).forEach((option) => {
         option.textContent = getSortLabel(option.value);
       });
@@ -3826,7 +3892,7 @@ Thank you.`
     panelFooter.className = 'mobile-filter-actions';
     panelFooter.innerHTML = `
       <button type="button" class="button-secondary mobile-filter-reset">Reset all</button>
-      <button type="button" class="button mobile-filter-done">Done</button>
+      <button type="button" class="button mobile-filter-done">Show results</button>
     `;
 
     filterPanel.append(panelFooter);
@@ -3842,7 +3908,7 @@ Thank you.`
         <span class="mobile-filter-trigger__title">Filters</span>
         <span class="mobile-filter-trigger__meta">All items</span>
       </span>
-      <span class="mobile-filter-trigger__icon" aria-hidden="true">&#9776;</span>
+      <span class="mobile-filter-trigger__icon" aria-hidden="true"><span></span><span></span><span></span></span>
     `;
 
     filterPanel.parentNode.insertBefore(trigger, filterPanel);
@@ -3874,6 +3940,12 @@ Thank you.`
         } else {
           metaNode.textContent = activeCount ? `${count} shown | ${activeCount} active` : `${count} shown`;
         }
+      }
+      if (doneButton) {
+        const resultCount = Number(count);
+        doneButton.textContent = Number.isFinite(resultCount)
+          ? `Show ${resultCount} result${resultCount === 1 ? '' : 's'}`
+          : 'Show results';
       }
     };
 
