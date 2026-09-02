@@ -106,61 +106,38 @@
       "updatedAt": "2026-08-31T12:30:32.6950572Z"
     },
     "/tools/player-card-matchups/": {
-      "targetKind": "new-ui",
-      "projectId": "8ca1ba0a-48a6-41e3-898a-5eaf86732679",
-      "baselineDraftId": "5037c510-df6c-4422-9412-496f9a74376e",
-      "activeDraftId": "5037c510-df6c-4422-9412-496f9a74376e",
-      "sourceTarget": "/tools/",
-      "sourceDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "targetKind": "existing-ui",
+      "projectId": "4ae16f51-2795-44a6-acf1-79b9c890a735",
+      "baselineDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
+      "activeDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
       "designSystemPath": ".superdesign/design-system.md",
-      "referenceIds": [
-        "assets-dj-logo.png"
-      ],
-      "brandAssets": {
-        "logo": {
-          "assetKey": "assets-dj-logo.png",
-          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8ca1ba0a-48a6-41e3-898a-5eaf86732679/brand-assets/assets-dj-logo.png/dj-logo.png",
-          "sourcePath": "assets/dj-logo.png"
-        }
-      },
       "contextFiles": [
         ".superdesign/design-system.md",
-        "tools/index.html",
-        "tools/registry.js",
-        "tools/fan-tools.js",
+        "tools/player-card-matchups/index.html",
+        "tools/player-card-matchups/player-card-matchups.css",
         "tools/fan-tools.css",
-        "nav.js",
-        "core.js:1:180",
-        "core.js:776:910",
-        "core.js:1190:1420",
         "styles.css:1:344",
-        "styles.css:3113:3224",
-        "styles.css:3394:3626",
-        "styles.css:5710:6380",
-        "styles-mobile-overrides.css:1:700",
-        "styles-mobile-overrides.css:1340:1530"
+        "styles.css:7190:7222",
+        "styles-mobile-overrides.css:540:555",
+        "styles-mobile-overrides.css:2617:2630"
       ],
       "fingerprints": {
         ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
-        "tools/index.html": "a5802a0835223e5ab29f7a3c07f6f7cb7d395a2ec811d7d159c4b353720ec14d",
-        "tools/registry.js": "c0248920d740babe52dd2ceb9f4b457458deccc205fa1ac40924ae0664a5afcb",
-        "tools/fan-tools.js": "d7670f68b3db5ab100e6c13e7478979e5d99c6a85415a71f4e2b54d3b71375cf",
-        "tools/fan-tools.css": "bf5f3b4be8f8b3dfd75237c67667c6073453ec77aaea8b40a99d39e807aab57f",
-        "nav.js": "69101b4b5217783222a24cd29f677973a883406a2aafa7895b48bfad51c78645",
-        "core.js": "f5ae87152e66345c73592c3761ff2873865fc837e0155b1612dfbb026531ea67",
-        "styles.css": "9028c22311b853fd5b558a8eaf9439ea33f3f93210acf87fb743aefe5d1622ca",
-        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+        "tools/player-card-matchups/index.html": "acc94af136baa83990d182370029d78836d47419e5876a44efdbd3f6ded206aa",
+        "tools/player-card-matchups/player-card-matchups.css": "1f77d6f57b8cefe03dd618a976ed3ed6799cd519b6dbf2fb5488de08e2275f68",
+        "tools/fan-tools.css": "2b11ef0d2dc70d07f7e72faecc7584415f84a5df70e5981efb3f935f19e18952",
+        "styles.css": "72e89439d6f53fbe5039ba36c9ac6e64358ea5dd9dcb1563205330875843a4d0",
+        "styles-mobile-overrides.css": "60d7862cc1101d6e94c7e15fe0061602248b3db8ec9373331a3abef16d171701"
       },
       "components": [],
       "drafts": {
-        "5037c510-df6c-4422-9412-496f9a74376e": {
-          "title": "Player & Card Matchups Explorer",
-          "visualDirection": "verified-only player search with mapped athlete context, exact card results, honest no-match state, Lineup Lab bridge, and read-only commerce guardrails",
-          "parentDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
-          "currentVersion": 1
+        "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1": {
+          "title": "Current Player & Card Matchups",
+          "visualDirection": "collector-native verified NBA lookup with a high-contrast status panel, readable methodology rail, and clear catalog actions",
+          "currentVersion": 3
         }
       },
-      "updatedAt": "2026-08-31T12:30:32.6950572Z"
+      "updatedAt": "2026-09-02T13:09:09.7030900Z"
     },
     "/": {
       "targetKind": "existing-ui",

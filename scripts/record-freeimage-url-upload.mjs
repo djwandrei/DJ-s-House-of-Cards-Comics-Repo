@@ -52,6 +52,9 @@ function parseArgs(argv) {
     directs: decodeUrlArray(values.get('direct-base64'), 'direct'),
     album: String(values.get('album')).trim(),
     label,
+    sourceIndexes: values.has('source-indexes-base64')
+      ? decodeSourceIndexes(values.get('source-indexes-base64'), take)
+      : null,
   };
 }
 
@@ -64,6 +67,26 @@ function decodeUrlArray(encoded, kind) {
   }
   if (!Array.isArray(values)) throw new Error(`--${kind}-base64 must decode to a JSON array.`);
   return values.map((value) => validateHttpsUrl(value, kind));
+}
+
+function decodeSourceIndexes(encoded, take) {
+  let values;
+  try {
+    values = JSON.parse(Buffer.from(String(encoded), 'base64').toString('utf8'));
+  } catch {
+    throw new Error('--source-indexes-base64 must decode to a JSON array.');
+  }
+  if (!Array.isArray(values) || values.length !== take) {
+    throw new Error(`--source-indexes-base64 must contain exactly --take (${take}) indexes.`);
+  }
+  const indexes = values.map((value) => Number(value));
+  if (!indexes.every((value) => Number.isInteger(value) && value >= 0)) {
+    throw new Error('--source-indexes-base64 must contain non-negative integer indexes.');
+  }
+  if (new Set(indexes).size !== indexes.length || indexes.some((value, index) => index && value <= indexes[index - 1])) {
+    throw new Error('--source-indexes-base64 must be unique and strictly ascending.');
+  }
+  return indexes;
 }
 
 function validateHttpsUrl(value, kind) {
@@ -81,13 +104,15 @@ function readJsonl(filePath) {
   });
 }
 
-function sourceUrls(filePath, take) {
+function sourceUrls(filePath, take, sourceIndexes) {
   const lines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   if (lines.length < take) throw new Error(`Source batch has ${lines.length} URLs but --take is ${take}.`);
-  const urls = lines.slice(0, take);
+  const indexes = sourceIndexes ?? Array.from({ length: take }, (_, index) => index);
+  if (indexes.some((index) => index >= lines.length)) throw new Error('A supplied source index is outside the source batch.');
+  const urls = indexes.map((index) => lines[index]);
   if (new Set(urls).size !== urls.length) throw new Error('Source batch contains duplicate URLs in the selected range.');
   for (const url of urls) validateHttpsUrl(url, 'source');
-  return urls;
+  return { urls, indexes };
 }
 
 function validatePair(viewer, direct) {
@@ -119,7 +144,7 @@ function main(argv = process.argv.slice(2)) {
     if (byRemoteUrl.has(remoteUrl)) throw new Error(`Manifest has duplicate remote URL: ${remoteUrl}`);
     byRemoteUrl.set(remoteUrl, row);
   }
-  const urls = sourceUrls(options.sourceBatch, options.take);
+  const { urls, indexes } = sourceUrls(options.sourceBatch, options.take, options.sourceIndexes);
   const uploadedAt = new Date().toISOString();
   const ledgerRows = urls.map((remoteUrl, index) => {
     const source = byRemoteUrl.get(remoteUrl);
@@ -133,6 +158,7 @@ function main(argv = process.argv.slice(2)) {
       sport: options.sport,
       album_label: options.album,
       upload_index: index,
+      source_batch_index: indexes[index],
       player_id: String(source.player_id ?? ''),
       player_name: String(source.player_name ?? ''),
       remote_url: remoteUrl,
@@ -155,7 +181,7 @@ function main(argv = process.argv.slice(2)) {
     album_label: options.album,
     rows: ledgerRows.length,
     source_batch: path.relative(ROOT, options.sourceBatch),
-    source_range: { start_index: 0, end_index: options.take - 1 },
+    source_indexes: indexes,
     ledger: path.relative(ROOT, ledgerPath),
   }, null, 2)}\n`);
   console.log(JSON.stringify({ ledger: path.relative(ROOT, ledgerPath), summary: path.relative(ROOT, summaryPath), rows: ledgerRows.length }, null, 2));

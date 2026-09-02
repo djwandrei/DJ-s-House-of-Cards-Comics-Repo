@@ -1,8 +1,0 @@
-# Narrow cPanel release for the June 18, 2026 Meta feed and static fallback pass.
-baseball-cards.html
-basketball-cards.html
-collectibles.html
-comics.html
-feeds/facebook-products.csv
-football-cards.html
-index.html
