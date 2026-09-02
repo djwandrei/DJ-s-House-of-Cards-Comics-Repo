@@ -1,0 +1,29 @@
+# Fan Tools and Player & Card Matchups cache activation pages.
+# Upload only after the paired assets manifest. Zero-delete path list.
+about.html
+account.html
+admin.html
+baseball-cards.html
+basketball-cards.html
+cart.html
+checkout-success.html
+collectibles.html
+comics.html
+contact.html
+football-cards.html
+inbox.html
+index.html
+metrics.html
+offer.html
+offline.html
+policies.html
+returns.html
+sell-trade-want-list.html
+shipping.html
+shop.html
+sports-cards.html
+tools/index.html
+tools/player-card-matchups/index.html
+tools/workshop/index.html
+wishlist.html
+sw.js

@@ -32,6 +32,7 @@ const crawlableNoindex = new Set([
   'lineup-lab/index.html',
   'tools/index.html',
   'tools/player-card-matchups/index.html',
+  'tools/workshop/index.html',
   'offline.html'
 ]);
 const authenticationProtected = new Set(['admin.html', 'inbox.html', 'metrics.html']);
@@ -72,6 +73,7 @@ function expectedCanonical(file) {
   if (file === 'lineup-lab/index.html') return `${SITE_ORIGIN}/lineup-lab/`;
   if (file === 'tools/index.html') return `${SITE_ORIGIN}/tools/`;
   if (file === 'tools/player-card-matchups/index.html') return `${SITE_ORIGIN}/tools/player-card-matchups/`;
+  if (file === 'tools/workshop/index.html') return `${SITE_ORIGIN}/tools/workshop/`;
   return file === 'index.html' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}/${file}`;
 }
 

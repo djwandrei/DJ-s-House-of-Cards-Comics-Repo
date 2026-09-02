@@ -79,8 +79,9 @@ function createRoadmapCard(tool) {
     const link = document.createElement('a');
     link.className = 'tool-roadmap-card__link';
     link.href = tool.href;
-    link.textContent = 'Open tool';
-    link.setAttribute('aria-label', `Open ${tool.title}`);
+    const label = tool.launchLabel || 'Open tool';
+    link.textContent = label;
+    link.setAttribute('aria-label', `${label} for ${tool.title}`);
     footer.append(link);
   }
   copy.append(footer);

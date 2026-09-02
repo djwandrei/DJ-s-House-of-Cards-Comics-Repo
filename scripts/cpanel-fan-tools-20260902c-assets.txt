@@ -1,0 +1,11 @@
+# Fan Tools and Player & Card Matchups cacheable assets.
+# Upload before the activation-page manifest. Zero-delete path list.
+core.js
+tools/fan-tools.css
+tools/fan-tools.js
+tools/registry.js
+tools/player-card-matchups/player-card-matchups.css
+tools/workshop/definitions.js
+tools/workshop/tool-workshop.css
+tools/workshop/tool-workshop.js
+tools/workshop/workshop-state.js

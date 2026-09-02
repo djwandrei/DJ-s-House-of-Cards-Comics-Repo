@@ -36,6 +36,7 @@ const PUBLIC_PAGE_PATHS = [
   '/offline.html',
   '/tools/index.html',
   '/tools/player-card-matchups/index.html',
+  '/tools/workshop/index.html',
   '/lineup-lab/index.html'
 ];
 const VISUAL_MATRIX_VIEWPORTS = [

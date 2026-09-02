@@ -119,14 +119,16 @@
 
 .matchup-hero-panel h2 {
   margin:0 0 .55rem;
-  color:#17213a;
+  /* The shared image-hero rule intentionally uses !important for white copy.
+     This panel is a light surface within that hero, so restore its contrast. */
+  color:#17213a !important;
   font-size:clamp(1.4rem,2vw,1.72rem);
   text-shadow:none;
 }
 
 .matchup-hero-panel p {
   margin:0;
-  color:#646d80;
+  color:#646d80 !important;
   font-size:.9rem;
   line-height:1.55;
 }
@@ -255,19 +257,45 @@
 }
 
 .matchup-status {
-  min-height:1.45rem;
-  margin:1.05rem .2rem 1.25rem;
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  min-height:2.6rem;
+  margin:1rem 0 1.25rem;
+  padding:.56rem .78rem;
+  border:1px solid rgba(31,47,163,.09);
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(31,47,163,.045),rgba(239,24,35,.022));
   color:var(--muted);
   font-size:.78rem;
   line-height:1.5;
+}
+
+.matchup-status::before {
+  width:.44rem;
+  height:.44rem;
+  flex:0 0 auto;
+  border-radius:50%;
+  background:#8390a8;
+  content:'';
 }
 
 .matchup-status[data-state="loading"] {
   color:var(--brand-blue);
 }
 
+.matchup-status[data-state="loading"]::before {
+  background:var(--brand-blue);
+  box-shadow:0 0 0 .25rem rgba(31,47,163,.1);
+}
+
 .matchup-status[data-state="error"] {
   color:#a3222a;
+}
+
+.matchup-status[data-state="error"]::before {
+  background:#c52a35;
+  box-shadow:0 0 0 .25rem rgba(197,42,53,.09);
 }
 
 .matchup-player-card {
@@ -464,11 +492,25 @@
 }
 
 .matchup-result-link {
+  display:inline-flex;
+  align-items:center;
+  min-height:32px;
+  padding:.38rem .56rem;
+  border:1px solid rgba(31,47,163,.14);
+  border-radius:9px;
+  background:rgba(31,47,163,.045);
   color:var(--brand-blue);
   font-size:.72rem;
   font-weight:850;
-  text-decoration:underline;
-  text-underline-offset:2px;
+  text-decoration:none;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+
+.matchup-result-link:hover,
+.matchup-result-link:focus-visible {
+  border-color:rgba(31,47,163,.34);
+  background:rgba(31,47,163,.09);
+  transform:translateY(-1px);
 }
 
 .matchup-empty-state {
@@ -534,14 +576,17 @@
   display:grid;
   grid-template-columns:28px minmax(0,1fr);
   gap:.65rem;
+  align-items:start;
   counter-increment:method;
 }
 
 .matchup-methodology li::before {
   display:grid;
+  grid-row:span 2;
   width:28px;
   height:28px;
   place-items:center;
+  align-self:start;
   border-radius:50%;
   background:#17213a;
   color:#fff;
@@ -641,11 +686,11 @@ body.dark-mode .matchup-result-price,
 body.dark-mode .matchup-empty-state h2,
 body.dark-mode .matchup-methodology h2,
 body.dark-mode .matchup-methodology strong {
-  color:#fff;
+  color:#fff !important;
 }
 
 body.dark-mode .matchup-hero-panel p {
-  color:#b9c1d2;
+  color:#b9c1d2 !important;
 }
 
 body.dark-mode .matchup-pills span,
@@ -659,6 +704,25 @@ body.dark-mode .matchup-search-row input {
   border-color:rgba(255,255,255,.16);
   background:#151f36;
   color:#fff;
+}
+
+body.dark-mode .matchup-status {
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.055);
+}
+
+body.dark-mode .matchup-status::before {
+  background:#9eaac5;
+}
+
+body.dark-mode .matchup-status[data-state="loading"]::before {
+  background:#91a6ff;
+  box-shadow:0 0 0 .25rem rgba(145,166,255,.12);
+}
+
+body.dark-mode .matchup-status[data-state="error"]::before {
+  background:#ff99a2;
+  box-shadow:0 0 0 .25rem rgba(255,153,162,.11);
 }
 
 body.dark-mode .matchup-player-card {
@@ -677,6 +741,18 @@ body.dark-mode .matchup-result-badge {
 
 body.dark-mode .matchup-methodology li::before {
   background:#30416f;
+}
+
+body.dark-mode .matchup-result-link {
+  border-color:rgba(145,166,255,.24);
+  background:rgba(145,166,255,.09);
+  color:#b9c6ff;
+}
+
+body.dark-mode .matchup-result-link:hover,
+body.dark-mode .matchup-result-link:focus-visible {
+  border-color:rgba(185,198,255,.52);
+  background:rgba(145,166,255,.16);
 }
 
 @media (max-width:960px) {

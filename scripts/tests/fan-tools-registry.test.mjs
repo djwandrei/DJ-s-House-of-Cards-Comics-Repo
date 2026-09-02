@@ -23,11 +23,18 @@ test('fan tool registry has unique, complete metadata', () => {
     assert.ok(tool.implementationNotes.length > 20);
 
     if (tool.href) {
-      const routePath = path.resolve(root, 'tools', tool.href);
+      const routeUrl = new URL(tool.href, 'https://local.djhc.test/tools/');
+      assert.equal(routeUrl.origin, 'https://local.djhc.test', `${tool.id} route must remain local`);
+      const routePath = path.resolve(root, decodeURIComponent(routeUrl.pathname).replace(/^\/+/, ''));
       const relativeRoute = path.relative(root, routePath);
       assert.ok(relativeRoute && !relativeRoute.startsWith('..') && !path.isAbsolute(relativeRoute), `${tool.id} route escapes the site root`);
       const routeEntry = fs.statSync(routePath).isDirectory() ? path.join(routePath, 'index.html') : routePath;
       assert.ok(fs.existsSync(routeEntry) && fs.statSync(routeEntry).isFile(), `${tool.id} route has no page entry file`);
+
+      if (routeUrl.pathname === '/tools/workshop/') {
+        assert.equal(routeUrl.searchParams.get('experience'), tool.id, `${tool.id} workshop route must identify its experience`);
+        assert.equal(tool.launchLabel, 'Open framework', `${tool.id} workshop route needs an honest launch label`);
+      }
     } else if (tool.status === TOOL_STATUSES.LIVE) {
       assert.fail(`${tool.id} is live but has no route`);
     } else {
@@ -68,17 +75,17 @@ test('fan tool filters preserve registry order and status boundaries', () => {
     filterRegistry(TOOL_STATUSES.LIVE).map((tool) => tool.id),
     ['lineup-lab']
   );
-  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 4);
-  assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 1);
+  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 15);
+  assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 4);
   assert.equal(formatToolsStatus('all', TOOL_REGISTRY.length), `Showing ${TOOL_REGISTRY.length} fan tools.`);
   assert.equal(formatToolsStatus(TOOL_STATUSES.LIVE, 1), 'Showing 1 live fan tool.');
-  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 4), 'Showing 4 planned fan tools.');
+  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 15), 'Showing 15 planned fan tools.');
 });
 
 test('fan tool status summary is derived from the registry', () => {
   assert.deepEqual(countRegistryByStatus(), {
     [TOOL_STATUSES.LIVE]: 1,
-    [TOOL_STATUSES.PLANNED]: 4,
-    [TOOL_STATUSES.RESEARCH]: 1
+    [TOOL_STATUSES.PLANNED]: 15,
+    [TOOL_STATUSES.RESEARCH]: 4
   });
 });

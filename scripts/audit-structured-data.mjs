@@ -54,7 +54,8 @@ const EXPECTED_PAGE_TYPES = {
 
 const NESTED_PAGE_TYPES = {
   'tools/index.html': 'CollectionPage',
-  'tools/player-card-matchups/index.html': 'CollectionPage'
+  'tools/player-card-matchups/index.html': 'CollectionPage',
+  'tools/workshop/index.html': 'WebPage'
 };
 
 function discoverToolsHtml(relativeDirectory = 'tools') {
