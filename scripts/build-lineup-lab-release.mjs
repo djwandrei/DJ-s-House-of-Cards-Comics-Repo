@@ -10,11 +10,16 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // storefront's shared cache contract. Bump this only when the generated Lab
 // files change so a later reviewed path-list release cannot serve stale model
 // logic or interface copy from a browser cache.
-const RELEASE_ASSET_VERSION = "20260901c";
+const RELEASE_ASSET_VERSION = "20260901d";
 const releaseFiles = [
   "index.html",
   "app.js",
   "optimizer-config.js",
+  "projection-parameters.js",
+  "player-projection.js",
+  "lineup-role-model.js",
+  "scout-impact.js",
+  "rotation-unit-planner.js",
   "optimizer-core.js",
   "optimizer-worker.js",
   "player-data.js",

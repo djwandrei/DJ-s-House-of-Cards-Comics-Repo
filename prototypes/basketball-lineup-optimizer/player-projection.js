@@ -115,13 +115,14 @@ export function projectPlayerResponsibility(
     };
   }
 
-  // Older fixtures and CSV imports may not include usage. Retain a smaller,
-  // explicit fallback based on the unobserved share of the role rather than
-  // pretending usage was zero or silently giving the row full confidence.
-  const fallbackRetention = Math.max(
-    0.55,
-    1 - (expansionShare * strength * elasticity * 0.45),
-  );
+  // Older fixtures and CSV imports may not include usage. Preserve the prior
+  // conservative role-volume contract: only the share supported by observed
+  // minutes keeps an above-baseline advantage. This is intentionally stricter
+  // than the reported-usage path, because the model cannot distinguish a true
+  // low-usage specialist from a missing analytics row.
+  const fallbackRetention = requestedMinutes > 0 && sourceMinutes > 0
+    ? Math.min(1, sourceMinutes / requestedMinutes)
+    : 1;
   return {
     available: false,
     source: "role-volume-fallback",
@@ -265,4 +266,3 @@ export function projectRotationUsageDemand(players, minutesById, parameters) {
     })),
   };
 }
-

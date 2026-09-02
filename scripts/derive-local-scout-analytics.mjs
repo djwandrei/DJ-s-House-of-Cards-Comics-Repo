@@ -234,6 +234,31 @@ function comboKey(teamId, ids) {
   return `${teamId}~${ids.length}~${ids.join('|')}`;
 }
 
+/**
+ * Selects the first and final exact lineup stints that are actually observed
+ * at a possession start. A reconstructed dead-ball substitution can create a
+ * valid zero-duration/end-of-game stint; crediting it as a starter or closer
+ * would make role counts disagree with the possession-defined on/off sample.
+ */
+export function selectPossessionObservedBoundaryLineups({
+  teamId,
+  exactLineups = [],
+  observedLineupKeys = new Set(),
+} = {}) {
+  const normalizedTeamId = String(teamId ?? '').trim();
+  if (!normalizedTeamId) return { starterIds: null, closerIds: null };
+  const observed = observedLineupKeys instanceof Set
+    ? observedLineupKeys
+    : new Set(Array.isArray(observedLineupKeys) ? observedLineupKeys : []);
+  const candidates = (Array.isArray(exactLineups) ? exactLineups : [])
+    .filter((ids) => Array.isArray(ids) && ids.length === 5);
+  const wasObservedAtPossessionStart = (ids) => observed.has(comboKey(normalizedTeamId, ids));
+  return {
+    starterIds: candidates.find(wasObservedAtPossessionStart) ?? null,
+    closerIds: [...candidates].reverse().find(wasObservedAtPossessionStart) ?? null,
+  };
+}
+
 function wowyKey(teamId, playerA, playerB) {
   return `${teamId}~${playerA}~${playerB}`;
 }
@@ -1002,25 +1027,14 @@ async function derive() {
       }))
       .filter((stint) => stint.homeIds && stint.awayIds)
       .sort((left, right) => left.ordinal - right.ordinal || left.index - right.index);
-    if (exactStints.length) {
-      const starting = exactStints[0];
-      const closing = exactStints[exactStints.length - 1];
-      for (const [teamId, starterIds, closerIds] of [
-        [homeTeamId, starting.homeIds, closing.homeIds],
-        [awayTeamId, starting.awayIds, closing.awayIds],
-      ]) {
-        incrementCount(lineupStartCounts, comboKey(teamId, starterIds));
-        incrementCount(lineupCloseCounts, comboKey(teamId, closerIds));
-        for (const playerId of starterIds) incrementCount(playerStartCounts, `${teamId}~${playerId}`);
-        for (const playerId of closerIds) incrementCount(playerCloseCounts, `${teamId}~${playerId}`);
-      }
-    }
     for (const [teamId, appeared] of appearedPlayersByTeam.entries()) {
       for (const playerId of appeared) {
         const key = `${teamId}~${playerId}`;
         playerScopeMinutes.set(key, (playerScopeMinutes.get(key) ?? 0) + (teamStintMinutes.get(teamId) ?? 0));
       }
     }
+
+    const possessionObservedLineupKeysByTeam = new Map([[homeTeamId, new Set()], [awayTeamId, new Set()]]);
 
     for (const possession of record.possessions ?? []) {
       const homePlayerIds = exactLineup(possession.homeLineupId, maps.lineups);
@@ -1101,6 +1115,7 @@ async function derive() {
         { teamId: awayTeamId, side: 'away', ids: awayPlayerIds, opponentIds: homePlayerIds },
       ];
       for (const side of sides) {
+        possessionObservedLineupKeysByTeam.get(side.teamId).add(comboKey(side.teamId, side.ids));
         const isOffense = side.teamId === offenseTeamId;
         const row = {
           gameId,
@@ -1164,6 +1179,27 @@ async function derive() {
             if (!entry.cells.has(cell)) entry.cells.set(cell, new Map());
             aggregateInto(entry.cells.get(cell), contexts, row);
           }
+        }
+      }
+    }
+
+    if (exactStints.length) {
+      for (const [teamId, exactLineups] of [
+        [homeTeamId, exactStints.map((stint) => stint.homeIds)],
+        [awayTeamId, exactStints.map((stint) => stint.awayIds)],
+      ]) {
+        const { starterIds, closerIds } = selectPossessionObservedBoundaryLineups({
+          teamId,
+          exactLineups,
+          observedLineupKeys: possessionObservedLineupKeysByTeam.get(teamId),
+        });
+        if (starterIds) {
+          incrementCount(lineupStartCounts, comboKey(teamId, starterIds));
+          for (const playerId of starterIds) incrementCount(playerStartCounts, `${teamId}~${playerId}`);
+        }
+        if (closerIds) {
+          incrementCount(lineupCloseCounts, comboKey(teamId, closerIds));
+          for (const playerId of closerIds) incrementCount(playerCloseCounts, `${teamId}~${playerId}`);
         }
       }
     }
@@ -1274,7 +1310,7 @@ async function derive() {
         exactLineupStartRate: entry.size === 5 ? ratioOrNull(lineupStartCounts.get(key) ?? 0, finite(contexts.all?.games), 4) : null,
         exactLineupCloseRate: entry.size === 5 ? ratioOrNull(lineupCloseCounts.get(key) ?? 0, finite(contexts.all?.games), 4) : null,
         caveat: entry.size === 5
-          ? 'Starting and closing counts use the first and final verified exact-lineup stint in each eligible game; they are unavailable where a game lacks any verified exact stint.'
+          ? 'Starting and closing counts use the first and final verified exact-lineup stint observed at a possession start in each eligible game; zero-possession dead-ball lineups are excluded.'
           : 'Starting and closing counts are meaningful only for exact five-player lineups; this row is a co-presence combination.',
       },
       contexts,

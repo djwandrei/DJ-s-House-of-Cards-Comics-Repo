@@ -5,6 +5,7 @@ import {
   createDirectPlayerEventLine,
   homeCourtExposureAdjustmentPer100,
   playerProfileFromEvents,
+  selectPossessionObservedBoundaryLineups,
 } from '../derive-local-scout-analytics.mjs';
 
 test('lineup home-court context scales the net RAPM venue effect by observed exposure', () => {
@@ -105,4 +106,20 @@ test('lineup home-court context fails closed for missing or invalid inputs', () 
   ]) {
     assert.equal(homeCourtExposureAdjustmentPer100(input), null);
   }
+});
+
+test('boundary lineup roles exclude an unobserved dead-ball final lineup', () => {
+  const teamId = 'team-a';
+  const opening = ['a1', 'a2', 'a3', 'a4', 'a5'];
+  const closing = ['a1', 'a2', 'a3', 'a4', 'a6'];
+  const unobservedDeadBallLineup = ['a1', 'a2', 'a3', 'a4', 'a7'];
+  const key = (ids) => `${teamId}~5~${ids.join('|')}`;
+  const result = selectPossessionObservedBoundaryLineups({
+    teamId,
+    exactLineups: [opening, closing, unobservedDeadBallLineup],
+    observedLineupKeys: new Set([key(opening), key(closing)]),
+  });
+
+  assert.deepEqual(result.starterIds, opening);
+  assert.deepEqual(result.closerIds, closing);
 });

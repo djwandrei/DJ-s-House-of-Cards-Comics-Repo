@@ -17,6 +17,8 @@ const ROTATION_MINUTE_PLAN_VALUES = new Set(["historicalAware", "openWhatIf"]);
 const ROTATION_ALLOCATION_STYLE_VALUES = new Set(["preserveWorkload", "strategyFirst"]);
 const ROTATION_RATE_STABILITY_VALUES = new Set(["sampleAdjusted", "raw"]);
 const ROTATION_POSITION_PROFILE_VALUES = new Set(["automatic", "traditional", "small", "big"]);
+const PROJECTION_RISK_VALUES = new Set(["reliable", "balanced", "upside"]);
+const ROLE_BALANCE_VALUES = new Set(["off", "recommended", "emphasized"]);
 // These sets mirror the visible selects in index.html. A shared URL must never
 // claim to restore an assumption the receiving UI cannot actually represent.
 const ROTATION_MINUTE_FLEXIBILITY_VALUES = new Set([4, 8, 12, 16]);
@@ -195,6 +197,12 @@ export function encodeScenarioQuery(input = {}) {
   if (ROTATION_RATE_STABILITY_VALUES.has(input.rotationRateStability)) {
     params.set("rateStability", input.rotationRateStability);
   }
+  if (PROJECTION_RISK_VALUES.has(input.projectionRisk)) {
+    params.set("risk", input.projectionRisk);
+  }
+  if (ROLE_BALANCE_VALUES.has(input.roleBalance)) {
+    params.set("roleBalance", input.roleBalance);
+  }
   if (ROTATION_POSITION_PROFILE_VALUES.has(input.rotationPositionProfile)) {
     params.set("roleProfile", input.rotationPositionProfile);
   }
@@ -331,6 +339,16 @@ export function decodeScenarioQuery(search = "") {
   if (rotationRateStability) {
     if (ROTATION_RATE_STABILITY_VALUES.has(rotationRateStability)) scenario.rotationRateStability = rotationRateStability;
     else warnings.push("Ignored an invalid rotation rate-stability setting from the shared link.");
+  }
+  const projectionRisk = params.get("risk");
+  if (projectionRisk) {
+    if (PROJECTION_RISK_VALUES.has(projectionRisk)) scenario.projectionRisk = projectionRisk;
+    else warnings.push("Ignored an invalid projection-risk setting from the shared link.");
+  }
+  const roleBalance = params.get("roleBalance");
+  if (roleBalance) {
+    if (ROLE_BALANCE_VALUES.has(roleBalance)) scenario.roleBalance = roleBalance;
+    else warnings.push("Ignored an invalid role-balance setting from the shared link.");
   }
   const rotationPositionProfile = params.get("roleProfile");
   if (rotationPositionProfile) {

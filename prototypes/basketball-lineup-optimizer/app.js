@@ -187,6 +187,7 @@ const elements = {
   activeSelectionTray: $("#activeSelectionTray"),
   mode: $("#modeInput"),
   size: $("#sizeInput"),
+  sizeField: $("#sizeField"),
   alternatives: $("#alternativesInput"),
   rotationSettings: $("#rotationSettings"),
   minGuards: $("#minGuardsInput"),
@@ -213,6 +214,8 @@ const elements = {
   rotationRateStabilityField: $("#rotationRateStabilityField"),
   rotationRateStabilityHelp: $("#rotationRateStabilityHelp"),
   rotationPositionProfile: $("#rotationPositionProfileInput"),
+  projectionRisk: $("#projectionRiskInput"),
+  roleBalance: $("#roleBalanceInput"),
   positionFlexibility: $("#positionFlexibilityInput"),
   rotationMinutePlanHelp: $("#rotationMinutePlanHelp"),
   rotationEvidencePreview: $("#rotationEvidencePreview"),
@@ -895,6 +898,12 @@ function applySharedScenarioControls(scenario) {
   if (["sampleAdjusted", "raw"].includes(scenario.rotationRateStability)) {
     elements.rotationRateStability.value = scenario.rotationRateStability;
   }
+  if (["reliable", "balanced", "upside"].includes(scenario.projectionRisk)) {
+    elements.projectionRisk.value = scenario.projectionRisk;
+  }
+  if (["off", "recommended", "emphasized"].includes(scenario.roleBalance)) {
+    elements.roleBalance.value = scenario.roleBalance;
+  }
   if (scenario.rotationScoreBasis === "perGame" && scenario.rotationRateStability === "sampleAdjusted") {
     state.pendingScenarioWarnings.push("Per-game rotation scoring uses raw source values, so the shared sample-adjustment setting was disabled.");
   }
@@ -983,6 +992,8 @@ function sharedScenarioFromControls() {
     rotationHistoricalAllocationStyle: elements.rotationAllocationStyle.value,
     rotationMinuteFlexibility: numberFromInput(elements.rotationFlexibility, 8),
     rotationRateStability: elements.rotationRateStability.value,
+    projectionRisk: elements.projectionRisk.value,
+    roleBalance: elements.roleBalance.value,
     rotationPositionProfile: elements.rotationPositionProfile.value,
     rotationPositionMinuteRequirements: selectedRotationPositionRequirements(),
     positionFlexibility: elements.positionFlexibility.value,
@@ -1461,7 +1472,7 @@ function objectiveWeightsMatch(left, right) {
 
 function renderCounterWeightPreview(strategy) {
   const wrap = document.createElement("div");
-  wrap.className = "counter-weight-preview table-wrap";
+  wrap.className = "counter-weight-preview table-wrap detailed-only";
   wrap.tabIndex = 0;
   wrap.setAttribute("aria-label", "Current and suggested skill-priority comparison");
   const table = document.createElement("table");
@@ -1470,7 +1481,7 @@ function renderCounterWeightPreview(strategy) {
   caption.textContent = "Weight preview";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Metric", "Current", "Suggested", "Change"]) {
+  for (const heading of ["Priority", "Current focus", "Suggested focus", "Change"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -1478,14 +1489,16 @@ function renderCounterWeightPreview(strategy) {
   }
   head.append(headRow);
   const body = document.createElement("tbody");
+  const currentShares = normalizedFamilyShares(state.familyWeights);
+  const suggestedShares = normalizedFamilyShares(strategy.familyWeights);
   for (const [family, label] of Object.entries(FAMILY_LABELS)) {
-    const current = Number(state.familyWeights[family] || 0);
-    const suggested = Number(strategy.familyWeights[family] || 0);
+    const current = currentShares.get(family) || 0;
+    const suggested = suggestedShares.get(family) || 0;
     const row = document.createElement("tr");
     createCell(row, label);
-    createCell(row, String(current));
-    createCell(row, String(suggested));
-    createCell(row, formatSignedDifference(suggested - current));
+    createCell(row, `${current}%`);
+    createCell(row, `${suggested}%`);
+    createCell(row, `${formatSignedDifference(suggested - current)} points`);
     body.append(row);
   }
   table.append(caption, head, body);
@@ -1523,7 +1536,7 @@ function renderOpponentPlanPriorities({ heading, description, priorities = [] })
 function renderOpponentThreats(threats = []) {
   if (!Array.isArray(threats) || threats.length === 0) return null;
   const section = document.createElement("section");
-  section.className = "opponent-plan__threats";
+  section.className = "opponent-plan__threats detailed-only";
   const heading = document.createElement("h5");
   heading.textContent = "Historical contributors to know";
   const note = document.createElement("p");
@@ -1583,7 +1596,7 @@ function renderOpponentScout() {
 
   const fragment = document.createDocumentFragment();
   const teamHeader = document.createElement("div");
-  teamHeader.className = "opponent-scout__team";
+  teamHeader.className = "opponent-scout__team detailed-only";
   teamHeader.append(createOpponentTeamMark(source));
   const teamCopy = document.createElement("div");
   const teamTitle = document.createElement("h4");
@@ -1602,10 +1615,10 @@ function renderOpponentScout() {
   fragment.append(teamHeader);
 
   const stats = document.createElement("dl");
-  stats.className = "opponent-scout__stats";
+  stats.className = "opponent-scout__stats detailed-only";
   const ownAverages = state.dataset?.source?.teamAverages || {};
   const deltaNote = document.createElement("p");
-  deltaNote.className = "opponent-scout__delta-note";
+  deltaNote.className = "opponent-scout__delta-note detailed-only";
   deltaNote.textContent = `The comparison below is per game. The game plan uses ${strategy.comparison.rateBasisLabel} when both teams have the needed totals; positive turnover differences remain worse.`;
   const statRows = [
     ["points", "PTS", false],
@@ -1647,9 +1660,9 @@ function renderOpponentScout() {
   fragment.append(deltaNote, stats);
 
   const rotationSection = document.createElement("section");
-  rotationSection.className = "opponent-scout__section";
+  rotationSection.className = "opponent-scout__section detailed-only";
   const rotationHeading = document.createElement("h4");
-  rotationHeading.textContent = "Historical rotation context";
+  rotationHeading.textContent = "Who played most for this team";
   const rotationNote = document.createElement("p");
   rotationNote.textContent = "The nine largest shares of the selected historical team's minutes. This is not a live depth chart, injury report, or a minute setting for your lineup.";
   const rotationGrid = document.createElement("div");
@@ -1693,7 +1706,7 @@ function renderOpponentScout() {
   );
   const threats = renderOpponentThreats(strategy.threats);
   const caveats = document.createElement("p");
-  caveats.className = "opponent-plan__caveat";
+  caveats.className = "opponent-plan__caveat detailed-only";
   caveats.textContent = strategy.caveats.join(" ");
   const applyButton = document.createElement("button");
   applyButton.className = "button button--quiet";
@@ -1921,12 +1934,46 @@ function renderPresetState() {
 }
 
 function renderWeightControls() {
+  const sharesByFamily = normalizedFamilyShares(state.familyWeights);
   $$('[data-family]').forEach((input) => {
     input.value = String(state.familyWeights[input.dataset.family] ?? 0);
     const output = input.parentElement.querySelector("output");
-    output.textContent = input.value;
+    const share = sharesByFamily.get(input.dataset.family) || 0;
+    output.textContent = `${share}%`;
+    input.setAttribute("aria-valuetext", `${share} percent of the current game-plan focus`);
   });
   renderWeightShareSummary();
+}
+
+/**
+ * Return whole-number shares that add to exactly 100 using deterministic
+ * largest-remainder rounding. The sliders remain independent raw controls; the
+ * displayed percentages describe the proportional objective the solver sees.
+ */
+function normalizedFamilyShares(familyWeights) {
+  const entries = Object.entries(familyWeights)
+    .map(([family, value]) => ({ family, value: Math.max(0, Number(value) || 0) }))
+    .filter((item) => item.value > 0);
+  const total = entries.reduce((sum, item) => sum + item.value, 0);
+  if (!(total > 0)) return new Map();
+  const values = entries.map((item) => ({
+    ...item,
+    exactShare: (item.value / total) * 100,
+    share: Math.floor((item.value / total) * 100),
+  }));
+  let remaining = 100 - values.reduce((sum, item) => sum + item.share, 0);
+  values
+    .slice()
+    .sort((left, right) =>
+      (right.exactShare - right.share) - (left.exactShare - left.share)
+      || left.family.localeCompare(right.family))
+    .slice(0, remaining)
+    .forEach((winner) => {
+      const row = values.find((item) => item.family === winner.family);
+      row.share += 1;
+      remaining -= 1;
+    });
+  return new Map(values.map(({ family, share }) => [family, share]));
 }
 
 /**
@@ -1935,40 +1982,18 @@ function renderWeightControls() {
  * 20 / 10 / 0 and 2 / 1 / 0 are intentionally the same strategy.
  */
 function renderWeightShareSummary() {
-  const entries = Object.entries(state.familyWeights)
-    .map(([family, value]) => [family, Math.max(0, Number(value) || 0)])
-    .filter(([, value]) => value > 0);
-  const total = entries.reduce((sum, [, value]) => sum + value, 0);
-  if (!(total > 0)) {
+  const sharesByFamily = normalizedFamilyShares(state.familyWeights);
+  if (sharesByFamily.size === 0) {
     elements.weightShareSummary.textContent = "Choose at least one priority above zero.";
     return;
   }
-  const unroundedShares = entries
-    .map(([family, value]) => ({
+  const shares = [...sharesByFamily.entries()]
+    .map(([family, share]) => ({
       label: FAMILY_LABELS[family] || titleCase(family),
-      exactShare: (value / total) * 100,
-    }));
-  // Largest-remainder rounding keeps the friendly whole-number display while
-  // guaranteeing that the visible proportions add to exactly 100%. Rounding
-  // every metric independently made the default Balanced preset appear to use
-  // 101%, which undermined the explanation that only proportions matter.
-  let percentagePointsRemaining = 100 - unroundedShares.reduce(
-    (sum, item) => sum + Math.floor(item.exactShare),
-    0,
-  );
-  const remainderOrder = [...unroundedShares].sort((left, right) => (
-    (right.exactShare - Math.floor(right.exactShare))
-    - (left.exactShare - Math.floor(left.exactShare))
-    || left.label.localeCompare(right.label)
-  ));
-  const awarded = new Set(remainderOrder.slice(0, percentagePointsRemaining).map((item) => item.label));
-  const shares = unroundedShares
-    .map((item) => ({
-      label: item.label,
-      share: Math.floor(item.exactShare) + (awarded.has(item.label) ? 1 : 0),
+      share,
     }))
     .sort((left, right) => right.share - left.share || left.label.localeCompare(right.label));
-  elements.weightShareSummary.textContent = `Your relative focus: ${shares.map(({ label, share }) => `${label} ${share}%`).join(" · ")}.`;
+  elements.weightShareSummary.textContent = `Current focus: ${shares.map(({ label, share }) => `${label} ${share}%`).join(" · ")}.`;
 }
 
 function selectedRotationPositionRequirements() {
@@ -2135,13 +2160,13 @@ function syncRotationModelControls() {
     ? "Choose whether limited evidence, larger roles, and above-average workloads receive the recommended conservative projection"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "Three safeguards work together. The model prefers complete all-team season totals when they are available and otherwise uses a fair per-appearance evidence estimate. Each stat has its own opportunity requirement and a modest confidence reserve. Any remaining unproven advantage moves toward a same-season baseline as a role expands, while extra workload gradually adds less game-plan fit. Better players can still earn larger roles or reach your maximum. A player's games or total minutes with the selected team never set the plan."
+    ? "Recommended adjusts uncertain rates toward the same-season baseline when a player is asked to handle more responsibility. Playing more minutes does not automatically mean star-level usage. Games or total minutes with the selected team never set the new minute plan."
     : "Per-game comparison uses raw historical per-game lines. Limited-role adjustment is available only with per-36 comparison.";
   renderRotationEvidencePreview();
 }
 
 function rotationModelSummary() {
-  return "Game plan · conservative rates + diminishing returns + hard limits";
+  return "Conservative rates · exact 240-minute plan";
 }
 
 function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
@@ -2165,8 +2190,8 @@ function syncRotationRoleCopy(isRotation = elements.mode.value === "rotation") {
         ? "Realistic leaves season-listed roles unrestricted and caps each verified career-only secondary role at 24 rotation minutes. That cap is a disclosed modeling assumption, not tracked historical position time."
         : "Realistic allows verified Basketball Reference career positions; each player can still fill only one required lineup slot.";
   elements.positionCoverageHelp.textContent = isRotation
-    ? `Roster balance is a minimum composition rule. The ${automatic ? "roster role estimate" : "selected mix"} is ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. ${policyCopy} The automatic mix uses season-listed positions and minutes per appearance, never source totals. ${automatic ? estimateCopy : ""}`
-    : `${policyCopy} For example, a PF-C may fill a forward or center requirement, but never both slots at once.`;
+    ? `Multi-position players may cover any verified position, but only one court role at a time. The ${automatic ? "recommended roster estimate" : "selected mix"} is ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minutes. ${policyCopy} ${automatic ? estimateCopy : ""}`
+    : `Multi-position players may cover any verified position, but only one court role at a time. ${policyCopy} For example, a PF-C may fill a forward or center requirement, never both slots at once.`;
   elements.rotationMinutesHelp.textContent = `Every candidate receives exactly 240 integer minutes while covering the same ${roleMinutes.G} guard, ${roleMinutes.F} forward, and ${roleMinutes.C} center minute target.`;
   elements.rotationPositionProfile.title = automatic
     ? "An estimate from season-listed positions and minutes per appearance. Games played and source totals are excluded."
@@ -2272,6 +2297,7 @@ function setMode(mode, { preserveSize = false } = {}) {
   const isRotation = mode === "rotation";
   elements.rotationSettings.hidden = !isRotation;
   elements.rotationScoringBasisField.hidden = !isRotation;
+  elements.sizeField.hidden = !isRotation;
   syncRotationModelControls();
   const productionQualifier = document.createElement("span");
   productionQualifier.textContent = "(optional requirements)";
@@ -2347,9 +2373,9 @@ function syncSampleFilterHelp(seasonPhase = null) {
   const recommendedGameRequirement = games > 0
     ? `${games} game${games === 1 ? "" : "s"} with this team`
     : "no games-with-this-team minimum";
-  elements.sampleFilterHelp.textContent = mode === "rotation"
-    ? `Players currently need ${activeGameRequirement} and at least ${activeMinutes} MPG to enter the search. These are eligibility filters only; neither one assigns model minutes. Recommended rotation defaults for the ${phaseLabel}: ${recommendedGameRequirement} and ${minutes} MPG. Conservative rate scaling handles limited opportunity without excluding a traded player solely for fewer games with this team.`
-    : `Players currently need ${activeGameRequirement} and at least ${activeMinutes} MPG to enter the search. These are eligibility filters only; neither one assigns model minutes. Recommended starting-five defaults for the ${phaseLabel}: ${recommendedGameRequirement} and ${minutes} MPG.`;
+  const currentRule = `Current rule: ${activeGameRequirement} and at least ${activeMinutes} minutes per appearance.`;
+  const recommendedRule = `Recommended ${phaseLabel} default: ${recommendedGameRequirement} and ${minutes} minutes per appearance.`;
+  elements.sampleFilterHelp.textContent = `These requirements decide who may enter the search. They never determine assigned minutes. ${currentRule} ${recommendedRule}`;
 }
 
 function solveActionLabel({ busy = false, update = false } = {}) {
@@ -2381,6 +2407,8 @@ function captureDetailedSettings() {
     "rotationScoringBasis",
     "rotationPositionProfile",
     "positionFlexibility",
+    "projectionRisk",
+    "roleBalance",
   ];
   return {
     fields: Object.fromEntries(fields.map((name) => [name, elements[name].value])),
@@ -2461,9 +2489,21 @@ function applySimpleModelDefaults({ invalidate = false } = {}) {
   elements.rotationScoringBasis.value = "per36";
   elements.rotationPositionProfile.value = "automatic";
   elements.positionFlexibility.value = "recommended";
+  elements.projectionRisk.value = "balanced";
+  elements.roleBalance.value = "recommended";
   state.analyticsView = "perGame";
   elements.analyticsView.value = "perGame";
-  if (state.activePreset === "custom") applyPreset("balanced", { invalidate: false });
+  // Simple exposes only Balanced, Offense, and Defense. Map every hidden
+  // specialized preset to a visible choice so the result is never controlled
+  // by a setting the fan cannot see. The Detailed snapshot restores the exact
+  // original preset when the visitor switches back.
+  const simplePreset = {
+    shooting: "offense",
+    playmaking: "offense",
+    rebounding: "balanced",
+    custom: "balanced",
+  }[state.activePreset];
+  if (simplePreset) applyPreset(simplePreset, { invalidate: false });
   $$('details.detailed-only[open]').forEach((details) => details.removeAttribute("open"));
   syncRotationModelControls();
   syncRotationRoleCopy(isRotation);
@@ -3062,6 +3102,12 @@ function buildOptimizerConfig() {
       historicalAllocationStyle: elements.rotationAllocationStyle.value,
       minuteFlexibility: numberFromInput(elements.rotationFlexibility, 8),
       rateStability: elements.rotationRateStability.value,
+      projectionRisk: elements.projectionRisk.value,
+      roleBalance: elements.roleBalance.value,
+      // Possession-level Scout evidence remains a separately versioned input.
+      // The public page stays Historical until a complete, verified dataset is
+      // delivered; missing Scout rows are never interpreted as league average.
+      modelMode: "historical",
       positionMinuteRequirements: selectedRotationPositionRequirements(),
     };
   }
@@ -3218,12 +3264,9 @@ function renderExactObjectiveReasons(player, result, insight) {
       const percentileContext = item.assignedRoleAdjusted
         ? "percentile after the extra-minute adjustment"
         : "percentile in this search";
-      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} ${percentileContext}; ${formatNumber(item.scoreContribution, 2)} points toward this result.`;
+      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} ${percentileContext}.`;
       list.append(row);
     });
-    const total = document.createElement("li");
-    total.textContent = `Contribution to this result: ${formatNumber(contribution.scoreContribution, 2)} of ${formatNumber(result.best.score)} game-plan-fit points in this search.`;
-    list.append(total);
   } else {
     // The explanation layer remains useful if a future compatible optimizer
     // does not return player-level contributions. It is visibly labelled as a
@@ -3621,9 +3664,9 @@ function renderResultRankingContext(result) {
  */
 function fitGapSummary(gap) {
   if (!Number.isFinite(gap)) return "Difference unavailable";
-  if (gap <= 0.25) return `Nearly tied · ${formatNumber(gap, 2)} fit points`;
-  if (gap <= 1) return `Close alternative · ${formatNumber(gap, 2)} fit points`;
-  return `Clearer lead · ${formatNumber(gap, 2)} fit points`;
+  if (gap <= 0.25) return "Nearly tied";
+  if (gap <= 1) return "Close alternative";
+  return "Clearer lead";
 }
 
 function renderRotationMinutes(rotation) {
@@ -3821,7 +3864,7 @@ function renderAlternatives(alternatives, best) {
   const heading = document.createElement("h3");
   heading.textContent = "Next-best groups under the same rules";
   const note = document.createElement("p");
-  note.textContent = `Plan Fit Index uses expected rates against the same-season NBA baseline (100), while the search score only ranks groups inside this exact run and is more cautious with limited evidence. Neither is a player rating or win prediction. ${best.rotation ? "Production columns use each group's conservative 240-minute projection." : "Production columns add the selected players' per-game profiles."}`;
+  note.textContent = `Fit vs. NBA Baseline uses expected rates against the same-season NBA benchmark (100). A difference of three index points is not 3%, a win probability, or an overall team rating. ${best.rotation ? "Production columns use each group's conservative 240-minute projection." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
   wrap.className = "alternatives-wrap table-wrap";
   wrap.tabIndex = 0;
@@ -3833,7 +3876,7 @@ function renderAlternatives(alternatives, best) {
   caption.textContent = "Top feasible lineup alternatives";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Rank", "Players", "Plan Fit Index", "Search score", "Changes from #1", "Main tradeoff", "PTS", "REB", "AST", "TOV"]) {
+  for (const heading of ["Rank", "Players", "Fit vs. NBA Baseline", "Changes from #1", "Main tradeoff", "PTS", "REB", "AST", "TOV"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -3853,7 +3896,6 @@ function renderAlternatives(alternatives, best) {
     createCell(row, `#${lineup.rank}`);
     createCell(row, lineup.players.map((player) => player.name).join(", "));
     createCell(row, Number.isFinite(Number(lineup.planFitIndex)) ? formatNumber(lineup.planFitIndex) : "Unavailable");
-    createCell(row, `${formatNumber(lineup.score)} / 100`);
     createCell(row, changes);
     createCell(row, summarizeAlternativeTradeoff(lineup, best));
     createCell(row, formatNumber(lineup.totals.points));
@@ -4090,23 +4132,23 @@ function renderSimpleResultOverview(result, fanExplanation) {
   const panel = document.createElement("section");
   panel.className = "simple-result-overview simple-only";
   const heading = document.createElement("h3");
-  heading.textContent = "Why this group was recommended";
+  heading.textContent = "Why this group fits";
   const benchmark = document.createElement("div");
   benchmark.className = "simple-benchmark";
   if (Number.isFinite(Number(best.planFitIndex))) {
     benchmark.append(
-      renderScoreCard("Plan Fit Index", formatNumber(best.planFitIndex), true),
-      renderScoreCard("Offense", formatNumber(best.offenseIndex)),
-      renderScoreCard("Defense", formatNumber(best.defenseIndex)),
+      renderScoreCard("Fit vs. NBA Baseline", formatNumber(best.planFitIndex), true),
+      renderScoreCard("Offense vs. Baseline", formatNumber(best.offenseIndex)),
+      renderScoreCard("Defense vs. Baseline", formatNumber(best.defenseIndex)),
     );
     const benchmarkHelp = document.createElement("p");
     benchmarkHelp.className = "simple-benchmark__help";
-    benchmarkHelp.textContent = "100 is the expected same-season NBA baseline. Higher means this group is stronger in the priorities you selected. The exact ranking separately uses a small caution adjustment when evidence is limited; neither number is a win probability or overall team rating.";
+    benchmarkHelp.textContent = "100 is the same-season NBA baseline for the priorities you selected. A score of 103 is 3 index points above that benchmark—not 3%, a win probability, or an overall team rating.";
     benchmark.append(benchmarkHelp);
   } else {
     const unavailable = document.createElement("p");
     unavailable.className = "simple-benchmark__help";
-    unavailable.textContent = "This source does not include enough same-season evidence for a stable Plan Fit Index. The exact #1 ranking is still available.";
+    unavailable.textContent = "This source does not include enough same-season evidence for Fit vs. NBA Baseline. The exact #1 ranking is still available.";
     benchmark.append(unavailable);
   }
   const list = document.createElement("ul");
@@ -4119,7 +4161,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
     .map(([metric]) => resultMetricLabel(metric));
   const fitReason = document.createElement("li");
   fitReason.textContent = strongest.length
-    ? `It matches your game plan most through ${strongest.join(", ")}.`
+    ? `What it does best: ${strongest.join(", ")}.`
     : "It is the strongest game-plan fit under the rules you selected.";
   list.append(fitReason);
 
@@ -4141,15 +4183,11 @@ function renderSimpleResultOverview(result, fanExplanation) {
     list.append(impactReason);
   }
 
-  const exactReason = document.createElement("li");
-  exactReason.textContent = `The exact search ranked it #1 after applying every active player and position rule.`;
-  list.append(exactReason);
-
   const deficiencies = fanExplanation?.roleCoverage?.deficiencies || [];
   if (deficiencies.length > 0) {
     const concern = document.createElement("p");
     concern.className = "simple-result-concern";
-    concern.textContent = `Possible weakness: ${simpleRoleConcern(deficiencies[0])}`;
+    concern.textContent = `Biggest concern: ${simpleRoleConcern(deficiencies[0])}`;
     panel.append(benchmark, heading, list, concern);
   } else {
     panel.append(benchmark, heading, list);
@@ -4166,7 +4204,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
       : null;
     const next = document.createElement("p");
     next.className = "simple-result-next";
-    next.textContent = `Next-best exact group${indexGap === null ? "" : ` (${formatNumber(indexGap)} Plan Fit Index point${Math.abs(indexGap - 1) < 0.001 ? "" : "s"} lower)`}: ${added.length || removed.length
+    next.textContent = `Closest alternative${indexGap === null ? "" : ` · ${fitGapSummary(Math.max(0, Number(best.score) - Number(alternative.score)))}`}: ${added.length || removed.length
       ? `swap ${removed.join(", ") || "the changed player"} for ${added.join(", ") || "the alternative"}.`
       : "the same player group with a nearly identical plan."} ${summarizeAlternativeTradeoff(alternative, best)}.`;
     panel.append(next);
@@ -4176,7 +4214,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
   detailsButton.type = "button";
   detailsButton.className = "button button--quiet simple-result-details";
   detailsButton.dataset.action = "show-detailed";
-  detailsButton.textContent = "See details and alternatives";
+  detailsButton.textContent = "Open detailed analysis";
   panel.append(detailsButton);
   return panel;
 }
@@ -4205,8 +4243,8 @@ function renderSuccess(result) {
     ? `Recommended #1 of ${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule after checking all ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}.`
     : `Recommended #1 after checking all ${possibleCount.toLocaleString()} possible groups. At least ${feasibleCount.toLocaleString()} met every rule; the rest could not change the displayed rankings.`;
   const planFitHeadline = Number.isFinite(Number(best.planFitIndex))
-    ? ` Plan Fit Index ${formatNumber(best.planFitIndex)}, where 100 is the same-season NBA baseline for the selected priorities.`
-    : " A same-season Plan Fit Index was unavailable for this source.";
+    ? ` Fit vs. NBA Baseline: ${formatNumber(best.planFitIndex)}, where 100 is the same-season benchmark for the selected priorities.`
+    : " Fit vs. NBA Baseline was unavailable for this source.";
   elements.resultSummary.textContent = `${exactSearchHeadline}${planFitHeadline} This is an optimizer result—not a win prediction or real-world depth chart.`;
 
   const fragment = document.createDocumentFragment();
@@ -4224,27 +4262,20 @@ function renderSuccess(result) {
   const fullAnalysis = document.createElement("details");
   fullAnalysis.className = "full-analysis detailed-only";
   const fullSummary = document.createElement("summary");
-  fullSummary.textContent = "See score, alternatives, and evidence";
+  fullSummary.textContent = "Open detailed analysis";
   const scoreExplanation = document.createElement("p");
   scoreExplanation.className = "full-analysis__intro";
-  scoreExplanation.textContent = best.rotation
-    ? "Plan Fit Index compares the expected rates with the same-season NBA baseline (100) using the priorities you selected. The technical search-relative score ranks only this eligible pool and is more cautious with limited evidence, larger projected roles, and extra workload; it also uses diminishing marginal fit to avoid artificial min/max minute pileups. Neither score is team quality or win probability."
-    : "Plan Fit Index is anchored to the same-season NBA baseline (100) and uses the priorities you selected. The technical search-relative score ranks only this eligible pool; neither score is team quality or win probability.";
+  scoreExplanation.textContent = "Fit vs. NBA Baseline compares the expected rates with the same-season NBA benchmark using the priorities you selected. A score of 103 is 3 index points above that benchmark—not 3%, a win probability, or an overall team rating.";
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";
   const productionPrefix = best.rotation ? "Projected" : "Combined";
   if (Number.isFinite(Number(best.planFitIndex))) {
     scoreboard.append(
-      renderScoreCard("Plan Fit Index · 100 = league baseline", formatNumber(best.planFitIndex), true),
-      renderScoreCard("Offense Index", formatNumber(best.offenseIndex)),
-      renderScoreCard("Defense Index", formatNumber(best.defenseIndex)),
+      renderScoreCard("Fit vs. NBA Baseline", formatNumber(best.planFitIndex), true),
+      renderScoreCard("Offense vs. Baseline", formatNumber(best.offenseIndex)),
+      renderScoreCard("Defense vs. Baseline", formatNumber(best.defenseIndex)),
     );
   }
-  scoreboard.append(renderScoreCard(
-    "Search-relative ranking score",
-    `${formatNumber(best.score)} / 100`,
-    !Number.isFinite(Number(best.planFitIndex)),
-  ));
   scoreboard.append(
     renderScoreCard(`${productionPrefix} PTS`, formatNumber(best.totals.points)),
     renderScoreCard(`${productionPrefix} REB`, formatNumber(best.totals.rebounds)),
@@ -4256,7 +4287,7 @@ function renderSuccess(result) {
   const contributionCard = document.createElement("section");
   contributionCard.className = "result-card";
   const contributionHeading = document.createElement("h3");
-  contributionHeading.textContent = "What drove this ranking";
+  contributionHeading.textContent = "Strongest statistical advantages";
   contributionCard.append(contributionHeading, renderContributionList(best.contributionBreakdown));
   const auditCard = document.createElement("section");
   auditCard.className = "result-card";
@@ -4896,9 +4927,8 @@ function resultSummaryText() {
     `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Recommended rotation and minutes plan" : "Recommended lineup"}`,
     `Strategy: ${PRESET_LABELS[state.activePreset] || "Custom mix"}`,
     ...(Number.isFinite(Number(best.planFitIndex))
-      ? [`Plan Fit Index: ${formatNumber(best.planFitIndex)} (100 = same-season NBA baseline)`, `Offense: ${formatNumber(best.offenseIndex)}; Defense: ${formatNumber(best.defenseIndex)}`]
-      : ["Plan Fit Index: unavailable for this source"]),
-    `Search-relative ranking score: ${formatNumber(best.score)} / 100`,
+      ? [`Fit vs. NBA Baseline: ${formatNumber(best.planFitIndex)} (100 = same-season NBA baseline)`, `Offense vs. baseline: ${formatNumber(best.offenseIndex)}; Defense vs. baseline: ${formatNumber(best.defenseIndex)}`]
+      : ["Fit vs. NBA Baseline: unavailable for this source"]),
     `Players: ${best.players.map((player) => player.name).join(", ")}`,
     `${best.rotation ? "Minute-weighted projection" : "Combined player profiles"}: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
   ];
@@ -5057,6 +5087,8 @@ function resetScenario() {
   elements.rotationFlexibility.value = "8";
   elements.rotationRateStability.value = "sampleAdjusted";
   elements.rotationPositionProfile.value = "automatic";
+  elements.projectionRisk.value = "balanced";
+  elements.roleBalance.value = "recommended";
   state.analyticsView = "perGame";
   elements.analyticsView.value = state.analyticsView;
   elements.rotationScoringBasis.value = "per36";
@@ -5088,11 +5120,10 @@ function bindEvents() {
       // readable controls back to the same eight auditable metric weights used
       // by presets, shared links, contribution details, and exact search.
       state.weights = weightsFromSkillFamilies(state.familyWeights);
-      input.parentElement.querySelector("output").textContent = input.value;
       state.activePreset = "custom";
       state.opponentWeightUndo = null;
       renderPresetState();
-      renderWeightShareSummary();
+      renderWeightControls();
       updateRunSummary();
       markScenarioChanged();
     });
@@ -5135,6 +5166,8 @@ function bindEvents() {
     markScenarioChanged();
   });
   elements.rotationRateStability.addEventListener("change", markScenarioChanged);
+  elements.projectionRisk.addEventListener("change", markScenarioChanged);
+  elements.roleBalance.addEventListener("change", markScenarioChanged);
   elements.rotationPositionProfile.addEventListener("change", () => {
     syncRotationRoleCopy();
     updateRunSummary();

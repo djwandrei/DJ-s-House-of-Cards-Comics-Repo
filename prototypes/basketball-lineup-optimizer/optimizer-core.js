@@ -6181,10 +6181,12 @@ export function optimizeLineups(players, config = {}) {
   /**
    * Candidate-wide adjustments are intentionally kept outside the separable
    * per-minute flow objective. Role complementarity and Scout evidence depend
-   * only on the complete roster; usage demand depends on the final minute plan
-   * and is always a non-positive caution. During constrained top-K pruning we
-   * omit that caution from the upper bound, which preserves mathematical
-   * exactness while still applying it to every retained feasible answer.
+   * only on the complete roster. Team usage is retained as an explanatory
+   * audit because it depends on the final minute plan; applying it only after
+   * the separable minute allocator would make the reported score differ from
+   * the objective that actually chose those minutes. Individual usage already
+   * affects the pre-allocation responsibility projection above. A future exact
+   * usage-allocation layer may promote this audit into the minute objective.
    */
   function candidateModelAdjustments(selectedPlayers, rotation = null, { upperBound = false } = {}) {
     const roleFit = scoreLineupRoleFit(selectedPlayers, lineupRoleModel, {
@@ -6200,16 +6202,16 @@ export function optimizeLineups(players, config = {}) {
       minutesById,
       projectionParameters,
     );
-    const usageAdjustment = upperBound ? 0 : Math.min(0, Number(usageDemand.adjustmentPoints) || 0);
     return {
       totalAdjustmentPoints:
         (Number(roleFit.adjustmentPoints) || 0) +
-        (Number(scoutImpact.adjustmentPoints) || 0) +
-        usageAdjustment,
+        (Number(scoutImpact.adjustmentPoints) || 0),
       roleFit,
-      usageDemand: upperBound
-        ? { ...usageDemand, adjustmentPoints: 0, upperBoundOmitted: usageDemand.adjustmentPoints < 0 }
-        : usageDemand,
+      usageDemand: {
+        ...usageDemand,
+        scoringAdjustmentPoints: 0,
+        explanationOnly: true,
+      },
       scoutImpact,
       projectionRisk: normalizedConfig.projectionRisk,
       upperBound,

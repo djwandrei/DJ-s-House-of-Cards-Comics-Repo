@@ -507,7 +507,7 @@ test("season-wide rates replace a traded player's team-stint spike without using
   assert.ok(fallbackOnly.best.playerIds.includes("team-stint-spike"));
   assert.equal(
     seasonAware.diagnostics.rotationRateStabilityEvidence.modelVersion,
-    "historical-rates-v3-season-evidence",
+    "historical-rates-v4-usage-responsibility",
   );
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideRatePlayers, 1);
@@ -605,7 +605,7 @@ test("season-wide minutes cannot grant confidence to a team-stint impact estimat
   assert.equal(result.ok, true);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
-  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v3-season-evidence");
+  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v4-usage-responsibility");
   assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "reserved-not-active");
 });
 

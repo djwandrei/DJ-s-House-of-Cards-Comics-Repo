@@ -11,7 +11,11 @@ import { readPlayerUsage } from "./player-projection.js?v=__LINEUP_LAB_ASSET_VER
  */
 
 export const LINEUP_ROLE_MODEL_VERSION = "role-complementarity-v1";
-export const DEFAULT_ROLE_BALANCE = "recommended";
+// Direct API callers retain the historical no-composition default for backward
+// compatibility. The Lineup Lab UI deliberately sends `recommended`, making
+// the small complementarity preference visible and shareable rather than a
+// hidden change to an older integration's objective.
+export const DEFAULT_ROLE_BALANCE = "off";
 export const ROLE_BALANCE_LEVELS = Object.freeze({
   off: Object.freeze({ key: "off", label: "Off", maximumAdjustmentPoints: 0 }),
   recommended: Object.freeze({
@@ -202,7 +206,12 @@ export function scoreLineupRoleFit(
   // enough that a merely tidy roster cannot defeat a materially better match
   // to the user's direct priorities.
   const centered = Math.max(-1, Math.min(1, (fitIndex - 60) / 40));
-  const adjustmentPoints = centered * level.maximumAdjustmentPoints;
+  // Multiplying a negative centered score by zero produces JavaScript's
+  // surprising `-0`. Return a literal zero when the model is explanation-only
+  // so diagnostics, JSON, and strict tests all report one unambiguous value.
+  const adjustmentPoints = level.maximumAdjustmentPoints > 0
+    ? centered * level.maximumAdjustmentPoints
+    : 0;
   const ordered = Object.entries(coverage)
     .map(([role, value]) => ({ role, label: ROLE_DEFINITIONS[role].label, coverage: value }))
     .sort((left, right) => right.coverage - left.coverage);
@@ -220,4 +229,3 @@ export function scoreLineupRoleFit(
       : "Role balance was left as explanation only and did not affect ranking.",
   };
 }
-
