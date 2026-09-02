@@ -229,6 +229,57 @@
       },
       "updatedAt": "2026-08-31T03:47:50.3512921Z"
     },
+    "/catalog-filters/": {
+      "targetKind": "existing-ui",
+      "projectId": "dcb8aa16-226a-4869-a3ec-8f15c9ca3c59",
+      "baselineDraftId": "256a8f22-7ad8-4314-9b06-e57fbc4b24d9",
+      "activeDraftId": "256a8f22-7ad8-4314-9b06-e57fbc4b24d9",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/dcb8aa16-226a-4869-a3ec-8f15c9ca3c59/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "basketball-cards.html",
+        "catalog.js:901:962",
+        "catalog.js:2421:2708",
+        "catalog.js:2721:2858",
+        "catalog.js:3011:3196",
+        "catalog.js:3811:4010",
+        "styles.css:1:250",
+        "styles.css:6461:7005",
+        "styles.css:7341:7510",
+        "styles.css:8201:8285",
+        "styles.css:10088:10120",
+        "styles.css:13600:13640",
+        "styles-mobile-overrides.css:1:230",
+        "styles-mobile-overrides.css:1420:1615"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        "basketball-cards.html": "CC0637EBDFE33C26133BCF403D9CA5D67534DCC2241E4779A3B2A87BD011F5BB",
+        "catalog.js": "0ED35DC9F13C32EF8A06F9A784DCFB8D1945FBB48B3F5C5E587441F65C12B51B",
+        "styles.css": "A27481A5EFD9F87AF6A68FFC722E25E878D6BF8C8BA2C29C360B1BE332E8C498",
+        "styles-mobile-overrides.css": "7EFE96F199A4A048297DB3E29EDC17C55A037FB4D1EAF8D203334315B1E2A36D"
+      },
+      "components": [],
+      "drafts": {
+        "256a8f22-7ad8-4314-9b06-e57fbc4b24d9": {
+          "title": "DJHC Responsive Catalog Corrections",
+          "visualDirection": "collector-focused desktop filter rail with grouped facets, result context, clear reset and show-more states, plus a verified compact mobile header and accessible filter drawer without horizontal overflow",
+          "parentDraftId": null,
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-09-01T23:54:02.8569229Z"
+    },
     "/homepage-navigation/": {
       "targetKind": "new-ui",
       "projectId": "a89611b9-b9f0-4cb3-8b2a-9e2b3b3c7d0c",

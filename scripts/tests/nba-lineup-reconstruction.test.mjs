@@ -5,7 +5,9 @@ import {
   deterministicUuidV5,
   expandLineupCombinations,
   hasProviderFastbreakQualifier,
+  homeScoreStateV1,
   isClutchV1,
+  isKnownScoreStateV1,
   reconstructNbaGameLineups,
   sortPbpEvents,
   validateOnCourtSnapshot
@@ -51,7 +53,7 @@ function event({
   qualifiers = [],
   statistics = [],
   eventType = 'event',
-  periodNumber = 1
+  periodNumber = 4
 }) {
   return {
     id,
@@ -134,6 +136,69 @@ test('reconstructs exact five-player stints, preserves a zero-duration same-cloc
   assert.ok(awayScoringPossession.qualityFlags.includes('lineup_changed_mid_possession'));
   assert.ok(result.combinationAnalytics.some((row) => row.playerCount === 2 && row.semantics === 'shared_floor'));
   assert.ok(result.combinationAnalytics.some((row) => row.playerCount === 5 && row.semantics === 'exact_five'));
+});
+
+test('requires a confirmed end of game before publishing reconstruction analytics', () => {
+  const endedEarly = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'q1-start', sequence: 1, periodNumber: 1, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home }),
+    event({ id: 'q1-make', sequence: 2, periodNumber: 1, clockRemainingMs: 710000, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, eventType: 'twopointmade' }),
+    event({ id: 'q1-end', sequence: 3, periodNumber: 1, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'endperiod' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+
+  assert.equal(endedEarly.coverageStatus, 'ineligible');
+  assert.equal(endedEarly.isEligible, false);
+  assert.ok(endedEarly.validation.errors.includes('document_ended_before_confirmed_game_end'));
+
+  const sparseFinal = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'q4-start', sequence: 1, periodNumber: 4, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home }),
+    event({ id: 'q4-make', sequence: 2, periodNumber: 4, clockRemainingMs: 710000, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, eventType: 'twopointmade' }),
+    event({ id: 'q4-end', sequence: 3, periodNumber: 4, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'endperiod' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+
+  assert.equal(sparseFinal.coverageStatus, 'eligible');
+  assert.ok(!sparseFinal.validation.errors.includes('document_ended_before_confirmed_game_end'));
+});
+
+test('rebases an untouched possession to a verified dead-ball substitution lineup', () => {
+  const result = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'start', sequence: 1, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home, eventType: 'start_period' }),
+    event({
+      id: 'dead-ball-sub', sequence: 2, clockRemainingMs: 710000, homePointsAfter: 0, awayPointsAfter: 0,
+      possessionTeamId: ids.home, onCourt: onCourt(secondHome), eventType: 'Lineup Change'
+    }),
+    event({
+      id: 'home-make', sequence: 3, clockRemainingMs: 700000, homePointsAfter: 2, awayPointsAfter: 0,
+      possessionTeamId: ids.away, onCourt: onCourt(secondHome), eventType: 'Two Point Made'
+    }),
+    event({ id: 'end', sequence: 4, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'end_period' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+
+  assert.equal(result.coverageStatus, 'eligible');
+  const homePossession = result.possessions.find((row) => row.offenseProviderTeamId === ids.home);
+  const secondHomeLineup = result.lineupDefinitions.find((row) => row.providerTeamId === ids.home
+    && row.playerIds.includes(ids.h6));
+  assert.ok(secondHomeLineup);
+  assert.equal(homePossession.homeLineupId, secondHomeLineup.id);
+  assert.equal(homePossession.hasLineupChangeMidPossession, false);
+  assert.ok(homePossession.qualityFlags.includes('dead_ball_substitution_rebased_possession_start'));
+
+  const actionBeforeSubstitution = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'start', sequence: 1, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home, eventType: 'start_period' }),
+    event({ id: 'miss', sequence: 2, clockRemainingMs: 715000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home, eventType: 'Two Point Missed' }),
+    event({
+      id: 'sub-after-action', sequence: 3, clockRemainingMs: 710000, homePointsAfter: 0, awayPointsAfter: 0,
+      possessionTeamId: ids.home, onCourt: onCourt(secondHome), eventType: 'Lineup Change'
+    }),
+    event({
+      id: 'make-after-action', sequence: 4, clockRemainingMs: 700000, homePointsAfter: 2, awayPointsAfter: 0,
+      possessionTeamId: ids.away, onCourt: onCourt(secondHome), eventType: 'Two Point Made'
+    }),
+    event({ id: 'end-after-action', sequence: 5, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'end_period' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+  const changedPossession = actionBeforeSubstitution.possessions.find((row) => row.offenseProviderTeamId === ids.home);
+  assert.equal(changedPossession.hasLineupChangeMidPossession, true);
+  assert.ok(changedPossession.qualityFlags.includes('lineup_changed_mid_possession'));
+  assert.ok(!changedPossession.qualityFlags.includes('dead_ball_substitution_rebased_possession_start'));
 });
 
 test('fails closed when a score-changing event is missing a valid five-on-five snapshot', () => {
@@ -289,7 +354,7 @@ test('seeds only a verified first made field goal after a period boundary with n
       id: 'q2-make', sequence: 5, periodNumber: 2, clockRemainingMs: 710000, homePointsAfter: 2, awayPointsAfter: 0,
       possessionTeamId: ids.away, attributionTeamId: ids.home, onCourt: onCourt(secondHome), statistics: [fieldGoal], eventType: 'twopointmade'
     }),
-    event({ id: 'q2-end', sequence: 6, periodNumber: 2, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'endperiod' })
+    event({ id: 'q2-end', sequence: 6, periodNumber: 2, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, onCourt: null, eventType: 'endgame' })
   ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } });
   const result = reconstructNbaGameLineups(input);
 
@@ -492,6 +557,91 @@ test('marks provider-fastbreak clutch possessions and never renames non-fastbrea
   assert.equal(isClutchV1({ periodNumber: 4, clockRemainingMs: 300000, homePointsBefore: 8, awayPointsBefore: 3 }), true);
   assert.equal(hasProviderFastbreakQualifier([{ fastbreak: false }]), false);
   assert.equal(hasProviderFastbreakQualifier([{ qualifier: 'fast break' }]), true);
+  assert.equal(hasProviderFastbreakQualifier([{ type: 'FAST_BREAK', value: ' FALSE ' }]), false);
+  assert.equal(hasProviderFastbreakQualifier([{ type: 'FAST_BREAK', enabled: 'YES' }]), true);
+  assert.equal(hasProviderFastbreakQualifier([{ is_fast_break: 'No' }]), false);
+});
+
+test('emits an unclassified clutch context when period, clock, or score is unavailable', () => {
+  assert.equal(isClutchV1({ clockRemainingMs: 300000, homePointsBefore: 8, awayPointsBefore: 3 }), null);
+  assert.equal(isClutchV1({ periodNumber: 4, homePointsBefore: 8, awayPointsBefore: 3 }), null);
+  assert.equal(isClutchV1({ periodNumber: 4, clockRemainingMs: 300000, homePointsBefore: 8 }), null);
+
+  const missingPeriodStart = event({
+    id: 'missing-period-start', sequence: 1, clockRemainingMs: 300000,
+    homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home
+  });
+  const missingPeriodEnd = event({
+    id: 'missing-period-end', sequence: 2, clockRemainingMs: 0,
+    homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home,
+    onCourt: null, eventType: 'endgame'
+  });
+  delete missingPeriodStart.periodNumber;
+  delete missingPeriodStart.periodSequence;
+  delete missingPeriodEnd.periodNumber;
+  delete missingPeriodEnd.periodSequence;
+
+  const result = reconstructNbaGameLineups(fullGameInput([
+    missingPeriodStart,
+    missingPeriodEnd
+  ], { expectedFinalScore: { homePoints: 0, awayPoints: 0 } }));
+
+  assert.equal(result.coverageStatus, 'eligible');
+  assert.equal(result.possessions[0].isClutchV1, null);
+});
+
+test('classifies unknown score state explicitly and gates consequential missing scores only', () => {
+  assert.equal(homeScoreStateV1(undefined, 0), 'unclassified');
+  assert.equal(homeScoreStateV1(0, null), 'unclassified');
+  assert.equal(isKnownScoreStateV1('unclassified'), true);
+
+  const sparseAdministrative = reconstructNbaGameLineups(fullGameInput([
+    event({
+      id: 'sparse-start', sequence: 1, clockRemainingMs: 720000,
+      homePointsAfter: undefined, awayPointsAfter: undefined,
+      possessionTeamId: ids.home, eventType: 'Start Period'
+    }),
+    event({
+      id: 'sparse-timeout', sequence: 2, clockRemainingMs: 710000,
+      homePointsAfter: undefined, awayPointsAfter: undefined,
+      possessionTeamId: ids.home, eventType: 'TIMEOUT'
+    }),
+    event({
+      id: 'make', sequence: 3, clockRemainingMs: 700000, homePointsAfter: 2, awayPointsAfter: 0,
+      possessionTeamId: ids.away, eventType: 'Two Point Made'
+    }),
+    event({ id: 'end', sequence: 4, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, eventType: 'End Period' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+
+  assert.equal(sparseAdministrative.coverageStatus, 'eligible');
+  assert.equal(sparseAdministrative.possessions[0].homeScoreStateV1, 'unclassified');
+  assert.equal(sparseAdministrative.possessions[0].isClutchV1, null);
+  assert.ok(sparseAdministrative.validation.warnings.includes('missing_score_after:sparse-start'));
+  assert.ok(!sparseAdministrative.validation.errors.some((error) => error.includes('missing_score')));
+
+  const missingScoringScore = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'start', sequence: 1, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home }),
+    event({
+      id: 'unknown-make-score', sequence: 2, clockRemainingMs: 710000,
+      homePointsAfter: undefined, awayPointsAfter: undefined,
+      possessionTeamId: ids.away, eventType: 'Two Point Made'
+    }),
+    event({ id: 'end', sequence: 3, clockRemainingMs: 0, homePointsAfter: 2, awayPointsAfter: 0, possessionTeamId: ids.away, eventType: 'end_period' })
+  ], { expectedFinalScore: { homePoints: 2, awayPoints: 0 } }));
+  assert.equal(missingScoringScore.coverageStatus, 'ineligible');
+  assert.ok(missingScoringScore.validation.errors.includes('missing_score_for_scoring_event:unknown-make-score'));
+
+  const missingTransitionScore = reconstructNbaGameLineups(fullGameInput([
+    event({ id: 'start', sequence: 1, clockRemainingMs: 720000, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.home }),
+    event({
+      id: 'unknown-transition-score', sequence: 2, clockRemainingMs: 710000,
+      homePointsAfter: undefined, awayPointsAfter: undefined,
+      possessionTeamId: ids.away, eventType: 'event'
+    }),
+    event({ id: 'end', sequence: 3, clockRemainingMs: 0, homePointsAfter: 0, awayPointsAfter: 0, possessionTeamId: ids.away, eventType: 'end_period' })
+  ], { expectedFinalScore: { homePoints: 0, awayPoints: 0 } }));
+  assert.equal(missingTransitionScore.coverageStatus, 'ineligible');
+  assert.ok(missingTransitionScore.validation.errors.includes('missing_score_at_possession_transition:unknown-transition-score'));
 });
 
 test('validates reconstructed player minutes and possession counts when provider summary inputs are supplied', () => {

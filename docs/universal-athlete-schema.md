@@ -65,6 +65,64 @@ $env:NBA_PRODUCT_MAPPING_ALLOW_WRITE='confirmed'
 node .\scripts\build-nba-product-player-mappings.mjs --apply --confirm=insert-only-reviewed-nba-mappings
 ```
 
+For a credential-free review of current catalog coverage against the latest
+local verified mapping backup, run:
+
+```powershell
+node .\scripts\audit-nba-product-mapping-coverage.mjs
+```
+
+This produces a review-only queue. It may identify a high-confidence candidate
+only when every pipe-delimited subject has the same exact source name as prior
+verified mappings and those mappings resolve consistently to one distinct
+athlete per subject. The queue is evidence for review; it never writes to
+Supabase and never promotes title similarity into a shopper-visible mapping.
+
+Because a local backup can lag the live catalog, validate exact expansion
+candidates against the public buyer-safe RPC before treating them as new rows:
+
+```powershell
+node .\scripts\audit-public-nba-product-mapping-status.mjs
+```
+
+This read-only check records only public mapping identity, subject order, and
+review state. Use `--all` to audit every row in the coverage queue. A product
+already returned as `mapped` must not be proposed as an insert from a stale
+snapshot.
+
+To compare the remaining live-empty queue with the public NBA analytics player
+identity pool, run the read-only candidate audit:
+
+```powershell
+node .\scripts\audit-nba-analytics-identity-candidates.mjs
+```
+
+It requires ten or more live mapped products to prove that analytics
+`player_id` values and commerce athlete IDs share the same namespace. Exact
+accent/punctuation folds are review candidates; suffix and one-character name
+differences are suggestion-only. Neither class is automatically written.
+
+After reviewing the identity queue, generate the deduplicated alias-and-mapping
+proposal with:
+
+```powershell
+node .\scripts\build-nba-product-mapping-review-proposal.mjs
+```
+
+The proposal is not a database payload. It keeps aliases in `needs_review` and
+lists the mandatory private preflight checks for athlete status, NBA
+membership, alias uniqueness, product eligibility, and existing mapping rows.
+
+With a service-role key injected in the process environment, run those checks
+without writing:
+
+```powershell
+node .\scripts\audit-nba-product-mapping-private-preflight.mjs
+```
+
+The output separates products ready for alias review, ready for mapping review,
+and blocked by drift or conflicting state. It never inserts aliases or mappings.
+
 ## Slab-to-Stats API
 
 Shopper code cannot select the mapping tables. It calls
@@ -96,3 +154,29 @@ cards and initial catalog rendering do not load player stats.
    panel contract.
 7. Run identity, mapping, rights, aggregation, accessibility, and responsive
    regression tests before publishing mappings.
+
+### MLB/NFL catalog identity expansion
+
+`scripts/audit-pro-sports-product-mapping-coverage.mjs` performs the first
+review-gated expansion step for MLB and NFL. It reads `products.json` and the
+already-authorized local Baseball Reference / Pro Football Reference caches,
+then resolves catalog subjects against stable provider player IDs. The report
+separates exact unique provider matches, punctuation/diacritic-only review
+candidates, duplicate-name ambiguity, team conflicts, unseen names, and
+intentional team-lot blanks. Multi-player products resolve all subjects in
+order or remain unpublished.
+
+The report is proposal-only. A provider external ID is not treated as a
+commerce-project `athlete_id`; publication still requires a private cross-
+project identity preflight, verified league membership and aliases, and an
+explicit database write gate. The audit does not edit workbooks, catalog
+artifacts, Supabase, or storefront files.
+
+`scripts/build-pro-sports-product-mapping-review-proposal.mjs` packages only
+the unique exact, career-window-disambiguated, and punctuation/diacritic-only
+matches into a hashed review proposal. Then
+`scripts/audit-pro-sports-product-mapping-private-preflight.mjs` uses the two
+already-linked Supabase projects for read-only checks: analytics provider-ID
+resolution, active/verified athlete identity, current commerce product values,
+league readiness, alias conflicts, and existing mappings. It emits no insert,
+update, delete, migration, or deploy payload.

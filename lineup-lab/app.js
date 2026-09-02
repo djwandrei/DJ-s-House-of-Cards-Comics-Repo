@@ -6,36 +6,39 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260901b";
+} from "./optimizer-config.js?v=20260901c";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260901b";
+} from "./player-data.js?v=20260901c";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260901b";
+} from "./supabase-nba-data.js?v=20260901c";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   FAN_ROLE_DEFINITIONS,
-} from "./fan-analytics.js?v=20260901b";
+} from "./fan-analytics.js?v=20260901c";
+import {
+  buildOpponentGamePlan,
+} from "./opponent-gameplan.js?v=20260901c";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260901b";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260901b";
+} from "./scenario-url.js?v=20260901c";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260901c";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260901b";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260901b", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260901c";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260901c", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -1270,7 +1273,7 @@ function populateOpponentTeamOptions({ preferredTeam = "" } = {}) {
   elements.opponentTeam.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
   elements.loadOpponent.disabled = state.liveDataLoading || state.opponentLoading || !canScout;
   if (!canScout && !state.opponentLoading) {
-    setOpponentScoutStatus("Apply the team, season, and phase above before building an opponent scouting cue.");
+    setOpponentScoutStatus("Apply the team, season, and phase above before building an opponent game plan.");
   }
 }
 
@@ -1439,80 +1442,17 @@ function setOpponentLoading(loading) {
   elements.opponentScout.setAttribute("aria-busy", String(loading));
   elements.opponentTeam.disabled = loading;
   elements.loadOpponent.disabled = loading;
-  elements.loadOpponent.textContent = loading ? "Building scouting cue..." : "Build scouting cue";
+  elements.loadOpponent.textContent = loading ? "Building game plan..." : "Build game plan";
   if (!loading) populateOpponentTeamOptions({ preferredTeam: state.opponentDataset?.source?.team });
 }
 
-function clearOpponentScout(message = "Choose an opponent to compare historical rotations and team averages.") {
+function clearOpponentScout(message = "Choose an opponent to build a historical game plan.") {
   state.opponentDataset = null;
   state.opponentStrategy = null;
   state.opponentWeightUndo = null;
   elements.opponentScoutSummary.hidden = true;
   elements.opponentScoutSummary.replaceChildren();
   setOpponentScoutStatus(message);
-}
-
-function normalizedDisplayWeights(rawWeights) {
-  const total = Object.values(rawWeights).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
-  if (!(total > 0)) return { ...state.familyWeights };
-  return Object.fromEntries(
-    Object.entries(rawWeights).map(([metric, value]) => [metric, Math.round((Math.max(0, Number(value) || 0) / total) * 100)]),
-  );
-}
-
-function deriveHistoricalCounterStrategy(ownAverages, opponentAverages) {
-  // This suggestion deliberately uses only same-season team totals already
-  // shown to the user. It is a transparent heuristic—not a hidden prediction
-  // model—and it never changes settings until the user presses Apply.
-  const familyWeights = { ...DEFAULT_FAMILY_PRESETS.balanced };
-  const reasons = [];
-  const own = ownAverages || {};
-  const opponent = opponentAverages || {};
-  const finite = (value) => Number.isFinite(Number(value));
-  const leadsByRatio = (metric, ratio) => finite(own[metric])
-    && finite(opponent[metric])
-    && Number(opponent[metric]) > Number(own[metric]) * ratio;
-  const leadsByAmount = (metric, amount) => finite(own[metric])
-    && finite(opponent[metric])
-    && Number(opponent[metric]) > Number(own[metric]) + amount;
-
-  if (leadsByRatio("rebounds", 1.02)) {
-    familyWeights.rebounding += 12;
-    familyWeights.interiorDefense += 4;
-    reasons.push("The opponent held a rebounding edge, so the suggestion raises rebounding and interior size.");
-  }
-  if (leadsByAmount("efgPct", 0.008)) {
-    familyWeights.perimeterDefense += 8;
-    familyWeights.interiorDefense += 8;
-    reasons.push("The opponent posted the higher effective field-goal rate, so disruption and rim protection receive more weight.");
-  }
-  if (leadsByAmount("threePct", 0.01)) {
-    familyWeights.perimeterDefense += 7;
-    familyWeights.spacing += 4;
-    reasons.push("The opponent shot better from three, so perimeter disruption and efficient answering offense rise.");
-  }
-  if (leadsByRatio("assists", 1.03)) {
-    familyWeights.perimeterDefense += 7;
-    reasons.push("The opponent created more assists, so the suggestion favors active passing-lane defenders.");
-  }
-  if (finite(own.turnovers) && finite(opponent.turnovers) && Number(own.turnovers) > Number(opponent.turnovers) + 0.5) {
-    familyWeights.creation += 10;
-    reasons.push("The current team committed more turnovers, so ball security becomes a larger priority.");
-  }
-  if (leadsByRatio("points", 1.02)) {
-    familyWeights.scoring += 8;
-    familyWeights.spacing += 6;
-    reasons.push("The opponent scored more per team game, so the scouting cue adds scoring and shot efficiency.");
-  }
-  if (reasons.length === 0) {
-    reasons.push("No large same-season statistical gap crossed the comparison thresholds, so a balanced mix remains the suggestion.");
-  }
-  const normalizedFamilies = normalizedDisplayWeights(familyWeights);
-  return {
-    familyWeights: normalizedFamilies,
-    weights: weightsFromSkillFamilies(normalizedFamilies),
-    reasons,
-  };
 }
 
 function objectiveWeightsMatch(left, right) {
@@ -1553,6 +1493,55 @@ function renderCounterWeightPreview(strategy) {
   return wrap;
 }
 
+/**
+ * Render one short, evidence-first game-plan column. The model returns plain
+ * data rather than DOM so it can be unit tested independently of the page;
+ * this helper is the only browser-specific presentation layer for it.
+ */
+function renderOpponentPlanPriorities({ heading, description, priorities = [] }) {
+  const section = document.createElement("section");
+  section.className = "opponent-plan__column";
+  const title = document.createElement("h5");
+  title.textContent = heading;
+  const note = document.createElement("p");
+  note.textContent = description;
+  const list = document.createElement("ul");
+  for (const planPriority of priorities) {
+    const item = document.createElement("li");
+    const label = document.createElement("strong");
+    label.textContent = planPriority.label;
+    const evidence = document.createElement("span");
+    evidence.textContent = planPriority.evidence;
+    item.append(label, evidence);
+    list.append(item);
+  }
+  section.append(title, note, list);
+  return section;
+}
+
+/** Show a compact factual contributor list without inventing player matchups. */
+function renderOpponentThreats(threats = []) {
+  if (!Array.isArray(threats) || threats.length === 0) return null;
+  const section = document.createElement("section");
+  section.className = "opponent-plan__threats";
+  const heading = document.createElement("h5");
+  heading.textContent = "Historical contributors to know";
+  const note = document.createElement("p");
+  note.textContent = "These are shares of the selected team's recorded totals, not live matchup assignments.";
+  const list = document.createElement("ul");
+  for (const threat of threats.slice(0, 4)) {
+    const item = document.createElement("li");
+    const label = document.createElement("strong");
+    label.textContent = `${threat.label}: ${threat.playerName}`;
+    const evidence = document.createElement("span");
+    evidence.textContent = threat.description;
+    item.append(label, evidence);
+    list.append(item);
+  }
+  section.append(heading, note, list);
+  return section;
+}
+
 function createOpponentTeamMark(source) {
   const mark = document.createElement("span");
   mark.className = "opponent-scout__logo";
@@ -1579,8 +1568,18 @@ function renderOpponentScout() {
   const averages = source.teamAverages;
   const rotation = Array.isArray(source.rotation) ? source.rotation : [];
   if (!averages || rotation.length === 0) {
-    throw new Error("This saved team-season does not include the totals needed for a historical style comparison yet.");
+    throw new Error("This saved team-season does not include the totals needed for a historical game plan yet.");
   }
+
+  // The pure model creates a new recommendation from a balanced, visible
+  // baseline every time. It never reads a historical player's workload as a
+  // target and it does not mutate the current scenario until Apply is clicked.
+  const strategy = buildOpponentGamePlan({
+    ownDataset: state.dataset,
+    opponentDataset: state.opponentDataset,
+    baselineFamilyWeights: DEFAULT_FAMILY_PRESETS.balanced,
+  });
+  state.opponentStrategy = strategy;
 
   const fragment = document.createDocumentFragment();
   const teamHeader = document.createElement("div");
@@ -1597,7 +1596,7 @@ function renderOpponentScout() {
     && Number(source.teamGames) > 0
     ? `${source.teamGames}-game`
     : "Stored";
-  teamNote.textContent = `${gameCount} denominator for the ${phase}, estimated from aggregate player minutes with the largest GP total as a lower bound. Team averages use only stats recorded with this team.`;
+  teamNote.textContent = `${gameCount} historical sample for the ${phase}. Team totals include only games recorded for this team, so a traded player's other-team production is not mixed in.`;
   teamCopy.append(teamTitle, teamNote);
   teamHeader.append(teamCopy);
   fragment.append(teamHeader);
@@ -1607,7 +1606,7 @@ function renderOpponentScout() {
   const ownAverages = state.dataset?.source?.teamAverages || {};
   const deltaNote = document.createElement("p");
   deltaNote.className = "opponent-scout__delta-note";
-  deltaNote.textContent = `Current is ${state.dataset?.source?.teamName || state.dataset?.source?.team || "the loaded player pool"}. Delta equals current minus opponent; positive turnovers are worse.`;
+  deltaNote.textContent = `The comparison below is per game. The game plan uses ${strategy.comparison.rateBasisLabel} when both teams have the needed totals; positive turnover differences remain worse.`;
   const statRows = [
     ["points", "PTS", false],
     ["rebounds", "REB", false],
@@ -1650,9 +1649,9 @@ function renderOpponentScout() {
   const rotationSection = document.createElement("section");
   rotationSection.className = "opponent-scout__section";
   const rotationHeading = document.createElement("h4");
-  rotationHeading.textContent = "Minutes-based historical rotation";
+  rotationHeading.textContent = "Historical rotation context";
   const rotationNote = document.createElement("p");
-  rotationNote.textContent = "The nine largest minute shares from this team-season—not a live depth chart or injury report.";
+  rotationNote.textContent = "The nine largest shares of the selected historical team's minutes. This is not a live depth chart, injury report, or a minute setting for your lineup.";
   const rotationGrid = document.createElement("div");
   rotationGrid.className = "opponent-scout__rotation";
   for (const player of rotation) {
@@ -1675,22 +1674,32 @@ function renderOpponentScout() {
   const counter = document.createElement("section");
   counter.className = "opponent-scout__counter opponent-scout__section";
   const counterHeading = document.createElement("h4");
-  counterHeading.textContent = "Suggested historical emphasis";
+  counterHeading.textContent = "Recommended game-plan priorities";
   const counterNote = document.createElement("p");
-  counterNote.textContent = "A transparent heuristic based only on the displayed team-season gaps. Previewing it changes nothing; Apply updates only the strategy weights and can be undone here.";
-  const strategy = deriveHistoricalCounterStrategy(state.dataset?.source?.teamAverages, averages);
-  state.opponentStrategy = strategy;
-  const reasonList = document.createElement("ul");
-  for (const reason of strategy.reasons) {
-    const item = document.createElement("li");
-    item.textContent = reason;
-    reasonList.append(item);
-  }
+  counterNote.textContent = "This preview starts from a balanced plan and uses the displayed historical team totals. Previewing it changes nothing; Apply updates only the six visible priorities and can be undone here.";
+  const priorities = document.createElement("div");
+  priorities.className = "opponent-plan__priorities";
+  priorities.append(
+    renderOpponentPlanPriorities({
+      heading: "Defend their strengths",
+      description: "What the historical opponent profile asks your lineup to handle.",
+      priorities: strategy.defendTheirStrengths,
+    }),
+    renderOpponentPlanPriorities({
+      heading: "Protect your offense",
+      description: "A cautious response to their steals-and-blocks signal, not a claim about their overall defense.",
+      priorities: strategy.protectYourOffense,
+    }),
+  );
+  const threats = renderOpponentThreats(strategy.threats);
+  const caveats = document.createElement("p");
+  caveats.className = "opponent-plan__caveat";
+  caveats.textContent = strategy.caveats.join(" ");
   const applyButton = document.createElement("button");
   applyButton.className = "button button--quiet";
   applyButton.type = "button";
   const suggestionAlreadyApplied = objectiveWeightsMatch(state.weights, strategy.weights);
-  applyButton.textContent = suggestionAlreadyApplied ? "Suggested weights applied" : "Apply suggested weights";
+  applyButton.textContent = suggestionAlreadyApplied ? "Game-plan priorities applied" : "Apply game-plan priorities";
   applyButton.disabled = suggestionAlreadyApplied;
   applyButton.addEventListener("click", () => {
     // Keep one deliberate undo boundary. A later manual slider or preset edit
@@ -1709,7 +1718,7 @@ function renderOpponentScout() {
     updateRunSummary();
     markScenarioChanged();
     renderOpponentScout();
-    showToast(`Historical-emphasis weights applied for ${source.teamName || source.team}.`);
+    showToast(`Historical game-plan priorities applied for ${source.teamName || source.team}.`);
   });
   const actions = document.createElement("div");
   actions.className = "opponent-scout__actions";
@@ -1718,7 +1727,7 @@ function renderOpponentScout() {
     const undoButton = document.createElement("button");
     undoButton.className = "text-button";
     undoButton.type = "button";
-    undoButton.textContent = "Undo weight change";
+    undoButton.textContent = "Undo game-plan priorities";
     undoButton.addEventListener("click", () => {
       const prior = state.opponentWeightUndo;
       if (!prior) return;
@@ -1731,14 +1740,16 @@ function renderOpponentScout() {
       updateRunSummary();
       markScenarioChanged();
       renderOpponentScout();
-      showToast("Previous strategy weights restored.");
+      showToast("Previous lineup priorities restored.");
     });
     actions.append(undoButton);
   }
   counter.append(
     counterHeading,
     counterNote,
-    reasonList,
+    priorities,
+    ...(threats ? [threats] : []),
+    caveats,
     renderCounterWeightPreview(strategy),
     actions,
   );
@@ -1750,7 +1761,7 @@ function renderOpponentScout() {
   // but reveal the completed evidence when a visitor explicitly asked for it.
   elements.opponentScout.open = true;
   setOpponentScoutStatus(
-    `${source.teamName || source.team} ${source.season} comparison ready. Review the sourced averages, signed gaps, and optional weight preview below.`,
+    `${source.teamName || source.team} ${source.season} game plan ready. Review the historical evidence and optional priority preview below.`,
     "success",
   );
 }
@@ -1759,7 +1770,7 @@ async function loadOpponentScout() {
   if (state.opponentLoading || state.liveDataLoading) return;
   const selection = selectionFromControls();
   if (!liveSelectionMatches(state.loadedLiveSelection, selection)) {
-    clearOpponentScout("Apply the selected team-season above before building an opponent scouting cue.");
+    clearOpponentScout("Apply the selected team-season above before building an opponent game plan.");
     return;
   }
   const team = elements.opponentTeam.value;
@@ -1771,7 +1782,7 @@ async function loadOpponentScout() {
   const teamName = teamNameForCode(team);
   let staleResponseMessage = "";
   setOpponentLoading(true);
-  setOpponentScoutStatus(`Comparing ${teamName} ${nbaSeasonLabel(selection.season)} historical averages and rotation...`);
+  setOpponentScoutStatus(`Loading ${teamName} ${nbaSeasonLabel(selection.season)} historical profile...`);
   try {
     const cached = readCachedLiveDataset(team, selection.season, selection.seasonPhase);
     const dataset = cached?.fresh
@@ -1798,14 +1809,14 @@ async function loadOpponentScout() {
       state.opponentWeightUndo = null;
       elements.opponentScoutSummary.hidden = true;
       elements.opponentScoutSummary.replaceChildren();
-      staleResponseMessage = "The team, season, phase, or opponent changed while the comparison was loading. Load the selected team-season, then build the scouting cue again.";
+      staleResponseMessage = "The team, season, phase, or opponent changed while the profile was loading. Load the selected team-season, then build the game plan again.";
       return;
     }
 
     state.opponentDataset = dataset;
     renderOpponentScout();
   } catch (error) {
-    const detail = error instanceof Error ? error.message : "The historical style comparison could not be loaded.";
+    const detail = error instanceof Error ? error.message : "The historical opponent profile could not be loaded.";
     state.opponentDataset = null;
     state.opponentStrategy = null;
     state.opponentWeightUndo = null;
@@ -2837,8 +2848,8 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   state.playerMediaStatus.clear();
   state.teamLogoStatus = "unavailable";
   clearOpponentScout(liveSelection
-    ? "Choose another team from this season and phase to load its averages and historical rotation."
-    : "Load a database team-season above before building an opponent scouting cue.");
+    ? "Choose another team from this season and phase to build a historical game plan."
+    : "Load a database team-season above before building an opponent game plan.");
   if (clearScenario) {
     state.lockedIds.clear();
     state.excludedIds.clear();
@@ -5224,14 +5235,14 @@ function bindEvents() {
     // asynchronously. Stale the old result before the network request so it
     // cannot be copied, downloaded, printed, or shared in that short window.
     markResultStaleForDatasetSelection();
-    clearOpponentScout("Apply the updated team-season before building an opponent scouting cue.");
+    clearOpponentScout("Apply the updated team-season before building an opponent game plan.");
     refreshLiveTeamOptions();
   };
   elements.liveSeason.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveSeasonPhase.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveTeam.addEventListener("change", () => {
     updateLiveSelectionState();
-    clearOpponentScout("Apply this team as the player pool before building an opponent scouting cue.");
+    clearOpponentScout("Apply this team as the player pool before building an opponent game plan.");
     populateOpponentTeamOptions();
   });
   elements.loadOpponent.addEventListener("click", loadOpponentScout);
@@ -5242,7 +5253,7 @@ function bindEvents() {
       state.opponentWeightUndo = null;
       elements.opponentScoutSummary.hidden = true;
       elements.opponentScoutSummary.replaceChildren();
-      setOpponentScoutStatus(`Build a scouting cue for ${teamNameForCode(elements.opponentTeam.value)} to view historical averages and rotation.`);
+      setOpponentScoutStatus(`Build a game plan for ${teamNameForCode(elements.opponentTeam.value)} to view historical strengths and priorities.`);
     }
   });
   elements.importCsv.addEventListener("click", () => elements.csvFile.click());

@@ -156,7 +156,10 @@ function playerFromCell(cell, playerExpression, normalizeExternalId = (value) =>
   const match = cell.html.match(playerExpression);
   if (!match) return null;
   const externalId = normalizeExternalId(match[1].trim());
-  const fullName = stripHtml(cell.html).replace(/\s*[\*†‡]+\s*$/u, '').trim();
+  // Sports Reference appends batting-handedness, active, award, and
+  // Hall-of-Fame display markers to linked names. They are presentation
+  // metadata, not part of the athlete identity or an alias.
+  const fullName = stripHtml(cell.html).replace(/\s*[\*#†‡+]+\s*$/u, '').trim();
   return externalId && fullName ? { externalId, fullName } : null;
 }
 

@@ -13,7 +13,7 @@ const baseballBatting = `
 </tbody></table> -->
 <table id="players_standard_batting"><tbody>
   <tr>
-    <th data-stat="name_display"><a href="/players/s/schmimi01.shtml">Mike Schmidt*</a></th>
+    <th data-stat="name_display"><a href="/players/s/schmimi01.shtml">Mike Schmidt*#+</a></th>
     <td data-stat="age">30</td><td data-stat="team_name_abbr">PHI</td><td data-stat="pos">3B</td>
     <td data-stat="b_games">150</td><td data-stat="b_pa">617</td><td data-stat="b_hr">48</td>
     <td data-stat="b_batting_avg">.286</td><td data-stat="b_onbase_plus_slugging_plus">171</td>
@@ -60,7 +60,7 @@ test('parses regular and postseason Baseball Reference player rows with metric J
     sourceUrl,
     sourceRecordId: '1980:regular:batting:schmimi01:PHI',
     rawPayload: {
-      name_display: 'Mike Schmidt*', age: '30', team_name_abbr: 'PHI', pos: '3B',
+      name_display: 'Mike Schmidt*#+', age: '30', team_name_abbr: 'PHI', pos: '3B',
       b_games: '150', b_pa: '617', b_hr: '48', b_batting_avg: '.286',
       b_onbase_plus_slugging_plus: '171', awards: 'MVP',
     },

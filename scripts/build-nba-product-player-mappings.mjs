@@ -7,6 +7,7 @@ import {
 
 const ROOT = process.cwd();
 const APPLY_CONFIRMATION = 'insert-only-reviewed-nba-mappings';
+const PUBLISHED_REVIEW_STATES = new Set(['auto_verified', 'human_verified']);
 
 export function optionsFromArgs(argv = []) {
   const options = {
@@ -130,8 +131,124 @@ async function insertMappingBatches(projectUrl, apiKey, batches) {
   }
 }
 
-function mappingKey(mapping) {
-  return `${Number(mapping.product_id)}:${String(mapping.athlete_id)}:${String(mapping.league_code)}`;
+function mappingIdentityKey(mapping) {
+  return [
+    Number(mapping.product_id),
+    String(mapping.athlete_id || ''),
+    String(mapping.league_code || '').toUpperCase(),
+    Number(mapping.subject_order),
+  ].join(':');
+}
+
+function groupMappingRowsByProduct(rows = []) {
+  const groups = new Map();
+  for (const row of Array.isArray(rows) ? rows : []) {
+    const productId = Number(row?.product_id);
+    if (!Number.isSafeInteger(productId) || productId <= 0) continue;
+    const group = groups.get(productId) || [];
+    group.push(row);
+    groups.set(productId, group);
+  }
+  return groups;
+}
+
+function comparableMappingRows(rows = []) {
+  return rows
+    .map((row) => ({
+      product_id: Number(row.product_id),
+      athlete_id: String(row.athlete_id || ''),
+      league_code: String(row.league_code || '').toUpperCase(),
+      subject_order: Number(row.subject_order),
+      review_state: String(row.review_state || ''),
+    }))
+    .sort((left, right) => (
+      left.subject_order - right.subject_order
+      || left.athlete_id.localeCompare(right.athlete_id)
+    ));
+}
+
+function isRemoteNbaProduct(row) {
+  return String(row?.category || '').trim().toLowerCase() === 'basketball'
+    && String(row?.league || '').trim().toUpperCase() === 'NBA';
+}
+
+/**
+ * Compare a fresh deterministic plan with the current remote rows without
+ * mutating either side. Existing products remain write-protected, but exact,
+ * partial, and conflicting states are reported separately for review.
+ */
+export function reconcilePlannedMappingsWithExisting(proposedMappings = [], existingRows = []) {
+  const proposedByProduct = groupMappingRowsByProduct(proposedMappings);
+  const existingByProduct = groupMappingRowsByProduct(existingRows);
+  const insertableMappings = [];
+  const exactExistingProductIds = [];
+  const conflictingExisting = [];
+
+  for (const [productId, proposedRows] of [...proposedByProduct.entries()]
+    .sort(([left], [right]) => left - right)) {
+    const currentRows = existingByProduct.get(productId) || [];
+    if (!currentRows.length) {
+      insertableMappings.push(...proposedRows);
+      continue;
+    }
+
+    const proposedKeys = new Set(proposedRows.map(mappingIdentityKey));
+    // Rejected rows are historical review evidence, not published mappings.
+    // Ignore them when checking an active mapping set, but keep them in the
+    // report so a reviewer can see why the product remains write-protected.
+    const activeRows = currentRows.filter((row) => (
+      String(row?.review_state || '').toLowerCase() !== 'rejected'
+    ));
+    const unpublishedRows = activeRows.filter((row) => (
+      !PUBLISHED_REVIEW_STATES.has(String(row?.review_state || '').toLowerCase())
+    ));
+    const existingKeys = new Set(activeRows.map(mappingIdentityKey));
+    const missingFromExisting = [...proposedKeys].filter((key) => !existingKeys.has(key));
+    const unexpectedExisting = [...existingKeys].filter((key) => !proposedKeys.has(key));
+    const duplicateExistingRows = activeRows.length - existingKeys.size;
+    if (!missingFromExisting.length && !unexpectedExisting.length && !duplicateExistingRows
+      && activeRows.length && !unpublishedRows.length) {
+      exactExistingProductIds.push(productId);
+      continue;
+    }
+
+    const allHistoricalRejected = currentRows.length > 0 && activeRows.length === 0
+      && currentRows.every((row) => String(row?.review_state || '').toLowerCase() === 'rejected');
+    const keysMatch = !missingFromExisting.length && !unexpectedExisting.length && !duplicateExistingRows;
+    conflictingExisting.push({
+      productId,
+      classification: allHistoricalRejected
+        ? 'rejected_existing_mapping'
+        : (keysMatch && unpublishedRows.length
+          ? 'needs_review_existing_mapping'
+          : (duplicateExistingRows
+            ? 'duplicate_existing_mapping'
+            : (!unexpectedExisting.length && missingFromExisting.length
+              ? 'partial_existing_mapping'
+              : 'conflicting_existing_mapping'))),
+      missingPlannedRowCount: missingFromExisting.length,
+      unexpectedExistingRowCount: unexpectedExisting.length,
+      duplicateExistingRowCount: duplicateExistingRows,
+      unpublishedExistingRowCount: unpublishedRows.length,
+      proposed: comparableMappingRows(proposedRows),
+      existing: comparableMappingRows(currentRows),
+    });
+  }
+
+  const existingWithoutPlan = [...existingByProduct.entries()]
+    .filter(([productId]) => !proposedByProduct.has(productId))
+    .sort(([left], [right]) => left - right)
+    .map(([productId, rows]) => ({
+      productId,
+      existing: comparableMappingRows(rows),
+    }));
+
+  return {
+    insertableMappings,
+    exactExistingProductIds,
+    conflictingExisting,
+    existingWithoutPlan,
+  };
 }
 
 export async function main(argv = process.argv.slice(2)) {
@@ -169,11 +286,10 @@ export async function main(argv = process.argv.slice(2)) {
       league_code: 'eq.NBA',
       order: 'product_id.asc,subject_order.asc',
     });
-  const remoteProductRows = await fetchAllRows(projectUrl, serviceRoleKey, 'products', 'id', {
-    category: 'eq.Basketball',
-    league: 'eq.NBA',
-    order: 'id.asc',
-  });
+  // Read the full remote identity scope so a category/league casing change is
+  // reported as scope drift instead of being mislabeled as a missing product.
+  const remoteProductRows = await fetchAllRows(projectUrl, serviceRoleKey, 'products',
+    'id,category,league,is_deleted,sale_status', { order: 'id.asc' });
 
   const identityStatusById = new Map(
     athleteRows.map((athlete) => [String(athlete.id), String(athlete.identity_status || '')])
@@ -193,19 +309,30 @@ export async function main(argv = process.argv.slice(2)) {
   }));
   const plan = buildNbaProductPlayerMappingPlan({ products: catalog, aliases });
   const remoteProductIds = new Set(remoteProductRows.map((row) => Number(row.id)));
-  const existingProductIds = new Set(existingRows.map((row) => Number(row.product_id)));
+  const remoteEligibleProductIds = new Set(
+    remoteProductRows.filter(isRemoteNbaProduct).map((row) => Number(row.id))
+  );
   const missingRemoteProductIds = [...new Set(plan.mappings
     .map((mapping) => mapping.product_id)
     .filter((productId) => !remoteProductIds.has(productId)))]
     .sort((left, right) => left - right);
-  const insertableMappings = plan.mappings.filter((mapping) => (
-    remoteProductIds.has(mapping.product_id)
-    && !existingProductIds.has(mapping.product_id)
-  ));
-  const blockedByExistingProductIds = [...new Set(plan.mappings
+  const remoteScopeDriftProductIds = [...new Set(plan.mappings
     .map((mapping) => mapping.product_id)
-    .filter((productId) => existingProductIds.has(productId)))]
+    .filter((productId) => remoteProductIds.has(productId) && !remoteEligibleProductIds.has(productId)))]
     .sort((left, right) => left - right);
+  const remoteEligibleMappings = plan.mappings.filter((mapping) => remoteEligibleProductIds.has(mapping.product_id));
+  const reconciliation = reconcilePlannedMappingsWithExisting(remoteEligibleMappings, existingRows);
+  const insertableMappings = reconciliation.insertableMappings;
+  const existingWithoutCurrentPlan = reconciliation.existingWithoutPlan
+    .filter((entry) => remoteEligibleProductIds.has(entry.productId));
+  const scopeDriftExistingMappings = reconciliation.existingWithoutPlan
+    .filter((entry) => remoteProductIds.has(entry.productId) && !remoteEligibleProductIds.has(entry.productId));
+  const staleExistingMappings = reconciliation.existingWithoutPlan
+    .filter((entry) => !remoteProductIds.has(entry.productId));
+  const blockedByExistingProductIds = [
+    ...reconciliation.exactExistingProductIds,
+    ...reconciliation.conflictingExisting.map((entry) => entry.productId),
+  ].sort((left, right) => left - right);
 
   const report = {
     generatedAt: new Date().toISOString(),
@@ -217,18 +344,40 @@ export async function main(argv = process.argv.slice(2)) {
     existingMappingRows: existingRows.length,
     blockedByExistingProductCount: blockedByExistingProductIds.length,
     blockedByExistingProductIds,
+    exactExistingProductCount: reconciliation.exactExistingProductIds.length,
+    exactExistingProductIds: reconciliation.exactExistingProductIds,
+    conflictingExistingProductCount: reconciliation.conflictingExisting.length,
+    conflictingExisting: reconciliation.conflictingExisting,
+    existingWithoutCurrentPlanProductCount: existingWithoutCurrentPlan.length,
+    existingWithoutCurrentPlan,
+    staleExistingMappingProductCount: staleExistingMappings.length,
+    staleExistingMappings,
+    remoteScopeDriftProductCount: remoteScopeDriftProductIds.length,
+    remoteScopeDriftProductIds,
+    scopeDriftExistingMappingProductCount: scopeDriftExistingMappings.length,
+    scopeDriftExistingMappings,
     missingRemoteProductCount: missingRemoteProductIds.length,
     missingRemoteProductIds,
     insertableProductCount: new Set(insertableMappings.map((mapping) => mapping.product_id)).size,
     insertableMappingRows: insertableMappings.length,
     appliedMappingRows: 0,
   };
-
-  if (options.reportPath) {
-    const reportPath = workspacePath(options.reportPath, 'Report path');
+  const reportPath = options.reportPath
+    ? workspacePath(options.reportPath, 'Report path')
+    : '';
+  const writeReport = async () => {
+    if (!reportPath) return;
     await fs.mkdir(path.dirname(reportPath), { recursive: true });
-    await fs.writeFile(reportPath, `${JSON.stringify({ ...report, unresolved: plan.unresolved }, null, 2)}\n`, 'utf8');
-  }
+    await fs.writeFile(reportPath, `${JSON.stringify({
+      ...report,
+      insertableMappings,
+      unresolved: plan.unresolved,
+    }, null, 2)}\n`, 'utf8');
+  };
+
+  // Preserve an audit artifact even if a later guarded apply fails, then
+  // rewrite it after a successful apply with appliedMappingRows/backupPath.
+  await writeReport();
 
   if (options.apply) {
     if (options.confirmation !== APPLY_CONFIRMATION
@@ -250,13 +399,18 @@ export async function main(argv = process.argv.slice(2)) {
         league_code: 'eq.NBA',
         order: 'product_id.asc,subject_order.asc',
       });
-    const verifiedKeys = new Set(verifiedRows.map(mappingKey));
-    const missingApplied = insertableMappings.filter((mapping) => !verifiedKeys.has(mappingKey(mapping)));
+    const verifiedKeys = new Set(verifiedRows
+      .filter((row) => String(row.review_state || '') === 'auto_verified')
+      .map(mappingIdentityKey));
+    const missingApplied = insertableMappings.filter((mapping) => (
+      !verifiedKeys.has(mappingIdentityKey(mapping))
+    ));
     if (missingApplied.length) {
       throw new Error(`${missingApplied.length} proposed mapping rows were not present after apply.`);
     }
     report.appliedMappingRows = insertableMappings.length;
     report.backupPath = path.relative(ROOT, backupPath).replace(/\\/g, '/');
+    await writeReport();
   }
 
   console.log(JSON.stringify(report, null, 2));

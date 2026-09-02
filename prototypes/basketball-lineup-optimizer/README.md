@@ -174,6 +174,33 @@ solver remains the shared constraint layer for every model. Until this separate
 layer is validated and approved, the interface must continue to label Scout
 impact as not active.
 
+## Historical opponent game plan
+
+Detailed view includes an optional same-season opponent game plan. It is a
+transparent pre-solver layer—not a separate rating or a second optimizer. It
+reconstructs a team's historical box-score totals from the selected player pool
+and, when all inputs exist, compares both teams per 100 *estimated offensive
+possessions* using `FGA + 0.44 × FTA − OREB + TOV`. If either pool is missing
+that denominator, it falls back to clearly labeled per-game comparisons rather
+than inventing pace-adjusted values.
+
+The model can raise the existing six visible priorities for four supported
+historical signals: three-point volume/accuracy, ball movement, shot
+efficiency, and rebounding. It separately offers a cautious `Protect
+possessions` response to a steals-plus-blocks edge. That is a box-score
+disruption proxy, not a claim that the opponent has a measured defensive
+weakness or a complete defensive rating. The page also names leading historical
+contributors by their share of team scoring, assists, three-point attempts,
+rebounds, and stocks; those are context only, never assigned matchups.
+
+Applying the plan is explicit and reversible. It changes only the six visible
+family weights passed to the exact optimizer. It does not alter player
+eligibility, locks, exclusions, position requirements, statistical floors, or
+assigned minutes. Player games played, past minutes, and team-only history are
+intentionally absent from the game-plan calculation, so no past role becomes a
+hidden rotation target. The result is historical context—not a live injury
+report, schedule forecast, player-tracking matchup map, or game prediction.
+
 ## Data boundary
 
 The default player pool comes from the approved Basketball Reference import in

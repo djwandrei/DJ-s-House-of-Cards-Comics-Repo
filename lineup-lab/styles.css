@@ -1597,6 +1597,89 @@ body[data-experience-mode="simple"] .simple-model-summary {
   font-size: 0.76rem;
 }
 
+/*
+ * Keep the optional game plan short and scannable. These cards deliberately
+ * show the model's two questions—what to defend and how to protect the ball—
+ * before the more technical weight table. The underlying strategy remains the
+ * same six visible slider families; no new hidden score is introduced here.
+ */
+.opponent-plan__priorities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.opponent-plan__column,
+.opponent-plan__threats {
+  min-width: 0;
+  padding: 0.72rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(162, 123, 25, 0.23);
+  border-radius: 9px;
+}
+
+.opponent-plan__column h5,
+.opponent-plan__threats h5 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 0.84rem;
+}
+
+.opponent-plan__column > p,
+.opponent-plan__threats > p,
+.opponent-plan__caveat {
+  margin: 0.24rem 0 0;
+  color: #6b5726;
+  font-size: 0.74rem;
+  line-height: 1.42;
+}
+
+.opponent-plan__column ul,
+.opponent-plan__threats ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.58rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opponent-plan__column li,
+.opponent-plan__threats li {
+  padding-left: 0.58rem;
+  border-left: 3px solid #d59c1e;
+}
+
+.opponent-plan__column li strong,
+.opponent-plan__threats li strong,
+.opponent-plan__column li span,
+.opponent-plan__threats li span {
+  display: block;
+}
+
+.opponent-plan__column li strong,
+.opponent-plan__threats li strong {
+  color: #40310d;
+  font-size: 0.76rem;
+}
+
+.opponent-plan__column li span,
+.opponent-plan__threats li span {
+  margin-top: 0.12rem;
+  color: #6b5726;
+  line-height: 1.35;
+}
+
+.opponent-plan__threats {
+  margin-top: 0.65rem;
+}
+
+.opponent-plan__caveat {
+  margin-top: 0.7rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(162, 123, 25, 0.25);
+}
+
 .counter-weight-preview {
   margin-top: 0.7rem;
   background: #fff;
@@ -3594,6 +3677,10 @@ body[data-experience-mode="simple"] .simple-model-summary {
 
   .opponent-scout__rotation {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .opponent-plan__priorities {
+    grid-template-columns: 1fr;
   }
 
   .constraint-group--wide {

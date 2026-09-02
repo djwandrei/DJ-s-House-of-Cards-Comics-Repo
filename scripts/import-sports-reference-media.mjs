@@ -55,6 +55,7 @@ Options:
   --season-start <year>        Existing team-season lower bound (default: 1950)
   --season-end <year>          Existing team-season upper bound (default: current year)
   --profile-start <year>       Earliest headshot-eligible season (default: 2010)
+  --external-ids <id,...>      Restrict headshot work to specific source player IDs
   --cache-only                 Read browser-captured player HTML only
   --apply --analytics          Write the isolated Extra project
 
@@ -75,7 +76,7 @@ function parseArgs(argv, now = new Date()) {
     else if (argv[i + 1] && !argv[i + 1].startsWith('--')) values.set(name, argv[++i]);
     else flags.add(name);
   }
-  const known = new Set(['sport', 'kind', 'season-start', 'season-end', 'profile-start', 'cache-only', 'apply', 'analytics', 'help']);
+  const known = new Set(['sport', 'kind', 'season-start', 'season-end', 'profile-start', 'external-ids', 'cache-only', 'apply', 'analytics', 'help']);
   for (const name of [...values.keys(), ...flags]) if (!known.has(name)) throw new Error(`Unknown option: --${name}`);
   if (flags.has('help')) return { help: true };
   const sportValue = String(values.get('sport') ?? 'both').toLowerCase();
@@ -91,9 +92,12 @@ function parseArgs(argv, now = new Date()) {
   const end = integer(values.get('season-end') ?? now.getUTCFullYear(), '--season-end', 1920, 2200);
   const profileStart = integer(values.get('profile-start') ?? 2010, '--profile-start', 1920, 2200);
   if (end < start) throw new Error('--season-end must be greater than or equal to --season-start.');
+  const externalIds = String(values.get('external-ids') ?? '').split(',').map((value) => value.trim()).filter(Boolean);
+  if (externalIds.length > 200) throw new Error('--external-ids may contain at most 200 IDs.');
+  if (externalIds.some((value) => !/^[A-Za-z0-9.]+$/.test(value))) throw new Error('--external-ids contains an unsafe player ID.');
   return {
     help: false, sports: sportValue === 'both' ? ['mlb', 'nfl'] : [sportValue], kind, start, end, profileStart,
-    cacheOnly: flags.has('cache-only'), apply: flags.has('apply'), analytics: flags.has('analytics'),
+    externalIds: [...new Set(externalIds)], cacheOnly: flags.has('cache-only'), apply: flags.has('apply'), analytics: flags.has('analytics'),
   };
 }
 
@@ -108,6 +112,11 @@ function ensureDirectory(directory) { fs.mkdirSync(directory, { recursive: true 
 
 function parseCliJson(stdout) {
   const text = String(stdout ?? '').trim();
+  try {
+    const direct = JSON.parse(text);
+    if (Array.isArray(direct)) return { rows: direct };
+    if (Array.isArray(direct?.rows)) return direct;
+  } catch { /* scan for a JSON payload after CLI notices */ }
   for (const match of text.matchAll(/\{/g)) {
     try {
       const parsed = JSON.parse(text.slice(match.index));
@@ -118,11 +127,19 @@ function parseCliJson(stdout) {
 }
 
 async function executeSql(sql, label) {
+  const readOnlyQuery = /^\s*select\b/i.test(sql);
   const work = ensureDirectory(path.join(ROOT, 'outputs', 'sports-reference-import-work'));
   const sqlFile = path.join(work, `media-${label.replace(/[^a-z0-9_-]+/gi, '-')}.sql`);
   fs.writeFileSync(sqlFile, sql, 'utf8');
+  const compactQuery = sql.replace(/\s+/g, ' ').trim();
+  // The CLI only emits SELECT result rows for an inline query; --file is for
+  // statement execution and deliberately has no row-result envelope.
+  const selectArgs = ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', WORKDIR,
+    '--output-format', 'json', `"${compactQuery.replaceAll('"', '\\"')}"`];
   const result = await new Promise((resolve, reject) => {
-    const child = spawn('npx.cmd', ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', WORKDIR, '--file', sqlFile, '--output', 'json'], {
+    const child = readOnlyQuery
+      ? spawn('npx.cmd', selectArgs, { cwd: WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'] })
+      : spawn('npx.cmd', ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', WORKDIR, '--file', sqlFile], {
       cwd: WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = ''; let stderr = '';
@@ -131,6 +148,7 @@ async function executeSql(sql, label) {
     child.once('error', reject); child.once('close', (code) => resolve({ code, stdout, stderr }));
   });
   if (result.code !== 0) throw new Error(`NBA/Extra media SQL failed for ${label}: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
+  if (!readOnlyQuery) return [];
   const payload = parseCliJson(result.stdout);
   if (!payload) throw new Error(`Media SQL returned invalid JSON for ${label}.`);
   return payload.rows;
@@ -250,17 +268,24 @@ commit;
 }
 
 async function processSport(source, options) {
-  const teamRows = (await executeSql(`select id, season_year, team_code, team_name from public.${source.teamTable} where season_year between ${options.start} and ${options.end} order by season_year, team_code;`, `${source.sport}-teams`)).map((row) => row);
+  const needTeamRows = options.kind === 'logos' || options.kind === 'all' || source.sport === 'mlb';
+  const teamRows = needTeamRows
+    ? (await executeSql(`select id, season_year, team_code, team_name from public.${source.teamTable} where season_year between ${options.start} and ${options.end} order by season_year, team_code;`, `${source.sport}-teams`)).map((row) => row)
+    : [];
   const mediaRows = [];
   if (options.kind === 'logos' || options.kind === 'all') mediaRows.push(...buildLogoRows(source, teamRows, options));
   if (options.kind === 'headshots' || options.kind === 'all') {
     const teamHeadshots = loadCachedTeamHeadshots(source, teamRows);
+    const externalIdFilter = options.externalIds.length
+      ? `and e.external_id in (${options.externalIds.map(sqlLiteral).join(', ')})`
+      : '';
     const playerRows = await executeSql(`
       select p.id as player_id, p.full_name, e.external_id, min(s.season_year)::int as first_season
       from public.${source.playerTable} p
       join public.${source.externalTable} e on e.player_id = p.id and e.source_name = ${sqlLiteral(source.sourceName)}
       join public.${source.statsTable} s on s.player_id = p.id
       where s.season_year >= ${options.profileStart}
+        ${externalIdFilter}
       group by p.id, p.full_name, e.external_id;
     `, `${source.sport}-players`);
     if (!options.cacheOnly) {

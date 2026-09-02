@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260901b">
+  <link rel="stylesheet" href="styles.css?v=20260901c">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -217,21 +217,21 @@
                   </details>
 
                   <details class="opponent-scout detailed-only" id="opponentScout">
-                    <summary>Compare a historical opponent <span>(optional)</span></summary>
+                    <summary>Build a historical opponent game plan <span>(optional)</span></summary>
                     <div class="opponent-scout__heading">
                       <div>
-                        <h3 id="opponentScoutHeading">Opponent profile</h3>
-                        <p>Compare same-season team profiles and minute leaders, then preview an optional strategy emphasis. This is a profile comparison, not a matchup simulation.</p>
+                        <h3 id="opponentScoutHeading">Opponent game plan</h3>
+                        <p>Use a same-season opponent profile to preview lineup priorities. It is historical context—not a live injury report, exact matchup assignment, or game prediction.</p>
                       </div>
                       <div class="opponent-scout__controls">
                         <label class="field">
                           <span>Opponent</span>
                           <select id="opponentTeamInput" aria-describedby="opponentScoutStatus"></select>
                         </label>
-                      <button class="button button--quiet" id="loadOpponentButton" type="button">Compare team profile</button>
+                      <button class="button button--quiet" id="loadOpponentButton" type="button">Build game plan</button>
                       </div>
                     </div>
-                    <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above to compare an opponent.</p>
+                    <p class="opponent-scout__status" id="opponentScoutStatus" role="status" aria-live="polite">Load a database team-season above, then choose an opponent from the same season and phase.</p>
                     <div class="opponent-scout__summary" id="opponentScoutSummary" hidden></div>
                   </details>
 
@@ -553,8 +553,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260901b"></script>
-  <script defer src="../supabase-client.js?v=20260901b"></script>
-  <script type="module" src="app.js?v=20260901b"></script>
+  <script defer src="../backend-config.js?v=20260901c"></script>
+  <script defer src="../supabase-client.js?v=20260901c"></script>
+  <script type="module" src="app.js?v=20260901c"></script>
 </body>
 </html>

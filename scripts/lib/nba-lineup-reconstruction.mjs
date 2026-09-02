@@ -25,7 +25,7 @@
 
 import { createHash } from 'node:crypto';
 
-export const NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION = 'sportradar-nba-lineup-reconstruction-v2';
+export const NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION = 'sportradar-nba-lineup-reconstruction-v3';
 
 // Fixed namespaces make keys reproducible across dry-runs and imports. They
 // are application namespaces, not provider identifiers.
@@ -35,6 +35,7 @@ export const NBA_POSSESSION_UUID_NAMESPACE = 'd2e7c7d7-f263-5f1e-a1c9-8ce4eb729d
 
 const VALID_SNAPSHOT_STATUS = 'valid_five_on_five';
 const SCORE_STATE_LABELS = new Set([
+  'unclassified',
   'tied',
   'ahead_1_5',
   'ahead_6_10',
@@ -86,7 +87,7 @@ function normalizeStatus(value) {
 }
 
 function normalizedEventType(event) {
-  return normalizeStatus(event?.eventType ?? event?.type ?? '');
+  return normalizeStatus(event?.eventType ?? event?.type ?? '').replace(/[^a-z0-9]+/g, '');
 }
 
 function eventId(event, index) {
@@ -252,6 +253,11 @@ function periodNumber(event) {
   return asPositiveInteger(event?.periodNumber ?? event?.period_number) ?? periodSequence(event);
 }
 
+function observedPeriodNumber(event) {
+  return asPositiveInteger(event?.periodNumber ?? event?.period_number)
+    ?? asPositiveInteger(event?.periodSequence ?? event?.period_sequence);
+}
+
 function periodStartElapsedMs(event) {
   const sequence = periodSequence(event);
   let elapsed = 0;
@@ -271,9 +277,10 @@ export function gameElapsedMs(event = {}) {
 }
 
 export function homeScoreStateV1(homePoints, awayPoints) {
-  const margin = asFiniteNumber(homePoints) !== null && asFiniteNumber(awayPoints) !== null
-    ? asFiniteNumber(homePoints) - asFiniteNumber(awayPoints)
-    : 0;
+  const home = asFiniteNumber(homePoints);
+  const away = asFiniteNumber(awayPoints);
+  if (home === null || away === null) return 'unclassified';
+  const margin = home - away;
   if (margin === 0) return 'tied';
   const direction = margin > 0 ? 'ahead' : 'trailing';
   const magnitude = Math.abs(margin);
@@ -288,13 +295,8 @@ export function isClutchV1({ periodNumber: rawPeriodNumber, clockRemainingMs, ho
   const clock = asNonNegativeInteger(clockRemainingMs);
   const home = asFiniteNumber(homePointsBefore);
   const away = asFiniteNumber(awayPointsBefore);
-  return currentPeriod !== null
-    && currentPeriod >= 4
-    && clock !== null
-    && clock <= 300000
-    && home !== null
-    && away !== null
-    && Math.abs(home - away) <= 5;
+  if (currentPeriod === null || clock === null || home === null || away === null) return null;
+  return currentPeriod >= 4 && clock <= 300000 && Math.abs(home - away) <= 5;
 }
 
 function fastbreakText(value) {
@@ -302,7 +304,11 @@ function fastbreakText(value) {
 }
 
 function truthyFastbreakValue(value) {
-  if (value === false || value === 0 || value === 'false' || value === '0' || value === 'no') return false;
+  if (value === false || value === 0) return false;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized || normalized === 'false' || normalized === '0' || normalized === 'no' || normalized === 'off') return false;
+  }
   return value !== null && value !== undefined && value !== '';
 }
 
@@ -314,6 +320,12 @@ function qualifierHasFastbreak(value, depth = 0) {
   }
   if (Array.isArray(value)) return value.some((item) => qualifierHasFastbreak(item, depth + 1));
   if (typeof value !== 'object') return false;
+  const descriptor = value.type ?? value.name ?? value.qualifier ?? value.code;
+  const compactDescriptor = fastbreakText(descriptor);
+  if (compactDescriptor === 'fastbreak' || compactDescriptor === 'fastbreakplay' || compactDescriptor === 'fastbreakpoints') {
+    const explicitValue = value.value ?? value.enabled ?? value.active ?? value.isFastbreak ?? value.is_fastbreak;
+    return explicitValue === undefined ? true : truthyFastbreakValue(explicitValue);
+  }
   return Object.entries(value).some(([key, child]) => {
     const compactKey = fastbreakText(key);
     if (compactKey === 'fastbreak' || compactKey === 'isfastbreak' || compactKey === 'fastbreakplay') {
@@ -338,6 +350,19 @@ function isLineupChangeEvent(event) {
   return type.includes('lineupchange') || type.includes('substitution') || type.includes('ejection');
 }
 
+function isPossessionAdministrativeEvent(event) {
+  const type = normalizedEventType(event);
+  return isLineupChangeEvent(event)
+    || isPeriodEndEvent(event)
+    || type.includes('startperiod')
+    || type.includes('periodstart')
+    || type.includes('startquarter')
+    || type.includes('quarterstart')
+    || type.includes('timeout')
+    || type.includes('review')
+    || type.includes('instantreplay');
+}
+
 function isMadeFreeThrowEvent(event) {
   const type = normalizedEventType(event);
   return type.includes('freethrowmade') || type.includes('madefreethrow');
@@ -351,6 +376,40 @@ function isMissedFreeThrowEvent(event) {
 function isMadeFieldGoalEvent(event) {
   const type = normalizedEventType(event);
   return type.includes('twopointmade') || type.includes('threepointmade');
+}
+
+function eventMayChangeScore(event) {
+  const type = normalizedEventType(event);
+  if (isMadeFieldGoalEvent(event)
+    || isMadeFreeThrowEvent(event)
+    || type.includes('fieldgoalmade')
+    || type.includes('madefieldgoal')
+    || type.includes('basketmade')
+    || type.includes('scorechange')) return true;
+  if (asFiniteNumber(event?.points) > 0) return true;
+  return (Array.isArray(event?.statistics) ? event.statistics : []).some((statistic) => (
+    statistic?.made === true
+    && asFiniteNumber(statistic?.points) > 0
+    && ['fieldgoal', 'freethrow'].includes(normalizedStatisticType(statistic))
+  ));
+}
+
+function isObservedPossessionAction(event) {
+  const type = normalizedEventType(event);
+  if (isPossessionAdministrativeEvent(event)) return false;
+  if (type.includes('twopoint')
+    || type.includes('threepoint')
+    || type.includes('fieldgoal')
+    || type.includes('freethrow')
+    || type.includes('turnover')
+    || type.includes('rebound')
+    || type.includes('foul')
+    || type.includes('violation')
+    || type.includes('jumpball')) return true;
+  return (Array.isArray(event?.statistics) ? event.statistics : []).some((statistic) => (
+    ['fieldgoal', 'freethrow', 'turnover', 'rebound', 'personalfoul', 'fouldrawn']
+      .includes(normalizedStatisticType(statistic))
+  ));
 }
 
 function isShootingFoulEvent(event) {
@@ -652,13 +711,13 @@ function expectedGameEndMs(events) {
 function isPotentialGameEnd(lastEvent, events) {
   if (!lastEvent) return false;
   if (isGameEndEvent(lastEvent)) return true;
-  const lastIndex = events.length - 1;
   const lastClock = asNonNegativeInteger(lastEvent.clockRemainingMs ?? lastEvent.clock_remaining_ms);
-  if (lastClock !== 0 || lastIndex < 0) return false;
+  if (lastClock !== 0) return false;
   const currentPeriod = periodSequence(lastEvent);
-  // A final zero-clock event is a defensible game end only if no later period
-  // exists in this document. Overtime records have a higher period sequence.
-  return !events.some((event) => periodSequence(event) > currentPeriod);
+  // A sparse provider document may omit a distinct game-end event. Its final
+  // zero-clock event is sufficient only after regulation (or in overtime), so
+  // a document truncated at the end of Q1-Q3 cannot become publishable.
+  return currentPeriod >= 4 && !events.some((event) => periodSequence(event) > currentPeriod);
 }
 
 function createLineupRegistry() {
@@ -900,6 +959,7 @@ function identifyAndOneContinuations(events, homeTeamId, awayTeamId) {
 
 function makePossession({ ordinal, gameId, providerId, sourcePossessionId: explicitSourcePossessionId, possessionSource = 'provider_post_event_state', offenseTeamId, defenseTeamId, event, score, snapshot, homeLineup, awayLineup, currentStint, includeStartEventContext, qualityFlags = [] }) {
   const sourcePossessionId = explicitSourcePossessionId || providerId || `provider-post-event-state:${ordinal}:${event.id}`;
+  const scoreKnown = score.known && !score.invalid;
   return {
     id: deterministicUuidV5(NBA_POSSESSION_UUID_NAMESPACE, `${gameId}:${sourcePossessionId}:${ordinal}`),
     sourcePossessionId,
@@ -917,12 +977,15 @@ function makePossession({ ordinal, gameId, providerId, sourcePossessionId: expli
     offensePoints: 0,
     defensePoints: 0,
     isClutchV1: isClutchV1({
-      periodNumber: periodNumber(event.raw),
+      periodNumber: observedPeriodNumber(event.raw),
       clockRemainingMs: asNonNegativeInteger(event.raw.clockRemainingMs ?? event.raw.clock_remaining_ms),
-      homePointsBefore: score.homeAfter,
-      awayPointsBefore: score.awayAfter
+      homePointsBefore: scoreKnown ? score.homeAfter : null,
+      awayPointsBefore: scoreKnown ? score.awayAfter : null
     }),
-    homeScoreStateV1: homeScoreStateV1(score.homeAfter, score.awayAfter),
+    homeScoreStateV1: homeScoreStateV1(
+      scoreKnown ? score.homeAfter : null,
+      scoreKnown ? score.awayAfter : null
+    ),
     transitionContext: 'unclassified',
     transitionSource: 'unavailable',
     hasLineupChangeMidPossession: !snapshot.isValid,
@@ -937,6 +1000,7 @@ function makePossession({ ordinal, gameId, providerId, sourcePossessionId: expli
     // possession, so its context is retained.
     qualifierEvidence: includeStartEventContext && hasQualifierEvidence(event.raw),
     providerFastbreak: includeStartEventContext && hasProviderFastbreakQualifier(event.raw.qualifiers ?? event.raw.qualifier),
+    hasObservedPossessionAction: includeStartEventContext && isObservedPossessionAction(event.raw),
     startStintOrdinal: currentStint?.stintOrdinal ?? null,
     lastEventId: event.id
   };
@@ -1034,21 +1098,55 @@ function retainedTechnicalFreeThrowState({ possession, event, score, snapshot, p
   return { retained: true, freeThrowMade };
 }
 
-function updatePossessionContext(possession, event, snapshot, homeLineup, awayLineup) {
+function updatePossessionContext(possession, event, snapshot, homeLineup, awayLineup, currentStint) {
   if (!possession) return;
   possession.lastEventId = event.id;
   possession.qualifierEvidence ||= hasQualifierEvidence(event.raw);
   possession.providerFastbreak ||= hasProviderFastbreakQualifier(event.raw.qualifiers ?? event.raw.qualifier);
   if (!snapshot.isValid) {
-    if (snapshot.snapshotStatus === 'missing') return;
+    if (snapshot.snapshotStatus === 'missing') {
+      possession.hasObservedPossessionAction ||= isObservedPossessionAction(event.raw);
+      return;
+    }
     possession.hasLineupChangeMidPossession = true;
     addFlag(possession.qualityFlagSet, 'missing_valid_lineup_during_possession');
+    possession.hasObservedPossessionAction ||= isObservedPossessionAction(event.raw);
     return;
   }
-  if (possession.homeLineupId !== homeLineup?.id || possession.awayLineupId !== awayLineup?.id) {
+  const lineupChanged = possession.homeLineupId !== homeLineup?.id || possession.awayLineupId !== awayLineup?.id;
+  const scoreUnchanged = event.score.known
+    && !event.score.invalid
+    && event.score.homeDelta === 0
+    && event.score.awayDelta === 0;
+  const canRebaseDeadBallSubstitution = Boolean(lineupChanged
+    && isLineupChangeEvent(event.raw)
+    && !possession.hasObservedPossessionAction
+    && possession.offensePoints === 0
+    && possession.defensePoints === 0
+    && scoreUnchanged
+    && postEventPossessionTeamId(event.raw) === possession.offenseProviderTeamId
+    && currentStint);
+  if (canRebaseDeadBallSubstitution) {
+    possession.homeLineupId = homeLineup.id;
+    possession.awayLineupId = awayLineup.id;
+    possession.startStintOrdinal = currentStint.stintOrdinal;
+    possession.startEventId = event.id;
+    possession.clockRemainingMs = asNonNegativeInteger(event.raw.clockRemainingMs ?? event.raw.clock_remaining_ms);
+    possession.homePointsBefore = event.score.homeAfter;
+    possession.awayPointsBefore = event.score.awayAfter;
+    possession.isClutchV1 = isClutchV1({
+      periodNumber: observedPeriodNumber(event.raw),
+      clockRemainingMs: possession.clockRemainingMs,
+      homePointsBefore: event.score.homeAfter,
+      awayPointsBefore: event.score.awayAfter
+    });
+    possession.homeScoreStateV1 = homeScoreStateV1(event.score.homeAfter, event.score.awayAfter);
+    addFlag(possession.qualityFlagSet, 'dead_ball_substitution_rebased_possession_start');
+  } else if (lineupChanged) {
     possession.hasLineupChangeMidPossession = true;
     addFlag(possession.qualityFlagSet, 'lineup_changed_mid_possession');
   }
+  possession.hasObservedPossessionAction ||= isObservedPossessionAction(event.raw);
 }
 
 function finalizePossession(possession, terminalEventId, reason, stintByOrdinal, homeTeamId) {
@@ -1084,7 +1182,15 @@ function finalizePossession(possession, terminalEventId, reason, stintByOrdinal,
     addFlag(startStint.qualityFlagSet, 'possession_excluded_for_mid_or_missing_lineup');
   }
 
-  const { qualityFlagSet, qualifierEvidence, providerFastbreak, startStintOrdinal, lastEventId, ...row } = possession;
+  const {
+    qualityFlagSet,
+    qualifierEvidence,
+    providerFastbreak,
+    hasObservedPossessionAction,
+    startStintOrdinal,
+    lastEventId,
+    ...row
+  } = possession;
   return { ...row, qualityFlags: stableFlags(qualityFlagSet) };
 }
 
@@ -1389,10 +1495,20 @@ export function reconstructNbaGameLineups(input = {}) {
     const elapsedMs = gameElapsedMs(raw);
     const snapshot = validateOnCourtSnapshot(raw);
     const score = scoreDelta(lastScore, raw);
+    const providerPossessionTeamId = postEventPossessionTeamId(raw);
     const isScoring = score.known && (score.homeDelta > 0 || score.awayDelta > 0);
     if (isScoring) scoringEvents += 1;
     if (score.invalid) errors.push(`non_monotonic_score:${id}`);
-    if (!score.known) warnings.push(`missing_score_after:${id}`);
+    if (!score.known) {
+      warnings.push(`missing_score_after:${id}`);
+      if (eventMayChangeScore(raw)) {
+        errors.push(`missing_score_for_scoring_event:${id}`);
+      } else if (activePossession
+        && (providerPossessionTeamId === metadata.homeTeamId || providerPossessionTeamId === metadata.awayTeamId)
+        && providerPossessionTeamId !== activePossession.offenseProviderTeamId) {
+        errors.push(`missing_score_at_possession_transition:${id}`);
+      }
+    }
 
     const event = { id, raw, elapsedMs, snapshot, score };
     const priorPeriod = lastEvent ? periodSequence(lastEvent.raw) : null;
@@ -1421,7 +1537,6 @@ export function reconstructNbaGameLineups(input = {}) {
       }
     }
 
-    const providerPossessionTeamId = postEventPossessionTeamId(raw);
     const periodOpeningCandidate = periodOpeningCandidates.get(periodSequence(raw)) ?? null;
     const openingScoringTeamId = scoringTeamForMadeFieldGoal(
       raw,
@@ -1512,7 +1627,7 @@ export function reconstructNbaGameLineups(input = {}) {
     if (activePossession) {
       addEventScoreToPossession(activePossession, score, metadata.homeTeamId);
       if (!(isPeriodEndEvent(raw) && !snapshot.isValid)) {
-        updatePossessionContext(activePossession, event, snapshot, currentHomeLineup, currentAwayLineup);
+        updatePossessionContext(activePossession, event, snapshot, currentHomeLineup, currentAwayLineup, currentStint);
       }
       if (sparseFreeThrowState) {
         addFlag(activePossession.qualityFlagSet, 'provider_regular_free_throw_state_inferred');
@@ -1591,10 +1706,12 @@ export function reconstructNbaGameLineups(input = {}) {
 
   if (activePossession) finalizeActivePossession(lastEvent, 'document_end_closed');
 
+  const confirmedGameEnd = isPotentialGameEnd(lastEvent?.raw, events);
+  if (events.length && !confirmedGameEnd) errors.push('document_ended_before_confirmed_game_end');
+
   if (currentStint) {
     const lastElapsed = lastEvent?.elapsedMs;
-    const closeAtExpectedEnd = isPotentialGameEnd(lastEvent?.raw, events);
-    const expectedEnd = closeAtExpectedEnd ? expectedGameEndMs(events) : null;
+    const expectedEnd = confirmedGameEnd ? expectedGameEndMs(events) : null;
     const endElapsed = expectedEnd ?? lastElapsed ?? currentStint.startElapsedMs;
     if (expectedEnd === null) addFlag(currentStint.qualityFlagSet, 'document_ended_before_confirmed_game_end');
     closeStint(currentStint, endElapsed, lastEvent?.id ?? null);
