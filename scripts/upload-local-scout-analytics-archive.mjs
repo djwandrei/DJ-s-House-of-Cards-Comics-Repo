@@ -300,18 +300,17 @@ function storageHeaders(serviceRoleKey, extra = {}) {
   };
 }
 
-async function responseText(response) {
-  const text = await response.text();
-  return text.replace(/\s+/g, ' ').slice(0, 500);
+function compactResponseText(text) {
+  return String(text ?? '').replace(/\s+/g, ' ').slice(0, 500);
 }
 
 async function requestJson(fetchImpl, url, options, label) {
   const response = await fetchImpl(url, options);
-  const text = await responseText(response);
-  if (!response.ok) throw new Error(`${label} failed with HTTP ${response.status}: ${text}`);
-  if (!text) return null;
+  const raw = await response.text();
+  if (!response.ok) throw new Error(`${label} failed with HTTP ${response.status}: ${compactResponseText(raw)}`);
+  if (!raw.trim()) return null;
   try {
-    return JSON.parse(text);
+    return JSON.parse(raw);
   } catch {
     throw new Error(`${label} returned malformed JSON.`);
   }
@@ -325,7 +324,8 @@ export async function getBucket({ projectUrl, serviceRoleKey, bucket = DEFAULT_B
   const response = await fetchImpl(storageApiUrl(projectUrl, `/bucket/${encodeURIComponent(bucket)}`), {
     headers: storageHeaders(serviceRoleKey),
   });
-  const text = await responseText(response);
+  const raw = await response.text();
+  const text = compactResponseText(raw);
   // The Storage API currently wraps a missing bucket as HTTP 400 with a
   // NoSuchBucket/404 payload on some projects, rather than a transport 404.
   // Treat only that documented semantic response as absence; every other
@@ -335,7 +335,7 @@ export async function getBucket({ projectUrl, serviceRoleKey, bucket = DEFAULT_B
   }
   if (!response.ok) throw new Error(`Read private Storage bucket failed with HTTP ${response.status}: ${text}`);
   try {
-    return JSON.parse(text);
+    return JSON.parse(raw);
   } catch {
     throw new Error('Read private Storage bucket returned malformed JSON.');
   }
@@ -407,7 +407,7 @@ function parseTusOffset(response, label) {
 async function tusRequest(fetchImpl, url, options, label) {
   const response = await fetchImpl(url, options);
   if (!response.ok) {
-    const text = await responseText(response);
+    const text = compactResponseText(await response.text());
     throw new Error(`${label} failed with HTTP ${response.status}: ${text}`);
   }
   return response;
@@ -420,7 +420,7 @@ async function resumeTusUpload({ fetchImpl, uploadUrl, serviceRoleKey }) {
   });
   if (response.status === 404 || response.status === 410) return null;
   if (!response.ok) {
-    const text = await responseText(response);
+    const text = compactResponseText(await response.text());
     throw new Error(`Resume Scout archive upload failed with HTTP ${response.status}: ${text}`);
   }
   return parseTusOffset(response, 'Resume Scout archive upload');
