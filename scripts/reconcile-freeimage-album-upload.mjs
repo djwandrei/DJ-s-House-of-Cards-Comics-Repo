@@ -16,7 +16,7 @@ function usage() {
 Usage:
   node .\\scripts\\reconcile-freeimage-album-upload.mjs \\
     --sport <mlb|nfl|nba> --manifest <manifest.jsonl> --album <label> \\
-    --label <run-label> --album-entries-base64 <base64-json-array>
+    --label <run-label> (--album-entries-base64 <base64-json-array> | --album-entries-file <entries.json> | --album-entries-stdin 1)
 `;
 }
 
@@ -32,8 +32,14 @@ function argumentValues(argv) {
     values.set(name, value);
     index += 1;
   }
-  for (const required of ['sport', 'manifest', 'album', 'label', 'album-entries-base64']) {
+  for (const required of ['sport', 'manifest', 'album', 'label']) {
     if (!values.has(required)) throw new Error(`Missing --${required}.`);
+  }
+  const hasBase64Entries = values.has('album-entries-base64');
+  const hasFileEntries = values.has('album-entries-file');
+  const hasStdinEntries = values.has('album-entries-stdin');
+  if ([hasBase64Entries, hasFileEntries, hasStdinEntries].filter(Boolean).length !== 1) {
+    throw new Error('Provide exactly one album-entry input: base64, file, or stdin.');
   }
   const sport = String(values.get('sport')).toLowerCase();
   if (!['mlb', 'nfl', 'nba'].includes(sport)) throw new Error('--sport must be mlb, nfl, or nba.');
@@ -44,7 +50,11 @@ function argumentValues(argv) {
     manifestPath: path.resolve(values.get('manifest')),
     album: String(values.get('album')).trim(),
     label,
-    entries: decodeEntries(values.get('album-entries-base64')),
+    entries: hasBase64Entries
+      ? decodeEntries(values.get('album-entries-base64'))
+      : hasFileEntries
+        ? decodeEntriesFile(path.resolve(values.get('album-entries-file')))
+        : decodeEntriesStdin(),
   };
 }
 
@@ -60,6 +70,22 @@ function httpsUrl(value, host, kind) {
 function decodeEntries(encoded) {
   let raw;
   try { raw = JSON.parse(Buffer.from(String(encoded), 'base64').toString('utf8')); } catch { throw new Error('Album entries are not valid base64 JSON.'); }
+  return validateEntries(raw);
+}
+
+function decodeEntriesFile(filePath) {
+  let raw;
+  try { raw = JSON.parse(fs.readFileSync(filePath, 'utf8')); } catch { throw new Error(`Album entries file is not valid JSON: ${filePath}`); }
+  return validateEntries(raw);
+}
+
+function decodeEntriesStdin() {
+  let raw;
+  try { raw = JSON.parse(fs.readFileSync(0, 'utf8')); } catch { throw new Error('Album entries from stdin are not valid JSON.'); }
+  return validateEntries(raw);
+}
+
+function validateEntries(raw) {
   if (!Array.isArray(raw) || raw.length < 1 || raw.length > 250) throw new Error('Album entries must contain 1 through 250 images.');
   const names = new Set();
   const viewers = new Set();
@@ -106,7 +132,13 @@ function main() {
   }
   const now = new Date().toISOString();
   const rows = options.entries.map((entry, uploadIndex) => {
-    const source = byFilename.get(entry.filename);
+    const exactSource = byFilename.get(entry.filename);
+    const extensionlessFilename = entry.filename.replace(/\.(?:jpe?g|png|webp|gif)$/i, '');
+    const extensionlessSource = byFilename.get(extensionlessFilename);
+    if (exactSource && extensionlessSource && exactSource !== extensionlessSource) {
+      throw new Error(`Ambiguous provider filename: ${entry.filename}`);
+    }
+    const source = exactSource ?? extensionlessSource;
     if (!source) throw new Error(`No manifest source matches uploaded filename: ${entry.filename}`);
     return {
       format: 'freeimage-url-upload-ledger/v1',
