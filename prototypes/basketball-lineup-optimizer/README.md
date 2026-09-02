@@ -16,10 +16,19 @@ the beta.
   optional production floors, and a turnover ceiling.
 - Top alternatives, score contributions, constraint checks, and an optional
   240-minute rotation plan.
+- A Simple view for the three decisions most fans need (team/season, game plan,
+  and starting five or rotation) plus a Detailed view for eligibility, hard
+  production rules, projection risk, role balance, and the complete audit.
 - Per-36 rotation ranking with evidence-gated small-sample and larger-role
-  projections. Extra assigned minutes beyond a player's established role are
-  valued at the same-season baseline, preventing a low-usage spike from being
-  repeated as if it were already star-sized production.
+  projections. Minutes and offensive responsibility are separate: extra court
+  time does not automatically demand star usage, but an expanded low-usage role
+  conservatively reduces only unsupported above-baseline advantages.
+- Versioned Reliable, Balanced, and Upside projection policies. They alter
+  uncertainty and responsibility assumptions, never eligibility or hard limits.
+- An optional, deliberately small role-complementarity preference for creation,
+  spacing, connective passing, finishing, point-of-attack defense, rim
+  protection, and rebounding. It is soft, visible, and shareable—not a new hard
+  constraint.
 - Game-plan-first minute allocation with auditable guard, forward, and center
   role-minute profiles. Historical games and total minutes are descriptive
   context only in the public product; they do not set minute targets or caps.
@@ -39,6 +48,12 @@ the beta.
   candidate group is checked, even when the pool is broader than a normal NBA
   team roster; changing the scenario cancels the active Worker cleanly.
 - A separate candidate-count safeguard remains for five-player lineup mode.
+- A second exact on-court proof that decomposes every successful 240-minute
+  rotation into 48 five-player frames while preserving exact player and G/F/C
+  minutes. The displayed order is a feasibility witness, not a coaching script.
+- A separately versioned Scout Impact contract that fails closed when verified
+  possession evidence is incomplete. The public Historical model does not
+  silently substitute missing RAPM or synergy with zero.
 
 ## Run locally
 
@@ -65,8 +80,31 @@ Basketball Reference adapter, deterministic optimization, locks/exclusions,
 positional assignment, uncapped rotation enumeration, the separate lineup-mode
 search safeguard, infeasible scenarios, alternative ordering, 240-minute
 allocation, optional recorded-minutes guardrails, small-sample and role-expansion
-rate projections, custom role-minute proofs, and the legacy local-server
-safeguards.
+rate projections, usage-responsibility separation, role complementarity,
+custom role-minute proofs, exact five-player unit decomposition, Scout-data
+fail-closed behavior, and the legacy local-server safeguards.
+
+## Understanding the game-plan fit index
+
+**Game-plan fit (NBA = 100)** is a public comparison index, not the exact
+solver score. It makes a different question easy to read: after applying the
+visitor's priorities, how does the selected group's expected statistical
+profile compare with the same-season NBA reference?
+
+1. The model stabilizes the selected players' source-season rates according to
+   the active projection policy.
+2. It combines those expected rates using the visitor's game-plan weights and,
+   in rotation mode, the exact proposed minute allocation.
+3. It compares the resulting weighted profile with a same-season NBA reference
+   that is fixed at **100**.
+
+For example, 103 means the group is three **index points** above that
+reference for the chosen game plan. It is not 3%, a win forecast, an overall
+team rating, a chemistry measurement, or a betting signal. Offense and defense
+sub-indexes use the same 100-based convention for their respective metric
+families. The exact optimizer still selects and ranks only groups that satisfy
+every lock, exclusion, position, and hard-production rule; changing the player
+pool can change that ranking without redefining the NBA-baseline index.
 
 ## Rotation model contract
 
@@ -84,10 +122,17 @@ production so their units do not get mixed:
   take precedence when available. Metric-specific conservative priors are 750
   minutes for points, 500 for rebounds, 700 for assists and ball security, 900
   for steals and blocks, 500 field-goal attempts for eFG%, 180 three-point
-  attempts for 3P%, and 1,200 minutes for OBPM/DBPM. These are transparent model
-  settings, not fitted player-impact coefficients.
-- The distinct larger-role projection removes only unproven upside beyond an
-  established role and never improves a below-baseline player.
+  attempts for 3P%, and 1,200 minutes for OBPM/DBPM. The versioned parameters
+  apply a documented multiplier to these priors for Reliable, Balanced, or
+  Upside mode. These are transparent projection settings, not fitted
+  player-impact coefficients.
+- The responsibility layer reads reported usage when comparable data exists. It
+  estimates only the extra on-ball burden needed when a low-usage player expands
+  beyond his established role, with metric-specific elasticity. It removes only
+  unsupported upside and never improves a below-baseline player. If usage is
+  missing, the model uses a stricter disclosed role-volume fallback instead of
+  interpreting the missing value as zero. Neither path reads games or total
+  minutes from the selected team stint.
 - After that expected larger-role estimate is calculated, the exact decision
   holds back a modest evidence-confidence reserve. At zero supporting
   opportunity, ordinary box-score rates move another 8% of the same-season
@@ -98,9 +143,9 @@ production so their units do not get mixed:
   selected-team games or total stint minutes. It changes the projected rate
   rather than restricting the player to a past role. Signed BPM inputs retain
   their separate 1,200-minute shrinkage prior but no invented variance reserve.
-  The reserve affects exact ranking and conservative production totals; Plan Fit
-  keeps the expected posterior-mean projection so 100 retains its league-baseline
-  meaning.
+  The reserve affects exact ranking and conservative production totals; Fit vs.
+  NBA Baseline keeps the expected posterior-mean projection so 100 retains its
+  same-season benchmark meaning.
 - A shared workload-saturation curve begins after
   `240 / selected roster size` minutes:
   extra minutes still add positive value, but their marginal fit moves smoothly
@@ -111,6 +156,17 @@ production so their units do not get mixed:
 - Metric weights are normalized into relative shares. Each candidate's fit is
   the weighted, eligible-pool percentile profile, and rotation fit is then
   weighted by the exact minutes assigned to each selected player.
+- The optional role-balance layer scores the two strongest signals for each job
+  with diminishing returns. Its maximum ranking adjustment is bounded and
+  disclosed (zero for Off, five points for Recommended, eight for Emphasized),
+  so it cannot quietly become a position requirement or overwhelm a materially
+  better match to the visitor's direct priorities.
+- A complete-group usage audit estimates whether documented player roles cover
+  a full team offense. It is currently explanation only: individual
+  responsibility projection is already inside the exact objective, so applying
+  a second post-allocation group penalty would make the reported objective differ
+  from the one that chose the minutes. A future joint-usage layer must be
+  calibrated and optimized inside the minute decision before it can affect rank.
 - The public game-plan plan uses only the visitor's hard player bounds and
   objective. A legacy `historicalAware` route remains in the core for backward
   compatibility and regression tests, but the interface no longer exposes or
@@ -119,6 +175,10 @@ production so their units do not get mixed:
 - Every successful rotation assigns exactly 240 integer player-minutes and the
   selected role profile's exact G/F/C totals. Custom role totals are used in
   both the allocation and every projected-stat feasibility proof.
+- The final unit-decomposition pass also proves that those aggregate totals can
+  place five distinct selected players on court during each of 48 regulation
+  minutes. Multi-position players may change role across minutes, but can never
+  occupy two roles in the same minute.
 - Rotation candidate count never changes the model or causes a fallback. The
   outer exact enumeration has no count or elapsed-time cutoff and remains in a
   background Worker. Optional production thresholds retain a per-candidate
@@ -142,8 +202,9 @@ production so their units do not get mixed:
   use the evidence-based role-expansion projection: established minutes use the
   adjusted player rate, while additional expansion minutes move smoothly toward
   the same-season bound. Workload saturation affects allocation utility and the
-  search-relative score only; it does not arbitrarily erase projected points or
-  change the meaning of 100 in the Plan Fit Index. Otherwise totals retain the
+  internal exact-search score only; it does not arbitrarily erase projected
+  points or change the meaning of 100 in Fit vs. NBA Baseline. Otherwise totals
+  retain the
   static conservative rate used by the exact threshold solver. They are
   descriptive estimates, not game, injury, availability, matchup, or betting
   predictions.
@@ -153,17 +214,18 @@ production so their units do not get mixed:
 The current production model is deliberately named the **Historical Rates**
 model. It uses season box scores, the user's visible priorities, and the exact
 constraint/minute layer described above. Imported play-by-play, reconstructed
-lineup stints, RAPM, and observed five-player synergy are not inputs to its Plan
-Fit score. This protects the stable meaning of 100 and prevents a partially
+lineup stints, RAPM, and observed five-player synergy are not inputs to its Fit
+vs. NBA Baseline score. This protects the stable meaning of 100 and prevents a partially
 available Scout feed from changing an answer without telling the visitor.
 
-The planned **Scout Impact** model should be a separate, versioned scoring
-layer rather than a silent extra weight. Its input contract should include
+The staged **Scout Impact** model is a separate, versioned scoring layer rather
+than a silent extra weight. Its input contract requires
 offensive and defensive impact separately, possession sample size, reliability
 or shrinkage strength, source/model version, and season/phase coverage. A
 future hybrid mode may combine Historical Rates and Scout Impact only with a
 visible blend control and separate offense/defense contributions in the result
-explanation.
+explanation. The current public UI keeps Historical mode active; the Scout
+contract fails closed unless every eligible player has comparable evidence.
 
 Observed five-player synergy requires an even stricter rule: use a
 possession-shrunk adjustment only when that exact unit has adequate evidence.
@@ -176,8 +238,9 @@ impact as not active.
 
 ## Historical opponent game plan
 
-Detailed view includes an optional same-season opponent game plan. It is a
-transparent pre-solver layer—not a separate rating or a second optimizer. It
+Simple and Detailed views include an optional same-season opponent game plan;
+Detailed reveals the full source comparison and supporting rotation context. It
+is a transparent pre-solver layer—not a separate rating or a second optimizer. It
 reconstructs a team's historical box-score totals from the selected player pool
 and, when all inputs exist, compares both teams per 100 *estimated offensive
 possessions* using `FGA + 0.44 × FTA − OREB + TOV`. If either pool is missing

@@ -10,7 +10,7 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // storefront's shared cache contract. Bump this only when the generated Lab
 // files change so a later reviewed path-list release cannot serve stale model
 // logic or interface copy from a browser cache.
-const RELEASE_ASSET_VERSION = "20260901d";
+const RELEASE_ASSET_VERSION = "20260901e";
 const releaseFiles = [
   "index.html",
   "app.js",
@@ -58,7 +58,12 @@ function transform(relativePath, source) {
     output = output
       .replaceAll("../../backend-config.js", "../backend-config.js")
       .replaceAll("../../supabase-client.js", "../supabase-client.js")
-      .replaceAll("../../index.html", "../index.html");
+      .replaceAll("../../index.html", "../index.html")
+      // Header navigation is written relative to the nested prototype. Keep
+      // those same destinations one level up from the deployable /lineup-lab/
+      // page so the links stay correct both locally and on cPanel.
+      .replaceAll("../../tools/", "../tools/")
+      .replaceAll("../../account.html", "../account.html");
   }
   return Buffer.from(output, "utf8");
 }

@@ -94,7 +94,46 @@ test("returns exact-size lineups and evaluates every combination", () => {
   assert.ok(result.alternatives.every((lineup) => lineup.constraintAudit.exactSize.passed));
 });
 
-test("Plan Fit Index stays anchored when an irrelevant eligible player changes pool percentiles", () => {
+test("visible role balance participates in exact candidate ranking", () => {
+  const fixed = [
+    player("creator", { assists: 12, turnovers: 2.5, analytics: { advanced: { usage_percentage: 0.3 } } }),
+    player("shooter", { threePct: 0.46, efgPct: 0.67 }),
+    player("connector", { assists: 8, turnovers: 0.6 }),
+    player("stopper", { steals: 3, blocks: 0.8 }),
+  ];
+  const redundant = player("a-redundant", {
+    assists: 11,
+    analytics: { advanced: { usage_percentage: 0.29 } },
+  });
+  const rimHelp = player("z-rim-help", {
+    rebounds: 15,
+    blocks: 4,
+    analytics: { advanced: { defensive_box_plus_minus: 3 } },
+  });
+  const config = {
+    size: 5,
+    alternatives: 2,
+    lockedIds: fixed.map(({ id }) => id),
+    weights: { points: 1 },
+  };
+  const explanationOnly = optimizeLineups([...fixed, redundant, rimHelp], {
+    ...config,
+    roleBalance: "off",
+  });
+  const recommended = optimizeLineups([...fixed, redundant, rimHelp], {
+    ...config,
+    roleBalance: "recommended",
+  });
+
+  assert.equal(explanationOnly.ok, true);
+  assert.equal(recommended.ok, true);
+  assert.equal(explanationOnly.best.playerIds.includes("a-redundant"), true);
+  assert.equal(recommended.best.playerIds.includes("z-rim-help"), true);
+  assert.equal(recommended.best.modelAdjustments.roleFit.applied, true);
+  assert.notEqual(recommended.best.modelAdjustments.totalAdjustmentPoints, 0);
+});
+
+test("NBA-baseline index stays anchored when an irrelevant eligible player changes pool percentiles", () => {
   const withLeagueEvidence = (id, points) => player(id, {
     minutes: 30,
     points,
@@ -430,6 +469,11 @@ test("uses per-36 rotation scoring so a superior rate earns more proposed minute
   assert.equal(rateBased.diagnostics.rotationScoringBasis, "per36");
   assert.equal(rateBased.best.rotation.byId["rate-star"], 48);
   assert.equal(rateBased.best.rotation.byId["volume-veteran"], 0);
+  assert.equal(rateBased.best.unitPlan.ok, true, rateBased.best.unitPlan.reason);
+  assert.equal(rateBased.best.unitPlan.frames.length, 48);
+  assert.ok(rateBased.best.unitPlan.frames.every((frame) => (
+    frame.playerIds.length === 5 && new Set(frame.playerIds).size === 5
+  )));
   // The displayed projection remains a real 240-minute box-score estimate:
   // 48 + four * (14 / 21 * 48) = 176 points. Per-36 drives the ranking only.
   assert.equal(rateBased.best.totals.points, 176);
@@ -448,6 +492,7 @@ test("uses per-36 rotation scoring so a superior rate earns more proposed minute
   assert.equal(legacyPerGame.diagnostics.rotationScoringBasis, "perGame");
   assert.equal(legacyPerGame.best.rotation.byId["volume-veteran"], 48);
   assert.equal(legacyPerGame.best.rotation.byId["rate-star"], 0);
+  assert.equal(legacyPerGame.best.unitPlan.ok, true, legacyPerGame.best.unitPlan.reason);
   assertPlayerContributionReconciliation(legacyPerGame.best);
   assert.ok(
     legacyPerGame.best.playerContributions["volume-veteran"].scoreContribution > 0,
@@ -508,6 +553,7 @@ test("rotation exact search ignores legacy candidate-count ceilings", () => {
   assert.equal(result.diagnostics.maxCombinations, null);
   assert.equal(result.diagnostics.candidateCombinationLimitApplied, false);
   assert.equal(result.combinationsEvaluated, 9);
+  assert.ok(result.alternatives.every((alternative) => alternative.unitPlan?.ok === true));
 });
 
 test("allocates exactly 240 integer minutes within player bounds", () => {

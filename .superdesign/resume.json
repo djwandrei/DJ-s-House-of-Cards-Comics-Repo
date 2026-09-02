@@ -3,9 +3,9 @@
   "targets": {
     "/lineup-lab/": {
       "targetKind": "existing-ui",
-      "projectId": "2f8c52b7-1e8f-411f-a74d-db238afe485c",
-      "baselineDraftId": "1b9ada26-13f5-46ac-bb31-05886eb4ad97",
-      "activeDraftId": "1b9ada26-13f5-46ac-bb31-05886eb4ad97",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
+      "activeDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
       "designSystemPath": ".superdesign/lineup-lab-design-system.md",
       "referenceIds": [
         "assets-dj-logo.png"
@@ -13,33 +13,42 @@
       "brandAssets": {
         "logo": {
           "assetKey": "assets-dj-logo.png",
-          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/2f8c52b7-1e8f-411f-a74d-db238afe485c/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
           "sourcePath": "assets/dj-logo.png"
         }
       },
       "contextFiles": [
         ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/tmp/lineup-lab-model-ux-upgrade.html",
         "prototypes/basketball-lineup-optimizer/index.html",
-        "prototypes/basketball-lineup-optimizer/styles.css:1:720",
-        "prototypes/basketball-lineup-optimizer/styles.css:850:1350",
-        "prototypes/basketball-lineup-optimizer/styles.css:2250:2460",
-        "prototypes/basketball-lineup-optimizer/styles.css:3440:3860"
+        "prototypes/basketball-lineup-optimizer/app.js:3148:3180",
+        "prototypes/basketball-lineup-optimizer/app.js:4258:4430",
+        "prototypes/basketball-lineup-optimizer/app.js:5055:5080",
+        "prototypes/basketball-lineup-optimizer/styles.css:1:70",
+        "prototypes/basketball-lineup-optimizer/styles.css:151:235",
+        "prototypes/basketball-lineup-optimizer/styles.css:2290:2385",
+        "prototypes/basketball-lineup-optimizer/styles.css:3795:3845",
+        "prototypes/basketball-lineup-optimizer/styles.css:4090:4115",
+        "prototypes/basketball-lineup-optimizer/optimizer-core.js:2000:2245"
       ],
       "fingerprints": {
         ".superdesign/lineup-lab-design-system.md": "32B04B9628BB968A14C9FCF87E757462E89FF84BB20C5045A634ADD342B2DD47",
-        "prototypes/basketball-lineup-optimizer/index.html": "07BF594D59CE45A11086DC3903AA8EB308C2978645BCD2A8E42310CF63B81E3C",
-        "prototypes/basketball-lineup-optimizer/styles.css": "3786649BFDBBFB55C921E8DB70036789E5703609A710817C6D847EE787E53BBC"
+        ".superdesign/tmp/lineup-lab-model-ux-upgrade.html": "008B500CAAB4B63D2DE9E6F6CC9D436351BD4C23B37A9256220F40C01E372F59",
+        "prototypes/basketball-lineup-optimizer/index.html": "F060BE8FA2B98C1D4CDA83EC98104D5D980263DEC3EED962051487E753548CC2",
+        "prototypes/basketball-lineup-optimizer/app.js": "C238D091E10AB8B062A16CC277840781B4683D62E43185AE94BF92840701B875",
+        "prototypes/basketball-lineup-optimizer/styles.css": "BA8651C149AECFD52C2BB5D54418E070ECAB715CD710217832F69C3E62548BA5",
+        "prototypes/basketball-lineup-optimizer/optimizer-core.js": "B065F7F26B61195BE212A6B63B9845CC91FEBC1885447810E2967A6C5C23DB77"
       },
       "components": [],
       "drafts": {
-        "1b9ada26-13f5-46ac-bb31-05886eb4ad97": {
-          "title": "DJ's Lineup Lab Baseline",
-          "visualDirection": "guided build flow with clear model definitions and progressive detail",
+        "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484": {
+          "title": "Lineup Lab Model and UX Upgrade",
+          "visualDirection": "simplified fan-first workflow with optional analyst controls, plain-language model evidence, exact rotation proof, and the existing DJHC visual system",
           "parentDraftId": null,
           "currentVersion": 2
         }
       },
-      "updatedAt": "2026-08-27T09:11:32.261Z"
+      "updatedAt": "2026-09-02T00:34:58.0803635-05:00"
     },
     "/tools/": {
       "targetKind": "existing-ui",

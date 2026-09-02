@@ -606,7 +606,7 @@ test("season-wide minutes cannot grant confidence to a team-stint impact estimat
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
   assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v4-usage-responsibility");
-  assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "reserved-not-active");
+  assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "separate-not-active");
 });
 
 test("evidence-confidence reserve breaks an equal-rate tie without using team-stint length", () => {
@@ -1189,7 +1189,7 @@ test("fixed-role Pareto proof closes a one-threshold integer gap without generic
   assert.ok(projectedTurnovers <= 61);
 });
 
-test("workload saturation preserves league-baseline Plan Fit while totals remain conservative", () => {
+test("workload saturation preserves the same-season NBA-baseline index while totals remain conservative", () => {
   const players = Array.from({ length: 8 }, (_, index) => player(`baseline-${index + 1}`, {
     minutes: 30,
     points: 15,
@@ -1223,7 +1223,7 @@ test("workload saturation preserves league-baseline Plan Fit while totals remain
 
   assert.equal(result.ok, true);
   assert.equal(result.best.planFitIndex, 100);
-  // Plan Fit reports the posterior-mean expectation, while the displayed
+  // The NBA-baseline index reports the posterior-mean expectation, while the displayed
   // production projection retains the same modest downside reserve used by
   // the exact decision. This keeps 100 intuitive without promising the full
   // average rate as if limited evidence carried no risk.

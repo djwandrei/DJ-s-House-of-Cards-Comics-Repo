@@ -1,0 +1,22 @@
+# Reviewed Lineup Lab release: public UI, exact solver, projection helpers,
+# and source fixture only. This path-list release has no deletes and deliberately
+# excludes unrelated storefront, analytics-pipeline, Supabase schema, and
+# security-hardening files.
+lineup-lab/index.html
+lineup-lab/app.js
+lineup-lab/optimizer-config.js
+lineup-lab/projection-parameters.js
+lineup-lab/player-projection.js
+lineup-lab/lineup-role-model.js
+lineup-lab/scout-impact.js
+lineup-lab/rotation-unit-planner.js
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/player-data.js
+lineup-lab/supabase-nba-data.js
+lineup-lab/fan-analytics.js
+lineup-lab/opponent-gameplan.js
+lineup-lab/scenario-url.js
+lineup-lab/lineup-cache.js
+lineup-lab/styles.css
+lineup-lab/fixtures/timberwolves-2021-22.json

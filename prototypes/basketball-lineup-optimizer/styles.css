@@ -180,10 +180,10 @@ select:focus-visible,
 }
 
 .brand strong {
-  font-family: "Bebas Neue", Impact, sans-serif;
-  font-size: 1.55rem;
-  font-weight: 400;
-  letter-spacing: 0.055em;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 1.13rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .brand small {
@@ -193,6 +193,77 @@ select:focus-visible,
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* Keep the Lineup Lab header legible and unmistakably separate from the
+ * condensed display face used for the on-court hero. These links are ordinary
+ * storefront navigation, so they use the site's readable Inter UI face and
+ * retain a full 44px target on touch screens. */
+.lab-header__actions,
+.lab-header__links {
+  display: flex;
+  align-items: center;
+}
+
+.lab-header__actions {
+  gap: 0.7rem;
+}
+
+.lab-header__links {
+  gap: 0.35rem;
+}
+
+.lab-header__link,
+.lab-header__account {
+  min-height: 42px;
+  color: #eaf0ff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.lab-header__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.lab-header__link svg,
+.lab-header__account svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.lab-header__account {
+  width: 42px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.lab-header__link:hover,
+.lab-header__account:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.lab-header__link:focus-visible,
+.lab-header__account:focus-visible {
+  outline: 2px solid #f5cb70;
+  outline-offset: 2px;
 }
 
 .prototype-badge {
@@ -622,6 +693,28 @@ body[data-experience-mode="simple"] .lineup-player .card-search-link {
   display: none !important;
 }
 
+/* “Open detailed analysis” explains the already-calculated Simple result. It
+ * must not switch model inputs or restore an older Detailed snapshot. Reveal
+ * only this report and its audit sections while the page remains in Simple. */
+body[data-experience-mode="simple"] .full-analysis.is-simple-open {
+  display: block !important;
+}
+
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .result-evidence {
+  display: grid !important;
+}
+
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .result-ranking-context,
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .result-detail-grid {
+  display: grid !important;
+}
+
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .historical-benchmark,
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .alternatives-section,
+body[data-experience-mode="simple"] .full-analysis.is-simple-open .fan-report {
+  display: block !important;
+}
+
 .tool-nav {
   position: relative;
   z-index: 5;
@@ -1049,6 +1142,9 @@ body[data-experience-mode="simple"] .lineup-player .card-search-link {
 }
 
 .weights-panel summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   color: var(--blue);
   font-weight: 700;
   cursor: pointer;
@@ -1357,6 +1453,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 .opponent-scout > summary {
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1753,11 +1850,78 @@ body[data-experience-mode="simple"] .simple-model-summary {
   display: block;
 }
 
+.player-pool-details {
+  margin-top: 0.8rem;
+  overflow: hidden;
+  background: #fbfcff;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+.player-pool-details > summary {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.72rem 0.85rem;
+  color: var(--navy);
+  cursor: pointer;
+  list-style: none;
+}
+
+.player-pool-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.player-pool-details > summary::after {
+  flex: 0 0 auto;
+  color: var(--blue);
+  content: "+";
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.player-pool-details[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.player-pool-details[open] > summary::after {
+  content: "−";
+}
+
+.player-pool-details > summary span,
+.player-pool-details > summary small {
+  min-width: 0;
+  display: block;
+}
+
+.player-pool-details > summary strong {
+  font-size: 0.94rem;
+}
+
+.player-pool-details > summary small {
+  margin-top: 0.12rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.player-pool-details__content {
+  padding: 0.8rem;
+}
+
+.player-pool-details__content > .search-field {
+  max-width: 320px;
+  margin: 0 0 0.75rem auto;
+}
+
 .player-action-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 0.38rem 0.7rem;
-  margin: -0.3rem 0 0.75rem;
+  margin: 0 0 0.75rem;
   color: var(--muted);
   font-size: 0.84rem;
 }
@@ -2487,6 +2651,76 @@ body[data-experience-mode="simple"] .simple-model-summary {
   line-height: 1.45;
 }
 
+/* The benchmark explanation has one source in JavaScript so Simple and
+ * Detailed results cannot drift into conflicting definitions. The compact
+ * version stays optional for fans who only need the recommendation first. */
+.benchmark-explainer {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  color: #273754;
+  background: #fff;
+  border: 1px solid #d6def5;
+  border-radius: 12px;
+}
+
+.benchmark-explainer h3 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 1rem;
+}
+
+.benchmark-explainer__intro,
+.benchmark-explainer__reading,
+.benchmark-explainer__boundary {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.benchmark-explainer__steps {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.7rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.benchmark-explainer__reading {
+  padding: 0.56rem 0.65rem;
+  color: #17348b;
+  background: #eef3ff;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.benchmark-explainer__boundary {
+  color: var(--muted);
+}
+
+.benchmark-explainer--compact {
+  grid-column: 1 / -1;
+  margin-top: -0.3rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.benchmark-explainer--compact summary {
+  padding: 0.72rem 0.8rem;
+  color: #17348b;
+  cursor: pointer;
+  font-size: 0.87rem;
+  font-weight: 800;
+}
+
+.benchmark-explainer--compact[open] summary {
+  border-bottom: 1px solid #d6def5;
+}
+
+.benchmark-explainer--compact .benchmark-explainer__content {
+  padding: 0 0.8rem 0.8rem;
+}
+
 .simple-result-reasons {
   display: grid;
   gap: 0.46rem;
@@ -2530,6 +2764,9 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 .full-analysis > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   color: var(--navy);
   cursor: pointer;
   font-size: 1rem;
@@ -2702,6 +2939,9 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 .historical-benchmark > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   color: var(--navy);
   font-size: 0.9rem;
@@ -3152,6 +3392,9 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 .analytics-panel summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
   color: var(--blue);
   font-weight: 700;
   cursor: pointer;
@@ -3349,41 +3592,86 @@ body[data-experience-mode="simple"] .simple-model-summary {
   color: var(--warning);
 }
 
-.role-matrix {
-  margin-top: 0.7rem;
-  overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: 9px;
+.fan-report__roles {
+  margin-top: 0.9rem;
 }
 
-.role-matrix table {
-  width: 100%;
-  min-width: 460px;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-}
-
-.role-matrix th,
-.role-matrix td {
-  padding: 0.48rem 0.55rem;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-
-.role-matrix th {
+.fan-report__roles > h4 {
+  margin: 0;
   color: var(--navy);
-  background: #edf1fb;
-  font-size: 0.78rem;
-  letter-spacing: 0.03em;
+  font-size: 1rem;
 }
 
-.role-matrix tbody tr:last-child td {
-  border-bottom: 0;
+.fan-report__roles > p {
+  max-width: 84ch;
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.48;
 }
 
-.role-matrix td:last-child {
-  color: var(--blue);
-  font-weight: 700;
+.role-coverage-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+}
+
+.role-coverage-row {
+  min-width: 0;
+  padding: 0.72rem 0.78rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid #9ca8c5;
+  border-radius: 10px;
+}
+
+.role-coverage-row[data-status="covered"] {
+  border-left-color: var(--success);
+}
+
+.role-coverage-row[data-status="thin"] {
+  border-left-color: var(--warning);
+}
+
+.role-coverage-row__title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.role-coverage-row__title > strong {
+  color: var(--navy);
+  font-size: 0.88rem;
+  line-height: 1.3;
+}
+
+.role-coverage-status {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.42rem;
+  color: #46526f;
+  background: #edf0f7;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.role-coverage-row[data-status="covered"] .role-coverage-status {
+  color: #075d48;
+  background: #e7f7f1;
+}
+
+.role-coverage-row[data-status="thin"] .role-coverage-status {
+  color: #744900;
+  background: #fff4d8;
+}
+
+.role-coverage-row > p {
+  margin: 0.35rem 0 0;
+  color: #536078;
+  font-size: 0.8rem;
+  line-height: 1.42;
 }
 
 .analytics-comparison {
@@ -3656,7 +3944,48 @@ body[data-experience-mode="simple"] .simple-model-summary {
   }
 
   .lab-header__inner {
-    min-height: 68px;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "brand beta"
+      "links links";
+    align-items: center;
+    gap: 0.55rem 0.7rem;
+    padding-block: 0.65rem;
+  }
+
+  .brand {
+    grid-area: brand;
+  }
+
+  .lab-header__actions {
+    display: contents;
+  }
+
+  .lab-header__links {
+    grid-area: links;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px;
+    gap: 0.45rem;
+  }
+
+  .lab-header__link,
+  .lab-header__account {
+    min-height: 44px;
+  }
+
+  .lab-header__link {
+    justify-content: center;
+    padding-inline: 0.5rem;
+  }
+
+  .lab-header__account {
+    width: 44px;
+  }
+
+  .prototype-badge {
+    grid-area: beta;
   }
 
   .brand img {
@@ -3665,7 +3994,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
   }
 
   .brand strong {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   .brand small {
@@ -3673,7 +4002,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
   }
 
   .prototype-badge {
-    font-size: 0.75rem;
+    font-size: 0.69rem;
   }
 
   .hero h1 {
@@ -3748,6 +4077,11 @@ body[data-experience-mode="simple"] .simple-model-summary {
     grid-template-columns: 1fr;
   }
 
+  .role-coverage-list,
+  .unit-proof-examples {
+    grid-template-columns: 1fr;
+  }
+
   .simple-benchmark {
     grid-template-columns: 1fr 1fr;
   }
@@ -3794,8 +4128,8 @@ body[data-experience-mode="simple"] .simple-model-summary {
     grid-template-columns: auto 1fr;
   }
 
-  .step-heading--split .search-field {
-    grid-column: 1 / -1;
+  .player-pool-details__content > .search-field {
+    max-width: none;
   }
 
   .player-action-legend {
@@ -3984,10 +4318,14 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 @media (max-width: 470px) {
+  .lab-header__inner {
+    grid-template-areas:
+      "brand brand"
+      "links links";
+  }
+
   .prototype-badge {
-    max-width: 88px;
-    line-height: 1.2;
-    text-align: center;
+    display: none;
   }
 
   .hero__proof {

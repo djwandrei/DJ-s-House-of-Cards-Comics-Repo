@@ -74,6 +74,21 @@ test("responsibility expansion reduces only an unsupported advantage", () => {
   assert.equal(below.value, 0.5);
 });
 
+test("projection risk changes caution monotonically without changing hard inputs", () => {
+  const projections = ["reliable", "balanced", "upside"].map((risk) => (
+    projectPlayerResponsibility(
+      player(),
+      "points",
+      34,
+      projectionParametersFor(risk),
+    )
+  ));
+  assert.ok(projections[0].rateRetention < projections[1].rateRetention);
+  assert.ok(projections[1].rateRetention < projections[2].rateRetention);
+  assert.deepEqual(projections.map((projection) => projection.targetMinutes), [34, 34, 34]);
+  assert.deepEqual(projections.map((projection) => projection.sourceMinutes), [12, 12, 12]);
+});
+
 test("selected-team games and totals do not alter the responsibility projection", () => {
   const parameters = projectionParametersFor("balanced");
   const shortStint = player({ games: 3, analytics: { totals: { minutes: 36 }, advanced: { usage_percentage: 0.12 } } });
@@ -83,4 +98,3 @@ test("selected-team games and totals do not alter the responsibility projection"
     projectPlayerResponsibility(longStint, "points", 30, parameters),
   );
 });
-

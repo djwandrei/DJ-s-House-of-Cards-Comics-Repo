@@ -191,6 +191,7 @@ const elements = {
   simpleModelSummaryCopy: $("#simpleModelSummaryCopy"),
   simpleModelSummaryNote: $("#simpleModelSummaryNote"),
   playerTableBody: $("#playerTableBody"),
+  playerPoolDetails: $("#playerPoolDetails"),
   playerSearch: $("#playerSearchInput"),
   poolSummary: $("#poolSummary"),
   activeSelectionTray: $("#activeSelectionTray"),
@@ -447,6 +448,17 @@ function optionalNumber(input) {
   if (input.value.trim() === "") return undefined;
   const value = Number(input.value);
   return Number.isFinite(value) ? value : undefined;
+}
+
+// `Number(null)` and `Number("")` both equal zero. Benchmark evidence uses
+// null to mean unavailable, so a bare Number.isFinite(Number(value)) would
+// falsely render an evidence-free source as an index of 0 instead of saying
+// that the benchmark cannot be calculated.
+function hasFiniteNumber(value) {
+  return value !== null
+    && value !== undefined
+    && value !== ""
+    && Number.isFinite(Number(value));
 }
 
 function formatNumber(value, digits = 1) {
@@ -2538,6 +2550,11 @@ function setExperienceMode(
   elements.simpleMode.setAttribute("aria-pressed", String(!detailed));
   elements.detailedMode.setAttribute("aria-pressed", String(detailed));
   elements.playersStepNumber.textContent = detailed ? "3" : "2";
+  // Player locks are useful but optional. Keep the roster open for analysts in
+  // Detailed mode and collapsed in Simple mode so a 15-player mobile pool does
+  // not turn the main workflow into several screens of controls before the
+  // result. Existing selections remain visible in the tray above this panel.
+  elements.playerPoolDetails.open = detailed;
   elements.playersStepNumber.setAttribute("aria-label", `Step ${detailed ? "3" : "2"}`);
 
   let restoredDetailedSettings = false;
@@ -3152,6 +3169,75 @@ function renderScoreCard(label, value, primary = false) {
   valueNode.textContent = value;
   card.append(labelNode, valueNode);
   return card;
+}
+
+/**
+ * Explain an NBA-baseline index in plain language without treating its point
+ * difference like a percentage or a prediction. The index is deliberately
+ * separate from the pool-relative exact-solver score: it remains anchored to
+ * the same-season NBA reference even when the visitor changes the candidate
+ * pool by locking or excluding a player.
+ */
+function benchmarkIndexReading(value) {
+  const index = Number(value);
+  if (!Number.isFinite(index)) return "";
+  const difference = index - 100;
+  if (Math.abs(difference) < 0.05) {
+    return `At ${formatNumber(index)}, this group matches the NBA reference for this game plan.`;
+  }
+  const direction = difference > 0 ? "above" : "below";
+  const magnitude = formatNumber(Math.abs(difference));
+  return `At ${formatNumber(index)}, this group is ${magnitude} index point${Math.abs(difference) === 1 ? "" : "s"} ${direction} that reference.`;
+}
+
+/**
+ * Render the explanation next to the result rather than hiding the meaning of
+ * the public index in developer terminology. A compact disclosure keeps the
+ * Simple result concise; the Detailed result shows the same mechanics in full.
+ */
+function renderBenchmarkExplainer(best, { compact = false } = {}) {
+  if (!hasFiniteNumber(best?.planFitIndex)) return null;
+
+  const root = document.createElement(compact ? "details" : "section");
+  root.className = `benchmark-explainer${compact ? " benchmark-explainer--compact" : ""}`;
+  const content = document.createElement("div");
+  content.className = "benchmark-explainer__content";
+
+  if (compact) {
+    const summary = document.createElement("summary");
+    summary.textContent = "How this NBA-baseline index is built";
+    root.append(summary);
+  } else {
+    const heading = document.createElement("h3");
+    heading.textContent = "How to read the game-plan fit index";
+    content.append(heading);
+  }
+
+  const intro = document.createElement("p");
+  intro.className = "benchmark-explainer__intro";
+  intro.textContent = "This is a 100-based comparison index, not the exact solver score. It describes how well the selected group fits the priorities you chose against a same-season NBA reference.";
+
+  const steps = document.createElement("ol");
+  steps.className = "benchmark-explainer__steps";
+  for (const step of [
+    "Lineup Lab projects each selected player's expected rate from the season you chose.",
+    "It combines those rates using your game-plan priorities and, for a rotation, the proposed minute plan.",
+    "It compares that weighted profile with the same-season NBA reference, which is set to 100.",
+  ]) {
+    const item = document.createElement("li");
+    item.textContent = step;
+    steps.append(item);
+  }
+
+  const reading = document.createElement("p");
+  reading.className = "benchmark-explainer__reading";
+  reading.textContent = benchmarkIndexReading(best.planFitIndex);
+  const boundary = document.createElement("p");
+  boundary.className = "benchmark-explainer__boundary";
+  boundary.textContent = "It is not a percentage, win forecast, team rating, chemistry measure, or betting signal. The exact solver still ranks only groups that pass every hard rule.";
+  content.append(intro, steps, reading, boundary);
+  root.append(content);
+  return root;
 }
 
 function playerInsightFor(explanation, playerId) {
@@ -3981,7 +4067,7 @@ function renderAlternatives(alternatives, best) {
   const heading = document.createElement("h3");
   heading.textContent = "Next-best groups under the same rules";
   const note = document.createElement("p");
-  note.textContent = `Fit vs. NBA Baseline uses expected rates against the same-season NBA benchmark (100). A difference of three index points is not 3%, a win probability, or an overall team rating. ${best.rotation ? "Production columns use each group's conservative 240-minute projection." : "Production columns add the selected players' per-game profiles."}`;
+  note.textContent = `Game-plan fit (NBA = 100) combines expected player rates using your selected priorities, then compares that group profile with the same-season NBA reference. It is separate from the exact solver score and is not a percentage, win probability, or overall team rating. ${best.rotation ? "Production columns use each group's conservative 240-minute projection." : "Production columns add the selected players' per-game profiles."}`;
   const wrap = document.createElement("div");
   wrap.className = "alternatives-wrap table-wrap";
   wrap.tabIndex = 0;
@@ -3993,7 +4079,7 @@ function renderAlternatives(alternatives, best) {
   caption.textContent = "Top feasible lineup alternatives";
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const heading of ["Rank", "Players", "Fit vs. NBA Baseline", "Changes from #1", "Main tradeoff", "PTS", "REB", "AST", "TOV"]) {
+  for (const heading of ["Rank", "Players", "Game-plan fit (NBA = 100)", "Changes from #1", "Main tradeoff", "PTS", "REB", "AST", "TOV"]) {
     const cell = document.createElement("th");
     cell.scope = "col";
     cell.textContent = heading;
@@ -4012,7 +4098,7 @@ function renderAlternatives(alternatives, best) {
     const row = document.createElement("tr");
     createCell(row, `#${lineup.rank}`);
     createCell(row, lineup.players.map((player) => player.name).join(", "));
-    createCell(row, Number.isFinite(Number(lineup.planFitIndex)) ? formatNumber(lineup.planFitIndex) : "Unavailable");
+    createCell(row, hasFiniteNumber(lineup.planFitIndex) ? formatNumber(lineup.planFitIndex) : "Unavailable");
     createCell(row, changes);
     createCell(row, summarizeAlternativeTradeoff(lineup, best));
     createCell(row, formatNumber(lineup.totals.points));
@@ -4258,20 +4344,20 @@ function renderSimpleResultOverview(result, fanExplanation) {
   heading.textContent = "Why this group fits";
   const benchmark = document.createElement("div");
   benchmark.className = "simple-benchmark";
-  if (Number.isFinite(Number(best.planFitIndex))) {
+  if (hasFiniteNumber(best.planFitIndex)) {
     benchmark.append(
-      renderScoreCard("Fit vs. NBA Baseline", formatNumber(best.planFitIndex), true),
-      renderScoreCard("Offense vs. Baseline", formatNumber(best.offenseIndex)),
-      renderScoreCard("Defense vs. Baseline", formatNumber(best.defenseIndex)),
+      renderScoreCard("Game-plan fit (NBA = 100)", formatNumber(best.planFitIndex), true),
+      renderScoreCard("Offense fit (NBA = 100)", hasFiniteNumber(best.offenseIndex) ? formatNumber(best.offenseIndex) : "Unavailable"),
+      renderScoreCard("Defense fit (NBA = 100)", hasFiniteNumber(best.defenseIndex) ? formatNumber(best.defenseIndex) : "Unavailable"),
     );
     const benchmarkHelp = document.createElement("p");
     benchmarkHelp.className = "simple-benchmark__help";
-    benchmarkHelp.textContent = "100 is the same-season NBA baseline for the priorities you selected. A score of 103 is 3 index points above that benchmark—not 3%, a win probability, or an overall team rating.";
-    benchmark.append(benchmarkHelp);
+    benchmarkHelp.textContent = `Game-plan fit is a separate 100-based comparison index. ${benchmarkIndexReading(best.planFitIndex)}`;
+    benchmark.append(benchmarkHelp, renderBenchmarkExplainer(best, { compact: true }));
   } else {
     const unavailable = document.createElement("p");
     unavailable.className = "simple-benchmark__help";
-    unavailable.textContent = "This source does not include enough same-season evidence for Fit vs. NBA Baseline. The exact #1 ranking is still available.";
+    unavailable.textContent = "This source does not include enough same-season evidence to calculate game-plan fit (NBA = 100). The exact #1 ranking is still available.";
     benchmark.append(unavailable);
   }
   const list = document.createElement("ul");
@@ -4322,7 +4408,7 @@ function renderSimpleResultOverview(result, fanExplanation) {
     const alternativeIds = new Set(alternative.playerIds || alternative.players.map((player) => player.id));
     const added = alternative.players.filter((player) => !bestIds.has(player.id)).map((player) => player.name);
     const removed = best.players.filter((player) => !alternativeIds.has(player.id)).map((player) => player.name);
-    const indexGap = Number.isFinite(Number(best.planFitIndex)) && Number.isFinite(Number(alternative.planFitIndex))
+    const indexGap = hasFiniteNumber(best.planFitIndex) && hasFiniteNumber(alternative.planFitIndex)
       ? Math.max(0, Number(best.planFitIndex) - Number(alternative.planFitIndex))
       : null;
     const next = document.createElement("p");
@@ -4365,9 +4451,9 @@ function renderSuccess(result) {
   const exactSearchHeadline = countIsComplete
     ? `Recommended #1 of ${feasibleCount.toLocaleString()} group${feasibleCount === 1 ? "" : "s"} that met every rule after checking all ${possibleCount.toLocaleString()} possible group${possibleCount === 1 ? "" : "s"}.`
     : `Recommended #1 after checking all ${possibleCount.toLocaleString()} possible groups. At least ${feasibleCount.toLocaleString()} met every rule; the rest could not change the displayed rankings.`;
-  const planFitHeadline = Number.isFinite(Number(best.planFitIndex))
-    ? ` Fit vs. NBA Baseline: ${formatNumber(best.planFitIndex)}, where 100 is the same-season benchmark for the selected priorities.`
-    : " Fit vs. NBA Baseline was unavailable for this source.";
+  const planFitHeadline = hasFiniteNumber(best.planFitIndex)
+    ? ` Game-plan fit: ${formatNumber(best.planFitIndex)}. ${benchmarkIndexReading(best.planFitIndex)}`
+    : " Game-plan fit (NBA = 100) was unavailable for this source.";
   elements.resultSummary.textContent = `${exactSearchHeadline}${planFitHeadline} This is an optimizer result—not a win prediction or real-world depth chart.`;
 
   const fragment = document.createDocumentFragment();
@@ -4386,17 +4472,15 @@ function renderSuccess(result) {
   fullAnalysis.className = "full-analysis detailed-only";
   const fullSummary = document.createElement("summary");
   fullSummary.textContent = "Open detailed analysis";
-  const scoreExplanation = document.createElement("p");
-  scoreExplanation.className = "full-analysis__intro";
-  scoreExplanation.textContent = "Fit vs. NBA Baseline compares the expected rates with the same-season NBA benchmark using the priorities you selected. A score of 103 is 3 index points above that benchmark—not 3%, a win probability, or an overall team rating.";
+  const benchmarkExplainer = renderBenchmarkExplainer(best);
   const scoreboard = document.createElement("div");
   scoreboard.className = "result-scoreboard";
   const productionPrefix = best.rotation ? "Projected" : "Combined";
-  if (Number.isFinite(Number(best.planFitIndex))) {
+  if (hasFiniteNumber(best.planFitIndex)) {
     scoreboard.append(
-      renderScoreCard("Fit vs. NBA Baseline", formatNumber(best.planFitIndex), true),
-      renderScoreCard("Offense vs. Baseline", formatNumber(best.offenseIndex)),
-      renderScoreCard("Defense vs. Baseline", formatNumber(best.defenseIndex)),
+      renderScoreCard("Game-plan fit (NBA = 100)", formatNumber(best.planFitIndex), true),
+      renderScoreCard("Offense fit (NBA = 100)", hasFiniteNumber(best.offenseIndex) ? formatNumber(best.offenseIndex) : "Unavailable"),
+      renderScoreCard("Defense fit (NBA = 100)", hasFiniteNumber(best.defenseIndex) ? formatNumber(best.defenseIndex) : "Unavailable"),
     );
   }
   scoreboard.append(
@@ -4419,9 +4503,9 @@ function renderSuccess(result) {
   auditCard.append(auditHeading, renderAudit(best.constraintAudit));
   detailGrid.append(contributionCard, auditCard);
 
+  fullAnalysis.append(fullSummary);
+  if (benchmarkExplainer) fullAnalysis.append(benchmarkExplainer);
   fullAnalysis.append(
-    fullSummary,
-    scoreExplanation,
     scoreboard,
     renderResultEvidence(result),
     renderResultRankingContext(result),
@@ -5049,9 +5133,9 @@ function resultSummaryText() {
   const lines = [
     `DJ's Lineup Lab - ${elements.mode.value === "rotation" ? "Recommended rotation and minutes plan" : "Recommended lineup"}`,
     `Strategy: ${PRESET_LABELS[state.activePreset] || "Custom mix"}`,
-    ...(Number.isFinite(Number(best.planFitIndex))
-      ? [`Fit vs. NBA Baseline: ${formatNumber(best.planFitIndex)} (100 = same-season NBA baseline)`, `Offense vs. baseline: ${formatNumber(best.offenseIndex)}; Defense vs. baseline: ${formatNumber(best.defenseIndex)}`]
-      : ["Fit vs. NBA Baseline: unavailable for this source"]),
+    ...(hasFiniteNumber(best.planFitIndex)
+      ? [`Game-plan fit (NBA = 100): ${formatNumber(best.planFitIndex)}. ${benchmarkIndexReading(best.planFitIndex)}`, `Offense fit (NBA = 100): ${hasFiniteNumber(best.offenseIndex) ? formatNumber(best.offenseIndex) : "unavailable"}; Defense fit (NBA = 100): ${hasFiniteNumber(best.defenseIndex) ? formatNumber(best.defenseIndex) : "unavailable"}`]
+      : ["Game-plan fit (NBA = 100): unavailable for this source"]),
     `Players: ${best.players.map((player) => player.name).join(", ")}`,
     `${best.rotation ? "Minute-weighted projection" : "Combined player profiles"}: ${formatNumber(best.totals.points)} PTS, ${formatNumber(best.totals.rebounds)} REB, ${formatNumber(best.totals.assists)} AST, ${formatNumber(best.totals.turnovers)} TOV`,
   ];
@@ -5314,14 +5398,17 @@ function bindEvents() {
   elements.resultContent.addEventListener("click", (event) => {
     const detailedButton = event.target.closest('[data-action="show-detailed"]');
     if (detailedButton) {
-      setExperienceMode("detailed", { applyDefaults: false, announce: true });
       const analysis = elements.resultContent.querySelector(".full-analysis");
       if (analysis) {
+        // Open the report calculated from the current Simple assumptions in
+        // place. Switching the entire page to Detailed would restore a prior
+        // advanced-settings snapshot and immediately mark this exact result as
+        // stale—the opposite of what someone asking "why?" expects.
+        analysis.classList.add("is-simple-open");
         analysis.open = true;
+        detailedButton.hidden = true;
         analysis.scrollIntoView({ behavior: motionBehavior(), block: "start" });
-        // The source button disappears in Detailed mode. Move focus to the
-        // newly revealed disclosure so keyboard and screen-reader users stay
-        // oriented at the point their action opened.
+        showToast("Full result details opened. Your model settings did not change.");
         requestAnimationFrame(() => analysis.querySelector("summary")?.focus({ preventScroll: true }));
       }
       return;

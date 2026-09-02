@@ -27,7 +27,23 @@
           <small>NBA lineup optimizer</small>
         </span>
       </a>
-      <span class="prototype-badge">Public beta</span>
+      <div class="lab-header__actions">
+        <nav class="lab-header__links" aria-label="Lineup Lab navigation">
+          <a class="lab-header__link" href="../../index.html">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"></path><path d="M9 20v-5h6v5"></path></svg>
+            <span>Shop</span>
+          </a>
+          <a class="lab-header__link lab-header__link--tools" href="../../tools/">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5h7v6H4zM13 5.5h7v6h-7zM4 13.5h7v6H4zM13 13.5h7v6h-7z"></path></svg>
+            <span>Fan Tools</span>
+          </a>
+          <a class="lab-header__account" href="../../account.html" aria-label="Open your account" title="Account">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+            <span class="sr-only">Account</span>
+          </a>
+        </nav>
+        <span class="prototype-badge">Public beta</span>
+      </div>
     </div>
   </header>
 
@@ -399,45 +415,52 @@
                       <p class="eyebrow">Player choices</p>
                       <h2 id="playersHeading">Optional: require or remove players</h2>
                     </div>
-                    <label class="search-field">
-                      <span class="sr-only">Search players</span>
-                      <input id="playerSearchInput" type="search" placeholder="Search this roster">
-                    </label>
                   </div>
 
-                  <div class="player-action-legend" aria-label="Player action guide">
-                    <span><strong>Lock</strong> guarantees a player is selected</span>
-                    <span><strong>Exclude</strong> removes a player from the search</span>
-                    <span class="detailed-only"><strong>Compare</strong> changes charts only</span>
-                    <span class="detailed-only"><strong>Save</strong> adds a player to your private watchlist</span>
-                  </div>
                   <div class="active-selection-tray" id="activeSelectionTray" hidden aria-label="Active player selections"></div>
-                  <div class="table-wrap player-table-wrap" aria-label="Player pool controls" tabindex="0">
-                    <table class="player-table">
-                      <caption>Lock and Exclude change the lineup search. Searching only changes which rows are visible. <span class="detailed-only">Compare and Save do not change the search.</span></caption>
-                      <thead>
-                        <tr>
-                          <th scope="col">Player</th>
-                          <th scope="col">Position</th>
-                          <th scope="col">MPG</th>
-                          <th scope="col">PTS</th>
-                          <th scope="col">REB</th>
-                          <th scope="col">AST</th>
-                          <th class="detailed-only-column" scope="col">STL</th>
-                          <th class="detailed-only-column" scope="col">BLK</th>
-                          <th class="detailed-only-column" scope="col">TOV</th>
-                          <th scope="col">Lock</th>
-                          <th scope="col">Exclude</th>
-                          <th class="detailed-only-column" scope="col">Compare</th>
-                          <th class="detailed-only-column" scope="col">Save</th>
-                        </tr>
-                      </thead>
-                      <tbody id="playerTableBody">
-                        <tr><td colspan="13" class="loading-cell">Loading player data...</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="pool-summary" id="poolSummary">Loading eligibility...</div>
+                  <details class="player-pool-details" id="playerPoolDetails">
+                    <summary>
+                      <span><strong>Browse this roster</strong><small>Optional — lock a must-have player or exclude someone from the exact search</small></span>
+                    </summary>
+                    <div class="player-pool-details__content">
+                      <label class="search-field">
+                        <span class="sr-only">Search players</span>
+                        <input id="playerSearchInput" type="search" placeholder="Search this roster">
+                      </label>
+                      <div class="player-action-legend" aria-label="Player action guide">
+                        <span><strong>Lock</strong> guarantees a player is selected</span>
+                        <span><strong>Exclude</strong> removes a player from the search</span>
+                        <span class="detailed-only"><strong>Compare</strong> changes charts only</span>
+                        <span class="detailed-only"><strong>Save</strong> adds a player to your private watchlist</span>
+                      </div>
+                      <div class="table-wrap player-table-wrap" aria-label="Player pool controls" tabindex="0">
+                        <table class="player-table">
+                          <caption>Lock and Exclude change the lineup search. Searching only changes which rows are visible. <span class="detailed-only">Compare and Save do not change the search.</span></caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Player</th>
+                              <th scope="col">Position</th>
+                              <th scope="col">MPG</th>
+                              <th scope="col">PTS</th>
+                              <th scope="col">REB</th>
+                              <th scope="col">AST</th>
+                              <th class="detailed-only-column" scope="col">STL</th>
+                              <th class="detailed-only-column" scope="col">BLK</th>
+                              <th class="detailed-only-column" scope="col">TOV</th>
+                              <th scope="col">Lock</th>
+                              <th scope="col">Exclude</th>
+                              <th class="detailed-only-column" scope="col">Compare</th>
+                              <th class="detailed-only-column" scope="col">Save</th>
+                            </tr>
+                          </thead>
+                          <tbody id="playerTableBody">
+                            <tr><td colspan="13" class="loading-cell">Loading player data...</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="pool-summary" id="poolSummary">Loading eligibility...</div>
+                    </div>
+                  </details>
                 </section>
               </div>
 
@@ -541,8 +564,8 @@
             </article>
             <article class="panel model-card">
               <span class="model-card__number">02</span>
-              <h3>One understandable benchmark</h3>
-              <p><strong>Fit vs. NBA Baseline</strong> uses the same-season NBA benchmark for your selected priorities. A score of 103 is 3 index points above that benchmark—not 3%, a win probability, or an overall team rating. The exact solver still checks every eligible group and applies every hard rule.</p>
+              <h3>How to read the game-plan fit index</h3>
+              <p><strong>Fit vs. NBA Baseline</strong> is a 100-based comparison index, not the solver score. Lineup Lab projects each selected player’s rate for the chosen season, applies the priorities you set, then compares the group’s combined profile with a same-season NBA reference. <strong>100</strong> matches that reference. <strong>103</strong> is 3 index points above it for this particular game plan. It does not estimate wins, overall team quality, chemistry, or betting odds. The exact solver still chooses only from groups that pass every rule.</p>
             </article>
             <article class="panel model-card">
               <span class="model-card__number">03</span>

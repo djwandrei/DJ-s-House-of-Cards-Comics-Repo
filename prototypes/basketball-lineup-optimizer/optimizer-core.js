@@ -117,7 +117,8 @@ export const DEFAULT_ROTATION_RATE_STABILITY = "sampleAdjusted";
 // Version the fan-facing statistical model independently from the solver
 // implementation. The exact enumerator/min-cost flow can remain unchanged
 // while its evidence model evolves, and a future possession-level Scout model
-// can identify itself separately instead of silently changing Plan Fit.
+// can identify itself separately instead of silently changing the public
+// Fit-vs.-NBA-Baseline benchmark.
 export const HISTORICAL_RATE_MODEL_VERSION = HISTORICAL_PROJECTION_MODEL_VERSION;
 const ROTATION_RATE_STABILITY_MODES = Object.freeze({
   SAMPLE_ADJUSTED: "sampleAdjusted",
@@ -152,7 +153,7 @@ const RATE_EVIDENCE_REFERENCE_GAMES = DEFAULT_PROJECTION_PARAMETERS.evidenceRefe
 // fitted player-impact coefficient, team-stint penalty, minute cap, or attempt
 // to reproduce a coach's historical rotation.
 // BPM is centered at league average (zero) and is expressed as estimated
-// points per 100 possessions. Plan Fit is an explanatory index rather than a
+// points per 100 possessions. Fit vs. NBA Baseline is an explanatory index rather than a
 // literal point differential, so a moderate five index points per BPM point
 // keeps this secondary signal bounded and subordinate to the user's box-score
 // priorities.
@@ -1328,7 +1329,7 @@ function buildNormalizedMetrics(
       // benchmark the same interpretable unit as rotation mode. Rotation mode
       // supplies its common planned role (240 / roster size).
       //
-      // Keep the explanatory Plan Fit benchmark on the posterior-mean
+      // Keep the explanatory Fit-vs.-NBA-Baseline benchmark on the posterior-mean
       // projection, without the one-sided decision reserve. The exact search
       // and projected production remain deliberately conservative, but this
       // separation preserves the intuitive meaning of 100: a player projected
@@ -1580,7 +1581,7 @@ function buildRoleConditionedProjectionPlan(
 
     // Mirror the same one-way expansion assumption on the stable, league-
     // anchored display index. The exact solver still ranks on percentiles;
-    // these maps only make the displayed Plan Fit Index match the minutes that
+    // these maps only make the displayed NBA-baseline index match the minutes that
     // the selected rotation was actually assigned.
     const establishedBenchmarkIndexes = metricResult.benchmarkIndexesByPlayerId?.get(id) ?? {};
     const expandedBenchmarkIndexes = {};
@@ -1754,7 +1755,7 @@ function roleConditionedMinuteSplit(playerId, assignedMinutes, roleProjectionPla
 /**
  * Integrate only the evidence-based role-expansion curve.
  *
- * Projected box-score totals and the league-anchored Plan Fit Index use this
+ * Projected box-score totals and the same-season NBA-baseline index use this
  * helper because the new workload-saturation term is an allocation utility,
  * not a claim that a 36th minute literally erases a fixed share of a player's
  * points or rebounds. Keeping those concepts separate preserves both honest
@@ -2020,7 +2021,7 @@ const DEFENSE_BENCHMARK_METRICS = Object.freeze([
  * Build the stable result index shown to fans.
  *
  * Exact ranking continues to use pool-relative percentiles because they answer
- * "which eligible group best matches this request?" The Plan Fit Index answers
+ * "which eligible group best matches this request?" Fit vs. NBA Baseline answers
  * a different, more stable question: "how does this group compare with the
  * same-season NBA baseline for the priorities I chose?" Changing an unrelated
  * eligible player can move the ranking percentiles but cannot move this index.
@@ -2083,7 +2084,7 @@ function calculateBenchmarkFit(
     );
     // A deliberately zeroed offense or defense family still deserves a useful
     // descriptive sub-index. Equal weighting is used only for that readout; it
-    // does not add a hidden priority to the Plan Fit Index or exact solver.
+    // does not add a hidden priority to the NBA-baseline index or exact solver.
     const equalWeight = !(weightTotal > 0);
     if (equalWeight) weightTotal = available.length;
     return round(available.reduce((total, metric) => {
@@ -2122,9 +2123,11 @@ function calculateObjective(
   const contributionBreakdown = {};
   // Keep the group-level breakdown for the existing UI, while also retaining
   // the additive player-level evidence a fan report needs to explain why a
-  // specific player belongs in this exact result. Every player contribution is
-  // measured on the same objective scale and the player totals reconcile to
-  // the displayed fit score (subject only to display rounding).
+  // specific player belongs in this exact result. The player totals reconcile
+  // to the direct, user-weighted game-plan score (subject only to display
+  // rounding). Roster-wide role and Scout adjustments deliberately remain
+  // separate below: they describe the combination of five players and cannot
+  // honestly be assigned to one individual.
   const playerContributions = Object.fromEntries(players.map((player) => [
     player.id,
     { scoreContribution: 0, metrics: {} },
@@ -2229,6 +2232,12 @@ function calculateObjective(
   return {
     rawScore,
     score: round(rawScore),
+    // Expose the two pieces separately for API consumers and future reports.
+    // `score` is the ranking result; `directGamePlanScore` is the sum of the
+    // per-player metric contributions; `rosterAdjustmentPoints` is the small,
+    // explicitly opt-in group-level context that is not attributed to a player.
+    directGamePlanScore: round(rawScore - adjustmentPoints),
+    rosterAdjustmentPoints: round(adjustmentPoints),
     // 0–100 values are retained for renderer/API compatibility. The former
     // readiness fields deliberately contain no hidden score contribution.
     strategyFitScore: round(rawScore / strategyShare),
@@ -6027,11 +6036,11 @@ export function optimizeLineups(players, config = {}) {
         ? "separate-not-active"
         : "scout-impact-v1",
       // Possession-level RAPM and lineup synergy have different units,
-      // uncertainty, and interaction terms from box-score Plan Fit. Explicitly
+      // uncertainty, and interaction terms from the box-score benchmark. Explicitly
       // reserve a separate layer so a later Scout model cannot silently alter
       // this result while still being labelled as the historical-rate model.
       scoutSeparationReason:
-        "Verified possession-level player impact and lineup synergy require a separately versioned model and are not blended into Plan Fit.",
+        "Verified possession-level player impact and lineup synergy require a separately versioned model and are not blended into Fit vs. NBA Baseline.",
     },
     inputPlayers: normalizedPlayers.length,
     eligiblePlayers: eligiblePlayers.length,
