@@ -354,6 +354,7 @@ function Test-DeployablePath {
     "metrics.js",
     "nav.js",
     "nba-slab-stats.mjs",
+    "pro-sports-slab-stats.mjs",
     "offline.html",
     "offline.js",
     "offer.html",

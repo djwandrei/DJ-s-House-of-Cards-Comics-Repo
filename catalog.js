@@ -143,6 +143,7 @@ window.DJ = window.DJ || {};
   let activeModalContextProducts = [];
   let modalSlabStatsRequestId = 0;
   let nbaSlabStatsModulePromise = null;
+  let proSportsSlabStatsModulePromise = null;
   let cartActionFeedbackTimer = 0;
 
   function setFilterPanelDescendantsFocusable(filterPanel, enabled) {
@@ -1854,6 +1855,13 @@ window.DJ = window.DJ || {};
       && String(product.league || '').trim().toUpperCase() === 'NBA';
   }
 
+  function isProSportsSlabStatsCandidate(product = {}) {
+    const category = String(product.category || '').trim().toLowerCase();
+    const league = String(product.league || '').trim().toUpperCase();
+    return (category === 'baseball' && league === 'MLB')
+      || (category === 'football' && league === 'NFL');
+  }
+
   async function ensureNbaSlabStatsBridge() {
     await DJ.loadScriptsInOrder([
       DJ.versionedProductAsset('backend-config.js'),
@@ -1892,6 +1900,47 @@ window.DJ = window.DJ || {};
         container.hidden = true;
         container.replaceChildren();
         console.warn('NBA Slab-to-Stats panel could not be initialized.', error);
+      });
+  }
+
+  async function ensureProSportsSlabStatsBridge() {
+    await DJ.loadScriptsInOrder([
+      DJ.versionedProductAsset('backend-config.js'),
+      DJ.versionedProductAsset('supabase-client.js')
+    ]);
+    if (!DJ.remoteCatalog?.getProSportsProductSlabStats) return null;
+
+    if (!proSportsSlabStatsModulePromise) {
+      proSportsSlabStatsModulePromise = import(DJ.versionedProductAsset('pro-sports-slab-stats.mjs'))
+        .catch((error) => {
+          proSportsSlabStatsModulePromise = null;
+          throw error;
+        });
+    }
+    return proSportsSlabStatsModulePromise;
+  }
+
+  function hydrateProSportsSlabStatsPanel(product, requestId) {
+    const container = document.getElementById('proSportsSlabStatsPanel');
+    if (!container) return;
+
+    const isCurrent = () => (
+      requestId === modalSlabStatsRequestId
+      && Number(activeModalProductId) === Number(product.id)
+      && container.isConnected
+      && document.getElementById('productModal')?.classList.contains('active')
+    );
+
+    ensureProSportsSlabStatsBridge()
+      .then((statsModule) => {
+        if (!isCurrent() || !statsModule?.mountProSportsSlabStatsPanel) return;
+        return statsModule.mountProSportsSlabStatsPanel(container, product, { isCurrent });
+      })
+      .catch((error) => {
+        if (!isCurrent()) return;
+        container.hidden = true;
+        container.replaceChildren();
+        console.warn('MLB/NFL Slab-to-Stats panel could not be initialized.', error);
       });
   }
 
@@ -4666,6 +4715,11 @@ Thank you.`
               <p class="slab-stats-loading" role="status">Matching this card to verified NBA statistics&hellip;</p>
             </section>
           ` : ''}
+          ${isProSportsSlabStatsCandidate(product) ? `
+            <section class="slab-stats" id="proSportsSlabStatsPanel" aria-label="${DJ.escapeHtml(String(product.league || '').trim().toUpperCase())} player statistics for this product" aria-busy="true">
+              <p class="slab-stats-loading" role="status">Matching this card to verified player statistics&hellip;</p>
+            </section>
+          ` : ''}
         </div>
         <div class="modal-copy">
           <span class="product-badge">${DJ.escapeHtml(badgeLabel(product.category))}</span>
@@ -4786,6 +4840,8 @@ Thank you.`
     document.body.style.overflow = 'hidden';
     if (isNbaSlabStatsCandidate(product)) {
       hydrateNbaSlabStatsPanel(product, slabStatsRequestId);
+    } else if (isProSportsSlabStatsCandidate(product)) {
+      hydrateProSportsSlabStatsPanel(product, slabStatsRequestId);
     }
     requestAnimationFrame(() => {
       const preferredFocus = options.focusSelector ? modal.querySelector(options.focusSelector) : null;

@@ -1218,6 +1218,39 @@ window.DJ = window.DJ || {};
     }
   }
 
+  /**
+   * Read the fixed-shape, public-safe MLB/NFL Slab-to-Stats payload for one
+   * visible catalog product. The server decides the eligible league and keeps
+   * mapping evidence plus warehouse source data private.
+   */
+  async function getProSportsProductSlabStats(productId, options = {}) {
+    const normalizedProductId = Number(productId);
+    if (!Number.isSafeInteger(normalizedProductId) || normalizedProductId <= 0) {
+      throw new Error('Choose a valid product before loading player stats.');
+    }
+
+    const cacheKey = 'pro-sports-product-slab-stats:' + normalizedProductId;
+    const cachedPromise = getCachedRemotePromise(cacheKey, { force: options.force });
+    if (cachedPromise) return cachedPromise;
+
+    const pending = (async () => {
+      const client = await getRequiredClient();
+      const { data, error } = await client.rpc('get_pro_sports_product_slab_stats', {
+        p_product_id: normalizedProductId
+      });
+      if (error) throw createFriendlyError(error, 'getProSportsProductSlabStats');
+      return data && typeof data === 'object' ? data : null;
+    })();
+
+    if (!options.force) setCachedRemotePromise(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      if (!options.force) remoteCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Auth operations used by the remote admin
   // ---------------------------------------------------------------------------
@@ -1613,6 +1646,7 @@ window.DJ = window.DJ || {};
     listNbaLineupTeams,
     listNbaTeamSeasonPlayers,
     getNbaProductSlabStats,
+    getProSportsProductSlabStats,
     listOrders,
     getAccountProfile,
     saveAccountProfile,

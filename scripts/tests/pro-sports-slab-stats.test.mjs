@@ -1,0 +1,162 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  chooseDefaultProSportsSeason,
+  normalizeProSportsSlabStatsPayload,
+  renderProSportsSeasonStats,
+  renderProSportsSlabStatsPanel,
+} from '../../pro-sports-slab-stats.mjs';
+
+const mapping = (overrides = {}) => ({
+  subjectOrder: 1,
+  subjectRole: 'primary',
+  depictedSeasonLabel: '2024',
+  depictedSeasonStartYear: 2024,
+  depictedSeasonEndYear: 2024,
+  seasonMappingMethod: 'title_year',
+  reviewState: 'human_verified',
+  ...overrides,
+});
+
+const mlbPayload = (overrides = {}) => ({
+  schemaVersion: 1,
+  provider: 'MLB',
+  productId: 101,
+  players: [{
+    mapping: mapping(),
+    player: {
+      athleteId: 'athlete-mlb-one',
+      leagueCode: 'MLB',
+      name: 'Example Hitter',
+      primaryPosition: 'CF',
+      headshotUrl: 'https://example.com/hitter.jpg',
+    },
+    seasons: [{
+      seasonEndYear: 2024,
+      seasonLabel: '2024',
+      phase: 'regular',
+      statGroup: 'batting',
+      gamesPlayed: 150,
+      metrics: {
+        battingAverage: 0.301,
+        homeRuns: 31,
+        runsBattedIn: 99,
+        onBasePlusSlugging: 0.901,
+        stolenBases: 18,
+        war: 5.2,
+        plateAppearances: 640,
+      },
+    }, {
+      seasonEndYear: 2024,
+      seasonLabel: '2024',
+      phase: 'regular',
+      statGroup: 'pitching',
+      gamesPlayed: 1,
+      metrics: { wins: 0, losses: 0, earnedRunAverage: 0 },
+    }, {
+      seasonEndYear: 2025,
+      seasonLabel: '2025',
+      phase: 'regular',
+      statGroup: 'batting',
+      gamesPlayed: 10,
+      metrics: { battingAverage: 0.2 },
+    }],
+  }],
+  ...overrides,
+});
+
+const nflPayload = (overrides = {}) => ({
+  schemaVersion: 1,
+  provider: 'NFL',
+  productId: 202,
+  players: [{
+    mapping: mapping({ depictedSeasonEndYear: 2023, depictedSeasonLabel: '2023' }),
+    player: {
+      athleteId: 'athlete-nfl-one',
+      leagueCode: 'NFL',
+      name: 'Example Quarterback',
+      primaryPosition: 'QB',
+      headshotUrl: 'https://example.com/qb.jpg',
+    },
+    seasons: [{
+      seasonEndYear: 2023,
+      seasonLabel: '2023',
+      phase: 'regular',
+      statGroup: 'passing',
+      gamesPlayed: 17,
+      gamesStarted: 17,
+      metrics: {
+        passingYards: 4300,
+        passingTouchdowns: 31,
+        interceptions: 10,
+        completionPercentage: 67.4,
+        passerRating: 101.2,
+        yardsPerAttempt: 7.5,
+        completions: 401,
+        attempts: 595,
+      },
+    }],
+  }],
+  ...overrides,
+});
+
+test('MLB normalization retains only expected provider fields and depicted-position defaults', () => {
+  const normalized = normalizeProSportsSlabStatsPayload(mlbPayload(), 101);
+  assert.equal(normalized.provider, 'MLB');
+  assert.equal(normalized.players.length, 1);
+  assert.equal(normalized.players[0].seasons.length, 3);
+
+  const selection = chooseDefaultProSportsSeason(normalized.players[0], normalized.provider);
+  assert.equal(selection.reason, 'depicted_season');
+  assert.equal(selection.season.seasonKey, '2024:regular:batting');
+});
+
+test('NFL position preference selects passing when a depicted year has multiple stat groups', () => {
+  const raw = nflPayload();
+  raw.players[0].seasons.push({
+    seasonEndYear: 2023,
+    seasonLabel: '2023',
+    phase: 'regular',
+    statGroup: 'rushing',
+    gamesPlayed: 17,
+    metrics: { rushingYards: 200 },
+  });
+  const normalized = normalizeProSportsSlabStatsPayload(raw, 202);
+  const selection = chooseDefaultProSportsSeason(normalized.players[0], normalized.provider);
+  assert.equal(selection.season.seasonKey, '2023:regular:passing');
+
+  const markup = renderProSportsSeasonStats(normalized.players[0], normalized.provider, selection.season.seasonKey);
+  assert.match(markup, /<span>YDS<\/span><strong>4,300<\/strong>/);
+  assert.match(markup, /<span>CMP%<\/span><strong>67\.4%<\/strong>/);
+});
+
+test('payload verification rejects the wrong provider or product and discards unsafe headshots', () => {
+  const unsafe = mlbPayload();
+  unsafe.players[0].player.headshotUrl = 'javascript:alert(1)';
+  const normalized = normalizeProSportsSlabStatsPayload(unsafe, 101);
+  assert.equal(normalized.players[0].headshotUrl, '');
+  assert.equal(normalizeProSportsSlabStatsPayload(mlbPayload({ provider: 'NBA' }), 101), null);
+  assert.equal(normalizeProSportsSlabStatsPayload(mlbPayload(), 999), null);
+});
+
+test('rendered markup escapes player content and never substitutes unavailable statistics', () => {
+  const raw = mlbPayload();
+  raw.players[0].player.name = '<script>bad</script>';
+  raw.players[0].seasons[0].metrics.war = null;
+  const normalized = normalizeProSportsSlabStatsPayload(raw, 101);
+  const panel = renderProSportsSlabStatsPanel(normalized);
+  const season = renderProSportsSeasonStats(normalized.players[0], normalized.provider, '2024:regular:batting');
+  assert.match(panel, /DJ&apos;s Slab-to-Stats/);
+  assert.match(panel, /&lt;script&gt;bad&lt;\/script&gt;/);
+  assert.doesNotMatch(panel, /<script>bad<\/script>/);
+  assert.match(panel, /Historical performance only/);
+  assert.match(season, /<span>WAR<\/span><strong>&mdash;<\/strong>/);
+});
+
+test('a player with no valid season payload is retained but renders an explicit empty state', () => {
+  const raw = nflPayload();
+  raw.players[0].seasons = [{ seasonEndYear: 2023, phase: 'invalid', statGroup: 'passing' }];
+  const normalized = normalizeProSportsSlabStatsPayload(raw, 202);
+  assert.equal(normalized.players[0].seasons.length, 0);
+  assert.match(renderProSportsSeasonStats(normalized.players[0], normalized.provider), /not available/);
+});

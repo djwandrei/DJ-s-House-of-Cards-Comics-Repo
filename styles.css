@@ -10485,10 +10485,11 @@ body[data-page="admin"] {
 
 }
 
-/* Slab-to-Stats is loaded only inside an opened NBA product modal. The panel
-   stays compact so richer context does not enlarge catalog cards or delay the
-   initial grid. */
-.nba-slab-stats {
+/* Slab-to-Stats is loaded only inside an opened product modal. The panel stays
+   compact so richer context does not enlarge catalog cards or delay the initial
+   grid; NBA retains its legacy class while MLB/NFL use the generic one. */
+.nba-slab-stats,
+.slab-stats {
   display:grid;
   gap:.7rem;
   padding:.85rem;
@@ -10500,7 +10501,8 @@ body[data-page="admin"] {
   box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
 }
 
-.nba-slab-stats[hidden] {
+.nba-slab-stats[hidden],
+.slab-stats[hidden] {
   display:none;
 }
 
@@ -10759,7 +10761,8 @@ body[data-page="admin"] {
   font-weight:900;
 }
 
-body.dark-mode .nba-slab-stats {
+body.dark-mode .nba-slab-stats,
+body.dark-mode .slab-stats {
   border-color:rgba(255,255,255,.14);
   background:
     radial-gradient(circle at 100% 0,rgba(239,35,60,.18),transparent 36%),
@@ -10801,7 +10804,8 @@ body.dark-mode .slab-stats-disclaimer a {
 }
 
 @media (max-width:520px) {
-  .nba-slab-stats {
+  .nba-slab-stats,
+  .slab-stats {
     padding:.75rem;
   }
 
@@ -13641,7 +13645,8 @@ body.dark-mode:not([data-page="home"]) main :is(
   }
 }
 
-.modal-media > .nba-slab-stats {
+.modal-media > .nba-slab-stats,
+.modal-media > .slab-stats {
   width:100%;
   margin-top:.15rem;
 }

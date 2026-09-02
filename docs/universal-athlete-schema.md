@@ -143,17 +143,41 @@ unless the provider supplied one aggregate value.
 The storefront loads this data only after an NBA product modal opens. Catalog
 cards and initial catalog rendering do not load player stats.
 
-## Adding MLB or NFL later
+## MLB/NFL Slab-to-Stats
 
-1. Add the sport/league row.
-2. Add a league profile table with a unique `athlete_id` reference.
-3. Import provider IDs, then create verified league aliases.
-4. Reuse `product_athlete_mappings`; do not create another product bridge.
-5. Add a league-specific stats schema and fixed-shape public RPC.
-6. Add a storefront provider adapter that normalizes that RPC into the shared
-   panel contract.
-7. Run identity, mapping, rights, aggregation, accessibility, and responsive
-   regression tests before publishing mappings.
+MLB and NFL now follow the same shopper boundary as NBA without exposing the
+warehouse or mapping bridge directly:
+
+1. The isolated pro-sports analytics project accepts requested verified athlete
+   IDs through `get_pro_sports_athlete_slab_stats_batch(league_code,
+   athlete_ids)`. Only its service role can execute that function. It returns
+   normalized season summaries and rights-confirmed headshots, never provider
+   provenance, external IDs, commerce products, or customer data.
+2. The Commerce project cache
+   `pro_sports_product_slab_stats_cache` holds the compact, validated payload
+   for visible MLB/NFL listings. Direct table access is revoked from browsers.
+3. `get_pro_sports_product_slab_stats(product_id)` is the shopper-facing RPC.
+   It returns a cache row only while the product remains visible and its active,
+   verified athlete mapping still exactly matches the cached athlete IDs.
+4. `sync-pro-sports-product-slab-stats-cache` is the service-role Edge worker.
+   It reads only reviewed mappings, validates the isolated project identity,
+   upserts the cache, verifies every stored hash, and intentionally leaves
+   stale rows intact for review; the public RPC fails closed on those rows.
+5. `pro-sports-slab-stats.mjs` loads only after an eligible MLB or NFL product
+   modal opens. It uses the same visual panel contract as NBA while selecting
+   a position-appropriate stat group when a card season has multiple summaries.
+
+Run the guarded refresh wrapper after an approved MLB/NFL mapping or source
+update:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-pro-sports-product-slab-stats-cache.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-pro-sports-product-slab-stats-cache.ps1 -Apply
+```
+
+The first command is a dry run. The apply command changes only the dedicated
+Commerce cache and its server-side audit rows; it does not edit products,
+workbooks, inventory, prices, sales state, or identity mappings.
 
 ### MLB/NFL catalog identity expansion
 

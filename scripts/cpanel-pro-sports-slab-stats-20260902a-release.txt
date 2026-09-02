@@ -1,0 +1,35 @@
+# MLB/NFL Slab-to-Stats storefront release. This reviewed path list intentionally
+# excludes catalog data, asset trees, Lineup Lab, analytics, and all deletes.
+# Use only with deploy-cpanel-ftps.ps1 -PathList.
+about.html
+account.html
+admin.html
+baseball-cards.html
+basketball-cards.html
+cart.html
+catalog.js
+checkout-success.html
+collectibles.html
+comics.html
+contact.html
+core.js
+football-cards.html
+inbox.html
+index.html
+metrics.html
+offer.html
+offline.html
+policies.html
+pro-sports-slab-stats.mjs
+returns.html
+sell-trade-want-list.html
+shipping.html
+shop.html
+sports-cards.html
+styles.css
+supabase-client.js
+sw.js
+tools/index.html
+tools/player-card-matchups/index.html
+vendor/supabase.min.js
+wishlist.html
