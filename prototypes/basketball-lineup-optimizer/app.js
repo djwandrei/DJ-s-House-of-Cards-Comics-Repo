@@ -22,7 +22,6 @@ import {
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-  FAN_ROLE_DEFINITIONS,
 } from "./fan-analytics.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import {
   buildOpponentGamePlan,
@@ -164,6 +163,16 @@ const ROTATION_POSITION_PROFILES = Object.freeze({
 const ROTATION_MINUTE_PLAN_LABELS = Object.freeze({
   historicalAware: "Recorded-minutes guardrail",
   openWhatIf: "Game-plan optimization",
+});
+const PROJECTION_RISK_LABELS = Object.freeze({
+  reliable: "Reliable evidence",
+  balanced: "Balanced projection",
+  upside: "More upside",
+});
+const ROLE_BALANCE_LABELS = Object.freeze({
+  off: "Explanation only",
+  recommended: "Recommended",
+  emphasized: "Emphasized",
 });
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
@@ -3593,6 +3602,39 @@ function renderResultEvidence(result) {
       "Equal-player lineup fit; no proposed rotation minutes.",
     ));
   }
+  const modelAdjustments = result.best?.modelAdjustments;
+  if (result.best?.rotation) {
+    const usage = modelAdjustments?.usageDemand;
+    const observedUsage = Number(usage?.observedUsageShare);
+    const deficit = Number(usage?.deficitShare);
+    strip.append(resultEvidenceItem(
+      "Team-usage check",
+      usage?.available
+        ? deficit > 1e-9
+          ? "More creation would be required"
+          : "Documented creation is sufficient"
+        : "Incomplete — no value guessed",
+      usage?.available
+        ? deficit > 1e-9
+          ? `The selected players' minute-weighted historical roles account for ${formatNumber(observedUsage * 100, 0)}% of a complete team offense. Individual projections already reduce unsupported expanded-role advantages; this group check is explanation only and adds no second hidden penalty.`
+          : "The selected players already account for a complete team offense at their documented usage rates. This check is explanatory and does not alter hard rules."
+        : `${usage?.missingPlayerIds?.length || 0} selected player${usage?.missingPlayerIds?.length === 1 ? " lacks" : "s lack"} comparable usage evidence. Missing usage was not treated as zero, and no group-level score adjustment was applied.`,
+    ));
+
+    const roleFit = modelAdjustments?.roleFit;
+    const strongestRoles = (roleFit?.strengths || []).slice(0, 2).map((entry) => entry.label);
+    const thinnestRoles = (roleFit?.needs || []).slice(0, 2).map((entry) => entry.label);
+    const riskKey = modelAdjustments?.projectionRisk || result.diagnostics?.projectionRisk || "balanced";
+    const balanceKey = roleFit?.balance || result.diagnostics?.roleBalance || "off";
+    const roleDetail = roleFit?.applied
+      ? `A deliberately small soft preference rewards complementary skills after the direct game-plan priorities. Strongest signals: ${strongestRoles.join(" and ") || "not available"}. Thinnest signals: ${thinnestRoles.join(" and ") || "not available"}. No role became a hard requirement.`
+      : "Role coverage was explained but did not change ranking. Position eligibility and every hard rule still applied normally.";
+    strip.append(resultEvidenceItem(
+      "Projection policy",
+      `${PROJECTION_RISK_LABELS[riskKey] || "Balanced projection"} · ${ROLE_BALANCE_LABELS[balanceKey] || "Explanation only"} role balance`,
+      roleDetail,
+    ));
+  }
   const objectiveEvidence = result.diagnostics?.objectiveMetricEvidence;
   const requestedImpact = ["offensiveImpact", "defensiveImpact"]
     .filter((metric) => Number(result.weights?.[metric]) > 0);
@@ -3612,12 +3654,16 @@ function renderResultEvidence(result) {
         : "Basketball Reference OBPM/DBPM supplied a modest individual offense/defense check; the exact result still follows your visible priorities.",
   ));
   const modelIdentity = result.diagnostics?.modelIdentity;
+  const scoutModel = result.diagnostics?.scoutImpactModel;
   strip.append(resultEvidenceItem(
     "Scout-level impact model",
-    modelIdentity?.scoutImpactLayer === "reserved-not-active"
+    modelIdentity?.scoutImpactLayer === "separate-not-active"
       ? "Separate layer · not active"
-      : "Unavailable",
-    modelIdentity?.scoutSeparationReason
+      : scoutModel?.applied
+        ? "Verified possession evidence active"
+        : "Unavailable",
+    scoutModel?.reason
+      || modelIdentity?.scoutSeparationReason
       || "OBPM/DBPM are individual box estimates, not lineup chemistry. Verified play-by-play must be a separate sourced layer.",
   ));
   return strip;
@@ -3754,6 +3800,77 @@ function renderRotationMinutes(rotation) {
   }
   card.append(headingRow, note, list);
   return card;
+}
+
+/**
+ * Show the final simultaneity proof without pretending the decomposed minute
+ * order is a coaching substitution plan. Aggregate G/F/C totals can otherwise
+ * look valid even when the same player would need to occupy two roles at once;
+ * the exact unit planner rules that out for every regulation minute.
+ */
+function renderRotationUnitProof(best) {
+  const plan = best?.unitPlan;
+  const section = document.createElement("section");
+  section.className = "result-card rotation-unit-proof";
+  const headingRow = document.createElement("div");
+  headingRow.className = "rotation-plan__heading";
+  const heading = document.createElement("h3");
+  heading.textContent = "Can these minutes exist on the court?";
+  const status = document.createElement("span");
+  status.className = `model-status-chip${plan?.ok ? "" : " model-status-chip--warning"}`;
+  status.textContent = plan?.ok ? "Exact check passed" : "Check unavailable";
+  headingRow.append(heading, status);
+
+  const intro = document.createElement("p");
+  intro.className = "rotation-plan-note";
+  if (!plan?.ok) {
+    intro.textContent = plan?.reason
+      || "The player and position totals were returned, but an exact five-player unit schedule was unavailable.";
+    section.append(headingRow, intro);
+    return section;
+  }
+  intro.textContent = "Yes. A second exact check placed five distinct players on the floor in every regulation minute while preserving every assigned player minute and guard/forward/center minute. The sample order below is one feasibility proof—not a recommendation for starters, closers, or substitution timing.";
+
+  const checks = document.createElement("ul");
+  checks.className = "unit-proof-checks";
+  [
+    "48 one-minute frames",
+    "5 distinct players in every frame",
+    "Player minutes match the optimizer",
+    "Court-role minutes match the selected mix",
+  ].forEach((label) => {
+    const item = document.createElement("li");
+    item.textContent = label;
+    checks.append(item);
+  });
+
+  const examples = document.createElement("div");
+  examples.className = "unit-proof-examples";
+  const exampleFrames = [plan.frames?.[0], plan.frames?.[23], plan.frames?.[47]].filter(Boolean);
+  for (const frame of exampleFrames) {
+    const card = document.createElement("div");
+    card.className = "unit-proof-frame";
+    const label = document.createElement("strong");
+    label.textContent = `Example minute ${frame.minute}`;
+    const roleList = document.createElement("dl");
+    for (const role of ["G", "F", "C"]) {
+      const ids = Array.isArray(frame.roles?.[role]) ? frame.roles[role] : [];
+      if (ids.length === 0) continue;
+      const row = document.createElement("div");
+      const term = document.createElement("dt");
+      term.textContent = role;
+      const detail = document.createElement("dd");
+      detail.textContent = ids.map((id) => (
+        best.players.find((player) => String(player.id) === String(id))?.name || id
+      )).join(", ");
+      row.append(term, detail);
+      roleList.append(row);
+    }
+    card.append(label, roleList);
+    examples.append(card);
+  }
+  section.append(headingRow, intro, checks, examples);
+  return section;
 }
 
 function renderHistoricalWorkloadBenchmark(result) {
@@ -3992,46 +4109,52 @@ function renderInsightList(headingText, entries, { warning = false, emptyText } 
   return section;
 }
 
-function renderRoleMatrix(roleCoverage) {
+function renderRoleCoverageSummary(roleCoverage) {
   const section = document.createElement("section");
-  section.className = "fan-report__matrix";
+  section.className = "fan-report__roles";
   const heading = document.createElement("h4");
-  heading.textContent = "Player strengths at a glance";
+  heading.textContent = "Which basketball jobs are covered?";
   const note = document.createElement("p");
-  note.textContent = `Each mark is a statistical strength compared with the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). ✓ has enough evidence for the role check; △ is limited evidence shown only for context. These are box-score signals, not scouting certainties.`;
-  section.append(heading, note);
-  const scroll = document.createElement("div");
-  scroll.className = "role-matrix table-wrap";
-  scroll.tabIndex = 0;
-  scroll.setAttribute("aria-label", "Selected-player strengths table");
-  const table = document.createElement("table");
-  const head = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  for (const label of ["Player", ...FAN_ROLE_DEFINITIONS.map((role) => role.shortLabel)]) {
-    const cell = document.createElement("th");
-    cell.scope = "col";
-    cell.textContent = label;
-    headRow.append(cell);
+  note.textContent = `Each row translates box-score evidence into a familiar lineup job compared with the ${roleCoverage.comparisonLabel} (${roleCoverage.referencePlayerCount} players). These are report signals—not hard position rules, scouting certainties, or requirements that every group must fill.`;
+  const list = document.createElement("div");
+  list.className = "role-coverage-list";
+  const statusLabels = {
+    covered: "Covered",
+    thin: "Thin",
+    gap: "No clear signal",
+    unassessed: "Not assessed",
+  };
+  for (const role of roleCoverage.coverage || []) {
+    const row = document.createElement("article");
+    row.className = "role-coverage-row";
+    row.dataset.status = role.status;
+    const title = document.createElement("div");
+    title.className = "role-coverage-row__title";
+    const label = document.createElement("strong");
+    label.textContent = role.label;
+    const status = document.createElement("span");
+    status.className = "role-coverage-status";
+    status.textContent = statusLabels[role.status] || "Context only";
+    title.append(label, status);
+
+    const detail = document.createElement("p");
+    const confirmedNames = (role.players || []).map((player) => player.playerName);
+    const provisionalNames = (role.provisionalPlayers || []).map((player) => player.playerName);
+    if (role.status === "covered") {
+      detail.textContent = `Supported by ${confirmedNames.join(", ")}.`;
+    } else if (role.status === "thin") {
+      detail.textContent = `Only ${confirmedNames.join(", ")} shows a strong signal; the report target is ${role.target}.`;
+    } else if (role.status === "unassessed") {
+      detail.textContent = "The source does not contain the evidence needed to assess this job fairly.";
+    } else if (provisionalNames.length > 0) {
+      detail.textContent = `No full-evidence match. Limited-sample signal: ${provisionalNames.join(", ")}.`;
+    } else {
+      detail.textContent = "No selected player reached this report's statistical signal in the current comparison pool.";
+    }
+    row.append(title, detail);
+    list.append(row);
   }
-  head.append(headRow);
-  const body = document.createElement("tbody");
-  roleCoverage.matrix.forEach((row) => {
-    const tableRow = document.createElement("tr");
-    createCell(tableRow, row.playerName);
-    FAN_ROLE_DEFINITIONS.forEach((definition) => {
-      const role = row.roles?.[definition.id];
-      const provisional = role?.confidence === "small-sample";
-      const cell = createCell(tableRow, role ? (provisional ? "△" : "✓") : "—");
-      cell.title = role
-        ? `${definition.label}${provisional ? " (limited evidence; excluded from coverage targets)" : ""}: ${role.evidence?.[0] || "statistical signal"}`
-        : `${definition.label} signal not established`;
-      cell.setAttribute("aria-label", `${row.playerName}: ${role ? `${provisional ? "limited-evidence " : ""}${definition.label}` : `no ${definition.label.toLowerCase()} signal`}`);
-    });
-    body.append(tableRow);
-  });
-  table.append(head, body);
-  scroll.append(table);
-  section.append(scroll);
+  section.append(heading, note, list);
   return section;
 }
 
@@ -4087,7 +4210,7 @@ function renderFanScoutingReport(result, explanation) {
       },
     ),
   );
-  report.append(grid, renderRoleMatrix(explanation.roleCoverage), renderAnalyticsComparisonChart(best, comparisonPool()));
+  report.append(grid, renderRoleCoverageSummary(explanation.roleCoverage), renderAnalyticsComparisonChart(best, comparisonPool()));
 
   const caveats = [...new Set([
     analyticsViewDetail().note,
@@ -4305,7 +4428,7 @@ function renderSuccess(result) {
     detailGrid,
   );
   if (best.rotation) {
-    fullAnalysis.append(renderRotationMinutes(best.rotation));
+    fullAnalysis.append(renderRotationMinutes(best.rotation), renderRotationUnitProof(best));
     const historicalBenchmark = renderHistoricalWorkloadBenchmark(result);
     if (historicalBenchmark) fullAnalysis.append(historicalBenchmark);
   }

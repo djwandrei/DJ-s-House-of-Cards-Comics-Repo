@@ -1085,7 +1085,7 @@ body[data-experience-mode="simple"] .lineup-player .card-search-link {
 
 .range-field small {
   color: var(--muted);
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   font-weight: 400;
   line-height: 1.3;
 }
@@ -1233,12 +1233,8 @@ body[data-experience-mode="simple"] .simple-model-summary {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
-/*
- * Rotation realism is a first-class model choice, so it lives inside the
- * constraint step instead of being buried with presentation-only analytics.
- * The visual hierarchy separates evidence policy from the hard min/max rules
- * that always remain authoritative.
- */
+/* Keep the projection policy and hard limits visually separate. Historical
+ * team-stint workload is no longer a selectable minute policy in this UI. */
 .rotation-model-intro,
 .rotation-plan__heading {
   display: flex;
@@ -1281,10 +1277,38 @@ body[data-experience-mode="simple"] .simple-model-summary {
   white-space: nowrap;
 }
 
+.model-status-chip--warning {
+  color: #7a3f00;
+  background: #fff4d8;
+  border-color: #e6c26c;
+}
+
 .rotation-model-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+.rotation-static-policy {
+  min-height: 48px;
+  display: grid;
+  align-content: center;
+  gap: 0.18rem;
+  padding: 0.62rem 0.72rem;
+  color: var(--ink);
+  background: #f4f7fd;
+  border: 1px solid #cdd5e3;
+  border-radius: 10px;
+}
+
+.rotation-static-policy strong {
+  font-size: 0.94rem;
+}
+
+.rotation-static-policy span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
 }
 
 .rotation-model-grid .field.is-disabled {
@@ -2598,12 +2622,83 @@ body[data-experience-mode="simple"] .simple-model-summary {
 }
 
 .rotation-plan,
+.rotation-unit-proof,
 .historical-benchmark {
   margin-top: 1rem;
 }
 
 .rotation-plan__heading h3 {
   padding-top: 0.18rem;
+}
+
+.unit-proof-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unit-proof-checks li {
+  padding: 0.38rem 0.58rem;
+  color: #0a5f4b;
+  background: #eaf8f3;
+  border: 1px solid #b5ddcf;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.unit-proof-checks li::before {
+  margin-right: 0.28rem;
+  content: "✓";
+}
+
+.unit-proof-examples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.unit-proof-frame {
+  min-width: 0;
+  padding: 0.72rem;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.unit-proof-frame > strong {
+  color: var(--navy);
+  font-size: 0.86rem;
+}
+
+.unit-proof-frame dl {
+  display: grid;
+  gap: 0.32rem;
+  margin: 0.5rem 0 0;
+}
+
+.unit-proof-frame dl div {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 0.35rem;
+}
+
+.unit-proof-frame dt {
+  color: var(--blue);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.unit-proof-frame dd {
+  min-width: 0;
+  margin: 0;
+  color: #3f4b68;
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .historical-benchmark > summary {

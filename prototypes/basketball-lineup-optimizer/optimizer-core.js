@@ -6946,7 +6946,10 @@ export function optimizeLineups(players, config = {}) {
       alternative.totals,
       rotation,
     );
-    const unitPlan = index === 0 && rotation
+    // Every returned rotation receives the same final simultaneity proof. This
+    // keeps next-best groups fully auditable too: an alternative is not called
+    // feasible merely because its 240 aggregate minutes add up on paper.
+    const unitPlan = rotation
       ? planRotationUnits(alternative.players, rotation)
       : null;
     alternatives.push({
