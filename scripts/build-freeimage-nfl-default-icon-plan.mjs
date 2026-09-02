@@ -30,6 +30,7 @@ Required:
 
 Options:
   --output-dir <path>               New output directory (default: hash-based)
+  --existing-hosted-ledger <path>   Verified hosted rows to omit from upload batches
   --help                            Show this help
 
 Reads completed outputs/freeimage-staging/nfl/batch-####-#### manifests and
@@ -44,7 +45,7 @@ function parseArgs(argv) {
     if (!token.startsWith('--')) throw new Error(`Unexpected argument: ${token}`);
     const [name, inline] = token.slice(2).split(/=(.*)/s, 2);
     if (name === 'help') return { help: true };
-    if (!['reference-image', 'canonical-viewer-url', 'canonical-asset-url', 'output-dir'].includes(name)) {
+    if (!['reference-image', 'canonical-viewer-url', 'canonical-asset-url', 'output-dir', 'existing-hosted-ledger'].includes(name)) {
       throw new Error(`Unknown option: --${name}`);
     }
     const value = inline ?? argv[++index];
@@ -68,6 +69,7 @@ function parseArgs(argv) {
     canonicalViewerUrl: validateHttps('canonical-viewer-url'),
     canonicalAssetUrl: validateHttps('canonical-asset-url'),
     outputDirectory: values.has('output-dir') ? path.resolve(String(values.get('output-dir'))) : null,
+    existingHostedLedger: values.has('existing-hosted-ledger') ? path.resolve(String(values.get('existing-hosted-ledger'))) : null,
   };
 }
 
@@ -113,6 +115,34 @@ function asJsonl(rows) {
   return rows.map((row) => JSON.stringify(row)).join('\n') + (rows.length ? '\n' : '');
 }
 
+async function loadExistingHostedRows(ledgerPath) {
+  if (!ledgerPath) return new Map();
+  const text = await fs.readFile(ledgerPath, 'utf8');
+  const byStagedFile = new Map();
+  for (const [index, line] of text.split(/\r?\n/).filter(Boolean).entries()) {
+    let row;
+    try {
+      row = JSON.parse(line);
+    } catch (error) {
+      throw new Error(`Existing-hosted ledger line ${index + 1} is invalid JSON: ${String(error.message ?? error)}`);
+    }
+    if (row.reconciliation_status !== 'matched_and_verified' || row.hosted_asset_matches_staged_bytes !== true) {
+      throw new Error(`Existing-hosted ledger line ${index + 1} is not byte-verified.`);
+    }
+    const playerId = String(row.player_id ?? '').trim();
+    const stagedFile = path.resolve(ROOT, String(row.staged_file ?? ''));
+    if (!playerId || !stagedFile) throw new Error(`Existing-hosted ledger line ${index + 1} is missing player_id or staged_file.`);
+    const directUrl = new URL(String(row.direct_hosted_asset_url ?? ''));
+    const viewerUrl = new URL(String(row.viewer_url ?? ''));
+    if (directUrl.protocol !== 'https:' || viewerUrl.protocol !== 'https:') {
+      throw new Error(`Existing-hosted ledger line ${index + 1} contains a non-HTTPS hosted URL.`);
+    }
+    if (byStagedFile.has(stagedFile)) throw new Error(`Existing-hosted ledger repeats staged file: ${stagedFile}`);
+    byStagedFile.set(stagedFile, row);
+  }
+  return byStagedFile;
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -133,7 +163,9 @@ async function main() {
     throw error;
   }
   const batches = await loadCompletedBatches();
+  const existingHostedByFile = await loadExistingHostedRows(options.existingHostedLedger);
   const defaultRows = [];
+  const alreadyHostedRows = [];
   const uploadBatches = [];
   const missingFiles = [];
   const failedSources = [];
@@ -147,15 +179,18 @@ async function main() {
         continue;
       }
       const filePath = path.join(batch.directory, outcome.file);
-      let body;
+      let fileStats;
       try {
-        body = await fs.readFile(filePath);
+        fileStats = await fs.stat(filePath);
       } catch (error) {
         missingFiles.push({ batch: batch.label, player_id: outcome.player_id, file: outcome.file, error: String(error.message ?? error) });
         continue;
       }
       stagedRows += 1;
-      const isDefaultIcon = body.length === reference.length && sha256(body) === referenceSha256;
+      // Nearly all player photos differ in byte length, so avoid reading them
+      // merely to rule out an exact match with the reference placeholder.
+      const isDefaultIcon = fileStats.size === reference.length
+        && sha256(await fs.readFile(filePath)) === referenceSha256;
       const base = {
         sport: SPORT,
         batch: batch.label,
@@ -176,7 +211,21 @@ async function main() {
           canonical_asset_url: options.canonicalAssetUrl,
         });
       } else {
-        uploadRows.push({ ...base, transfer_status: 'upload_required' });
+        const existingHosted = existingHostedByFile.get(filePath);
+        if (existingHosted) {
+          if (String(existingHosted.player_id) !== String(outcome.player_id)
+            || String(existingHosted.original_remote_url) !== String(outcome.remote_url)) {
+            throw new Error(`Existing-hosted ledger does not match staged player/source: ${filePath}`);
+          }
+          alreadyHostedRows.push({
+            ...base,
+            transfer_status: 'already_hosted_and_verified',
+            freeimage_viewer_url: String(existingHosted.viewer_url),
+            canonical_asset_url: String(existingHosted.direct_hosted_asset_url),
+          });
+        } else {
+          uploadRows.push({ ...base, transfer_status: 'upload_required' });
+        }
       }
     }
     uploadBatches.push({ batch: batch.label, rows: uploadRows });
@@ -191,6 +240,7 @@ async function main() {
     await atomicWrite(path.join(uploadDirectory, `${batch.batch}.jsonl`), asJsonl(batch.rows));
   }
   await atomicWrite(path.join(outputDirectory, 'default-icon-player-references.jsonl'), asJsonl(defaultRows));
+  await atomicWrite(path.join(outputDirectory, 'already-hosted-player-references.jsonl'), asJsonl(alreadyHostedRows));
   await atomicWrite(path.join(outputDirectory, 'source-failures.jsonl'), asJsonl(failedSources));
   const summary = {
     sport: SPORT,
@@ -203,10 +253,12 @@ async function main() {
     expected_batches: BATCH_COUNT,
     staged_rows: stagedRows,
     default_icon_players: defaultRows.length,
-    non_default_uploads_required: uploadBatches.reduce((sum, batch) => sum + batch.rows.length, 0),
+    already_hosted_verified: alreadyHostedRows.length,
+    new_non_default_uploads_required: uploadBatches.reduce((sum, batch) => sum + batch.rows.length, 0),
     source_failures: failedSources.length,
     outputs: {
       default_icon_players: 'default-icon-player-references.jsonl',
+      already_hosted_players: 'already-hosted-player-references.jsonl',
       non_default_upload_batches: 'upload-batches',
       source_failures: 'source-failures.jsonl',
     },
