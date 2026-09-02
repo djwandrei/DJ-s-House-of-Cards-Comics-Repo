@@ -1,0 +1,90 @@
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import { gzipSync } from 'node:zlib';
+import {
+  buildArchiveUploadPlan,
+  getBucket,
+  optionsFromArgs,
+  validateLocalArchivePlan,
+  verifyRemoteArtifacts,
+} from '../upload-local-scout-analytics-archive.mjs';
+
+function sha256(value) {
+  return crypto.createHash('sha256').update(value).digest('hex');
+}
+
+async function fixtureArchive() {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'scout-archive-upload-'));
+  const archive = path.join(root, 'outputs', 'fixture-scout-package');
+  await fs.mkdir(path.join(archive, 'teams'), { recursive: true });
+  const shard = gzipSync(Buffer.from('{"fixture":true}'));
+  await fs.writeFile(path.join(archive, 'teams', 'fixture.json.gz'), shard);
+  const manifest = {
+    schemaVersion: 4,
+    scope: { seasonStartYear: 2025, seasonEndYear: 2026 },
+    dataShards: [{
+      gzipPath: 'teams/fixture.json.gz',
+      gzipBytes: shard.length,
+      gzipSha256: sha256(shard),
+    }],
+  };
+  await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.json'), JSON.stringify(manifest));
+  await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.json.gz'), gzipSync(Buffer.from(JSON.stringify(manifest))));
+  await fs.writeFile(path.join(archive, 'README.md'), '# Fixture\n');
+  await fs.writeFile(path.join(archive, 'boundary-role-repair-report.json'), '{}');
+  await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.validation-v2.json'), '{}');
+  return { root, archive };
+}
+
+test('archive uploader requires a package below workspace outputs/', () => {
+  assert.throws(() => optionsFromArgs([]), /--archive is required/);
+  assert.throws(() => optionsFromArgs(['--archive', '..']), /workspace/);
+  assert.throws(() => optionsFromArgs(['--archive', 'lineup-lab']), /outputs/);
+});
+
+test('archive plan includes only metadata and gzip team shards with verified hashes', async () => {
+  const fixture = await fixtureArchive();
+  try {
+    // The CLI intentionally resolves from the repository; direct plan building
+    // permits a temporary fixture so the package contract can be tested.
+    const plan = await validateLocalArchivePlan(await buildArchiveUploadPlan({ archiveDir: fixture.archive }));
+    assert.equal(plan.bucket, 'nba-scout-analytics-archive');
+    assert.equal(plan.artifacts.filter((artifact) => artifact.kind === 'team-gzip-shard').length, 1);
+    assert.equal(plan.artifacts.some((artifact) => artifact.relativePath.endsWith('.json') && artifact.relativePath.startsWith('teams/')), false);
+    assert.equal(plan.totalBytes > 0, true);
+    assert.match(plan.prefix, /^schema-v4\/2025-26\/fixture-scout-package-/);
+  } finally {
+    await fs.rm(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('remote verification distinguishes missing and size-conflicting immutable objects', async () => {
+  const fixture = await fixtureArchive();
+  try {
+    const plan = await validateLocalArchivePlan(await buildArchiveUploadPlan({ archiveDir: fixture.archive }));
+    const remote = new Map([[plan.artifacts[0].remotePath, { size: plan.artifacts[0].bytes + 1 }]]);
+    const result = verifyRemoteArtifacts({ plan, remoteArtifacts: remote });
+    assert.equal(result.complete, false);
+    assert.equal(result.sizeMismatch.length, 1);
+    assert.equal(result.missing.length, plan.artifacts.length - 1);
+  } finally {
+    await fs.rm(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('bucket lookup recognizes the Storage API missing-bucket response shape', async () => {
+  const bucket = await getBucket({
+    projectUrl: 'https://analytics-project.supabase.co',
+    serviceRoleKey: 'test-service-role',
+    fetchImpl: async () => ({
+      ok: false,
+      status: 400,
+      text: async () => '{"statusCode":"404","error":"Bucket not found","code":"NoSuchBucket"}',
+    }),
+  });
+  assert.equal(bucket, null);
+});
