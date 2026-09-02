@@ -293,7 +293,7 @@ def build_document():
         "Five-player lineup: the exact five players verified at possession start. This is the strongest lineup record in the package.",
         "Two-, three-, and four-player combination: a shared-floor co-presence group. It answers whether those players played together; it is not a complete lineup.",
         "Exposure: games, team possessions, minutes, possessions per game, minutes per game, and pace per 48 minutes.",
-        "Continuity: team possession share, team minute share, games used, and for exact five-player lineups only, starting and closing lineup counts/rates.",
+        "Continuity: team possession share, team minute share, games used, and for exact five-player lineups only, starting and closing lineup counts/rates. Starting and closing use the first and final verified exact five observed at a possession start in each eligible game; zero-possession dead-ball lineups are excluded.",
     ]:
         add_bullet(doc, text)
     add_paragraph(doc, "Use five-man rows to identify units that deserve more testing, protection against a certain opponent style, or caution because the result is based on a thin sample. Use pair/trio rows to explore compatibility before choosing a full five-man unit.")
@@ -358,7 +358,7 @@ def build_document():
         "Box-score line: points; FGA/FGM; 2PA/2PM; 3PA/3PM; FTA/FTM; rebounds; assists; steals; blocks; turnovers; personal/drawn/technical/flagrant fouls; blocked attempts; ejections.",
         "Shooting line: FG%, 2P%, 3P%, FT%, eFG%, TS%, 3PA rate, blocked-attempt rate, observed distance, two-point zones, and provider shot-type/description profiles such as jumpers, layups, dunks, hooks, pull-ups, drives, step-backs, cuts, floaters, putbacks, and fadeaways.",
         "Rate line: per-36 and per-100 possession scoring, rebounding, playmaking, disruption, foul, and blocked-attempt indicators plus possession-ending involvement proxy.",
-        "Role line: games appeared, reconstructed minutes, team possessions while on court, starter games/rate, and closer games/rate.",
+        "Role line: games appeared, reconstructed minutes, team possessions while on court, starter games/rate, and closer games/rate. Role counts use only possession-observed boundary lineups.",
     ]:
         add_bullet(doc, text)
     add_paragraph(doc, "Use player cards to build development plans. A low-rim-frequency, low-foul-drawn scorer may merit rim-pressure work; a high-assist but high-turnover player may merit decision-quality film; a strong defensive RAPM player with a modest box score may need matchup-focused film instead of a scoring-centric evaluation.")

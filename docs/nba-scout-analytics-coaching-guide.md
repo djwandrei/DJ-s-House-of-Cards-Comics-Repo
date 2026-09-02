@@ -43,7 +43,7 @@ Use ratings in rotation planning by comparing a candidate unit’s all-sample ou
 - **Five-player lineup:** the exact five players verified at the start of a possession. This is the strongest lineup record in the package.
 - **Two-, three-, and four-player combination:** a shared-floor co-presence group. It answers whether a pair, trio, or quartet played together; it is not a complete lineup.
 - **Exposure:** games, team possessions, minutes, possessions per game, minutes per game, and pace per 48 minutes.
-- **Continuity:** team possession share, team minute share, games used, and—only for exact five-player lineups—starting and closing lineup counts/rates.
+- **Continuity:** team possession share, team minute share, games used, and—only for exact five-player lineups—starting and closing lineup counts/rates. “Starting” and “closing” use the first and final verified exact five observed at a possession start in each eligible game; zero-possession dead-ball lineups are excluded.
 
 Use exact five-man rows to decide which units deserve more testing, which should be protected against certain opponent styles, and which may be running unusually hot or cold. Use pair/trio rows to explore compatibility before selecting a full five-man group.
 
@@ -126,7 +126,7 @@ The direct player profile joins structured event totals to reconstructed on-cour
 - **Box-score line:** points, FGA/FGM, 2PA/2PM, 3PA/3PM, FTA/FTM, offensive/defensive/total rebounds, assists, steals, blocks, turnovers, personal fouls, fouls drawn, attempts blocked, technical/flagrant fouls, and ejections.
 - **Shooting line:** FG%, 2P%, 3P%, FT%, eFG%, TS%, 3PA rate, blocked-attempt rate, average observed FG distance, structured two-point zones, and provider shot-type/description profiles such as jump shots, layups, dunks, hooks, pull-ups, drives, step-backs, cuts, floaters, putbacks, and fadeaways.
 - **Rate line:** per-36 and per-100-possession points, rebounds, assists, steals, blocks, turnovers, foul indicators, attempts blocked, and a possession-ending involvement proxy.
-- **Role line:** games appeared, reconstructed minutes, team possessions while on court, starter games/rate, and closer games/rate.
+- **Role line:** games appeared, reconstructed minutes, team possessions while on court, starter games/rate, and closer games/rate. Role counts use only possession-observed boundary lineups.
 
 Use player cards to construct development plans: a low-rim-frequency, low-foul-drawn scorer may need rim-pressure work; a high-assist but high-turnover player may need decision-quality film; a strong defensive RAPM player with a modest box score may warrant matchup-focused film study instead of a purely scoring-centric evaluation.
 

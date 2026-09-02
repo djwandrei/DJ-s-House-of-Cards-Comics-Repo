@@ -5,6 +5,10 @@ import path from 'node:path';
 import { Writable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { createGunzip } from 'node:zlib';
+import { fileURLToPath } from 'node:url';
+
+const MODULE_PATH = fileURLToPath(import.meta.url);
+const IS_MAIN = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(MODULE_PATH);
 
 function parseArgs(argv) {
   const options = { input: null, validationReport: null, output: null, seasonStartYear: 2025 };
@@ -595,6 +599,40 @@ function checkPlayerProfile(row, onOff, index, errors) {
   if (!closeEnough(per100.possessionEndingInvolvementProxy, expectedInvolvement)) errors.push(`playerProfile.${index}.per100Possessions involvement proxy does not reconcile.`);
 }
 
+export function checkCombinationContinuity(row, index, errors) {
+  const continuity = row?.continuity;
+  if (!continuity || typeof continuity !== 'object') {
+    errors.push(`combination.${index}.continuity is missing.`);
+    return;
+  }
+  const isExactLineup = row.size === 5;
+  const games = Number(row.contexts?.all?.games);
+  if (!Number.isInteger(games) || games < 0) {
+    errors.push(`combination.${index}.continuity games-used coverage is invalid.`);
+    return;
+  }
+  const countFields = [
+    ['exactLineupStartingGames', 'exactLineupStartRate'],
+    ['exactLineupClosingGames', 'exactLineupCloseRate'],
+  ];
+  for (const [countField, rateField] of countFields) {
+    if (!isExactLineup) {
+      if (continuity[countField] !== null || continuity[rateField] !== null) {
+        errors.push(`combination.${index}.continuity exact-lineup role fields must be null for a non-five-player combination.`);
+      }
+      continue;
+    }
+    checkNonNegativeInteger(continuity[countField], `combination.${index}.continuity.${countField}`, errors);
+    if (Number.isInteger(continuity[countField]) && continuity[countField] > games) {
+      errors.push(`combination.${index}.continuity.${countField} exceeds games used.`);
+    }
+    const expectedRate = games > 0 ? rounded(continuity[countField] / games, 4) : null;
+    if (!closeEnough(continuity[rateField], expectedRate, 0.0001)) {
+      errors.push(`combination.${index}.continuity.${rateField} does not reconcile.`);
+    }
+  }
+}
+
 function checkProjection(row, playerRapm, netRapm, index, errors) {
   if (row.size !== 5) {
     if (row.projection) errors.push(`combination.${index} non-five-player row has a projection.`);
@@ -751,6 +789,7 @@ async function validate() {
       if ([...(row.playerIds ?? [])].sort((a, b) => String(a).localeCompare(String(b))).join('|') !== (row.playerIds ?? []).join('|')) errors.push(`Combination player IDs are not canonical at row ${index}.`);
       if (!Number.isFinite(row.minutes) || row.minutes < 0) errors.push(`Combination minutes are invalid at row ${index}.`);
       checkContextMap(row.contexts, `combination.${index}`, phases, errors);
+      checkCombinationContinuity(row, index, errors);
       checkProjection(row, playerRapm, netRapm, index, errors);
       const total = comboTotalsBySize.get(row.size) ?? zeroMetric();
       for (const field of TOTAL_FIELDS) total[field] += Number(row.contexts?.all?.[field] ?? 0);
@@ -915,7 +954,9 @@ async function validate() {
   if (!report.passed) process.exitCode = 1;
 }
 
-validate().catch((error) => {
-  process.stderr.write(`${String(error?.stack ?? error)}\n`);
-  process.exitCode = 1;
-});
+if (IS_MAIN) {
+  validate().catch((error) => {
+    process.stderr.write(`${String(error?.stack ?? error)}\n`);
+    process.exitCode = 1;
+  });
+}
