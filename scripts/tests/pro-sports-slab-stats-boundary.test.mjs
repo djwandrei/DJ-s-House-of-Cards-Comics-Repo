@@ -42,7 +42,9 @@ test('commerce cache uses a fail-closed visible-product RPC instead of direct br
 });
 
 test('the worker preserves current verified mappings and source-project isolation', () => {
-  assert.match(worker, /PRO_SPORTS_ANALYTICS_PROJECT_REF/);
+  assert.match(worker, /PRO_BASEBALL_ANALYTICS_PROJECT_REF/);
+  assert.match(worker, /PRO_FOOTBALL_ANALYTICS_PROJECT_REF/);
+  assert.match(worker, /analyticsSources\[leagueCode\]/);
   assert.match(worker, /get_pro_sports_athlete_slab_stats_batch/);
   assert.match(worker, /from\('pro_sports_product_slab_stats_cache'\)/);
   assert.match(worker, /review_state', \['auto_verified', 'human_verified'\]/);

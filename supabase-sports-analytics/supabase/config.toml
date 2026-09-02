@@ -1,4 +1,7 @@
 project_id = "rioxosivyhczxshhmaen"
 
-# This project is the isolated MLB/NFL analytics warehouse. It must not receive
-# storefront products, customers, orders, payments, or commerce credentials.
+# This linked project is the read-only recovery source for the verified
+# September 2026 MLB/NFL split. New operational reads use the dedicated
+# Baseball and Football projects documented in sports-analytics-project-layout.md.
+# No sports warehouse may receive storefront products, customers, orders,
+# payments, or commerce credentials.

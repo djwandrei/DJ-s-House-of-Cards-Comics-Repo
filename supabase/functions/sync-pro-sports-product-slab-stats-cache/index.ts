@@ -5,6 +5,13 @@ import { readJsonBody } from '../_shared/http.ts';
 
 type LeagueCode = 'MLB' | 'NFL';
 
+type AnalyticsSource = {
+  url: string;
+  serviceRoleKey: string;
+  projectRef: string;
+  client: ReturnType<typeof createClient>;
+};
+
 type MappingRow = {
   product_id: number;
   athlete_id: string;
@@ -53,9 +60,6 @@ type StoredCacheRow = Pick<CacheWriteRow,
 
 const supabaseUrl = String(Deno.env.get('SUPABASE_URL') || '').trim();
 const serviceRoleKey = String(Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim();
-const analyticsUrl = String(Deno.env.get('PRO_SPORTS_ANALYTICS_SUPABASE_URL') || '').trim().replace(/\/+$/, '');
-const analyticsServiceRoleKey = String(Deno.env.get('PRO_SPORTS_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY') || '').trim();
-const analyticsProjectRef = String(Deno.env.get('PRO_SPORTS_ANALYTICS_PROJECT_REF') || '').trim();
 const workerSecret = String(Deno.env.get('PRO_SPORTS_PRODUCT_SLAB_CACHE_SYNC_SECRET') || '').trim();
 const siteUrl = String(Deno.env.get('SITE_URL') || 'https://www.djshouseofcards-comics.com').replace(/\/+$/, '');
 const DEFAULT_CORS_ORIGINS = [
@@ -63,15 +67,40 @@ const DEFAULT_CORS_ORIGINS = [
   'https://djshouseofcards-comics.com',
 ];
 const LEAGUES: LeagueCode[] = ['MLB', 'NFL'];
+const ANALYTICS_BATCH_SIZE = 40;
 
 // Keep an unconfigured deployment inert. The handler returns its 503 before a
 // request can use either placeholder client.
 const admin = createClient(supabaseUrl || 'https://unconfigured.invalid', serviceRoleKey || 'unconfigured', {
   auth: { persistSession: false },
 });
-const analytics = createClient(analyticsUrl || 'https://unconfigured.invalid', analyticsServiceRoleKey || 'unconfigured', {
-  auth: { persistSession: false },
-});
+
+function analyticsSource(urlEnv: string, serviceRoleEnv: string, projectRefEnv: string): AnalyticsSource {
+  const url = String(Deno.env.get(urlEnv) || '').trim().replace(/\/+$/, '');
+  const serviceRoleKey = String(Deno.env.get(serviceRoleEnv) || '').trim();
+  const projectRef = String(Deno.env.get(projectRefEnv) || '').trim();
+  return {
+    url,
+    serviceRoleKey,
+    projectRef,
+    client: createClient(url || 'https://unconfigured.invalid', serviceRoleKey || 'unconfigured', {
+      auth: { persistSession: false },
+    }),
+  };
+}
+
+const analyticsSources: Record<LeagueCode, AnalyticsSource> = {
+  MLB: analyticsSource(
+    'PRO_BASEBALL_ANALYTICS_SUPABASE_URL',
+    'PRO_BASEBALL_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY',
+    'PRO_BASEBALL_ANALYTICS_PROJECT_REF',
+  ),
+  NFL: analyticsSource(
+    'PRO_FOOTBALL_ANALYTICS_SUPABASE_URL',
+    'PRO_FOOTBALL_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY',
+    'PRO_FOOTBALL_ANALYTICS_PROJECT_REF',
+  ),
+};
 
 function normalizeOrigin(value: string) {
   const trimmed = String(value || '').trim().replace(/\/+$/, '');
@@ -111,12 +140,21 @@ function allowedOrigin(request: Request) {
   return !origin || allowedOrigins.includes(origin);
 }
 
-function analyticsUrlMatchesProjectRef() {
+function analyticsUrlMatchesProjectRef(source: AnalyticsSource) {
   try {
-    return new URL(analyticsUrl).hostname === analyticsProjectRef + '.supabase.co';
+    return new URL(source.url).hostname === source.projectRef + '.supabase.co';
   } catch {
     return false;
   }
+}
+
+function analyticsSourcesConfigured() {
+  return LEAGUES.every((leagueCode) => {
+    const source = analyticsSources[leagueCode];
+    return Boolean(source.url && source.serviceRoleKey)
+      && /^[a-z0-9]{20}$/.test(source.projectRef)
+      && analyticsUrlMatchesProjectRef(source);
+  });
 }
 
 function isLeagueCode(value: unknown): value is LeagueCode {
@@ -217,8 +255,9 @@ async function visibleProducts(productIds: number[]) {
 
 async function analyticsProfiles(leagueCode: LeagueCode, athleteIds: string[]) {
   const byAthleteId = new Map<string, AnalyticsProfile>();
-  for (const ids of chunks([...new Set(athleteIds)].sort(), 150)) {
-    const { data, error } = await analytics.rpc('get_pro_sports_athlete_slab_stats_batch', {
+  const source = analyticsSources[leagueCode];
+  for (const ids of chunks([...new Set(athleteIds)].sort(), ANALYTICS_BATCH_SIZE)) {
+    const { data, error } = await source.client.rpc('get_pro_sports_athlete_slab_stats_batch', {
       p_league_code: leagueCode,
       p_athlete_ids: ids,
     });
@@ -264,14 +303,19 @@ function cachePayload(productId: number, leagueCode: LeagueCode, mappings: Mappi
   return { schemaVersion: 1, provider: leagueCode, productId, players };
 }
 
-async function createRun() {
+async function createRuns() {
   const { data, error } = await admin
     .from('pro_sports_product_slab_stats_cache_runs')
-    .insert({ status: 'running', analytics_project_ref: analyticsProjectRef, league_code: 'BOTH' })
-    .select('id')
-    .single();
-  if (error || !data?.id) throw new Error(`Could not start the pro-sports cache synchronization audit: ${error?.message || 'missing run ID'}`);
-  return String(data.id);
+    .insert(LEAGUES.map((leagueCode) => ({
+      status: 'running',
+      analytics_project_ref: analyticsSources[leagueCode].projectRef,
+      league_code: leagueCode,
+    })))
+    .select('id,league_code');
+  if (error || !Array.isArray(data) || data.length !== LEAGUES.length) {
+    throw new Error(`Could not start the pro-sports cache synchronization audit: ${error?.message || 'missing league run IDs'}`);
+  }
+  return new Map((data as Array<{ id: string; league_code: LeagueCode }>).map((row) => [row.league_code, String(row.id)]));
 }
 
 async function finishRun(runId: string, values: Record<string, unknown>) {
@@ -292,6 +336,8 @@ function sameOrderedStrings(left: unknown, right: unknown) {
 async function verifyStoredCache(expectedRows: CacheWriteRow[]) {
   let checked = 0;
   let mismatches = 0;
+  const checkedByLeague: Record<LeagueCode, number> = { MLB: 0, NFL: 0 };
+  const mismatchesByLeague: Record<LeagueCode, number> = { MLB: 0, NFL: 0 };
   const expectedByProductId = new Map(expectedRows.map((row) => [row.product_id, row]));
 
   for (const ids of chunks([...expectedByProductId.keys()].sort((left, right) => left - right), 200)) {
@@ -308,6 +354,7 @@ async function verifyStoredCache(expectedRows: CacheWriteRow[]) {
       const expected = expectedByProductId.get(productId);
       const actual = actualByProductId.get(productId);
       checked += 1;
+      if (expected) checkedByLeague[expected.league_code] += 1;
       if (!expected || !actual
         || actual.league_code !== expected.league_code
         || !sameOrderedStrings(actual.athlete_ids, expected.athlete_ids)
@@ -316,20 +363,22 @@ async function verifyStoredCache(expectedRows: CacheWriteRow[]) {
         || actual.analytics_project_ref !== expected.analytics_project_ref
         || Number(actual.analytics_schema_version) !== expected.analytics_schema_version) {
         mismatches += 1;
+        if (expected) mismatchesByLeague[expected.league_code] += 1;
       }
     }
   }
-  return { checked, mismatches };
+  return { checked, mismatches, checkedByLeague, mismatchesByLeague };
 }
 
 // Cache rows are intentionally not deleted here. If a product becomes hidden,
 // sold, unmapped, or changes leagues, the public RPC rejects its old row. Keep
 // any obsolete cache rows for audit/recovery until an explicitly authorized
 // cleanup reviews them.
-async function countStaleCacheRows(eligibleProductIds: number[]) {
+async function countStaleCacheRows(eligibleProductIds: number[], leagueCode: LeagueCode) {
   const { data, error } = await admin
     .from('pro_sports_product_slab_stats_cache')
     .select('product_id')
+    .eq('league_code', leagueCode)
     .order('product_id', { ascending: true });
   if (error) throw new Error(`Could not inspect stale pro-sports cache rows: ${error.message}`);
   const eligible = new Set(eligibleProductIds);
@@ -342,8 +391,7 @@ Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeadersFor(request) });
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405, request);
   if (!allowedOrigin(request)) return jsonResponse({ error: 'This request origin is not allowed.' }, 403, request);
-  if (!supabaseUrl || !serviceRoleKey || !analyticsUrl || !analyticsServiceRoleKey
-    || !/^[a-z0-9]{20}$/.test(analyticsProjectRef) || !analyticsUrlMatchesProjectRef()) {
+  if (!supabaseUrl || !serviceRoleKey || !analyticsSourcesConfigured()) {
     return jsonResponse({ error: 'MLB/NFL analytics cache synchronization is not configured.' }, 503, request);
   }
 
@@ -363,9 +411,9 @@ Deno.serve(async (request) => {
     );
   }
 
-  let runId = '';
+  let runIds = new Map<LeagueCode, string>();
   try {
-    runId = await createRun();
+    runIds = await createRuns();
     const mappings = await listMappings();
     const products = await visibleProducts(mappings.map((row) => row.product_id));
     const grouped = new Map<number, MappingRow[]>();
@@ -421,7 +469,7 @@ Deno.serve(async (request) => {
         }))),
         payload,
         payload_sha256: await sha256(payload),
-        analytics_project_ref: analyticsProjectRef,
+        analytics_project_ref: analyticsSources[leagueCode].projectRef,
         analytics_schema_version: 1,
         analytics_refreshed_at: synchronizedAt,
         synced_at: synchronizedAt,
@@ -437,17 +485,24 @@ Deno.serve(async (request) => {
     }
 
     const verification = await verifyStoredCache(cacheRows);
-    const staleCacheRows = verification.mismatches ? 0 : await countStaleCacheRows(eligibleProducts);
-    await finishRun(runId, {
-      status: verification.mismatches ? 'failed' : 'completed',
-      mapped_product_count: eligibleProducts.length,
-      cache_upsert_count: cacheRows.length,
-      cache_checked_count: verification.checked,
-      mismatch_count: verification.mismatches,
-      stale_cache_count: staleCacheRows,
-      error_summary: verification.mismatches ? 'Stored cache validation found a payload mismatch.' : '',
-      completed_at: new Date().toISOString(),
-    });
+    const staleCacheRowsByLeague: Record<LeagueCode, number> = { MLB: 0, NFL: 0 };
+    for (const leagueCode of LEAGUES) {
+      const leagueProductIds = eligibleProducts.filter((productId) => products.get(productId) === leagueCode);
+      staleCacheRowsByLeague[leagueCode] = verification.mismatchesByLeague[leagueCode]
+        ? 0
+        : await countStaleCacheRows(leagueProductIds, leagueCode);
+      await finishRun(String(runIds.get(leagueCode)), {
+        status: verification.mismatchesByLeague[leagueCode] ? 'failed' : 'completed',
+        mapped_product_count: leagueProductIds.length,
+        cache_upsert_count: cacheRows.filter((row) => row.league_code === leagueCode).length,
+        cache_checked_count: verification.checkedByLeague[leagueCode],
+        mismatch_count: verification.mismatchesByLeague[leagueCode],
+        stale_cache_count: staleCacheRowsByLeague[leagueCode],
+        error_summary: verification.mismatchesByLeague[leagueCode] ? 'Stored cache validation found a payload mismatch.' : '',
+        completed_at: new Date().toISOString(),
+      });
+    }
+    const staleCacheRows = LEAGUES.reduce((total, leagueCode) => total + staleCacheRowsByLeague[leagueCode], 0);
     return jsonResponse({
       ok: verification.mismatches === 0,
       mappedProducts: eligibleProducts.length,
@@ -457,15 +512,17 @@ Deno.serve(async (request) => {
       mismatches: verification.mismatches,
     }, verification.mismatches ? 409 : 200, request);
   } catch (error) {
-    if (runId) {
-      try {
-        await finishRun(runId, {
-          status: 'failed',
-          error_summary: String(error instanceof Error ? error.message : error).slice(0, 1000),
-          completed_at: new Date().toISOString(),
-        });
-      } catch (finishError) {
-        console.error('[sync-pro-sports-product-slab-stats-cache] could not record failure', finishError);
+    for (const runId of runIds.values()) {
+      if (runId) {
+        try {
+          await finishRun(runId, {
+            status: 'failed',
+            error_summary: String(error instanceof Error ? error.message : error).slice(0, 1000),
+            completed_at: new Date().toISOString(),
+          });
+        } catch (finishError) {
+          console.error('[sync-pro-sports-product-slab-stats-cache] could not record failure', finishError);
+        }
       }
     }
     console.error('[sync-pro-sports-product-slab-stats-cache]', error);

@@ -4,7 +4,7 @@ param(
 )
 
 # Refresh the original Commerce project's compact, public-safe MLB/NFL
-# Slab-to-Stats cache from the isolated pro-sports analytics project. The Edge
+# Slab-to-Stats cache from the isolated Baseball and Football analytics projects. The Edge
 # Function owns data selection, mapping validation, and writes; this wrapper
 # keeps both service credentials and the per-run worker secret in process
 # memory and never writes them to a report.
@@ -13,7 +13,8 @@ $ErrorActionPreference = 'Stop'
 
 $pnpm = 'C:\Users\djwan\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd'
 $commerceProjectRef = 'gkqdymnmczabcggvigce'
-$analyticsProjectRef = 'rioxosivyhczxshhmaen'
+$baseballProjectRef = 'sptahazcjnorayjkltdx'
+$footballProjectRef = 'iuhjjwqfkohrrjqgpahh'
 $functionName = 'sync-pro-sports-product-slab-stats-cache'
 $functionUrl = "https://$commerceProjectRef.functions.supabase.co/$functionName"
 
@@ -30,7 +31,8 @@ if (-not $Apply) {
   [pscustomobject]@{
     mode = 'dry-run'
     commerceProjectRef = $commerceProjectRef
-    analyticsProjectRef = $analyticsProjectRef
+    baseballProjectRef = $baseballProjectRef
+    footballProjectRef = $footballProjectRef
     function = $functionName
     operation = 'Would configure the isolated analytics source credentials, rotate the worker-only trigger secret, and run a zero-mismatch cache refresh.'
     hint = 'Pass -Apply to perform the server-side cache write.'
@@ -38,18 +40,22 @@ if (-not $Apply) {
   return
 }
 
-$analyticsServiceRoleKey = $null
+$baseballServiceRoleKey = $null
+$footballServiceRoleKey = $null
 $workerSecret = [guid]::NewGuid().ToString('N')
 try {
-  $analyticsServiceRoleKey = Get-ProjectServiceRoleKey $analyticsProjectRef
+  $baseballServiceRoleKey = Get-ProjectServiceRoleKey $baseballProjectRef
+  $footballServiceRoleKey = Get-ProjectServiceRoleKey $footballProjectRef
 
-  # The Commerce function can only reach the dedicated MLB/NFL warehouse with
-  # this service credential. Supabase receives it directly; PowerShell never
-  # serializes it to disk or the wrapper's JSON result.
+  # Supabase receives the two service credentials directly; PowerShell never
+  # serializes them to disk or the wrapper's JSON result.
   & $pnpm dlx supabase secrets set `
-    "PRO_SPORTS_ANALYTICS_SUPABASE_URL=https://$analyticsProjectRef.supabase.co" `
-    "PRO_SPORTS_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY=$analyticsServiceRoleKey" `
-    "PRO_SPORTS_ANALYTICS_PROJECT_REF=$analyticsProjectRef" `
+    "PRO_BASEBALL_ANALYTICS_SUPABASE_URL=https://$baseballProjectRef.supabase.co" `
+    "PRO_BASEBALL_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY=$baseballServiceRoleKey" `
+    "PRO_BASEBALL_ANALYTICS_PROJECT_REF=$baseballProjectRef" `
+    "PRO_FOOTBALL_ANALYTICS_SUPABASE_URL=https://$footballProjectRef.supabase.co" `
+    "PRO_FOOTBALL_ANALYTICS_SUPABASE_SERVICE_ROLE_KEY=$footballServiceRoleKey" `
+    "PRO_FOOTBALL_ANALYTICS_PROJECT_REF=$footballProjectRef" `
     "PRO_SPORTS_PRODUCT_SLAB_CACHE_SYNC_SECRET=$workerSecret" `
     --project-ref $commerceProjectRef
   if ($LASTEXITCODE -ne 0) { throw 'Could not configure the pro-sports product-cache worker secrets.' }
@@ -81,6 +87,7 @@ try {
   }
   $summary | ConvertTo-Json -Compress
 } finally {
-  Remove-Variable analyticsServiceRoleKey -ErrorAction SilentlyContinue
+  Remove-Variable baseballServiceRoleKey -ErrorAction SilentlyContinue
+  Remove-Variable footballServiceRoleKey -ErrorAction SilentlyContinue
   Remove-Variable workerSecret -ErrorAction SilentlyContinue
 }
