@@ -29,6 +29,7 @@ import {
 } from "./lineup-role-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import {
   buildScoutImpactModel,
+  buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
 } from "./scout-impact.js?v=__LINEUP_LAB_ASSET_VERSION__";
@@ -58,6 +59,25 @@ const OBJECTIVE_METRICS = Object.freeze([
 
 const ADVANCED_IMPACT_OBJECTIVE_METRICS = new Set([
   "offensiveImpact",
+  "defensiveImpact",
+]);
+
+// Scout RAPM has separate offense/defense components. These familiar game-plan
+// families determine the blend when Scout mode is selected; they do not create
+// a hidden composite priority. If a visitor leaves every family at zero, the
+// Scout adapter uses an even offense/defense read rather than guessing intent.
+const SCOUT_OFFENSE_OBJECTIVE_METRICS = Object.freeze([
+  "points",
+  "efgPct",
+  "threePct",
+  "assists",
+  "ballSecurity",
+  "offensiveImpact",
+]);
+const SCOUT_DEFENSE_OBJECTIVE_METRICS = Object.freeze([
+  "rebounds",
+  "steals",
+  "blocks",
   "defensiveImpact",
 ]);
 

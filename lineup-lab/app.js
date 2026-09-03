@@ -18,7 +18,7 @@ import {
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260902f";
+} from "./supabase-nba-data.js?v=20260902g";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
@@ -177,6 +177,7 @@ const ROLE_BALANCE_LABELS = Object.freeze({
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
+  "iili.io",
 ]);
 const TRUSTED_SOURCE_HOSTS = new Set(["www.basketball-reference.com"]);
 
@@ -559,7 +560,7 @@ function createCardSearchLink(player) {
 
 function safeExternalImageUrl(value) {
   // Media URLs are supplied by the verified database view. Restricting them to
-  // the known Basketball Reference hosts prevents an imported value from
+  // the approved source and hosted-media domains prevents an imported value from
   // introducing mixed content, a scriptable URL, or an unrelated tracking
   // image into a shopper-facing image element.
   try {

@@ -7,7 +7,7 @@
  * installed Chromium browser to render normal Pro Football Reference profile
  * pages and stores only the rendered document in the existing media cache.
  * The existing media importer remains responsible for validating and writing
- * provider-hosted headshot URLs to the isolated analytics project.
+ * provider-hosted headshot URLs to the Football analytics project.
  */
 
 import fs from 'node:fs';
@@ -15,6 +15,10 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
 const CACHE_DIRECTORY = path.join(ROOT, 'outputs', 'sports-reference-media-cache', 'nfl', 'players');
@@ -24,7 +28,7 @@ const PENDING_IMPORTS_FILE = path.join(ROOT, 'outputs', 'sports-reference-media-
 const BROWSER_PROFILE_ROOT = path.join(ROOT, 'outputs', 'sports-reference-media-cache', 'nfl', 'browser-profiles');
 const BROWSER_PROFILE_DIRECTORY = path.join(BROWSER_PROFILE_ROOT, 'normal-session');
 const IMPORTER = path.join(ROOT, 'scripts', 'import-sports-reference-media.mjs');
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
+const FOOTBALL_TARGET = proSportsAnalyticsTarget('nfl');
 const SUPABASE_CLI_VERSION = '2.115.0';
 const SOURCE_NAME = 'pro_football_reference';
 const DEFAULT_LIMIT = 50;
@@ -342,9 +346,10 @@ async function nextCandidates(afterExternalId, needed) {
   `.replace(/\s+/g, ' ').trim();
   const quotedQuery = `"${query.replaceAll('"', '\\"')}"`;
   const result = await runProcess('npx.cmd', [
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR,
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', FOOTBALL_TARGET.projectRef,
     '--output-format', 'json', quotedQuery,
-  ], 90_000, { cwd: ANALYTICS_WORKDIR, shell: true });
+  ], 90_000, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, shell: true });
   if (result.code !== 0) throw new Error(`Candidate query failed (${result.code}): ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1600)}`);
   const payloadText = String(result.stdout).trim();
   let rows = null;

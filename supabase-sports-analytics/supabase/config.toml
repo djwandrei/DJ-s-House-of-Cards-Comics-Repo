@@ -1,7 +1,8 @@
-project_id = "rioxosivyhczxshhmaen"
+project_id = "sptahazcjnorayjkltdx"
 
-# This linked project is the read-only recovery source for the verified
-# September 2026 MLB/NFL split. New operational reads use the dedicated
-# Baseball and Football projects documented in sports-analytics-project-layout.md.
+# This local configuration defaults to the Baseball analytics project after the
+# September 2026 MLB/NFL split. Every operational command must still pass the
+# league-specific --project-ref; Football is a separate project documented in
+# sports-analytics-project-layout.md.
 # No sports warehouse may receive storefront products, customers, orders,
 # payments, or commerce credentials.

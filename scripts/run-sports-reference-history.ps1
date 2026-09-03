@@ -26,6 +26,9 @@ $arguments = @(
 )
 if ($Apply) { $arguments += @('--apply', '--analytics') }
 if ($CacheOnly) { $arguments += @('--cache-only') }
+if ($Apply -and $Sport -eq 'both') {
+  throw 'Apply requires one sport because Baseball and Football analytics use separate Supabase projects.'
+}
 
 $previousSourceConfirmation = $env:SPORTS_REFERENCE_AUTOMATION_CONFIRMED
 $previousSourcePermission = $env:SPORTS_REFERENCE_SOURCE_PERMISSION_CONFIRMED
@@ -36,7 +39,11 @@ try {
   if ($CacheOnly) { $env:SPORTS_REFERENCE_SOURCE_PERMISSION_CONFIRMED = 'confirmed' }
   if ($Apply) {
     $env:SPORTS_ANALYTICS_ALLOW_WRITE = 'confirmed'
-    $env:SPORTS_ANALYTICS_SUPABASE_URL = 'https://rioxosivyhczxshhmaen.supabase.co'
+    $env:SPORTS_ANALYTICS_SUPABASE_URL = if ($Sport -eq 'mlb') {
+      'https://sptahazcjnorayjkltdx.supabase.co'
+    } else {
+      'https://iuhjjwqfkohrrjqgpahh.supabase.co'
+    }
   }
   if ($Background) {
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'

@@ -128,8 +128,8 @@ async function splitDump(inputPath, outputPaths, leagueAthletes) {
   };
   const counts = { baseball: {}, football: {} };
   const headers = {
-    baseball: '-- Baseball analytics data split generated from the verified combined warehouse.',
-    football: '-- Football analytics data split generated from the verified combined warehouse.',
+    baseball: '-- Baseball analytics data split generated from the verified pre-retirement source dump.',
+    football: '-- Football analytics data split generated from the verified pre-retirement source dump.',
   };
   for (const [target, output] of Object.entries(outputs)) {
     await writeLine(output, headers[target]);

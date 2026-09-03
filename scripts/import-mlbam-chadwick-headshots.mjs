@@ -4,7 +4,7 @@
  * Bulk, URL-only MLB headshot importer.
  *
  * The Chadwick Register supplies an auditable exact bridge from the Baseball
- * Reference player IDs already stored in the isolated analytics warehouse to
+ * Reference player IDs already stored in the Baseball analytics warehouse to
  * MLBAM IDs.  This worker never name-matches, requests Baseball Reference, or
  * downloads image binaries.  It preserves any existing non-Chadwick media
  * record for a player.
@@ -15,11 +15,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
-const EXTRA_PROJECT_REF = 'rioxosivyhczxshhmaen';
-const EXTRA_PROJECT_URL = `https://${EXTRA_PROJECT_REF}.supabase.co`;
+const BASEBALL_TARGET = proSportsAnalyticsTarget('mlb');
 const CHADWICK_COMMIT = '7640314a83d788c63fa7d26fa5ce9a9871053e27';
 const CHADWICK_ARCHIVE_SHA256 = '6b18444f5ee2f7137294cad1b71c7676fb41162b872759f0ce0be746eb98f2ef';
 const CHADWICK_ARCHIVE_URL = `https://github.com/chadwickbureau/register/archive/${CHADWICK_COMMIT}.zip`;
@@ -50,7 +52,7 @@ Options:
   --archive <path>           Pinned Chadwick Register archive cache
                               (default: ${path.relative(ROOT, DEFAULT_ARCHIVE)})
   --profile-start <year>     Earliest eligible MLB season (default: 2010)
-  --apply --analytics        Transactionally write the Extra analytics project
+  --apply --analytics        Transactionally write the Baseball analytics project
   --help                     Show this help
 `;
 }
@@ -296,11 +298,12 @@ async function querySql(sql) {
   const sqlFile = path.join(workDirectory, 'query-mlbam-chadwick-headshots.sql');
   fs.writeFileSync(sqlFile, sql, 'utf8');
   const result = await runNpx([
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR,
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', BASEBALL_TARGET.projectRef,
     '--output-format', 'json', '--file', sqlFile,
   ], 120_000);
   if (result.code !== 0) {
-    throw new Error(`Analytics read failed: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
+    throw new Error(`Baseball analytics read failed: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
   }
   const payload = parseJsonEnvelope(result.stdout);
   if (!Array.isArray(payload?.rows)) {
@@ -315,21 +318,22 @@ async function applySql(sql) {
   const sqlFile = path.join(workDirectory, 'apply-mlbam-chadwick-headshots.sql');
   fs.writeFileSync(sqlFile, sql, 'utf8');
   const result = await runNpx([
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR,
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', BASEBALL_TARGET.projectRef,
     '--file', sqlFile,
   ], 180_000);
   if (result.code !== 0) {
-    throw new Error(`Analytics write failed: ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1800)}`);
+    throw new Error(`Baseball analytics write failed: ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1800)}`);
   }
 }
 
 function runNpx(args, timeoutMs) {
   if (fs.existsSync(NPX_CLI)) {
-    return runProcess(process.execPath, [NPX_CLI, ...args], timeoutMs, { cwd: ANALYTICS_WORKDIR });
+    return runProcess(process.execPath, [NPX_CLI, ...args], timeoutMs, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR });
   }
   // Windows cannot spawn a .cmd file without a shell.  The fallback accepts
   // only fixed local paths and generated SQL-file arguments, never SQL text.
-  return runProcess('npx.cmd', args, timeoutMs, { cwd: ANALYTICS_WORKDIR, shell: true });
+  return runProcess('npx.cmd', args, timeoutMs, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, shell: true });
 }
 
 function delay(milliseconds) {
@@ -394,12 +398,6 @@ async function run(argv = process.argv.slice(2)) {
     return;
   }
   if (options.apply && !options.analytics) throw new Error('--apply requires --analytics.');
-  if (options.apply) {
-    const linkedRef = fs.readFileSync(path.join(ANALYTICS_WORKDIR, 'supabase', '.temp', 'project-ref'), 'utf8').trim();
-    if (linkedRef !== EXTRA_PROJECT_REF) {
-      throw new Error(`Linked analytics target ${linkedRef || '(missing)'} is not ${EXTRA_PROJECT_REF}.`);
-    }
-  }
 
   const manifest = await loadExactMappings(options.archive);
   if (manifest.conflicts.length) {
@@ -449,7 +447,7 @@ async function run(argv = process.argv.slice(2)) {
     : { appliedRecords: 0, statements: 0 };
   const report = {
     mode: options.apply ? 'apply' : 'dry-run',
-    target: options.apply ? EXTRA_PROJECT_URL : null,
+    target: options.apply ? BASEBALL_TARGET.projectUrl : null,
     profileStart: options.profileStart,
     archive: {
       path: path.relative(ROOT, options.archive),

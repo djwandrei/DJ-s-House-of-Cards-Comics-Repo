@@ -2,7 +2,7 @@
 
 /**
  * Resumable, season-at-a-time MLB/NFL historical statistics importer for the
- * isolated DJHC Extra Supabase project. Source pages are cached locally and
+ * separate private Baseball and Football Supabase projects. Source pages are cached locally and
  * each completed season/stat-group is checkpointed after one transactional
  * upsert, so the long-running worker can resume without Codex involvement.
  */
@@ -29,11 +29,12 @@ import {
   isPathAllowedByRobots,
   parseRobotsTxt,
 } from './update-nba-basketball-reference-weekly.mjs';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
-const EXTRA_PROJECT_REF = 'rioxosivyhczxshhmaen';
-const EXTRA_PROJECT_URL = `https://${EXTRA_PROJECT_REF}.supabase.co`;
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
 const CLI_VERSION = '2.115.0';
 const SOURCE_CONFIRMATION_ENV = 'SPORTS_REFERENCE_AUTOMATION_CONFIRMED';
 const SOURCE_PERMISSION_ENV = 'SPORTS_REFERENCE_SOURCE_PERMISSION_CONFIRMED';
@@ -85,8 +86,8 @@ Options:
   --sport <mlb|nfl|both>    Source to process (default: both)
   --season-start <year>     First season year (default: 1980)
   --season-end <year>       Last season year (default: current UTC year)
-  --apply                   Upsert validated pages into the Extra project
-  --analytics               Confirm the isolated analytics target for --apply
+  --apply                   Upsert one selected league into its dedicated project
+  --analytics               Confirm the dedicated analytics target for --apply
   --request-delay-ms <ms>   Uncached request delay (default: 4000; minimum: 3000)
   --refresh-cache           Re-fetch pages already present in the local cache
   --cache-only              Read existing local page caches; make no network requests
@@ -97,7 +98,9 @@ Required acknowledgement:
 
 Additional --apply gates:
   ${WRITE_CONFIRMATION_ENV}=confirmed
-  ${TARGET_CONFIRMATION_ENV}=${EXTRA_PROJECT_URL}
+  ${TARGET_CONFIRMATION_ENV}=<the selected league's Supabase project URL>
+
+--apply requires exactly one --sport because MLB and NFL use separate projects.
 
 The worker checks each source's live robots policy before reading either cache
 or network data. With --cache-only and an explicit permission acknowledgement,
@@ -167,19 +170,23 @@ function confirmed(value) {
 export function assertWriteTarget(options, env = process.env) {
   if (!options.apply) return null;
   if (!options.analytics) throw new Error('--apply requires --analytics.');
+  if (options.sports.length !== 1) {
+    throw new Error('--apply requires exactly one --sport (mlb or nfl) because each league has a separate analytics project.');
+  }
   if (!confirmed(env[WRITE_CONFIRMATION_ENV])) {
     throw new Error(`--apply requires ${WRITE_CONFIRMATION_ENV}=confirmed.`);
   }
+  const target = proSportsAnalyticsTarget(options.sports[0]);
   let expected;
   try {
     expected = new URL(String(env[TARGET_CONFIRMATION_ENV] ?? '').trim()).origin;
   } catch {
-    throw new Error(`${TARGET_CONFIRMATION_ENV} must be the Extra project URL.`);
+    throw new Error(`${TARGET_CONFIRMATION_ENV} must be the selected league's project URL.`);
   }
-  if (expected !== EXTRA_PROJECT_URL) {
-    throw new Error(`${TARGET_CONFIRMATION_ENV} must exactly match ${EXTRA_PROJECT_URL}.`);
+  if (expected !== target.projectUrl) {
+    throw new Error(`${TARGET_CONFIRMATION_ENV} must exactly match ${target.projectUrl}.`);
   }
-  return { projectRef: EXTRA_PROJECT_REF, projectUrl: EXTRA_PROJECT_URL, workdir: ANALYTICS_WORKDIR };
+  return { ...target, workdir: PRO_SPORTS_ANALYTICS_WORKDIR };
 }
 
 function ensureDirectory(directory) {
@@ -534,7 +541,7 @@ function parseCliJson(stdout) {
   return null;
 }
 
-export async function executeProjectSql(sql, label, dependencies = {}) {
+export async function executeProjectSql(sql, label, target, dependencies = {}) {
   const work = ensureDirectory(path.join(ROOT, 'outputs', 'sports-reference-import-work'));
   const sqlFile = path.join(work, `${label.replace(/[^a-z0-9_-]+/gi, '-')}.sql`);
   fs.writeFileSync(sqlFile, sql, 'utf8');
@@ -542,13 +549,14 @@ export async function executeProjectSql(sql, label, dependencies = {}) {
   const command = fs.existsSync(installedNpx) ? process.execPath : (process.platform === 'win32' ? 'npx.cmd' : 'npx');
   const npxArgs = [
     '--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked',
-    '--workdir', ANALYTICS_WORKDIR, '--file', sqlFile, '--output', 'json',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', target.projectRef,
+    '--file', sqlFile, '--output', 'json',
   ];
   const args = fs.existsSync(installedNpx) ? [installedNpx, ...npxArgs] : npxArgs;
   const spawnImpl = dependencies.spawnImpl ?? spawn;
   const result = await new Promise((resolve, reject) => {
     const child = spawnImpl(command, args, {
-      cwd: ANALYTICS_WORKDIR, windowsHide: true,
+      cwd: PRO_SPORTS_ANALYTICS_WORKDIR, windowsHide: true,
       shell: !fs.existsSync(installedNpx) && process.platform === 'win32',
       stdio: ['ignore', 'pipe', 'pipe'],
     });
@@ -560,17 +568,17 @@ export async function executeProjectSql(sql, label, dependencies = {}) {
     child.once('close', (code) => resolve({ code, stdout, stderr }));
   });
   if (result.code !== 0) {
-    throw new Error(`Extra-project SQL failed for ${label}: ${String(result.stderr || result.stdout).trim().slice(0, 2000)}`);
+    throw new Error(`${target.label} SQL failed for ${label}: ${String(result.stderr || result.stdout).trim().slice(0, 2000)}`);
   }
   const payload = parseCliJson(result.stdout);
-  if (!payload || !Array.isArray(payload.rows)) throw new Error(`Extra-project SQL returned invalid JSON for ${label}.`);
+  if (!payload || !Array.isArray(payload.rows)) throw new Error(`${target.label} SQL returned invalid JSON for ${label}.`);
   return payload.rows;
 }
 
 function blankCheckpoint(options) {
   return {
-    version: 1,
-    targetProjectRef: EXTRA_PROJECT_REF,
+    version: 2,
+    targetProjectRefs: Object.fromEntries(options.sports.map((sport) => [sport, proSportsAnalyticsTarget(sport).projectRef])),
     seasonStart: options.seasonStart,
     seasonEnd: options.seasonEnd,
     sports: options.sports,
@@ -583,8 +591,10 @@ function blankCheckpoint(options) {
 }
 
 function matchingCheckpoint(checkpoint, options) {
-  return checkpoint?.version === 1
-    && checkpoint.targetProjectRef === EXTRA_PROJECT_REF
+  return checkpoint?.version === 2
+    && JSON.stringify(checkpoint.targetProjectRefs) === JSON.stringify(
+      Object.fromEntries(options.sports.map((sport) => [sport, proSportsAnalyticsTarget(sport).projectRef])),
+    )
     && checkpoint.seasonStart === options.seasonStart
     && checkpoint.seasonEnd === options.seasonEnd
     && JSON.stringify(checkpoint.sports) === JSON.stringify(options.sports);
@@ -684,7 +694,12 @@ export async function runImport(argv = process.argv.slice(2), env = process.env,
         if (options.apply) {
           const runId = crypto.randomUUID();
           const sql = buildImportSql({ sport, source, seasonYear, statGroup, sourceUrl, rows: parsed.rows, runId });
-          const resultRows = await (dependencies.executeSql ?? executeProjectSql)(sql, `${sport}-${seasonYear}-${statGroup}`);
+          const resultRows = await (dependencies.executeSql ?? executeProjectSql)(
+            sql,
+            `${sport}-${seasonYear}-${statGroup}`,
+            target,
+            dependencies,
+          );
           databaseResult = resultRows[0]?.result ?? null;
           checkpoint.completed[key] = {
             completedAt: new Date().toISOString(), rows: parsed.rows.length,

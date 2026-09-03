@@ -17,6 +17,7 @@ import {
   extractTeamPageHeadshots,
   teamCacheFile,
 } from './import-sports-reference-media.mjs';
+import { proSportsAnalyticsTarget } from './lib/pro-sports-analytics-targets.mjs';
 import {
   crawlDelayForUserAgent,
   isPathAllowedByRobots,
@@ -25,6 +26,7 @@ import {
 
 const ROOT = process.cwd();
 const SOURCE = SOURCES.mlb;
+const BASEBALL_TARGET = proSportsAnalyticsTarget('mlb');
 const USER_AGENT = process.env.SPORTS_REFERENCE_USER_AGENT?.trim()
   || 'DJHC-Sports-Analytics/1.0 (+https://www.djshouseofcards-comics.com/contact.html)';
 const DEFAULT_DELAY_MS = 4000;
@@ -62,7 +64,11 @@ function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 async function run(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   if (options.help) { console.log('Use --season-start/--season-end and --request-delay-ms; output is resumable under outputs/sports-reference-media-cache.'); return; }
-  const rows = await executeSql(`select id, season_year, team_code, team_name from public.mlb_team_seasons where season_year between ${options.start} and ${options.end} order by season_year, team_code;`, 'mlb-team-media-teams');
+  const rows = await executeSql(
+    `select id, season_year, team_code, team_name from public.mlb_team_seasons where season_year between ${options.start} and ${options.end} order by season_year, team_code;`,
+    'mlb-team-media-teams',
+    BASEBALL_TARGET,
+  );
   const prior = options.newRun ? null : readJson(CHECKPOINT);
   const checkpoint = prior?.start === options.start && prior?.end === options.end
     ? prior
@@ -107,4 +113,3 @@ const invokedModuleUrl = process.argv[1] ? pathToFileURL(path.resolve(process.ar
 if (import.meta.url === invokedModuleUrl) run().catch((error) => { console.error(`Baseball team media capture failed: ${String(error?.stack ?? error)}`); process.exitCode = 1; });
 
 export { parseArgs, run };
-

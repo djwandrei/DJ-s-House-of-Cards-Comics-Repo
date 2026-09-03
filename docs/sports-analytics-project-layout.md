@@ -10,8 +10,8 @@ deferred and is not part of the Basketball-Reference warehouse.
 | Commerce | `gkqdymnmczabcggvigce` | Products, mappings, payments, and the public-safe stats cache | Separate; unchanged by the split |
 | Basketball | `fbbmuqbdpgsmvnezowwn` | Basketball-Reference descriptive data | Separate; unchanged by the split |
 | Baseball | `sptahazcjnorayjkltdx` | MLB identities, seasons, media metadata, import audit, stats, and source records | 349,441,171 bytes (333.3 MiB) |
-| Football | `iuhjjwqfkohrrjqgpahh` | NFL identities, seasons, media metadata, import audit, stats, and source records | 311,372,947 bytes (296.9 MiB) |
-| Recovery source | `rioxosivyhczxshhmaen` | Original combined MLB/NFL warehouse retained for rollback | 648,088,723 bytes (618.1 MiB) |
+| Football | `iuhjjwqfkohrrjqgpahh` | NFL identities, seasons, media metadata, import audit, stats, and source records | 311,405,715 bytes (297.0 MiB) |
+| Retired combined warehouse | `rioxosivyhczxshhmaen` (deleted) | Former MLB/NFL source; permanently retired after verified parity and Commerce cutover | Not applicable |
 
 ## Verified split state
 
@@ -20,9 +20,10 @@ deferred and is not part of the Basketball-Reference warehouse.
 - Football: 15,824 athletes, 149,050 stat rows, 151,690 source records,
   329 completed import runs, and zero MLB memberships/stat/source rows.
 - Every copied table passed row-count parity and two independent deterministic
-  content checksums against the retained combined source.
-- The combined source is a recovery asset. Do not delete, truncate, relink, or
-  repurpose it until a separately approved retirement review.
+  content checksums against the former combined source before its retirement.
+- After the parity checks, Commerce cache readback, and project-content audit,
+  the combined warehouse was permanently deleted on September 2, 2026. Do not
+  target or attempt to relink its former project ref.
 
 ## Storefront routing
 
@@ -49,8 +50,8 @@ storefront RPC contract did not change.
   migration-history entry is intentionally marked applied without execution
   in Football.
 - Historical MLB/NFL imports are frozen unless a new import is explicitly
-  approved. If that changes, update the old combined-target importer guards
-  before using `--apply`.
+  approved. If that changes, use the league-specific importer target guards
+  before using `--apply`; never use the retired combined target.
 - Refresh the Commerce cache with:
 
   ```powershell

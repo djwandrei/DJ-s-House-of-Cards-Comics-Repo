@@ -1,4 +1,4 @@
--- Isolated MLB/NFL historical analytics warehouse for the Extra project.
+-- Shared private historical analytics schema for the separate MLB and NFL projects.
 -- Raw source records and ingest provenance remain private. No commerce,
 -- customer, order, payment, or storefront tables belong in this project.
 

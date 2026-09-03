@@ -2,19 +2,21 @@
 
 /**
  * Repoint exact NFL placeholder rows to one verified, canonical FreeImage
- * asset.  Dry-run is the default.  --apply requires the isolated Extra
- * analytics project and rejects any row whose player, source, or asset URL
+ * asset.  Dry-run is the default.  --apply targets the Football analytics
+ * project and rejects any row whose player, source, or asset URL
  * changed after the local plan was produced.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
-const EXTRA_PROJECT_REF = 'rioxosivyhczxshhmaen';
-const EXTRA_PROJECT_URL = `https://${EXTRA_PROJECT_REF}.supabase.co`;
+const FOOTBALL_TARGET = proSportsAnalyticsTarget('nfl');
 const SUPABASE_CLI_VERSION = '2.115.0';
 const SOURCE_NAME = 'freeimage_canonical_nfl_default_icon';
 const DEFAULT_PLAN = path.join(
@@ -34,7 +36,7 @@ Usage:
 
 Options:
   --plan <path>           Default-icon JSONL plan (default: generated NFL plan)
-  --apply --analytics      Write only the linked Extra analytics project
+  --apply --analytics      Write only the Football analytics project
   --help                   Show this help
 
 Default mode is a read-only preflight.  Apply refuses to overwrite a row
@@ -129,9 +131,10 @@ async function runQueryFromFile(sql, label) {
   const filePath = path.join(workDirectory, `${label}.sql`);
   fs.writeFileSync(filePath, sql, 'utf8');
   const result = await runProcess('npx.cmd', [
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR,
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', FOOTBALL_TARGET.projectRef,
     '--output-format', 'json', '--file', filePath,
-  ], 180_000, { cwd: ANALYTICS_WORKDIR, shell: true });
+  ], 180_000, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, shell: true });
   if (result.code !== 0) {
     throw new Error(`${label} failed: ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1800)}`);
   }
@@ -327,8 +330,6 @@ async function main() {
     process.stdout.write(usage());
     return;
   }
-  const projectRef = fs.readFileSync(path.join(ANALYTICS_WORKDIR, 'supabase', '.temp', 'project-ref'), 'utf8').trim();
-  if (projectRef !== EXTRA_PROJECT_REF) throw new Error(`Linked analytics target ${projectRef || '(missing)'} is not ${EXTRA_PROJECT_REF}.`);
   const plan = loadPlan(options.plan);
   const preflight = extractReport(await runQueryFromFile(preflightSql(plan.records), 'preflight'), 'Preflight');
   const expectedRows = Number(preflight.expected_rows);
@@ -357,7 +358,7 @@ async function main() {
   }
   process.stdout.write(`${JSON.stringify({
     mode: 'apply',
-    target: EXTRA_PROJECT_URL,
+    target: FOOTBALL_TARGET.projectUrl,
     plan: path.relative(ROOT, options.plan),
     canonical_asset_url: plan.canonicalAssetUrl,
     canonical_viewer_url: plan.canonicalViewerUrl,

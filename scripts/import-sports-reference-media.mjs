@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Idempotent media manifest importer for the isolated MLB/NFL warehouse.
+ * Idempotent media manifest importer for the separate private MLB and NFL warehouses.
  *
  * Team logos use the year-specific Sports Reference CDN paths shown on the
  * source team pages, so the complete historical logo set can be staged with
@@ -14,11 +14,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
-const EXTRA_PROJECT_REF = 'rioxosivyhczxshhmaen';
-const EXTRA_PROJECT_URL = `https://${EXTRA_PROJECT_REF}.supabase.co`;
-const WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
 const CLI_VERSION = '2.115.0';
 const MEDIA_CACHE_ROOT = path.join(ROOT, 'outputs', 'sports-reference-media-cache');
 const SOURCE_LICENSE_NOTE = 'Private non-competing analytics requested by the site owner on 2026-08-31; source media is retained as provider URLs with user-confirmed permission.';
@@ -57,7 +58,7 @@ Options:
   --profile-start <year>       Earliest headshot-eligible season (default: 2010)
   --external-ids <id,...>      Restrict headshot work to specific source player IDs
   --cache-only                 Read browser-captured player HTML only
-  --apply --analytics          Write the isolated Extra project
+  --apply --analytics          Write each selected league's dedicated analytics project
 
 Headshot cache layout:
   outputs\\sports-reference-media-cache\\<mlb|nfl>\\players\\<external-id>.html
@@ -126,7 +127,7 @@ function parseCliJson(stdout) {
   return null;
 }
 
-async function executeSql(sql, label) {
+async function executeSql(sql, label, target) {
   const readOnlyQuery = /^\s*select\b/i.test(sql);
   const work = ensureDirectory(path.join(ROOT, 'outputs', 'sports-reference-import-work'));
   const sqlFile = path.join(work, `media-${label.replace(/[^a-z0-9_-]+/gi, '-')}.sql`);
@@ -134,20 +135,22 @@ async function executeSql(sql, label) {
   const compactQuery = sql.replace(/\s+/g, ' ').trim();
   // The CLI only emits SELECT result rows for an inline query; --file is for
   // statement execution and deliberately has no row-result envelope.
-  const selectArgs = ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', WORKDIR,
+  const selectArgs = ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', target.projectRef,
     '--output-format', 'json', `"${compactQuery.replaceAll('"', '\\"')}"`];
   const result = await new Promise((resolve, reject) => {
     const child = readOnlyQuery
-      ? spawn('npx.cmd', selectArgs, { cwd: WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'] })
-      : spawn('npx.cmd', ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', WORKDIR, '--file', sqlFile], {
-      cwd: WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'],
+      ? spawn('npx.cmd', selectArgs, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'] })
+      : spawn('npx.cmd', ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked',
+        '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', target.projectRef, '--file', sqlFile], {
+      cwd: PRO_SPORTS_ANALYTICS_WORKDIR, windowsHide: true, shell: true, stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = ''; let stderr = '';
     child.stdout.on('data', (chunk) => { stdout += String(chunk); });
     child.stderr.on('data', (chunk) => { stderr += String(chunk); });
     child.once('error', reject); child.once('close', (code) => resolve({ code, stdout, stderr }));
   });
-  if (result.code !== 0) throw new Error(`NBA/Extra media SQL failed for ${label}: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
+  if (result.code !== 0) throw new Error(`${target.label} media SQL failed for ${label}: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
   if (!readOnlyQuery) return [];
   const payload = parseCliJson(result.stdout);
   if (!payload) throw new Error(`Media SQL returned invalid JSON for ${label}.`);
@@ -268,9 +271,10 @@ commit;
 }
 
 async function processSport(source, options) {
+  const target = proSportsAnalyticsTarget(source.sport);
   const needTeamRows = options.kind === 'logos' || options.kind === 'all' || source.sport === 'mlb';
   const teamRows = needTeamRows
-    ? (await executeSql(`select id, season_year, team_code, team_name from public.${source.teamTable} where season_year between ${options.start} and ${options.end} order by season_year, team_code;`, `${source.sport}-teams`)).map((row) => row)
+    ? (await executeSql(`select id, season_year, team_code, team_name from public.${source.teamTable} where season_year between ${options.start} and ${options.end} order by season_year, team_code;`, `${source.sport}-teams`, target)).map((row) => row)
     : [];
   const mediaRows = [];
   if (options.kind === 'logos' || options.kind === 'all') mediaRows.push(...buildLogoRows(source, teamRows, options));
@@ -287,7 +291,7 @@ async function processSport(source, options) {
       where s.season_year >= ${options.profileStart}
         ${externalIdFilter}
       group by p.id, p.full_name, e.external_id;
-    `, `${source.sport}-players`);
+    `, `${source.sport}-players`, target);
     if (!options.cacheOnly) {
       // The command intentionally does not fetch player pages. Browser-captured
       // HTML is the authorized handoff for sources that block unattended HTTP.
@@ -295,20 +299,27 @@ async function processSport(source, options) {
     }
     mediaRows.push(...buildHeadshotRows(source, playerRows, options, teamHeadshots));
   }
-  if (options.apply && mediaRows.length) await executeSql(buildUpsertSql(source, mediaRows), `${source.sport}-upsert`);
-  return { sport: source.sport, logos: mediaRows.filter((row) => row.asset_kind === 'team_logo').length, headshots: mediaRows.filter((row) => row.asset_kind === 'headshot').length, written: options.apply ? mediaRows.length : 0 };
+  if (options.apply && mediaRows.length) await executeSql(buildUpsertSql(source, mediaRows), `${source.sport}-upsert`, target);
+  return {
+    sport: source.sport,
+    target: target.projectUrl,
+    logos: mediaRows.filter((row) => row.asset_kind === 'team_logo').length,
+    headshots: mediaRows.filter((row) => row.asset_kind === 'headshot').length,
+    written: options.apply ? mediaRows.length : 0,
+  };
 }
 
 async function run(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   if (options.help) { console.log(usage()); return; }
   if (options.apply && !options.analytics) throw new Error('--apply requires --analytics.');
-  if (options.apply && !options.cacheOnly && !options.analytics) throw new Error('Media writes require the isolated analytics target.');
-  if (options.apply) {
-    const linked = fs.readFileSync(path.join(WORKDIR, 'supabase', '.temp', 'project-ref'), 'utf8').trim();
-    if (linked !== EXTRA_PROJECT_REF) throw new Error(`Linked analytics target ${linked || '(missing)'} is not ${EXTRA_PROJECT_REF}.`);
-  }
-  const report = { mode: options.apply ? 'apply' : 'dry-run', target: options.apply ? EXTRA_PROJECT_URL : null, kind: options.kind, profileStart: options.profileStart, sports: [] };
+  const report = {
+    mode: options.apply ? 'apply' : 'dry-run',
+    targets: Object.fromEntries(options.sports.map((sport) => [sport, proSportsAnalyticsTarget(sport).projectUrl])),
+    kind: options.kind,
+    profileStart: options.profileStart,
+    sports: [],
+  };
   for (const sport of options.sports) report.sports.push(await processSport(SOURCES[sport], options));
   console.log(JSON.stringify(report, null, 2));
   return report;

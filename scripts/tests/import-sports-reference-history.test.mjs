@@ -39,21 +39,30 @@ test('cache-only mode requires an explicit source-permission acknowledgement', a
   }), (error) => error instanceof SourceAccessBlockedError && error.details.reason === 'cache_missing');
 });
 
-test('apply requires the explicit Extra-project target and write gate', () => {
+test('apply requires the selected league target, one sport, and the write gate', () => {
   const options = optionsFromArgs(['--sport', 'mlb', '--apply', '--analytics']);
   assert.throws(() => assertWriteTarget(options, {}), /SPORTS_ANALYTICS_ALLOW_WRITE/);
   assert.throws(() => assertWriteTarget(options, {
     SPORTS_ANALYTICS_ALLOW_WRITE: 'confirmed',
     SPORTS_ANALYTICS_SUPABASE_URL: 'https://gkqdymnmczabcggvigce.supabase.co',
   }), /must exactly match/);
-  assert.deepEqual(assertWriteTarget(options, {
+  const baseballTarget = assertWriteTarget(options, {
     SPORTS_ANALYTICS_ALLOW_WRITE: 'confirmed',
-    SPORTS_ANALYTICS_SUPABASE_URL: 'https://rioxosivyhczxshhmaen.supabase.co',
-  }), {
-    projectRef: 'rioxosivyhczxshhmaen',
-    projectUrl: 'https://rioxosivyhczxshhmaen.supabase.co',
-    workdir: `${process.cwd()}\\supabase-sports-analytics`,
+    SPORTS_ANALYTICS_SUPABASE_URL: 'https://sptahazcjnorayjkltdx.supabase.co',
   });
+  assert.equal(baseballTarget.projectRef, 'sptahazcjnorayjkltdx');
+  assert.equal(baseballTarget.projectUrl, 'https://sptahazcjnorayjkltdx.supabase.co');
+  assert.equal(baseballTarget.workdir, `${process.cwd()}\\supabase-sports-analytics`);
+
+  const footballTarget = assertWriteTarget(optionsFromArgs(['--sport', 'nfl', '--apply', '--analytics']), {
+    SPORTS_ANALYTICS_ALLOW_WRITE: 'confirmed',
+    SPORTS_ANALYTICS_SUPABASE_URL: 'https://iuhjjwqfkohrrjqgpahh.supabase.co',
+  });
+  assert.equal(footballTarget.projectRef, 'iuhjjwqfkohrrjqgpahh');
+  assert.throws(() => assertWriteTarget(optionsFromArgs(['--sport', 'both', '--apply', '--analytics']), {
+    SPORTS_ANALYTICS_ALLOW_WRITE: 'confirmed',
+    SPORTS_ANALYTICS_SUPABASE_URL: 'https://sptahazcjnorayjkltdx.supabase.co',
+  }), /exactly one --sport/);
 });
 
 test('source preflight fails closed on inaccessible robots or a security challenge', async () => {

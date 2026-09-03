@@ -5,7 +5,7 @@
  *
  * NFLverse publishes one player manifest with the PFR ID crosswalk and an
  * NFL-hosted headshot URL. This worker joins only exact, case-insensitive PFR
- * IDs already present in the isolated analytics project; it never name-matches
+ * IDs already present in the Football analytics project; it never name-matches
  * players, downloads image binaries, or requests Pro Football Reference.
  */
 
@@ -14,11 +14,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
-const EXTRA_PROJECT_REF = 'rioxosivyhczxshhmaen';
-const EXTRA_PROJECT_URL = `https://${EXTRA_PROJECT_REF}.supabase.co`;
+const FOOTBALL_TARGET = proSportsAnalyticsTarget('nfl');
 const DEFAULT_MANIFEST = path.join(ROOT, 'outputs', 'sports-reference-media-cache', 'nfl', 'nflverse-players.csv');
 const PLAYER_RELEASE_URL = 'https://github.com/nflverse/nflverse-data/releases/download/players/players.csv';
 const SOURCE_NAME = 'nflverse';
@@ -37,7 +39,7 @@ Usage:
 Options:
   --manifest <path>          NFLverse players.csv cache (default: ${path.relative(ROOT, DEFAULT_MANIFEST)})
   --profile-start <year>     Earliest eligible NFL season (default: 2010)
-  --apply --analytics        Transactionally write the Extra analytics project
+  --apply --analytics        Transactionally write the Football analytics project
   --help                     Show this help
 `;
 }
@@ -192,10 +194,11 @@ function delay(milliseconds) { return new Promise((resolve) => setTimeout(resolv
 async function querySql(sql) {
   const compact = sql.replace(/\s+/g, ' ').trim();
   const result = await runProcess('npx.cmd', [
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR,
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', FOOTBALL_TARGET.projectRef,
     '--output-format', 'json', `"${compact.replaceAll('"', '\\"')}"`,
-  ], 120_000, { cwd: ANALYTICS_WORKDIR, shell: true });
-  if (result.code !== 0) throw new Error(`Analytics read failed: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
+  ], 120_000, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, shell: true });
+  if (result.code !== 0) throw new Error(`Football analytics read failed: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
   const payload = parseJsonEnvelope(result.stdout);
   if (!Array.isArray(payload?.rows)) throw new Error(`Analytics read returned invalid JSON: ${String(result.stdout).slice(0, 1200)}`);
   return payload.rows;
@@ -207,9 +210,10 @@ async function applySql(sql) {
   const sqlFile = path.join(workDirectory, 'apply-nflverse-headshots.sql');
   fs.writeFileSync(sqlFile, sql, 'utf8');
   const result = await runProcess('npx.cmd', [
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', ANALYTICS_WORKDIR, '--file', sqlFile,
-  ], 180_000, { cwd: ANALYTICS_WORKDIR, shell: true });
-  if (result.code !== 0) throw new Error(`Analytics write failed: ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1800)}`);
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked',
+    '--workdir', PRO_SPORTS_ANALYTICS_WORKDIR, '--project-ref', FOOTBALL_TARGET.projectRef, '--file', sqlFile,
+  ], 180_000, { cwd: PRO_SPORTS_ANALYTICS_WORKDIR, shell: true });
+  if (result.code !== 0) throw new Error(`Football analytics write failed: ${String(`${result.stderr}\n${result.stdout}`).trim().slice(0, 1800)}`);
 }
 
 async function applyBatches(records) {
@@ -270,10 +274,6 @@ async function run(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   if (options.help) { console.log(usage()); return; }
   if (options.apply && !options.analytics) throw new Error('--apply requires --analytics.');
-  if (options.apply) {
-    const linkedRef = fs.readFileSync(path.join(ANALYTICS_WORKDIR, 'supabase', '.temp', 'project-ref'), 'utf8').trim();
-    if (linkedRef !== EXTRA_PROJECT_REF) throw new Error(`Linked analytics target ${linkedRef || '(missing)'} is not ${EXTRA_PROJECT_REF}.`);
-  }
 
   const manifest = loadManifest(options.manifest);
   if (manifest.conflicts.length) throw new Error(`Fail-closed: ${manifest.conflicts.length} PFR IDs have conflicting approved bulk URLs.`);
@@ -311,7 +311,7 @@ async function run(argv = process.argv.slice(2)) {
   const writeResult = options.apply ? await applyBatches(sourceRecords) : { appliedRecords: 0, statements: 0 };
   const report = {
     mode: options.apply ? 'apply' : 'dry-run',
-    target: options.apply ? EXTRA_PROJECT_URL : null,
+    target: options.apply ? FOOTBALL_TARGET.projectUrl : null,
     profileStart: options.profileStart,
     manifest: {
       path: path.relative(ROOT, options.manifest),
