@@ -6,6 +6,7 @@ const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
+  "iili.io",
 ]);
 
 function requireSeasonEndYear(value) {

@@ -177,6 +177,7 @@ const ROLE_BALANCE_LABELS = Object.freeze({
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
+  "iili.io",
 ]);
 const TRUSTED_SOURCE_HOSTS = new Set(["www.basketball-reference.com"]);
 
