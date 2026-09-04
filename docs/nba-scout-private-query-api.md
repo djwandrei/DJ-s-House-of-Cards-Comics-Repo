@@ -47,6 +47,12 @@ only the validated `all` context; team and player on/off queries retain all
 validated source contexts. `transition:non_provider_fastbreak` remains a
 non-provider proxy and must not be relabeled as verified half-court data.
 
+The compact lineup projection retains its model label, player count, RAPM sum,
+observed context, raw and prior-shrunk synergy, projected rating, and compact
+reliability/caveat fields. It deliberately omits raw possession contexts,
+archive paths, and nested calculation diagnostics. A non-publishable projection
+may be stored for provenance, but it must not become an exact-five model bonus.
+
 ## Deploy and import
 
 First apply the dedicated analytics migration after authenticating the Supabase

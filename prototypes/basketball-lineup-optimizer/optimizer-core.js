@@ -1500,6 +1500,25 @@ function buildEffectiveObjectiveWeights(requestedWeights, availableMetrics) {
 }
 
 /**
+ * Translate the visible game-plan priorities into the offense/defense mix for
+ * the optional Scout RAPM layer. This is deliberately a family split, not a
+ * new opaque "Scout score": the visitor can still see and control every
+ * underlying basketball priority. An empty custom objective stays neutral.
+ */
+function scoutFamilyWeightsFrom(normalizedWeights) {
+  const sum = (metrics) => metrics.reduce(
+    (total, metric) => total + Math.max(0, Number(normalizedWeights?.[metric]) || 0),
+    0,
+  );
+  const offense = sum(SCOUT_OFFENSE_OBJECTIVE_METRICS);
+  const defense = sum(SCOUT_DEFENSE_OBJECTIVE_METRICS);
+  const total = offense + defense;
+  return total > 0
+    ? { offense: offense / total, defense: defense / total }
+    : { offense: 0.5, defense: 0.5 };
+}
+
+/**
  * Build the minute-aware companion to the ordinary per-36 score. The static
  * score remains the expected profile at the rotation's common workload. When a
  * player receives more minutes than that profile is established for, only the
@@ -1520,6 +1539,7 @@ function buildRoleConditionedProjectionPlan(
   normalizedWeights,
   metricResult,
   projectionParameters = DEFAULT_PROJECTION_PARAMETERS,
+  scoutMinuteObjective = null,
 ) {
   const referenceMinutes = finiteNonNegative(metricResult?.rateStability?.roleMinutesTarget);
   const stabilizedMetrics = Array.isArray(metricResult?.rateStability?.stabilizedMetrics)
@@ -1594,6 +1614,25 @@ function buildRoleConditionedProjectionPlan(
       expandedMetrics[metric] = expandedPercentile;
       establishedScore += establishedPercentile * weight;
       expandedScore += expandedPercentile * weight;
+    }
+    // Scout's player signal must obey the same diminishing-return objective as
+    // every other minute value. Blend the bounded Scout percentile into both
+    // the established and expanded score instead of adding a roster bonus once
+    // minutes have already been chosen. The same blend is used below when the
+    // reported score is reconciled to this exact allocation.
+    const scoutPercentile = Number(
+      scoutMinuteObjective?.scoutPercentilesById?.get(id),
+    );
+    const scoutBlend = Number(scoutMinuteObjective?.blend);
+    if (
+      scoutMinuteObjective?.applied &&
+      Number.isFinite(scoutPercentile) &&
+      Number.isFinite(scoutBlend) &&
+      scoutBlend > 0 &&
+      scoutBlend < 1
+    ) {
+      establishedScore = ((1 - scoutBlend) * establishedScore) + (scoutBlend * scoutPercentile);
+      expandedScore = ((1 - scoutBlend) * expandedScore) + (scoutBlend * scoutPercentile);
     }
     establishedScoresById.set(id, establishedScore);
     expandedScoresById.set(id, expandedScore);
@@ -2145,9 +2184,10 @@ function calculateObjective(
   // the additive player-level evidence a fan report needs to explain why a
   // specific player belongs in this exact result. The player totals reconcile
   // to the direct, user-weighted game-plan score (subject only to display
-  // rounding). Roster-wide role and Scout adjustments deliberately remain
-  // separate below: they describe the combination of five players and cannot
-  // honestly be assigned to one individual.
+  // rounding). A Scout player-minute delta is additive and belongs to the
+  // player that earned it. Only a role-complementarity or exact-five residual
+  // stays separate below, because those describe the group rather than one
+  // player.
   const playerContributions = Object.fromEntries(players.map((player) => [
     player.id,
     { scoreContribution: 0, metrics: {} },
@@ -2239,6 +2279,27 @@ function calculateObjective(
     };
   }
 
+  // The allocator ranks on the Scout-blended minute utility when a complete,
+  // reliable Scout dataset is deliberately selected. Reconstruct that exact
+  // player-level delta here so the reported score, player explanation, and
+  // exact allocation all reconcile. This is intentionally not a new visible
+  // objective weight: the visitor's box-score priorities chose the Scout
+  // offense/defense split before this calculation.
+  const scoutMinuteAdjustmentPoints =
+    Number(modelAdjustments?.scoutImpact?.minuteAdjustmentPoints) || 0;
+  const scoutPlayerMinuteAdjustments =
+    modelAdjustments?.scoutImpact?.playerMinuteAdjustmentPointsById;
+  if (scoutPlayerMinuteAdjustments && typeof scoutPlayerMinuteAdjustments === "object") {
+    for (const player of players) {
+      const adjustment = Number(scoutPlayerMinuteAdjustments[player.id]) || 0;
+      if (adjustment === 0) continue;
+      const playerEntry = playerContributions[player.id];
+      playerEntry.scoreContribution += adjustment;
+      playerEntry.scoutMinuteAdjustmentPoints = round(adjustment);
+    }
+  }
+  rawScore += scoutMinuteAdjustmentPoints;
+
   const benchmarkFit = calculateBenchmarkFit(
     players,
     benchmarkIndexesByPlayerId,
@@ -2253,11 +2314,13 @@ function calculateObjective(
     rawScore,
     score: round(rawScore),
     // Expose the two pieces separately for API consumers and future reports.
-    // `score` is the ranking result; `directGamePlanScore` is the sum of the
-    // per-player metric contributions; `rosterAdjustmentPoints` is the small,
-    // explicitly opt-in group-level context that is not attributed to a player.
+  // `score` is the ranking result; `directGamePlanScore` is the sum of the
+  // per-player metric and any selected Scout-minute contributions;
+  // `rosterAdjustmentPoints` is the small, explicitly opt-in group-level
+  // context that is not attributed to a player.
     directGamePlanScore: round(rawScore - adjustmentPoints),
     rosterAdjustmentPoints: round(adjustmentPoints),
+    scoutMinuteAdjustmentPoints: round(scoutMinuteAdjustmentPoints),
     // 0–100 values are retained for renderer/API compatibility. The former
     // readiness fields deliberately contain no hidden score contribution.
     strategyFitScore: round(rawScore / strategyShare),
@@ -6054,13 +6117,13 @@ export function optimizeLineups(players, config = {}) {
         : "historical-team-profile-v1",
       scoutImpactLayer: normalizedConfig.modelMode === "historical"
         ? "separate-not-active"
-        : "scout-impact-v1",
+        : "scout-impact-v2",
       // Possession-level RAPM and lineup synergy have different units,
       // uncertainty, and interaction terms from the box-score benchmark. Explicitly
       // reserve a separate layer so a later Scout model cannot silently alter
       // this result while still being labelled as the historical-rate model.
       scoutSeparationReason:
-        "Verified possession-level player impact and lineup synergy require a separately versioned model and are not blended into Fit vs. NBA Baseline.",
+        "Scout RAPM is a separately versioned, reliability-shrunk input to player-minute selection. Fit vs. NBA Baseline remains a box-score comparison index and is never relabeled as Scout impact.",
     },
     inputPlayers: normalizedPlayers.length,
     eligiblePlayers: eligiblePlayers.length,
@@ -6167,7 +6230,9 @@ export function optimizeLineups(players, config = {}) {
     // actually available for the current source.
     baseDiagnostics.rotationRateStabilityEvidence = normalizedMetricResult.rateStability;
   }
-  const playerStrategyScores = new Map(
+  // Keep the historical game-plan score separate so the Scout layer can report
+  // its exact minute-level delta instead of hiding it inside a composite value.
+  const basePlayerStrategyScores = new Map(
     eligiblePlayers.map((player) => [
       player.id,
       OBJECTIVE_METRICS.reduce(
@@ -6183,6 +6248,21 @@ export function optimizeLineups(players, config = {}) {
     normalizedConfig.scoutEvidence,
     { mode: normalizedConfig.modelMode },
   );
+  const scoutFamilyWeights = scoutFamilyWeightsFrom(
+    effectiveObjective.normalizedWeights,
+  );
+  const scoutMinuteObjective = buildScoutMinuteObjective(
+    eligiblePlayers,
+    scoutImpactModel,
+    basePlayerStrategyScores,
+    {
+      offenseWeight: scoutFamilyWeights.offense,
+      defenseWeight: scoutFamilyWeights.defense,
+    },
+  );
+  // This is the actual player-minute objective passed to the exact allocator.
+  // In historical mode it is an unchanged copy of the user-game-plan score.
+  const playerStrategyScores = scoutMinuteObjective.scoresById;
   baseDiagnostics.compositionModel = {
     version: lineupRoleModel.version,
     balance: normalizedConfig.roleBalance,
@@ -6195,6 +6275,13 @@ export function optimizeLineups(players, config = {}) {
     available: scoutImpactModel.available,
     applied: scoutImpactModel.applied,
     missingPlayerIds: [...scoutImpactModel.missingPlayerIds],
+    minuteObjective: {
+      applied: scoutMinuteObjective.applied,
+      blend: scoutMinuteObjective.blend,
+      offenseWeight: scoutMinuteObjective.offenseWeight,
+      defenseWeight: scoutMinuteObjective.defenseWeight,
+      reason: scoutMinuteObjective.reason,
+    },
     reason: scoutImpactModel.reason,
   };
   if (normalizedConfig.modelMode !== "historical" && !scoutImpactModel.available) {
@@ -6207,45 +6294,6 @@ export function optimizeLineups(players, config = {}) {
     });
   }
 
-  /**
-   * Candidate-wide adjustments are intentionally kept outside the separable
-   * per-minute flow objective. Role complementarity and Scout evidence depend
-   * only on the complete roster. Team usage is retained as an explanatory
-   * audit because it depends on the final minute plan; applying it only after
-   * the separable minute allocator would make the reported score differ from
-   * the objective that actually chose those minutes. Individual usage already
-   * affects the pre-allocation responsibility projection above. A future exact
-   * usage-allocation layer may promote this audit into the minute objective.
-   */
-  function candidateModelAdjustments(selectedPlayers, rotation = null, { upperBound = false } = {}) {
-    const roleFit = scoreLineupRoleFit(selectedPlayers, lineupRoleModel, {
-      objectiveWeights: effectiveObjective.normalizedWeights,
-      balance: normalizedConfig.roleBalance,
-    });
-    const scoutImpact = scoreScoutCandidate(selectedPlayers, scoutImpactModel);
-    const minutesById = rotation?.byId || Object.fromEntries(
-      selectedPlayers.map((player) => [player.id, 48]),
-    );
-    const usageDemand = projectRotationUsageDemand(
-      selectedPlayers,
-      minutesById,
-      projectionParameters,
-    );
-    return {
-      totalAdjustmentPoints:
-        (Number(roleFit.adjustmentPoints) || 0) +
-        (Number(scoutImpact.adjustmentPoints) || 0),
-      roleFit,
-      usageDemand: {
-        ...usageDemand,
-        scoringAdjustmentPoints: 0,
-        explanationOnly: true,
-      },
-      scoutImpact,
-      projectionRisk: normalizedConfig.projectionRisk,
-      upperBound,
-    };
-  }
   const rotationRankingModel = normalizedConfig.mode === "rotation"
     ? buildRotationHistoricalReadiness(
       eligiblePlayers,
@@ -6304,6 +6352,7 @@ export function optimizeLineups(players, config = {}) {
         effectiveObjective.normalizedWeights,
         normalizedMetricResult,
         projectionParameters,
+        scoutMinuteObjective,
       )
       : null;
   // Keep the allocation objective and descriptive production projection as two
@@ -6334,6 +6383,106 @@ export function optimizeLineups(players, config = {}) {
         candidateCombinationLimitApplied: false,
         reason: assignedRoleProjectionReason,
       },
+    };
+  }
+
+  /**
+   * Return the exact Scout delta represented by a completed minute plan.
+   *
+   * The regular score is the visitor's historical/box-score objective. The
+   * Scout player signal is a bounded blend of that score and a complete,
+   * reliability-shrunk RAPM percentile. When the role-conditioned allocator is
+   * active, calculate the difference from the same marginal curve rather than
+   * multiplying a static value by minutes. That makes the reported delta
+   * reconcile to the objective that actually assigned the minutes.
+   */
+  function scoutMinuteScoreUnitsFor(selectedPlayers, rotation = null) {
+    if (!scoutMinuteObjective.applied) return null;
+    const minutesById = rotation?.byId || Object.fromEntries(
+      selectedPlayers.map((player) => [player.id, 48]),
+    );
+    const usesRoleConditionedScout = Boolean(
+      rotation?.diagnostics?.roleConditionedScoring?.applied &&
+      roleConditionedProjectionPlan,
+    );
+    const unitsById = {};
+    for (const player of selectedPlayers) {
+      const assignedMinutes = Math.max(0, Number(minutesById[player.id]) || 0);
+      if (!(assignedMinutes > 0)) {
+        unitsById[player.id] = 0;
+        continue;
+      }
+      if (usesRoleConditionedScout) {
+        const blendedUnits = roleConditionedScoreUnits(
+          player.id,
+          assignedMinutes,
+          roleConditionedProjectionPlan,
+        );
+        const historicalUnits = OBJECTIVE_METRICS.reduce(
+          (total, metric) => total + (
+            roleConditionedMetricScoreUnits(
+              player,
+              metric,
+              assignedMinutes,
+              normalizedMetrics,
+              roleConditionedProjectionPlan,
+            ) * effectiveObjective.normalizedWeights[metric]
+          ),
+          0,
+        );
+        unitsById[player.id] = Number.isFinite(blendedUnits)
+          ? blendedUnits - historicalUnits
+          : 0;
+      } else {
+        const blendedScore = Number(playerStrategyScores.get(player.id));
+        const historicalScore = Number(basePlayerStrategyScores.get(player.id));
+        unitsById[player.id] = Number.isFinite(blendedScore) && Number.isFinite(historicalScore)
+          ? (blendedScore - historicalScore) * assignedMinutes
+          : 0;
+      }
+    }
+    return unitsById;
+  }
+
+  /**
+   * Only non-separable combination context stays here. Player Scout RAPM is
+   * already inside `playerStrategyScores` and the role-conditioned minute
+   * curve above. A verified exact-five residual remains separate because it
+   * cannot be honestly assigned to one player or to an eight-to-twelve-player
+   * rotation roster.
+   */
+  function candidateModelAdjustments(selectedPlayers, rotation = null, { upperBound = false } = {}) {
+    const roleFit = scoreLineupRoleFit(selectedPlayers, lineupRoleModel, {
+      objectiveWeights: effectiveObjective.normalizedWeights,
+      balance: normalizedConfig.roleBalance,
+    });
+    const minutesById = rotation?.byId || Object.fromEntries(
+      selectedPlayers.map((player) => [player.id, 48]),
+    );
+    const scoutImpact = scoreScoutCandidate(selectedPlayers, scoutImpactModel, {
+      minutesById,
+      minuteScoreUnitsById: scoutMinuteScoreUnitsFor(selectedPlayers, rotation),
+    });
+    const usageDemand = projectRotationUsageDemand(
+      selectedPlayers,
+      minutesById,
+      projectionParameters,
+    );
+    return {
+      totalAdjustmentPoints:
+        (Number(roleFit.adjustmentPoints) || 0) +
+        // Minute-level Scout value is already inside the exact allocation and
+        // score. Only an eligible exact-five interaction residual belongs here.
+        (Number(scoutImpact.exactLineupAdjustmentPoints) || 0),
+      roleFit,
+      usageDemand: {
+        ...usageDemand,
+        scoringAdjustmentPoints: 0,
+        explanationOnly: true,
+      },
+      scoutImpact,
+      projectionRisk: normalizedConfig.projectionRisk,
+      upperBound,
     };
   }
   // Production-threshold proofs retain a bounded state search *inside each
@@ -6986,6 +7135,12 @@ export function optimizeLineups(players, config = {}) {
       playerIds: alternative.players.map((player) => player.id),
       players: alternative.players,
       score: objective.score,
+      // Keep the exact score decomposition on every ranked alternative. This
+      // lets a Detailed report explain the player-minute Scout effect without
+      // pretending a group-only exact-five residual belongs to one player.
+      directGamePlanScore: objective.directGamePlanScore,
+      rosterAdjustmentPoints: objective.rosterAdjustmentPoints,
+      scoutMinuteAdjustmentPoints: objective.scoutMinuteAdjustmentPoints,
       strategyFitScore: objective.strategyFitScore,
       historicalReadinessIndex: objective.historicalReadinessIndex,
       strategyScore: objective.strategyScore,

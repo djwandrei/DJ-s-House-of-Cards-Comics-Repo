@@ -49,6 +49,36 @@ function sourceShard() {
       minutes: 20,
       exposure: { games: 1, possessions: 100 },
       continuity: { gamesUsed: 1 },
+      // This mirrors the current derived Scout package. The importer must
+      // retain the projection fields Lineup Lab needs while discarding the
+      // raw-shaped field below before any private RPC call.
+      projection: {
+        status: 'available',
+        model: 'fixture-possession-lineup-v1',
+        playerCount: 2,
+        rapmSumPer100: 1.25,
+        averageOpponentLineupRapmPer100: -0.2,
+        homeCourtExposureAdjustmentPer100: 0.1,
+        expectedObservedNetRatingPer100: 1.55,
+        contextAdjustmentStatus: 'applied',
+        observedNetRating: 1.5,
+        observedPossessions: 100,
+        rawObservedSynergyPer100: 0.5,
+        synergyPriorPossessions: 400,
+        synergyWeight: 0.2,
+        shrunkSynergyPer100: 0.1,
+        projectedNetRatingPer100: 1.35,
+        projectedObservedContextNetRatingPer100: 1.45,
+        caveat: 'fixture only',
+        reliability: {
+          possessions: 100,
+          grade: 'medium',
+          publishable: true,
+          reliabilityScore: 0.6,
+          method: 'fixture',
+        },
+        rawPbp: { forbidden: true },
+      },
       contexts: { all: metric() },
     }],
     playerOnOff: [{
@@ -228,6 +258,34 @@ test('guarded apply uses only private Storage and RPC endpoints and strips raw-s
     assert.equal(requestBodies.includes('providerPayload'), false);
     assert.equal(requestBodies.includes('rawPbp'), false);
     assert.equal(requestBodies.includes('aOnBOn'), true);
+    const shardCall = calls.find((call) => call.url.includes('/rpc/ingest_nba_scout_archive_shard'));
+    const shardPayload = JSON.parse(shardCall.options.body).p_payload;
+    assert.deepEqual(shardPayload.lineups[0].projection, {
+      status: 'available',
+      model: 'fixture-possession-lineup-v1',
+      playerCount: 2,
+      rapmSumPer100: 1.25,
+      averageOpponentLineupRapmPer100: -0.2,
+      homeCourtExposureAdjustmentPer100: 0.1,
+      expectedObservedNetRatingPer100: 1.55,
+      contextAdjustmentStatus: 'applied',
+      observedNetRating: 1.5,
+      observedPossessions: 100,
+      rawObservedSynergyPer100: 0.5,
+      synergyPriorPossessions: 400,
+      synergyWeight: 0.2,
+      shrunkSynergyPer100: 0.1,
+      projectedNetRatingPer100: 1.35,
+      projectedObservedContextNetRatingPer100: 1.45,
+      caveat: 'fixture only',
+      reliability: {
+        possessions: 100,
+        grade: 'medium',
+        publishable: true,
+        reliabilityScore: 0.6,
+        method: 'fixture',
+      },
+    });
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value === undefined) delete process.env[key];

@@ -3,13 +3,23 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { COMPACT_QUERY_KEYS } from '../import-local-scout-analytics.mjs';
 
-const migrationUrl = new URL(
-  '../../supabase-analytics/supabase/migrations/20260902090058_nba_scout_archive_query_index.sql',
-  import.meta.url,
-);
+// The base migration establishes the private schema/RPC boundary. Later
+// forward-only migrations may replace the compact JSON allowlist, so validate
+// the final function definition rather than accidentally comparing the
+// importer to a historical contract.
+const migrationUrls = [
+  new URL(
+    '../../supabase-analytics/supabase/migrations/20260902090058_nba_scout_archive_query_index.sql',
+    import.meta.url,
+  ),
+  new URL(
+    '../../supabase-analytics/supabase/migrations/20260903025501_expand_nba_scout_projection_allowlist.sql',
+    import.meta.url,
+  ),
+];
 
 test('Scout query index is private, immutable, and service-role RPC-only', async () => {
-  const rawSql = await readFile(migrationUrl, 'utf8');
+  const rawSql = (await Promise.all(migrationUrls.map((url) => readFile(url, 'utf8')))).join('\n');
   const sql = rawSql.toLowerCase();
   const tables = [
     'nba_scout_archive_imports',
@@ -52,7 +62,8 @@ test('Scout query index is private, immutable, and service-role RPC-only', async
   assert.match(sql, /nba_scout_compact_jsonb_is_safe/);
   assert.doesNotMatch(sql, /grant execute on function public\.get_nba_scout_[^(]+\([^;]+\) to anon, authenticated;/);
 
-  const allowlist = /key <> all \(array\[(.*?)\]::text\[\]\)/s.exec(rawSql);
+  const allowlists = [...rawSql.matchAll(/key <> all \(array\[(.*?)\]::text\[\]\)/gs)];
+  const allowlist = allowlists[allowlists.length - 1];
   assert.ok(allowlist, 'database compact-object allowlist must be present');
   const databaseKeys = new Set([...allowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
   assert.deepEqual(databaseKeys, COMPACT_QUERY_KEYS, 'importer and database compact-object allowlists must stay identical');

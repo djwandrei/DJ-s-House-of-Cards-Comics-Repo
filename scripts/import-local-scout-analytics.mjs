@@ -101,6 +101,15 @@ export const COMPACT_QUERY_KEYS = new Set([
   'sampleSizeTier', 'ridgeReliabilityProxy', 'exposureShareOfAvailablePossessions',
   'offensiveObservationCount', 'defensiveObservationCount', 'offensiveRidgeReliabilityProxy',
   'defensiveRidgeReliabilityProxy',
+  // Compact Scout lineup-projection contract. These are derived scalar fields
+  // only; raw possession contexts, event rows, archive paths, and nested model
+  // diagnostics remain disallowed by the importer and database backstop.
+  'model', 'playerCount', 'rapmSumPer100', 'averageOpponentLineupRapmPer100',
+  'homeCourtExposureAdjustmentPer100', 'expectedObservedNetRatingPer100',
+  'contextAdjustmentStatus', 'observedNetRating', 'observedPossessions',
+  'rawObservedSynergyPer100', 'synergyPriorPossessions', 'synergyWeight',
+  'shrunkSynergyPer100', 'projectedNetRatingPer100',
+  'projectedObservedContextNetRatingPer100', 'caveat',
 ]);
 
 function usage() {
@@ -423,7 +432,8 @@ function compactContinuity(value) {
 }
 
 function compactProjection(value) {
-  return pickScalars(value, [
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const result = pickScalars(source, [
     'modelVersion',
     'expectedMinutes',
     'expectedNetRating',
@@ -431,7 +441,36 @@ function compactProjection(value) {
     'defensiveRating',
     'netRating',
     'reliabilityScore',
+    // Current Scout package fields. Keep this list intentionally narrow: it
+    // preserves the derived projection and its sample/prior provenance while
+    // omitting raw contexts and nested calculation detail.
+    'status',
+    'model',
+    'playerCount',
+    'rapmSumPer100',
+    'averageOpponentLineupRapmPer100',
+    'homeCourtExposureAdjustmentPer100',
+    'expectedObservedNetRatingPer100',
+    'contextAdjustmentStatus',
+    'observedNetRating',
+    'observedPossessions',
+    'rawObservedSynergyPer100',
+    'synergyPriorPossessions',
+    'synergyWeight',
+    'shrunkSynergyPer100',
+    'projectedNetRatingPer100',
+    'projectedObservedContextNetRatingPer100',
+    'caveat',
   ]);
+  const reliability = pickScalars(source.reliability, [
+    'possessions',
+    'grade',
+    'publishable',
+    'reliabilityScore',
+    'method',
+  ]);
+  if (Object.keys(reliability).length > 0) result.reliability = reliability;
+  return result;
 }
 
 function compactProfile(row) {

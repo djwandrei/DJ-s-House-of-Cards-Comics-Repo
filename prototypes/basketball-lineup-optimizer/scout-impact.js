@@ -65,10 +65,26 @@ function playerEvidence(source, id) {
   return mapValue(source, id) || null;
 }
 
+/**
+ * Private `get_nba_scout_rapm` rows expose the RAPM components at their top
+ * level, while the reliability proxy belongs in a compact `metrics` object.
+ * Accept only those two bounded shapes. This does not recursively search an
+ * arbitrary payload, which would make an unrelated nested number silently
+ * qualify a player for Scout mode.
+ */
+function evidenceObjects(row) {
+  const nestedMetrics = row?.metrics;
+  return nestedMetrics && typeof nestedMetrics === "object" && !Array.isArray(nestedMetrics)
+    ? [row, nestedMetrics]
+    : [row];
+}
+
 function impactValue(row, side) {
-  for (const alias of PLAYER_IMPACT_ALIASES[side]) {
-    const value = finite(row?.[alias]);
-    if (value !== null) return value;
+  for (const source of evidenceObjects(row)) {
+    for (const alias of PLAYER_IMPACT_ALIASES[side]) {
+      const value = finite(source?.[alias]);
+      if (value !== null) return value;
+    }
   }
   return null;
 }
@@ -77,9 +93,11 @@ function reliabilityValue(row) {
   // The current compact private RAPM response stores its stability proxy in
   // `metrics.ridgeReliabilityProxy`; test/dev callers may use `reliability`.
   // Require an explicit value rather than granting an omitted value full trust.
-  for (const alias of ["reliability", "ridgeReliabilityProxy", "reliabilityProxy"]) {
-    const value = finite(row?.[alias]);
-    if (value !== null) return clamp(value, 0, 1);
+  for (const source of evidenceObjects(row)) {
+    for (const alias of ["reliability", "ridgeReliabilityProxy", "reliabilityProxy"]) {
+      const value = finite(source?.[alias]);
+      if (value !== null) return clamp(value, 0, 1);
+    }
   }
   return null;
 }

@@ -6,38 +6,38 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260902f";
+} from "./optimizer-config.js?v=20260904a";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260902f";
+} from "./player-data.js?v=20260904a";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260902g";
+} from "./supabase-nba-data.js?v=20260904a";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260902f";
+} from "./fan-analytics.js?v=20260904a";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260902f";
+} from "./opponent-gameplan.js?v=20260904a";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260902f";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260902f";
+} from "./scenario-url.js?v=20260904a";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260904a";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260902f";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260902f", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260904a";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260904a", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -560,7 +560,7 @@ function createCardSearchLink(player) {
 
 function safeExternalImageUrl(value) {
   // Media URLs are supplied by the verified database view. Restricting them to
-  // the approved source and hosted-media domains prevents an imported value from
+  // the known Basketball Reference hosts prevents an imported value from
   // introducing mixed content, a scriptable URL, or an unrelated tracking
   // image into a shopper-facing image element.
   try {

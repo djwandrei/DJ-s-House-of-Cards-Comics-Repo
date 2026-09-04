@@ -1931,3 +1931,93 @@ test("historical-aware allocation fails closed when only part of the selected ro
   assert.equal(openWhatIf.ok, true);
   assert.equal(openWhatIf.totalMinutes, 240);
 });
+
+test("complete Scout RAPM changes exact minutes and reconciles to the returned player evidence", () => {
+  // All eight players have intentionally identical box-score profiles. The
+  // only difference is the complete, reliability-qualified Scout RAPM signal.
+  // That makes this a direct regression test for the product rule: Scout must
+  // alter the exact player-minute objective, not merely decorate a lineup that
+  // the historical objective had already selected.
+  const players = Array.from({ length: 8 }, (_, index) => player(`scout-${index + 1}`, {
+    positions: ["G", "F", "C"],
+    minutes: 30,
+    points: 15,
+    blocks: 0.5,
+  }));
+  const scoutEvidence = {
+    players: Object.fromEntries(players.map((item, index) => [item.id, {
+      // Player one is offense-first; player eight is defense-first. The six
+      // middle players are neutral, and every row is explicitly eligible and
+      // fully reliable so no missing-data fallback can explain the outcome.
+      offensiveRapmPer100: index === 0 ? 8 : index === 7 ? -8 : 0,
+      defensiveRapmPer100: index === 0 ? -8 : index === 7 ? 8 : 0,
+      ridgeReliabilityProxy: 1,
+      displayEligible: true,
+    }])),
+  };
+  const baseConfig = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 1,
+    minGames: 0,
+    minMinutes: 0,
+    positionMinimums: { G: 0, F: 0, C: 0 },
+    modelMode: "scout",
+    scoutEvidence,
+    rotationOptions: {
+      minMinutes: 0,
+      maxMinutes: 48,
+      minutePlan: "openWhatIf",
+      scoringBasis: "per36",
+      rateStability: "raw",
+      positionMinuteRequirements: STANDARD_ROLE_MINUTES,
+    },
+  };
+  const offenseFirst = optimizeLineups(players, {
+    ...baseConfig,
+    weights: { points: 1 },
+  });
+  const defenseFirst = optimizeLineups(players, {
+    ...baseConfig,
+    weights: { blocks: 1 },
+  });
+  const historical = optimizeLineups(players, {
+    ...baseConfig,
+    modelMode: "historical",
+    weights: { points: 1 },
+  });
+
+  for (const result of [offenseFirst, defenseFirst, historical]) {
+    assert.equal(result.ok, true);
+    assert.equal(result.best.rotation.totalMinutes, 240);
+  }
+  assert.equal(offenseFirst.diagnostics.scoutImpactModel.minuteObjective.applied, true);
+  assert.equal(offenseFirst.diagnostics.scoutImpactModel.minuteObjective.blend, 0.12);
+  assert.ok(
+    offenseFirst.best.rotation.byId["scout-1"] > offenseFirst.best.rotation.byId["scout-8"],
+    "offense-first game plans should favor the offense-first RAPM player",
+  );
+  assert.ok(
+    defenseFirst.best.rotation.byId["scout-8"] > defenseFirst.best.rotation.byId["scout-1"],
+    "defense-first game plans should favor the defense-first RAPM player",
+  );
+  assert.ok(
+    offenseFirst.best.rotation.byId["scout-1"] > historical.best.rotation.byId["scout-1"],
+    "the Scout minute objective must change the allocation, not only the displayed score",
+  );
+
+  const playerContributionTotal = Object.values(offenseFirst.best.playerContributions)
+    .reduce((total, contribution) => total + contribution.scoreContribution, 0);
+  assert.ok(Math.abs(
+    playerContributionTotal + offenseFirst.best.rosterAdjustmentPoints - offenseFirst.best.score,
+  ) < 0.00002);
+  assert.ok(Math.abs(
+    offenseFirst.best.scoutMinuteAdjustmentPoints -
+      offenseFirst.best.modelAdjustments.scoutImpact.minuteAdjustmentPoints,
+  ) < 0.000001);
+  assert.ok(
+    Object.values(offenseFirst.best.playerContributions)
+      .some((contribution) => Number.isFinite(contribution.scoutMinuteAdjustmentPoints)),
+    "the detailed response should identify which player-minute contributions came from Scout evidence",
+  );
+});
