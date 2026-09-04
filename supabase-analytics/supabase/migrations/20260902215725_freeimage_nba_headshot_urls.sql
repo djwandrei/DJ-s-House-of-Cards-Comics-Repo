@@ -1,12 +1,8 @@
 -- Repoint NBA headshots to the user's verified FreeImage direct-image URLs.
 -- Original provider provenance remains in source_name/source_url.
--- Twelve byte-identical provider placeholder images are deliberately excluded;
--- a player must have one unique, verified direct image before this migration
--- changes its asset URL.
 do $$
 declare
   changed_rows integer;
-  expected_rows constant integer := 2313;
 begin
 with freeimage_headshots(player_id, asset_url) as (
 values
@@ -575,6 +571,7 @@ values
   ('3cff7253-9b7e-484f-b951-6215aae136b5'::uuid, 'https://iili.io/nHTXmeR.jpg'),
   ('3d039251-c255-4414-a87a-4031ef94b2b8'::uuid, 'https://iili.io/nHznuI9.jpg'),
   ('3d07d54e-b91e-4ab7-a8e5-48c162b53b50'::uuid, 'https://iili.io/nHTyM21.jpg'),
+  ('3d11008d-3acf-438e-bc74-e6887094513e'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('3d47dc12-1a60-4521-998c-a4ef1c4b43b9'::uuid, 'https://iili.io/nHTWvup.jpg'),
   ('3d604b65-a537-47d6-bb38-3c546ee0dd92'::uuid, 'https://iili.io/nHTp3Dx.jpg'),
   ('3d6c6cbc-17a5-4e24-8579-5c7519b11ff9'::uuid, 'https://iili.io/nHzCpgR.jpg'),
@@ -621,6 +618,7 @@ values
   ('42944e0f-2586-4ff7-8a54-1aceaeaa60e0'::uuid, 'https://iili.io/nHu3Kk7.jpg'),
   ('42a6bb6b-895c-4543-9367-82f0f7d8209b'::uuid, 'https://iili.io/nHT5ETG.jpg'),
   ('42dc9790-ceac-48df-9ec6-d7467afb4b1b'::uuid, 'https://iili.io/nHTv7P2.jpg'),
+  ('42ef5289-b851-42c8-8078-3d5218fb7639'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('42f4fef8-d569-41f2-bf4e-3f72f6cf0424'::uuid, 'https://iili.io/nHzGzvI.jpg'),
   ('432cd30e-ec34-4f11-8e3b-95c4d2f77bff'::uuid, 'https://iili.io/nHu3QGj.jpg'),
   ('43378d04-1008-4a4a-94f9-da1b2d02ac27'::uuid, 'https://iili.io/nHzZtEu.jpg'),
@@ -951,6 +949,7 @@ values
   ('66a86040-713b-40c7-ab9b-6f7bd199413b'::uuid, 'https://iili.io/nHT8Q1V.jpg'),
   ('66aab1cb-fff4-461f-8426-0d30f29a3c56'::uuid, 'https://iili.io/nHzBd2p.jpg'),
   ('66ba1e9b-9f2d-4134-8d6b-41424f2a4d87'::uuid, 'https://iili.io/nHzrzIs.jpg'),
+  ('66ce6398-74e5-440f-9777-16490ff9ff38'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('66ef717e-aee8-4207-aeba-f841649695de'::uuid, 'https://iili.io/nHT8Sd7.jpg'),
   ('6701e025-5d48-4ed8-a230-469393c6f5b1'::uuid, 'https://iili.io/nHuF9u1.jpg'),
   ('6724551b-15cb-456c-8da0-2c2f0c86d2a8'::uuid, 'https://iili.io/nHzjPPn.jpg'),
@@ -1136,6 +1135,7 @@ values
   ('799cd665-d0d2-4cb3-b7ba-17a5131a4b73'::uuid, 'https://iili.io/nHTPSGs.jpg'),
   ('79a4d7d2-db4c-4101-9232-d5dd1e774541'::uuid, 'https://iili.io/nHTY0Xf.jpg'),
   ('79b93f7f-ff3a-4893-bfff-ccc0dec1880a'::uuid, 'https://iili.io/nHTmN9a.jpg'),
+  ('79d70163-b747-4169-988e-fd95b4a0a94e'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('79fb9a53-b902-4f57-8117-2683d68d72b2'::uuid, 'https://iili.io/nHu3IrQ.jpg'),
   ('7a3de96c-a45b-4d48-9322-ee4dfceb92e9'::uuid, 'https://iili.io/nHzCbqJ.jpg'),
   ('7a4518cd-2687-4f19-9afd-7cae0e8fdf23'::uuid, 'https://iili.io/nHTupGS.jpg'),
@@ -1708,6 +1708,7 @@ values
   ('bc930912-2c8e-4160-a8a3-624dd1bc8534'::uuid, 'https://iili.io/nHufUaR.jpg'),
   ('bcd93e83-7ce5-4aeb-9999-17e3c34a7a44'::uuid, 'https://iili.io/nHTMWOB.jpg'),
   ('bcf6672b-0576-4ac4-bcdb-5e3a87bc0523'::uuid, 'https://iili.io/nHzrC7t.jpg'),
+  ('bd0aafee-a4c6-454e-a508-855996415f22'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('bd0c0450-39e7-4001-9c35-cd744b481220'::uuid, 'https://iili.io/nHTPYvV.jpg'),
   ('bd3152db-072e-489e-80a2-dbec4cb37182'::uuid, 'https://iili.io/nHu3zEx.jpg'),
   ('bd34e920-1a20-4551-a04d-d7aecfd8fc21'::uuid, 'https://iili.io/nHTrpFR.jpg'),
@@ -1833,6 +1834,7 @@ values
   ('ca2b4328-452c-4f02-b29d-4937554eb5a3'::uuid, 'https://iili.io/nHu9uGp.jpg'),
   ('ca2c9dde-8f3a-4e57-aa29-e5cec0c42fbc'::uuid, 'https://iili.io/nHT8Wen.jpg'),
   ('ca621ec1-722d-41a4-a68c-23798d2d894c'::uuid, 'https://iili.io/nHzsf5B.jpg'),
+  ('ca88a549-c914-42ee-8eb7-61e9a0ce1d06'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('ca94d06f-2c8e-463d-b7fd-1b6cab0e80db'::uuid, 'https://iili.io/nHTk9If.jpg'),
   ('cacf1eca-4c2c-4867-ba68-c475a43beb92'::uuid, 'https://iili.io/nHTARwv.jpg'),
   ('cad2bb2f-e755-4fcd-9048-3681aca6966f'::uuid, 'https://iili.io/nHzGw6x.jpg'),
@@ -1872,6 +1874,7 @@ values
   ('ce11e038-8c65-4839-804b-2da225a8d5f7'::uuid, 'https://iili.io/nHTV1LX.jpg'),
   ('ce24cc16-5588-4d28-a658-2cf40fd41089'::uuid, 'https://iili.io/nHzQsfa.jpg'),
   ('ce289298-ad63-42a1-bb9d-91c6ac3d2790'::uuid, 'https://iili.io/nHTSuEl.jpg'),
+  ('ce469fa8-bf70-4abb-827a-bc1784e30fed'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('ce6af8b6-fd2e-48ce-81b9-230af149dbba'::uuid, 'https://iili.io/nHTPU6G.jpg'),
   ('ce705ee4-9269-4496-b4a9-bc3f88cd01f8'::uuid, 'https://iili.io/nHTVxX1.jpg'),
   ('ce8ad0e4-1e7c-46dc-8824-30b8556de7e9'::uuid, 'https://iili.io/nHT4z9S.jpg'),
@@ -2116,6 +2119,7 @@ values
   ('ea7d9137-fddc-4617-98a5-ca9a6590ea45'::uuid, 'https://iili.io/nHT66I1.jpg'),
   ('ea82c8aa-b0ab-4e04-9937-df4e12b8f39d'::uuid, 'https://iili.io/nHu2gzg.jpg'),
   ('ea95068e-6855-4004-a519-66fe70e83115'::uuid, 'https://iili.io/nHzBZF4.jpg'),
+  ('eaae582b-221c-4912-b418-e3f86f3d9783'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('eb10d37d-01c7-4de7-a91a-94a527d56da0'::uuid, 'https://iili.io/nHzZG1a.jpg'),
   ('eb4845e3-daf8-4316-bc90-1392a1ec6edf'::uuid, 'https://iili.io/nHTMefa.jpg'),
   ('eb6ba2f6-8304-47ab-a50d-89276287342d'::uuid, 'https://iili.io/nHzM4O7.jpg'),
@@ -2143,6 +2147,7 @@ values
   ('ed471e55-f7a6-4fde-8479-34c7a24414fd'::uuid, 'https://iili.io/nHznP4f.jpg'),
   ('ed567f7c-4546-416a-a3b1-5a779eadfd57'::uuid, 'https://iili.io/nHzsDrv.jpg'),
   ('ed62292f-069f-4039-a2e6-4b056ebf6588'::uuid, 'https://iili.io/nHTDv5J.jpg'),
+  ('edfc47da-159e-44bd-ad4c-2d8880d1d78c'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('ee02b832-7fa4-491b-9542-f6bde804303a'::uuid, 'https://iili.io/nHzkiva.jpg'),
   ('ee27a1ab-7670-42bb-a7a2-a58fbeb83781'::uuid, 'https://iili.io/nHzf8iv.jpg'),
   ('ee2b0385-48ec-4f19-9b0e-9d5beb9a934a'::uuid, 'https://iili.io/nHTYJiQ.jpg'),
@@ -2205,6 +2210,7 @@ values
   ('f493c290-9cc2-4278-971f-1678b254c39e'::uuid, 'https://iili.io/nHuJPja.jpg'),
   ('f4979328-dc9a-42d4-8402-2854bd6dcc0d'::uuid, 'https://iili.io/nHzQCPa.jpg'),
   ('f4c80144-143d-4750-b63b-94ab8fdd2677'::uuid, 'https://iili.io/nHz84ea.jpg'),
+  ('f4d4b87b-23a4-4329-8462-5c09cc7ceb3b'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('f4f8f680-114b-4963-9381-cfeeb0c90e32'::uuid, 'https://iili.io/nHTPOuI.jpg'),
   ('f5159ac7-1c1b-4c63-83fd-541b15e99ee0'::uuid, 'https://iili.io/nHTS8Cv.jpg'),
   ('f516dc45-28ed-4af7-a2ea-0107b5ab60c0'::uuid, 'https://iili.io/nHTAHF9.jpg'),
@@ -2232,6 +2238,7 @@ values
   ('f6a2016d-93b1-49aa-b359-34dad83523b1'::uuid, 'https://iili.io/nHz0xY7.jpg'),
   ('f6adb637-f8e4-4b2e-945c-3440b8b2669c'::uuid, 'https://iili.io/nHuFSVa.jpg'),
   ('f6be6131-991f-41cb-9312-e98d8eda07ee'::uuid, 'https://iili.io/nHz0mZb.jpg'),
+  ('f6f13b2e-c50d-4a4c-be32-236f725d4243'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('f7066d08-fa4e-46b4-8c5a-54dd095c2213'::uuid, 'https://iili.io/nHTiutt.jpg'),
   ('f70d4563-caac-440c-829d-4198001f8366'::uuid, 'https://iili.io/nHTsgkl.jpg'),
   ('f70f669e-0cd1-421b-a391-a76fbae54a84'::uuid, 'https://iili.io/nHzkvhQ.jpg'),
@@ -2281,6 +2288,7 @@ values
   ('fb3bd048-3238-4ce6-9d21-9c109d4eadd2'::uuid, 'https://iili.io/nHT8FRe.jpg'),
   ('fb4229a0-422f-427f-a870-f956ef947869'::uuid, 'https://iili.io/nHzCkxe.jpg'),
   ('fb4a759f-a71a-4390-ac3d-d52c35924abd'::uuid, 'https://iili.io/nHTSb6l.jpg'),
+  ('fb558776-bb88-4e7c-92f4-d4709d9be3a8'::uuid, 'https://iili.io/nHzfRl2.jpg'),
   ('fb65edf1-83de-4259-a322-9a443690f8b2'::uuid, 'https://iili.io/nHzUVwb.jpg'),
   ('fb678bc9-c1fc-4ae7-a724-9376857cf525'::uuid, 'https://iili.io/nHufm8l.jpg'),
   ('fb7d8f4e-b3f4-4033-8583-dbf9e144c2b2'::uuid, 'https://iili.io/nHzLB24.jpg'),
@@ -2323,27 +2331,16 @@ values
   ('ffa9fd2b-79f7-43da-9693-7e51f6d9ce0f'::uuid, 'https://iili.io/nHTXXb2.jpg'),
   ('ffbe870c-4c3e-4879-805a-de9d652ee115'::uuid, 'https://iili.io/nHzVC5N.jpg'),
   ('fffe47ae-5857-444c-9c12-6cfb1b8c8b4f'::uuid, 'https://iili.io/nHTUvR9.jpg')
-),
-source_validation as (
-  select
-    count(*)::integer as source_rows,
-    count(distinct player_id)::integer as unique_players,
-    count(distinct asset_url)::integer as unique_urls
-  from freeimage_headshots
 )
 update public.nba_media_assets as media
 set asset_url = freeimage_headshots.asset_url
 from freeimage_headshots
-cross join source_validation
 where media.player_id = freeimage_headshots.player_id
   and media.asset_kind = 'headshot'
-  and source_validation.source_rows = expected_rows
-  and source_validation.unique_players = expected_rows
-  and source_validation.unique_urls = expected_rows
   and media.asset_url is distinct from freeimage_headshots.asset_url;
 
 get diagnostics changed_rows = row_count;
-if changed_rows <> expected_rows then
-  raise exception 'Expected % NBA FreeImage headshot updates; changed %.', expected_rows, changed_rows;
+if changed_rows <> 2325 then
+  raise exception 'Expected 2325 NBA FreeImage headshot updates; changed %.', changed_rows;
 end if;
 end $$;

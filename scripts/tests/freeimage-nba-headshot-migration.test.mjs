@@ -23,24 +23,22 @@ function readMappings(sql) {
     .map((match) => ({ playerId: match[1], assetUrl: match[2] }));
 }
 
-test('NBA FreeImage headshot migration maps each verified player to one unique image', () => {
+test('NBA FreeImage headshot migration keeps its applied 2,325-row contract', () => {
   const sql = fs.readFileSync(MIGRATION_PATH, 'utf8');
   const mappings = readMappings(sql);
   const playerIds = new Set(mappings.map((mapping) => mapping.playerId));
   const assetUrls = new Set(mappings.map((mapping) => mapping.assetUrl));
 
-  assert.equal(mappings.length, 2313);
+  assert.equal(mappings.length, 2325);
   assert.equal(playerIds.size, mappings.length, 'player IDs must be unique');
-  assert.equal(assetUrls.size, mappings.length, 'direct image URLs must be unique');
-  assert.ok(
-    !assetUrls.has('https://iili.io/nHzfRl2.jpg'),
-    'the byte-identical provider placeholder must never become a player headshot',
+  assert.equal(
+    mappings.filter((mapping) => mapping.assetUrl === 'https://iili.io/nHzfRl2.jpg').length,
+    12,
+    'the applied migration includes the twelve provider placeholder rows repaired later',
   );
-  assert.match(sql, /expected_rows constant integer := 2313;/);
-  assert.match(sql, /count\(distinct player_id\)::integer as unique_players/);
-  assert.match(sql, /count\(distinct asset_url\)::integer as unique_urls/);
-  assert.match(sql, /source_validation\.unique_players = expected_rows/);
-  assert.match(sql, /source_validation\.unique_urls = expected_rows/);
+  assert.equal(assetUrls.size, 2314, 'the placeholder is the only repeated asset URL');
+  assert.match(sql, /if changed_rows <> 2325 then/);
+  assert.match(sql, /Expected 2325 NBA FreeImage headshot updates/);
 });
 
 test('NBA FreeImage placeholder repair is scoped to the twelve verified primary headshots', () => {
