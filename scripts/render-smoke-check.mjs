@@ -534,7 +534,7 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       window.dispatchEvent(new Event('resize'));
       await pause(150);
       const width = ${width};
-      const compactNav = width <= 1180;
+      const compactNav = width <= 900;
       const mobileFilters = width <= 900;
       const nav = document.getElementById('siteNav');
       const navToggle = document.getElementById('navToggle');
@@ -544,7 +544,7 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       const outcome = {
         width,
         actualWidth: window.innerWidth,
-        compactNavMatches: window.matchMedia('(max-width: 1180px)').matches,
+        compactNavMatches: window.matchMedia('(max-width: 900px)').matches,
         mobileFiltersMatch: window.matchMedia('(max-width: 900px)').matches,
         navToggleVisible,
         navClosedHidden: !!nav?.hidden,
@@ -681,7 +681,7 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
       return outcome;
     })()`);
     const failures = [];
-    const compactNav = width <= 1180;
+    const compactNav = width <= 900;
     const mobileFilters = width <= 900;
     if (state.navToggleVisible !== compactNav) failures.push(`nav-toggle visibility does not match compact breakpoint at ${width}px`);
     if (compactNav) {
@@ -705,6 +705,144 @@ async function inspectResponsiveDrawerContracts(client, baseUrl) {
     }
     if (mobileFilters && !state.gallerySwipeChangedImage) failures.push(`gallerySwipeChangedImage failed at ${width}px`);
     results.push({ label: `responsive drawer contract ${width}px`, state, failures });
+  }
+  return results;
+}
+
+async function inspectStorefrontShell(client, baseUrl) {
+  const scenarios = [
+    { label: 'mobile home shell', path: '/', width: 390, compact: true, footer: true, maxFooterArtworkHeight: 151 },
+    { label: 'mobile comics shell', path: '/comics.html', width: 390, compact: true },
+    { label: 'mobile account footer 390px', path: '/account.html', width: 390, compact: true, footer: true, maxFooterArtworkHeight: 151 },
+    { label: 'mobile account footer 420px', path: '/account.html', width: 420, compact: true, footer: true, maxFooterArtworkHeight: 160 },
+    { label: 'mobile account footer 700px', path: '/account.html', width: 700, compact: true, footer: true, maxFooterArtworkHeight: 173 },
+    { label: 'compact tablet home shell 900px', path: '/', width: 900, compact: true },
+    { label: 'narrow desktop home shell 901px', path: '/', width: 901, compact: false },
+    { label: 'narrow desktop home shell 1024px', path: '/', width: 1024, compact: false },
+    { label: 'narrow desktop home shell 1180px', path: '/', width: 1180, compact: false },
+    { label: 'narrow desktop account shell 901px', path: '/account.html', width: 901, compact: false, minimumNavWidth: 640 },
+    { label: 'narrow desktop account shell 1180px', path: '/account.html', width: 1180, compact: false, minimumNavWidth: 640 }
+  ];
+  const results = [];
+
+  for (const scenario of scenarios) {
+    client.consumeEvents();
+    await setViewport(client, scenario.width);
+    await navigate(client, `${baseUrl}${scenario.path}${scenario.path.includes('?') ? '&' : '?'}shellSmoke=${scenario.width}`);
+    const state = await client.evaluate(`(() => {
+      const isVisible = (element) => {
+        if (!element || element.hidden || element.closest('[hidden]')) return false;
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none'
+          && style.visibility !== 'hidden'
+          && Number(style.opacity || '1') > 0
+          && rect.width > 2
+          && rect.height > 2;
+      };
+      const header = document.querySelector('.site-header');
+      const brandCopy = header?.querySelector('.brand-copy');
+      const brandScript = header?.querySelector('.brand-script');
+      const account = header?.querySelector('.home-header-utility a[href$="account.html"]');
+      const cart = header?.querySelector('.home-header-utility a[data-cart-link]');
+      const nav = header?.querySelector('#siteNav');
+      const navToggle = header?.querySelector('#navToggle');
+      const drawerTheme = header?.querySelector('.site-nav .theme-toggle:not(.theme-toggle--footer)');
+      const footer = document.querySelector('footer.site-footer');
+      const footerGroups = footer?.querySelector('.footer-link-groups');
+      const footerBefore = footer ? getComputedStyle(footer, '::before') : null;
+      const footerGridColumns = footerGroups
+        ? getComputedStyle(footerGroups).gridTemplateColumns.split(/\\s+/).filter(Boolean).length
+        : 0;
+      return {
+        brandCopyVisible: isVisible(brandCopy),
+        brandScriptVisible: isVisible(brandScript),
+        accountVisible: isVisible(account),
+        cartVisible: isVisible(cart),
+        navVisible: isVisible(nav),
+        navHidden: !!nav?.hidden,
+        navAriaHidden: nav?.getAttribute('aria-hidden') || '',
+        navInert: !!nav?.hasAttribute('inert'),
+        navToggleVisible: isVisible(navToggle),
+        navClientWidth: Math.round(nav?.getBoundingClientRect().width || 0),
+        headerClientWidth: Math.round(header?.getBoundingClientRect().width || 0),
+        drawerThemeEnabled: !!drawerTheme && getComputedStyle(drawerTheme).display !== 'none',
+        footerHeight: Math.round(footer?.getBoundingClientRect().height || 0),
+        footerArtworkHeight: Math.round(Number.parseFloat(footerBefore?.height || '0')),
+        footerGridColumns,
+        overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth
+      };
+    })()`);
+    const failures = [];
+    for (const key of ['brandCopyVisible', 'brandScriptVisible', 'accountVisible', 'cartVisible']) {
+      if (!state[key]) failures.push(`${key} is not visible`);
+    }
+    if (state.overflow > 2) failures.push(`horizontal overflow ${state.overflow}`);
+
+    if (scenario.compact) {
+      if (!state.navToggleVisible) failures.push('compact header menu toggle is not visible');
+      if (scenario.width <= 900 && !state.drawerThemeEnabled) failures.push('drawer theme switcher is not available');
+    } else {
+      if (!state.navVisible || state.navHidden || state.navAriaHidden !== 'false' || state.navInert) {
+        failures.push('horizontal navigation is not available');
+      }
+      if (state.navToggleVisible) failures.push('desktop menu toggle is still visible');
+      const minimumNavWidth = scenario.minimumNavWidth || state.headerClientWidth - 30;
+      if (state.navClientWidth < minimumNavWidth) failures.push('horizontal navigation has insufficient usable width');
+    }
+
+    if (scenario.footer) {
+      if (state.footerHeight > 820) failures.push(`account footer is too tall (${state.footerHeight}px)`);
+      if (state.footerArtworkHeight > scenario.maxFooterArtworkHeight) failures.push(`footer artwork separator is too tall (${state.footerArtworkHeight}px)`);
+      if (state.footerGridColumns < 2) failures.push('footer link groups do not use the compact two-column layout');
+    }
+
+    results.push({ label: scenario.label, state, failures });
+  }
+  return results;
+}
+
+async function inspectNarrowDesktopSubmenus(client, baseUrl) {
+  const widths = [901, 1180];
+  const results = [];
+  for (const width of widths) {
+    client.consumeEvents();
+    await setViewport(client, width);
+    await navigate(client, `${baseUrl}/?submenuSmoke=${width}`);
+    const state = await client.evaluate(`(async () => {
+      const nav = document.getElementById('siteNav');
+      const toggle = nav?.querySelector('.submenu-toggle');
+      const submenu = toggle?.getAttribute('aria-controls')
+        ? document.getElementById(toggle.getAttribute('aria-controls'))
+        : null;
+      const list = nav?.querySelector('.primary-nav__list');
+      const visible = (element) => {
+        if (!element || element.hidden || element.closest('[hidden]')) return false;
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 2 && rect.height > 2;
+      };
+      toggle?.click();
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const rect = submenu?.getBoundingClientRect();
+      const state = {
+        width: window.innerWidth,
+        togglePresent: !!toggle,
+        opened: toggle?.getAttribute('aria-expanded') === 'true',
+        visible: visible(submenu),
+        withinViewport: !!rect && rect.top >= 0 && rect.right <= window.innerWidth && rect.bottom <= window.innerHeight,
+        listOverflow: list ? getComputedStyle(list).overflow : '',
+        submenuHeight: Math.round(rect?.height || 0)
+      };
+      toggle?.click();
+      return state;
+    })()`);
+    const failures = [];
+    if (!state.togglePresent) failures.push('submenu toggle is missing');
+    if (!state.opened) failures.push('submenu did not open');
+    if (!state.visible || !state.withinViewport) failures.push('opened submenu is clipped or outside the viewport');
+    if (state.listOverflow !== 'visible') failures.push(`nav list clips submenu overflow (${state.listOverflow})`);
+    results.push({ label: `narrow desktop submenu ${width}px`, state, failures });
   }
   return results;
 }
@@ -992,17 +1130,23 @@ async function main() {
     if (process.argv.includes('--interaction-only')) {
       const mobile = await inspectMobileFlow(client, baseUrl);
       const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
+      const storefrontShell = await inspectStorefrontShell(client, baseUrl);
+      const narrowDesktopSubmenus = await inspectNarrowDesktopSubmenus(client, baseUrl);
       client.websocket.close();
       const failures = [
         ...mobile.failures.map((failure) => `${mobile.label}: ${failure}`),
         ...mobile.badEvents.map((event) => `${mobile.label}: ${event}`),
-        ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`))
+        ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
+        ...storefrontShell.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
+        ...narrowDesktopSubmenus.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`))
       ];
       const summary = {
         ok: failures.length === 0,
         baseUrl,
         mobile,
         responsive,
+        storefrontShell,
+        narrowDesktopSubmenus,
         failures
       };
       console.log(JSON.stringify(summary, null, 2));
@@ -1028,6 +1172,8 @@ async function main() {
     }
     const mobile = await inspectMobileFlow(client, baseUrl);
     const responsive = await inspectResponsiveDrawerContracts(client, baseUrl);
+    const storefrontShell = await inspectStorefrontShell(client, baseUrl);
+    const narrowDesktopSubmenus = await inspectNarrowDesktopSubmenus(client, baseUrl);
     const visualMatrix = await inspectEveryPageVisualMatrix(client, baseUrl);
     client.websocket.close();
 
@@ -1038,6 +1184,8 @@ async function main() {
       ...mobile.badEvents.map((event) => `${mobile.label}: ${event}`),
       ...slabStats.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
       ...responsive.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
+      ...storefrontShell.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
+      ...narrowDesktopSubmenus.flatMap((item) => item.failures.map((failure) => `${item.label}: ${failure}`)),
       ...visualMatrix.failures
     ];
     const summary = {
@@ -1047,6 +1195,8 @@ async function main() {
       mobile,
       slabStats,
       responsive,
+      storefrontShell,
+      narrowDesktopSubmenus,
       visualMatrix,
       failures: allFailures
     };

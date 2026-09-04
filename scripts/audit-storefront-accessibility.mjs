@@ -53,8 +53,11 @@ assert(/aria-live=["']polite["']/i.test(metricsLiveStatus) && /role=["']status["
 
 const navSource = read('nav.js');
 const styles = read('styles.css');
-assert(/COMPACT_NAV_BREAKPOINT\s*=\s*1180/.test(navSource), 'nav.js compact-navigation breakpoint must be 1180px.');
-assert(/@media \(max-width:1180px\)\s*\{\s*\.site-header/.test(styles), 'styles.css must provide the 1180px compact-header contract.');
+const mobileStyles = read('styles-mobile-overrides.css');
+assert(/COMPACT_NAV_BREAKPOINT\s*=\s*900/.test(navSource), 'nav.js compact-navigation breakpoint must be 900px.');
+assert(/MOBILE_THEME_BREAKPOINT\s*=\s*900/.test(read('core.js')), 'core.js theme-placement breakpoint must stay aligned at 900px.');
+assert(/@media \(min-width:901px\) and \(max-width:1180px\)/.test(mobileStyles) && /grid-area:nav !important/.test(mobileStyles), 'styles-mobile-overrides.css must provide the 901-1180px horizontal navigation contract.');
+assert(/@media \(max-width:900px\)/.test(mobileStyles) && /\.site-header \.brand-copy/.test(mobileStyles), 'styles-mobile-overrides.css must provide the 900px compact-header contract.');
 assert(/@media \(max-width:900px\)\s*\{\s*\.filter-panel--drawer/.test(styles), 'styles.css must retain the 900px mobile-filter drawer contract.');
 assert(/showCartActionFeedback/.test(read('catalog.js')), 'catalog add-to-cart feedback helper is missing.');
 assert(/Only \$\{available\} available/.test(read('catalog.js')), 'catalog stock-limit feedback is missing.');

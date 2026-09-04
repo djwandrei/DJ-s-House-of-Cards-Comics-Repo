@@ -961,7 +961,7 @@ body.dark-mode .modal-image-stage {
 .brand-card:focus-within,
 .contact-card:focus-within,
 .about-archive-panel:focus-within {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:4px;
   box-shadow:0 0 0 6px rgba(228,177,65,.18), 0 18px 34px rgba(16,27,57,.14);
 }
@@ -984,7 +984,7 @@ body.dark-mode .modal-image-stage {
 .facet-toggle:focus-visible,
 .filter-panel-dismiss:focus-visible,
 .mobile-filter-trigger:focus-visible {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
   box-shadow:0 0 0 6px rgba(228,177,65,.18);
 }
@@ -1773,7 +1773,7 @@ body.dark-mode[data-page="wishlist"] #wishlistContainer > .empty-state {
 }
 
 .modal-listing-nav__button:focus-visible {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:2px;
 }
 
@@ -2577,7 +2577,8 @@ body.dark-mode .modal-listing-nav__button {
 /* Keep the compact drawer content-led on phones instead of stretching into a
    mostly empty panel. The same destinations and submenu behavior are kept. */
 @media (max-width:700px) {
-  .site-header .site-nav {
+  body[data-page="home"] .site-header .site-nav,
+  body:not([data-page="home"]) .site-header .site-nav {
     bottom:auto !important;
     height:auto !important;
     min-height:0 !important;
@@ -3207,5 +3208,454 @@ body.dark-mode .modal-listing-nav__button {
 @media (max-width:370px) {
   .filter-panel--drawer .range-grid {
     grid-template-columns:1fr;
+  }
+}
+
+/*
+  Storefront shell stabilization.
+
+  The header previously had several competing compact layouts. This final layer
+  owns the shopper-facing breakpoints: drawer navigation through 900px, a
+  horizontal desktop menu from 901px through 1180px, and the existing full
+  desktop shell above that. It deliberately preserves the navy, red, gold, and
+  collector-photo identity while making the hierarchy predictable.
+*/
+:root {
+  --focus-ring:#0b3f93;
+}
+
+body.dark-mode {
+  --focus-ring:#f4c766;
+}
+
+:focus-visible {
+  outline-color:var(--focus-ring);
+}
+
+.site-header .brand:focus-visible,
+.site-header .nav-toggle:focus-visible,
+.site-header .theme-toggle:focus-visible,
+.site-header .submenu-toggle:focus-visible,
+.site-header .primary-nav__link:focus-visible,
+.site-header .home-header-utility a:focus-visible {
+  outline:3px solid #f4c766;
+  outline-offset:3px;
+  box-shadow:0 0 0 4px rgba(8,14,32,.94);
+}
+
+/* Narrow desktop keeps the complete information architecture visible instead
+   of turning the menu into a button directly beside the homepage search. */
+@media (min-width:901px) and (max-width:1180px) {
+  body[data-page="home"] .site-header .site-nav,
+  body:not([data-page="home"]) .site-header .site-nav {
+    grid-area:nav !important;
+    position:static !important;
+    inset:auto !important;
+    display:block !important;
+    width:100% !important;
+    max-width:none !important;
+    justify-self:stretch !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    transform:none !important;
+  }
+
+  .site-header .site-nav::before,
+  .site-header .site-nav__mobile-header {
+    content:none !important;
+    display:none !important;
+  }
+
+  .site-header .site-nav .primary-nav__list {
+    display:flex !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    align-items:center;
+    justify-content:flex-start !important;
+    gap:.2rem !important;
+    overflow:visible !important;
+  }
+
+  .site-header .site-nav .primary-nav__item,
+  .site-header .site-nav .primary-nav__item-group {
+    flex:0 0 auto;
+    width:auto !important;
+  }
+
+  .site-header .site-nav .primary-nav__link {
+    min-height:32px !important;
+    padding:.3rem .52rem !important;
+    font-size:.82rem !important;
+  }
+
+  .site-header .site-nav .submenu-toggle {
+    min-height:32px;
+    height:32px;
+  }
+
+  .site-header .site-nav .primary-nav__submenu {
+    position:absolute !important;
+    width:max-content;
+    min-width:11rem;
+  }
+
+  .site-header .home-header-utility ~ .site-nav .header-wishlist-item,
+  .site-header .home-header-utility ~ .site-nav .header-cart-item,
+  .site-header .home-header-utility ~ .site-nav .primary-nav__item:has(> .primary-nav__link[href="account.html"]) {
+    display:none !important;
+  }
+
+  body[data-page="home"] .site-header .nav-toggle,
+  body:not([data-page="home"]) .site-header .nav-toggle,
+  .site-nav-backdrop {
+    display:none !important;
+  }
+
+  .site-header .header-actions {
+    grid-area:actions !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+    min-width:0;
+  }
+
+  .site-header .header-actions .theme-toggle:not(.theme-toggle--footer) {
+    display:inline-flex !important;
+    min-height:36px;
+  }
+
+  body[data-page="home"],
+  body[data-page="home"] .site-header,
+  body[data-page="home"] .site-header .header-inner {
+    --header-h:146px;
+  }
+
+  body[data-page="home"] .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:50px 34px 42px !important;
+    grid-template-areas:
+      "brand utility actions"
+      "nav nav nav"
+      "search search search" !important;
+    gap:.3rem .7rem !important;
+    padding-block:.42rem !important;
+  }
+
+  body[data-page="home"] .site-header .brand {
+    grid-area:brand !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+  }
+
+  body[data-page="home"] .site-header .home-header-search {
+    grid-area:search !important;
+    width:100%;
+    min-width:0;
+    padding-left:0 !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-search__bar {
+    min-height:42px;
+    border-radius:14px;
+  }
+
+  body[data-page="home"] .site-header .home-header-search input {
+    height:40px;
+  }
+
+  body:not([data-page="home"]),
+  body:not([data-page="home"]) .site-header,
+  body:not([data-page="home"]) .site-header .header-inner {
+    --header-h:98px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:52px 32px !important;
+    grid-template-areas:
+      "brand utility actions"
+      "nav nav nav" !important;
+    gap:.28rem .7rem !important;
+    padding-block:.42rem !important;
+  }
+
+  body:not([data-page="home"]) .site-header .brand {
+    grid-area:brand !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+  }
+}
+
+/* The accessible drawer remains the compact navigation pattern on phones and
+   tablets, but the wordmark and key shopper actions never collapse to zero. */
+@media (max-width:900px) {
+  .site-header .brand {
+    min-width:0;
+    gap:.45rem;
+  }
+
+  .site-header .brand-copy {
+    position:static !important;
+    display:flex !important;
+    flex-direction:column;
+    width:auto !important;
+    height:auto !important;
+    min-width:0 !important;
+    overflow:visible !important;
+    clip:auto !important;
+    clip-path:none !important;
+    white-space:normal !important;
+  }
+
+  .site-header .brand-script {
+    display:block !important;
+    min-width:0;
+    overflow:hidden;
+    font-size:1.16rem !important;
+    line-height:1;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .site-header .brand-kicker {
+    display:block !important;
+    min-width:0;
+    overflow:hidden;
+    font-size:.52rem !important;
+    letter-spacing:.045em !important;
+    line-height:1.08;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  body[data-page="home"],
+  body[data-page="home"] .site-header,
+  body[data-page="home"] .site-header .header-inner {
+    --header-h:116px;
+  }
+
+  body[data-page="home"] .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:50px 42px !important;
+    grid-template-areas:
+      "brand utility menu"
+      "search search search" !important;
+    column-gap:.42rem !important;
+    row-gap:.32rem !important;
+    padding-block:.38rem !important;
+  }
+
+  body[data-page="home"] .site-header .brand {
+    grid-area:brand !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    gap:.3rem;
+  }
+
+  body[data-page="home"] .site-header .home-header-utility__sell {
+    display:none !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-utility a {
+    min-width:40px;
+    min-height:40px;
+  }
+
+  body[data-page="home"] .site-header .header-actions {
+    grid-area:menu !important;
+    display:flex !important;
+    justify-self:end;
+  }
+
+  body[data-page="home"] .site-header .header-actions .theme-toggle:not(.theme-toggle--footer) {
+    display:none !important;
+  }
+
+  body[data-page="home"] .site-header .nav-toggle {
+    position:static !important;
+    display:inline-flex !important;
+    width:68px !important;
+    min-width:68px !important;
+    min-height:40px !important;
+    height:40px !important;
+    margin:0;
+    padding-inline:.44rem;
+  }
+
+  body[data-page="home"] .site-header .home-header-search {
+    grid-area:search !important;
+    width:100%;
+    min-width:0;
+    padding-left:0 !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-search__bar {
+    min-height:42px !important;
+    border-radius:14px !important;
+  }
+
+  body[data-page="home"] .site-header .home-header-search input {
+    height:40px !important;
+  }
+
+  body:not([data-page="home"]),
+  body:not([data-page="home"]) .site-header,
+  body:not([data-page="home"]) .site-header .header-inner {
+    --header-h:76px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-inner {
+    min-height:var(--header-h) !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:1fr !important;
+    grid-template-areas:"brand utility menu" !important;
+    gap:.42rem !important;
+    padding-block:.38rem !important;
+  }
+
+  body:not([data-page="home"]) .site-header .brand {
+    grid-area:brand !important;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+    gap:.3rem;
+  }
+
+  body:not([data-page="home"]) .site-header .home-header-utility a {
+    min-width:40px;
+    min-height:40px;
+  }
+
+  body:not([data-page="home"]) .site-header .header-actions {
+    grid-area:menu !important;
+    display:flex !important;
+    justify-self:end;
+  }
+
+  body:not([data-page="home"]) .site-header .header-actions .theme-toggle:not(.theme-toggle--footer) {
+    display:none !important;
+  }
+}
+
+/* The shared script moves this control into the drawer at this breakpoint;
+   keep that in-drawer control available rather than hiding the only switcher. */
+@media (max-width:900px) {
+  .site-header .site-nav .theme-toggle:not(.theme-toggle--footer) {
+    display:inline-flex !important;
+  }
+}
+
+@media (max-width:520px) {
+  .site-header .brand-logo {
+    width:46px !important;
+    height:46px !important;
+  }
+
+  .site-header .brand-script {
+    font-size:1rem !important;
+  }
+
+  .site-header .brand-kicker {
+    font-size:.43rem !important;
+  }
+
+  body[data-page="home"],
+  body[data-page="home"] .site-header,
+  body[data-page="home"] .site-header .header-inner {
+    --header-h:112px;
+  }
+
+  body[data-page="home"] .site-header .header-inner {
+    grid-template-rows:48px 42px !important;
+  }
+
+  .site-header .home-header-utility__icon[href$="wishlist.html"] {
+    display:none !important;
+  }
+
+  .site-header .home-header-utility a {
+    min-width:38px !important;
+    min-height:38px !important;
+  }
+
+  .site-header .nav-toggle {
+    width:60px !important;
+    min-width:60px !important;
+  }
+}
+
+/* Keep the shared footer photo separator proportional to a phone viewport and
+   avoid stacking every link group into a single tall column on common phones. */
+@media (max-width:700px) {
+  .footer.site-footer {
+    --footer-artwork-offset:clamp(8.5rem,38vw,10.75rem);
+  }
+
+  /* Home already has a deliberately subtle field-photo lead-in. Declare that
+     exception in this final responsive layer rather than depending on an
+     earlier, more-specific selector to undo the shared mobile token. */
+  body[data-page="home"] .footer.site-footer {
+    --footer-artwork-offset:3rem;
+  }
+
+  .footer.site-footer::before {
+    min-height:0 !important;
+    height:var(--footer-artwork-offset) !important;
+  }
+
+  .footer.site-footer .footer-inner {
+    padding-top:calc(var(--footer-artwork-offset) + 1rem) !important;
+  }
+}
+
+@media (max-width:420px) {
+  .footer.site-footer .footer-link-groups {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .footer.site-footer .footer-link-group--storefronts {
+    grid-column:1 / -1;
+  }
+
+  /* The home stylesheet previously reintroduced a one-column footer at this
+     width, which made its otherwise shared footer much taller than account
+     and catalog pages. Keep the marketplace links as the full-width third
+     group while the two primary groups stay side by side. */
+  body[data-page="home"] .footer.site-footer .footer-link-groups {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  body[data-page="home"] .footer.site-footer .footer-link-group--storefronts {
+    grid-column:1 / -1;
   }
 }

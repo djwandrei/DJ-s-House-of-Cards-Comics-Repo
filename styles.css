@@ -1158,7 +1158,7 @@ main:focus {
   transform:translateY(0)
 }
 :focus-visible {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px
 }
 .admin-footer-link:focus-visible,.admin-form button:focus-visible,.back-to-top:focus-visible,.button-secondary:focus-visible,.button:focus-visible,.contact-form button:focus-visible,.modal-close:focus-visible,.modal-cta:focus-visible,.nav-toggle:focus-visible,.product-card button:focus-visible,.site-nav a:focus-visible,.theme-toggle:focus-visible,.wishlist-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {
@@ -4478,7 +4478,7 @@ body.dark-mode .page-hero-card {
   cursor:pointer;
 }
 .product-card:focus-visible {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:4px;
 }
 .product-card img {
@@ -4557,7 +4557,7 @@ button.modal-image-stage {
 }
 
 .modal-image-zoom:focus-visible {
-  outline:3px solid rgba(228,177,65,.58);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
 }
 
@@ -7992,7 +7992,7 @@ body[data-page="collectibles"] {
 .legacy-image-clickable:hover,
 .legacy-image-clickable:focus-visible {
   filter:brightness(1.06);
-  outline:3px solid rgba(228,177,65,.5);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
 }
 
@@ -11038,7 +11038,7 @@ body[data-page="home"] .home-header-utility {
 }
 
 .home-header-utility a:focus-visible {
-  outline:3px solid var(--brand-gold);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:2px;
 }
 
@@ -11921,7 +11921,7 @@ body[data-page="home"] .home-section-heading__copy p {
 }
 
 .home-section-link:focus-visible {
-  outline:3px solid rgba(228,177,65,.8);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
 }
 
@@ -12195,7 +12195,7 @@ body[data-page="home"] .home-connect-card :is(.marketplace-link-grid a,.home-aut
 }
 
 body[data-page="home"] .home-connect-card :is(.marketplace-link-grid a,.home-auth-actions .button,.home-auth-actions .button-secondary,.home-connect-actions .button-secondary):focus-visible {
-  outline:3px solid rgba(228,177,65,.88);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
 }
 
@@ -12243,7 +12243,7 @@ body[data-page="home"] .home-featured-section .product-card .product-card-action
 }
 
 body[data-page="home"] .home-featured-section .product-card .product-card-actions .buy-button:not(.buy-button--inquiry):focus-visible {
-  outline:3px solid rgba(244,199,102,.92);
+  outline:3px solid var(--focus-ring,var(--brand-gold));
   outline-offset:3px;
 }
 

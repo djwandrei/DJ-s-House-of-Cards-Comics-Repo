@@ -37,8 +37,10 @@ window.DJ = window.DJ || {};
     policy: { target: 'about.html', label: 'Policies & Authenticity' },
     'sell-trade-want-list': { target: 'contact.html', label: 'Sell, Trade & Want List' }
   });
-  // CSS converts the header to its drawer layout at this exact width.
-  const COMPACT_NAV_BREAKPOINT = 1180;
+  // Phones and compact tablets use the accessible drawer. Narrow desktop
+  // widths retain the full horizontal menu so discovery stays visible beside
+  // the catalog search rather than becoming a second hidden interaction.
+  const COMPACT_NAV_BREAKPOINT = 900;
   // One shared breakpoint keeps the menu drawer and submenu behavior in sync.
   const COMPACT_NAV_QUERY = typeof window.matchMedia === 'function'
     ? window.matchMedia(`(max-width: ${COMPACT_NAV_BREAKPOINT}px)`)

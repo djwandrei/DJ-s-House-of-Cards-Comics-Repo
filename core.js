@@ -24,11 +24,14 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260904a';
+  const PRODUCT_ASSET_VERSION = '20260904b';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.
-  const MOBILE_THEME_BREAKPOINT = 700;
+  // Keep theme placement aligned with the shared compact-navigation boundary.
+  // At 900px and below the control belongs in the accessible drawer, where it
+  // does not compete with the wordmark, account tools, or menu trigger.
+  const MOBILE_THEME_BREAKPOINT = 900;
   const MOBILE_THEME_QUERY = typeof window.matchMedia === 'function'
     ? window.matchMedia(`(max-width: ${MOBILE_THEME_BREAKPOINT}px)`)
     : null;
