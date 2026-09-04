@@ -20,6 +20,16 @@ offer.html
 offline.html
 policies.html
 pro-sports-slab-stats.mjs
+# The generated Lineup Lab release is parity-checked against its prototype
+# before this path-list release. These modules changed for the current build.
+lineup-lab/app.js
+lineup-lab/index.html
+lineup-lab/lineup-role-model.js
+lineup-lab/opponent-gameplan.js
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/scout-impact.js
+lineup-lab/supabase-nba-data.js
 returns.html
 sell-trade-want-list.html
 shipping.html
