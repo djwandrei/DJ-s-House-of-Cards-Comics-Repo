@@ -1,0 +1,10 @@
+# Reviewed Lineup Lab v10 public release.  This list intentionally contains
+# only the modules whose local bytes differ from the live site; it never
+# uploads private Scout archives, Supabase migrations, or raw analytics data.
+lineup-lab/app.js
+lineup-lab/lineup-role-model.js
+lineup-lab/scout-impact.js
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/supabase-nba-data.js
+lineup-lab/opponent-gameplan.js

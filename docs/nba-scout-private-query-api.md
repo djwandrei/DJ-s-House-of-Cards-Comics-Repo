@@ -9,6 +9,10 @@ compact, allowlisted summaries needed for private service-to-service queries.
 It never imports uncompressed team JSON, raw provider payloads, archive object
 paths, or full nested lineup/WOWY context trees.
 
+If a package was produced by the separate boundary-role repair utility, its
+small repair-provenance report is retained with the private archive. A directly
+derived package is valid without that optional repair-only artifact.
+
 ## Boundary and target
 
 - Use only `supabase-analytics/` and its dedicated linked project

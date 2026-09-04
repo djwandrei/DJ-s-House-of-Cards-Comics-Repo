@@ -119,7 +119,7 @@ function sourceShard() {
   };
 }
 
-async function fixtureArchive() {
+async function fixtureArchive({ validationFilename = 'nba-scout-analytics-2025-26.validation-v2.json' } = {}) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'scout-query-import-'));
   const archive = path.join(root, 'outputs', 'fixture-scout-query-package');
   await fs.mkdir(path.join(archive, 'teams'), { recursive: true });
@@ -207,7 +207,7 @@ async function fixtureArchive() {
     warnings: [],
     checks: { teams: 1, combinations: 1, onOff: 1, playerProfiles: 1, wowy: 1, netRapmPlayers: 1, offenseDefenseRapmPlayers: 1 },
   };
-  await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.validation-v2.json'), JSON.stringify(validation));
+  await fs.writeFile(path.join(archive, validationFilename), JSON.stringify(validation));
   await fs.writeFile(path.join(archive, 'README.md'), '# Fixture\n');
   await fs.writeFile(path.join(archive, 'boundary-role-repair-report.json'), '{}');
   return { root, archive };
@@ -234,6 +234,18 @@ test('query importer defaults to a local validation plan and retains only compac
     });
     assert.equal(queryPlan.plan.bucket, 'nba-scout-analytics-archive');
     assert.equal(queryPlan.rapm.players.length, 2);
+    assert.equal(queryPlan.validation.report.passed, true);
+  } finally {
+    await fs.rm(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('query importer accepts the current validator report filename', async () => {
+  const validationFilename = 'nba-scout-analytics-validation-2025-26.json';
+  const fixture = await fixtureArchive({ validationFilename });
+  try {
+    const queryPlan = await buildScoutArchiveQueryPlan({ archiveDir: fixture.archive });
+    assert.equal(queryPlan.validation.relativePath, validationFilename);
     assert.equal(queryPlan.validation.report.passed, true);
   } finally {
     await fs.rm(fixture.root, { recursive: true, force: true });

@@ -21,6 +21,10 @@ const DEFAULT_BUCKET = 'nba-scout-analytics-archive';
 const TUS_VERSION = '1.0.0';
 const TUS_CHUNK_BYTES = 6 * 1024 * 1024;
 const WRITE_CONFIRMATION_ENV = 'NBA_SCOUT_ARCHIVE_UPLOAD_ALLOW_WRITE';
+// Both names are retained for immutable package compatibility. Earlier
+// validators emitted `2025-26.validation-v2`; the current validator emits
+// `validation-2025-26`. Each report is still hash-bound to its manifest.
+const PACKAGE_VALIDATION_NAME_PATTERN = /^(?:nba-scout-analytics-\d{4}-\d{2}\.validation(?:-[a-z0-9]+)?|nba-scout-analytics-validation-\d{4}-\d{2})\.json$/i;
 
 function usage() {
   return `
@@ -185,9 +189,16 @@ function artifactDescriptor({ archiveDir, relativePath, remotePath, expectedByte
 }
 
 function metadataArtifactNames(entries, manifestName) {
-  const allowed = new Set([manifestName, `${manifestName}.gz`, 'README.md', 'boundary-role-repair-report.json']);
+  // A full derivation already produces corrected boundary-role fields, while
+  // the separate repair utility adds an immutable provenance report.  Require
+  // the report when it is present, but do not make a post-derivation repair a
+  // prerequisite for uploading an otherwise valid, directly-derived package.
+  const allowed = new Set([manifestName, `${manifestName}.gz`, 'README.md']);
   for (const entry of entries) {
-    if (entry.isFile() && /^nba-scout-analytics-\d{4}-\d{2}\.validation(?:-[a-z0-9]+)?\.json$/i.test(entry.name)) {
+    if (entry.isFile() && entry.name === 'boundary-role-repair-report.json') {
+      allowed.add(entry.name);
+    }
+    if (entry.isFile() && PACKAGE_VALIDATION_NAME_PATTERN.test(entry.name)) {
       allowed.add(entry.name);
     }
   }

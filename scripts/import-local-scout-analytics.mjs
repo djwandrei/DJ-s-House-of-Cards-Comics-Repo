@@ -33,7 +33,10 @@ const SUPPORTED_SCHEMA_VERSION = 4;
 const SUPPORTED_METRICS_VERSION = 'nba-scout-metrics-v4';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
-const VALIDATION_NAME_PATTERN = /^nba-scout-analytics-\d{4}-\d{2}\.validation(?:-[a-z0-9]+)?\.json$/i;
+// The two accepted names represent the same immutable package-validation
+// contract. The validator's newer output name is intentionally accepted so a
+// valid package is not rejected merely because its provenance filename evolved.
+const VALIDATION_NAME_PATTERN = /^(?:nba-scout-analytics-\d{4}-\d{2}\.validation(?:-[a-z0-9]+)?|nba-scout-analytics-validation-\d{4}-\d{2})\.json$/i;
 const SOURCE_SHARD_FIELDS = new Set([
   'schemaVersion',
   'metricsVersion',

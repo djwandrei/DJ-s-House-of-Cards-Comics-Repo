@@ -18,7 +18,10 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
-async function fixtureArchive() {
+async function fixtureArchive({
+  includeBoundaryRoleRepairReport = true,
+  validationFilename = 'nba-scout-analytics-2025-26.validation-v2.json',
+} = {}) {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'scout-archive-upload-'));
   const archive = path.join(root, 'outputs', 'fixture-scout-package');
   await fs.mkdir(path.join(archive, 'teams'), { recursive: true });
@@ -36,8 +39,10 @@ async function fixtureArchive() {
   await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.json'), JSON.stringify(manifest));
   await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.json.gz'), gzipSync(Buffer.from(JSON.stringify(manifest))));
   await fs.writeFile(path.join(archive, 'README.md'), '# Fixture\n');
-  await fs.writeFile(path.join(archive, 'boundary-role-repair-report.json'), '{}');
-  await fs.writeFile(path.join(archive, 'nba-scout-analytics-2025-26.validation-v2.json'), '{}');
+  if (includeBoundaryRoleRepairReport) {
+    await fs.writeFile(path.join(archive, 'boundary-role-repair-report.json'), '{}');
+  }
+  await fs.writeFile(path.join(archive, validationFilename), '{}');
   return { root, archive };
 }
 
@@ -58,6 +63,28 @@ test('archive plan includes only metadata and gzip team shards with verified has
     assert.equal(plan.artifacts.some((artifact) => artifact.relativePath.endsWith('.json') && artifact.relativePath.startsWith('teams/')), false);
     assert.equal(plan.totalBytes > 0, true);
     assert.match(plan.prefix, /^schema-v4\/2025-26\/fixture-scout-package-/);
+  } finally {
+    await fs.rm(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('archive plan accepts a directly-derived package without a repair-only report', async () => {
+  const fixture = await fixtureArchive({ includeBoundaryRoleRepairReport: false });
+  try {
+    const plan = await validateLocalArchivePlan(await buildArchiveUploadPlan({ archiveDir: fixture.archive }));
+    assert.equal(plan.artifacts.some((artifact) => artifact.relativePath === 'boundary-role-repair-report.json'), false);
+    assert.equal(plan.artifacts.filter((artifact) => artifact.kind === 'team-gzip-shard').length, 1);
+  } finally {
+    await fs.rm(fixture.root, { recursive: true, force: true });
+  }
+});
+
+test('archive plan includes the current validator report filename', async () => {
+  const validationFilename = 'nba-scout-analytics-validation-2025-26.json';
+  const fixture = await fixtureArchive({ validationFilename });
+  try {
+    const plan = await validateLocalArchivePlan(await buildArchiveUploadPlan({ archiveDir: fixture.archive }));
+    assert.equal(plan.artifacts.some((artifact) => artifact.relativePath === validationFilename), true);
   } finally {
     await fs.rm(fixture.root, { recursive: true, force: true });
   }
