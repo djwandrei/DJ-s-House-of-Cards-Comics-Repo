@@ -3,6 +3,8 @@ const STAT_GROUPS = Object.freeze({
   MLB: Object.freeze(['batting', 'pitching']),
   NFL: Object.freeze(['passing', 'rushing', 'receiving', 'defense', 'kicking', 'returns', 'scoring']),
 });
+const MLB_PITCHER_BATTING_MIN_PLATE_APPEARANCES = 150;
+const MLB_POSITION_PLAYER_PITCHING_MIN_OUTS = 9;
 
 function text(value) {
   return String(value ?? '').trim();
@@ -47,6 +49,10 @@ function normalizePhase(value) {
 
 function phaseLabel(phase) {
   return phase === 'postseason' ? 'Postseason' : 'Regular season';
+}
+
+function phaseRank(phase) {
+  return phase === 'regular' ? 0 : 1;
 }
 
 function statGroupLabel(statGroup) {
@@ -101,6 +107,55 @@ function normalizeSeason(rawSeason, provider) {
   });
 }
 
+function isMlbPitcherPosition(primaryPosition) {
+  const position = text(primaryPosition).toUpperCase();
+  // Baseball-Reference imports use both text positions and scorebook code 1.
+  return /(^|[^A-Z0-9])(?:P|SP|RP|LHP|RHP|PITCHER|1)(?=$|[^A-Z0-9])/.test(position);
+}
+
+function nflPrimaryStatGroup(primaryPosition) {
+  const positions = new Set(text(primaryPosition).toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean));
+  if (positions.has('QB')) return 'passing';
+  if (positions.has('RB') || positions.has('FB')) return 'rushing';
+  if (positions.has('WR') || positions.has('TE')) return 'receiving';
+  if (positions.has('K') || positions.has('PK')) return 'kicking';
+  if ([
+    'DE', 'DT', 'NT', 'DL', 'LB', 'OLB', 'ILB', 'CB', 'S', 'FS', 'SS', 'DB',
+  ].some((position) => positions.has(position))) return 'defense';
+  return '';
+}
+
+function hasMetricAtLeast(season, metricNames, threshold) {
+  return metricNames.some((metricName) => (finiteNumber(season.metrics?.[metricName]) ?? 0) >= threshold);
+}
+
+function hasPositiveMetric(season) {
+  return Object.values(season.metrics || {}).some((value) => (finiteNumber(value) ?? 0) > 0);
+}
+
+function isRelevantProSportsSeason(season, provider, primaryPosition) {
+  if (provider === 'MLB') {
+    if (isMlbPitcherPosition(primaryPosition)) {
+      return season.statGroup === 'pitching'
+        || (season.statGroup === 'batting' && hasMetricAtLeast(
+          season,
+          ['plateAppearances', 'atBats'],
+          MLB_PITCHER_BATTING_MIN_PLATE_APPEARANCES,
+        ));
+    }
+    return season.statGroup === 'batting'
+      || (season.statGroup === 'pitching' && hasMetricAtLeast(
+        season,
+        ['inningsPitchedOuts'],
+        MLB_POSITION_PLAYER_PITCHING_MIN_OUTS,
+      ));
+  }
+
+  // NFL providers can emit all-zero rows for positions a player never played.
+  // Keep every real contribution (including a QB reception) while hiding those templates.
+  return hasPositiveMetric(season);
+}
+
 function normalizePlayer(rawEntry, provider, index) {
   if (!rawEntry || typeof rawEntry !== 'object') return null;
   const rawPlayer = rawEntry.player && typeof rawEntry.player === 'object' ? rawEntry.player : {};
@@ -108,25 +163,27 @@ function normalizePlayer(rawEntry, provider, index) {
   const athleteId = text(rawPlayer.athleteId);
   const name = text(rawPlayer.name);
   if (!athleteId || !name || text(rawPlayer.leagueCode).toUpperCase() !== provider) return null;
+  const primaryPosition = text(rawPlayer.primaryPosition);
 
   const seenSeasonKeys = new Set();
   const seasons = (Array.isArray(rawEntry.seasons) ? rawEntry.seasons : [])
     .map((season) => normalizeSeason(season, provider))
     .filter((season) => {
-      if (!season || seenSeasonKeys.has(season.seasonKey)) return false;
+      if (!season || !isRelevantProSportsSeason(season, provider, primaryPosition)
+        || seenSeasonKeys.has(season.seasonKey)) return false;
       seenSeasonKeys.add(season.seasonKey);
       return true;
     })
     .sort((left, right) => (
       right.seasonEndYear - left.seasonEndYear
-      || (left.phase === 'regular' ? -1 : 1)
+      || phaseRank(left.phase) - phaseRank(right.phase)
       || statGroupRank(provider, left.statGroup) - statGroupRank(provider, right.statGroup)
     ));
 
   return Object.freeze({
     athleteId,
     name,
-    primaryPosition: text(rawPlayer.primaryPosition),
+    primaryPosition,
     headshotUrl: safeImageUrl(rawPlayer.headshotUrl),
     subjectOrder: integer(rawMapping.subjectOrder) || index + 1,
     subjectRole: text(rawMapping.subjectRole) || 'primary',
@@ -168,16 +225,10 @@ export function normalizeProSportsSlabStatsPayload(rawPayload, expectedProductId
 }
 
 function preferredStatGroup(provider, primaryPosition) {
-  const position = text(primaryPosition).toUpperCase();
   if (provider === 'MLB') {
-    return /(^|[^A-Z])P($|[^A-Z])|PITCH|LHP|RHP/.test(position) ? 'pitching' : 'batting';
+    return isMlbPitcherPosition(primaryPosition) ? 'pitching' : 'batting';
   }
-  if (position === 'QB') return 'passing';
-  if (['RB', 'FB'].includes(position)) return 'rushing';
-  if (['WR', 'TE'].includes(position)) return 'receiving';
-  if (['K', 'PK'].includes(position)) return 'kicking';
-  if (/(^|[^A-Z])(DE|DT|NT|DL|LB|OLB|ILB|CB|S|FS|SS|DB)($|[^A-Z])/.test(position)) return 'defense';
-  return '';
+  return nflPrimaryStatGroup(primaryPosition);
 }
 
 export function chooseDefaultProSportsSeason(player, provider) {

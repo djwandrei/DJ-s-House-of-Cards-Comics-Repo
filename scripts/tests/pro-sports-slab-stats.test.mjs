@@ -105,11 +105,49 @@ test('MLB normalization retains only expected provider fields and depicted-posit
   const normalized = normalizeProSportsSlabStatsPayload(mlbPayload(), 101);
   assert.equal(normalized.provider, 'MLB');
   assert.equal(normalized.players.length, 1);
-  assert.equal(normalized.players[0].seasons.length, 3);
+  assert.equal(normalized.players[0].seasons.length, 2);
 
   const selection = chooseDefaultProSportsSeason(normalized.players[0], normalized.provider);
   assert.equal(selection.reason, 'depicted_season');
   assert.equal(selection.season.seasonKey, '2024:regular:batting');
+});
+
+test('MLB scorebook-code pitchers hide ordinary batting seasons but retain real two-way seasons', () => {
+  const raw = mlbPayload();
+  raw.players[0].player.primaryPosition = '/1';
+  raw.players[0].seasons = [{
+    seasonEndYear: 2024,
+    seasonLabel: '2024',
+    phase: 'regular',
+    statGroup: 'pitching',
+    gamesPlayed: 30,
+    metrics: { inningsPitchedOuts: 450, strikeouts: 170 },
+  }, {
+    seasonEndYear: 2024,
+    seasonLabel: '2024',
+    phase: 'regular',
+    statGroup: 'batting',
+    gamesPlayed: 30,
+    metrics: { plateAppearances: 149, atBats: 132, hits: 29 },
+  }, {
+    seasonEndYear: 2023,
+    seasonLabel: '2023',
+    phase: 'regular',
+    statGroup: 'batting',
+    gamesPlayed: 120,
+    metrics: { plateAppearances: 415, atBats: 370, hits: 100 },
+  }];
+
+  const normalized = normalizeProSportsSlabStatsPayload(raw, 101);
+  assert.deepEqual(
+    normalized.players[0].seasons.map((season) => season.seasonKey),
+    ['2024:regular:pitching', '2023:regular:batting'],
+  );
+  assert.equal(
+    chooseDefaultProSportsSeason(normalized.players[0], normalized.provider).season.seasonKey,
+    '2024:regular:pitching',
+  );
+  assert.doesNotMatch(renderProSportsSlabStatsPanel(normalized), /2024 - Regular season · Batting/);
 });
 
 test('NFL position preference selects passing when a depicted year has multiple stat groups', () => {
@@ -129,6 +167,44 @@ test('NFL position preference selects passing when a depicted year has multiple 
   const markup = renderProSportsSeasonStats(normalized.players[0], normalized.provider, selection.season.seasonKey);
   assert.match(markup, /<span>YDS<\/span><strong>4,300<\/strong>/);
   assert.match(markup, /<span>CMP%<\/span><strong>67\.4%<\/strong>/);
+});
+
+test('NFL suppresses all-zero cross-position templates while retaining actual multi-role contributions', () => {
+  const raw = nflPayload();
+  raw.players[0].seasons.push({
+    seasonEndYear: 2023,
+    seasonLabel: '2023',
+    phase: 'regular',
+    statGroup: 'receiving',
+    gamesPlayed: 17,
+    metrics: { receptions: 0, targets: 0, receivingYards: 0, receivingTouchdowns: 0 },
+  }, {
+    seasonEndYear: 2023,
+    seasonLabel: '2023',
+    phase: 'regular',
+    statGroup: 'rushing',
+    gamesPlayed: 17,
+    metrics: { attempts: 44, rushingYards: 200, rushingTouchdowns: 2 },
+  });
+
+  const normalized = normalizeProSportsSlabStatsPayload(raw, 202);
+  assert.deepEqual(
+    normalized.players[0].seasons.map((season) => season.seasonKey),
+    ['2023:regular:passing', '2023:regular:rushing'],
+  );
+  assert.doesNotMatch(renderProSportsSlabStatsPanel(normalized), /Receiving/);
+
+  raw.players[0].seasons[1].metrics = {
+    receptions: 1,
+    targets: 1,
+    receivingYards: 12,
+    receivingTouchdowns: 0,
+  };
+  const withRealReception = normalizeProSportsSlabStatsPayload(raw, 202);
+  assert.ok(
+    withRealReception.players[0].seasons.some((season) => season.seasonKey === '2023:regular:receiving'),
+    'a real QB reception must remain selectable',
+  );
 });
 
 test('payload verification rejects the wrong provider or product and discards unsafe headshots', () => {

@@ -1,0 +1,32 @@
+# MLB/NFL position-aware Slab-to-Stats release. This zero-delete path list
+# includes only the revised selector, cache generation, and pages whose
+# versioned assets must advance together.
+about.html
+account.html
+admin.html
+baseball-cards.html
+basketball-cards.html
+cart.html
+checkout-success.html
+collectibles.html
+comics.html
+contact.html
+core.js
+football-cards.html
+inbox.html
+index.html
+metrics.html
+offer.html
+offline.html
+policies.html
+pro-sports-slab-stats.mjs
+returns.html
+sell-trade-want-list.html
+shipping.html
+shop.html
+sports-cards.html
+sw.js
+tools/index.html
+tools/player-card-matchups/index.html
+tools/workshop/index.html
+wishlist.html
