@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildRapmObservations,
   fitWeightedRidgeOffenseDefenseRapm,
+  evaluateOffenseDefenseRapmCalibration,
   fitWeightedRidgeRapm,
   RAPM_MODEL_VERSION,
   RAPM_OFFENSE_DEFENSE_MODEL_VERSION,
@@ -28,6 +29,49 @@ function crossValidationStints() {
     { gameId: 'game-c', stintOrdinal: 1, homePlayerIds: home, awayPlayerIds: away, homePoints: 17, awayPoints: 8, homeOffensivePossessions: 10, awayOffensivePossessions: 10 },
     { gameId: 'game-d', stintOrdinal: 1, homePlayerIds: away, awayPlayerIds: home, homePoints: 7, awayPoints: 19, homeOffensivePossessions: 10, awayOffensivePossessions: 10 },
   ];
+}
+
+// Five synthetic lineups independently vary offensive and defensive player
+// value. Unlike a simple two-team fixture, this lets an out-of-fold test check
+// that each component earns its place in the prediction after the other one is
+// held fixed. Scores remain integer because every rate increment is a multiple
+// of 1 point across 50 possessions.
+function calibrationStints() {
+  const lineups = [
+    { prefix: 'offense-strong', offense: 0.04, defense: 0 },
+    { prefix: 'defense-strong', offense: 0, defense: 0.04 },
+    { prefix: 'offense-weak', offense: -0.04, defense: 0 },
+    { prefix: 'defense-weak', offense: 0, defense: -0.04 },
+    { prefix: 'neutral', offense: 0, defense: 0 },
+  ].map((lineup) => ({
+    ...lineup,
+    players: Array.from({ length: 5 }, (_, index) => `${lineup.prefix}-${index + 1}`),
+  }));
+  const possessions = 50;
+  const homeCourtRate = 0.02;
+  const stints = [];
+  let gameNumber = 1;
+  for (let homeIndex = 0; homeIndex < lineups.length; homeIndex += 1) {
+    for (let awayIndex = 0; awayIndex < lineups.length; awayIndex += 1) {
+      if (homeIndex === awayIndex) continue;
+      const homeLineup = lineups[homeIndex];
+      const awayLineup = lineups[awayIndex];
+      const homeRate = 1 + homeCourtRate + homeLineup.offense - awayLineup.defense;
+      const awayRate = 1 - homeCourtRate + awayLineup.offense - homeLineup.defense;
+      stints.push({
+        gameId: `calibration-${String(gameNumber).padStart(2, '0')}`,
+        stintOrdinal: 1,
+        homePlayerIds: homeLineup.players,
+        awayPlayerIds: awayLineup.players,
+        homePoints: Math.round(homeRate * possessions),
+        awayPoints: Math.round(awayRate * possessions),
+        homeOffensivePossessions: possessions,
+        awayOffensivePossessions: possessions,
+      });
+      gameNumber += 1;
+    }
+  }
+  return stints;
 }
 
 test('RAPM observation build excludes invalid rows rather than inventing a lineup', () => {
@@ -256,6 +300,30 @@ test('separate offense/defense RAPM is deterministic and uses the documented def
   assert.ok([1, 10].includes(selected.selectedLambda));
   assert.equal(selected.foldCount, 2);
   assert.deepEqual(selected, selectedReversed);
+});
+
+test('offense/defense calibration uses held-out games and validates both player components against a venue baseline', () => {
+  const stints = calibrationStints();
+  const first = evaluateOffenseDefenseRapmCalibration(stints, { lambda: 1, foldCount: 5 });
+  const second = evaluateOffenseDefenseRapmCalibration([...stints].reverse(), { lambda: 1, foldCount: 5 });
+
+  assert.deepEqual(first, second, 'the calibration report must be independent of input order');
+  assert.equal(first.status, 'validated');
+  assert.equal(first.foldCount, 5);
+  assert.equal(first.gameCount, 20);
+  assert.equal(first.heldOutPossessions, 2_000);
+  assert.equal(first.unseenPlayerPossessionShare, 0);
+  assert.ok(first.fullModel.weightedMse < first.venueBaseline.weightedMse);
+  assert.ok(first.fullModel.weightedMse < first.withoutOffensePlayerEffects.weightedMse);
+  assert.ok(first.fullModel.weightedMse < first.withoutDefensePlayerEffects.weightedMse);
+  assert.equal(first.fullModelImprovesBaseline, true);
+  assert.equal(first.offenseComponentDoesNotDegrade, true);
+  assert.equal(first.defenseComponentDoesNotDegrade, true);
+  assert.equal(first.allComponentsImproved, true);
+  assert.throws(
+    () => evaluateOffenseDefenseRapmCalibration(stints, { lambda: 'auto' }),
+    /already-selected numeric lambda/,
+  );
 });
 
 test('RAPM rejects a zero or negative ridge lambda', () => {

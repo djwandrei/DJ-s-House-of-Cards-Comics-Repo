@@ -4,9 +4,47 @@ import {
   addDirectPlayerStatistic,
   createDirectPlayerEventLine,
   homeCourtExposureAdjustmentPer100,
+  optionsFromArgs,
   playerProfileFromEvents,
   selectPossessionObservedBoundaryLineups,
+  sourceArchiveValidationStatus,
 } from '../derive-local-scout-analytics.mjs';
+
+test('calibration-only derivation writes a bounded report instead of a full package', () => {
+  const options = optionsFromArgs([
+    '--archive-dir', 'outputs/fixture-source',
+    '--calibration-only',
+    '--calibration-report', 'outputs/fixture-calibration.json',
+  ]);
+  assert.equal(options.calibrationOnly, true);
+  assert.match(options.calibrationReport, /fixture-calibration\.json$/);
+  assert.throws(
+    () => optionsFromArgs(['--archive-dir', 'outputs/fixture-source', '--calibration-only=yes']),
+    /does not accept a value/,
+  );
+});
+
+test('calibration provenance uses the checkpoint report verdict instead of a nonexistent season verdict', () => {
+  const validated = sourceArchiveValidationStatus({
+    passed: true,
+    seasons: [{ seasonStartYear: 2025, manifest: { completedEntries: 1400 } }],
+  }, 2025);
+  assert.equal(validated.sourceArchiveValidationReportPassed, true);
+  assert.equal(validated.sourceArchiveValidationSeasonPresent, true);
+  assert.equal(validated.sourceArchiveValidationPassed, true);
+
+  const wrongSeason = sourceArchiveValidationStatus({
+    passed: true,
+    seasons: [{ seasonStartYear: 2024 }],
+  }, 2025);
+  assert.equal(wrongSeason.sourceArchiveValidationPassed, false);
+
+  const failedReport = sourceArchiveValidationStatus({
+    passed: false,
+    seasons: [{ seasonStartYear: 2025 }],
+  }, 2025);
+  assert.equal(failedReport.sourceArchiveValidationPassed, false);
+});
 
 test('lineup home-court context scales the net RAPM venue effect by observed exposure', () => {
   assert.equal(homeCourtExposureAdjustmentPer100({

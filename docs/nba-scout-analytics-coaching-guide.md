@@ -69,6 +69,18 @@ The package fits weighted ridge RAPM on current reconstructed possession-start l
 
 RAPM is best for choosing which players merit more lineup experiments, estimating an unseen five-man group, and avoiding raw-plus-minus traps. It is not a final player ranking. Ridge regularization shrinks noisy samples, and lineup deployment is not random.
 
+### Offense/defense calibration gate
+
+Before an offense/defense RAPM model can influence a Scout-enabled optimizer, it must carry a completed held-out game calibration. The training fold estimates a neutral-venue scoring baseline and signed home-court effect separately from player coefficients. The held-out fold then compares four predictions: the full player model, the venue-only baseline, the same model without offensive player terms, and the same model without defensive player terms.
+
+The report shows weighted scoring error per 100 possessions, the full-model improvement versus the venue baseline, and the conditional contribution of each player component. A `validated` result means the full model beat the venue-only baseline and neither the offensive nor defensive component degraded held-out error beyond numerical tolerance. It does **not** prove a player caused the result, nor does it convert a historical rotation into a recommended depth chart. Players unseen in a training fold receive the explicit zero-effect ridge prior, and that held-out possession share is shown rather than hidden.
+
+For a repeatable quality check without recreating the larger Scout package, run
+the derivation script with `--calibration-only` and a new
+`--calibration-report` path. That mode replays the same vetted source archive,
+writes only a compact immutable report, refuses to overwrite an existing one,
+and performs no Supabase or public-site write.
+
 ### Lineup projection
 
 For an unseen five-player lineup, the neutral projection starts with the sum of the five players’ net RAPM values. For an observed exact lineup, it adds a possession-shrunk residual synergy after opponent and home-court exposure adjustment. The home-court adjustment uses the net RAPM model's signed home-versus-away term, weighted by that lineup's actual home/away possession exposure, so its context adjustment stays in the same fitted model as its player values.

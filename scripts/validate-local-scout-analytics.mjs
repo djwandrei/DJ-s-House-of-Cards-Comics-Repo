@@ -666,6 +666,150 @@ function checkProjection(row, playerRapm, netRapm, index, errors) {
   if (!closeEnough(projection.projectedNetRatingPer100, expectedNeutral)) errors.push(`combination.${index} neutral projection does not reconcile.`);
 }
 
+function finiteCalibrationNumber(value) {
+  if (value === null || value === undefined || typeof value === 'boolean') return null;
+  if (typeof value === 'string' && !value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function calibrationMseImprovement(reference, candidate) {
+  if (!(reference > 0) || !Number.isFinite(candidate)) return null;
+  return (reference - candidate) / reference;
+}
+
+/**
+ * New Scout packages include a compact O/D RAPM calibration report. Legacy
+ * packages are still structurally valid and receive a warning, because a
+ * package may need archival import before it is eligible for optimizer use.
+ * A package that *does* claim a calibration must pass every reconciliation and
+ * its own validation gate; otherwise the source-validation report fails closed.
+ */
+export function checkOffenseDefenseRapmCalibration(calibration, odRapm, errors, warnings) {
+  if (!calibration || typeof calibration !== 'object' || Array.isArray(calibration)) {
+    warnings.push('Offense/defense RAPM has no held-out calibration report; keep it out of Scout optimizer mode.');
+    return;
+  }
+  if (calibration.version !== 'game_fold_directional_ablation_v1') {
+    errors.push('Offense/defense RAPM calibration version is unsupported.');
+  }
+  if (calibration.method !== 'deterministic_sorted_game_round_robin_fixed_lambda_weighted_out_of_fold_v1') {
+    errors.push('Offense/defense RAPM calibration method is invalid.');
+  }
+  const scalarFields = [
+    'fixedLambda',
+    'requestedFoldCount',
+    'foldCount',
+    'gameCount',
+    'directionalObservationCount',
+    'heldOutPossessions',
+    'unseenPlayerDirectionPossessions',
+    'unseenPlayerDirectionCount',
+    'unseenPlayerPossessionShare',
+  ];
+  for (const field of scalarFields) {
+    if (finiteCalibrationNumber(calibration[field]) === null) {
+      errors.push(`Offense/defense RAPM calibration ${field} is invalid.`);
+    }
+  }
+  if (!closeEnough(calibration.fixedLambda, odRapm.lambda, 1e-12)) {
+    errors.push('Offense/defense RAPM calibration lambda does not match the fitted model.');
+  }
+  if (!Number.isInteger(calibration.requestedFoldCount) || calibration.requestedFoldCount < 2
+    || !Number.isInteger(calibration.foldCount) || calibration.foldCount < 2
+    || calibration.foldCount > calibration.gameCount) {
+    errors.push('Offense/defense RAPM calibration fold counts are invalid.');
+  }
+  if (calibration.gameCount !== odRapm.gameCount
+    || calibration.directionalObservationCount !== odRapm.directionalObservationCount
+    || !closeEnough(calibration.heldOutPossessions, odRapm.totalOffensivePossessions, 0.001)) {
+    errors.push('Offense/defense RAPM calibration coverage does not reconcile to the fitted model.');
+  }
+  if (calibration.unseenPlayerDirectionPossessions < 0 || calibration.unseenPlayerDirectionCount < 0
+    || calibration.unseenPlayerDirectionPossessions > calibration.heldOutPossessions
+    || calibration.unseenPlayerPossessionShare < 0 || calibration.unseenPlayerPossessionShare > 1
+    || !closeEnough(
+      calibration.unseenPlayerPossessionShare,
+      calibration.heldOutPossessions > 0
+        ? calibration.unseenPlayerDirectionPossessions / calibration.heldOutPossessions
+        : null,
+      1e-12,
+    )) {
+    errors.push('Offense/defense RAPM calibration unseen-player coverage is invalid.');
+  }
+
+  const predictionMetrics = {};
+  for (const field of [
+    'fullModel',
+    'venueBaseline',
+    'withoutOffensePlayerEffects',
+    'withoutDefensePlayerEffects',
+  ]) {
+    const metrics = calibration[field];
+    if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)) {
+      errors.push(`Offense/defense RAPM calibration ${field} metrics are missing.`);
+      continue;
+    }
+    for (const key of [
+      'weightedMse',
+      'weightedRmsePer100',
+      'weightedMaePer100',
+      'weightedBiasPredictedMinusObservedPer100',
+      'heldOutPossessions',
+      'directionalObservationCount',
+    ]) {
+      if (finiteCalibrationNumber(metrics[key]) === null) {
+        errors.push(`Offense/defense RAPM calibration ${field}.${key} is invalid.`);
+      }
+    }
+    if (metrics.weightedMse < 0 || metrics.weightedRmsePer100 < 0 || metrics.weightedMaePer100 < 0
+      || !closeEnough(metrics.weightedRmsePer100, 100 * Math.sqrt(metrics.weightedMse), 1e-9)
+      || metrics.heldOutPossessions !== calibration.heldOutPossessions
+      || metrics.directionalObservationCount !== calibration.directionalObservationCount) {
+      errors.push(`Offense/defense RAPM calibration ${field} metrics do not reconcile.`);
+    }
+    predictionMetrics[field] = metrics;
+  }
+  const fullModel = predictionMetrics.fullModel;
+  const venueBaseline = predictionMetrics.venueBaseline;
+  const withoutOffense = predictionMetrics.withoutOffensePlayerEffects;
+  const withoutDefense = predictionMetrics.withoutDefensePlayerEffects;
+  if (!fullModel || !venueBaseline || !withoutOffense || !withoutDefense) return;
+
+  const fullImprovement = calibrationMseImprovement(venueBaseline.weightedMse, fullModel.weightedMse);
+  const offenseImprovement = calibrationMseImprovement(withoutOffense.weightedMse, fullModel.weightedMse);
+  const defenseImprovement = calibrationMseImprovement(withoutDefense.weightedMse, fullModel.weightedMse);
+  for (const [field, expected] of [
+    ['fullModelMseImprovementVsVenueBaseline', fullImprovement],
+    ['offenseComponentMseImprovementVsWithoutOffense', offenseImprovement],
+    ['defenseComponentMseImprovementVsWithoutDefense', defenseImprovement],
+  ]) {
+    if (!Number.isFinite(expected) || !closeEnough(calibration[field], expected, 1e-9)) {
+      errors.push(`Offense/defense RAPM calibration ${field} does not reconcile.`);
+    }
+  }
+  const epsilon = 1e-9;
+  const expectedFullImprovesBaseline = fullImprovement !== null && fullImprovement > epsilon;
+  const expectedOffenseDoesNotDegrade = offenseImprovement !== null && offenseImprovement >= -epsilon;
+  const expectedDefenseDoesNotDegrade = defenseImprovement !== null && defenseImprovement >= -epsilon;
+  const expectedAllComponentsImproved = expectedFullImprovesBaseline
+    && expectedOffenseDoesNotDegrade
+    && expectedDefenseDoesNotDegrade;
+  if (calibration.fullModelImprovesBaseline !== expectedFullImprovesBaseline
+    || calibration.offenseComponentDoesNotDegrade !== expectedOffenseDoesNotDegrade
+    || calibration.defenseComponentDoesNotDegrade !== expectedDefenseDoesNotDegrade
+    || calibration.allComponentsImproved !== expectedAllComponentsImproved
+    || calibration.status !== (expectedAllComponentsImproved ? 'validated' : 'not_validated')) {
+    errors.push('Offense/defense RAPM calibration status does not match its held-out results.');
+  }
+  if (!expectedAllComponentsImproved) {
+    errors.push('Offense/defense RAPM did not clear its held-out venue-baseline and component-ablation gate.');
+  }
+  if (calibration.unseenPlayerPossessionShare > 0.1) {
+    warnings.push('More than 10% of O/D RAPM held-out possessions used the zero-effect prior for unseen players.');
+  }
+}
+
 async function validate() {
   const options = parseArgs(process.argv.slice(2));
   const [inputRaw, validationRaw] = await Promise.all([
@@ -872,6 +1016,7 @@ async function validate() {
   if (odRapm.lambdaSelection && odRapm.lambdaSelection.selectedLambda !== odRapm.lambda) errors.push('Offense/defense RAPM selected lambda does not reconcile.');
   if (netRapm.lambdaSelection?.selectedAtBoundary) warnings.push(`Net RAPM selected the ${netRapm.lambdaSelection.selectedBoundary} lambda-grid boundary.`);
   if (odRapm.lambdaSelection?.selectedAtBoundary) warnings.push(`Offense/defense RAPM selected the ${odRapm.lambdaSelection.selectedBoundary} lambda-grid boundary.`);
+  checkOffenseDefenseRapmCalibration(odRapm.calibration, odRapm, errors, warnings);
   if (netRapm.observationCount !== coverage.rapmGroupedObservations) errors.push('Net RAPM observation count does not reconcile.');
   if (netRapm.gameCount !== coverage.archivesEligible || odRapm.gameCount !== coverage.archivesEligible) errors.push('RAPM game counts do not reconcile.');
   if (!Array.isArray(netRapm.players) || !netRapm.players.length) errors.push('Net RAPM players are missing.');

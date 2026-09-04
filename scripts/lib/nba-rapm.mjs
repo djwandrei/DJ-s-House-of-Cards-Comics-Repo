@@ -2,9 +2,17 @@ import crypto from 'node:crypto';
 
 export const RAPM_MODEL_VERSION = 'weighted_ridge_rapm_v1';
 export const RAPM_OFFENSE_DEFENSE_MODEL_VERSION = 'weighted_ridge_offense_defense_rapm_v2';
+// This is intentionally a calibration-report version, not a new player-RAPM
+// formulation. It lets downstream consumers distinguish a model with a
+// reproducible held-out test from one that merely converged in sample.
+export const RAPM_OFFENSE_DEFENSE_CALIBRATION_VERSION = 'game_fold_directional_ablation_v1';
 export const DEFAULT_RAPM_LAMBDA_CANDIDATES = Object.freeze([1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]);
 export const DEFAULT_RAPM_DISPLAY_POSSESSION_THRESHOLDS = Object.freeze([200, 500, 1000]);
 const OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT = 2;
+// Avoid labeling a floating-point rounding artifact as predictive improvement.
+// This is a numerical tolerance (one part per billion of MSE), not a hidden
+// quality threshold; the actual held-out improvement remains fully reported.
+const CALIBRATION_MSE_NUMERIC_EPSILON = 1e-9;
 
 function asFiniteNumber(value, name) {
   const parsed = Number(value);
@@ -356,6 +364,12 @@ function offenseDefenseDesignRows(observations, playerIds) {
       side,
       weight: possessions,
       response: points / possessions,
+      // Preserve the two lineup sides explicitly for calibration. The sparse
+      // feature list remains the fitting source of truth, while these bounded
+      // five-player arrays make offense/defense ablations auditable without
+      // reverse-engineering column offsets from a held-out fold.
+      offensePlayerIds,
+      defensePlayerIds,
       features: [
         [0, 1],
         [1, side === 'home' ? 1 : -1],
@@ -395,6 +409,296 @@ function assertSignedHomeCourtRows(rows, context) {
   }
 }
 
+/**
+ * Assign complete games to deterministic round-robin folds. Keeping all of a
+ * game's stints together prevents the model from learning a lineup from one
+ * possession and "predicting" another possession from the very same game.
+ */
+function buildDeterministicGameFoldPlan(rows, foldCount) {
+  const requestedFoldCount = normalizedFoldCount(foldCount);
+  const gameIds = [...new Set(rows.map((row) => row.gameId))]
+    .sort((left, right) => left.localeCompare(right));
+  if (gameIds.length < 2) throw new RangeError('Calibration requires at least two distinct games.');
+  const actualFoldCount = Math.min(requestedFoldCount, gameIds.length);
+  const foldByGameId = new Map(gameIds.map((gameId, index) => [gameId, index % actualFoldCount]));
+  const folds = Array.from({ length: actualFoldCount }, (_, foldIndex) => ({
+    foldIndex,
+    gameIds: gameIds.filter((gameId) => foldByGameId.get(gameId) === foldIndex),
+  }));
+  return {
+    requestedFoldCount,
+    actualFoldCount,
+    gameIds,
+    foldByGameId,
+    folds,
+  };
+}
+
+function emptyPredictionMetrics() {
+  return {
+    weightedSquaredError: 0,
+    weightedAbsoluteError: 0,
+    weightedPredictedMinusObserved: 0,
+    weight: 0,
+    directionalObservationCount: 0,
+  };
+}
+
+function addPredictionMetrics(metrics, row, prediction) {
+  if (!Number.isFinite(prediction)) throw new RangeError('Calibration produced a non-finite held-out prediction.');
+  const error = row.response - prediction;
+  metrics.weightedSquaredError += row.weight * error * error;
+  metrics.weightedAbsoluteError += row.weight * Math.abs(error);
+  metrics.weightedPredictedMinusObserved += row.weight * (prediction - row.response);
+  metrics.weight += row.weight;
+  metrics.directionalObservationCount += 1;
+}
+
+function finalizedPredictionMetrics(metrics) {
+  if (!(metrics.weight > 0)) throw new RangeError('Calibration has no held-out offensive possessions.');
+  const weightedMse = metrics.weightedSquaredError / metrics.weight;
+  return {
+    weightedMse,
+    weightedRmsePer100: 100 * Math.sqrt(weightedMse),
+    weightedMaePer100: 100 * (metrics.weightedAbsoluteError / metrics.weight),
+    weightedBiasPredictedMinusObservedPer100: 100 * (metrics.weightedPredictedMinusObserved / metrics.weight),
+    heldOutPossessions: metrics.weight,
+    directionalObservationCount: metrics.directionalObservationCount,
+  };
+}
+
+function mseImprovement(reference, candidate) {
+  if (!(reference?.weightedMse > 0) || !Number.isFinite(candidate?.weightedMse)) return null;
+  return (reference.weightedMse - candidate.weightedMse) / reference.weightedMse;
+}
+
+/**
+ * Fit only the fixed neutral-venue and signed-home-court terms on a training
+ * fold. This is the appropriate low-information comparison for the full RAPM
+ * model: it knows the scoring environment and location, but nothing about the
+ * ten players on the floor.
+ */
+function fitVenueOnlyBaseline(rows, { tolerance, maxIterations } = {}) {
+  assertSignedHomeCourtRows(rows, 'Venue baseline');
+  const venueRows = rows.map((row) => ({
+    gameId: row.gameId,
+    side: row.side,
+    weight: row.weight,
+    response: row.response,
+    features: [[0, 1], [1, row.side === 'home' ? 1 : -1]],
+  }));
+  const solved = solveSparseWeightedRidge(venueRows, OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT, 0, {
+    tolerance,
+    maxIterations,
+    unregularizedColumnCount: OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT,
+  });
+  if (!solved.converged) throw new RangeError('Venue-only calibration baseline did not converge.');
+  return {
+    baselinePerPossession: solved.coefficients[0],
+    homeCourtEffectPerPossession: solved.coefficients[1],
+    solver: solved,
+  };
+}
+
+function observationToStint(observation) {
+  return {
+    gameId: observation.gameId,
+    stintOrdinal: observation.stintOrdinal,
+    homePlayerIds: observation.homePlayerIds,
+    awayPlayerIds: observation.awayPlayerIds,
+    homePoints: observation.homePoints,
+    awayPoints: observation.awayPoints,
+    homeOffensePoints: observation.homeOffensePoints,
+    awayOffensePoints: observation.awayOffensePoints,
+    homeOffensivePossessions: observation.homeOffensivePossessions,
+    awayOffensivePossessions: observation.awayOffensivePossessions,
+  };
+}
+
+function heldOutPlayerEffects(row, playersById) {
+  let offensePerPossession = 0;
+  let defensePerPossession = 0;
+  const unseenPlayerIds = new Set();
+  for (const playerId of row.offensePlayerIds) {
+    const player = playersById.get(playerId);
+    if (!player) {
+      // Zero is the explicit ridge prior for an unseen player, not a claim
+      // that the player is average. We record its possession share below so
+      // calibration cannot hide a large out-of-fold identity gap.
+      unseenPlayerIds.add(playerId);
+      continue;
+    }
+    offensePerPossession += Number(player.offensiveRapmPer100) / 100;
+  }
+  for (const playerId of row.defensePlayerIds) {
+    const player = playersById.get(playerId);
+    if (!player) {
+      unseenPlayerIds.add(playerId);
+      continue;
+    }
+    defensePerPossession += Number(player.defensiveRapmPer100) / 100;
+  }
+  return { offensePerPossession, defensePerPossession, unseenPlayerIds };
+}
+
+/**
+ * Evaluate a fixed-lambda offense/defense RAPM model on held-out *games*.
+ *
+ * The full model is compared with (1) a venue-only scoring baseline and (2)
+ * directional ablations that remove only the offense or defense player terms.
+ * The latter two comparisons are the honest way to ask whether each component
+ * adds predictive information conditional on the other component; individual
+ * offense and defense coefficients do not have a directly observable
+ * counterfactual target on a single possession.
+ */
+export function evaluateOffenseDefenseRapmCalibration(stints, {
+  lambda = 100,
+  foldCount = 5,
+  solverTolerance = 1e-10,
+  solverMaxIterations = null,
+} = {}) {
+  if (lambda === 'auto') {
+    throw new TypeError('Calibration requires the already-selected numeric lambda so held-out scores do not silently reuse tuning data.');
+  }
+  const ridgeLambda = asFiniteNumber(lambda, 'lambda');
+  if (!(ridgeLambda > 0)) throw new RangeError('lambda must be greater than zero.');
+  const tolerance = asFiniteNumber(solverTolerance, 'solverTolerance');
+  if (!(tolerance > 0)) throw new RangeError('solverTolerance must be greater than zero.');
+  let maxIterations;
+  if (solverMaxIterations !== null && solverMaxIterations !== undefined) {
+    maxIterations = Number(solverMaxIterations);
+    if (!Number.isInteger(maxIterations) || maxIterations <= 0) {
+      throw new TypeError('solverMaxIterations must be a positive integer when provided.');
+    }
+  }
+
+  const { observations, excluded } = buildRapmObservations(stints);
+  if (!observations.length) throw new RangeError('No valid paired five-on-five stints are available for calibration.');
+  const playerIds = observationPlayerIds(observations);
+  const { rows, skippedDirections } = offenseDefenseDesignRows(observations, playerIds);
+  if (!rows.length) throw new RangeError('No positive offensive-possession observations are available for calibration.');
+  assertSignedHomeCourtRows(rows, 'Offense/defense calibration');
+  const foldPlan = buildDeterministicGameFoldPlan(rows, foldCount);
+  const fullModelMetrics = emptyPredictionMetrics();
+  const venueBaselineMetrics = emptyPredictionMetrics();
+  const withoutOffensePlayerEffectsMetrics = emptyPredictionMetrics();
+  const withoutDefensePlayerEffectsMetrics = emptyPredictionMetrics();
+  let unseenPlayerDirectionPossessions = 0;
+  let unseenPlayerDirectionCount = 0;
+
+  for (let foldIndex = 0; foldIndex < foldPlan.actualFoldCount; foldIndex += 1) {
+    const trainingObservations = observations.filter(
+      (observation) => foldPlan.foldByGameId.get(observation.gameId) !== foldIndex,
+    );
+    const heldOutObservations = observations.filter(
+      (observation) => foldPlan.foldByGameId.get(observation.gameId) === foldIndex,
+    );
+    const trainingPlayerIds = observationPlayerIds(trainingObservations);
+    const { rows: trainingRows } = offenseDefenseDesignRows(trainingObservations, trainingPlayerIds);
+    assertSignedHomeCourtRows(trainingRows, `Calibration training fold ${foldIndex}`);
+    const heldOutRows = offenseDefenseDesignRows(heldOutObservations, playerIds).rows;
+    const fitted = fitWeightedRidgeOffenseDefenseRapm(
+      trainingObservations.map(observationToStint),
+      {
+        lambda: ridgeLambda,
+        solverTolerance: tolerance,
+        solverMaxIterations: maxIterations ?? null,
+      },
+    );
+    const venueBaseline = fitVenueOnlyBaseline(trainingRows, {
+      tolerance,
+      maxIterations: maxIterations ?? undefined,
+    });
+    const playersById = new Map(fitted.players.map((player) => [player.providerPlayerId, player]));
+    for (const row of heldOutRows) {
+      const venueSign = row.side === 'home' ? 1 : -1;
+      const fittedVenuePrediction = (fitted.baselineOffensiveRatingPer100
+        + (venueSign * fitted.homeCourtEffectPer100)) / 100;
+      const baselinePrediction = venueBaseline.baselinePerPossession
+        + (venueSign * venueBaseline.homeCourtEffectPerPossession);
+      const effects = heldOutPlayerEffects(row, playersById);
+      const fullPrediction = fittedVenuePrediction
+        + effects.offensePerPossession
+        - effects.defensePerPossession;
+      const withoutOffensePlayerEffectsPrediction = fittedVenuePrediction - effects.defensePerPossession;
+      const withoutDefensePlayerEffectsPrediction = fittedVenuePrediction + effects.offensePerPossession;
+      addPredictionMetrics(fullModelMetrics, row, fullPrediction);
+      addPredictionMetrics(venueBaselineMetrics, row, baselinePrediction);
+      addPredictionMetrics(withoutOffensePlayerEffectsMetrics, row, withoutOffensePlayerEffectsPrediction);
+      addPredictionMetrics(withoutDefensePlayerEffectsMetrics, row, withoutDefensePlayerEffectsPrediction);
+      if (effects.unseenPlayerIds.size > 0) {
+        unseenPlayerDirectionPossessions += row.weight;
+        unseenPlayerDirectionCount += 1;
+      }
+    }
+  }
+
+  const fullModel = finalizedPredictionMetrics(fullModelMetrics);
+  const venueBaseline = finalizedPredictionMetrics(venueBaselineMetrics);
+  const withoutOffensePlayerEffects = finalizedPredictionMetrics(withoutOffensePlayerEffectsMetrics);
+  const withoutDefensePlayerEffects = finalizedPredictionMetrics(withoutDefensePlayerEffectsMetrics);
+  const fullModelMseImprovementVsVenueBaseline = mseImprovement(venueBaseline, fullModel);
+  const offenseComponentMseImprovementVsWithoutOffense = mseImprovement(withoutOffensePlayerEffects, fullModel);
+  const defenseComponentMseImprovementVsWithoutDefense = mseImprovement(withoutDefensePlayerEffects, fullModel);
+  // `>= 0` is intentional for the two ablations: an exactly neutral component
+  // does not make a previously validated full model worse. The full model must
+  // still beat the low-information venue baseline by a strictly positive amount.
+  const fullModelImprovesBaseline = fullModelMseImprovementVsVenueBaseline !== null
+    && fullModelMseImprovementVsVenueBaseline > CALIBRATION_MSE_NUMERIC_EPSILON;
+  const offenseComponentDoesNotDegrade = offenseComponentMseImprovementVsWithoutOffense !== null
+    && offenseComponentMseImprovementVsWithoutOffense >= -CALIBRATION_MSE_NUMERIC_EPSILON;
+  const defenseComponentDoesNotDegrade = defenseComponentMseImprovementVsWithoutDefense !== null
+    && defenseComponentMseImprovementVsWithoutDefense >= -CALIBRATION_MSE_NUMERIC_EPSILON;
+  const allComponentsImproved = fullModelImprovesBaseline
+    && offenseComponentDoesNotDegrade
+    && defenseComponentDoesNotDegrade;
+
+  return {
+    version: RAPM_OFFENSE_DEFENSE_CALIBRATION_VERSION,
+    status: allComponentsImproved ? 'validated' : 'not_validated',
+    method: 'deterministic_sorted_game_round_robin_fixed_lambda_weighted_out_of_fold_v1',
+    fixedLambda: ridgeLambda,
+    requestedFoldCount: foldPlan.requestedFoldCount,
+    foldCount: foldPlan.actualFoldCount,
+    gameCount: foldPlan.gameIds.length,
+    directionalObservationCount: rows.length,
+    heldOutPossessions: fullModel.heldOutPossessions,
+    fullModel,
+    venueBaseline,
+    withoutOffensePlayerEffects,
+    withoutDefensePlayerEffects,
+    fullModelMseImprovementVsVenueBaseline,
+    offenseComponentMseImprovementVsWithoutOffense,
+    defenseComponentMseImprovementVsWithoutDefense,
+    fullModelImprovesBaseline,
+    offenseComponentDoesNotDegrade,
+    defenseComponentDoesNotDegrade,
+    allComponentsImproved,
+    unseenPlayerDirectionPossessions,
+    unseenPlayerDirectionCount,
+    unseenPlayerPossessionShare: fullModel.heldOutPossessions > 0
+      ? unseenPlayerDirectionPossessions / fullModel.heldOutPossessions
+      : null,
+    inputSha256: sha256Json({
+      version: RAPM_OFFENSE_DEFENSE_CALIBRATION_VERSION,
+      lambda: ridgeLambda,
+      requestedFoldCount: foldPlan.requestedFoldCount,
+      folds: foldPlan.folds,
+      rows: rows.map((row) => ({
+        gameId: row.gameId,
+        side: row.side,
+        weight: row.weight,
+        response: row.response,
+        offensePlayerIds: row.offensePlayerIds,
+        defensePlayerIds: row.defensePlayerIds,
+      })),
+    }),
+    caveat: 'Fixed-lambda, held-out game folds evaluate predictive scoring error, not causal player attribution. Players absent from a training fold use the explicit zero-effect ridge prior; their held-out possession share is reported.',
+    excludedStintCount: excluded.length,
+    skippedDirectionalObservationCount: skippedDirections.length,
+  };
+}
+
 function selectLambdaFromGameFolds(rows, dimension, {
   candidateLambdas = DEFAULT_RAPM_LAMBDA_CANDIDATES,
   foldCount = 5,
@@ -404,16 +708,14 @@ function selectLambdaFromGameFolds(rows, dimension, {
 } = {}) {
   if (requireSignedHomeCourtRows) assertSignedHomeCourtRows(rows, 'Lambda selection');
   const candidates = normalizedLambdaCandidates(candidateLambdas);
-  const requestedFoldCount = normalizedFoldCount(foldCount);
-  const gameIds = [...new Set(rows.map((row) => row.gameId))]
-    .sort((left, right) => left.localeCompare(right));
-  if (gameIds.length < 2) throw new RangeError('Lambda selection requires at least two distinct games.');
-  const actualFoldCount = Math.min(requestedFoldCount, gameIds.length);
-  const foldByGameId = new Map(gameIds.map((gameId, index) => [gameId, index % actualFoldCount]));
-  const folds = Array.from({ length: actualFoldCount }, (_, foldIndex) => ({
-    foldIndex,
-    gameIds: gameIds.filter((gameId) => foldByGameId.get(gameId) === foldIndex),
-  }));
+  const foldPlan = buildDeterministicGameFoldPlan(rows, foldCount);
+  const {
+    requestedFoldCount,
+    actualFoldCount,
+    gameIds,
+    foldByGameId,
+    folds,
+  } = foldPlan;
 
   const scores = candidates.map((lambda) => {
     let weightedSquaredError = 0;

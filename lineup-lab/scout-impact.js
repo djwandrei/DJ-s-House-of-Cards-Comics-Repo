@@ -102,6 +102,44 @@ function reliabilityValue(row) {
   return null;
 }
 
+/**
+ * A hand-authored local test fixture may provide player rows directly, so a
+ * missing `model` object remains backward-compatible. A real private
+ * `get_nba_scout_rapm` response, however, always includes its compact model
+ * metadata. Once that contract is present, require a completed held-out O/D
+ * calibration before those numbers can influence a user-facing exact solve.
+ * This prevents a merely converged in-sample fit from being mistaken for a
+ * validated offense/defense signal.
+ */
+function modelCalibrationGate(evidence) {
+  const model = evidence?.model;
+  if (model === null || model === undefined) {
+    return { required: false, available: true, reason: null };
+  }
+  if (!model || typeof model !== "object" || Array.isArray(model)) {
+    return {
+      required: true,
+      available: false,
+      reason: "Scout model metadata was malformed, so its possession impact stayed disabled.",
+    };
+  }
+  const calibration = model.calibration;
+  if (
+    calibration
+    && typeof calibration === "object"
+    && !Array.isArray(calibration)
+    && calibration.status === "validated"
+    && calibration.allComponentsImproved === true
+  ) {
+    return { required: true, available: true, reason: null };
+  }
+  return {
+    required: true,
+    available: false,
+    reason: "Scout model metadata did not pass its held-out offense/defense calibration, so its RAPM values stayed separate from the optimizer.",
+  };
+}
+
 function normalizedWeights(offenseWeight, defenseWeight) {
   const offense = Math.max(0, finite(offenseWeight) ?? 0);
   const defense = Math.max(0, finite(defenseWeight) ?? 0);
@@ -164,7 +202,24 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical" }
       impactsById: new Map(),
       exactLineupResiduals: new Map(),
       missingPlayerIds: [],
+      calibrationRequired: false,
+      calibrationAvailable: false,
       reason: "The historical model was selected; possession-level Scout evidence stayed separate.",
+    };
+  }
+  const calibrationGate = modelCalibrationGate(evidence);
+  if (!calibrationGate.available) {
+    return {
+      version: SCOUT_IMPACT_MODEL_VERSION,
+      mode,
+      available: false,
+      applied: false,
+      impactsById: new Map(),
+      exactLineupResiduals: new Map(),
+      missingPlayerIds: [],
+      calibrationRequired: calibrationGate.required,
+      calibrationAvailable: false,
+      reason: calibrationGate.reason,
     };
   }
   const rows = evidence?.players;
@@ -238,6 +293,8 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical" }
     impactsById,
     exactLineupResiduals,
     missingPlayerIds,
+    calibrationRequired: calibrationGate.required,
+    calibrationAvailable: calibrationGate.available,
     reason: available
       ? "Reliability-shrunk possession impact is available for every eligible player."
       : "Scout mode requires comparable possession evidence for every eligible player; missing rows were not imputed as zero.",

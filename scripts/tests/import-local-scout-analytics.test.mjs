@@ -144,7 +144,40 @@ async function fixtureArchive() {
         }],
       },
       offenseDefense: {
-        modelVersion: 'fixture-od-v1', players: [{
+        modelVersion: 'fixture-od-v1',
+        calibration: {
+          version: 'game_fold_directional_ablation_v1',
+          status: 'validated',
+          method: 'fixture-held-out-game-folds',
+          fixedLambda: 25,
+          requestedFoldCount: 5,
+          foldCount: 5,
+          gameCount: 82,
+          directionalObservationCount: 164,
+          heldOutPossessions: 8_200,
+          fullModelMseImprovementVsVenueBaseline: 0.12,
+          offenseComponentMseImprovementVsWithoutOffense: 0.04,
+          defenseComponentMseImprovementVsWithoutDefense: 0.05,
+          fullModelImprovesBaseline: true,
+          offenseComponentDoesNotDegrade: true,
+          defenseComponentDoesNotDegrade: true,
+          allComponentsImproved: true,
+          unseenPlayerDirectionPossessions: 0,
+          unseenPlayerDirectionCount: 0,
+          unseenPlayerPossessionShare: 0,
+          inputSha256: 'b'.repeat(64),
+          caveat: 'fixture calibration only',
+          fullModel: {
+            weightedMse: 0.8,
+            weightedRmsePer100: 89.44,
+            weightedMaePer100: 70,
+            weightedBiasPredictedMinusObservedPer100: 0.1,
+            heldOutPossessions: 8_200,
+            directionalObservationCount: 164,
+            perGamePredictions: [{ forbidden: true }],
+          },
+        },
+        players: [{
           providerPlayerId: PLAYER_A_ID, playerName: 'Player A', combinedRapmPer100: 1.25,
           offensiveRapmPer100: 1, defensiveRapmPer100: 0.25, pairedPossessions: 100, displayEligible: true,
         }],
@@ -286,6 +319,41 @@ test('guarded apply uses only private Storage and RPC endpoints and strips raw-s
         method: 'fixture',
       },
     });
+    const rapmCall = calls.find((call) => call.url.includes('/rpc/ingest_nba_scout_rapm'));
+    const rapmPayload = JSON.parse(rapmCall.options.body).p_payload;
+    const offenseDefenseModel = rapmPayload.models.find((model) => model.model_kind === 'offense_defense');
+    assert.deepEqual(offenseDefenseModel.model_metadata.calibration, {
+      version: 'game_fold_directional_ablation_v1',
+      status: 'validated',
+      method: 'fixture-held-out-game-folds',
+      fixedLambda: 25,
+      requestedFoldCount: 5,
+      foldCount: 5,
+      gameCount: 82,
+      directionalObservationCount: 164,
+      heldOutPossessions: 8_200,
+      fullModelMseImprovementVsVenueBaseline: 0.12,
+      offenseComponentMseImprovementVsWithoutOffense: 0.04,
+      defenseComponentMseImprovementVsWithoutDefense: 0.05,
+      fullModelImprovesBaseline: true,
+      offenseComponentDoesNotDegrade: true,
+      defenseComponentDoesNotDegrade: true,
+      allComponentsImproved: true,
+      unseenPlayerDirectionPossessions: 0,
+      unseenPlayerDirectionCount: 0,
+      unseenPlayerPossessionShare: 0,
+      inputSha256: 'b'.repeat(64),
+      caveat: 'fixture calibration only',
+      fullModel: {
+        weightedMse: 0.8,
+        weightedRmsePer100: 89.44,
+        weightedMaePer100: 70,
+        weightedBiasPredictedMinusObservedPer100: 0.1,
+        heldOutPossessions: 8_200,
+        directionalObservationCount: 164,
+      },
+    });
+    assert.equal(JSON.stringify(rapmPayload).includes('perGamePredictions'), false);
   } finally {
     for (const [key, value] of Object.entries(previous)) {
       if (value === undefined) delete process.env[key];

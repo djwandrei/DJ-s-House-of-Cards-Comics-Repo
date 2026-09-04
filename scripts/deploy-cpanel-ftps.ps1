@@ -7,7 +7,11 @@ param(
   [switch]$DryRun,
   [switch]$SkipDelete,
   [switch]$AllowAssetDelete,
-  [string]$DeletePathList
+  [string]$DeletePathList,
+  [switch]$ListRemote,
+  [string]$RemoteListPath = "",
+  [string]$BackupRemotePath,
+  [string]$BackupDestination
 )
 
 $ErrorActionPreference = "Stop"
@@ -235,6 +239,28 @@ function Get-DeployCredential {
   return $script:ResolvedDeployCredential
 }
 
+function Test-CanonicalRelativePath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$RelativePath
+  )
+
+  $normalizedPath = ($RelativePath -replace "\\", "/").Trim()
+  if (-not $normalizedPath -or
+      $normalizedPath.StartsWith("/", [System.StringComparison]::Ordinal) -or
+      $normalizedPath -match "^[A-Za-z]:") {
+    return $false
+  }
+
+  foreach ($segment in ($normalizedPath -split "/")) {
+    if (-not $segment -or $segment -eq "." -or $segment -eq "..") {
+      return $false
+    }
+  }
+
+  return $true
+}
+
 function Test-DeployablePath {
   param(
     [Parameter(Mandatory = $true)]
@@ -242,7 +268,7 @@ function Test-DeployablePath {
   )
 
   $normalizedPath = ($RelativePath -replace "\\", "/").Trim()
-  if (-not $normalizedPath) {
+  if (-not (Test-CanonicalRelativePath -RelativePath $normalizedPath)) {
     return $false
   }
 
@@ -500,6 +526,7 @@ function Get-CurrentCommit {
 function Convert-ToRemoteUrl {
   param(
     [Parameter(Mandatory = $true)]
+    [AllowEmptyString()]
     [string]$RelativePath
   )
 
@@ -571,6 +598,119 @@ function Invoke-SecureCurl {
   }
 }
 
+function Get-RemoteDirectoryListing {
+  param(
+    [AllowEmptyString()]
+    [string]$RelativePath = ""
+  )
+
+  $normalizedPath = ($RelativePath -replace "\\", "/").Trim()
+  if ($normalizedPath -and -not (Test-CanonicalRelativePath -RelativePath $normalizedPath)) {
+    throw "Remote listing path must be empty or a canonical relative path."
+  }
+
+  $remoteUrl = Convert-ToRemoteUrl -RelativePath $normalizedPath
+  if (-not $remoteUrl.EndsWith("/", [System.StringComparison]::Ordinal)) {
+    $remoteUrl += "/"
+  }
+
+  $args = Get-CurlCommonArguments
+  $args += @(
+    "--list-only",
+    "--connect-timeout", "30",
+    "--max-time", "60",
+    $remoteUrl
+  )
+  Invoke-SecureCurl -Arguments $args
+}
+
+function Resolve-NewBackupDestination {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$DestinationPath
+  )
+
+  if ([string]::IsNullOrWhiteSpace($DestinationPath) -or
+      -not [System.IO.Path]::IsPathRooted($DestinationPath)) {
+    throw "Backup destination must be a non-empty absolute path."
+  }
+
+  $fullDestinationPath = [System.IO.Path]::GetFullPath($DestinationPath)
+  $parentPath = [System.IO.Path]::GetDirectoryName($fullDestinationPath)
+  $leafName = [System.IO.Path]::GetFileName($fullDestinationPath)
+  if (-not $parentPath -or -not $leafName -or
+      -not (Test-Path -LiteralPath $parentPath -PathType Container)) {
+    throw "Backup destination must have an existing parent directory and a file name."
+  }
+
+  $repoRootPath = [System.IO.Path]::GetFullPath($script:RepoRoot).TrimEnd(
+    [System.IO.Path]::DirectorySeparatorChar,
+    [System.IO.Path]::AltDirectorySeparatorChar
+  )
+  $repoPrefix = $repoRootPath + [System.IO.Path]::DirectorySeparatorChar
+  if ($fullDestinationPath.Equals($repoRootPath, [System.StringComparison]::OrdinalIgnoreCase) -or
+      $fullDestinationPath.StartsWith($repoPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "Backup destination must be outside the repository."
+  }
+
+  if (Test-Path -LiteralPath $fullDestinationPath) {
+    throw "Backup destination already exists: $fullDestinationPath"
+  }
+
+  return $fullDestinationPath
+}
+
+function Invoke-RemoteBackup {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$RelativePath,
+    [Parameter(Mandatory = $true)]
+    [string]$DestinationPath
+  )
+
+  $normalizedPath = ($RelativePath -replace "\\", "/").Trim()
+  if (-not (Test-CanonicalRelativePath -RelativePath $normalizedPath)) {
+    throw "Remote backup path must be a canonical relative path."
+  }
+
+  $finalPath = Resolve-NewBackupDestination -DestinationPath $DestinationPath
+  $parentPath = [System.IO.Path]::GetDirectoryName($finalPath)
+  $leafName = [System.IO.Path]::GetFileName($finalPath)
+  $temporaryPath = Join-Path $parentPath (".{0}.{1}.partial" -f $leafName, ([guid]::NewGuid().ToString("N")))
+
+  try {
+    [System.IO.File]::Open(
+      $temporaryPath,
+      [System.IO.FileMode]::CreateNew,
+      [System.IO.FileAccess]::Write,
+      [System.IO.FileShare]::None
+    ).Dispose()
+
+    $args = Get-CurlCommonArguments
+    $args += @(
+      "--retry", "4",
+      "--retry-delay", "2",
+      "--retry-all-errors",
+      "--connect-timeout", "30",
+      "--output", $temporaryPath,
+      (Convert-ToRemoteUrl -RelativePath $normalizedPath)
+    )
+    Invoke-SecureCurl -Arguments $args
+
+    [System.IO.File]::Move($temporaryPath, $finalPath)
+    $backupFile = Get-Item -LiteralPath $finalPath -ErrorAction Stop
+    return [pscustomobject]@{
+      path = $backupFile.FullName
+      bytes = $backupFile.Length
+      sha256 = (Get-FileHash -LiteralPath $backupFile.FullName -Algorithm SHA256).Hash
+    }
+  } finally {
+    if (Test-Path -LiteralPath $temporaryPath) {
+      Remove-Item -LiteralPath $temporaryPath -Force
+    }
+  }
+}
+
 function Invoke-Upload {
   param(
     [Parameter(Mandatory = $true)]
@@ -637,6 +777,14 @@ function Invoke-DeleteBatch {
   )
 
   if (-not $RelativePaths.Count) {
+    return
+  }
+
+  if ($DryRun) {
+    foreach ($relativePath in $RelativePaths) {
+      $remotePath = "/" + ((Get-RemotePathSegments -RelativePath $relativePath) -join "/")
+      Write-Host "[dry-run] delete $remotePath"
+    }
     return
   }
 
@@ -824,7 +972,10 @@ function Get-DeletePathListSet {
       continue
     }
 
-    if (Test-DeployablePath -RelativePath $path) {
+    $explicitAssetDelete = $AllowAssetDelete -and
+      (Test-CanonicalRelativePath -RelativePath $path) -and
+      $path.StartsWith("assets/", [System.StringComparison]::OrdinalIgnoreCase)
+    if ((Test-DeployablePath -RelativePath $path) -or $explicitAssetDelete) {
       [void]$deletes.Add($path)
     } else {
       Write-Warning "Skipping non-deployable delete path from list: $path"
@@ -838,10 +989,53 @@ function Get-DeletePathListSet {
 }
 
 $script:RepoRoot = Get-RepoRoot
-$script:GitExe = Get-GitExecutable
-$script:IsGitRepository = Test-GitRepository
 $resolvedConfigPath = if ([System.IO.Path]::IsPathRooted($ConfigPath)) { $ConfigPath } else { Join-Path $script:RepoRoot $ConfigPath }
 $script:DeployConfig = Load-DeployConfig -Path $resolvedConfigPath
+
+$hasBackupRemotePath = $PSBoundParameters.ContainsKey("BackupRemotePath")
+$hasBackupDestination = $PSBoundParameters.ContainsKey("BackupDestination")
+if ($hasBackupRemotePath -xor $hasBackupDestination) {
+  throw "-BackupRemotePath and -BackupDestination must be supplied together."
+}
+
+if ($hasBackupRemotePath) {
+  $conflictingBackupOptions = @(
+    "PathList",
+    "DeletePathList",
+    "Full",
+    "DryRun",
+    "SkipDelete",
+    "AllowAssetDelete",
+    "ListRemote",
+    "RemoteListPath"
+  ) | Where-Object { $PSBoundParameters.ContainsKey($_) }
+  if ($conflictingBackupOptions.Count) {
+    throw "Backup mode cannot be combined with: $($conflictingBackupOptions -join ', ')."
+  }
+
+  $backup = Invoke-RemoteBackup -RelativePath $BackupRemotePath -DestinationPath $BackupDestination
+  Write-Host ("Remote backup completed: {0} ({1} bytes, SHA256 {2})" -f $backup.path, $backup.bytes, $backup.sha256)
+  exit 0
+}
+
+if ($ListRemote) {
+  if ($PathList -or $DeletePathList -or $Full -or $DryRun -or $SkipDelete -or $AllowAssetDelete) {
+    throw "-ListRemote cannot be combined with deploy or delete options."
+  }
+
+  Get-RemoteDirectoryListing -RelativePath $RemoteListPath
+  exit 0
+}
+
+if ($DeletePathList -or $PathList) {
+  # Explicit path-list operations never inspect history or deploy state. Keep
+  # them usable for recovery and cleanup even when another process is using Git.
+  $script:GitExe = $null
+  $script:IsGitRepository = $false
+} else {
+  $script:GitExe = Get-GitExecutable
+  $script:IsGitRepository = Test-GitRepository
+}
 
 $changeSet = if ($DeletePathList) {
   Get-DeletePathListSet -ListPath $DeletePathList
@@ -877,7 +1071,7 @@ if (-not $SkipDelete -and -not $AllowAssetDelete -and $blockedAssetDeleteList.Co
 }
 
 if (-not $uploadList.Count -and -not $deleteList.Count) {
-  if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
+  if (-not $DryRun -and -not $PathList -and -not $DeletePathList -and -not $skippedDeleteList.Count) {
     $headCommit = Get-CurrentCommit
     Save-DeployState -Commit $headCommit
   }
@@ -898,11 +1092,13 @@ foreach ($relativePath in $uploadList) {
   Invoke-Upload -RelativePath $relativePath
 }
 
-if ($DeletePathList -and -not $DryRun) {
+if ($DeletePathList) {
   $deleteBatchSize = 50
   for ($index = 0; $index -lt $deleteList.Count; $index += $deleteBatchSize) {
     $lastIndex = [Math]::Min($index + $deleteBatchSize - 1, $deleteList.Count - 1)
-    Invoke-DeleteBatch -RelativePaths @($deleteList[$index..$lastIndex])
+    $batchLength = $lastIndex - $index + 1
+    $batch = @($deleteList | Select-Object -Skip $index -First $batchLength)
+    Invoke-DeleteBatch -RelativePaths $batch
   }
 } else {
   foreach ($relativePath in $deleteList) {
@@ -910,7 +1106,7 @@ if ($DeletePathList -and -not $DryRun) {
   }
 }
 
-if (-not $DryRun -and -not $PathList -and -not $skippedDeleteList.Count) {
+if (-not $DryRun -and -not $PathList -and -not $DeletePathList -and -not $skippedDeleteList.Count) {
   $headCommit = Get-CurrentCommit
   Save-DeployState -Commit $headCommit
 } elseif (-not $DryRun -and $PathList) {

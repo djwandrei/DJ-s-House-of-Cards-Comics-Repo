@@ -86,6 +86,7 @@ Options:
   --sport <mlb|nfl|both>    Source to process (default: both)
   --season-start <year>     First season year (default: 1980)
   --season-end <year>       Last season year (default: current UTC year)
+  --stat-group <name>       Restrict one single-sport run to one stat group
   --apply                   Upsert one selected league into its dedicated project
   --analytics               Confirm the dedicated analytics target for --apply
   --request-delay-ms <ms>   Uncached request delay (default: 4000; minimum: 3000)
@@ -134,13 +135,21 @@ function integerOption(value, name, min, max) {
 
 export function optionsFromArgs(argv = [], now = new Date()) {
   const { values, flags } = optionTokens(argv);
-  const known = new Set(['sport', 'season-start', 'season-end', 'apply', 'analytics', 'request-delay-ms', 'refresh-cache', 'cache-only', 'help']);
+  const known = new Set(['sport', 'season-start', 'season-end', 'stat-group', 'apply', 'analytics', 'request-delay-ms', 'refresh-cache', 'cache-only', 'help']);
   for (const name of [...values.keys(), ...flags]) {
     if (!known.has(name)) throw new Error(`Unknown option: --${name}`);
   }
   if (flags.has('help')) return { help: true };
   const sport = String(values.get('sport') ?? 'both').trim().toLowerCase();
   if (!['mlb', 'nfl', 'both'].includes(sport)) throw new Error('--sport must be mlb, nfl, or both.');
+  const sports = sport === 'both' ? ['mlb', 'nfl'] : [sport];
+  const selectedStatGroup = values.has('stat-group') ? String(values.get('stat-group')).trim().toLowerCase() : '';
+  if (selectedStatGroup && sports.length !== 1) {
+    throw new Error('--stat-group requires exactly one --sport because MLB and NFL have different stat-group sets.');
+  }
+  if (selectedStatGroup && !SOURCE_CONFIGS[sports[0]].groups.includes(selectedStatGroup)) {
+    throw new Error(`--stat-group must be one of: ${SOURCE_CONFIGS[sports[0]].groups.join(', ')}.`);
+  }
   const seasonStart = integerOption(values.get('season-start') ?? 1980, '--season-start', 1920, 2200);
   const seasonEnd = integerOption(values.get('season-end') ?? now.getUTCFullYear(), '--season-end', 1920, 2200);
   if (seasonEnd < seasonStart) throw new Error('--season-end must be greater than or equal to --season-start.');
@@ -152,7 +161,11 @@ export function optionsFromArgs(argv = [], now = new Date()) {
   );
   return {
     help: false,
-    sports: sport === 'both' ? ['mlb', 'nfl'] : [sport],
+    sports,
+    statGroups: Object.fromEntries(sports.map((selectedSport) => [
+      selectedSport,
+      selectedStatGroup ? [selectedStatGroup] : SOURCE_CONFIGS[selectedSport].groups,
+    ])),
     seasonStart,
     seasonEnd,
     apply: flags.has('apply'),
@@ -582,6 +595,7 @@ function blankCheckpoint(options) {
     seasonStart: options.seasonStart,
     seasonEnd: options.seasonEnd,
     sports: options.sports,
+    statGroups: options.statGroups,
     status: 'running',
     completed: {},
     blockedSources: {},
@@ -591,13 +605,31 @@ function blankCheckpoint(options) {
 }
 
 function matchingCheckpoint(checkpoint, options) {
+  const expectedStatGroups = options.statGroups;
+  // Version-2 checkpoints created before --stat-group existed represent the
+  // full stat-group set. Preserve their resumability, but never use them for
+  // a later narrow repair that would otherwise overwrite the full checkpoint.
+  const checkpointStatGroups = checkpoint?.statGroups ?? Object.fromEntries(
+    options.sports.map((sport) => [sport, SOURCE_CONFIGS[sport].groups]),
+  );
   return checkpoint?.version === 2
     && JSON.stringify(checkpoint.targetProjectRefs) === JSON.stringify(
       Object.fromEntries(options.sports.map((sport) => [sport, proSportsAnalyticsTarget(sport).projectRef])),
     )
     && checkpoint.seasonStart === options.seasonStart
     && checkpoint.seasonEnd === options.seasonEnd
-    && JSON.stringify(checkpoint.sports) === JSON.stringify(options.sports);
+    && JSON.stringify(checkpoint.sports) === JSON.stringify(options.sports)
+    && JSON.stringify(checkpointStatGroups) === JSON.stringify(expectedStatGroups);
+}
+
+function checkpointStem(options) {
+  const narrowedSports = options.sports.filter((sport) => (
+    JSON.stringify(options.statGroups[sport]) !== JSON.stringify(SOURCE_CONFIGS[sport].groups)
+  ));
+  const suffix = narrowedSports.length
+    ? `-${narrowedSports.map((sport) => `${sport}-${options.statGroups[sport].join('-')}`).join('-')}`
+    : '';
+  return `${options.sports.join('-')}-${options.seasonStart}-${options.seasonEnd}${suffix}`;
 }
 
 export async function runImport(argv = process.argv.slice(2), env = process.env, dependencies = {}) {
@@ -615,8 +647,9 @@ export async function runImport(argv = process.argv.slice(2), env = process.env,
   const target = assertWriteTarget(options, env);
   const runRoot = ensureDirectory(path.join(ROOT, 'outputs', 'sports-reference-history'));
   const cacheRoot = ensureDirectory(path.join(runRoot, 'cache'));
-  const checkpointFile = path.join(runRoot, `checkpoint-${options.sports.join('-')}-${options.seasonStart}-${options.seasonEnd}.json`);
-  const eventFile = path.join(runRoot, `events-${options.sports.join('-')}-${options.seasonStart}-${options.seasonEnd}.jsonl`);
+  const stem = checkpointStem(options);
+  const checkpointFile = path.join(runRoot, `checkpoint-${stem}.json`);
+  const eventFile = path.join(runRoot, `events-${stem}.jsonl`);
   const prior = readJson(checkpointFile);
   const checkpoint = matchingCheckpoint(prior, options) ? prior : blankCheckpoint(options);
   checkpoint.status = 'running';
@@ -655,7 +688,7 @@ export async function runImport(argv = process.argv.slice(2), env = process.env,
       cacheOnly: options.cacheOnly,
     });
     for (let seasonYear = options.seasonStart; seasonYear <= options.seasonEnd; seasonYear += 1) {
-      for (const statGroup of source.groups) {
+      for (const statGroup of options.statGroups[sport]) {
         const key = `${sport}:${seasonYear}:${statGroup}`;
         if (options.apply && checkpoint.completed[key]) continue;
         const sourceUrl = source.pageUrl(seasonYear, statGroup);

@@ -10,30 +10,30 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260904a";
+} from "./optimizer-config.js?v=20260904b";
 import {
   DEFAULT_PROJECTION_RISK,
   HISTORICAL_PROJECTION_MODEL_VERSION,
   PROJECTION_RISK_KEYS,
   projectionParametersFor,
-} from "./projection-parameters.js?v=20260904a";
+} from "./projection-parameters.js?v=20260904b";
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
-} from "./player-projection.js?v=20260904a";
+} from "./player-projection.js?v=20260904b";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
   ROLE_BALANCE_KEYS,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260904a";
+} from "./lineup-role-model.js?v=20260904b";
 import {
   buildScoutImpactModel,
   buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
-} from "./scout-impact.js?v=20260904a";
-import { planRotationUnits } from "./rotation-unit-planner.js?v=20260904a";
+} from "./scout-impact.js?v=20260904b";
+import { planRotationUnits } from "./rotation-unit-planner.js?v=20260904b";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,

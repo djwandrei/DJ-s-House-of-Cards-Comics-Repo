@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260904a";
+import { normalizeDataset } from "./player-data.js?v=20260904b";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([

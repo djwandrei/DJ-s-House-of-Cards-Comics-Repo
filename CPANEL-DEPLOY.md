@@ -132,9 +132,28 @@ comparisons honest.
 - `-DryRun` : preview actions only
 - `-Full` : upload the full current project again
 - `-SkipDelete` : do not delete files from the server
-- `-AllowAssetDelete` : allow removed files under `assets/` to be deleted
+- `-AllowAssetDelete` : allow reviewed files under `assets/` to be deleted, including an explicit nondeployable archive in a delete path list; it never permits archive uploads
 - `-PathList` : upload only reviewed paths; never delete or update global deploy state
+- `-DeletePathList` : permanently delete only reviewed, canonical relative paths; run with `-DryRun` first. This mode never updates the global deploy state.
+- `-ListRemote` : read-only FTPS directory listing for `public_html`; pair with `-RemoteListPath <canonical-relative-directory>` to inspect a subdirectory.
+- `-BackupRemotePath` plus `-BackupDestination` : backup one canonical remote file to a new absolute local path outside the repository. This is a separate, backup-only mode that does not deploy, delete, or update state.
 - `-ConfigPath` : use a different local config file
+
+`-DeletePathList` is for a separately audited cleanup, not routine deployment.
+It rejects absolute and traversal paths, still blocks `assets/` unless
+`-AllowAssetDelete` is supplied, and does not create a remote backup or trash
+copy. Preserve a backup and verify each candidate is unreferenced before
+running it without `-DryRun`.
+
+Use the backup-only mode before a live cleanup deletion. It downloads to an
+owned temporary file and atomically moves it into a previously unused local
+destination only after the FTPS transfer succeeds, then reports the byte count
+and SHA-256. It never overwrites an existing local file.
+
+For a cleanup inventory, use `-ListRemote` with the same process-scoped FTPS
+credentials used by deployment. It only lists one directory per call; inspect
+non-asset directories individually and never treat a directory listing alone
+as deletion evidence.
 
 ## Recommended cPanel setup
 

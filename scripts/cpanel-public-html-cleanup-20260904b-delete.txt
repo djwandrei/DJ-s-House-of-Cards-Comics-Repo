@@ -1,0 +1,4 @@
+# Reviewed 2026-09-04: remote-only macOS Finder metadata. It is absent from
+# the local project, active catalog payloads, and the public storefront media
+# view. A local recovery copy must be verified before this manifest is applied.
+assets/Ebay Listing Photos/.DS_Store

@@ -57,3 +57,31 @@ storefront RPC contract did not change.
   ```powershell
   powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\sync-pro-sports-product-slab-stats-cache.ps1 -Apply
   ```
+
+## Health checks and controlled continuation
+
+Run the compact, read-only health check before any new historical work:
+
+```powershell
+node .\scripts\audit-pro-sports-analytics-health.mjs --sport both --season-start 1980 --season-end 2026
+```
+
+It uses explicit Baseball and Football project refs, performs no provider
+request or database write, and separates true historical gaps from an
+in-progress current season. The local `DJHC Pro Sports Analytics Health` Task
+Scheduler task invokes `scripts/run-pro-sports-analytics-health.ps1` daily at
+6:30 AM and records only a compact local report under
+`outputs/sports-reference-history/health/`. It does not use Codex automation,
+fetch Sports Reference, or apply imports.
+
+The 2026-09-04 baseline is healthy for MLB (94/94 required groups from
+1980–2026) and complete for NFL through 2025 (322/322 required groups). The
+seven NFL 2026 groups are current-season pending, not historical gaps.
+
+When a health report identifies a genuinely approved backfill, use
+`scripts/run-pro-sports-history-backfill-resumable.ps1` only with both
+`-Apply` and `-AllowSourceAccess`. The runner has a per-range mutex, validates
+the expected checkpoint group count before calling a range complete, preserves
+separate MLB checkpoint ranges, and supports a single `-StatGroup` repair.
+It must never be scheduled as an unattended import worker without separate
+source and database-write approval.

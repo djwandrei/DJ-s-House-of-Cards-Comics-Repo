@@ -95,6 +95,30 @@ test("RAPM aliases and user offense-defense priorities produce a bounded minute 
   nearlyEqual(offenseFirst.scoresById.get("a"), 0.47);
 });
 
+test("contract-backed Scout RAPM requires a passed held-out offense/defense calibration", () => {
+  const rows = Object.fromEntries(players.map(({ id }) => [id, {
+    offensiveRapmPer100: 1,
+    defensiveRapmPer100: 1,
+    metrics: { ridgeReliabilityProxy: 0.5 },
+    displayEligible: true,
+  }]));
+  const blocked = buildScoutImpactModel(players, {
+    model: { calibration: { status: "not_validated", allComponentsImproved: false } },
+    players: rows,
+  }, { mode: "scout" });
+  const passed = buildScoutImpactModel(players, {
+    model: { calibration: { status: "validated", allComponentsImproved: true } },
+    players: rows,
+  }, { mode: "scout" });
+
+  assert.equal(blocked.available, false);
+  assert.equal(blocked.calibrationRequired, true);
+  assert.match(blocked.reason, /held-out offense\/defense calibration/);
+  assert.equal(passed.available, true);
+  assert.equal(passed.calibrationRequired, true);
+  assert.equal(passed.calibrationAvailable, true);
+});
+
 test("minute deltas reconcile separately from exact-five residuals", () => {
   const evidence = {
     ...completeEvidence(),

@@ -1,4 +1,4 @@
-import { readPlayerUsage } from "./player-projection.js?v=20260904a";
+import { readPlayerUsage } from "./player-projection.js?v=20260904b";
 
 /**
  * Soft lineup-composition model.

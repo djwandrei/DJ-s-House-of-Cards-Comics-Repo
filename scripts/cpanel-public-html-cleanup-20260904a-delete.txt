@@ -1,0 +1,4 @@
+# Reviewed 2026-09-04: remote-only public archive, absent from the current
+# storefront runtime, generated catalogs, and Supabase storefront media view.
+# A local recovery copy was verified before this deletion manifest was created.
+assets/Aden Holloway.zip

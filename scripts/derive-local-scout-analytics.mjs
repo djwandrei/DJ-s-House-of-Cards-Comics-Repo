@@ -7,6 +7,7 @@ import { pipeline } from 'node:stream/promises';
 import { createGzip, gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import {
+  evaluateOffenseDefenseRapmCalibration,
   fitWeightedRidgeOffenseDefenseRapm,
   fitWeightedRidgeRapm,
   RAPM_MODEL_VERSION,
@@ -51,6 +52,8 @@ export function optionsFromArgs(argv) {
     seasonStartYear: 2025,
     outputDir: null,
     validationReport: null,
+    calibrationOnly: false,
+    calibrationReport: null,
     rapmLambda: 'auto',
     offenseDefenseRapmLambda: 'auto',
     lambdaCandidates: [...DEFAULT_LAMBDA_CANDIDATES],
@@ -66,12 +69,18 @@ export function optionsFromArgs(argv) {
       continue;
     }
     const [name, inline] = token.split(/=(.*)/s, 2);
+    if (name === '--calibration-only') {
+      if (inline !== undefined) throw new Error('--calibration-only does not accept a value.');
+      options.calibrationOnly = true;
+      continue;
+    }
     const value = inline ?? argv[++index];
     if (!value || value.startsWith('--')) throw new Error(`${name} requires a value.`);
     if (name === '--archive-dir') options.archiveDir = path.resolve(value);
     else if (name === '--season') options.seasonStartYear = Number.parseInt(value, 10);
     else if (name === '--output-dir') options.outputDir = path.resolve(value);
     else if (name === '--validation-report') options.validationReport = path.resolve(value);
+    else if (name === '--calibration-report') options.calibrationReport = path.resolve(value);
     else if (name === '--rapm-lambda') options.rapmLambda = parseLambda(value, name);
     else if (name === '--offense-defense-rapm-lambda') options.offenseDefenseRapmLambda = parseLambda(value, name);
     else if (name === '--lambda-candidates') {
@@ -94,6 +103,14 @@ export function optionsFromArgs(argv) {
   if (!Number.isInteger(options.lambdaFoldCount) || options.lambdaFoldCount < 2) throw new Error('--lambda-folds must be an integer of at least two.');
   if (!Number.isFinite(options.synergyPriorPossessions) || options.synergyPriorPossessions <= 0) throw new Error('--synergy-prior-possessions must be greater than zero.');
   if (!options.outputDir) options.outputDir = path.join(options.archiveDir, '..', 'scout-analytics', String(options.seasonStartYear));
+  if (options.calibrationOnly && !options.calibrationReport) {
+    options.calibrationReport = path.join(
+      options.archiveDir,
+      '..',
+      'work',
+      `nba-scout-${options.seasonStartYear}-${String(options.seasonStartYear + 1).slice(-2)}-od-rapm-calibration.json`,
+    );
+  }
   return options;
 }
 
@@ -163,6 +180,15 @@ async function assertOutputDirectoryAbsent(outputDir) {
   }
 }
 
+async function assertOutputFileAbsent(outputPath) {
+  try {
+    await fs.stat(outputPath);
+    throw new Error(`Refusing to overwrite existing Scout calibration report: ${outputPath}`);
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+}
+
 async function makeAtomicOutputDirectory(outputDir) {
   await assertOutputDirectoryAbsent(outputDir);
   const parent = path.dirname(outputDir);
@@ -172,6 +198,29 @@ async function makeAtomicOutputDirectory(outputDir) {
 
 function requestGarbageCollection() {
   if (typeof global.gc === 'function') global.gc();
+}
+
+/**
+ * Normalize the source-checkpoint verdict used in derivative model reports.
+ * The archive validator intentionally stores one authoritative `passed` flag
+ * at the report level; individual season entries describe their coverage and
+ * hashes but do not repeat that boolean.  Keeping this interpretation in one
+ * tested helper prevents a downstream model report from mislabeling a valid
+ * source archive as failed merely because `season.passed` is absent.
+ */
+export function sourceArchiveValidationStatus(validation, seasonStartYear) {
+  const selectedSeason = (validation?.seasons ?? []).find(
+    (season) => season?.seasonStartYear === seasonStartYear,
+  ) ?? null;
+  const sourceArchiveValidationReportPassed = validation?.passed === true;
+  const sourceArchiveValidationSeasonPresent = selectedSeason !== null;
+  return {
+    selectedSeason,
+    sourceArchiveValidationReportPassed,
+    sourceArchiveValidationSeasonPresent,
+    sourceArchiveValidationPassed: sourceArchiveValidationReportPassed
+      && sourceArchiveValidationSeasonPresent,
+  };
 }
 
 function finite(value, fallback = 0) {
@@ -856,17 +905,186 @@ function rapmModelOutput(model, players) {
     reliability: model.reliability,
     contextSemantics: model.contextSemantics,
     solver: model.solver,
+    // Net RAPM intentionally has no separate offense/defense ablation test.
+    // The O/D model receives this only after its fixed-lambda held-out game
+    // calibration completes below. Keep it at the model level so every player
+    // row shares one auditable validation result rather than duplicating it.
+    calibration: model.calibration ?? null,
     players,
   };
 }
 
+/**
+ * Produce the small empirical RAPM-quality report without building the much
+ * larger Scout package.  This intentionally does *not* call the normal
+ * package derivation below: on/off, WOWY, role, tactical, and combination
+ * aggregates are all irrelevant to a held-out offense/defense calibration.
+ *
+ * Keeping this path narrow has two important benefits:
+ *
+ * 1. It makes repeatable model checks practical on the full source archive.
+ * 2. It prevents a quality gate from accidentally consuming the storage and
+ *    memory budget reserved for the immutable production Scout package.
+ *
+ * It still applies the exact same phase, official-game, replay, lineup, and
+ * possession-validity rules as the full derivation, so its input remains
+ * directly comparable to the package it is meant to certify.
+ */
+async function deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw, loadedRecords }) {
+  const validation = JSON.parse(validationRaw);
+  // Check the report at the level where the checkpoint validator actually
+  // publishes pass/fail.  A season entry is descriptive coverage/provenance,
+  // not an independently scored pass/fail object, so treating
+  // `validationSeason.passed` as authoritative would produce a false negative.
+  const {
+    sourceArchiveValidationPassed,
+    sourceArchiveValidationReportPassed,
+    sourceArchiveValidationSeasonPresent,
+  } = sourceArchiveValidationStatus(validation, OPTIONS.seasonStartYear);
+  const sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
+  let phaseRecords = loadedRecords
+    .filter(({ game }) => OPTIONS.includedPhases.includes(String(game.primaryPhase ?? '').trim().toLowerCase()));
+  let officialRecords = phaseRecords.filter(isOfficialFranchiseGame);
+  let replayedRecords = officialRecords.map(transientReplay);
+  let eligibleRecords = replayedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true);
+  const rapmGroups = new Map();
+  let exactLineupPossessions = 0;
+
+  for (const { record, game, maps, filename } of eligibleRecords) {
+    const gameId = String(game.providerGameId || filename);
+    const homeTeamId = String(game.homeProviderTeamId ?? '');
+    const awayTeamId = String(game.awayProviderTeamId ?? '');
+    if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) continue;
+    for (const possession of record.possessions ?? []) {
+      const homePlayerIds = exactLineup(possession.homeLineupId, maps.lineups);
+      const awayPlayerIds = exactLineup(possession.awayLineupId, maps.lineups);
+      if (!homePlayerIds || !awayPlayerIds) continue;
+      const offenseTeamId = String(possession.offenseProviderTeamId ?? '');
+      const defenseTeamId = String(possession.defenseProviderTeamId ?? '');
+      if (![homeTeamId, awayTeamId].includes(offenseTeamId)
+        || ![homeTeamId, awayTeamId].includes(defenseTeamId)
+        || offenseTeamId === defenseTeamId) continue;
+
+      exactLineupPossessions += 1;
+      // Match the full package's game + exact-ten-player grouping so each
+      // regression row aggregates identical source possessions in both paths.
+      const rapmKey = `${gameId}~${homePlayerIds.join('|')}~${awayPlayerIds.join('|')}`;
+      if (!rapmGroups.has(rapmKey)) {
+        rapmGroups.set(rapmKey, {
+          gameId,
+          stintOrdinal: rapmGroups.size + 1,
+          homePlayerIds,
+          awayPlayerIds,
+          homePoints: 0,
+          awayPoints: 0,
+          homeOffensePoints: 0,
+          awayOffensePoints: 0,
+          homeOffensivePossessions: 0,
+          awayOffensivePossessions: 0,
+          eligible: true,
+        });
+      }
+      const rapmGroup = rapmGroups.get(rapmKey);
+      const offensePoints = finite(possession.offensePoints);
+      const defensePoints = finite(possession.defensePoints);
+      if (offenseTeamId === homeTeamId) {
+        rapmGroup.homePoints += offensePoints;
+        rapmGroup.awayPoints += defensePoints;
+        rapmGroup.homeOffensePoints += offensePoints;
+        rapmGroup.homeOffensivePossessions += 1;
+      } else {
+        rapmGroup.awayPoints += offensePoints;
+        rapmGroup.homePoints += defensePoints;
+        rapmGroup.awayOffensePoints += offensePoints;
+        rapmGroup.awayOffensivePossessions += 1;
+      }
+    }
+  }
+
+  // The solver only needs the compact grouped rows.  Release decoded archive
+  // records before the six (one full + five held-out) ridge fits begin.
+  loadedRecords.length = 0;
+  phaseRecords.length = 0;
+  officialRecords.length = 0;
+  replayedRecords.length = 0;
+  eligibleRecords.length = 0;
+  phaseRecords = null;
+  officialRecords = null;
+  replayedRecords = null;
+  eligibleRecords = null;
+  requestGarbageCollection();
+
+  const rapmInput = [...rapmGroups.values()];
+  const seasonPhase = `${OPTIONS.includedPhases.join('_')}_official_franchise_${NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION}_possession_start_lineups`;
+  const offenseDefenseRapm = fitWeightedRidgeOffenseDefenseRapm(rapmInput, {
+    lambdaCandidates: OPTIONS.lambdaCandidates,
+    lambdaFoldCount: OPTIONS.lambdaFoldCount,
+    seasonEndYear: OPTIONS.seasonStartYear + 1,
+    seasonPhase,
+    lambda: OPTIONS.offenseDefenseRapmLambda,
+  });
+  const calibration = evaluateOffenseDefenseRapmCalibration(rapmInput, {
+    lambda: offenseDefenseRapm.lambda,
+    foldCount: OPTIONS.lambdaFoldCount,
+  });
+  const report = {
+    schemaVersion: 1,
+    generatedAt: new Date().toISOString(),
+    mode: 'offline_calibration_only',
+    seasonStartYear: OPTIONS.seasonStartYear,
+    seasonEndYear: OPTIONS.seasonStartYear + 1,
+    source: {
+      manifestSha256: sha256(manifestRaw),
+      sourceValidationReportSha256: sha256(validationRaw),
+      sourceArchiveValidationPassed,
+      sourceArchiveValidationReportPassed,
+      sourceArchiveValidationSeasonPresent,
+      sourceEligibleArchives: sourceEligibleCount,
+      eligibleArchives: calibration.gameCount,
+      exactLineupPossessions,
+      rapmGroupedObservations: rapmInput.length,
+    },
+    offenseDefenseRapm: {
+      modelVersion: offenseDefenseRapm.modelVersion,
+      lambda: offenseDefenseRapm.lambda,
+      observationCount: offenseDefenseRapm.observationCount,
+      directionalObservationCount: offenseDefenseRapm.directionalObservationCount,
+      gameCount: offenseDefenseRapm.gameCount,
+      totalOffensivePossessions: offenseDefenseRapm.totalOffensivePossessions,
+      baselineOffensiveRatingPer100: offenseDefenseRapm.baselineOffensiveRatingPer100,
+      homeCourtEffectPer100: offenseDefenseRapm.homeCourtEffectPer100,
+      homeCourtNetRatingEffectPer100: offenseDefenseRapm.homeCourtNetRatingEffectPer100,
+      calibration,
+    },
+  };
+  await fs.mkdir(path.dirname(OPTIONS.calibrationReport), { recursive: true });
+  await fs.writeFile(OPTIONS.calibrationReport, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+  process.stdout.write(`${JSON.stringify({
+    output: OPTIONS.calibrationReport,
+    mode: report.mode,
+    status: calibration.status,
+    gameCount: calibration.gameCount,
+    heldOutPossessions: calibration.heldOutPossessions,
+    fullModelMseImprovementVsVenueBaseline: calibration.fullModelMseImprovementVsVenueBaseline,
+  }, null, 2)}\n`);
+}
+
 async function derive() {
-  await assertOutputDirectoryAbsent(OPTIONS.outputDir);
+  // Calibration-only mode reads the same validated raw archive but emits one
+  // small report instead of materializing another multi-gigabyte Scout package.
+  // It is useful for a fast model-quality rerun and refuses to overwrite an
+  // existing report just like the normal atomic package writer.
+  if (OPTIONS.calibrationOnly) await assertOutputFileAbsent(OPTIONS.calibrationReport);
+  else await assertOutputDirectoryAbsent(OPTIONS.outputDir);
   const [manifestRaw, validationRaw, loadedRecords] = await Promise.all([
     fs.readFile(MANIFEST_PATH, 'utf8'),
     fs.readFile(VALIDATION_PATH, 'utf8'),
     loadRecords(),
   ]);
+  if (OPTIONS.calibrationOnly) {
+    await deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw, loadedRecords });
+    return;
+  }
   const validation = JSON.parse(validationRaw);
   const validationSeason = validation.seasons?.find((season) => season.seasonStartYear === OPTIONS.seasonStartYear);
   const sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
@@ -1229,6 +1447,14 @@ async function derive() {
     ...rapmOptions,
     lambda: OPTIONS.offenseDefenseRapmLambda,
   });
+  // Evaluate the selected numeric lambda on complete held-out games. If the
+  // derive command chose lambda automatically, its selected value is frozen
+  // here; calibration never quietly reuses the same held-out fold to retune it.
+  // This adds a model-quality report without changing the fitted coefficients.
+  offenseDefenseRapm.calibration = evaluateOffenseDefenseRapmCalibration(rapmInput, {
+    lambda: offenseDefenseRapm.lambda,
+    foldCount: OPTIONS.lambdaFoldCount,
+  });
   rapmGroups.clear();
   rapmInput.length = 0;
   rapmInput = null;
@@ -1446,7 +1672,13 @@ async function derive() {
       possessionOutcomes: { status: 'available', buckets: ['0', '1', '2', '3', '4+'] },
       venueSplits: { status: 'available', contexts: ['home', 'away'] },
       teammateOpponentAdjustment: { status: 'available_via_rapm', caveat: 'average teammate/opponent RAPM fields are exposure context, not extra adjustment terms' },
-      regularizedAdjustedPlusMinus: { status: 'available', netModel: RAPM_MODEL_VERSION, offenseDefenseModel: RAPM_OFFENSE_DEFENSE_MODEL_VERSION, lambdaSelection: 'deterministic held-out game-fold weighted MSE when auto' },
+      regularizedAdjustedPlusMinus: {
+        status: 'available',
+        netModel: RAPM_MODEL_VERSION,
+        offenseDefenseModel: RAPM_OFFENSE_DEFENSE_MODEL_VERSION,
+        lambdaSelection: 'deterministic held-out game-fold weighted MSE when auto',
+        offenseDefenseCalibration: 'fixed-lambda held-out game-fold venue-baseline and component-ablation report',
+      },
       clutch: { status: 'available_with_unclassified', definition: 'final five minutes of fourth quarter/overtime, margin five or fewer at possession start; missing period, clock, or score is retained as clutch:unclassified' },
       transition: { status: 'available', contexts: ['provider_fastbreak_v1', 'non_provider_fastbreak', 'unclassified'] },
       halfCourt: { status: 'proxy_only', proxy: 'non_provider_fastbreak' },
@@ -1662,6 +1894,7 @@ async function derive() {
     + `- Possessions with valid start lineups used: ${counters.exactLineupPossessions}; start-lineup-attributed mid-change possessions: ${counters.possessionStartLineupAttributedMidChange}; excluded: ${counters.excludedPossessions}.\n`
     + `- Rows: ${rowCounts.lineupsAndCombinations} combinations; ${rowCounts.playerOnOff} player on/off; ${rowCounts.playerProfiles} direct player profiles; ${rowCounts.wowy} WOWY pairs; ${rapmPlayers.length} net RAPM players.\n`
     + `- Net RAPM lambda: ${netRapm.lambda}; offense/defense RAPM lambda: ${offenseDefenseRapm.lambda}; both use deterministic game-fold selection when configured as auto.\n`
+    + `- Offense/defense held-out calibration: ${offenseDefenseRapm.calibration.status}; full-model MSE improvement vs venue baseline: ${round((offenseDefenseRapm.calibration.fullModelMseImprovementVsVenueBaseline ?? 0) * 100, 3)}%.\n`
     + `- Added phase, venue, quarter/half, last-5/10/20, clutch, transition, score-state, garbage-time proxy, leverage, four-factor, shot-zone, possession-extension, rotation-continuity, player-profile, reliability, interval, O/D RAPM, and lineup-projection fields.\n`
     + `- Manifest JSON: ${outputBytes} bytes, SHA-256 ${outputHash}.\n`
     + `- Manifest gzip: ${gzip.gzipBytes} bytes, SHA-256 ${gzip.gzipSha256}.\n`

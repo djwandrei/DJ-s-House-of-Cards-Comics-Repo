@@ -110,6 +110,16 @@ export const COMPACT_QUERY_KEYS = new Set([
   'rawObservedSynergyPer100', 'synergyPriorPossessions', 'synergyWeight',
   'shrunkSynergyPer100', 'projectedNetRatingPer100',
   'projectedObservedContextNetRatingPer100', 'caveat',
+  // Compact, model-level held-out calibration. These metrics are small enough
+  // to retain with the private RAPM model, but never include event rows,
+  // player identities, or per-game predictions.
+  'calibration', 'version', 'fixedLambda', 'requestedFoldCount', 'foldCount', 'heldOutPossessions',
+  'fullModel', 'venueBaseline', 'withoutOffensePlayerEffects', 'withoutDefensePlayerEffects',
+  'weightedMse', 'weightedRmsePer100', 'weightedMaePer100', 'weightedBiasPredictedMinusObservedPer100',
+  'fullModelMseImprovementVsVenueBaseline', 'offenseComponentMseImprovementVsWithoutOffense',
+  'defenseComponentMseImprovementVsWithoutDefense', 'fullModelImprovesBaseline',
+  'offenseComponentDoesNotDegrade', 'defenseComponentDoesNotDegrade', 'allComponentsImproved',
+  'unseenPlayerDirectionPossessions', 'unseenPlayerDirectionCount', 'unseenPlayerPossessionShare',
 ]);
 
 function usage() {
@@ -885,6 +895,50 @@ function compactRapmModel(model, source) {
   if (Object.keys(reliability).length) metadata.reliability = reliability;
   const solver = pickScalars(source.solver, ['method', 'converged', 'iterationCount', 'residualNorm', 'targetResidualNorm']);
   if (Object.keys(solver).length) metadata.solver = solver;
+  // The calibration is a concise, model-wide quality gate. Do not retain fold
+  // game IDs, per-game predictions, or raw player lineups here: the private
+  // query index needs only the reproducible aggregate evidence that tells a
+  // downstream optimizer whether the O/D split cleared its held-out check.
+  const calibration = pickScalars(source.calibration, [
+    'version',
+    'status',
+    'method',
+    'fixedLambda',
+    'requestedFoldCount',
+    'foldCount',
+    'gameCount',
+    'directionalObservationCount',
+    'heldOutPossessions',
+    'fullModelMseImprovementVsVenueBaseline',
+    'offenseComponentMseImprovementVsWithoutOffense',
+    'defenseComponentMseImprovementVsWithoutDefense',
+    'fullModelImprovesBaseline',
+    'offenseComponentDoesNotDegrade',
+    'defenseComponentDoesNotDegrade',
+    'allComponentsImproved',
+    'unseenPlayerDirectionPossessions',
+    'unseenPlayerDirectionCount',
+    'unseenPlayerPossessionShare',
+    'inputSha256',
+    'caveat',
+  ]);
+  for (const field of [
+    'fullModel',
+    'venueBaseline',
+    'withoutOffensePlayerEffects',
+    'withoutDefensePlayerEffects',
+  ]) {
+    const metrics = pickScalars(source.calibration?.[field], [
+      'weightedMse',
+      'weightedRmsePer100',
+      'weightedMaePer100',
+      'weightedBiasPredictedMinusObservedPer100',
+      'heldOutPossessions',
+      'directionalObservationCount',
+    ]);
+    if (Object.keys(metrics).length) calibration[field] = metrics;
+  }
+  if (Object.keys(calibration).length) metadata.calibration = calibration;
   return assertMetricPayload(metadata, `RAPM ${model} metadata`);
 }
 

@@ -53,6 +53,14 @@ reliability/caveat fields. It deliberately omits raw possession contexts,
 archive paths, and nested calculation diagnostics. A non-publishable projection
 may be stored for provenance, but it must not become an exact-five model bonus.
 
+Newly derived offense/defense RAPM metadata also retains a compact held-out
+calibration summary: venue-baseline error, full-model error, offense/defense
+ablation comparisons, fold coverage, and the status gate. It omits per-game
+predictions, player lineups, raw PBP, and fold identities. A legacy archive may
+be imported for private provenance, but a Scout optimizer must not use its O/D
+player effects until the private RPC's `model.calibration` is `validated` and
+reports that both components passed the held-out check.
+
 ## Deploy and import
 
 First apply the dedicated analytics migration after authenticating the Supabase

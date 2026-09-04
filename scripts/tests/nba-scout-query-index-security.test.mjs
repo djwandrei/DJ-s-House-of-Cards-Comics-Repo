@@ -16,6 +16,10 @@ const migrationUrls = [
     '../../supabase-analytics/supabase/migrations/20260903025501_expand_nba_scout_projection_allowlist.sql',
     import.meta.url,
   ),
+  new URL(
+    '../../supabase-analytics/supabase/migrations/20260904123000_add_nba_scout_rapm_calibration_allowlist.sql',
+    import.meta.url,
+  ),
 ];
 
 test('Scout query index is private, immutable, and service-role RPC-only', async () => {

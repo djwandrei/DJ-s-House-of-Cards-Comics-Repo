@@ -6,38 +6,38 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260904a";
+} from "./optimizer-config.js?v=20260904b";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260904a";
+} from "./player-data.js?v=20260904b";
 import {
   fetchSupabaseNbaTeamDataset,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260904a";
+} from "./supabase-nba-data.js?v=20260904b";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260904a";
+} from "./fan-analytics.js?v=20260904b";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260904a";
+} from "./opponent-gameplan.js?v=20260904b";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260904a";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260904a";
+} from "./scenario-url.js?v=20260904b";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260904b";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260904a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260904a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260904b";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260904b", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes

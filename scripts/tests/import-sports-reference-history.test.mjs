@@ -14,6 +14,10 @@ test('history options default to a resumable 1980-through-current run', () => {
   assert.deepEqual(optionsFromArgs([], new Date('2026-08-31T12:00:00Z')), {
     help: false,
     sports: ['mlb', 'nfl'],
+    statGroups: {
+      mlb: ['batting', 'pitching'],
+      nfl: ['passing', 'rushing', 'receiving', 'defense', 'kicking', 'returns', 'scoring'],
+    },
     seasonStart: 1980,
     seasonEnd: 2026,
     apply: false,
@@ -23,6 +27,10 @@ test('history options default to a resumable 1980-through-current run', () => {
     cacheOnly: false,
   });
   assert.throws(() => optionsFromArgs(['--request-delay-ms', '2999']), /3000/);
+  assert.deepEqual(optionsFromArgs(['--sport', 'nfl', '--stat-group', 'passing'], new Date('2026-08-31T12:00:00Z')).statGroups, {
+    nfl: ['passing'],
+  });
+  assert.throws(() => optionsFromArgs(['--sport', 'both', '--stat-group', 'passing']), /exactly one --sport/);
 });
 
 test('cache-only mode requires an explicit source-permission acknowledgement', async () => {
