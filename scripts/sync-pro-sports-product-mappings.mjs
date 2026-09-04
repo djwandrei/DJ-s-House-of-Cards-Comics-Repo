@@ -5,10 +5,13 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { main as runPrivatePreflight } from './audit-pro-sports-product-mapping-private-preflight.mjs';
 import { splitProductSubjects } from './lib/pro-sports-product-mapping-coverage.mjs';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
 const CLI_VERSION = '2.115.0';
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
 const COMMERCE_WORKDIR = ROOT;
 const ANALYTICS_REPAIR_CONFIRMATION = 'repair-reviewed-pro-sports-identities';
 const COMMERCE_COPY_CONFIRMATION = 'copy-reviewed-pro-sports-mappings';
@@ -21,6 +24,57 @@ const COMMERCE_PREFLIGHT_DISPOSITIONS = new Set([
   'ready_for_identity_copy_review',
   'ready_for_mapping_review',
 ]);
+
+const PRO_SPORTS_LEAGUE_TARGETS = Object.freeze({
+  MLB: Object.freeze({ sport: 'mlb', sportCode: 'baseball', playerTable: 'mlb_players' }),
+  NFL: Object.freeze({ sport: 'nfl', sportCode: 'football', playerTable: 'nfl_players' }),
+});
+
+export function analyticsTargetForLeagueCode(leagueCode) {
+  const normalized = String(leagueCode || '').trim().toUpperCase();
+  const route = PRO_SPORTS_LEAGUE_TARGETS[normalized];
+  if (!route) throw new Error(`Unsupported pro-sports analytics league: ${leagueCode}.`);
+  return { ...route, target: proSportsAnalyticsTarget(route.sport), leagueCode: normalized };
+}
+
+function assertAnalyticsRowsMatchTarget(rows, property, targetRoute, label) {
+  for (const row of rows) {
+    const leagueCode = String(row?.[property] || '').trim().toUpperCase();
+    if (leagueCode !== targetRoute.leagueCode) {
+      throw new Error(`${label} includes ${leagueCode || 'an empty league'} outside ${targetRoute.leagueCode}.`);
+    }
+  }
+}
+
+export function partitionAnalyticsInputs(identityRequests = [], repairs = []) {
+  const partitions = new Map();
+  const getPartition = (leagueCode) => {
+    const route = analyticsTargetForLeagueCode(leagueCode);
+    const existing = partitions.get(route.target.projectRef);
+    if (existing) return existing;
+    const partition = { ...route, identityRequests: [], repairs: [] };
+    partitions.set(route.target.projectRef, partition);
+    return partition;
+  };
+  for (const request of identityRequests) {
+    const partition = getPartition(request?.league_code);
+    assertAnalyticsRowsMatchTarget([request], 'league_code', partition, 'Analytics identity request');
+    partition.identityRequests.push(request);
+  }
+  for (const repair of repairs) {
+    const partition = getPartition(repair?.leagueCode);
+    assertAnalyticsRowsMatchTarget([repair], 'leagueCode', partition, 'Analytics repair');
+    partition.repairs.push(repair);
+  }
+  for (const partition of partitions.values()) {
+    if (!partition.identityRequests.length) {
+      throw new Error(`Analytics target ${partition.target.label} has repairs without reviewed identity requests.`);
+    }
+  }
+  return [...partitions.values()].sort((left, right) => (
+    left.leagueCode.localeCompare(right.leagueCode)
+  ));
+}
 
 function workspacePath(relativePath, label) {
   const resolved = path.resolve(ROOT, String(relativePath || ''));
@@ -294,8 +348,24 @@ export function buildSyncPlan({ proposal, proposalSha256, preflight, repairPropo
   };
 }
 
+function analyticsRouteForSnapshot(identityRequests, repairs) {
+  const partitions = partitionAnalyticsInputs(identityRequests, repairs);
+  if (partitions.length !== 1) {
+    throw new Error('An analytics snapshot must contain exactly one league target.');
+  }
+  return partitions[0];
+}
+
+function analyticsRouteForRepairs(repairs) {
+  if (!repairs.length) return null;
+  const route = analyticsTargetForLeagueCode(repairs[0]?.leagueCode);
+  assertAnalyticsRowsMatchTarget(repairs, 'leagueCode', route, 'Analytics repair');
+  return route;
+}
+
 export function buildAnalyticsSnapshotSql(identityRequests, repairs = []) {
   if (!identityRequests.length) throw new Error('No athlete identities were requested.');
+  const route = analyticsRouteForSnapshot(identityRequests, repairs);
   const requestedValues = identityRequests.map((row) => `(${[
     sqlLiteral(row.league_code), sqlLiteral(row.source_name), sqlLiteral(row.external_id),
     `${sqlLiteral(row.athlete_id)}::uuid`, sqlLiteral(row.canonical_name),
@@ -303,6 +373,11 @@ export function buildAnalyticsSnapshotSql(identityRequests, repairs = []) {
   const repairIds = repairs.length
     ? repairs.map((repair) => `${sqlLiteral(repair.athleteId)}::uuid`).join(', ')
     : 'null::uuid';
+  const repairProfileSql = `(select coalesce(json_agg(json_build_object('athlete_id', athlete_id, 'full_name', full_name, 'normalized_name', normalized_name) order by athlete_id), '[]'::json)
+      from public.${route.playerTable} where athlete_id in (${repairIds}))`;
+  const repairProfilesSql = route.sport === 'mlb'
+    ? `json_build_object('mlb', ${repairProfileSql}, 'nfl', '[]'::json)`
+    : `json_build_object('mlb', '[]'::json, 'nfl', ${repairProfileSql})`;
   return `
 with requested(league_code, source_name, external_id, expected_athlete_id, expected_name) as (
   values ${requestedValues}
@@ -320,11 +395,7 @@ with requested(league_code, source_name, external_id, expected_athlete_id, expec
   from resolved
   where athlete_id is not null
 ), requested_sports as (
-  select distinct case league_code
-    when 'MLB' then 'baseball'
-    when 'NFL' then 'football'
-  end as sport_code
-  from requested
+  select ${sqlLiteral(route.sportCode)}::text as sport_code
 ), requested_aliases as (
   select distinct athlete_id, league_code, expected_name
   from resolved
@@ -356,18 +427,14 @@ select json_build_object(
      and requested.source_name = ids.source_name
      and requested.external_id = ids.external_id
      and requested.expected_athlete_id = ids.athlete_id),
-  'repairProfiles', json_build_object(
-    'mlb', (select coalesce(json_agg(json_build_object('athlete_id', athlete_id, 'full_name', full_name, 'normalized_name', normalized_name) order by athlete_id), '[]'::json)
-      from public.mlb_players where athlete_id in (${repairIds})),
-    'nfl', (select coalesce(json_agg(json_build_object('athlete_id', athlete_id, 'full_name', full_name, 'normalized_name', normalized_name) order by athlete_id), '[]'::json)
-      from public.nfl_players where athlete_id in (${repairIds}))
-  )
+  'repairProfiles', ${repairProfilesSql}
 ) as payload;
 `;
 }
 
 export function buildAnalyticsRepairSql(repairs) {
   if (!repairs.length) return '';
+  const route = analyticsRouteForRepairs(repairs);
   const rows = repairs.map((repair) => ({
     athlete_id: repair.athleteId,
     league_code: repair.leagueCode,
@@ -427,20 +494,12 @@ begin
   ) then raise exception 'Provider external ID drift blocks the reviewed repair'; end if;
   if exists (
     select 1 from _reviewed_identity_repairs repairs
-    left join public.mlb_players players on players.athlete_id = repairs.athlete_id
-    where repairs.league_code = 'MLB' and (players.athlete_id is null or not (
+    left join public.${route.playerTable} players on players.athlete_id = repairs.athlete_id
+    where players.athlete_id is null or not (
       (players.full_name = repairs.old_name and players.normalized_name = repairs.old_normalized_name)
       or (players.full_name = repairs.new_name and players.normalized_name = repairs.normalized_name)
-    ))
-  ) then raise exception 'MLB profile drift blocks the reviewed repair'; end if;
-  if exists (
-    select 1 from _reviewed_identity_repairs repairs
-    left join public.nfl_players players on players.athlete_id = repairs.athlete_id
-    where repairs.league_code = 'NFL' and (players.athlete_id is null or not (
-      (players.full_name = repairs.old_name and players.normalized_name = repairs.old_normalized_name)
-      or (players.full_name = repairs.new_name and players.normalized_name = repairs.normalized_name)
-    ))
-  ) then raise exception 'NFL profile drift blocks the reviewed repair'; end if;
+    )
+  ) then raise exception '${route.leagueCode} profile drift blocks the reviewed repair'; end if;
 end $$;
 
 update public.athlete_aliases aliases
@@ -460,20 +519,12 @@ set canonical_name = repairs.new_name,
 from _reviewed_identity_repairs repairs
 where athletes.id = repairs.athlete_id and athletes.canonical_name = repairs.old_name;
 
-update public.mlb_players players
+update public.${route.playerTable} players
 set full_name = repairs.new_name,
     normalized_name = repairs.normalized_name,
     updated_at = now()
 from _reviewed_identity_repairs repairs
-where repairs.league_code = 'MLB' and players.athlete_id = repairs.athlete_id
-  and players.full_name = repairs.old_name;
-
-update public.nfl_players players
-set full_name = repairs.new_name,
-    normalized_name = repairs.normalized_name,
-    updated_at = now()
-from _reviewed_identity_repairs repairs
-where repairs.league_code = 'NFL' and players.athlete_id = repairs.athlete_id
+where players.athlete_id = repairs.athlete_id
   and players.full_name = repairs.old_name;
 
 do $$
@@ -496,18 +547,10 @@ begin
   ) then raise exception 'Alias repair readback failed'; end if;
   if exists (
     select 1 from _reviewed_identity_repairs repairs
-    left join public.mlb_players players on players.athlete_id = repairs.athlete_id
-    where repairs.league_code = 'MLB'
-      and (players.full_name <> repairs.new_name
-        or players.normalized_name <> repairs.normalized_name)
-  ) then raise exception 'MLB profile repair readback failed'; end if;
-  if exists (
-    select 1 from _reviewed_identity_repairs repairs
-    left join public.nfl_players players on players.athlete_id = repairs.athlete_id
-    where repairs.league_code = 'NFL'
-      and (players.full_name <> repairs.new_name
-        or players.normalized_name <> repairs.normalized_name)
-  ) then raise exception 'NFL profile repair readback failed'; end if;
+    left join public.${route.playerTable} players on players.athlete_id = repairs.athlete_id
+    where players.full_name <> repairs.new_name
+      or players.normalized_name <> repairs.normalized_name
+  ) then raise exception '${route.leagueCode} profile repair readback failed'; end if;
 end $$;
 
 commit;
@@ -899,14 +942,91 @@ export function parseSupabaseCliJson(stdout) {
   throw new Error('Supabase CLI returned malformed JSON.');
 }
 
-async function executeLinkedQuery(sql, workdir, label, dependencies = {}) {
+export function buildLinkedQueryArgs(workdir, sqlFile, projectRef = null) {
+  if (!workdir) throw new Error('A Supabase workdir is required.');
+  if (!sqlFile) throw new Error('A SQL file is required.');
+  return [
+    '--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', workdir,
+    ...(projectRef ? ['--project-ref', projectRef] : []),
+    '--file', sqlFile, '--output-format', 'json', '--agent', 'yes',
+  ];
+}
+
+function snapshotRowKey(row, properties) {
+  return properties.map((property) => String(row?.[property] ?? '')).join('\u0000');
+}
+
+function addUniqueSnapshotRows(target, rows, properties, label) {
+  const existing = new Map(target.map((row) => [snapshotRowKey(row, properties), row]));
+  for (const row of rows || []) {
+    const key = snapshotRowKey(row, properties);
+    const prior = existing.get(key);
+    if (prior && JSON.stringify(prior) !== JSON.stringify(row)) {
+      throw new Error(`Conflicting ${label} rows returned by separate analytics targets for ${key}.`);
+    }
+    if (!prior) {
+      existing.set(key, row);
+      target.push(row);
+    }
+  }
+}
+
+export function mergeAnalyticsSnapshots(snapshots = []) {
+  const merged = {
+    requested: [], sports: [], leagues: [], athletes: [], memberships: [], aliases: [], externalIds: [],
+    repairProfiles: { mlb: [], nfl: [] },
+  };
+  const definitions = [
+    ['requested', ['league_code', 'source_name', 'external_id']],
+    ['sports', ['sport_code']],
+    ['leagues', ['league_code']],
+    ['athletes', ['id']],
+    ['memberships', ['athlete_id', 'league_code']],
+    ['aliases', ['athlete_id', 'league_code', 'normalized_alias']],
+    ['externalIds', ['athlete_id', 'league_code', 'source_name', 'external_id']],
+  ];
+  for (const snapshot of snapshots) {
+    for (const [property, keyProperties] of definitions) {
+      addUniqueSnapshotRows(merged[property], snapshot?.[property], keyProperties, property);
+    }
+    for (const sport of ['mlb', 'nfl']) {
+      addUniqueSnapshotRows(merged.repairProfiles[sport], snapshot?.repairProfiles?.[sport], ['athlete_id'], `${sport} repair profile`);
+    }
+  }
+  merged.requested.sort((left, right) => snapshotRowKey(left, ['league_code', 'source_name', 'external_id'])
+    .localeCompare(snapshotRowKey(right, ['league_code', 'source_name', 'external_id'])));
+  merged.sports.sort((left, right) => String(left.sport_code).localeCompare(String(right.sport_code)));
+  merged.leagues.sort((left, right) => String(left.league_code).localeCompare(String(right.league_code)));
+  merged.athletes.sort((left, right) => String(left.id).localeCompare(String(right.id)));
+  merged.memberships.sort((left, right) => snapshotRowKey(left, ['athlete_id', 'league_code'])
+    .localeCompare(snapshotRowKey(right, ['athlete_id', 'league_code'])));
+  merged.aliases.sort((left, right) => snapshotRowKey(left, ['athlete_id', 'league_code', 'normalized_alias'])
+    .localeCompare(snapshotRowKey(right, ['athlete_id', 'league_code', 'normalized_alias'])));
+  merged.externalIds.sort((left, right) => snapshotRowKey(left, ['athlete_id', 'league_code', 'source_name', 'external_id'])
+    .localeCompare(snapshotRowKey(right, ['athlete_id', 'league_code', 'source_name', 'external_id'])));
+  for (const sport of ['mlb', 'nfl']) {
+    merged.repairProfiles[sport].sort((left, right) => String(left.athlete_id).localeCompare(String(right.athlete_id)));
+  }
+  return merged;
+}
+
+function analyticsSnapshotCounts(snapshot) {
+  return {
+    requested: (snapshot.requested || []).length,
+    athletes: (snapshot.athletes || []).length,
+    memberships: (snapshot.memberships || []).length,
+    aliases: (snapshot.aliases || []).length,
+    externalIds: (snapshot.externalIds || []).length,
+  };
+}
+
+async function executeLinkedQuery(sql, workdir, label, dependencies = {}, projectRef = null) {
   const outputDirectory = path.join(ROOT, 'outputs', 'pro-sports-mapping-sync-work');
   await fs.mkdir(outputDirectory, { recursive: true });
   const sqlFile = path.join(outputDirectory, `${label}.sql`);
   await fs.writeFile(sqlFile, sql, 'utf8');
   const installedNpx = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npx-cli.js');
-  const npxArgs = ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', workdir,
-    '--file', sqlFile, '--output-format', 'json', '--agent', 'yes'];
+  const npxArgs = buildLinkedQueryArgs(workdir, sqlFile, projectRef);
   const command = await fs.access(installedNpx).then(() => process.execPath).catch(() => (
     process.platform === 'win32' ? 'npx.cmd' : 'npx'
   ));
@@ -932,6 +1052,33 @@ async function executeLinkedQuery(sql, workdir, label, dependencies = {}) {
     throw new Error(`${label} failed: ${details.slice(0, 1600)}`);
   }
   return parseSupabaseCliJson(result.stdout)?.rows?.[0]?.payload || {};
+}
+
+async function executeAnalyticsSnapshots(identityRequests, repairs, execute, label, dependencies) {
+  const snapshots = [];
+  for (const partition of partitionAnalyticsInputs(identityRequests, repairs)) {
+    snapshots.push(await execute(
+      buildAnalyticsSnapshotSql(partition.identityRequests, partition.repairs),
+      PRO_SPORTS_ANALYTICS_WORKDIR,
+      `${label}-${partition.sport}`,
+      dependencies,
+      partition.target.projectRef,
+    ));
+  }
+  return mergeAnalyticsSnapshots(snapshots);
+}
+
+async function executeAnalyticsRepairs(identityRequests, repairs, execute, label, dependencies) {
+  for (const partition of partitionAnalyticsInputs(identityRequests, repairs)) {
+    if (!partition.repairs.length) continue;
+    await execute(
+      buildAnalyticsRepairSql(partition.repairs),
+      PRO_SPORTS_ANALYTICS_WORKDIR,
+      `${label}-${partition.sport}`,
+      dependencies,
+      partition.target.projectRef,
+    );
+  }
 }
 
 async function writeJson(filePath, value) {
@@ -986,26 +1133,19 @@ export async function main(argv = process.argv.slice(2), dependencies = {}) {
         `Analytics repair requires --confirm=${ANALYTICS_REPAIR_CONFIRMATION} and PRO_SPORTS_MAPPING_ALLOW_ANALYTICS_REPAIR=confirmed.`,
       );
     }
-    const analyticsBefore = await execute(
-      buildAnalyticsSnapshotSql(plan.identityRequests, plan.repairs), ANALYTICS_WORKDIR,
-      'analytics-before-repairs', dependencies,
+    const analyticsBefore = await executeAnalyticsSnapshots(
+      plan.identityRequests, plan.repairs, execute, 'analytics-before-repairs', dependencies,
     );
-    report.sourceSnapshotCounts = {
-      requested: (analyticsBefore.requested || []).length,
-      athletes: (analyticsBefore.athletes || []).length,
-      memberships: (analyticsBefore.memberships || []).length,
-      aliases: (analyticsBefore.aliases || []).length,
-      externalIds: (analyticsBefore.externalIds || []).length,
-    };
+    report.sourceSnapshotCounts = analyticsSnapshotCounts(analyticsBefore);
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupDirectory = path.join(ROOT, 'outputs', 'backups', `pro-sports-mapping-${timestamp}`);
     await writeJson(path.join(backupDirectory, 'analytics-before.json'), analyticsBefore);
-    await execute(buildAnalyticsRepairSql(plan.repairs), ANALYTICS_WORKDIR,
-      'analytics-apply-repairs', dependencies);
+    await executeAnalyticsRepairs(
+      plan.identityRequests, plan.repairs, execute, 'analytics-apply-repairs', dependencies,
+    );
     report.appliedIdentityRepairs = plan.repairs.length;
-    const analyticsAfter = await execute(
-      buildAnalyticsSnapshotSql(plan.identityRequests, plan.repairs), ANALYTICS_WORKDIR,
-      'analytics-after-repairs', dependencies,
+    const analyticsAfter = await executeAnalyticsSnapshots(
+      plan.identityRequests, plan.repairs, execute, 'analytics-after-repairs', dependencies,
     );
     await writeJson(path.join(backupDirectory, 'analytics-after.json'), analyticsAfter);
     const postRepairPreflightPath = path.join(
@@ -1034,20 +1174,13 @@ export async function main(argv = process.argv.slice(2), dependencies = {}) {
         `Commerce copy requires --confirm=${COMMERCE_COPY_CONFIRMATION} and PRO_SPORTS_MAPPING_ALLOW_COMMERCE_WRITE=confirmed.`,
       );
     }
-    const analyticsBefore = await execute(
-      buildAnalyticsSnapshotSql(plan.identityRequests), ANALYTICS_WORKDIR,
-      'analytics-before-commerce-copy', dependencies,
+    const analyticsBefore = await executeAnalyticsSnapshots(
+      plan.identityRequests, [], execute, 'analytics-before-commerce-copy', dependencies,
     );
     const commerceBefore = await execute(
       buildCommerceSnapshotSql(plan), COMMERCE_WORKDIR, 'commerce-before-copy', dependencies,
     );
-    report.sourceSnapshotCounts = {
-      requested: (analyticsBefore.requested || []).length,
-      athletes: (analyticsBefore.athletes || []).length,
-      memberships: (analyticsBefore.memberships || []).length,
-      aliases: (analyticsBefore.aliases || []).length,
-      externalIds: (analyticsBefore.externalIds || []).length,
-    };
+    report.sourceSnapshotCounts = analyticsSnapshotCounts(analyticsBefore);
     report.targetSnapshotCounts = {
       products: (commerceBefore.products || []).length,
       mappings: (commerceBefore.mappings || []).length,
@@ -1077,20 +1210,13 @@ export async function main(argv = process.argv.slice(2), dependencies = {}) {
     report.backupDirectory = path.relative(ROOT, backupDirectory).replace(/\\/g, '/');
     report.publicationBoundary.databaseWritesPerformed = true;
   } else {
-    const analyticsBefore = await execute(
-      buildAnalyticsSnapshotSql(plan.identityRequests, plan.repairs), ANALYTICS_WORKDIR,
-      'analytics-audit', dependencies,
+    const analyticsBefore = await executeAnalyticsSnapshots(
+      plan.identityRequests, plan.repairs, execute, 'analytics-audit', dependencies,
     );
     const commerceBefore = await execute(
       buildCommerceSnapshotSql(plan), COMMERCE_WORKDIR, 'commerce-audit', dependencies,
     );
-    report.sourceSnapshotCounts = {
-      requested: (analyticsBefore.requested || []).length,
-      athletes: (analyticsBefore.athletes || []).length,
-      memberships: (analyticsBefore.memberships || []).length,
-      aliases: (analyticsBefore.aliases || []).length,
-      externalIds: (analyticsBefore.externalIds || []).length,
-    };
+    report.sourceSnapshotCounts = analyticsSnapshotCounts(analyticsBefore);
     report.targetSnapshotCounts = {
       products: (commerceBefore.products || []).length,
       mappings: (commerceBefore.mappings || []).length,

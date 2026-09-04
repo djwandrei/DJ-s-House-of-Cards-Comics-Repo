@@ -2,12 +2,16 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import test from 'node:test';
 import {
+  analyticsTargetForLeagueCode,
+  buildLinkedQueryArgs,
   buildAnalyticsRepairSql,
   buildAnalyticsSnapshotSql,
   buildCommerceApplySql,
   buildCommerceSnapshotSql,
   buildSyncPlan,
+  mergeAnalyticsSnapshots,
   optionsFromArgs,
+  partitionAnalyticsInputs,
   parseSupabaseCliJson,
 } from '../sync-pro-sports-product-mappings.mjs';
 
@@ -271,6 +275,67 @@ test('snapshot queries are read-only and apply queries are transaction guarded',
   assert.match(applySql, /Commerce external ID readback failed/);
   assert.match(applySql, /commit;/i);
   assert.doesNotMatch(applySql, /\bdelete\b/i);
+});
+
+test('analytics sync splits MLB and NFL work by explicit project target', () => {
+  const nflRequest = {
+    league_code: 'NFL', source_name: 'pro_football_reference', external_id: 'nflone01',
+    athlete_id: athleteId, canonical_name: 'Player Two',
+  };
+  const partitions = partitionAnalyticsInputs([
+    { league_code: 'MLB', source_name: 'baseball_reference', external_id: 'onepl01', athlete_id: athleteId, canonical_name: 'Player One' },
+    nflRequest,
+  ]);
+  assert.deepEqual(partitions.map((partition) => ({
+    leagueCode: partition.leagueCode,
+    sport: partition.sport,
+    projectRef: partition.target.projectRef,
+  })), [
+    { leagueCode: 'MLB', sport: 'mlb', projectRef: 'sptahazcjnorayjkltdx' },
+    { leagueCode: 'NFL', sport: 'nfl', projectRef: 'iuhjjwqfkohrrjqgpahh' },
+  ]);
+  assert.equal(analyticsTargetForLeagueCode('nfl').playerTable, 'nfl_players');
+  assert.throws(() => buildAnalyticsSnapshotSql([
+    { league_code: 'MLB', source_name: 'baseball_reference', external_id: 'onepl01', athlete_id: athleteId, canonical_name: 'Player One' },
+    nflRequest,
+  ]), /exactly one league target/);
+  const args = buildLinkedQueryArgs('supabase-sports-analytics', 'targeted.sql', partitions[0].target.projectRef);
+  assert.equal(args[args.indexOf('--project-ref') + 1], 'sptahazcjnorayjkltdx');
+  assert.throws(() => partitionAnalyticsInputs([
+    { league_code: 'NBA', source_name: 'basketball_reference', external_id: 'nbaone01', athlete_id: athleteId, canonical_name: 'Player Three' },
+  ]), /Unsupported pro-sports analytics league/);
+});
+
+test('analytics snapshots merge split-target reads and reject conflicts', () => {
+  const mlbSnapshot = {
+    requested: [{ league_code: 'MLB', source_name: 'baseball_reference', external_id: 'onepl01', athlete_id: athleteId }],
+    sports: [{ sport_code: 'baseball' }],
+    leagues: [{ league_code: 'MLB' }],
+    athletes: [{ id: athleteId, canonical_name: 'Player One' }],
+    memberships: [{ athlete_id: athleteId, league_code: 'MLB' }],
+    aliases: [{ athlete_id: athleteId, league_code: 'MLB', normalized_alias: 'player one' }],
+    externalIds: [{ athlete_id: athleteId, league_code: 'MLB', source_name: 'baseball_reference', external_id: 'onepl01' }],
+    repairProfiles: { mlb: [{ athlete_id: athleteId, full_name: 'Player One' }], nfl: [] },
+  };
+  const nflSnapshot = {
+    requested: [{ league_code: 'NFL', source_name: 'pro_football_reference', external_id: 'nflone01', athlete_id: athleteId }],
+    sports: [{ sport_code: 'football' }],
+    leagues: [{ league_code: 'NFL' }],
+    athletes: [{ id: athleteId, canonical_name: 'Player One' }],
+    memberships: [{ athlete_id: athleteId, league_code: 'NFL' }],
+    aliases: [{ athlete_id: athleteId, league_code: 'NFL', normalized_alias: 'player one' }],
+    externalIds: [{ athlete_id: athleteId, league_code: 'NFL', source_name: 'pro_football_reference', external_id: 'nflone01' }],
+    repairProfiles: { mlb: [], nfl: [{ athlete_id: athleteId, full_name: 'Player One' }] },
+  };
+  const merged = mergeAnalyticsSnapshots([nflSnapshot, mlbSnapshot]);
+  assert.deepEqual(merged.requested.map((row) => row.league_code), ['MLB', 'NFL']);
+  assert.deepEqual(merged.sports.map((row) => row.sport_code), ['baseball', 'football']);
+  assert.deepEqual(merged.repairProfiles.mlb.map((row) => row.athlete_id), [athleteId]);
+  assert.deepEqual(merged.repairProfiles.nfl.map((row) => row.athlete_id), [athleteId]);
+  assert.throws(() => mergeAnalyticsSnapshots([
+    mlbSnapshot,
+    { ...mlbSnapshot, athletes: [{ id: athleteId, canonical_name: 'Different Player' }] },
+  ]), /Conflicting athletes rows/);
 });
 
 test('marker repair is limited to reviewed identities and verifies readback', () => {

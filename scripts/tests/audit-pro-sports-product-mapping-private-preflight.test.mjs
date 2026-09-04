@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  buildSupabaseReadArgs,
   buildAnalyticsPreflightSql,
   evaluateProSportsPrivatePreflight,
   parseSupabaseCliJson,
+  planPrivateAnalyticsReads,
   stripProviderDisplayMarkers,
 } from '../audit-pro-sports-product-mapping-private-preflight.mjs';
 
@@ -22,6 +24,32 @@ test('analytics SQL is read-only and resolves provider IDs through verified iden
   assert.match(sql, /membership_status/);
   assert.doesNotMatch(sql, /normalize_athlete_name/);
   assert.doesNotMatch(sql, /\b(?:insert|update|delete|alter|drop|truncate)\b/i);
+});
+
+test('private analytics reads split by league and pin an explicit project ref', () => {
+  const plans = planPrivateAnalyticsReads([
+    { leagueCode: 'NFL', sourceName: 'pro_football_reference', externalId: 'nfl-one', providerCanonicalName: 'Player Two' },
+    { leagueCode: 'MLB', sourceName: 'baseball_reference', externalId: 'mlb-one', providerCanonicalName: 'Player One' },
+  ]);
+  assert.deepEqual(plans.map((plan) => ({
+    leagueCode: plan.target.leagueCode,
+    projectRef: plan.target.projectRef,
+    identityCount: plan.identities.length,
+  })), [
+    { leagueCode: 'MLB', projectRef: 'sptahazcjnorayjkltdx', identityCount: 1 },
+    { leagueCode: 'NFL', projectRef: 'iuhjjwqfkohrrjqgpahh', identityCount: 1 },
+  ]);
+  const args = buildSupabaseReadArgs({
+    workdir: 'supabase-sports-analytics', sqlFile: 'analytics-mlb-identities.sql',
+    projectRef: plans[0].target.projectRef,
+  });
+  assert.equal(args[args.indexOf('--project-ref') + 1], 'sptahazcjnorayjkltdx');
+});
+
+test('private analytics reads fail closed for an unmapped league', () => {
+  assert.throws(() => planPrivateAnalyticsReads([
+    { leagueCode: 'NBA', sourceName: 'basketball_reference', externalId: 'nba-one', providerCanonicalName: 'Player Three' },
+  ]), /No private analytics target is configured for NBA/);
 });
 
 test('private preflight distinguishes identity-copy readiness from mapping readiness', () => {

@@ -15,6 +15,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
 const NPX_CLI = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npx-cli.js');
@@ -24,7 +28,6 @@ const MAX_SHARD_SIZE = 250;
 
 const SPORTS = Object.freeze({
   mlb: Object.freeze({
-    analyticsDirectory: 'supabase-sports-analytics',
     mediaTable: 'mlb_media_assets',
     playersTable: 'mlb_players',
     statsTable: 'mlb_player_team_season_stats',
@@ -33,7 +36,6 @@ const SPORTS = Object.freeze({
     albumLabel: 'MLB Player Profile Pics',
   }),
   nfl: Object.freeze({
-    analyticsDirectory: 'supabase-sports-analytics',
     mediaTable: 'nfl_media_assets',
     playersTable: 'nfl_players',
     statsTable: 'nfl_player_team_season_stats',
@@ -190,16 +192,31 @@ order by media.player_id, media.updated_at desc;
 `;
 }
 
+function analyticsQueryPlan(options, sqlFile) {
+  // The Basketball target remains its existing linked project. MLB and NFL
+  // must name their isolated project ref so a stale local link cannot query
+  // the retired combined warehouse or the opposite sport.
+  const proSportsTarget = options.sport === 'mlb' || options.sport === 'nfl'
+    ? proSportsAnalyticsTarget(options.sport)
+    : null;
+  const workdir = proSportsTarget
+    ? PRO_SPORTS_ANALYTICS_WORKDIR
+    : path.join(ROOT, options.definition.analyticsDirectory);
+  const args = [
+    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', workdir,
+    ...(proSportsTarget ? ['--project-ref', proSportsTarget.projectRef] : []),
+    '--output-format', 'json', '--file', sqlFile,
+  ];
+  return { workdir, args, proSportsTarget };
+}
+
 async function loadRows(options) {
-  const workdir = path.join(ROOT, options.definition.analyticsDirectory);
   const scratchDirectory = path.join(ROOT, 'outputs', 'freeimage-player-photo-manifest-work');
   fs.mkdirSync(scratchDirectory, { recursive: true });
   const sqlFile = path.join(scratchDirectory, `query-${options.sport}-${options.profileStart}-${options.includeUnconfirmed ? 'all' : 'confirmed'}.sql`);
   fs.writeFileSync(sqlFile, sqlFor(options.definition, options.profileStart, options.includeUnconfirmed), 'utf8');
-  const result = await runNpx([
-    '--yes', `supabase@${SUPABASE_CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', workdir,
-    '--output-format', 'json', '--file', sqlFile,
-  ], workdir, 180_000);
+  const queryPlan = analyticsQueryPlan(options, sqlFile);
+  const result = await runNpx(queryPlan.args, queryPlan.workdir, 180_000);
   if (result.code !== 0) {
     throw new Error(`Unable to query ${options.sport.toUpperCase()} media: ${String(result.stderr || result.stdout).trim().slice(0, 1800)}`);
   }
@@ -328,4 +345,11 @@ if (import.meta.url === invokedModuleUrl) {
   });
 }
 
-export { parseArgs, validateHttpsImageUrl, prepareManifestRows, partition, sqlFor };
+export {
+  analyticsQueryPlan,
+  parseArgs,
+  validateHttpsImageUrl,
+  prepareManifestRows,
+  partition,
+  sqlFor,
+};

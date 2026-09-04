@@ -4,12 +4,16 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { normalizeProviderIdentityName } from './lib/pro-sports-product-mapping-coverage.mjs';
+import {
+  PRO_SPORTS_ANALYTICS_WORKDIR,
+  proSportsAnalyticsTarget,
+} from './lib/pro-sports-analytics-targets.mjs';
 
 const ROOT = process.cwd();
 const CLI_VERSION = '2.115.0';
-const ANALYTICS_WORKDIR = path.join(ROOT, 'supabase-sports-analytics');
 const COMMERCE_WORKDIR = ROOT;
 const LEAGUE_CATEGORIES = Object.freeze({ MLB: 'Baseball', NFL: 'Football' });
+const SPORT_BY_LEAGUE_CODE = Object.freeze({ MLB: 'mlb', NFL: 'nfl' });
 
 function workspacePath(relativePath, label) {
   const resolved = path.resolve(ROOT, String(relativePath || ''));
@@ -60,6 +64,26 @@ export function requestedIdentities(proposal) {
   }
   return [...identities.values()].sort((left, right) => left.leagueCode.localeCompare(right.leagueCode)
     || left.sourceName.localeCompare(right.sourceName) || left.externalId.localeCompare(right.externalId));
+}
+
+export function planPrivateAnalyticsReads(identities) {
+  if (!identities.length) throw new Error('No provider identities were proposed.');
+  const plansBySport = new Map();
+  for (const identity of identities) {
+    const sport = SPORT_BY_LEAGUE_CODE[identity.leagueCode];
+    if (!sport) {
+      throw new Error(`No private analytics target is configured for ${identity.leagueCode}.`);
+    }
+    const current = plansBySport.get(sport) || {
+      target: proSportsAnalyticsTarget(sport),
+      identities: [],
+    };
+    current.identities.push(identity);
+    plansBySport.set(sport, current);
+  }
+  return [...plansBySport.values()].sort((left, right) => (
+    left.target.leagueCode.localeCompare(right.target.leagueCode)
+  ));
 }
 
 export function buildAnalyticsPreflightSql(identities) {
@@ -189,14 +213,35 @@ export function parseSupabaseCliJson(stdout) {
   throw new Error('Supabase CLI returned malformed JSON.');
 }
 
+export function buildSupabaseReadArgs({ workdir, sqlFile, projectRef = null }) {
+  const targetArgs = projectRef ? ['--project-ref', projectRef] : [];
+  return ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', ...targetArgs,
+    '--workdir', workdir, '--file', sqlFile, '--output-format', 'json', '--agent', 'yes'];
+}
+
 async function executeLinkedRead(sql, workdir, label, dependencies = {}) {
+  return executeSupabaseRead(sql, { workdir }, label, dependencies);
+}
+
+async function executePrivateAnalyticsRead(sql, target, label, dependencies = {}) {
+  if (!target?.projectRef) throw new Error(`${label} requires an explicit analytics project ref.`);
+  return executeSupabaseRead(sql, {
+    workdir: PRO_SPORTS_ANALYTICS_WORKDIR,
+    projectRef: target.projectRef,
+  }, label, dependencies);
+}
+
+async function executeSupabaseRead(sql, destination, label, dependencies = {}) {
   const outputDirectory = path.join(ROOT, 'outputs', 'pro-sports-mapping-private-preflight-work');
   await fs.mkdir(outputDirectory, { recursive: true });
   const sqlFile = path.join(outputDirectory, `${label}.sql`);
   await fs.writeFile(sqlFile, sql, 'utf8');
   const installedNpx = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npx-cli.js');
-  const npxArgs = ['--yes', `supabase@${CLI_VERSION}`, 'db', 'query', '--linked', '--workdir', workdir,
-    '--file', sqlFile, '--output-format', 'json', '--agent', 'yes'];
+  const npxArgs = buildSupabaseReadArgs({
+    workdir: destination.workdir,
+    sqlFile,
+    projectRef: destination.projectRef,
+  });
   const command = await fs.access(installedNpx).then(() => process.execPath).catch(() => (
     process.platform === 'win32' ? 'npx.cmd' : 'npx'
   ));
@@ -335,9 +380,18 @@ export async function main(argv = process.argv.slice(2), dependencies = {}) {
   const proposal = JSON.parse(proposalText);
   if (proposal?.mode !== 'proposal_only') throw new Error('Input is not a mapping review proposal.');
   const identities = requestedIdentities(proposal);
-  const analyticsPayload = await (dependencies.executeLinkedRead || executeLinkedRead)(
-    buildAnalyticsPreflightSql(identities), ANALYTICS_WORKDIR, 'analytics-identities', dependencies,
-  );
+  const executeAnalyticsRead = dependencies.executePrivateAnalyticsRead || executePrivateAnalyticsRead;
+  const analyticsPayloads = await Promise.all(planPrivateAnalyticsReads(identities).map((plan) => (
+    executeAnalyticsRead(
+      buildAnalyticsPreflightSql(plan.identities),
+      plan.target,
+      `analytics-${plan.target.sport}-identities`,
+      dependencies,
+    )
+  )));
+  const analyticsPayload = {
+    identities: analyticsPayloads.flatMap((payload) => payload?.identities || []),
+  };
   const commercePayload = await (dependencies.executeLinkedRead || executeLinkedRead)(
     buildCommercePreflightSql(proposal, analyticsPayload.identities || []), COMMERCE_WORKDIR,
     'commerce-products-identities', dependencies,
