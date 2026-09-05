@@ -14,11 +14,29 @@ import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { workloadRate } from '../prototypes/basketball-lineup-optimizer/workload-model.js';
+import { chronologicalSplit, validateGames, pairedGameBootstrap, relativeImprovement } from './lib/lineup-workload-validation.mjs';
 
 export const METRICS = Object.freeze({ points: 'minutes', assists: 'minutes', rebounds: 'minutes', steals: 'minutes', blocks: 'minutes', ballSecurity: 'minutes', efgPct: 'fga', threePct: 'tpa' });
 const blank = () => ({ minutes: 0, games: 0, fga: 0, tpa: 0, points: 0, assists: 0, rebounds: 0, steals: 0, blocks: 0, ballSecurity: 0, efgPct: 0, threePct: 0 });
+const nonnegative = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
+const positive = value => nonnegative(value) && value > 0;
+const evidence = () => Object.fromEntries(Object.keys(METRICS).map(metric => [metric, { numerator: 0, exposure: 0, games: 0 }]));
+
+// These descriptive slices are fixed before looking at held-out outcomes.
+// They diagnose a model; they do NOT cap players' minutes in the optimizer.
+export const SUBGROUPS = Object.freeze({
+  lowSample: { definition: '5-19 valid training appearances for this metric', matches: (p, e) => e.games < 20 },
+  establishedSample: { definition: '20+ valid training appearances for this metric', matches: (p, e) => e.games >= 20 },
+  lowMinutes: { definition: 'Training observed MPG below 16', matches: p => p.minutes / p.games < 16 },
+  rotationMinutes: { definition: 'Training observed MPG from 16 to below 28', matches: p => p.minutes / p.games >= 16 && p.minutes / p.games < 28 },
+  highMinutes: { definition: 'Training observed MPG at least 28', matches: p => p.minutes / p.games >= 28 },
+});
 
 export function gameRows(archive) {
+  // A Map would silently keep only the last duplicate player. Reject the
+  // entire ambiguous game before constructing benchmark ground truth.
+  const active = archive.players.filter(p => p.minutesPlayed > 0);
+  if (new Set(active.map(p => p.id)).size !== active.length || active.some(p => typeof p.id !== 'string' || !p.id)) return [];
   const rows = new Map(archive.players.filter(p => p.minutesPlayed > 0).map(p => [p.id, { ...blank(), id: p.id, team: p.providerTeamId, minutes: p.minutesPlayed, games: 1 }]));
   const seen = new Set();
   for (const event of archive.events || []) {
@@ -49,56 +67,109 @@ export function gameRows(archive) {
 }
 
 export function fitProfiles(games) {
+  validateGames(games);
   const players = new Map(), league = blank();
+  const metricEvidence = { players: new Map(), league: evidence() };
   for (const game of games) for (const row of game.rows) {
     const player = players.get(row.id) || blank();
-    for (const field of Object.keys(league)) { player[field] += row[field]; league[field] += row[field]; }
+    // Do not turn null into zero or add a missing metric's minutes to its
+    // denominator. Every metric gets its own paired numerator/exposure bank.
+    if (!positive(row.minutes)) continue;
+    for (const field of Object.keys(league)) {
+      const value = field === 'games' ? 1 : row[field];
+      if (nonnegative(value)) { player[field] += value; league[field] += value; }
+    }
+    const sample = metricEvidence.players.get(row.id) || evidence();
+    for (const [metric, denominator] of Object.entries(METRICS)) {
+      if (!nonnegative(row[metric]) || !positive(row[denominator])) continue;
+      for (const bank of [sample, metricEvidence.league]) {
+        bank[metric].numerator += row[metric]; bank[metric].exposure += row[denominator]; bank[metric].games++;
+      }
+    }
+    metricEvidence.players.set(row.id, sample);
     players.set(row.id, player);
   }
-  return { players, league };
+  return { players, league, metricEvidence };
 }
 
 export function evaluate(games, fit, metric, parameters, expandedOnly = false) {
+  validateGames(games);
   const denominator = METRICS[metric];
-  const baseline = fit.league[metric] / fit.league[denominator];
+  if (!denominator) throw new Error(`Unknown metric: ${metric}`);
+  const options = typeof expandedOnly === 'object' && expandedOnly !== null ? expandedOnly : { expandedOnly };
+  if (options.subgroup && !SUBGROUPS[options.subgroup]) throw new Error(`Unknown subgroup: ${options.subgroup}`);
+  const league = fit.metricEvidence.league[metric];
+  const baseline = positive(league.exposure) ? league.numerator / league.exposure : null;
   let squared = 0, absolute = 0, weight = 0, rows = 0;
-  for (const game of games) for (const row of game.rows) {
+  const exclusions = { missingLeagueBaseline: 0, unknownPlayer: 0, missingTrainingDenominator: 0, insufficientTrainingGames: 0, missingTargetDenominator: 0, missingTargetNumerator: 0, invalidMinutes: 0, outsideSubgroup: 0, invalidPrediction: 0 };
+  const gameLosses = [];
+  let considered = 0;
+  for (const game of games) {
+    const loss = { gameId: game.id, squared: 0, exposure: 0, playerGames: 0 };
+    for (const row of game.rows) {
+    considered++;
+    if (baseline === null) { exclusions.missingLeagueBaseline++; continue; }
     const p = fit.players.get(row.id);
-    if (!p || !(p[denominator] > 0) || !(row[denominator] > 0) || p.games < 5) continue;
+    if (!p) { exclusions.unknownPlayer++; continue; }
+    const sample = fit.metricEvidence.players.get(row.id)[metric];
+    if (!positive(sample.exposure)) { exclusions.missingTrainingDenominator++; continue; }
+    if (sample.games < 5) { exclusions.insufficientTrainingGames++; continue; }
+    if (!positive(row[denominator])) { exclusions.missingTargetDenominator++; continue; }
+    if (!nonnegative(row[metric])) { exclusions.missingTargetNumerator++; continue; }
+    if (!positive(row.minutes)) { exclusions.invalidMinutes++; continue; }
     const sourceMinutes = p.minutes / p.games;
-    if (expandedOnly && !(row.minutes >= sourceMinutes + 8 && sourceMinutes < 24)) continue;
-    const prediction = workloadRate({ value: p[metric] / p[denominator], baseline, sample: p[denominator], ...parameters, sourceMinutes, targetMinutes: row.minutes, lowerIsBetter: metric === 'ballSecurity' });
+    if ((options.expandedOnly && !(row.minutes >= sourceMinutes + 8 && sourceMinutes < 24)) || (options.subgroup && !SUBGROUPS[options.subgroup].matches(p, sample))) { exclusions.outsideSubgroup++; continue; }
+    const prediction = workloadRate({ value: sample.numerator / sample.exposure, baseline, sample: sample.exposure, ...parameters, sourceMinutes, targetMinutes: row.minutes, lowerIsBetter: metric === 'ballSecurity' });
+    if (!nonnegative(prediction)) { exclusions.invalidPrediction++; continue; }
     const error = prediction - row[metric] / row[denominator];
     squared += row[denominator] * error * error;
     absolute += row[denominator] * Math.abs(error);
     weight += row[denominator]; rows++;
+    loss.squared += row[denominator] * error * error; loss.exposure += row[denominator]; loss.playerGames++;
+    }
+    gameLosses.push(loss);
   }
-  return { mse: weight ? squared / weight : null, mae: weight ? absolute / weight : null, exposure: weight, playerGames: rows };
+  const result = { mse: weight ? squared / weight : null, mae: weight ? absolute / weight : null, exposure: weight, playerGames: rows,
+    eligibility: { consideredPlayerGames: considered, minimumTrainingAppearances: 5, exclusions } };
+  // Per-game sufficient statistics are optional and stay in memory for paired
+  // resampling. The persisted report contains only aggregated evaluations.
+  if (options.includeGameLosses) result.gameLosses = gameLosses;
+  return result;
 }
 
-export function runBenchmark(games) {
-  const ordered = [...games].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  if (ordered.length < 100) throw new Error('At least 100 complete games are required.');
-  const train = ordered.slice(0, Math.floor(ordered.length * .6));
-  const tune = ordered.slice(train.length, Math.floor(ordered.length * .8));
-  const test = ordered.slice(train.length + tune.length);
+export function runBenchmark(games, { bootstrapIterations = 1000, bootstrapSeed = 20260905 } = {}) {
+  const { ordered, train, tune, test } = chronologicalSplit(games);
   const trainFit = fitProfiles(train), finalFit = fitProfiles([...train, ...tune]);
   const metrics = {};
+  const compare = (metric, chosen, selection = {}) => {
+    const options = { ...selection, includeGameLosses: true };
+    const projected = evaluate(test, finalFit, metric, chosen, options);
+    const raw = evaluate(test, finalFit, metric, { prior: 0, strength: 0 }, options);
+    const shrinkOnly = evaluate(test, finalFit, metric, { ...chosen, strength: 0 }, options);
+    const bootstrap = { iterations: bootstrapIterations, seed: bootstrapSeed };
+    const uncertainty = { vsRaw: pairedGameBootstrap(projected, raw, bootstrap), vsShrinkOnly: pairedGameBootstrap(projected, shrinkOnly, bootstrap) };
+    for (const row of [projected, raw, shrinkOnly]) delete row.gameLosses;
+    return { projected, raw, shrinkOnly, improvementVsRaw: relativeImprovement(projected.mse, raw.mse), improvementVsShrinkOnly: relativeImprovement(projected.mse, shrinkOnly.mse), uncertainty };
+  };
   for (const [metric, denominator] of Object.entries(METRICS)) {
     const priors = denominator === 'minutes' ? [0, 100, 250, 500, 750, 1500] : [0, 20, 50, 100, 180, 350];
     const candidates = priors.flatMap(prior => [0, .25, .5, 1, 2].map(strength => ({ prior, strength })));
     const scored = candidates.map(parameters => ({ parameters, evaluation: evaluate(tune, trainFit, metric, parameters) }));
-    scored.sort((a, b) => a.evaluation.mse - b.evaluation.mse || a.parameters.strength - b.parameters.strength || a.parameters.prior - b.parameters.prior);
+    // Null MSE means no evaluation, never a perfect zero-error candidate.
+    scored.sort((a, b) => (a.evaluation.mse ?? Infinity) - (b.evaluation.mse ?? Infinity) || a.parameters.strength - b.parameters.strength || a.parameters.prior - b.parameters.prior);
+    if (scored[0].evaluation.mse === null) {
+      metrics[metric] = { status: 'unavailable-no-eligible-tuning-rows', parameters: null, tuning: scored[0].evaluation, test: null, raw: null, shrinkOnly: null, improvementVsRaw: null, improvementVsShrinkOnly: null, expandedRole: null, subgroups: null, uncertainty: null };
+      continue;
+    }
     const chosen = scored[0].parameters;
-    const raw = evaluate(test, finalFit, metric, { prior: 0, strength: 0 });
-    const projected = evaluate(test, finalFit, metric, chosen);
-    const shrinkOnly = evaluate(test, finalFit, metric, { ...chosen, strength: 0 });
-    metrics[metric] = { parameters: chosen, tuning: scored[0].evaluation, test: projected, raw, shrinkOnly,
-      improvementVsRaw: 1 - projected.mse / raw.mse,
-      expandedRole: { projected: evaluate(test, finalFit, metric, chosen, true), raw: evaluate(test, finalFit, metric, { prior: 0, strength: 0 }, true) } };
+    const { projected, ...comparison } = compare(metric, chosen);
+    metrics[metric] = { status: projected.exposure ? 'evaluated' : 'unavailable-no-eligible-test-rows', parameters: chosen, tuning: scored[0].evaluation, test: projected, ...comparison,
+      expandedRole: { definition: 'Descriptive, outcome-conditioned slice: supplied test MPG at least 8 above training MPG, with training MPG below 24; not a pre-outcome subgroup.', ...compare(metric, chosen, { expandedOnly: true }) },
+      subgroups: Object.fromEntries(Object.entries(SUBGROUPS).map(([key, group]) => [key, { definition: group.definition, ...compare(metric, chosen, { subgroup: key }) }])) };
   }
-  return { version: 'chronological-workload-v1', evaluation: 'conditional production at supplied minutes; not predicted minutes or causal fatigue',
-    split: { trainGames: train.length, tuningGames: tune.length, testGames: test.length, trainingEnds: train.at(-1).date, tuningEnds: tune.at(-1).date, testStarts: test[0].date, testEnds: test.at(-1).date },
+  return { version: 'chronological-workload-v2', evaluation: 'conditional production at supplied minutes; not predicted minutes or causal fatigue',
+    validation: { grain: 'one player appearance per game', metricWeighting: METRICS, subgroupEvidence: 'train+tune appearances only; independent of held-out outcomes except the explicitly labeled legacy expandedRole slice', bootstrap: 'paired whole-game percentile intervals conditional on fitted parameters; exploratory subgroup intervals are not multiplicity-adjusted', missingEvidence: 'excluded explicitly per metric; missing numerators never become zeros' },
+    split: { method: 'nearest-60-20-20-whole-UTC-calendar-days', timezone: 'UTC', trainGames: train.length, tuningGames: tune.length, testGames: test.length, trainingEnds: train.at(-1).date, tuningEnds: tune.at(-1).date, testStarts: test[0].date, testEnds: test.at(-1).date },
     sourceGameIdsSha256: crypto.createHash('sha256').update(ordered.map(g => g.id).join('\n')).digest('hex'), metrics };
 }
 
@@ -121,6 +192,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const out = path.resolve(value('--out')); fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
   if (process.argv.includes('--write-runtime')) {
+    if (Object.values(report.metrics).some(row => !row.parameters || row.test?.mse === null)) throw new Error('Incomplete metric validation cannot be published as runtime calibration.');
     // Publish only scalar fitted assumptions and aggregated error metrics.
     // Retain the untouched holdout results even when they are disappointing.
     const runtime = { version: report.version, seasonEndYear: report.seasonEndYear, phase: report.phase, sourceGameIdsSha256: report.sourceGameIdsSha256, split: report.split,

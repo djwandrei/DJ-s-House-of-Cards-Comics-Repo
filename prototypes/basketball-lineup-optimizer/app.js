@@ -2422,7 +2422,7 @@ function setMode(mode, { preserveSize = false } = {}) {
     productionQualifier,
   );
   elements.productionRulesHelp.textContent = isRotation
-    ? "These hard rules use conservative per-minute bounds across workloads up to 48 minutes, then test the exact 240-minute plan. Bounds are not expected totals: they may reject a plan a more flexible nonlinear production model could allow. Your selected objective still chooses minutes."
+    ? "These hard rules use conservative rates within each player's allowed minute range, including individual overrides, then test the exact 240-minute plan. Bounds are not expected totals: they may still reject a plan a nonlinear production model could allow. Your selected objective still chooses minutes."
     : "In lineup mode, these rules add each selected player's historical per-game line. They describe the five-player profile; they do not forecast one team box score.";
   syncRotationRoleCopy(isRotation);
   elements.size.min = isRotation ? "8" : "5";
@@ -3797,7 +3797,7 @@ function renderResultEvidence(result) {
       ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond observed roles. Uncertain advantages receive a disclosed evidence adjustment. No roster-size-based penalty or automatic target minute range is applied.`
       : "";
     const seasonEvidenceDetail = rateEvidence.seasonWideEvidencePlayers > 0
-      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used complete all-team season evidence; ${rateEvidence.perAppearanceEvidencePlayers || 0} used the per-appearance fallback for at least one metric.`
+      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching all-team season evidence for at least one metric; ${rateEvidence.perAppearanceEvidencePlayers || 0} used approximate per-appearance evidence for at least one metric. A player can be in both groups.`
       : " Complete all-team season evidence was unavailable for this pool, so supported metrics used the per-appearance fallback.";
     strip.append(resultEvidenceItem(
       "Rate projection",
@@ -3806,7 +3806,7 @@ function renderResultEvidence(result) {
         : rateEvidence.roleAdjustedPlayerMetricCount > 0
           ? "Evidence confidence + role adjusted"
           : "Evidence-confidence adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? " Standard rate parameters were tuned chronologically and checked on 172 held-out regular-season games; this is not validation of a lineup forecast." : ` ${rateEvidence.uncertaintyAdjustedPlayers || 0} received a modest lower-confidence reserve.`} Team-stint games and totals were excluded.${roleProjectionDetail}${assignedRoleDetail}`,
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? " Standard rate parameters were tuned chronologically and checked on 172 held-out regular-season games using actual archived exposure. That test does not independently validate the approximate sample fallback, the browser's NBA baseline, or a lineup forecast." : ` ${rateEvidence.uncertaintyAdjustedPlayers || 0} received an assumption-based lower-confidence reserve.`} These adjustments are not player confidence intervals. Team-stint length does not set a minute target or cap.${roleProjectionDetail}${assignedRoleDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(

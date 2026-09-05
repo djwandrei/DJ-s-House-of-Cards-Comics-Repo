@@ -143,4 +143,13 @@ test('hard production floors cannot pass using optimistic observed-workload rate
   assert.equal(bounded.diagnostics.productionConstraintProjection.expectedProduction, false);
   assert.ok(bounded.best.totals.rebounds <= mean.best.totals.rebounds);
   assert.equal(bounded.best.score, mean.best.score, 'adding a satisfied floor must not alter the objective');
+
+  // This floor is feasible at the required 30 minutes, but was incorrectly
+  // rejected by the old envelope that also considered forbidden 48-minute
+  // workloads. Fixed bounds now make the production envelope exact here.
+  const tighter = optimizeLineups(pool, { ...request, statMinimums: { rebounds: 110 } });
+  assert.equal(tighter.ok, true, JSON.stringify(tighter.reasons));
+  assert.equal(tighter.best.totals.rebounds, mean.best.totals.rebounds);
+  assert.equal(tighter.best.score, mean.best.score);
+  assert.deepEqual(tighter.diagnostics.productionConstraintProjection.minuteBoundsById.p0, { min: 30, max: 30 });
 });
