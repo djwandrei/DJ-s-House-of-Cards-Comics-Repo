@@ -78,10 +78,12 @@ export function pairedGameBootstrap(projected, reference, { iterations = 1000, s
     if (![a[i].squared, b[i].squared, a[i].exposure, a[i].playerGames].every(n => Number.isFinite(n) && n >= 0)) throw new Error('Invalid game loss.');
   }
   const eligibleGames = a.filter(g => g.exposure > 0).length;
-  const estimate = relativeImprovement(projected.mse, reference.mse);
+  // Derive the point estimate from the same sufficient statistics as the
+  // interval, so stale/rounded display MSE values cannot disagree with it.
+  const estimate = relativeImprovement(a.reduce((sum, g) => sum + g.squared, 0), b.reduce((sum, g) => sum + g.squared, 0));
   const result = { method: 'paired-game-cluster-percentile', confidence, iterations, seed, eligibleGames, estimate, lower: null, upper: null, validReplicates: 0,
     interpretation: 'Conditional on fitted parameters and this held-out population; not player prediction intervals, causal effects, or uncertainty from model fitting. Games are resampled independently; serial/team dependence is not modeled.' };
-  if (estimate === null) return { ...result, status: reference.exposure === 0 ? 'no-eligible-exposure' : 'zero-or-missing-reference-error' };
+  if (estimate === null) return { ...result, status: eligibleGames === 0 ? 'no-eligible-exposure' : 'zero-or-missing-reference-error' };
   if (eligibleGames < 2) return { ...result, status: 'insufficient-game-clusters' };
   if (!iterations) return { ...result, status: 'not-requested' };
   const random = randomSequence(seed), samples = [];

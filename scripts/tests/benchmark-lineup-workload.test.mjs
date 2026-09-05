@@ -19,6 +19,33 @@ test('profiles aggregate by player across trades, never by selected team stint',
   changed.forEach((g, i) => { g.rows[0].team = i < 15 ? 'OLD' : 'NEW'; });
   assert.deepEqual(fitProfiles(games), fitProfiles(changed));
 });
+
+test('direct evaluation cannot reuse training identities or training calendar dates', () => {
+  const fit = fitProfiles(games.slice(0, 10));
+  assert.throws(() => evaluate([games[0]], fit, 'points', {}), /strictly after/);
+  const reused = { ...structuredClone(games[15]), id: games[0].id };
+  assert.throws(() => evaluate([reused], fit, 'points', {}), /strictly after/);
+  const sameDay = { ...structuredClone(games[15]), date: games[9].date.replace('00:00', '12:00') };
+  assert.throws(() => evaluate([sameDay], fit, 'points', {}), /strictly after/);
+});
+
+test('source adapter retains free throw evidence and honors explicit three point fields', () => {
+  const archive = {
+    players: [{ id: 'p', minutesPlayed: 20, providerTeamId: 'home' }],
+    events: [
+      { id: 'shot', eventType: 'fieldgoal', statistics: [{ type: 'fieldgoal', player: { id: 'p' }, made: true, three_point_shot: true }] },
+      { id: 'ft-1', statistics: [{ type: 'freethrow', player: { id: 'p' }, made: true }] },
+      { id: 'ft-2', statistics: [{ type: 'freethrow', player: { id: 'p' }, made: false }] },
+      { id: 'team', statistics: [{ type: 'rebound' }, { type: 'turnover' }] },
+    ],
+    game: { providerGameId: 'a', scheduledAt: games[0].date, homeProviderTeamId: 'home', awayProviderTeamId: 'away', homePoints: 4, awayPoints: 0 },
+  };
+  const [row] = gameRows(archive);
+  assert.equal(row.fta, 2); assert.equal(row.ftm, 1); assert.equal(row.tpa, 1); assert.equal(row.threePct, 1);
+  assert.equal(row.rebounds, 0); assert.equal(row.ballSecurity, 0);
+  archive.players.push(archive.players[0]);
+  assert.deepEqual(gameRows(archive), []);
+});
 test('incomplete source scoring cannot become benchmark ground truth', () => {
   const archive = { players: [{ id: 'p', minutesPlayed: 20, providerTeamId: 'home' }], events: [], game: { homeProviderTeamId: 'home', awayProviderTeamId: 'away', homePoints: 100, awayPoints: 90 } };
   assert.deepEqual(gameRows(archive), []);
@@ -86,6 +113,9 @@ test('no eligible rows yield null errors and explicit exclusion accounting', () 
   assert.equal(Object.values(result.eligibility.exclusions).reduce((a, b) => a + b, 0), result.eligibility.consideredPlayerGames);
   assert.equal(pairedGameBootstrap(result, result).status, 'no-eligible-exposure');
   assert.equal(evaluate([], fit, 'points', { prior: 0, strength: 0 }).mse, null);
+  const emptyFitResult = evaluate(target, fitProfiles([]), 'points', {});
+  assert.equal(emptyFitResult.mse, null);
+  assert.equal(emptyFitResult.eligibility.exclusions.missingLeagueBaseline, 4);
 });
 
 test('a wholly missing tuning metric is unavailable, never a zero-error fitted model', () => {
@@ -126,7 +156,8 @@ test('paired bootstrap is deterministic, game-clustered, and leaves zero referen
   const imperfect = structuredClone(raw); imperfect.gameLosses[0].squared = 50;
   const varying = pairedGameBootstrap(projected, imperfect, { iterations: 200, seed: 77 });
   assert.ok(varying.upper > varying.lower);
-  assert.equal(pairedGameBootstrap({ ...projected, mse: 0 }, { ...raw, mse: 0 }).estimate, null);
+  const zero = { mse: 0, exposure: 60, gameLosses: raw.gameLosses.map(g => ({ ...g, squared: 0 })) };
+  assert.equal(pairedGameBootstrap(zero, zero).estimate, null);
   const mismatched = structuredClone(raw); mismatched.gameLosses[0].exposure++;
   assert.throws(() => pairedGameBootstrap(projected, mismatched), /population mismatch/);
 });

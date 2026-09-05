@@ -17,7 +17,7 @@ import { workloadRate } from '../prototypes/basketball-lineup-optimizer/workload
 import { chronologicalSplit, validateGames, pairedGameBootstrap, relativeImprovement } from './lib/lineup-workload-validation.mjs';
 
 export const METRICS = Object.freeze({ points: 'minutes', assists: 'minutes', rebounds: 'minutes', steals: 'minutes', blocks: 'minutes', ballSecurity: 'minutes', efgPct: 'fga', threePct: 'tpa' });
-const blank = () => ({ minutes: 0, games: 0, fga: 0, tpa: 0, points: 0, assists: 0, rebounds: 0, steals: 0, blocks: 0, ballSecurity: 0, efgPct: 0, threePct: 0 });
+const blank = () => ({ minutes: 0, games: 0, fga: 0, tpa: 0, fta: 0, ftm: 0, points: 0, assists: 0, rebounds: 0, steals: 0, blocks: 0, ballSecurity: 0, efgPct: 0, threePct: 0 });
 const nonnegative = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 const positive = value => nonnegative(value) && value > 0;
 const evidence = () => Object.fromEntries(Object.keys(METRICS).map(metric => [metric, { numerator: 0, exposure: 0, games: 0 }]));
@@ -47,13 +47,16 @@ export function gameRows(archive) {
       if (!row) continue;
       if (stat.type === 'fieldgoal') {
         if (typeof stat.made !== 'boolean') return [];
-        const three = event.eventType?.includes('threepoint') || Number(stat.points) === 3;
+        const three = typeof stat.three_point_shot === 'boolean' ? stat.three_point_shot : event.eventType?.includes('threepoint') || Number(stat.points) === 3;
         row.fga++;
         if (three) row.tpa++;
         if (stat.made) { row.points += three ? 3 : 2; row.efgPct += three ? 1.5 : 1; if (three) row.threePct++; }
       } else if (stat.type === 'freethrow') {
         if (typeof stat.made !== 'boolean') return [];
-        if (stat.made) row.points++;
+        // Keep attempts as evidence for future offensive-load work. They do
+        // not become a fitted usage variable or reveal future shot allocation.
+        row.fta++;
+        if (stat.made) { row.points++; row.ftm++; }
       } else if (['assist', 'rebound', 'steal', 'block', 'turnover'].includes(stat.type)) {
         row[({ assist: 'assists', rebound: 'rebounds', steal: 'steals', block: 'blocks', turnover: 'ballSecurity' })[stat.type]]++;
       }
@@ -89,11 +92,15 @@ export function fitProfiles(games) {
     metricEvidence.players.set(row.id, sample);
     players.set(row.id, player);
   }
-  return { players, league, metricEvidence };
+  return { players, league, metricEvidence, sourceGameIds: new Set(games.map(game => game.id)),
+    trainingThroughUtcDay: games.length ? games.map(game => new Date(game.date).toISOString().slice(0, 10)).sort().at(-1) : null };
 }
 
 export function evaluate(games, fit, metric, parameters, expandedOnly = false) {
   validateGames(games);
+  // Protect direct callers as well as runBenchmark's split. Reusing an
+  // appearance, or evaluating on a day already used to fit means, leaks data.
+  if (games.some(game => fit.sourceGameIds.has(game.id) || (fit.trainingThroughUtcDay && new Date(game.date).toISOString().slice(0, 10) <= fit.trainingThroughUtcDay))) throw new Error('Held-out games must be strictly after all training UTC dates and absent from training identities.');
   const denominator = METRICS[metric];
   if (!denominator) throw new Error(`Unknown metric: ${metric}`);
   const options = typeof expandedOnly === 'object' && expandedOnly !== null ? expandedOnly : { expandedOnly };
@@ -168,7 +175,9 @@ export function runBenchmark(games, { bootstrapIterations = 1000, bootstrapSeed 
       subgroups: Object.fromEntries(Object.entries(SUBGROUPS).map(([key, group]) => [key, { definition: group.definition, ...compare(metric, chosen, { subgroup: key }) }])) };
   }
   return { version: 'chronological-workload-v2', evaluation: 'conditional production at supplied minutes; not predicted minutes or causal fatigue',
-    validation: { grain: 'one player appearance per game', metricWeighting: METRICS, subgroupEvidence: 'train+tune appearances only; independent of held-out outcomes except the explicitly labeled legacy expandedRole slice', bootstrap: 'paired whole-game percentile intervals conditional on fitted parameters; exploratory subgroup intervals are not multiplicity-adjusted', missingEvidence: 'excluded explicitly per metric; missing numerators never become zeros' },
+    validation: { grain: 'one player appearance per game', metricWeighting: METRICS, subgroupEvidence: 'train+tune appearances only; independent of held-out outcomes except the explicitly labeled legacy expandedRole slice', bootstrap: 'paired whole-game percentile intervals conditional on fitted parameters; exploratory subgroup intervals are not multiplicity-adjusted', missingEvidence: 'excluded explicitly per metric; missing numerators never become zeros',
+      sourceCoverage: 'Eligible archived games only; accumulated exposure is not a verified complete NBA season.',
+      sourceReconciliation: 'The archive adapter reconciles reconstructed player scoring to final team scores. Independent official player/team boxscore totals are not retained in this archive, so all-metric reconciliation is unavailable. Team-only rebounds and turnovers are not assigned to players.' },
     split: { method: 'nearest-60-20-20-whole-UTC-calendar-days', timezone: 'UTC', trainGames: train.length, tuningGames: tune.length, testGames: test.length, trainingEnds: train.at(-1).date, tuningEnds: tune.at(-1).date, testStarts: test[0].date, testEnds: test.at(-1).date },
     sourceGameIdsSha256: crypto.createHash('sha256').update(ordered.map(g => g.id).join('\n')).digest('hex'), metrics };
 }
