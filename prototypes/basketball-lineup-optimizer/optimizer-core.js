@@ -22,6 +22,8 @@ import {
   projectRotationUsageDemand,
 } from "./player-projection.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
+import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue,
+  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
@@ -718,6 +720,13 @@ function normalizeConfig(config = {}) {
     reasons,
   );
   const projectionRisk = rotationOptions.projectionRisk ?? config.projectionRisk ?? DEFAULT_PROJECTION_RISK;
+  const offensiveResponsibilities = rotationOptions.offensiveResponsibilities ?? {};
+  if (!isPlainObject(offensiveResponsibilities)) reasons.push("offensiveResponsibilities must map player ids to an on-court possession share from 0 to 1.");
+  else for (const [id, share] of Object.entries(offensiveResponsibilities)) {
+    if (!id || typeof share !== "number" || !Number.isFinite(share) || share < 0 || share > 1) {
+      reasons.push(`Offensive responsibility for ${id} must be a finite share from 0 to 1.`);
+    }
+  }
   if (!PROJECTION_RISK_KEYS.includes(projectionRisk)) {
     reasons.push(`projectionRisk must be one of: ${PROJECTION_RISK_KEYS.join(", ")}.`);
   }
@@ -773,6 +782,7 @@ function normalizeConfig(config = {}) {
       rotationMinutePlan,
       rotationHistoricalAllocationStyle,
       rotationRateStability,
+      offensiveResponsibilities,
       projectionRisk: PROJECTION_RISK_KEYS.includes(projectionRisk)
         ? projectionRisk
         : DEFAULT_PROJECTION_RISK,
@@ -854,8 +864,8 @@ function objectiveMetricValue(player, metric, scoringBasis) {
   // avoids the invalid hybrid of ranking a four-game team-stint spike with the
   // confidence earned by a full-season sample.
   if (scoringBasis === ROTATION_SCORING_BASES.PER_36) {
-    const seasonWideValue = seasonWideObjectiveMetricValue(player, metric);
-    if (seasonWideValue !== null) return seasonWideValue;
+    const paired = pairedMetricEvidence(player, metric);
+    if (paired) return paired.value;
   }
   if (
     scoringBasis !== ROTATION_SCORING_BASES.PER_36 ||
@@ -994,23 +1004,8 @@ function standardizedOpportunitySample(
     return { sample: seasonSample, sampleScope: "season-wide" };
   }
 
-  if (field === "minutes") {
-    const minutesPerAppearance = finiteNonNegative(player?.minutes);
-    return minutesPerAppearance === null
-      ? null
-      : {
-          sample: minutesPerAppearance * RATE_EVIDENCE_REFERENCE_GAMES,
-          sampleScope: "standardized per-appearance role volume",
-        };
-  }
-
-  const appearances = finiteNonNegative(player?.games);
   const stintTotal = finiteNonNegative(teamStintTotals?.[field]);
-  if (!(appearances > 0) || stintTotal === null) return null;
-  return {
-    sample: (stintTotal / appearances) * RATE_EVIDENCE_REFERENCE_GAMES,
-    sampleScope: "standardized per-appearance opportunity volume",
-  };
+  return stintTotal === null ? null : { sample: stintTotal, sampleScope: "selected-team-observed" };
 }
 
 /**
@@ -1039,70 +1034,37 @@ function rateStabilityEvidence(player, metric, parameters = DEFAULT_PROJECTION_P
       "minutes",
       { allowSeasonWide: hasSeasonWideImpact },
     );
-    if (!opportunity) return null;
     return {
-      ...opportunity,
+      ...(opportunity || { sample: 0, sampleScope: "unavailable" }),
+      signed: true,
+      metric,
       prior: parameters.priorImpactMinutes,
       // Basketball Reference BPM is explicitly centered on league average.
       baseline: 0,
-      denominator: opportunity.sampleScope === "season-wide"
+      denominator: opportunity?.sampleScope === "season-wide"
         ? "season-wide total minutes"
-        : "standardized role-volume minutes",
+        : opportunity ? "observed selected-team minutes" : "no observed sample",
     };
   }
 
-  if (!totals || !baseline) return null;
+  if (!baseline) return null;
 
-  // A season denominator is evidence for the season numerator ONLY. Partial
-  // imports may contain minutes/FGA without this metric's count or makes; in
-  // that case the ranking falls back to the selected-team rate and must also
-  // retain its explicitly approximate per-appearance evidence. Pairing a
-  // four-game shooting spike with 82 games of attempts would overstate trust.
-  const allowSeasonWide = seasonWideObjectiveMetricValue(player, metric) !== null;
-
-  if (metric === "efgPct") {
-    const opportunity = standardizedOpportunitySample(player, totals, "fieldGoalsAttempted", { allowSeasonWide });
-    const reference = finiteNonNegative(baseline.efgPct);
-    if (!opportunity || reference === null) return null;
-    return {
-      ...opportunity,
-      prior: parameters.priorFieldGoalAttempts,
-      baseline: reference,
-      denominator: opportunity.sampleScope === "season-wide"
-        ? "season-wide field-goal attempts"
-        : "standardized field-goal attempts per appearance",
-    };
-  }
-  if (metric === "threePct") {
-    const opportunity = standardizedOpportunitySample(
-      player,
-      totals,
-      "threePointFieldGoalsAttempted",
-      { allowSeasonWide },
-    );
-    const reference = finiteNonNegative(baseline.threePct);
-    if (!opportunity || reference === null) return null;
-    return {
-      ...opportunity,
-      prior: parameters.priorThreePointAttempts,
-      baseline: reference,
-      denominator: opportunity.sampleScope === "season-wide"
-        ? "season-wide three-point attempts"
-        : "standardized three-point attempts per appearance",
-    };
-  }
-
-  const baselineMetric = metric === "ballSecurity" ? "turnovers" : metric;
-  const opportunity = standardizedOpportunitySample(player, totals, "minutes", { allowSeasonWide });
-  const reference = finiteNonNegative(baseline[baselineMetric]);
-  if (!opportunity || reference === null) return null;
+  // Select a matched count/exposure pair first. If the all-team sum contains a
+  // gap, a complete selected-team pair may still be used, explicitly labelled.
+  // If both are missing, zero evidence means a prior-only estimate, never a
+  // synthetic 50-game sample. This also avoids making every other player raw
+  // just because one row lacks a count.
+  const paired = pairedMetricEvidence(player, metric);
+  const reference = finiteNonNegative(baseline[metric === "ballSecurity" ? "turnovers" : metric]);
+  if (reference === null) return null;
   return {
-    ...opportunity,
-    prior: parameters.priorMinutesByMetric[metric] ?? 700,
+    ...(paired || { sample: 0, sampleScope: "unavailable" }),
+    metric,
     baseline: reference,
-    denominator: opportunity.sampleScope === "season-wide"
-      ? "season-wide total minutes"
-      : "standardized role-volume minutes",
+    prior: metric === "efgPct" ? parameters.priorFieldGoalAttempts
+      : metric === "threePct" ? parameters.priorThreePointAttempts
+        : parameters.priorMinutesByMetric[metric] ?? 700,
+    denominator: paired ? `${paired.sampleScope} ${metric === "efgPct" ? "field-goal attempts" : metric === "threePct" ? "three-point attempts" : "minutes"}` : "no paired observed sample",
   };
 }
 
@@ -1156,8 +1118,8 @@ function stabilizedObjectiveMetricValue(
   // by a trade does not create a penalty by itself. Low MPG or low shot volume
   // still receives less confidence before we ask what happens in a larger role.
   const sampleReliability = evidence.sample + evidence.prior > 0 ? evidence.sample / (evidence.sample + evidence.prior) : 0;
-  const sampleAdjustedValue =
-    evidence.baseline + (sampleReliability * (raw - evidence.baseline));
+  const posterior = posteriorRate(raw, evidence);
+  const sampleAdjustedValue = posterior.mean;
 
   // Responsibility is modeled separately from minutes. A high-usage player is
   // not penalized simply for receiving a larger workload. A low-usage player
@@ -1194,15 +1156,12 @@ function stabilizedObjectiveMetricValue(
   // larger 1,200-minute prior; without a source variance estimate, inventing a
   // fixed BPM reserve would be less defensible than retaining their ordinary
   // shrinkage toward zero.
-  const uncertaintyReserve =
-    applyUncertaintyReserve &&
-    !ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric) &&
-    evidence.baseline > 0
-      ? evidence.baseline * projectionParameters.uncertaintyReserveShare * (1 - sampleReliability)
-      : 0;
+  const uncertaintyReserve = applyUncertaintyReserve
+    ? (posterior.standardError ?? 0) * projectionParameters.decisionUncertaintyWeight : 0;
   const confidenceAdjustedValue = metric === "ballSecurity"
     ? roleAdjustedMean + uncertaintyReserve
-    : Math.max(0, roleAdjustedMean - uncertaintyReserve);
+    : ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)
+      ? roleAdjustedMean - uncertaintyReserve : Math.max(0, roleAdjustedMean - uncertaintyReserve);
   const uncertaintyAdjusted = uncertaintyReserve > 1e-12;
   return {
     value: confidenceAdjustedValue,
@@ -1220,6 +1179,10 @@ function stabilizedObjectiveMetricValue(
     usageRatio: responsibilityProjection.usageRatio,
     evidenceGrade: responsibilityProjection.evidenceGrade,
     denominator: evidence.denominator,
+    posteriorMean: roleAdjustedMean,
+    standardError: posterior.standardError,
+    baseline: evidence.baseline,
+    participationPer36: evidence.participationPer36,
   };
 }
 
@@ -1233,6 +1196,7 @@ function buildNormalizedMetrics(
   } = {},
 ) {
   const byPlayerId = new Map(players.map((player) => [player.id, {}]));
+  const projectionInputsById = new Map(players.map(player => [player.id, {}]));
   // Keep the projected per-minute counting rates beside the percentile data so
   // roster ranking, projected threshold feasibility, and displayed team totals
   // all use the same conservative role-expansion assumption. Without this,
@@ -1289,8 +1253,9 @@ function buildNormalizedMetrics(
     evidenceByMetric[metric] = {
       eligiblePlayers: players.length,
       matchingSeasonSamples: evidenceByPlayer.filter(evidence => evidence?.sampleScope === "season-wide").length,
-      approximateSamples: evidenceByPlayer.filter(evidence => evidence && evidence.sampleScope !== "season-wide").length,
-      missingSamples: evidenceByPlayer.filter(evidence => !evidence).length,
+      observedTeamSamples: evidenceByPlayer.filter(evidence => evidence?.sampleScope === "selected-team-observed").length,
+      approximateSamples: 0,
+      missingSamples: evidenceByPlayer.filter(evidence => !evidence || evidence.sampleScope === "unavailable").length,
       metricAvailable,
     };
     // Applying a shrinkage correction to only the rows whose metadata happened
@@ -1323,6 +1288,7 @@ function buildNormalizedMetrics(
         true,
         projectionParameters,
       );
+      if (value.sampleAdjusted) projectionInputsById.get(player.id)[metric] = value;
       if (value.adjusted) {
         adjustedPlayerIds.add(player.id);
         adjustedPlayerMetricCount += 1;
@@ -1372,7 +1338,8 @@ function buildNormalizedMetrics(
             evidenceByPlayer[index].baseline / 36;
         }
       }
-      return { id: player.id, value: value.value };
+      return { id: player.id, value: canStabilizeMetric
+        ? demonstratedShootingValue(value.value, value.participationPer36, metric) : value.value };
     });
     players.forEach((player, index) => {
       if (!metricAvailable) return;
@@ -1423,10 +1390,13 @@ function buildNormalizedMetrics(
       );
       benchmarkMetrics.add(metric);
     });
-    const percentiles = percentileNormalize(
-      measured,
-      { lowerIsBetter: metric === "ballSecurity" },
-    );
+    // Compatibility/raw mode retains pool ranks. Recommended evidence mode
+    // uses fixed cardinal gaps, so a noisy .2 BPM gap cannot turn into a
+    // 40-percentile advantage merely because a roster has many near ties.
+    const percentiles = canStabilizeMetric
+      ? new Map(measured.map((entry, index) => [entry.id,
+        cardinalMetricScore(entry.value, evidenceByPlayer[index].baseline, metric)]))
+      : percentileNormalize(measured, { lowerIsBetter: metric === "ballSecurity" });
     if (canStabilizeMetric) {
       // A baseline can sit above or below a particular team pool. Convert it to
       // the same pool-relative percentile scale as the player values instead of
@@ -1435,12 +1405,8 @@ function buildNormalizedMetrics(
       // each row independently keeps the result safe if a future adapter mixes
       // otherwise compatible evidence envelopes.
       players.forEach((player, index) => {
-        const baselineId = `\u0000league-baseline-${index}`;
-        const baselinePercentiles = percentileNormalize(
-          [...measured, { id: baselineId, value: evidenceByPlayer[index].baseline }],
-          { lowerIsBetter: metric === "ballSecurity" },
-        );
-        baselinePercentilesByPlayerId.get(player.id)[metric] = baselinePercentiles.get(baselineId);
+        baselinePercentilesByPlayerId.get(player.id)[metric] = cardinalMetricScore(
+          evidenceByPlayer[index].baseline, evidenceByPlayer[index].baseline, metric);
       });
     }
     for (const player of players) {
@@ -1449,6 +1415,7 @@ function buildNormalizedMetrics(
   }
   return {
     metrics: byPlayerId,
+    projectionInputsById,
     projectedRatesByPlayerId,
     baselineProjectedRatesByPlayerId,
     baselinePercentilesByPlayerId,
@@ -1491,12 +1458,15 @@ function buildNormalizedMetrics(
       availableMetrics,
       unavailableMetrics,
       teamStintLengthAffectsProjection: false,
-      evidenceReferenceGames: projectionParameters.evidenceReferenceGames,
+      selectedTeamFallback: "Actual selected-team evidence is used only where a paired all-team rate is unavailable; its sample affects confidence, never hard minute limits.",
+      evidenceReferenceGames: null,
+      objectiveScale: "league-anchored-cardinal-with-raw-compatibility-fallback",
       evidenceByMetric,
       uncertainty: {
         calibratedPlayerIntervalsAvailable: false,
-        interpretation: "Sample shrinkage and role assumptions are not player confidence intervals. Held-out benchmark intervals describe model error across games, not the uncertainty of an individual lineup forecast.",
-        approximateSampleCaveat: "Standardized per-appearance samples are a fallback assumption, not observed season exposure. The workload calibration was fit using actual exposure in eligible archived games; that does not independently validate the fallback or the browser's NBA baseline.",
+        decisionWeight: projectionParameters.decisionUncertaintyWeight,
+        interpretation: "The decision reserve uses model-based sampling uncertainty and widens outside observed workload support. It is a sensitivity assumption, not a calibrated player interval or causal fatigue forecast. The posterior mean and decision reserve are separate.",
+        approximateSampleCaveat: "No synthetic sample sizes are used. Missing paired evidence remains prior-only or explicitly raw when the baseline is also unavailable.",
       },
       // Per-game is intentionally a compatibility mode. Presenting raw values
       // as sample-adjusted in that branch would mix unlike units.
@@ -1597,7 +1567,7 @@ function buildRoleConditionedProjectionPlan(
   );
   // Raw-rate mode leaves activeMetrics empty, so no evidence response changes
   // its rates. It must not acquire a hidden roster-average utility penalty.
-  if (!(referenceMinutes > 0) || objectiveMetrics.length === 0) return null;
+  if (!(referenceMinutes > 0)) return null;
 
   const evidenceMinutesById = new Map();
   const establishedScoresById = new Map();
@@ -1713,31 +1683,48 @@ function buildRoleConditionedProjectionPlan(
         : Math.min(establishedRate, baselineRate);
     }
     expandedProjectedRatesByPlayerId.set(id, expandedRates);
-    if (projectionParameters.calibration) {
+    if (metricResult.projectionInputsById) {
       const curves = {};
       const total = Array(49).fill(0);
+      const production = {};
       for (const metric of OBJECTIVE_METRICS) {
-        const curve = workloadUtilityCurve(Number(metrics[metric]) || 0, expandedMetrics[metric],
-          establishedRoleMinutes, projectionParameters.expansionStrengthByMetric?.[metric] ?? 0);
+        const input = metricResult.projectionInputsById.get(id)?.[metric];
+        const field = metric === "ballSecurity" ? "turnovers" : metric;
+        const quantities = [0];
+        const predictions = [0];
+        for (let minute = 1; minute <= 48; minute++) {
+          if (!input) {
+            predictions.push(minute * (Number(metrics[metric]) || 0));
+            quantities.push(minute * (Number(establishedRates[field]) || 0));
+            continue;
+          }
+          // One conditional-rate function supplies both the objective and
+          // production constraints. The mean's fitted minute response is kept
+          // separate from the explicitly chosen downside sensitivity reserve.
+          const mean = workloadRate({ value: input.posteriorMean, baseline: input.baseline,
+            sample: 1, prior: 0, sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
+            strength: projectionParameters.expansionStrengthByMetric?.[metric] ?? 0,
+            lowerIsBetter: metric === "ballSecurity" });
+          const projected = decisionRateAtWorkload({ mean, standardError: input.standardError,
+            sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
+            sourceUsage: input.sourceUsage, targetUsage: input.targetUsage,
+            risk: projectionParameters.decisionUncertaintyWeight,
+            lowerIsBetter: metric === "ballSecurity", signed: ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric) });
+          const scoringValue = demonstratedShootingValue(projected.decision, input.participationPer36, metric);
+          predictions.push(minute * cardinalMetricScore(scoringValue, input.baseline, metric));
+          quantities.push(minute * projected.decision / 36);
+        }
+        const curve = concaveDecisionCurve(predictions);
         curves[metric] = curve.totals;
         concavityGuardedPlayerMinutes += curve.guardedMinutes;
         for (let minute = 0; minute <= 48; minute++) total[minute] += curve.totals[minute] * (Number(normalizedWeights[metric]) || 0);
+        if (RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)) production[field] = quantities;
       }
       if (scoutMinuteObjective?.applied) {
         for (let minute = 0; minute <= 48; minute++) total[minute] = total[minute] * (1 - scoutBlend) + minute * scoutBlend * scoutPercentile;
       }
       calibratedUtilityCurvesById.set(id, total);
       calibratedMetricCurvesById.set(id, curves);
-      const production = {};
-      for (const [field, value] of Object.entries(establishedRates)) {
-        const baseline = baselineRates[field];
-        if (!Number.isFinite(value) || !Number.isFinite(baseline)) continue;
-        production[field] = Array.from({ length: 49 }, (_, minute) => minute * workloadRate({
-          value, baseline, sample: 1, prior: 0, sourceMinutes: establishedRoleMinutes,
-          targetMinutes: minute, strength: projectionParameters.expansionStrengthByMetric?.[field === "turnovers" ? "ballSecurity" : field] ?? 0,
-          lowerIsBetter: field === "turnovers",
-        }));
-      }
       calibratedProductionCurvesById.set(id, production);
       // A display index is descriptive, not allocation utility. Use the fitted
       // conditional mean here, without the solver's concavity approximation.
@@ -2094,6 +2081,8 @@ function projectedStatTotalForAssignedMinutes(
   roleProjectionPlan = null,
 ) {
   const calibrated = roleProjectionPlan?.calibratedProductionCurvesById?.get(player.id)?.[field];
+  const constraintCurve = projectedRates?.productionCurvesById?.get(player.id)?.[field];
+  if (constraintCurve) return constraintCurve[Math.max(0, Math.min(48, Math.round(assignedMinutes)))];
   if (calibrated) return calibrated[Math.min(48, Math.max(0, Math.round(assignedMinutes)))];
   const staticRate = playerPerMinuteRate(player, field, projectedRates);
   const split = roleConditionedMinuteSplit(player.id, assignedMinutes, roleProjectionPlan);
@@ -2621,8 +2610,9 @@ const PROJECTED_RATE_FIELDS = Object.freeze([...STAT_MINIMUM_KEYS, "turnovers"])
  * small-sample and role-expansion correction. Direct callers may omit it and
  * receive the historic raw-rate allocator behavior unchanged.
  */
-function normalizeProjectedRateMap(players, source, reasons) {
-  if (source === undefined || source === null) return null;
+function normalizeProjectedRateMap(players, source, reasons, curvesSource = null) {
+  if ((source === undefined || source === null) && !curvesSource) return null;
+  source ??= new Map();
   if (!(source instanceof Map) && !isPlainObject(source)) {
     reasons.push("projectedRates must be an object or Map keyed by player id when provided.");
     return null;
@@ -2652,6 +2642,27 @@ function normalizeProjectedRateMap(players, source, reasons) {
       }
     }
     normalized.set(id, rates);
+  }
+  if (curvesSource !== null) {
+    const curves = new Map();
+    if (!(curvesSource instanceof Map) && !isPlainObject(curvesSource)) {
+      reasons.push("projectedProductionCurves must be an object or Map keyed by player id.");
+    } else for (const player of players) {
+      const row = getMapLikeValue(curvesSource, player.id, "projectedProductionCurves", reasons);
+      if (row === undefined) continue;
+      if (!isPlainObject(row)) { reasons.push(`Production curves for ${player.id} must be an object.`); continue; }
+      const validated = {};
+      for (const [field, values] of Object.entries(row)) {
+        if (!PROJECTED_RATE_FIELDS.includes(field) || !Array.isArray(values) || values.length !== 49
+          || values[0] !== 0 || values.some(value => typeof value !== "number" || !Number.isFinite(value) || value < 0)) {
+          reasons.push(`Production curve ${field} for ${player.id} must contain 49 nonnegative totals starting at zero.`);
+        } else validated[field] = values.slice();
+      }
+      curves.set(player.id, validated);
+    }
+    // This private companion travels through existing allocation helpers. The
+    // scalar map remains available for backward-compatible direct callers.
+    normalized.productionCurvesById = curves;
   }
   return normalized;
 }
@@ -4036,10 +4047,15 @@ function projectedTotalsForMinutes(players, minutes, projectedRates = null) {
   for (const player of players) {
     const allocatedMinutes = Number(minutes.get(player.id) ?? 0);
     for (const field of Object.keys(totals)) {
-      totals[field] += playerPerMinuteRate(player, field, projectedRates) * allocatedMinutes;
+      totals[field] += productionAtMinutes(player, field, allocatedMinutes, projectedRates);
     }
   }
   return totals;
+}
+
+function productionAtMinutes(player, field, minutes, projectedRates) {
+  const curve = projectedRates?.productionCurvesById?.get(player.id)?.[field];
+  return curve ? curve[minutes] : playerPerMinuteRate(player, field, projectedRates) * minutes;
 }
 
 function projectedConstraintStatus(totals, constraints) {
@@ -4086,6 +4102,23 @@ function proveProjectedConstraintInfeasibility(
   failedStatus = null,
   projectedRates = null,
 ) {
+  if (projectedRates?.productionCurvesById?.size) {
+    // Independent bounds relax the 240-minute/role requirements. They may be
+    // loose, but can NEVER rule out a feasible nonlinear plan. A linear-rate
+    // certificate evaluated at a different workload is not valid here.
+    const bound = (field, minimum) => players.reduce((sum, player) => {
+      const allowed = bounds.get(player.id);
+      const values = Array.from({ length: allowed.max - allowed.min + 1 }, (_, i) =>
+        productionAtMinutes(player, field, allowed.min + i, projectedRates));
+      return sum + (minimum ? Math.min(...values) : Math.max(...values));
+    }, 0);
+    return {
+      impossibleStats: Object.entries(constraints.statMinimums).filter(([field, required]) =>
+        bound(field, false) + ROTATION_CONSTRAINT_TOLERANCE < required).map(([field]) => field),
+      impossibleTurnovers: Number.isFinite(constraints.maxTurnovers)
+        && bound("turnovers", true) - ROTATION_CONSTRAINT_TOLERANCE > constraints.maxTurnovers,
+    };
+  }
   const sortedIds = players.map((player) => player.id).sort(compareIds);
   const impossibleStats = [];
   for (const [stat, required] of Object.entries(constraints.statMinimums)) {
@@ -4299,8 +4332,12 @@ function buildConstraintFeasibleSeed(
         // can be rejected here without building another network.
         const totals = { ...current.totals };
         for (const field of statFields) {
-          totals[field] +=
-            rateVectors.get(receiverId)[field] - rateVectors.get(donorId)[field];
+          const donor = players.find(player => player.id === donorId);
+          const receiver = players.find(player => player.id === receiverId);
+          totals[field] += productionAtMinutes(receiver, field, current.minutes.get(receiverId) + 1, projectedRates)
+            - productionAtMinutes(receiver, field, current.minutes.get(receiverId), projectedRates)
+            + productionAtMinutes(donor, field, current.minutes.get(donorId) - 1, projectedRates)
+            - productionAtMinutes(donor, field, current.minutes.get(donorId), projectedRates);
         }
         const status = projectedConstraintStatus(totals, constraints);
         const violationImprovement =
@@ -4378,6 +4415,10 @@ function certifyConstraintFeasibleSeedWithLagrangian(
   projectedRates = null,
   roleConditionedScorePlan = null,
 ) {
+  if (projectedRates?.productionCurvesById?.size) return {
+    attempted: false, certified: false, evaluations: 0, feasibleSeed,
+    reason: "Nonlinear production uses exact workload evaluations, not a linear-rate certificate.",
+  };
   const rules = [];
   for (const [stat, required] of Object.entries(constraints.statMinimums)) {
     if (initialTotals[stat] + ROTATION_CONSTRAINT_TOLERANCE >= required) continue;
@@ -4710,7 +4751,8 @@ function enumerateFixedRoleFrontier(
         index + 1,
         remaining - assigned,
         objective + objectiveByIdAndMinutes.get(player.id).get(assigned),
-        quantity + rateById.get(player.id) * assigned,
+        quantity + (Array.isArray(rateById.get(player.id))
+          ? rateById.get(player.id)[assigned] : rateById.get(player.id) * assigned),
       );
     }
     minutes.delete(player.id);
@@ -4774,7 +4816,9 @@ function partitionedSingleConstraintAllocation(
 
   const rateById = new Map(players.map((player) => [
     player.id,
-    rule.sign * playerPerMinuteRate(player, rule.field, projectedRates),
+    projectedRates?.productionCurvesById?.size
+      ? Array.from({ length: 49 }, (_, minute) => rule.sign * productionAtMinutes(player, rule.field, minute, projectedRates))
+      : rule.sign * playerPerMinuteRate(player, rule.field, projectedRates),
   ]));
   let combined = [{
     key: "",
@@ -5348,6 +5392,7 @@ export function allocateRotationMinutes(players, options = {}) {
     rotationPlayers,
     options.projectedRates,
     reasons,
+    options.projectedProductionCurves,
   );
   const roleConditionedScorePlan = normalizeRoleConditionedScorePlan(
     rotationPlayers,
@@ -6217,7 +6262,10 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   }
 
   const estimatedCombinations = chooseCount(availablePlayers.length, slotsToChoose);
-  const projectionParameters = projectionParametersFor(normalizedConfig.projectionRisk, normalizedConfig.sourceScope);
+  const projectionParameters = Object.freeze({
+    ...projectionParametersFor(normalizedConfig.projectionRisk, normalizedConfig.sourceScope),
+    offensiveResponsibilities: normalizedConfig.offensiveResponsibilities,
+  });
   const baseDiagnostics = {
     modelIdentity: {
       constraintLayer: "exact-constraint-optimizer-v1",
@@ -6476,12 +6524,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
         scoutMinuteObjective,
       )
       : null;
-  // The exact constraint frontier accepts linear production inequalities.
-  // Establish a conservative rate over this player's allowed minute exposure,
-  // not the player's observed MPG: otherwise a low-role rebounder could satisfy a
-  // floor that his expanded-workload prediction actually misses. This is a
-  // bound, NOT a new expected-production model. It can reject some plans that
-  // a future nonlinear constraint solver could accept; disclose that tradeoff.
+  // Carry a complete table of production at 0..48 minutes into the exact
+  // frontier. Evaluating the same curve at the assigned minute avoids both
+  // optimistic raw-rate feasibility and pessimistic worst-allowed-rate rejects.
   const constraintProjectionPlan = roleConditionedProjectionPlan ?? (
     hasRotationProjectedConstraints && normalizedConfig.modelMode === "scout"
       ? buildRoleConditionedProjectionPlan(eligiblePlayers, normalizedMetrics,
@@ -6495,43 +6540,28 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     if (boundReasons.length) return failureResult(mode, size, boundReasons, {
       ...baseDiagnostics, category: "validation", subcategory: "minute-bounds",
     });
-    rotationProjectedRates = new Map(eligiblePlayers.map((player) => {
-      const bounds = {};
-      const allowed = allowedBounds.get(player.id);
-      for (const field of ["points", "rebounds", "assists", "steals", "blocks", "turnovers"]) {
-        // Never divide by zero. A player capped at zero cannot contribute to
-        // either a production floor or a turnover ceiling, regardless of rate.
-        if (allowed.max === 0) { bounds[field] = 0; continue; }
-        let bound = field === "turnovers" ? -Infinity : Infinity;
-        for (let minute = Math.max(1, allowed.min); minute <= allowed.max; minute++) {
-          const rate = projectedStatTotalForAssignedMinutes(player, field, minute,
-            normalizedMetricResult.projectedRatesByPlayerId, constraintProjectionPlan) / minute;
-          bound = field === "turnovers" ? Math.max(bound, rate) : Math.min(bound, rate);
-        }
-        bounds[field] = bound;
-      }
-      return [player.id, bounds];
-    }));
+    rotationProjectedRates = new Map(rotationProjectedRates);
+    rotationProjectedRates.productionCurvesById = constraintProjectionPlan.calibratedProductionCurvesById;
     baseDiagnostics.productionConstraintProjection = {
-      kind: "conservative-workload-bound",
+      kind: "exact-assigned-workload-curve",
       minimumMinutes: Math.min(...[...allowedBounds.values()].map(bound => bound.min)),
       maximumMinutes: Math.max(...[...allowedBounds.values()].map(bound => bound.max)),
       minuteBoundsById: Object.fromEntries(allowedBounds),
       boundScope: "per-player-user-allowed-minutes",
       expectedProduction: false,
-      reason: "Production limits and reported constraint totals use conservative rates within each player's allowed minute range, including individual overrides. They are bounds, not forecasts at the proposed minutes; some feasible nonlinear plans may still be rejected.",
+      reason: "Production limits and reported planning totals evaluate the same evidence-adjusted curve at each player's actual assigned minutes. Risk reserves are planning assumptions, not calibrated forecasts. Nonlinear feasibility is checked exactly; no fixed worst-case rate replaces the curve.",
     };
   }
   const usesRoleConditionedObjective = Boolean(roleConditionedProjectionPlan);
   const usesRoleConditionedProductionProjection = Boolean(
-    roleConditionedProjectionPlan && !hasRotationProjectedConstraints,
+    constraintProjectionPlan,
   );
   const assignedRoleProjectionReason = callerRotationScores
     ? "A custom minute-score map was supplied, so the optimizer retained that caller-defined allocation objective."
     : !roleConditionedProjectionPlan
       ? "The loaded evidence did not support a minute-aware same-season baseline for an active game-plan priority."
       : hasRotationProjectedConstraints
-        ? "The exact minute objective remains active. Hard production rules use conservative per-minute bounds within each player's allowed minute range, not expected totals at the assigned workload. This keeps feasibility auditable but can reject a plan that a nonlinear production constraint would allow."
+        ? "The exact objective and hard production rules use the same assigned-workload projection. A concave objective minorant keeps the allocation proof valid; stat totals are evaluated directly, without that numerical approximation."
         : "The exact minute allocation accounts for uncertain role expansion. No penalty begins at 240 divided by roster size, and observed minutes are not an availability cap.";
   if (normalizedConfig.mode === "rotation") {
     baseDiagnostics.rotationRateStabilityEvidence = {
@@ -6702,6 +6732,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       // solver. This does not cap a low-minute player; it simply avoids
       // extrapolating an unproven raw rate unchanged into a starter-sized role.
       projectedRates: rotationProjectedRates,
+      projectedProductionCurves: rotationProjectedRates?.productionCurvesById,
       // Keep the same diminishing-return workload utility when optional hard
       // production thresholds are active. Constraint feasibility still uses
       // the conservative common-role rates above, so every visible threshold

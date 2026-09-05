@@ -1,0 +1,13 @@
+# Lineup DNA release. Exact browser-facing scope; no deletes.
+lineup-lab/index.html
+lineup-lab/app.js
+lineup-lab/projection-parameters.js
+lineup-lab/player-projection.js
+lineup-lab/lineup-role-model.js
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/supabase-nba-data.js
+lineup-lab/opponent-gameplan.js
+lineup-lab/styles.css
+supabase-client.js
+vendor/supabase.min.js

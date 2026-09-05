@@ -364,22 +364,25 @@ export function mapSupabaseNbaPlayer(row, options = {}) {
  */
 function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl, seasonEvidence = null }) {
   const totals = {
-    minutes: optionalNonNegativeNumber(row.minutes_played),
-    fieldGoalsMade: optionalNonNegativeNumber(row.field_goals_made),
-    fieldGoalsAttempted: optionalNonNegativeNumber(row.field_goals_attempted),
-    threePointFieldGoalsMade: optionalNonNegativeNumber(row.three_point_field_goals_made),
-    threePointFieldGoalsAttempted: optionalNonNegativeNumber(row.three_point_field_goals_attempted),
-    freeThrowsMade: optionalNonNegativeNumber(row.free_throws_made),
-    freeThrowsAttempted: optionalNonNegativeNumber(row.free_throws_attempted),
-    offensiveRebounds: optionalNonNegativeNumber(row.offensive_rebounds),
-    defensiveRebounds: optionalNonNegativeNumber(row.defensive_rebounds),
-    totalRebounds: optionalNonNegativeNumber(row.total_rebounds),
-    assists: optionalNonNegativeNumber(row.assists),
-    steals: optionalNonNegativeNumber(row.steals),
-    blocks: optionalNonNegativeNumber(row.blocks),
-    turnovers: optionalNonNegativeNumber(row.turnovers),
-    personalFouls: optionalNonNegativeNumber(row.personal_fouls),
-    points: optionalNonNegativeNumber(row.points),
+    // Preserve provider gaps in the team fallback too. The all-team reader is
+    // not enough if this adapter later turns a missing contributing stat into
+    // an observed zero. The visible per-game schema remains a separate view.
+    minutes: optionalNonNegativeNumber(row.minutes_played, null),
+    fieldGoalsMade: optionalNonNegativeNumber(row.field_goals_made, null),
+    fieldGoalsAttempted: optionalNonNegativeNumber(row.field_goals_attempted, null),
+    threePointFieldGoalsMade: optionalNonNegativeNumber(row.three_point_field_goals_made, null),
+    threePointFieldGoalsAttempted: optionalNonNegativeNumber(row.three_point_field_goals_attempted, null),
+    freeThrowsMade: optionalNonNegativeNumber(row.free_throws_made, null),
+    freeThrowsAttempted: optionalNonNegativeNumber(row.free_throws_attempted, null),
+    offensiveRebounds: optionalNonNegativeNumber(row.offensive_rebounds, null),
+    defensiveRebounds: optionalNonNegativeNumber(row.defensive_rebounds, null),
+    totalRebounds: optionalNonNegativeNumber(row.total_rebounds, null),
+    assists: optionalNonNegativeNumber(row.assists, null),
+    steals: optionalNonNegativeNumber(row.steals, null),
+    blocks: optionalNonNegativeNumber(row.blocks, null),
+    turnovers: optionalNonNegativeNumber(row.turnovers, null),
+    personalFouls: optionalNonNegativeNumber(row.personal_fouls, null),
+    points: optionalNonNegativeNumber(row.points, null),
   };
   const leaguePer36 = {
     // These aggregates and the team-level denominator are non-negative by

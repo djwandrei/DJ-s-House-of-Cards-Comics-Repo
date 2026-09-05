@@ -94,6 +94,7 @@ test("Lineup DNA turns the exact result into a source-labeled strength, gap, and
   assert.match(app, /The exact solver keeps every other selected player and every current rule/);
   assert.match(app, /function renderLineupDnaReport\(result, explanation\)/);
   assert.match(app, /lineupDnaReport = renderLineupDnaReport\(result, fanExplanation\)/);
+  assert.match(app, /roundedMagnitude === 0 \? "±"/);
   assert.match(css, /\.lineup-dna__counts\s*\{/);
   assert.match(css, /\.lineup-dna__swap-controls\s*\{/);
   assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.lineup-dna__method/);

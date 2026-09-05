@@ -544,8 +544,9 @@ function formatSignedDifference(value, { percentagePoints = false } = {}) {
   const number = Number(value);
   if (!Number.isFinite(number)) return "-";
   const display = percentagePoints ? number * 100 : number;
-  const prefix = display > 0 ? "+" : display < 0 ? "−" : "±";
-  return `${prefix}${Math.abs(display).toFixed(1)}${percentagePoints ? " pp" : ""}`;
+  const roundedMagnitude = Number(Math.abs(display).toFixed(1));
+  const prefix = roundedMagnitude === 0 ? "±" : display > 0 ? "+" : "−";
+  return `${prefix}${roundedMagnitude.toFixed(1)}${percentagePoints ? " pp" : ""}`;
 }
 
 function titleCase(value) {

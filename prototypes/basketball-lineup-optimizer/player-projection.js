@@ -21,19 +21,6 @@ const USAGE_ALIASES = Object.freeze([
   "usg",
 ]);
 
-const RESPONSIBILITY_ELASTICITY = Object.freeze({
-  points: 0.65,
-  efgPct: 0.85,
-  threePct: 0.75,
-  rebounds: 0.1,
-  assists: 0.55,
-  steals: 0.08,
-  blocks: 0.08,
-  ballSecurity: 0.75,
-  offensiveImpact: 0.4,
-  defensiveImpact: 0.2,
-});
-
 function finiteNonNegative(value) {
   if (value == null || value === "" || typeof value === "boolean") return null;
   const number = Number(value);
@@ -87,70 +74,43 @@ export function projectPlayerResponsibility(
   const sourceMinutes = readSeasonRoleMinutes(player);
   const requestedMinutes = Math.max(0, Number(targetMinutes) || 0);
   const sourceUsage = readPlayerUsage(player);
-  const leagueUsage = Number(parameters?.leagueAverageUsage) || 0.2;
-  const strength = Number(parameters?.responsibilityExpansionStrength) || 0;
+  // Usage is a separate scenario input, not a function of assigned minutes.
+  // A catch-and-finish center can play 36 minutes at the same usage as at 12.
+  // Requesting star-like responsibility must be explicit (or unit-dependent).
+  const requestedUsage = finiteNonNegative(parameters?.offensiveResponsibilities?.[player.id]);
+  const targetUsage = requestedUsage !== null ? requestedUsage : sourceUsage;
   const expansionShare = requestedMinutes > 0
     ? Math.max(0, requestedMinutes - sourceMinutes) / requestedMinutes
     : 0;
-  const elasticity = RESPONSIBILITY_ELASTICITY[metric] ?? 0.35;
 
   if (parameters?.expansionStrengthByMetric && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
     const calibratedStrength = parameters.expansionStrengthByMetric[metric];
     return {
       available: true, source: "chronological-workload-fit", sourceMinutes,
-      targetMinutes: requestedMinutes, sourceUsage, targetUsage: sourceUsage,
-      usageRatio: sourceUsage > 0 ? 1 : null, expansionShare,
+      targetMinutes: requestedMinutes, sourceUsage, targetUsage,
+      usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null, expansionShare,
       rateRetention: workloadRetention(sourceMinutes, requestedMinutes, calibratedStrength),
       evidenceGrade: "conditional-prediction",
       reason: "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate.",
     };
   }
 
-  if (sourceUsage !== null && sourceUsage > 0) {
-    const targetUsage = sourceUsage + (
-      Math.max(0, leagueUsage - sourceUsage) * expansionShare * strength
-    );
-    const usageRatio = targetUsage / sourceUsage;
-    const rateRetention = usageRatio > 1
-      ? Math.max(0.35, Math.pow(usageRatio, -elasticity))
-      : 1;
-    return {
-      available: true,
-      source: "reported-usage",
-      sourceMinutes,
-      targetMinutes: requestedMinutes,
-      sourceUsage,
-      targetUsage,
-      usageRatio,
-      expansionShare,
-      rateRetention,
-      evidenceGrade: expansionShare === 0 ? "established" : "projected",
-      reason: expansionShare === 0
-        ? "The observed role already covers the requested workload."
-        : "The rate was tested against the extra team usage a larger low-usage role may need to absorb.",
-    };
-  }
-
-  // Older fixtures and CSV imports may not include usage. Preserve the prior
-  // conservative role-volume contract: only the share supported by observed
-  // minutes keeps an above-baseline advantage. This is intentionally stricter
-  // than the reported-usage path, because the model cannot distinguish a true
-  // low-usage specialist from a missing analytics row.
-  const fallbackRetention = requestedMinutes > 0 && sourceMinutes > 0
-    ? Math.min(1, sourceMinutes / requestedMinutes)
-    : 1;
+  // No fitted usage-response curve has passed complete-box-score validation.
+  // Remove the old invented elasticity and minute->usage conversion. Keep the
+  // conditional mean unchanged; the separate decision-uncertainty layer may
+  // penalize unsupported scenarios without calling that a learned decline.
   return {
-    available: false,
-    source: "role-volume-fallback",
+    available: sourceUsage !== null,
+    source: sourceUsage !== null ? "reported-usage" : "usage-unavailable",
     sourceMinutes,
     targetMinutes: requestedMinutes,
-    sourceUsage: null,
-    targetUsage: null,
-    usageRatio: null,
+    sourceUsage,
+    targetUsage,
+    usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null,
     expansionShare,
-    rateRetention: fallbackRetention,
-    evidenceGrade: "usage-unavailable",
-    reason: "Reported usage was unavailable, so a smaller disclosed role-volume fallback was used.",
+    rateRetention: 1,
+    evidenceGrade: "usage-response-unvalidated",
+    reason: "Minutes do not set usage. No unvalidated usage elasticity changes expected rates; expanded responsibility is a separate uncertainty scenario.",
   };
 }
 

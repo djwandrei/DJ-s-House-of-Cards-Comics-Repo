@@ -12,7 +12,7 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // logic or interface copy from a browser cache.
 // A follow-up model fix must also invalidate already loaded Lab modules.
 // Lineup Lab has its own revision; storefront cache values remain untouched.
-const RELEASE_ASSET_VERSION = "20260905e";
+const RELEASE_ASSET_VERSION = "20260905f";
 const releaseFiles = [
   "index.html",
   "app.js",
@@ -20,6 +20,7 @@ const releaseFiles = [
   "projection-parameters.js",
   "workload-calibration.js",
   "workload-model.js",
+  "projection-evidence.js",
   "player-projection.js",
   "lineup-role-model.js",
   "scout-impact.js",
