@@ -78,19 +78,19 @@ test('fan tool filters preserve registry order and status boundaries', () => {
   assert.deepEqual(filterRegistry('all'), TOOL_REGISTRY);
   assert.deepEqual(
     filterRegistry(TOOL_STATUSES.LIVE).map((tool) => tool.id),
-    ['lineup-lab', 'card-matchup-explorer']
+    ['lineup-lab', 'lineup-dna', 'fix-the-five', 'draft-night', 'card-matchup-explorer']
   );
-  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 14);
+  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 12);
   assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 4);
   assert.equal(formatToolsStatus('all', TOOL_REGISTRY.length), `Showing ${TOOL_REGISTRY.length} fan tools.`);
   assert.equal(formatToolsStatus(TOOL_STATUSES.LIVE, 1), 'Showing 1 live fan tool.');
-  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 14), 'Showing 14 planned fan tools.');
+  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 12), 'Showing 12 planned fan tools.');
 });
 
 test('fan tool status summary is derived from the registry', () => {
   assert.deepEqual(countRegistryByStatus(), {
-    [TOOL_STATUSES.LIVE]: 2,
-    [TOOL_STATUSES.PLANNED]: 14,
+    [TOOL_STATUSES.LIVE]: 5,
+    [TOOL_STATUSES.PLANNED]: 12,
     [TOOL_STATUSES.RESEARCH]: 4
   });
 });

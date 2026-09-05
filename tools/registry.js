@@ -52,11 +52,10 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'tool',
     marker: 'DNA',
     title: 'Lineup DNA',
-    eyebrow: 'Planned Lineup Lab enhancement',
-    status: TOOL_STATUSES.PLANNED,
-    href: workshopHref('lineup-dna'),
-    launchLabel: 'Open framework',
-    summary: 'Add a clear explanation layer to Lineup Lab: why a chosen five works, which roles are covered or missing, and what one substitution changes.',
+    eyebrow: 'Live Lineup Lab explanation',
+    status: TOOL_STATUSES.LIVE,
+    href: '../lineup-lab/',
+    summary: 'Read why a chosen five works, which roles are covered or thin, and how one source-bounded substitution changes the lineup profile.',
     capabilities: [
       'Role-coverage explanation cards',
       'Single-substitution before-and-after views',
@@ -66,7 +65,32 @@ export const TOOL_REGISTRY = Object.freeze([
       'Current role definitions and fan analytics helpers',
       'Optimizer output, rate views, and source caveats'
     ],
-    implementationNotes: 'This is an in-place Lineup Lab enhancement; keep any box-score movement, switching, or matchup labels clearly marked as proxies or unavailable.'
+    implementationNotes: 'This is an in-place Lineup Lab explanation layer; box-score movement, switching, or matchup labels remain clearly marked as proxies or unavailable.'
+  }),
+  freezeTool({
+    id: 'fix-the-five',
+    kind: 'game',
+    marker: '5x',
+    title: 'Fix the Five',
+    eyebrow: 'Live historical lineup game',
+    status: TOOL_STATUSES.LIVE,
+    href: './fix-the-five/',
+    summary: 'Make one legal historical lineup swap at a time, then see the source-bounded Lineup DNA gains, trade-offs, and published-board score.',
+    capabilities: [
+      'Five-round daily historical challenge',
+      'Legal replacement board and role-coverage reveal',
+      'Local streaks, replay, and shareable seeded runs'
+    ],
+    highlights: [
+      'Five daily swaps',
+      'Transparent board score',
+      'Local-only progress'
+    ],
+    dependencies: [
+      'Reviewed historical roster snapshot',
+      'Versioned game rules and transparent role coverage'
+    ],
+    implementationNotes: 'Every result stays inside a fixed published player board and labels its box-score role evidence, proxies, and limits plainly.'
   }),
   freezeTool({
     id: 'rotation-rescue',
@@ -111,25 +135,29 @@ export const TOOL_REGISTRY = Object.freeze([
     implementationNotes: 'Keep the exercise historical and avoid unsupported player-to-player defensive assignments, injury claims, or live schedule claims.'
   }),
   freezeTool({
-    id: 'five-role-draft',
+    id: 'draft-night',
     kind: 'game',
     marker: 'Draft',
-    title: 'Five-Role Draft',
-    eyebrow: 'Framework available',
-    status: TOOL_STATUSES.PLANNED,
-    href: workshopHref('five-role-draft'),
-    launchLabel: 'Open framework',
-    summary: 'Draft actual historical players into scarce lineup roles, then reveal the fit, trade-offs, and exact lineup feasibility.',
+    title: 'Draft Night',
+    eyebrow: 'Live historical lineup game',
+    status: TOOL_STATUSES.LIVE,
+    href: './draft-night/',
+    summary: 'Draft five historical players from a disclosed board, then reveal the fit, role coverage, and ranking across every published legal combination.',
     capabilities: [
-      'Seeded player pools and draft order',
-      'Creator, shooter, rebounder, connector, and activity roles',
-      'Role-gap and feasibility reveal'
+      'Seeded five-pick historical boards',
+      'Creator, scorer, wing, frontcourt, and big selections',
+      'Full-board feasibility and Lineup DNA reveal'
+    ],
+    highlights: [
+      '243 reviewed paths',
+      'Five-pick replay loop',
+      'Local-only score'
     ],
     dependencies: [
       'Historical player-season data and role definitions',
       'Deterministic draft pools and lineup feasibility checks'
     ],
-    implementationNotes: 'Use transparent role definitions and trade-offs; box-score defensive activity must remain labeled as a proxy.'
+    implementationNotes: 'The complete published board is re-evaluated before release; role definitions and box-score defensive activity remain transparent and labeled as proxies.'
   }),
   freezeTool({
     id: 'statline-sleuth',

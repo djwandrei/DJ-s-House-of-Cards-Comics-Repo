@@ -26,43 +26,6 @@ const option = (value, label) => Object.freeze({ value, label });
 
 export const WORKSHOP_DEFINITIONS = Object.freeze([
   freezeDefinition({
-    id: 'lineup-dna',
-    category: 'Lineup Lab explanation layer',
-    prompt: 'What makes this five work, and which one change shifts the profile?',
-    fields: [
-      {
-        id: 'analysis-scope',
-        label: 'Analysis scope',
-        help: 'The first adapter can begin with a selected five before expanding to full rotations.',
-        defaultValue: 'five',
-        options: [option('five', 'Five-player lineup'), option('rotation', 'Full rotation')]
-      },
-      {
-        id: 'explanation-focus',
-        label: 'Explanation focus',
-        help: 'Each focus uses role-model output and keeps source limitations attached.',
-        defaultValue: 'roles',
-        options: [option('roles', 'Covered and missing roles'), option('substitution', 'One substitution'), option('both', 'Full explanation')]
-      },
-      {
-        id: 'scenario-source',
-        label: 'Scenario source',
-        help: 'The enhancement will accept a current Lineup Lab scenario without creating a second source of truth.',
-        defaultValue: 'lab',
-        options: [option('lab', 'Current Lineup Lab scenario'), option('case', 'Reviewed example case')]
-      }
-    ],
-    stages: [
-      { title: 'Read', summary: 'Receive one exact five or rotation, its historical pool, active constraints, and source labels from Lineup Lab.' },
-      { title: 'Explain', summary: 'Translate role coverage, objective metrics, and feasible alternatives into a plain-language profile.' },
-      { title: 'Refine', summary: 'Show what one eligible substitution changes while preserving the same model settings and caveats.' }
-    ],
-    resultContract: ['Role-coverage summary', 'Covered and missing role labels', 'One controlled substitution comparison', 'Visible source and proxy caveats'],
-    guardrails: ['No unsupported movement or matchup claims', 'Five-player facts stay distinct from role-model output', 'Selected-team minutes never become a hidden cap'],
-    connectionPoints: ['lineup-role-model.js', 'fan-analytics.js', 'optimizer-core.js worker', 'Lineup Lab scenario URL'],
-    nextMilestone: 'Add one non-invasive Lineup DNA panel to a selected Lineup Lab five and verify its explanation against the existing role model.'
-  }),
-  freezeDefinition({
     id: 'rotation-rescue',
     category: 'Optimizer challenge',
     prompt: 'Can you solve the coaching brief without breaking the rotation?',
@@ -135,43 +98,6 @@ export const WORKSHOP_DEFINITIONS = Object.freeze([
     guardrails: ['No live injury or schedule claims', 'No unsupported player assignments', 'Observed profile is not proof of tactics'],
     connectionPoints: ['opponent-gameplan.js', 'fan-analytics.js', 'Lineup Lab scenario URL', 'historical team profile adapter'],
     nextMilestone: 'Bind a single opponent-profile fixture to the existing priority model and validate a round-trip Lineup Lab handoff.'
-  }),
-  freezeDefinition({
-    id: 'five-role-draft',
-    category: 'Seeded roster game',
-    prompt: 'Can you cover five scarce roles before the draft pool runs out?',
-    fields: [
-      {
-        id: 'pool',
-        label: 'Player pool',
-        help: 'Pools must be versioned so every seeded round remains reproducible.',
-        defaultValue: 'team-season',
-        options: [option('team-season', 'One team-season'), option('franchise-era', 'Franchise era'), option('league-era', 'League era')]
-      },
-      {
-        id: 'draft-order',
-        label: 'Draft order',
-        help: 'The initial game can support a solo straight draft before adding opponents.',
-        defaultValue: 'straight',
-        options: [option('straight', 'Straight draft'), option('snake', 'Snake draft preview')]
-      },
-      {
-        id: 'reveal-depth',
-        label: 'Role reveal',
-        help: 'Role labels stay visible and defensive activity stays marked as a proxy.',
-        defaultValue: 'full',
-        options: [option('quick', 'Quick fit grade'), option('full', 'Full role breakdown')]
-      }
-    ],
-    stages: [
-      { title: 'Seed', summary: 'Load a deterministic player pool, role definitions, draft order, and eligibility rules.' },
-      { title: 'Draft', summary: 'Record five actual player-season choices while preventing duplicate or ineligible selections.' },
-      { title: 'Profile', summary: 'Reveal role coverage, scarce-role misses, feasibility, and one useful alternative.' }
-    ],
-    resultContract: ['Five-player draft board', 'Role coverage matrix', 'Exact feasibility check', 'Alternative-player explanation'],
-    guardrails: ['No fictional skill stealing', 'Defensive activity remains a proxy', 'All player-seasons need stable IDs'],
-    connectionPoints: ['lineup-role-model.js', 'optimizer-config.js', 'player-season pool adapter', 'seeded challenge helper'],
-    nextMilestone: 'Create one deterministic five-round player pool and validate role coverage against the existing role model.'
   }),
   freezeDefinition({
     id: 'statline-sleuth',

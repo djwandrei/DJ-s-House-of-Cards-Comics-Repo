@@ -54,6 +54,8 @@ const EXPECTED_PAGE_TYPES = {
 
 const NESTED_PAGE_TYPES = {
   'tools/index.html': 'CollectionPage',
+  'tools/fix-the-five/index.html': 'Game',
+  'tools/draft-night/index.html': 'Game',
   'tools/player-card-matchups/index.html': 'CollectionPage',
   'tools/workshop/index.html': 'WebPage'
 };

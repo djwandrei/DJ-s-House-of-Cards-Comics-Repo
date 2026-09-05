@@ -1,5 +1,5 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260905a';
-import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js';
+import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260905g';
+import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260905g';
 import {
   clearWorkshopDraft,
   defaultWorkshopValues,

@@ -1,0 +1,158 @@
+import { FIX_THE_FIVE_SCHEMA_VERSION } from './game-engine.js?v=20260905g';
+
+const MINNESOTA_2022_SOURCE = Object.freeze({
+  team: 'MIN',
+  teamName: 'Minnesota Timberwolves',
+  season: 2022,
+  seasonLabel: '2021–22',
+  phase: 'regular',
+  label: 'Minnesota 2021–22 historical snapshot',
+  url: '../../lineup-lab/fixtures/timberwolves-2021-22.json?v=20260905g',
+  note: 'This first challenge pack uses the reviewed Minnesota historical snapshot bundled with Lineup Lab. It is a historical box-score snapshot, not a live roster or game forecast.',
+});
+
+const balanced = Object.freeze({ points: 18, efgPct: 12, threePct: 12, rebounds: 16, assists: 16, steals: 12, blocks: 8, ballSecurity: 6 });
+const spacing = Object.freeze({ points: 14, efgPct: 20, threePct: 36, rebounds: 8, assists: 8, steals: 5, blocks: 3, ballSecurity: 6 });
+const creation = Object.freeze({ points: 18, efgPct: 8, threePct: 10, rebounds: 6, assists: 36, steals: 8, blocks: 4, ballSecurity: 10 });
+const defense = Object.freeze({ points: 6, efgPct: 6, threePct: 6, rebounds: 22, assists: 8, steals: 25, blocks: 20, ballSecurity: 7 });
+const glass = Object.freeze({ points: 8, efgPct: 12, threePct: 6, rebounds: 38, assists: 8, steals: 10, blocks: 12, ballSecurity: 6 });
+const rim = Object.freeze({ points: 0, efgPct: 0, threePct: 0, rebounds: 30, assists: 0, steals: 0, blocks: 70, ballSecurity: 0 });
+
+function fixture(id, title, brief, lineupIds, removeId, candidateIds, objectiveWeights, answerId, focus) {
+  return Object.freeze({
+    schemaVersion: FIX_THE_FIVE_SCHEMA_VERSION,
+    id,
+    reviewStatus: 'reviewed',
+    source: MINNESOTA_2022_SOURCE,
+    title,
+    brief,
+    focus,
+    lineupIds: Object.freeze(lineupIds),
+    removeId,
+    candidateIds: Object.freeze(candidateIds),
+    objectiveWeights,
+    positionMinimums: Object.freeze({ G: 2, F: 2, C: 1 }),
+    answerId,
+    reviewNote: 'Candidate ranking is revalidated by the pure Fix the Five scoring contract in automated tests.',
+  });
+}
+
+/**
+ * Ten reviewed historical five-player scenarios. All candidates are actual
+ * player rows from the same source snapshot, and every answer is established
+ * by the published game engine rather than hand-authored result prose.
+ */
+export const FIX_THE_FIVE_FIXTURES = Object.freeze([
+  fixture(
+    'min-2022-space-the-wing',
+    'Open the wing',
+    'The group has enough scoring, but the wing slot is not helping its spacing. Make one legal change.',
+    ['anthony-edwards', 'dangelo-russell', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jaden-mcdaniels',
+    ['malik-beasley', 'taurean-prince', 'josh-okogie'],
+    spacing,
+    'taurean-prince',
+    'Prioritize a clearer high-volume perimeter signal without sacrificing the published court shape.',
+  ),
+  fixture(
+    'min-2022-secure-the-second-creator',
+    'Protect the second creator',
+    'The five needs a steadier secondary decision-maker beside its primary stars. Pick one legal swap.',
+    ['anthony-edwards', 'jaylen-nowell', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jaylen-nowell',
+    ['dangelo-russell', 'patrick-beverley', 'jordan-mclaughlin'],
+    creation,
+    'jordan-mclaughlin',
+    'Favor playmaking and ball security, with the rest of the five held constant.',
+  ),
+  fixture(
+    'min-2022-recover-the-glass',
+    'Recover the glass',
+    'A frontcourt spot is not doing enough to finish possessions. Make the one legal replacement.',
+    ['anthony-edwards', 'dangelo-russell', 'jaden-mcdaniels', 'jake-layman', 'karl-anthony-towns'],
+    'jake-layman',
+    ['jarred-vanderbilt', 'taurean-prince', 'josh-okogie'],
+    glass,
+    'jarred-vanderbilt',
+    'The task is a rebound-first repair with source-listed G/F/C requirements intact.',
+  ),
+  fixture(
+    'min-2022-add-a-stopper',
+    'Add a pressure point',
+    'The group’s weakest signal is perimeter disruption. Choose a legal wing replacement.',
+    ['anthony-edwards', 'dangelo-russell', 'malik-beasley', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'malik-beasley',
+    ['jaden-mcdaniels', 'taurean-prince', 'josh-okogie'],
+    defense,
+    'taurean-prince',
+    'Steals are a ball-pressure proxy, not a claim about an observed defensive assignment.',
+  ),
+  fixture(
+    'min-2022-balance-the-bench-wing',
+    'Balance the bench wing',
+    'The fifth starter needs to support a broader balanced profile. Find the best legal wing answer.',
+    ['anthony-edwards', 'patrick-beverley', 'jaden-mcdaniels', 'jake-layman', 'karl-anthony-towns'],
+    'jake-layman',
+    ['jarred-vanderbilt', 'malik-beasley', 'taurean-prince'],
+    balanced,
+    'jarred-vanderbilt',
+    'No candidate changes the other four selected player rows.',
+  ),
+  fixture(
+    'min-2022-find-the-cleaner-wing',
+    'Find the cleaner wing',
+    'The lineup has star power but needs a more efficient wing contribution. Make one legal swap.',
+    ['anthony-edwards', 'dangelo-russell', 'jaden-mcdaniels', 'josh-okogie', 'karl-anthony-towns'],
+    'josh-okogie',
+    ['malik-beasley', 'taurean-prince', 'jarred-vanderbilt'],
+    spacing,
+    'taurean-prince',
+    'This is a source-bounded shooting and efficiency comparison, not movement-shooting tracking.',
+  ),
+  fixture(
+    'min-2022-give-ant-a-partner',
+    'Add a second spark',
+    'Keep the defensive spine, but upgrade the complementary guard contribution next to Anthony Edwards.',
+    ['anthony-edwards', 'jordan-mclaughlin', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jordan-mclaughlin',
+    ['dangelo-russell', 'patrick-beverley', 'jaylen-nowell'],
+    creation,
+    'jaylen-nowell',
+    'The player pool and objective are fixed before the choice is shown.',
+  ),
+  fixture(
+    'min-2022-keep-the-big-strong',
+    'Keep the big strong',
+    'A frontcourt group needs a sturdier contribution. Select a legal forward or wing replacement.',
+    ['anthony-edwards', 'dangelo-russell', 'josh-okogie', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jarred-vanderbilt',
+    ['jaden-mcdaniels', 'taurean-prince', 'malik-beasley'],
+    rim,
+    'jaden-mcdaniels',
+    'Every published option is checked against the same 2G/2F/1C source-listed court shape.',
+  ),
+  fixture(
+    'min-2022-close-the-rotation-gap',
+    'Close the rotation gap',
+    'The fifth slot needs to create less strain on the ballhandlers. Choose the legal replacement.',
+    ['anthony-edwards', 'jaylen-nowell', 'jaden-mcdaniels', 'taurean-prince', 'karl-anthony-towns'],
+    'jaylen-nowell',
+    ['dangelo-russell', 'patrick-beverley', 'jordan-mclaughlin'],
+    balanced,
+    'patrick-beverley',
+    'The score rewards a stronger published fit, not a counterfactual season result.',
+  ),
+  fixture(
+    'min-2022-finish-with-a-wing',
+    'Finish with a wing',
+    'The lineup needs one more credible wing contribution around its two stars. Pick the best legal option.',
+    ['anthony-edwards', 'dangelo-russell', 'jaden-mcdaniels', 'leandro-bolmaro', 'karl-anthony-towns'],
+    'leandro-bolmaro',
+    ['jarred-vanderbilt', 'malik-beasley', 'taurean-prince'],
+    balanced,
+    'jarred-vanderbilt',
+    'This final prompt deliberately keeps the candidate board small and fully inspectable.',
+  ),
+]);
+
+export const FIX_THE_FIVE_SOURCE = MINNESOTA_2022_SOURCE;

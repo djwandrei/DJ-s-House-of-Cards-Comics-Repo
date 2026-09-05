@@ -35,6 +35,8 @@ const PUBLIC_PAGE_PATHS = [
   '/returns.html',
   '/offline.html',
   '/tools/index.html',
+  '/tools/fix-the-five/index.html',
+  '/tools/draft-night/index.html',
   '/tools/player-card-matchups/index.html',
   '/tools/workshop/index.html',
   '/lineup-lab/index.html'
@@ -515,6 +517,75 @@ async function setViewport(client, width) {
   // Allow both the animation-frame path and its 100ms timer fallback to settle
   // even when the page is busy finishing catalog/image work.
   await delay(500);
+}
+
+async function inspectFanGames(client, baseUrl) {
+  const games = [
+    { id: 'fix-the-five', label: 'Fix the Five', path: '/tools/fix-the-five/index.html', rounds: 5 },
+    { id: 'draft-night', label: 'Draft Night', path: '/tools/draft-night/index.html', rounds: 5 }
+  ];
+  const viewports = [
+    { label: 'mobile', width: 390 },
+    { label: 'desktop', width: 1280 }
+  ];
+  const results = [];
+
+  for (const viewport of viewports) {
+    await setViewport(client, viewport.width);
+    for (const game of games) {
+      client.consumeEvents();
+      const seed = `smoke-${game.id}-${viewport.width}`;
+      await navigate(client, `${baseUrl}${game.path}?seed=${seed}`);
+      const state = await client.evaluate(`(async () => {
+        const pause = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+        const game = ${JSON.stringify(game)};
+        const panelId = game.id === 'fix-the-five' ? 'challengePanel' : 'draftPanel';
+        const panel = document.getElementById(panelId);
+        const completion = document.getElementById('completionPanel');
+        for (let attempt = 0; attempt < 40 && !panel?.querySelector('button[data-action="choose"]'); attempt += 1) {
+          await pause(100);
+        }
+        const initialCandidates = panel?.querySelectorAll('button[data-action="choose"]').length || 0;
+        let firstResultVisible = false;
+        for (let round = 0; round < game.rounds; round += 1) {
+          const choice = panel?.querySelector('button[data-action="choose"]');
+          if (!choice) break;
+          choice.click();
+          await pause(90);
+          if (round === 0 && game.id === 'fix-the-five') {
+            firstResultVisible = /Published rank/.test(panel?.textContent || '');
+          }
+          const next = panel?.querySelector('button[data-action="next"]');
+          if (next) {
+            next.click();
+            await pause(90);
+          }
+        }
+        await pause(120);
+        return {
+          title: document.title,
+          h1: document.querySelector('h1')?.textContent?.trim() || '',
+          initialCandidates,
+          firstResultVisible,
+          completionVisible: !!completion && !completion.hidden && completion.getBoundingClientRect().height > 0,
+          completionText: completion?.textContent || '',
+          selectedCount: document.querySelectorAll('.draft-night-result-lineup .draft-night-player-chip').length,
+          overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth
+        };
+      })()`);
+      const failures = [];
+      if (!state.h1) failures.push('missing h1');
+      if (state.initialCandidates < 3) failures.push(`expected at least three initial choices, got ${state.initialCandidates}`);
+      if (game.id === 'fix-the-five' && !state.firstResultVisible) failures.push('choice did not reveal the per-round explanation before advancing');
+      if (!state.completionVisible) failures.push('five-pick run did not reach a visible completion panel');
+      if (game.id === 'draft-night' && state.selectedCount !== 5) failures.push(`expected five result players, got ${state.selectedCount}`);
+      if (state.overflow > 2) failures.push(`horizontal overflow ${state.overflow}px`);
+      const badEvents = eventFailures(client.consumeEvents()).filter((event) => !/\/favicon\.ico(?:$|\?)/i.test(event));
+      failures.push(...badEvents.map((event) => `browser error: ${event}`));
+      results.push({ label: `${game.label} ${viewport.label}`, state, badEvents, failures });
+    }
+  }
+  return results;
 }
 
 async function inspectResponsiveDrawerContracts(client, baseUrl) {
@@ -1069,11 +1140,12 @@ async function inspectNbaSlabStatsPanel(client, baseUrl) {
 
 function usage() {
   return [
-    'Usage: node scripts/render-smoke-check.mjs [--interaction-only|--nba-slab-stats-only]',
+    'Usage: node scripts/render-smoke-check.mjs [--interaction-only|--nba-slab-stats-only|--fan-games-only]',
     '',
     'Runs local rendered storefront checks with an isolated headless browser.',
     '  --interaction-only     Check mobile navigation, filters, gallery, and cart interactions.',
     '  --nba-slab-stats-only  Check the isolated NBA Slab-to-Stats panel fixture.',
+    '  --fan-games-only       Check the released fan-game choices, completion, and responsive layout.',
     '  --help, -h             Show this usage text without starting a server or browser.'
   ].join('\n');
 }
@@ -1149,6 +1221,17 @@ async function main() {
         narrowDesktopSubmenus,
         failures
       };
+      console.log(JSON.stringify(summary, null, 2));
+      if (!summary.ok) process.exitCode = 1;
+      return;
+    }
+    if (process.argv.includes('--fan-games-only')) {
+      const fanGames = await inspectFanGames(client, baseUrl);
+      client.websocket.close();
+      const failures = fanGames.flatMap((item) => (
+        item.failures.map((failure) => `${item.label}: ${failure}`)
+      ));
+      const summary = { ok: failures.length === 0, baseUrl, fanGames, failures };
       console.log(JSON.stringify(summary, null, 2));
       if (!summary.ok) process.exitCode = 1;
       return;

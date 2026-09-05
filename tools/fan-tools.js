@@ -1,4 +1,4 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260905a';
+import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260905g';
 
 const STATUS_LABELS = Object.freeze({
   [TOOL_STATUSES.LIVE]: 'Live',
