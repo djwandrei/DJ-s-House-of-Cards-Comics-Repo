@@ -114,25 +114,25 @@ export function evaluate(games, fit, metric, parameters, expandedOnly = false) {
   for (const game of games) {
     const loss = { gameId: game.id, squared: 0, exposure: 0, playerGames: 0 };
     for (const row of game.rows) {
-    considered++;
-    if (baseline === null) { exclusions.missingLeagueBaseline++; continue; }
-    const p = fit.players.get(row.id);
-    if (!p) { exclusions.unknownPlayer++; continue; }
-    const sample = fit.metricEvidence.players.get(row.id)[metric];
-    if (!positive(sample.exposure)) { exclusions.missingTrainingDenominator++; continue; }
-    if (sample.games < 5) { exclusions.insufficientTrainingGames++; continue; }
-    if (!positive(row[denominator])) { exclusions.missingTargetDenominator++; continue; }
-    if (!nonnegative(row[metric])) { exclusions.missingTargetNumerator++; continue; }
-    if (!positive(row.minutes)) { exclusions.invalidMinutes++; continue; }
-    const sourceMinutes = p.minutes / p.games;
-    if ((options.expandedOnly && !(row.minutes >= sourceMinutes + 8 && sourceMinutes < 24)) || (options.subgroup && !SUBGROUPS[options.subgroup].matches(p, sample))) { exclusions.outsideSubgroup++; continue; }
-    const prediction = workloadRate({ value: sample.numerator / sample.exposure, baseline, sample: sample.exposure, ...parameters, sourceMinutes, targetMinutes: row.minutes, lowerIsBetter: metric === 'ballSecurity' });
-    if (!nonnegative(prediction)) { exclusions.invalidPrediction++; continue; }
-    const error = prediction - row[metric] / row[denominator];
-    squared += row[denominator] * error * error;
-    absolute += row[denominator] * Math.abs(error);
-    weight += row[denominator]; rows++;
-    loss.squared += row[denominator] * error * error; loss.exposure += row[denominator]; loss.playerGames++;
+      considered++;
+      if (baseline === null) { exclusions.missingLeagueBaseline++; continue; }
+      const p = fit.players.get(row.id);
+      if (!p) { exclusions.unknownPlayer++; continue; }
+      const sample = fit.metricEvidence.players.get(row.id)[metric];
+      if (!positive(sample.exposure)) { exclusions.missingTrainingDenominator++; continue; }
+      if (sample.games < 5) { exclusions.insufficientTrainingGames++; continue; }
+      if (!positive(row[denominator])) { exclusions.missingTargetDenominator++; continue; }
+      if (!nonnegative(row[metric])) { exclusions.missingTargetNumerator++; continue; }
+      if (!positive(row.minutes)) { exclusions.invalidMinutes++; continue; }
+      const sourceMinutes = p.minutes / p.games;
+      if ((options.expandedOnly && !(row.minutes >= sourceMinutes + 8 && sourceMinutes < 24)) || (options.subgroup && !SUBGROUPS[options.subgroup].matches(p, sample))) { exclusions.outsideSubgroup++; continue; }
+      const prediction = workloadRate({ value: sample.numerator / sample.exposure, baseline, sample: sample.exposure, ...parameters, sourceMinutes, targetMinutes: row.minutes, lowerIsBetter: metric === 'ballSecurity' });
+      if (!nonnegative(prediction)) { exclusions.invalidPrediction++; continue; }
+      const error = prediction - row[metric] / row[denominator];
+      squared += row[denominator] * error * error;
+      absolute += row[denominator] * Math.abs(error);
+      weight += row[denominator]; rows++;
+      loss.squared += row[denominator] * error * error; loss.exposure += row[denominator]; loss.playerGames++;
     }
     gameLosses.push(loss);
   }

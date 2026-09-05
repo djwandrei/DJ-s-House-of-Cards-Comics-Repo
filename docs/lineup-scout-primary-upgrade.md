@@ -102,8 +102,10 @@ Descriptive production and the NBA-baseline display use conditional means,
 not this utility approximation.
 
 Hard production constraints currently need linear inequalities. They use
-conservative per-minute bounds across 1–48 minutes (upper bounds for turnovers),
-not optimistic observed-role rates. Constraint totals are explicitly marked as
+conservative per-minute bounds within each player's allowed minute range
+(upper bounds for turnovers), including individual overrides. Zero minutes
+contributes zero production; a fixed minute range evaluates only that workload.
+They do not use optimistic observed-role rates. Constraint totals are explicitly marked as
 bounds rather than forecasts. This is safe against a falsely passing production
 floor, but can reject a plan that a future nonlinear constraint solver would
 accept. The selected minute objective remains unchanged by adding a satisfied
@@ -206,3 +208,129 @@ that unavailable historical priorities cannot veto complete primary Scout
 evidence. The final response records the resulting follow-up commit/parity.
 That follow-up uses Lineup-specific asset revision `20260905b` so a browser
 cannot retain the earlier module graph under the same cache key.
+
+## Next local upgrade: evidence and validation (20260905c)
+
+This checkpoint is implementation and local verification, not a new cPanel or
+Supabase release. The fitted runtime coefficients and primary Scout model are
+unchanged. The exact solver still maximizes the chosen objective under user
+requirements; there is no new preferred minute range or candidate-count cap.
+
+### Runtime corrections
+
+- The production envelope now uses each player's actual allowed integer-minute
+  range, sharing the same bound resolver as the allocator. Scalar/Map defaults,
+  individual aliases, fixed minutes, zero minutes, and invalid bounds are tested.
+  A fixed 30-minute example with a 110-rebound floor now correctly passes; the
+  old 1–48-minute envelope rejected it despite forbidding 48 minutes.
+- Partial season records cannot pair full-season minutes or shooting attempts
+  with a selected-team numerator. Evidence and rate must describe the same
+  population for each metric. Complete matching evidence remains supported.
+- Null, blank, and boolean impact fields no longer become measured zero BPM.
+  Genuine numeric zero is still accepted.
+- Diagnostics count matching season samples, approximate samples, and missing
+  samples separately for each metric. Copy distinguishes fallback assumptions
+  from observed exposure and statistical confidence intervals. The backtest
+  game count comes from calibration metadata instead of hard-coded UI text.
+
+### Offline benchmark improvements
+
+Run the reviewed local benchmark without changing runtime defaults:
+
+```powershell
+node scripts/benchmark-lineup-workload.mjs --archive outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/data/2025 --out outputs/lineup-scout-upgrade/workload-validation-v2.json
+```
+
+`chronological-workload-v2` uses whole UTC days, explicit unique game/player
+identities, strict future-only evaluation, and metric-specific paired counts
+and denominators. It records exclusions instead of converting missing evidence
+to zero. Free-throw attempts/makes are retained for future offensive-load
+research; they do not activate a new usage coefficient.
+
+The local run accepts 856 eligible regular-season games: 515 training, 168
+tuning, and 173 test games (March 14–April 13, 2026 UTC). Five subgroup checks
+use only training evidence: 5–19 versus 20+ valid metric appearances, and
+observed MPG below 16, 16–below 28, or at least 28. These labels never constrain
+the optimizer. The legacy expanded-role slice is explicitly outcome-conditioned.
+
+Paired bootstrap resamples whole test games 1,000 times using a fixed seed.
+It keeps teammates together and uses identical games/opportunity weights for
+both models. The 95% intervals describe error improvement conditional on the
+fitted parameters, not individual player/lineup forecast uncertainty. Games
+are assumed independent; serial/team dependence and fitting uncertainty remain
+unmodeled. Subgroup intervals are exploratory, without multiplicity correction.
+
+| Metric | MSE improvement vs raw rates | 95% game-bootstrap interval |
+| --- | ---: | ---: |
+| Points | 2.22% | 1.39% to 3.08% |
+| Assists | 2.11% | 1.08% to 3.20% |
+| Rebounds | 0.24% | -0.57% to 1.03% |
+| Steals | 3.50% | 1.93% to 5.17% |
+| Blocks | 0.54% | -0.31% to 1.47% |
+| Turnovers | 1.84% | 1.29% to 2.48% |
+| eFG% | 0.86% | -0.28% to 2.00% |
+| 3P% | 1.93% | 0.43% to 3.47% |
+
+The rebounding workload correction's improvement over shrink-only is uncertain.
+Other metrics select zero workload strength and equal shrink-only predictions.
+This does **not** support adding a universal minute-expansion penalty. V1 and
+V2 results are not directly comparable: split boundaries and shooting-metric
+eligibility changed. The V1 runtime parameters remain untouched.
+
+### Evidence gaps and the next implementation boundary
+
+The archive audit found 18,550 active player appearances across these 856 games.
+Team scoring and source minutes are checked, but independent official player
+and team box-score totals were not retained by the archive normalizer. All-stat
+reconciliation is therefore unavailable, not implicitly passed. The manifest
+also contains 381 completed regular-tagged games excluded from publication;
+their phase/quality exclusions need review before broadening inclusion. Archive
+exposure is not a verified complete-season sample.
+
+The prototype accepts all-team season evidence, but the shared browser catalog
+currently has no `listNbaPlayerSeasonEvidence` reader. Thus this pass does **not**
+claim real season exposure is active on the live page. Next, implement a reviewed
+read-only bridge to the existing historical season aggregates and validate the
+exact browser transformation. That shared integration is outside this
+prototype-only change; no shared client or database definition was modified.
+
+Before fitting responsibility-dependent production, preserve official box-score
+totals in the private archive, reconcile all target metrics, and define
+offensive opportunity separately from minutes. Actual future usage must not be
+fed into a pregame predictor. Event-time lineups—not blindly possession-start
+lineups—are needed when attributing opportunities during substitutions.
+
+### Local verification
+
+- 211 focused optimizer, private-bridge, and benchmark tests pass, including
+  brute-force Scout objective comparisons and the new evidence/boundary cases.
+- Site integrity reports zero issues; the 20-file generated release matches
+  the prototype builder at independent Lineup revision `20260905c`.
+- Rendered checks at 1280×900 and 390×844: no horizontal page overflow, no
+  broken visible images, and no captured JavaScript errors. The updated
+  Historical rotation completed a 715-candidate constrained search with 70
+  feasible groups, 240 assigned minutes, and passing position/production rules.
+- Private authenticated Scout was not re-exercised in this UI pass; focused
+  authorization and pure Scout solver tests passed. No new live database query,
+  database migration, cPanel upload, or Git push was performed by this task.
+
+### Scoped file handoff
+
+Source: `prototypes/basketball-lineup-optimizer/app.js` and `optimizer-core.js`.
+Tests in that same prototype: `tests/scout-primary-benchmark.test.mjs` and
+`tests/workload-evidence-boundaries.test.mjs`.
+
+Offline tooling: `scripts/benchmark-lineup-workload.mjs`,
+`scripts/lib/lineup-workload-validation.mjs`, and
+`scripts/tests/benchmark-lineup-workload.test.mjs`.
+Builder: `scripts/build-lineup-lab-release.mjs`. Documentation: this file.
+
+Generated files changed by the reviewed build: `lineup-lab/app.js`,
+`lineup-lab/index.html`, `lineup-lab/lineup-role-model.js`,
+`lineup-lab/opponent-gameplan.js`, `lineup-lab/optimizer-core.js`,
+`lineup-lab/optimizer-worker.js`, `lineup-lab/player-projection.js`,
+`lineup-lab/projection-parameters.js`, and `lineup-lab/supabase-nba-data.js`.
+Seven of those changes are cache-revision propagation only. No manifest was
+changed, and `workload-calibration.js` remains identical to the prior release.
+The unrelated concurrent `scripts/lib/nba-rapm.mjs` change is excluded from
+this handoff; it was not edited or staged by this task.

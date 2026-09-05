@@ -101,6 +101,23 @@ test('complete real season counts retain their actual exposure and do not inheri
   assert.equal(result.best.score, changedStint.best.score);
 });
 
+test('actual season exposure changes rate confidence without imposing observed MPG as a limit', () => {
+  const withExposure = games => makePool().map(p => ({ ...p, analytics: { ...p.analytics,
+    seasonTotals: { games, minutes: games * 24, points: games * 20 },
+  } }));
+  const request = { ...config, weights: { points: 1 } };
+  const limited = optimizeLineups(withExposure(1), request);
+  const established = optimizeLineups(withExposure(82), request);
+  assert.equal(limited.ok, true);
+  assert.equal(established.ok, true);
+  assert.ok(limited.best.totals.points < established.best.totals.points,
+    'identical rates backed by fewer true observations should shrink more');
+  // Both plans obey the same 30-minute user requirement, above the observed
+  // 24 MPG. Sample size changes estimated production, never that hard limit.
+  assert.deepEqual(limited.best.rotation.byId, established.best.rotation.byId);
+  assert.ok(Object.values(limited.best.rotation.byId).every(minutes => minutes === 30));
+});
+
 for (const missing of [null, '', false, true]) {
   test(`missing impact value ${JSON.stringify(missing)} cannot masquerade as measured zero`, () => {
     const pool = makePool().map(p => ({ ...p, analytics: { ...p.analytics,

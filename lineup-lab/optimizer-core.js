@@ -1468,6 +1468,7 @@ function buildNormalizedMetrics(
         version: projectionParameters.calibration.version,
         seasonEndYear: projectionParameters.calibration.seasonEndYear,
         phase: projectionParameters.calibration.phase,
+        testGames: projectionParameters.calibration.split.testGames,
         validatedLineupForecast: false,
       } : null,
       uncertaintyReserveShare: projectionParameters.uncertaintyReserveShare,

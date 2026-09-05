@@ -7,6 +7,7 @@ import {
   fitWeightedRidgeRapm,
   RAPM_MODEL_VERSION,
   RAPM_OFFENSE_DEFENSE_MODEL_VERSION,
+  selectChronologicalRapmHyperparameters,
   selectWeightedRidgeOffenseDefenseLambda,
   selectWeightedRidgeRapmLambda,
 } from '../lib/nba-rapm.mjs';
@@ -103,6 +104,29 @@ test('RAPM observation build rejects blank game IDs and invalid count values', (
   for (const excluded of built.excluded.slice(1)) {
     assert.match(excluded.reason, /non-negative integer/);
   }
+});
+
+test('RAPM sample weights change effective exposure without rewriting raw possessions', () => {
+  const weightedStints = sampleStints().map((stint) => ({ ...stint, sampleWeight: 0.5 }));
+  const built = buildRapmObservations(weightedStints);
+  assert.equal(built.observations[0].pairedPossessions, 8);
+  assert.equal(built.observations[0].weight, 4);
+
+  const net = fitWeightedRidgeRapm(weightedStints, { lambda: 5 });
+  assert.equal(net.totalPairedPossessions, 22);
+  assert.equal(net.totalEffectivePairedPossessions, 11);
+  assert.equal(net.players[0].pairedPossessions, 22);
+  assert.equal(net.players[0].effectivePairedPossessions, 11);
+
+  const offenseDefense = fitWeightedRidgeOffenseDefenseRapm(weightedStints, { lambda: 5 });
+  assert.equal(offenseDefense.totalOffensivePossessions, 44);
+  assert.equal(offenseDefense.totalEffectiveOffensivePossessions, 22);
+  assert.equal(offenseDefense.players[0].pairedPossessions, 22);
+  assert.equal(offenseDefense.players[0].effectivePairedPossessions, 11);
+
+  const invalid = buildRapmObservations([{ ...sampleStints()[0], sampleWeight: 0 }]);
+  assert.equal(invalid.observations.length, 0);
+  assert.match(invalid.excluded[0].reason, /sampleWeight must be greater than zero/);
 });
 
 test('offense/defense RAPM separates nominal-offense scoring from total scoreboard points', () => {
@@ -324,6 +348,43 @@ test('offense/defense calibration uses held-out games and validates both player 
     () => evaluateOffenseDefenseRapmCalibration(stints, { lambda: 'auto' }),
     /already-selected numeric lambda/,
   );
+});
+
+test('chronological multiseason tuning is deterministic and keeps a final latest-season test block untouched', () => {
+  const stints = calibrationStints().map((stint, index) => {
+    const priorSeason = index < 6;
+    return {
+      ...stint,
+      seasonStartYear: priorSeason ? 2024 : 2025,
+      scheduledAt: new Date(Date.UTC(priorSeason ? 2024 : 2025, 9, index + 1)).toISOString(),
+    };
+  });
+  const options = {
+    latestSeasonStartYear: 2025,
+    priorSeasonWeightCandidates: [0, 0.5, 1],
+    lambdaCandidates: [1, 10],
+    tuningGameFraction: 0.2,
+    testGameFraction: 0.2,
+  };
+  const first = selectChronologicalRapmHyperparameters(stints, { ...options, model: 'net' });
+  const second = selectChronologicalRapmHyperparameters([...stints].reverse(), { ...options, model: 'net' });
+  assert.deepEqual(first, second);
+  assert.equal(first.split.priorSeasonsTraining.gameCount, 6);
+  assert.equal(first.split.latestSeasonTraining.gameCount, 10);
+  assert.equal(first.split.latestSeasonTuning.gameCount, 2);
+  assert.equal(first.split.latestSeasonTest.gameCount, 2);
+  assert.equal(first.candidates.length, 6);
+  assert.ok([0, 0.5, 1].includes(first.selectedPriorSeasonWeight));
+  assert.ok([1, 10].includes(first.selectedLambda));
+  assert.ok(Number.isFinite(first.test.fullModel.weightedMse));
+
+  const offenseDefense = selectChronologicalRapmHyperparameters(stints, {
+    ...options,
+    model: 'offenseDefense',
+  });
+  assert.equal(offenseDefense.split.latestSeasonTest.gameCount, 2);
+  assert.equal(offenseDefense.candidates.length, 6);
+  assert.ok(Number.isFinite(offenseDefense.test.fullModel.weightedMse));
 });
 
 test('RAPM rejects a zero or negative ridge lambda', () => {

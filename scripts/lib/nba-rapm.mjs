@@ -6,6 +6,7 @@ export const RAPM_OFFENSE_DEFENSE_MODEL_VERSION = 'weighted_ridge_offense_defens
 // formulation. It lets downstream consumers distinguish a model with a
 // reproducible held-out test from one that merely converged in sample.
 export const RAPM_OFFENSE_DEFENSE_CALIBRATION_VERSION = 'game_fold_directional_ablation_v1';
+export const RAPM_CHRONOLOGICAL_CALIBRATION_VERSION = 'chronological_latest_season_tune_test_v1';
 export const DEFAULT_RAPM_LAMBDA_CANDIDATES = Object.freeze([1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]);
 export const DEFAULT_RAPM_DISPLAY_POSSESSION_THRESHOLDS = Object.freeze([200, 500, 1000]);
 const OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT = 2;
@@ -54,6 +55,8 @@ function normalizedPlayerIds(value, name) {
 
 function compareObservation(left, right) {
   return [
+    left.seasonStartYear ?? '',
+    left.scheduledAt ?? '',
     left.gameId,
     String(left.stintOrdinal).padStart(12, '0'),
     left.homePlayerIds.join(','),
@@ -64,7 +67,10 @@ function compareObservation(left, right) {
     left.awayOffensePoints,
     left.homeOffensivePossessions,
     left.awayOffensivePossessions,
+    left.sampleWeight,
   ].join('|').localeCompare([
+    right.seasonStartYear ?? '',
+    right.scheduledAt ?? '',
     right.gameId,
     String(right.stintOrdinal).padStart(12, '0'),
     right.homePlayerIds.join(','),
@@ -75,6 +81,7 @@ function compareObservation(left, right) {
     right.awayOffensePoints,
     right.homeOffensivePossessions,
     right.awayOffensivePossessions,
+    right.sampleWeight,
   ].join('|'));
 }
 
@@ -109,9 +116,25 @@ function normalizedStint(stint, index) {
   );
   const exposure = (homeOffensivePossessions + awayOffensivePossessions) / 2;
   if (!(exposure > 0)) throw new RangeError(`stint ${index} must have positive paired possession exposure.`);
+  const sampleWeight = asFiniteNumber(stint.sampleWeight ?? 1, `stint ${index} sampleWeight`);
+  if (!(sampleWeight > 0)) throw new RangeError(`stint ${index} sampleWeight must be greater than zero.`);
+  const seasonStartYear = stint.seasonStartYear === null || stint.seasonStartYear === undefined
+    ? null
+    : Number(stint.seasonStartYear);
+  if (seasonStartYear !== null && (!Number.isInteger(seasonStartYear) || seasonStartYear < 1947)) {
+    throw new TypeError(`stint ${index} seasonStartYear must be a valid NBA season start year.`);
+  }
+  const scheduledAt = stint.scheduledAt === null || stint.scheduledAt === undefined
+    ? null
+    : String(stint.scheduledAt).trim();
+  if (scheduledAt !== null && (!scheduledAt || !Number.isFinite(Date.parse(scheduledAt)))) {
+    throw new TypeError(`stint ${index} scheduledAt must be a valid date-time string.`);
+  }
   return {
     gameId: normalizedGameId(stint.gameId, index),
     stintOrdinal: Number.isInteger(stint.stintOrdinal) ? stint.stintOrdinal : index,
+    seasonStartYear,
+    scheduledAt,
     homePlayerIds,
     awayPlayerIds,
     homePoints,
@@ -120,7 +143,9 @@ function normalizedStint(stint, index) {
     awayOffensePoints,
     homeOffensivePossessions,
     awayOffensivePossessions,
-    weight: exposure,
+    pairedPossessions: exposure,
+    sampleWeight,
+    weight: exposure * sampleWeight,
     response: (homePoints - awayPoints) / exposure,
   };
 }
@@ -332,6 +357,7 @@ function netDesignRows(observations, playerIds) {
   const playerIndex = new Map(playerIds.map((playerId, index) => [playerId, index + 1]));
   return observations.map((observation) => ({
     gameId: observation.gameId,
+    rawWeight: observation.pairedPossessions,
     weight: observation.weight,
     response: observation.response,
     features: [
@@ -362,7 +388,8 @@ function offenseDefenseDesignRows(observations, playerIds) {
     rows.push({
       gameId: observation.gameId,
       side,
-      weight: possessions,
+      rawWeight: possessions,
+      weight: possessions * observation.sampleWeight,
       response: points / possessions,
       // Preserve the two lineup sides explicitly for calibration. The sparse
       // feature list remains the fitting source of truth, while these bounded
@@ -504,6 +531,9 @@ function observationToStint(observation) {
   return {
     gameId: observation.gameId,
     stintOrdinal: observation.stintOrdinal,
+    seasonStartYear: observation.seasonStartYear,
+    scheduledAt: observation.scheduledAt,
+    sampleWeight: observation.sampleWeight,
     homePlayerIds: observation.homePlayerIds,
     awayPlayerIds: observation.awayPlayerIds,
     homePoints: observation.homePoints,
@@ -699,6 +729,369 @@ export function evaluateOffenseDefenseRapmCalibration(stints, {
   };
 }
 
+function normalizedPriorSeasonWeightCandidates(values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new TypeError('priorSeasonWeightCandidates must be a non-empty array.');
+  }
+  const normalized = values.map((value, index) => {
+    const candidate = asFiniteNumber(value, `priorSeasonWeightCandidates[${index}]`);
+    if (candidate < 0 || candidate > 1) {
+      throw new RangeError(`priorSeasonWeightCandidates[${index}] must be between zero and one.`);
+    }
+    return candidate;
+  });
+  return [...new Set(normalized)].sort((left, right) => left - right);
+}
+
+function normalizedChronologicalFraction(value, name) {
+  const fraction = asFiniteNumber(value, name);
+  if (!(fraction > 0 && fraction < 0.5)) {
+    throw new RangeError(`${name} must be greater than zero and less than 0.5.`);
+  }
+  return fraction;
+}
+
+function chronologicalGamePlan(observations, latestSeasonStartYear, tuningGameFraction, testGameFraction) {
+  const gameMetadata = new Map();
+  for (const observation of observations) {
+    if (!Number.isInteger(observation.seasonStartYear)) {
+      throw new TypeError('Chronological calibration requires seasonStartYear on every stint.');
+    }
+    if (!observation.scheduledAt) {
+      throw new TypeError('Chronological calibration requires scheduledAt on every stint.');
+    }
+    if (observation.seasonStartYear > latestSeasonStartYear) {
+      throw new RangeError('Chronological calibration input contains a season after latestSeasonStartYear.');
+    }
+    const scheduledAt = new Date(observation.scheduledAt).toISOString();
+    const existing = gameMetadata.get(observation.gameId);
+    if (existing && (existing.seasonStartYear !== observation.seasonStartYear || existing.scheduledAt !== scheduledAt)) {
+      throw new RangeError(`Game ${observation.gameId} has inconsistent chronological metadata.`);
+    }
+    gameMetadata.set(observation.gameId, {
+      gameId: observation.gameId,
+      seasonStartYear: observation.seasonStartYear,
+      scheduledAt,
+    });
+  }
+  const priorGames = [...gameMetadata.values()]
+    .filter((game) => game.seasonStartYear < latestSeasonStartYear)
+    .sort((left, right) => left.scheduledAt.localeCompare(right.scheduledAt) || left.gameId.localeCompare(right.gameId));
+  if (!priorGames.length) throw new RangeError('Chronological multiseason calibration requires at least one prior-season game.');
+  const latestGames = [...gameMetadata.values()]
+    .filter((game) => game.seasonStartYear === latestSeasonStartYear)
+    .sort((left, right) => left.scheduledAt.localeCompare(right.scheduledAt) || left.gameId.localeCompare(right.gameId));
+  if (latestGames.length < 3) {
+    throw new RangeError('Chronological calibration requires at least three latest-season games.');
+  }
+  const tuningGameCount = Math.max(1, Math.floor(latestGames.length * tuningGameFraction));
+  const testGameCount = Math.max(1, Math.floor(latestGames.length * testGameFraction));
+  const trainingGameCount = latestGames.length - tuningGameCount - testGameCount;
+  if (trainingGameCount < 1) {
+    throw new RangeError('Chronological calibration fractions leave no latest-season training games.');
+  }
+  const latestTrainingGames = latestGames.slice(0, trainingGameCount);
+  const tuningGames = latestGames.slice(trainingGameCount, trainingGameCount + tuningGameCount);
+  const testGames = latestGames.slice(trainingGameCount + tuningGameCount);
+  return {
+    gameMetadata,
+    priorGames,
+    latestGames,
+    latestTrainingGames,
+    tuningGames,
+    testGames,
+    baseTrainingGameIds: new Set([...priorGames, ...latestTrainingGames].map((game) => game.gameId)),
+    refitTrainingGameIds: new Set([...priorGames, ...latestTrainingGames, ...tuningGames].map((game) => game.gameId)),
+    tuningGameIds: new Set(tuningGames.map((game) => game.gameId)),
+    testGameIds: new Set(testGames.map((game) => game.gameId)),
+  };
+}
+
+function observationsForGames(observations, gameIds) {
+  return observations.filter((observation) => gameIds.has(observation.gameId));
+}
+
+function applyPriorSeasonDecay(observations, latestSeasonStartYear, priorSeasonWeight) {
+  const weighted = [];
+  for (const observation of observations) {
+    const age = latestSeasonStartYear - observation.seasonStartYear;
+    const sampleWeight = age === 0 ? 1 : priorSeasonWeight ** age;
+    if (!(sampleWeight > 0)) continue;
+    weighted.push({
+      ...observation,
+      sampleWeight,
+      weight: observation.pairedPossessions * sampleWeight,
+    });
+  }
+  return weighted;
+}
+
+function fitChronologicalCandidate(observations, model, lambda, { tolerance, maxIterations }) {
+  if (!observations.length) throw new RangeError('Chronological candidate has no training observations.');
+  const playerIds = observationPlayerIds(observations);
+  let rows;
+  let dimension;
+  let unregularizedColumnCount;
+  if (model === 'net') {
+    rows = netDesignRows(observations, playerIds);
+    dimension = playerIds.length + 1;
+    unregularizedColumnCount = 1;
+  } else {
+    rows = offenseDefenseDesignRows(observations, playerIds).rows;
+    assertSignedHomeCourtRows(rows, 'Chronological offense/defense training');
+    dimension = playerIds.length * 2 + OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT;
+    unregularizedColumnCount = OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT;
+  }
+  const solved = solveSparseWeightedRidge(rows, dimension, lambda, {
+    tolerance,
+    maxIterations,
+    unregularizedColumnCount,
+  });
+  if (!solved.converged) {
+    throw new RangeError(`Chronological ${model} candidate did not converge after ${solved.iterationCount} iterations.`);
+  }
+  let baseline;
+  if (model === 'net') {
+    const totalWeight = rows.reduce((total, row) => total + row.weight, 0);
+    baseline = {
+      interceptPerPossession: rows.reduce(
+        (total, row) => total + row.weight * row.response,
+        0,
+      ) / totalWeight,
+    };
+  } else {
+    baseline = fitVenueOnlyBaseline(rows, { tolerance, maxIterations });
+  }
+  return {
+    model,
+    playerIds,
+    playerIndex: new Map(playerIds.map((playerId, index) => [playerId, index])),
+    coefficients: solved.coefficients,
+    baseline,
+    solver: {
+      converged: solved.converged,
+      iterationCount: solved.iterationCount,
+      residualNorm: solved.residualNorm,
+      targetResidualNorm: solved.targetResidualNorm,
+    },
+  };
+}
+
+function evaluateChronologicalCandidate(fitted, heldOutObservations) {
+  const fullMetrics = emptyPredictionMetrics();
+  const baselineMetrics = emptyPredictionMetrics();
+  let unseenPlayerPossessions = 0;
+  let unseenObservationCount = 0;
+  const recordUnseen = (playerIds, weight) => {
+    if (playerIds.some((playerId) => !fitted.playerIndex.has(playerId))) {
+      unseenPlayerPossessions += weight;
+      unseenObservationCount += 1;
+    }
+  };
+  if (fitted.model === 'net') {
+    for (const observation of heldOutObservations) {
+      let prediction = fitted.coefficients[0];
+      for (const playerId of observation.homePlayerIds) {
+        const offset = fitted.playerIndex.get(playerId);
+        if (offset !== undefined) prediction += fitted.coefficients[offset + 1];
+      }
+      for (const playerId of observation.awayPlayerIds) {
+        const offset = fitted.playerIndex.get(playerId);
+        if (offset !== undefined) prediction -= fitted.coefficients[offset + 1];
+      }
+      const row = { response: observation.response, weight: observation.pairedPossessions };
+      addPredictionMetrics(fullMetrics, row, prediction);
+      addPredictionMetrics(baselineMetrics, row, fitted.baseline.interceptPerPossession);
+      recordUnseen([...observation.homePlayerIds, ...observation.awayPlayerIds], row.weight);
+    }
+  } else {
+    const heldOutRows = offenseDefenseDesignRows(
+      heldOutObservations.map((observation) => ({ ...observation, sampleWeight: 1 })),
+      observationPlayerIds(heldOutObservations),
+    ).rows;
+    const offenseStart = OFFENSE_DEFENSE_UNREGULARIZED_COLUMN_COUNT;
+    const defenseStart = fitted.playerIds.length + offenseStart;
+    for (const row of heldOutRows) {
+      const venueSign = row.side === 'home' ? 1 : -1;
+      let prediction = fitted.coefficients[0] + venueSign * fitted.coefficients[1];
+      for (const playerId of row.offensePlayerIds) {
+        const offset = fitted.playerIndex.get(playerId);
+        if (offset !== undefined) prediction += fitted.coefficients[offenseStart + offset];
+      }
+      for (const playerId of row.defensePlayerIds) {
+        const offset = fitted.playerIndex.get(playerId);
+        if (offset !== undefined) prediction -= fitted.coefficients[defenseStart + offset];
+      }
+      const baselinePrediction = fitted.baseline.baselinePerPossession
+        + venueSign * fitted.baseline.homeCourtEffectPerPossession;
+      addPredictionMetrics(fullMetrics, row, prediction);
+      addPredictionMetrics(baselineMetrics, row, baselinePrediction);
+      recordUnseen([...row.offensePlayerIds, ...row.defensePlayerIds], row.weight);
+    }
+  }
+  const fullModel = finalizedPredictionMetrics(fullMetrics);
+  const fixedEffectsBaseline = finalizedPredictionMetrics(baselineMetrics);
+  const improvement = mseImprovement(fixedEffectsBaseline, fullModel);
+  return {
+    status: improvement !== null && improvement > CALIBRATION_MSE_NUMERIC_EPSILON
+      ? 'validated'
+      : 'not_validated',
+    fullModel,
+    fixedEffectsBaseline,
+    fullModelMseImprovementVsFixedEffectsBaseline: improvement,
+    fullModelImprovesBaseline: improvement !== null && improvement > CALIBRATION_MSE_NUMERIC_EPSILON,
+    unseenPlayerPossessions,
+    unseenObservationCount,
+    unseenPlayerPossessionShare: fullModel.heldOutPossessions > 0
+      ? unseenPlayerPossessions / fullModel.heldOutPossessions
+      : null,
+  };
+}
+
+function chronologicalSplitSummary(games) {
+  if (!games.length) return { gameCount: 0, firstScheduledAt: null, lastScheduledAt: null };
+  return {
+    gameCount: games.length,
+    firstScheduledAt: games[0].scheduledAt,
+    lastScheduledAt: games[games.length - 1].scheduledAt,
+  };
+}
+
+/**
+ * Select a prior-season decay weight and ridge penalty without leaking future
+ * latest-season games into tuning. Earlier seasons and the first chronological
+ * block of the latest season train every candidate; the next block selects the
+ * hyperparameters, and the final block is touched once for an honest test.
+ */
+export function selectChronologicalRapmHyperparameters(stints, {
+  model = 'net',
+  latestSeasonStartYear,
+  priorSeasonWeightCandidates = [0, 0.25, 0.5, 0.75, 1],
+  lambdaCandidates = DEFAULT_RAPM_LAMBDA_CANDIDATES,
+  tuningGameFraction = 0.2,
+  testGameFraction = 0.2,
+  solverTolerance = 1e-10,
+  solverMaxIterations = null,
+} = {}) {
+  if (!['net', 'offenseDefense'].includes(model)) {
+    throw new TypeError('model must be net or offenseDefense.');
+  }
+  const latestSeason = Number(latestSeasonStartYear);
+  if (!Number.isInteger(latestSeason) || latestSeason < 1947) {
+    throw new TypeError('latestSeasonStartYear must be a valid NBA season start year.');
+  }
+  const weights = normalizedPriorSeasonWeightCandidates(priorSeasonWeightCandidates);
+  const lambdas = normalizedLambdaCandidates(lambdaCandidates);
+  const tuningFraction = normalizedChronologicalFraction(tuningGameFraction, 'tuningGameFraction');
+  const testFraction = normalizedChronologicalFraction(testGameFraction, 'testGameFraction');
+  if (tuningFraction + testFraction >= 1) {
+    throw new RangeError('tuningGameFraction plus testGameFraction must be less than one.');
+  }
+  const tolerance = asFiniteNumber(solverTolerance, 'solverTolerance');
+  if (!(tolerance > 0)) throw new RangeError('solverTolerance must be greater than zero.');
+  let maxIterations;
+  if (solverMaxIterations !== null && solverMaxIterations !== undefined) {
+    maxIterations = Number(solverMaxIterations);
+    if (!Number.isInteger(maxIterations) || maxIterations <= 0) {
+      throw new TypeError('solverMaxIterations must be a positive integer when provided.');
+    }
+  }
+
+  const { observations, excluded } = buildRapmObservations(stints);
+  if (!observations.length) throw new RangeError('No valid paired five-on-five stints are available for chronological calibration.');
+  const plan = chronologicalGamePlan(observations, latestSeason, tuningFraction, testFraction);
+  const baseTraining = observationsForGames(observations, plan.baseTrainingGameIds);
+  const tuning = observationsForGames(observations, plan.tuningGameIds);
+  const refitTraining = observationsForGames(observations, plan.refitTrainingGameIds);
+  const test = observationsForGames(observations, plan.testGameIds);
+  const candidates = [];
+
+  for (const priorSeasonWeight of weights) {
+    const weightedTraining = applyPriorSeasonDecay(baseTraining, latestSeason, priorSeasonWeight);
+    for (const lambda of lambdas) {
+      try {
+        const fitted = fitChronologicalCandidate(weightedTraining, model, lambda, { tolerance, maxIterations });
+        const evaluation = evaluateChronologicalCandidate(fitted, tuning);
+        candidates.push({
+          priorSeasonWeight,
+          lambda,
+          fitStatus: 'scored',
+          trainingObservationCount: weightedTraining.length,
+          trainingPlayerCount: fitted.playerIds.length,
+          solver: fitted.solver,
+          ...evaluation,
+        });
+      } catch (error) {
+        candidates.push({
+          priorSeasonWeight,
+          lambda,
+          fitStatus: 'failed',
+          error: String(error?.message ?? error),
+        });
+      }
+    }
+  }
+  const scored = candidates.filter((candidate) => candidate.fitStatus === 'scored');
+  if (!scored.length) {
+    const failureSummary = [...new Set(candidates.map((candidate) => candidate.error))]
+      .slice(0, 3)
+      .join(' | ');
+    throw new RangeError(`Every chronological ${model} candidate failed: ${failureSummary}`);
+  }
+  scored.sort((left, right) => (
+    left.fullModel.weightedMse - right.fullModel.weightedMse
+      || left.priorSeasonWeight - right.priorSeasonWeight
+      || left.lambda - right.lambda
+  ));
+  const winner = scored[0];
+  const weightedRefitTraining = applyPriorSeasonDecay(
+    refitTraining,
+    latestSeason,
+    winner.priorSeasonWeight,
+  );
+  const refit = fitChronologicalCandidate(weightedRefitTraining, model, winner.lambda, {
+    tolerance,
+    maxIterations,
+  });
+  const testEvaluation = evaluateChronologicalCandidate(refit, test);
+  const split = {
+    priorSeasonsTraining: chronologicalSplitSummary(plan.priorGames),
+    latestSeasonTraining: chronologicalSplitSummary(plan.latestTrainingGames),
+    latestSeasonTuning: chronologicalSplitSummary(plan.tuningGames),
+    latestSeasonTest: chronologicalSplitSummary(plan.testGames),
+  };
+  return {
+    version: RAPM_CHRONOLOGICAL_CALIBRATION_VERSION,
+    model,
+    latestSeasonStartYear: latestSeason,
+    method: 'prior_seasons_plus_chronological_latest_season_train_tune_test_v1',
+    priorSeasonWeightDefinition: 'latest season weight is 1; each season-age step is multiplied by the selected prior-season weight; zero excludes all prior seasons from the RAPM fit',
+    tuningGameFraction: tuningFraction,
+    testGameFraction: testFraction,
+    split,
+    selectedPriorSeasonWeight: winner.priorSeasonWeight,
+    selectedLambda: winner.lambda,
+    selectedPriorWeightAtBoundary: winner.priorSeasonWeight === weights[0]
+      || winner.priorSeasonWeight === weights[weights.length - 1],
+    selectedLambdaAtBoundary: winner.lambda === lambdas[0]
+      || winner.lambda === lambdas[lambdas.length - 1],
+    tuningSelection: winner,
+    candidates,
+    test: testEvaluation,
+    excludedStintCount: excluded.length,
+    inputSha256: sha256Json({
+      version: RAPM_CHRONOLOGICAL_CALIBRATION_VERSION,
+      model,
+      latestSeasonStartYear: latestSeason,
+      weights,
+      lambdas,
+      split,
+      observations: observations.map(observationToStint),
+    }),
+    caveat: 'The final test block is untouched during hyperparameter selection, but this remains predictive validation of lineup scoring rather than causal proof of individual player effects.',
+  };
+}
+
 function selectLambdaFromGameFolds(rows, dimension, {
   candidateLambdas = DEFAULT_RAPM_LAMBDA_CANDIDATES,
   foldCount = 5,
@@ -891,6 +1284,9 @@ export function fitWeightedRidgeRapm(stints, {
   const input = observations.map((observation) => ({
     gameId: observation.gameId,
     stintOrdinal: observation.stintOrdinal,
+    seasonStartYear: observation.seasonStartYear,
+    scheduledAt: observation.scheduledAt,
+    sampleWeight: observation.sampleWeight,
     homePlayerIds: observation.homePlayerIds,
     awayPlayerIds: observation.awayPlayerIds,
     homePoints: observation.homePoints,
@@ -903,11 +1299,19 @@ export function fitWeightedRidgeRapm(stints, {
 
   const playerContext = new Map(playerIds.map((playerId) => [playerId, {
     pairedPossessions: 0,
+    effectivePairedPossessions: 0,
     observationCount: 0,
     teammateCoefficientTotal: 0,
     opponentCoefficientTotal: 0,
   }]));
-  const totalPairedPossessions = observations.reduce((total, observation) => total + observation.weight, 0);
+  const totalPairedPossessions = observations.reduce(
+    (total, observation) => total + observation.pairedPossessions,
+    0,
+  );
+  const totalEffectivePairedPossessions = observations.reduce(
+    (total, observation) => total + observation.weight,
+    0,
+  );
   for (const observation of observations) {
     const homeCoefficients = observation.homePlayerIds.map((playerId) => coefficients[playerIndex.get(playerId)]);
     const awayCoefficients = observation.awayPlayerIds.map((playerId) => coefficients[playerIndex.get(playerId)]);
@@ -922,7 +1326,8 @@ export function fitWeightedRidgeRapm(stints, {
           .reduce((total, coefficient) => total + coefficient, 0) / 4;
         const opponentMean = opponentCoefficients
           .reduce((total, coefficient) => total + coefficient, 0) / 5;
-        context.pairedPossessions += observation.weight;
+        context.pairedPossessions += observation.pairedPossessions;
+        context.effectivePairedPossessions += observation.weight;
         context.observationCount += 1;
         context.teammateCoefficientTotal += teammateMean * observation.weight;
         context.opponentCoefficientTotal += opponentMean * observation.weight;
@@ -939,11 +1344,12 @@ export function fitWeightedRidgeRapm(stints, {
     observationCount: observations.length,
     gameCount: new Set(observations.map((observation) => observation.gameId)).size,
     totalPairedPossessions,
+    totalEffectivePairedPossessions,
     excludedStintCount: excluded.length,
     excluded,
     reliability: {
-      method: 'paired_possessions_over_paired_possessions_plus_lambda_proxy',
-      caveat: 'This is an exposure-and-ridge stability proxy, not a confidence interval or causal certainty score.',
+      method: 'effective_paired_possessions_over_effective_paired_possessions_plus_lambda_proxy',
+      caveat: 'This is a recency-weighted exposure-and-ridge stability proxy, not a confidence interval or causal certainty score. Raw possessions are retained separately.',
       displayPossessionThresholds: displayThresholds,
       sampleSizeTiers: ['insufficient', 'limited', 'moderate', 'established'],
     },
@@ -961,16 +1367,17 @@ export function fitWeightedRidgeRapm(stints, {
     interceptPer100: coefficients[0] * 100,
     players: playerIds.map((playerId, index) => {
       const context = playerContext.get(playerId);
-      const averageTeammateNetRapmPer100 = context.pairedPossessions > 0
-        ? 100 * context.teammateCoefficientTotal / context.pairedPossessions
+      const averageTeammateNetRapmPer100 = context.effectivePairedPossessions > 0
+        ? 100 * context.teammateCoefficientTotal / context.effectivePairedPossessions
         : null;
-      const averageOpponentNetRapmPer100 = context.pairedPossessions > 0
-        ? 100 * context.opponentCoefficientTotal / context.pairedPossessions
+      const averageOpponentNetRapmPer100 = context.effectivePairedPossessions > 0
+        ? 100 * context.opponentCoefficientTotal / context.effectivePairedPossessions
         : null;
       return {
         providerPlayerId: playerId,
         rapmPer100: coefficients[index + 1] * 100,
         pairedPossessions: context.pairedPossessions,
+        effectivePairedPossessions: context.effectivePairedPossessions,
         observationCount: context.observationCount,
         averageTeammateNetRapmPer100,
         averageOpponentNetRapmPer100,
@@ -979,8 +1386,8 @@ export function fitWeightedRidgeRapm(stints, {
         teammateRapmContextPer100: averageTeammateNetRapmPer100,
         opponentRapmContextPer100: averageOpponentNetRapmPer100,
         ...sampleSizeFields(
-          context.pairedPossessions,
-          totalPairedPossessions,
+          context.effectivePairedPossessions,
+          totalEffectivePairedPossessions,
           ridgeLambda,
           displayThresholds
         ),
@@ -1071,6 +1478,8 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
   const playerExposure = new Map(playerIds.map((playerId) => [playerId, {
     offensivePossessions: 0,
     defensivePossessions: 0,
+    effectiveOffensivePossessions: 0,
+    effectiveDefensivePossessions: 0,
     offensiveObservationCount: 0,
     defensiveObservationCount: 0,
     homeOffensivePossessions: 0,
@@ -1083,6 +1492,8 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
       const exposure = playerExposure.get(playerId);
       exposure.offensivePossessions += observation.homeOffensivePossessions;
       exposure.defensivePossessions += observation.awayOffensivePossessions;
+      exposure.effectiveOffensivePossessions += observation.homeOffensivePossessions * observation.sampleWeight;
+      exposure.effectiveDefensivePossessions += observation.awayOffensivePossessions * observation.sampleWeight;
       exposure.homeOffensivePossessions += observation.homeOffensivePossessions;
       exposure.homeDefensivePossessions += observation.awayOffensivePossessions;
       if (observation.homeOffensivePossessions > 0) exposure.offensiveObservationCount += 1;
@@ -1092,6 +1503,8 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
       const exposure = playerExposure.get(playerId);
       exposure.offensivePossessions += observation.awayOffensivePossessions;
       exposure.defensivePossessions += observation.homeOffensivePossessions;
+      exposure.effectiveOffensivePossessions += observation.awayOffensivePossessions * observation.sampleWeight;
+      exposure.effectiveDefensivePossessions += observation.homeOffensivePossessions * observation.sampleWeight;
       exposure.awayOffensivePossessions += observation.awayOffensivePossessions;
       exposure.awayDefensivePossessions += observation.homeOffensivePossessions;
       if (observation.awayOffensivePossessions > 0) exposure.offensiveObservationCount += 1;
@@ -1099,11 +1512,17 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
     }
   }
   const totalPairedPossessions = observations
+    .reduce((total, observation) => total + observation.pairedPossessions, 0);
+  const totalEffectivePairedPossessions = observations
     .reduce((total, observation) => total + observation.weight, 0);
-  const totalOffensivePossessions = rows.reduce((total, row) => total + row.weight, 0);
+  const totalOffensivePossessions = rows.reduce((total, row) => total + row.rawWeight, 0);
+  const totalEffectiveOffensivePossessions = rows.reduce((total, row) => total + row.weight, 0);
   const input = observations.map((observation) => ({
     gameId: observation.gameId,
     stintOrdinal: observation.stintOrdinal,
+    seasonStartYear: observation.seasonStartYear,
+    scheduledAt: observation.scheduledAt,
+    sampleWeight: observation.sampleWeight,
     homePlayerIds: observation.homePlayerIds,
     awayPlayerIds: observation.awayPlayerIds,
     homePoints: observation.homePoints,
@@ -1156,14 +1575,16 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
     pairedStintObservationCount: observations.length,
     gameCount: new Set(observations.map((observation) => observation.gameId)).size,
     totalOffensivePossessions,
+    totalEffectiveOffensivePossessions,
     totalPairedPossessions,
+    totalEffectivePairedPossessions,
     excludedStintCount: excluded.length,
     excluded,
     skippedDirectionalObservationCount: skippedDirections.length,
     skippedDirections,
     reliability: {
-      method: 'component_possessions_over_component_possessions_plus_lambda_proxy',
-      caveat: 'These are exposure-and-ridge stability proxies, not confidence intervals or causal certainty scores.',
+      method: 'effective_component_possessions_over_effective_component_possessions_plus_lambda_proxy',
+      caveat: 'These are recency-weighted exposure-and-ridge stability proxies, not confidence intervals or causal certainty scores. Raw possessions are retained separately.',
       displayPossessionThresholds: displayThresholds,
       sampleSizeTiers: ['insufficient', 'limited', 'moderate', 'established'],
     },
@@ -1192,6 +1613,9 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
       const offensiveRapmPer100 = solved.coefficients[offset + offenseStart] * 100;
       const defensiveRapmPer100 = solved.coefficients[defenseStart + offset] * 100;
       const pairedPossessions = (exposure.offensivePossessions + exposure.defensivePossessions) / 2;
+      const effectivePairedPossessions = (
+        exposure.effectiveOffensivePossessions + exposure.effectiveDefensivePossessions
+      ) / 2;
       const venueExposure = venueExposureRows[offset];
       return {
         providerPlayerId: playerId,
@@ -1200,17 +1624,20 @@ export function fitWeightedRidgeOffenseDefenseRapm(stints, {
         combinedRapmPer100: offensiveRapmPer100 + defensiveRapmPer100,
         offensivePossessions: exposure.offensivePossessions,
         defensivePossessions: exposure.defensivePossessions,
+        effectiveOffensivePossessions: exposure.effectiveOffensivePossessions,
+        effectiveDefensivePossessions: exposure.effectiveDefensivePossessions,
         pairedPossessions,
+        effectivePairedPossessions,
         offensiveObservationCount: exposure.offensiveObservationCount,
         defensiveObservationCount: exposure.defensiveObservationCount,
         venueExposure,
-        offensiveRidgeReliabilityProxy: exposure.offensivePossessions
-          / (exposure.offensivePossessions + ridgeLambda),
-        defensiveRidgeReliabilityProxy: exposure.defensivePossessions
-          / (exposure.defensivePossessions + ridgeLambda),
+        offensiveRidgeReliabilityProxy: exposure.effectiveOffensivePossessions
+          / (exposure.effectiveOffensivePossessions + ridgeLambda),
+        defensiveRidgeReliabilityProxy: exposure.effectiveDefensivePossessions
+          / (exposure.effectiveDefensivePossessions + ridgeLambda),
         ...sampleSizeFields(
-          pairedPossessions,
-          totalPairedPossessions,
+          effectivePairedPossessions,
+          totalEffectivePairedPossessions,
           ridgeLambda,
           displayThresholds
         ),
