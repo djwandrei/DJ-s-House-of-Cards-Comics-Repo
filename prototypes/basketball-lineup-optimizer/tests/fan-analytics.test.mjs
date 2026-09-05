@@ -376,3 +376,16 @@ test("rotation explanations mirror the optimizer's conservative zero for zero-mi
   assert.equal(points.percentileSource, "optimizer");
   assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /0 per 36/);
 });
+
+test("paired-evidence rotation contributions are not mislabeled as cohort percentiles", () => {
+  const row = player("p1");
+  const best = { players: [row], rotation: { byId: { p1: 48 } },
+    playerContributions: { p1: { metrics: { points: { percentile: .6, scoreContribution: 60 } } } } };
+  const explanation = explainOptimizationSelection({ best, alternatives: [best], diagnostics: {
+    rotationScoringBasis: "per36", rotationRateStabilityEvidence: { applied: true, stabilizedMetrics: ["points"] },
+  } }, { candidatePool: [row], weights: { points: 1 } });
+  const points = explanation.selectedPlayers[0].profile.contributions.find(item => item.metric === "points");
+  assert.equal(points.scoreMeaning, "normalized-contribution");
+  assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /60\/100 normalized contribution, not a percentile/);
+  assert.doesNotMatch(explanation.caveats.join(" "), /Objective contribution is pool-relative|Optimizer percentiles include/);
+});

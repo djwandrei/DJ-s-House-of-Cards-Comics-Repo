@@ -1151,17 +1151,6 @@ function roleCoverageStatus(matches, target, evidenceAvailable) {
   return "gap";
 }
 
-function roleCoverageSignal(matches, target) {
-  if (!matches.length) return null;
-  // A row may have more confirmed players than its role target. The strongest
-  // supporting signal is what makes the identity concise, while the target
-  // still controls whether the role is classified as covered.
-  const count = Math.max(1, Math.floor(target));
-  const strongest = matches.slice(0, count);
-  const total = strongest.reduce((sum, entry) => sum + Number(entry.role.score || 0), 0);
-  return round(total / strongest.length, 3);
-}
-
 /**
  * Produce a role matrix plus plain-language group strengths and gaps. A gap is
  * a planning signal, not a claim that a real NBA lineup cannot function. The
@@ -1198,7 +1187,6 @@ export function analyzeRoleCoverage(players, options = {}) {
     const evidenceAvailable = definition.id !== "movementShooter"
       || classification.records.some((record) => record.values.threePointVolume !== null);
     const status = roleCoverageStatus(matches, target, evidenceAvailable);
-    const coverageScore = roleCoverageSignal(matches, target);
     const baseMessage = status === "covered"
       ? `${matches.length} selected player${matches.length === 1 ? "" : "s"} cover ${definition.label.toLowerCase()}.`
       : status === "thin"
@@ -1214,7 +1202,6 @@ export function analyzeRoleCoverage(players, options = {}) {
       label: definition.label,
       target,
       status,
-      coverageScore,
       evidenceMode: definition.evidence,
       coverageUsesProvisional: includeProvisionalRoleCoverage,
       players: matches.map(({ record, role }) => ({
@@ -1232,24 +1219,8 @@ export function analyzeRoleCoverage(players, options = {}) {
       message,
     };
   });
-  // The simple Lineup DNA summary should name the strongest confirmed signal,
-  // not whichever role happens to appear first in the definitions array.
-  const strengths = coverage
-    .filter((item) => item.status === "covered")
-    .slice()
-    .sort((left, right) => (
-      Number(right.coverageScore ?? -1) - Number(left.coverageScore ?? -1)
-      || stableCompare(left.roleId, right.roleId)
-    ));
-  const deficiencySeverity = { gap: 2, thin: 1 };
-  const deficiencies = coverage
-    .filter((item) => item.status === "thin" || item.status === "gap")
-    .slice()
-    .sort((left, right) => (
-      (deficiencySeverity[right.status] || 0) - (deficiencySeverity[left.status] || 0)
-      || Number(left.coverageScore ?? -1) - Number(right.coverageScore ?? -1)
-      || stableCompare(left.roleId, right.roleId)
-    ));
+  const strengths = coverage.filter((item) => item.status === "covered");
+  const deficiencies = coverage.filter((item) => item.status === "thin" || item.status === "gap");
   const provisionalSignalCount = coverage.reduce((total, item) => total + item.provisionalPlayers.length, 0);
   const caveats = [...new Set([
     ...classification.records.flatMap((record) => record.caveats),
@@ -1316,7 +1287,7 @@ function weightedProfile(
   player,
   percentileMaps,
   weights,
-  { scoringBasis = "perGame", playerContribution = null } = {},
+  { scoringBasis = "perGame", playerContribution = null, cardinalMetrics = [] } = {},
 ) {
   const id = playerId(player);
   const normalized = normalizedWeights(weights);
@@ -1334,6 +1305,9 @@ function weightedProfile(
         : FAN_EFFICIENCY_METRICS.includes(metric) ? "rate" : "perGame",
       percentile: Number.isFinite(percentile) ? percentile : null,
       percentileSource: optimizerEvidence === null ? "recomputed" : "optimizer",
+      // Keep the legacy numeric field for report consumers, but never call a
+      // league-anchored utility a cohort percentile in the visible explanation.
+      scoreMeaning: optimizerEvidence !== null && cardinalMetrics.includes(metric) ? "normalized-contribution" : "pool-percentile",
       weight: round(weight, 4),
       weightedContribution: Number.isFinite(percentile) ? round(percentile * weight, 4) : 0,
       lowerIsBetter: metric === "ballSecurity",
@@ -1355,7 +1329,9 @@ function weightedProfile(
 }
 
 function formatObjectiveReason(item) {
-  const percentile = formatPercentile(item.percentile);
+  const percentile = item.scoreMeaning === "normalized-contribution"
+    ? `${round(item.percentile * 100, 1)}/100 normalized contribution, not a percentile`
+    : formatPercentile(item.percentile);
   const value = item.value === null ? "unavailable" : item.metric.endsWith("Pct")
     ? `${round(item.value * 100, 1)}%`
     : round(item.value, 1);
@@ -1478,6 +1454,8 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     : "perGame";
   const percentileMaps = objectivePercentiles(poolWithSelected, { scoringBasis });
   const weights = options.weights || result?.config?.weights || {};
+  const evidence = result?.diagnostics?.rotationRateStabilityEvidence;
+  const cardinalMetrics = best.rotation && evidence?.applied ? evidence.stabilizedMetrics || [] : [];
   const roleCoverage = analyzeRoleCoverage(best.players, {
     ...options,
     referencePlayers: options.referencePlayers || poolWithSelected,
@@ -1488,6 +1466,7 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     const profile = weightedProfile(player, percentileMaps, weights, {
       scoringBasis,
       playerContribution: best.playerContributions?.[id] ?? null,
+      cardinalMetrics,
     });
     const roles = roleCoverage.matrix.find((row) => row.playerId === id)?.roles || {};
     const activeRoles = Object.values(roles).filter(Boolean);
@@ -1507,12 +1486,12 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     : Array.isArray(options.alternatives) ? options.alternatives : [];
   const replacements = summarizeReplacementAlternatives(best, alternatives, options);
   const caveats = [
-    "Objective contribution is pool-relative and explains the configured strategy; it is not a win probability or player projection.",
+    "Objective contribution explains the configured strategy; it is not a win probability or overall player rating.",
     ...(best.rotation && scoringBasis === "per36"
-      ? ["Rotation counting-stat explanations use per-36 values and the optimizer's exact percentile evidence when it is available."]
+      ? ["Rotation counting-stat explanations display raw per-36 values alongside the optimizer's supplied contributions. Raw-rate scoring uses pool percentiles; paired-evidence scoring uses league-anchored normalized differences."]
       : []),
     ...(result?.diagnostics?.rotationRateStabilityEvidence?.applied
-      ? ["Optimizer percentiles include the configured sample adjustment; displayed per-36 values remain the observed raw rates."]
+      ? ["Evidence-adjusted contributions include the configured sample and workload adjustments; displayed per-36 values remain the observed raw rates."]
       : []),
     ...(roleCoverage.caveats || []),
     ...(replacements.caveats || []),

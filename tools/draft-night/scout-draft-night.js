@@ -1,0 +1,479 @@
+import {
+  chicagoDailySeed,
+  loadScoutDailyBoard,
+  normalizeDailySeed,
+  normalizeGameFamily,
+  revealScoutDailyGame,
+  scoutDailyGameUnavailableMessage,
+} from '../scout-daily-game-client.js?v=20260905g';
+
+const GAME_KIND = 'draft-night';
+const PICK_COUNT = 5;
+const STORAGE_KEY = 'djhc.draft-night.scout.v1';
+const STORAGE_VERSION = 1;
+
+const elements = {
+  runTitle: document.getElementById('runTitle'),
+  runDescription: document.getElementById('runDescription'),
+  roundCount: document.getElementById('roundCount'),
+  bestScore: document.getElementById('bestScore'),
+  pathCount: document.getElementById('pathCount'),
+  progress: document.getElementById('draftProgress'),
+  status: document.getElementById('gameStatus'),
+  workspace: document.getElementById('draftWorkspace'),
+  panel: document.getElementById('draftPanel'),
+  completionPanel: document.getElementById('completionPanel'),
+  sourceCopy: document.getElementById('sourceCopy'),
+  restart: document.getElementById('restartDraft'),
+  undo: document.getElementById('undoPick'),
+};
+
+const state = {
+  seed: readSeedFromUrl(),
+  family: readFamilyFromUrl(),
+  board: null,
+  selections: [],
+  outcome: null,
+  pending: false,
+  store: readStore(),
+};
+
+function createElement(tagName, className = '', text = '') {
+  const element = document.createElement(tagName);
+  if (className) element.className = className;
+  if (text) element.textContent = text;
+  return element;
+}
+
+function readSeedFromUrl() {
+  return normalizeDailySeed(new URLSearchParams(window.location.search).get('seed')) || chicagoDailySeed();
+}
+
+function readFamilyFromUrl() {
+  return normalizeGameFamily(new URLSearchParams(window.location.search).get('family'));
+}
+
+function emptyStore() {
+  return { version: STORAGE_VERSION, runs: {}, completed: {} };
+}
+
+function readStore() {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || 'null');
+    if (!stored || stored.version !== STORAGE_VERSION || typeof stored !== 'object') return emptyStore();
+    return {
+      ...emptyStore(),
+      ...stored,
+      runs: stored.runs && typeof stored.runs === 'object' ? stored.runs : {},
+      completed: stored.completed && typeof stored.completed === 'object' ? stored.completed : {},
+    };
+  } catch {
+    return emptyStore();
+  }
+}
+
+function writeStore() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.store));
+  } catch {
+    // A storage-restricted browser still gets a complete local round.
+  }
+}
+
+function deck() {
+  return state.board?.deck || null;
+}
+
+function recordKey() {
+  const boardId = deck()?.id || 'daily-scout-board';
+  return `${state.seed}:${state.family || 'automatic'}:${boardId}`;
+}
+
+function savedSelections() {
+  const record = state.store.runs[recordKey()];
+  return Array.isArray(record?.selections) ? record.selections : [];
+}
+
+function persistSelections() {
+  state.store.runs[recordKey()] = { selections: state.selections.slice() };
+  writeStore();
+}
+
+function setStatus(message, tone = 'normal') {
+  elements.status.textContent = message;
+  elements.status.classList.toggle('is-error', tone === 'error');
+}
+
+function currentIndex() {
+  return state.selections.length;
+}
+
+function isComplete() {
+  return Boolean(deck()) && currentIndex() === PICK_COUNT;
+}
+
+function playerFor(id) {
+  for (const round of deck()?.rounds || []) {
+    const player = round.candidates.find((candidate) => candidate.id === id);
+    if (player) return player;
+  }
+  return null;
+}
+
+function positionText(player) {
+  return Array.isArray(player?.positions) && player.positions.length ? player.positions.join(' / ') : 'Source position unavailable';
+}
+
+function playerContext(player) {
+  const source = player?.source || {};
+  return `${source.teamName || 'Source team'} · ${source.seasonLabel || 'Season unavailable'}`;
+}
+
+function playerStatText(player) {
+  const stats = player?.stats && typeof player.stats === 'object' ? player.stats : {};
+  const entries = [];
+  if (Number.isFinite(Number(stats.points))) entries.push(`${Number(stats.points).toFixed(1)} pts`);
+  if (Number.isFinite(Number(stats.assists))) entries.push(`${Number(stats.assists).toFixed(1)} ast`);
+  if (Number.isFinite(Number(stats.rebounds))) entries.push(`${Number(stats.rebounds).toFixed(1)} reb`);
+  return entries.join(' · ') || 'Source stats available on the daily board';
+}
+
+function sourceFamilyLabel(family) {
+  return ({
+    'team-season': 'Team season',
+    'franchise-window': 'Franchise window',
+    'multi-season-pool': 'Multi-season pool',
+  })[family] || 'Scout source';
+}
+
+function createPlayerChip(player, index) {
+  const item = createElement('li', 'fix-five-player-chip draft-night-player-chip');
+  item.append(
+    createElement('span', 'draft-night-player-number', String(index + 1)),
+    createElement('strong', '', player?.name || 'Player unavailable'),
+    createElement('small', '', `${positionText(player)} · ${playerContext(player)}`),
+  );
+  return item;
+}
+
+function renderSource() {
+  const source = deck()?.source;
+  if (!source) return;
+  elements.sourceCopy.textContent = `${sourceFamilyLabel(source.family)} · ${source.label}. ${source.description} ${source.model.label} ranks the sealed result; visible stats are context only.`;
+}
+
+function renderProgress() {
+  elements.progress.replaceChildren();
+  (deck()?.rounds || []).forEach((round, index) => {
+    const step = createElement('span', 'fix-five-progress-step', round.title);
+    step.dataset.round = String(index + 1);
+    if (index < currentIndex()) step.classList.add('is-complete');
+    else if (index === currentIndex()) step.classList.add('is-current');
+    elements.progress.append(step);
+  });
+}
+
+function localBest() {
+  return Number(state.store.completed[recordKey()]?.bestScore || 0);
+}
+
+function renderScoreboard() {
+  const currentDeck = deck();
+  elements.roundCount.textContent = `${Math.min(currentIndex() + 1, PICK_COUNT)}/${PICK_COUNT}`;
+  elements.bestScore.textContent = localBest() ? `${localBest()}/100` : (state.outcome ? `${state.outcome.roundScore}/100` : '—');
+  elements.pathCount.textContent = String(currentDeck?.publishedPathCount || 243);
+  elements.runTitle.textContent = `Daily Scout draft · ${state.seed}`;
+  elements.runDescription.textContent = isComplete()
+    ? 'Your five is selected. The sealed Scout comparison uses this one source-labeled daily board.'
+    : `${currentDeck?.brief || 'Build a five from today’s source-labeled Scout board.'}`;
+  elements.undo.disabled = state.pending || currentIndex() === 0;
+}
+
+function renderSelectedPlayers(parent) {
+  const section = createElement('section', 'draft-night-selection-section');
+  section.append(createElement('h3', 'fix-five-section-title', 'Your draft card'));
+  if (!state.selections.length) {
+    section.append(createElement('p', 'draft-night-empty-selection', 'No picks locked yet. Build from lead guard through centerpiece big.'));
+  } else {
+    const list = createElement('ol', 'fix-five-lineup-list draft-night-picked-list');
+    state.selections.forEach((id, index) => list.append(createPlayerChip(playerFor(id), index)));
+    section.append(list);
+  }
+  parent.append(section);
+}
+
+function createCandidateButton(round, candidate) {
+  const button = createElement('button', 'fix-five-candidate');
+  button.type = 'button';
+  button.dataset.action = 'choose';
+  button.dataset.candidateId = candidate.id;
+  button.disabled = state.pending;
+  button.setAttribute('aria-label', `Draft ${candidate.name} as ${round.title}`);
+  button.append(
+    createElement('span', 'fix-five-candidate-position', positionText(candidate)),
+    createElement('strong', '', candidate.name),
+    createElement('small', '', playerContext(candidate)),
+    createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
+  );
+  return button;
+}
+
+function renderRound() {
+  const round = deck()?.rounds[currentIndex()];
+  if (!round) return;
+  elements.workspace.hidden = false;
+  elements.completionPanel.hidden = true;
+  elements.panel.replaceChildren();
+  renderSource();
+
+  const header = createElement('header', 'fix-five-challenge-header');
+  header.append(createElement('div', 'fix-five-round-label', `Pick ${currentIndex() + 1} of ${PICK_COUNT}`));
+  header.append(createElement('h2', '', round.title));
+  header.lastElementChild.id = 'draftTitle';
+  header.append(createElement('p', '', round.prompt));
+  elements.panel.append(header);
+  elements.panel.append(createElement('p', 'fix-five-focus', `${sourceFamilyLabel(deck().source.family)} · ${deck().source.seasonLabels.join(', ')} · ${deck().objective.label}`));
+  renderSelectedPlayers(elements.panel);
+  elements.panel.append(createElement('h3', 'fix-five-section-title', state.pending ? 'Checking your five against the Scout board…' : 'Make this pick'));
+  const candidates = createElement('div', 'fix-five-candidate-grid draft-night-candidate-grid');
+  round.candidates.forEach((candidate) => candidates.append(createCandidateButton(round, candidate)));
+  elements.panel.append(candidates);
+}
+
+function createOnePickLearning(outcome) {
+  const section = createElement('section', 'draft-night-learning');
+  section.append(createElement('h3', '', outcome.isBest ? 'Board check' : 'One-pick learning'));
+  const alternatives = Array.isArray(outcome.onePickAlternatives) ? outcome.onePickAlternatives : [];
+  if (outcome.isBest) {
+    section.append(createElement('p', '', 'No one-pick change on this fixed Scout board improves your relative result. You can still edit and explore another lineup identity.'));
+    return section;
+  }
+  if (!alternatives.length) {
+    section.append(createElement('p', '', 'No one-pick change improves this result on the fixed board. A stronger path would require rebuilding more than one pick.'));
+    return section;
+  }
+  section.append(createElement('p', '', 'These nearby alternatives are comparisons inside today’s board, not advice for a real game or a player valuation.'));
+  const list = createElement('ol');
+  alternatives.slice(0, 3).forEach((alternative) => {
+    const round = deck().rounds.find((entry) => entry.id === alternative.roundId);
+    const fromPlayer = playerFor(alternative.fromPlayerId);
+    const toPlayer = playerFor(alternative.toPlayerId);
+    const item = createElement('li');
+    item.append(
+      createElement('strong', '', `${round?.title || 'One pick'}: ${fromPlayer?.name || 'Selected player'} → ${toPlayer?.name || 'Alternative'}`),
+      createElement('span', '', `+${alternative.scoreChange} board-score points · rank ${alternative.rank} of ${deck().publishedPathCount}`),
+    );
+    list.append(item);
+  });
+  section.append(list);
+  return section;
+}
+
+function recordCompletion() {
+  if (!state.outcome) return;
+  const current = state.store.completed[recordKey()];
+  const bestScore = Math.max(Number(current?.bestScore || 0), Number(state.outcome.roundScore || 0));
+  state.store.completed[recordKey()] = {
+    bestScore,
+    completedAt: current?.completedAt || new Date().toISOString(),
+    selections: state.selections.slice(),
+  };
+  writeStore();
+}
+
+function renderCompletion() {
+  if (!isComplete()) return;
+  elements.workspace.hidden = true;
+  elements.completionPanel.hidden = false;
+  elements.completionPanel.replaceChildren();
+  const outcome = state.outcome;
+  if (outcome) recordCompletion();
+  elements.completionPanel.append(createElement('span', 'kicker', outcome ? 'Scout draft complete' : 'Draft saved locally'));
+  elements.completionPanel.append(createElement('h2', '', outcome?.isBest ? 'You drafted the top Scout-board fit.' : (outcome ? 'Your five has a Scout-board identity.' : 'Your five is awaiting its Scout-board reveal.')));
+  elements.completionPanel.lastElementChild.id = 'completionTitle';
+  elements.completionPanel.append(createElement('p', '', outcome
+    ? (outcome.isBest
+      ? `Your five ranked first across ${deck().publishedPathCount} legal combinations on this source-labeled board.`
+      : `Your five ranked ${outcome.rank} of ${deck().publishedPathCount} legal combinations on this source-labeled board.`)
+    : 'The picks are retained only in this browser. A score will appear only when the validated Scout service confirms this exact board.'));
+
+  if (outcome) {
+    const score = createElement('div', 'fix-five-total-score');
+    score.append(createElement('strong', '', `${outcome.roundScore}/100`), createElement('span', '', `Local best ${Math.max(outcome.roundScore, localBest())}/100`));
+    elements.completionPanel.append(score);
+  }
+  const lineup = createElement('ol', 'fix-five-lineup-list draft-night-result-lineup');
+  state.selections.forEach((id, index) => lineup.append(createPlayerChip(playerFor(id), index)));
+  elements.completionPanel.append(lineup);
+  if (outcome) {
+    const resultPills = createElement('div', 'fix-five-result-pills');
+    resultPills.append(
+      createElement('span', '', `Rank ${outcome.rank} of ${deck().publishedPathCount}`),
+      createElement('span', '', deck().objective.label),
+      createElement('span', '', sourceFamilyLabel(deck().source.family)),
+    );
+    elements.completionPanel.append(resultPills, createOnePickLearning(outcome));
+    elements.completionPanel.append(createElement('p', 'fix-five-result-caveat', `${outcome.scoring?.description || state.board.scoring} Visible source stats are context only; raw Scout inputs remain private.`));
+  }
+
+  const actions = createElement('div', 'fix-five-complete-actions');
+  if (!outcome) {
+    const retry = createElement('button', 'button', 'Retry Scout reveal');
+    retry.type = 'button';
+    retry.dataset.action = 'retry';
+    retry.disabled = state.pending;
+    actions.append(retry);
+  } else {
+    const share = createElement('button', 'button', 'Share this board');
+    share.type = 'button';
+    share.dataset.action = 'share';
+    actions.append(share);
+  }
+  const edit = createElement('button', 'button-secondary', 'Edit last pick');
+  edit.type = 'button';
+  edit.dataset.action = 'undo';
+  const replay = createElement('button', 'button-secondary', 'Draft again');
+  replay.type = 'button';
+  replay.dataset.action = 'restart';
+  const tools = createElement('a', 'button-secondary', 'More fan tools');
+  tools.href = '../index.html';
+  actions.append(edit, replay, tools);
+  elements.completionPanel.append(actions);
+}
+
+function render() {
+  renderProgress();
+  renderScoreboard();
+  if (isComplete()) renderCompletion();
+  else renderRound();
+}
+
+async function resolveOutcome(announce = true) {
+  if (!isComplete() || state.pending) return false;
+  state.pending = true;
+  if (announce) setStatus('Comparing your five against the validated Scout board…');
+  render();
+  try {
+    state.outcome = await revealScoutDailyGame({
+      gameKind: GAME_KIND,
+      dailySeed: state.seed,
+      family: state.family,
+      selectionIds: state.selections,
+    });
+    recordCompletion();
+    setStatus('Your fixed-board Scout result is ready.');
+    return true;
+  } catch {
+    state.outcome = null;
+    setStatus(scoutDailyGameUnavailableMessage(), 'error');
+    return false;
+  } finally {
+    state.pending = false;
+    render();
+  }
+}
+
+async function selectCandidate(candidateId) {
+  const round = deck()?.rounds[currentIndex()];
+  if (state.pending || !round || !round.candidates.some((candidate) => candidate.id === candidateId)) return;
+  state.selections.push(candidateId);
+  state.outcome = null;
+  persistSelections();
+  const player = playerFor(candidateId);
+  setStatus(`${player?.name || 'Pick'} locked. ${isComplete() ? 'Checking the full five now.' : 'The next source-listed role is ready.'}`);
+  render();
+  if (isComplete()) await resolveOutcome(false);
+}
+
+function undoPick() {
+  if (state.pending || !state.selections.length) return;
+  const removed = state.selections.pop();
+  state.outcome = null;
+  persistSelections();
+  setStatus(`${playerFor(removed)?.name || 'Last pick'} removed. Choose again from the same Scout board.`);
+  render();
+}
+
+function restartDraft() {
+  if (state.pending) return;
+  state.selections = [];
+  state.outcome = null;
+  persistSelections();
+  setStatus('This local draft is reset. The same source-labeled Scout board remains in place.');
+  render();
+}
+
+async function shareDraft() {
+  if (!state.outcome) return;
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.searchParams.set('seed', state.seed);
+  if (state.family) url.searchParams.set('family', state.family);
+  const shareData = {
+    title: 'Draft Night · DJHC',
+    text: `I scored ${state.outcome.roundScore}/100 on today’s Draft Night Scout board. Can you draft a stronger five?`,
+    url: url.toString(),
+  };
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      setStatus('Share sheet opened. The link recreates this daily Scout board.');
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url.toString());
+      setStatus('Share link copied. It recreates this daily Scout board.');
+      return;
+    }
+  } catch (error) {
+    if (error?.name === 'AbortError') return;
+  }
+  window.prompt('Copy this Draft Night board link:', url.toString());
+}
+
+function restoreSelections() {
+  const saved = savedSelections();
+  const restored = [];
+  for (let index = 0; index < Math.min(saved.length, PICK_COUNT); index += 1) {
+    const candidateId = String(saved[index] || '');
+    if (!deck().rounds[index].candidates.some((candidate) => candidate.id === candidateId)) break;
+    restored.push(candidateId);
+  }
+  state.selections = restored;
+}
+
+function bindEvents() {
+  elements.panel.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-action="choose"]');
+    if (button) selectCandidate(button.dataset.candidateId);
+  });
+  elements.completionPanel.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-action]');
+    if (!button) return;
+    if (button.dataset.action === 'retry') resolveOutcome();
+    if (button.dataset.action === 'undo') undoPick();
+    if (button.dataset.action === 'restart') restartDraft();
+    if (button.dataset.action === 'share') shareDraft();
+  });
+  elements.restart.addEventListener('click', restartDraft);
+  elements.undo.addEventListener('click', undoPick);
+}
+
+async function loadGame() {
+  try {
+    state.board = await loadScoutDailyBoard({ gameKind: GAME_KIND, dailySeed: state.seed, family: state.family });
+    restoreSelections();
+    if (isComplete()) await resolveOutcome(false);
+    else {
+      setStatus('Today’s validated Scout board is ready. Draft five legal source-listed players to reveal the fixed-board rank.');
+      render();
+    }
+  } catch {
+    elements.workspace.hidden = true;
+    elements.completionPanel.hidden = true;
+    setStatus(scoutDailyGameUnavailableMessage(), 'error');
+  }
+}
+
+bindEvents();
+loadGame();

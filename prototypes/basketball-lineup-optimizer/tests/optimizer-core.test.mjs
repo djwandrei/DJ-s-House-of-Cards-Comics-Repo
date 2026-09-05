@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { performance } from "node:perf_hooks";
 import test from "node:test";
 import { loadOptimizerCore } from "./load-optimizer-core.mjs";
+import { withSyntheticCounts } from "./synthetic-evidence.mjs";
 
 const optimizer = await loadOptimizerCore();
 
@@ -13,7 +14,7 @@ const {
 } = optimizer;
 
 function player(id, overrides = {}) {
-  return {
+  return withSyntheticCounts({
     id,
     name: `Player ${id}`,
     team: "TST",
@@ -32,7 +33,7 @@ function player(id, overrides = {}) {
     turnovers: 2,
     points: 15,
     ...overrides,
-  };
+  });
 }
 
 /**
@@ -171,10 +172,10 @@ test("NBA-baseline index stays anchored when an irrelevant eligible player chang
 test("complete Basketball Reference impact evidence can refine offense and defense priorities", () => {
   const offense = optimizeLineups([
     player("positive-offense", {
-      analytics: { advanced: { offensive_box_plus_minus: 4 } },
+      analytics: { totals: { minutes: 1680 }, advanced: { offensive_box_plus_minus: 4 } },
     }),
     player("negative-offense", {
-      analytics: { advanced: { offensive_box_plus_minus: -4 } },
+      analytics: { totals: { minutes: 1680 }, advanced: { offensive_box_plus_minus: -4 } },
     }),
   ], {
     size: 1,
@@ -183,10 +184,10 @@ test("complete Basketball Reference impact evidence can refine offense and defen
   });
   const defense = optimizeLineups([
     player("positive-defense", {
-      analytics: { advanced: { defensive_box_plus_minus: 3 } },
+      analytics: { totals: { minutes: 1680 }, advanced: { defensive_box_plus_minus: 3 } },
     }),
     player("negative-defense", {
-      analytics: { advanced: { defensive_box_plus_minus: -3 } },
+      analytics: { totals: { minutes: 1680 }, advanced: { defensive_box_plus_minus: -3 } },
     }),
   ], {
     size: 1,

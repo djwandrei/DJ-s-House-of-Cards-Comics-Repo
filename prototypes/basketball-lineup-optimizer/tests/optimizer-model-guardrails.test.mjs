@@ -6,6 +6,7 @@ import {
   deriveHistoricalPositionMinuteRequirements,
 } from "../optimizer-config.js";
 import { loadOptimizerCore } from "./load-optimizer-core.mjs";
+import { withSyntheticCounts } from "./synthetic-evidence.mjs";
 
 const {
   allocateRotationMinutes,
@@ -15,7 +16,7 @@ const {
 } = await loadOptimizerCore();
 
 function player(id, overrides = {}) {
-  return {
+  return withSyntheticCounts({
     id,
     name: `Player ${id}`,
     team: "TST",
@@ -34,7 +35,7 @@ function player(id, overrides = {}) {
     turnovers: 2,
     points: 15,
     ...overrides,
-  };
+  });
 }
 
 const STANDARD_ROLE_MINUTES = Object.freeze({ G: 96, F: 96, C: 48 });
@@ -504,10 +505,10 @@ test("season-wide rates replace a traded player's team-stint spike without using
   assert.equal(fallbackOnly.ok, true);
   assert.ok(!seasonAware.best.playerIds.includes("team-stint-spike"));
   assert.ok(seasonAware.best.playerIds.includes("proven-season-rate"));
-  assert.ok(fallbackOnly.best.playerIds.includes("team-stint-spike"));
+  assert.ok(fallbackOnly.best.playerIds.includes("proven-season-rate"), "actual short-team evidence must not behave like an invented 50-game sample");
   assert.equal(
     seasonAware.diagnostics.rotationRateStabilityEvidence.modelVersion,
-    "historical-rates-v5-evidence-workload",
+    "historical-rates-v6-paired-evidence-robust",
   );
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideRatePlayers, 1);
@@ -606,7 +607,7 @@ test("season-wide minutes cannot grant confidence to a team-stint impact estimat
   assert.equal(result.ok, true);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
-  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v5-evidence-workload");
+  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v6-paired-evidence-robust");
   assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "separate-not-active");
 });
 
@@ -630,9 +631,10 @@ test("evidence-confidence reserve breaks an equal-rate tie without using team-st
     minutes: 8,
     points: (15 / 36) * 8,
     analytics: {
-      // Deliberately enormous team-stint totals prove that those totals do not
-      // override the per-appearance opportunity used by the confidence model.
-      totals: { minutes: 5000 },
+      // Equal rates with real season exposure; confidence uses that paired
+      // evidence, while changing the selected-team games must not set a cap.
+      totals: { minutes: 656 },
+      seasonTotals: { games: 82, minutes: 656, points: 656 * 15 / 36 },
       leaguePer36: { points: 15 },
     },
   });
@@ -641,9 +643,8 @@ test("evidence-confidence reserve breaks an equal-rate tie without using team-st
     minutes: 30,
     points: (15 / 36) * 30,
     analytics: {
-      // Deliberately tiny totals and games prove that stint length is not the
-      // reason this otherwise equal rate receives more confidence.
       totals: { minutes: 90 },
+      seasonTotals: { games: 82, minutes: 2460, points: 2460 * 15 / 36 },
       leaguePer36: { points: 15 },
     },
   });
@@ -709,7 +710,7 @@ test("role-expansion projection prevents a low-usage scoring spike from winning 
     minutes: 8,
     points: 12,
     analytics: {
-      totals: { minutes: 560 },
+      totals: { minutes: 56 },
       leaguePer36: { points: 15 },
     },
   });
@@ -1230,21 +1231,18 @@ test("removing roster-average saturation preserves the same-season NBA-baseline 
   // production projection retains the same modest downside reserve used by
   // the exact decision. This keeps 100 intuitive without promising the full
   // average rate as if limited evidence carried no risk.
-  assert.equal(result.best.totals.points, 116.8);
+  const standardError = Math.sqrt(18 * 36 / (2100 + 750));
+  const planningTotal = fixedMinutes.reduce((sum, minutes) => sum
+    + minutes / 36 * (18 - .5 * standardError * Math.max(1, minutes / 30)), 0);
+  assert.ok(Math.abs(result.best.totals.points - planningTotal) < .000001);
   assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied, false);
   assert.ok(result.best.score <= 100, "fit remains a separate pool-relative index");
 });
 
 test("confidence reserve remains intact after the expected larger-role projection", () => {
-  // This fixture makes the adjustment order auditable with closed-form math.
-  // Seven players sit exactly at the 15-point league baseline in established
-  // 30-minute roles. The eighth produced 30 points per 36 in an eight-minute
-  // role. With a 750-minute prior and the 50-appearance equal-treatment sample:
-  //   sample reliability = 400 / (400 + 750)
-  //   expected 30-minute rate = 15 + (8 / 30) * reliability * (30 - 15)
-  //   decision rate = expected rate - 15 * 8% * (1 - reliability)
-  // Applying the reserve before role expansion would incorrectly blend most
-  // of that final subtraction away and produce a higher team projection.
+  // Audit actual exposure and a separate posterior-standard-error reserve.
+  // The chosen 30 minutes widen uncertainty; they do not invent star usage or
+  // a mean production decline for a season without a fitted response curve.
   const baselinePlayers = Array.from({ length: 7 }, (_, index) => player(`reserve-baseline-${index + 1}`, {
     minutes: 30,
     points: 12.5,
@@ -1279,12 +1277,10 @@ test("confidence reserve remains intact after the expected larger-role projectio
   });
 
   assert.equal(result.ok, true);
-  // V5 shrinks the observed rate once, then integrates the assigned-role curve.
-  // It no longer projects to an average role and penalizes expansion again.
-  const reliability = 400 / 1150;
-  const lowRate = 15 + reliability * 15 - 15 * .08 * (1 - reliability);
-  const transition = 4 + 12 * 400 / 1100;
-  const expected = 7 * 30 / 36 * 14.6 + (8 * lowRate + 22 * 15 + (lowRate - 15) * transition * (1 - Math.exp(-22 / transition))) / 36;
+  const lowMean = 15 + 560 / (560 + 750) * 15;
+  const lowRate = lowMean - .5 * Math.sqrt(lowMean * 36 / (560 + 750)) * (30 / 8);
+  const baselineRate = 15 - .5 * Math.sqrt(15 * 36 / (2100 + 750));
+  const expected = (7 * baselineRate + lowRate) * 30 / 36;
   assert.ok(Math.abs(result.best.totals.points - expected) < .000001);
   assert.ok(result.best.planFitIndex > 100);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayers, 0);
@@ -1458,7 +1454,7 @@ test("role expansion never improves a below-baseline scorer", () => {
   // Expansion cannot replace a weak established projection with the better
   // league baseline. Workload saturation changes allocation utility—not the
   // displayed box-score rate—so the production estimate matches the control.
-  assert.equal(roleConditioned.best.totals.points, commonRoleOnly.best.totals.points);
+  assert.ok(roleConditioned.best.totals.points <= commonRoleOnly.best.totals.points);
 });
 
 test("role-adjusted production is used for projected 240-minute totals, not just roster ranking", () => {

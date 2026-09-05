@@ -72,25 +72,25 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'game',
     marker: '5x',
     title: 'Fix the Five',
-    eyebrow: 'Live historical lineup game',
+    eyebrow: 'Live daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './fix-the-five/',
-    summary: 'Make one legal historical lineup swap at a time, then see source-bounded Lineup DNA gains, trade-offs, and a curated, test-validated board score.',
+    summary: 'Make one legal swap on five daily, source-labeled Scout boards and reveal each sealed fixed-board rank.',
     capabilities: [
-      'Five-round daily historical challenge',
-      'Legal replacement board and role-coverage reveal',
+      'Five-round daily Scout challenge',
+      'Team-season, franchise-window, or multi-season source board',
       'Local streaks, replay, and shareable seeded runs'
     ],
     highlights: [
-      'Five daily swaps',
-      'Transparent board score',
+      'Five daily Scout swaps',
+      'Sealed fixed-board rank',
       'Local-only progress'
     ],
     dependencies: [
-      'Curated, test-validated historical roster snapshot',
-      'Versioned game rules and transparent role coverage'
+      'Validated Scout O/D scope in the 2023–24 through 2025–26 window',
+      'Service-only daily board compiler and sealed reveal endpoint'
     ],
-    implementationNotes: 'Every result stays inside a fixed published player board and labels its box-score role evidence, proxies, and limits plainly.'
+    implementationNotes: 'Every result stays inside one source-labeled Scout board. Public stats are context only; raw Scout values remain private, and an unavailable source never falls back to an older fixture.'
   }),
   freezeTool({
     id: 'rotation-rescue',
@@ -139,25 +139,25 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'game',
     marker: 'Draft',
     title: 'Draft Night',
-    eyebrow: 'Live historical lineup game',
+    eyebrow: 'Live daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './draft-night/',
-    summary: 'Draft five historical players from a disclosed board, then reveal the fit, role coverage, and ranking across every published legal combination.',
+    summary: 'Draft five players from one daily, source-labeled Scout board, then reveal your sealed rank across its 243 legal combinations.',
     capabilities: [
-      'Seeded five-pick historical boards',
+      'Seeded five-pick Scout boards',
       'Creator, scorer, wing, frontcourt, and big selections',
-      'Full-board feasibility and Lineup DNA reveal'
+      'Full-board feasibility and sealed Scout reveal'
     ],
     highlights: [
-      '243 test-validated paths per board',
+      '243 Scout-ranked paths per board',
       'Five-pick replay loop',
       'Local-only score'
     ],
     dependencies: [
-      'Curated, test-validated historical player-season data and role definitions',
-      'Deterministic draft pools and lineup feasibility checks'
+      'Validated Scout O/D scope in the 2023–24 through 2025–26 window',
+      'Service-only daily board compiler and sealed reveal endpoint'
     ],
-    implementationNotes: 'The complete published board is re-evaluated before release; role definitions and box-score defensive activity remain transparent and labeled as proxies.'
+    implementationNotes: 'The rank exists only inside the daily Scout board. Public stats label player context; raw model values stay private, and the game remains unavailable rather than using old fixtures.'
   }),
   freezeTool({
     id: 'statline-sleuth',

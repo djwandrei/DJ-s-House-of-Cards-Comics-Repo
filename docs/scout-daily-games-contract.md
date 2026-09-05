@@ -45,10 +45,32 @@ The Scout O/D model is the whole ranking objective:
 - **Defensive edge** ranks the positive points-prevented component.
 - **Two-way balance** weights those components equally.
 
-Historical box-score and role signals can still explain a Lineup DNA result,
-but they cannot alter the Scout rank. A game's 0–100 score is a normalized
-relative score within its fixed disclosed board; rank remains the primary
-comparison when source values are tied or negative.
+Historical box-score and role signals are descriptive context only. Lineup
+DNA is not a scoring input for either daily game. A game's 0–100 score is a
+normalized relative score within its fixed disclosed board; rank remains the
+primary comparison when source values are tied or negative.
+
+## Implementation and activation
+
+The private catalog lives in the analytics Supabase project. Its scope and
+player tables have no Data API access, and the only private-read RPC is
+service-role-only. The commerce `scout-daily-game` Edge Function calls that
+RPC, compiles the board server-side, and returns either a public board or one
+sealed outcome for a legal selection. The browser may never call the analytics
+project directly.
+
+Activation order is intentionally gated:
+
+1. Apply `supabase-analytics/supabase/migrations/20260905090355_scout_daily_game_catalog.sql` to the analytics project.
+2. Have the analytics pipeline register, ingest, reconcile, and finalize a
+   scope only after its archive/source and O/D calibration reports pass.
+3. Set the commerce function's analytics service credentials, deploy
+   `scout-daily-game`, and confirm a public board/reveal smoke test.
+4. Release the static game pages with their cache versions aligned.
+
+Until all four steps have succeeded, the public game remains unavailable. It
+must not fall back to bundled historical fixtures, a static Minnesota board,
+or heuristic/Lineup DNA scoring.
 
 ## Current gate
 

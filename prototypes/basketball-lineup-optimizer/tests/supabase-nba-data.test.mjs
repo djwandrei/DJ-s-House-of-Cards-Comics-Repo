@@ -485,9 +485,9 @@ test("keeps legacy player-pool rows compatible when fan analytics fields are abs
   assert.equal(player.analytics.teamTotalMinutes, null);
   assert.equal(player.analytics.estimatedTeamPossessions, null);
   assert.equal(player.analytics.postseasonAvailable, false);
-  assert.equal(player.analytics.totals.offensiveRebounds, 0);
-  assert.equal(player.analytics.totals.defensiveRebounds, 0);
-  assert.equal(player.analytics.totals.personalFouls, 0);
+  assert.equal(player.analytics.totals.offensiveRebounds, null);
+  assert.equal(player.analytics.totals.defensiveRebounds, null);
+  assert.equal(player.analytics.totals.personalFouls, null);
 });
 
 test("season counts reject coercion and cannot silently change phase or hide duplicates", () => {

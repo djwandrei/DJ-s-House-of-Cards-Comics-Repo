@@ -5,6 +5,7 @@ import {
   addDirectPlayerStatistic,
   createDirectPlayerEventLine,
   homeCourtExposureAdjustmentPer100,
+  officialSummaryReconciliationFromState,
   optionsFromArgs,
   playerProfileFromEvents,
   requireSourceSummaryTeamReconciliation,
@@ -285,6 +286,8 @@ test('direct player profiles fail closed when provider shot or rebound fields ar
   assert.equal(events.unknownFreeThrowMadeStatus, 1);
   assert.equal(events.unclassifiedRebounds, 1);
   assert.equal(profile.coverage.status, 'partial');
+  assert.equal(profile.boxScoreTotals.coverageStatus, 'partial');
+  assert.deepEqual(profile.boxScoreTotals.totals, profile.boxScore);
   assert.equal(profile.coverage.scoringComplete, false);
   assert.equal(profile.shooting.fieldGoalPercentage, null);
   assert.equal(profile.shooting.trueShootingPercentage, null);
@@ -306,6 +309,25 @@ test('direct player profiles retain complete percentages when structured outcome
   addDirectPlayerStatistic(events, { type: 'technicalfoulnonunsportsmanlike' }, 'technicalfoul');
   addDirectPlayerStatistic(events, { type: 'flagrantfoul' }, 'flagrantfoul');
   addDirectPlayerStatistic(events, { type: 'ejection' }, 'ejection');
+  const officialTotals = {
+    points: 3,
+    fieldGoalAttempts: 1,
+    fieldGoalsMade: 1,
+    twoPointAttempts: 1,
+    twoPointMakes: 1,
+    threePointAttempts: 0,
+    threePointersMade: 0,
+    freeThrowAttempts: 1,
+    freeThrowsMade: 1,
+    offensiveRebounds: 1,
+    defensiveRebounds: 0,
+    rebounds: 1,
+    assists: 0,
+    steals: 0,
+    blocks: 0,
+    turnovers: 0,
+    personalFouls: 0,
+  };
   const profile = playerProfileFromEvents({
     teamId: 'team-a',
     team: 'Team A',
@@ -315,10 +337,24 @@ test('direct player profiles retain complete percentages when structured outcome
     onOff: { onMinutes: 10, on: { all: { totalPossessions: 40, games: 1 } } },
     starterGames: 1,
     closerGames: 0,
+    officialSummaryReconciliationState: {
+      gamesExpected: 1,
+      gamesWithAnySummaryTotals: 1,
+      gamesWithCompleteSummaryTotals: 1,
+      gamesReconciledWithStructuredPbp: 1,
+      reconciledTotals: officialTotals,
+    },
   });
 
   assert.equal(profile.coverage.status, 'complete');
   assert.equal(profile.boxScore.points, 3);
+  assert.equal(profile.boxScoreTotals.source, 'sportradar_play_by_play_structured_statistics');
+  assert.equal(profile.boxScoreTotals.aggregation, 'scope_sum_of_non_rescinded_structured_statistics');
+  assert.equal(profile.boxScoreTotals.gameScope, 'scout_eligible_games');
+  assert.equal(profile.boxScoreTotals.coverageStatus, 'complete');
+  assert.deepEqual(profile.boxScoreTotals.totals, profile.boxScore);
+  assert.equal(profile.boxScoreTotals.officialSummaryReconciliation.status, 'complete_and_reconciled');
+  assert.deepEqual(profile.boxScoreTotals.officialSummaryReconciliation.totals, officialTotals);
   assert.equal(profile.shooting.fieldGoalPercentage, 1);
   assert.equal(profile.shooting.twoPointPercentage, 1);
   assert.equal(profile.shooting.freeThrowPercentage, 1);
@@ -333,6 +369,47 @@ test('direct player profiles retain complete percentages when structured outcome
   assert.equal(profile.boxScore.ejections, 1);
   assert.equal(events.structuredStatisticRows, events.recognizedStatisticRows);
   assert.equal(profile.per100Possessions.points, 15);
+});
+
+test('official Summary reconciliation emits a total only for fully matched player appearances', () => {
+  const reconciledTotals = {
+    points: 14,
+    fieldGoalAttempts: 9,
+    fieldGoalsMade: 5,
+    twoPointAttempts: 6,
+    twoPointMakes: 3,
+    threePointAttempts: 3,
+    threePointersMade: 2,
+    freeThrowAttempts: 2,
+    freeThrowsMade: 2,
+    offensiveRebounds: 2,
+    defensiveRebounds: 4,
+    rebounds: 6,
+    assists: 5,
+    steals: 1,
+    blocks: 2,
+    turnovers: 3,
+    personalFouls: 2,
+  };
+  const complete = officialSummaryReconciliationFromState({
+    gamesExpected: 2,
+    gamesWithAnySummaryTotals: 2,
+    gamesWithCompleteSummaryTotals: 2,
+    gamesReconciledWithStructuredPbp: 2,
+    reconciledTotals,
+  });
+  assert.equal(complete.status, 'complete_and_reconciled');
+  assert.deepEqual(complete.totals, reconciledTotals);
+
+  const partial = officialSummaryReconciliationFromState({
+    gamesExpected: 2,
+    gamesWithAnySummaryTotals: 2,
+    gamesWithCompleteSummaryTotals: 1,
+    gamesReconciledWithStructuredPbp: 1,
+    reconciledTotals,
+  });
+  assert.equal(partial.status, 'partial_or_unreconciled');
+  assert.equal(partial.totals, null);
 });
 
 test('lineup home-court context fails closed for missing or invalid inputs', () => {

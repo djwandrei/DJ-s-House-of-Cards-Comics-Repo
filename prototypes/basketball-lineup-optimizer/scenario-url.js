@@ -243,6 +243,18 @@ export function encodeScenarioQuery(input = {}) {
   const excludedIds = Array.isArray(input.excludedIds) ? input.excludedIds.slice(0, MAX_SHARED_IDS) : [];
   if (lockedIds.length) params.set("lock", lockedIds.map(String).join(","));
   if (excludedIds.length) params.set("exclude", excludedIds.map(String).join(","));
+  const responsibilities = Object.entries(input.offensiveResponsibilities || {});
+  if (responsibilities.length) {
+    // Never silently drop an invalid/oversized scenario and then claim the link
+    // reproduces the user's solve. This is URL transport, not a solver cap.
+    if (responsibilities.some(([id, share]) => !/^[a-z0-9_-]{1,80}$/i.test(id)
+      || typeof share !== "number" || !Number.isFinite(share) || share < 0 || share > 1
+      || Math.abs(share * 1000 - Math.round(share * 1000)) > 1e-8)) {
+      throw new Error("Usage scenarios must use valid player IDs and percentages in 0.1-point steps.");
+    }
+    params.set("usage", responsibilities.sort(([a], [b]) => a.localeCompare(b))
+      .map(([id, share]) => `${id}:${Math.round(share * 1000)}`).join(","));
+  }
   const query = params.toString();
   // The UI will surface a friendly message rather than generating links that
   // browsers, email clients, or social sites may truncate.
@@ -391,5 +403,16 @@ export function decodeScenarioQuery(search = "") {
   }
   scenario.lockedIds = commaSeparatedIds(params.get("lock"), warnings, "locked");
   scenario.excludedIds = commaSeparatedIds(params.get("exclude"), warnings, "excluded");
+  if (params.has("usage")) {
+    const values = Object.create(null);
+    let valid = true;
+    for (const entry of params.get("usage").split(",")) {
+      const match = /^([a-z0-9_-]{1,80}):(\d{1,4})$/i.exec(entry);
+      if (!match || Object.hasOwn(values, match[1]) || Number(match[2]) > 1000) { valid = false; break; }
+      values[match[1]] = Number(match[2]) / 1000;
+    }
+    if (valid) scenario.offensiveResponsibilities = { ...values };
+    else warnings.push("Ignored malformed or duplicate offensive usage scenarios from the shared link.");
+  }
   return { scenario, warnings };
 }

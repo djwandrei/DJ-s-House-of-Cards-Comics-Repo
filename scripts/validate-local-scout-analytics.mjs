@@ -19,6 +19,12 @@ const SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS = [
   'gamesWithSummaryTeamPossessionSymmetryDiagnostics',
   'summaryTeamPossessionSymmetryDiagnostics',
 ];
+const OFFICIAL_SUMMARY_PLAYER_BOX_SCORE_FIELDS = [
+  'points', 'fieldGoalAttempts', 'fieldGoalsMade', 'twoPointAttempts', 'twoPointMakes',
+  'threePointAttempts', 'threePointersMade', 'freeThrowAttempts', 'freeThrowsMade',
+  'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks',
+  'turnovers', 'personalFouls',
+];
 
 function parseArgs(argv) {
   const options = {
@@ -772,7 +778,113 @@ function checkOnOff(row, index, phases, errors, seasonStartYears = []) {
   if (![row.onMinutes, row.offMinutes].every((value) => Number.isFinite(value) && value >= 0)) errors.push(`onOff.${index} minutes are invalid.`);
 }
 
-function checkPlayerProfile(row, onOff, index, errors) {
+export function checkExplicitPlayerBoxScoreTotals({
+  explicitTotals,
+  box,
+  gamesAppeared,
+  minutes,
+  coverageStatus,
+  index,
+  errors,
+  required = false,
+}) {
+  const countFields = [
+    'points', 'fieldGoalAttempts', 'fieldGoalsMade', 'twoPointAttempts', 'twoPointMakes',
+    'threePointAttempts', 'threePointersMade', 'unclassifiedFieldGoalAttempts',
+    'unclassifiedFieldGoalMakes', 'freeThrowAttempts', 'freeThrowsMade',
+    'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks',
+    'turnovers', 'personalFouls', 'foulsDrawn', 'shotAttemptsBlocked', 'technicalFouls',
+    'nonUnsportsmanlikeTechnicalFouls', 'totalTechnicalFouls', 'flagrantFouls', 'ejections',
+  ];
+  if (!explicitTotals || typeof explicitTotals !== 'object' || Array.isArray(explicitTotals)) {
+    if (required) errors.push(`playerProfile.${index}.boxScoreTotals is required.`);
+    return;
+  }
+  if (explicitTotals.source !== 'sportradar_play_by_play_structured_statistics'
+    || explicitTotals.aggregation !== 'scope_sum_of_non_rescinded_structured_statistics'
+    || explicitTotals.gameScope !== 'scout_eligible_games') {
+    errors.push(`playerProfile.${index}.boxScoreTotals metadata is invalid.`);
+  }
+  if (Number(explicitTotals.gamesAppeared) !== Number(gamesAppeared)
+    || !closeEnough(explicitTotals.minutes, minutes)) {
+    errors.push(`playerProfile.${index}.boxScoreTotals exposure does not reconcile.`);
+  }
+  if (explicitTotals.coverageStatus !== coverageStatus) {
+    errors.push(`playerProfile.${index}.boxScoreTotals coverage does not reconcile.`);
+  }
+  const totals = explicitTotals.totals;
+  if (!totals || typeof totals !== 'object' || Array.isArray(totals)) {
+    errors.push(`playerProfile.${index}.boxScoreTotals.totals is invalid.`);
+  } else {
+    for (const field of countFields) {
+      if (Number(totals[field]) !== Number(box[field])) {
+        errors.push(`playerProfile.${index}.boxScoreTotals.${field} does not reconcile.`);
+      }
+    }
+  }
+  const officialSummary = explicitTotals.officialSummaryReconciliation;
+  if (!officialSummary || typeof officialSummary !== 'object' || Array.isArray(officialSummary)
+    || officialSummary.source !== 'summary_endpoint'
+    || typeof officialSummary.caveat !== 'string' || !officialSummary.caveat.trim()) {
+    errors.push(`playerProfile.${index}.boxScoreTotals official-summary status is invalid.`);
+    return;
+  }
+  const gamesExpected = Number(officialSummary.gamesExpected);
+  const gamesWithAnySummaryTotals = Number(officialSummary.gamesWithAnySummaryTotals);
+  const gamesWithCompleteSummaryTotals = Number(officialSummary.gamesWithCompleteSummaryTotals);
+  const gamesReconciledWithStructuredPbp = Number(officialSummary.gamesReconciledWithStructuredPbp);
+  const counters = [
+    gamesExpected,
+    gamesWithAnySummaryTotals,
+    gamesWithCompleteSummaryTotals,
+    gamesReconciledWithStructuredPbp,
+  ];
+  if (!counters.every((value) => Number.isSafeInteger(value) && value >= 0)
+    || gamesWithAnySummaryTotals > gamesExpected
+    || gamesWithCompleteSummaryTotals > gamesWithAnySummaryTotals
+    || gamesReconciledWithStructuredPbp > gamesWithCompleteSummaryTotals) {
+    errors.push(`playerProfile.${index}.boxScoreTotals official-summary counters are invalid.`);
+    return;
+  }
+  if (officialSummary.status === 'not_available_in_current_legacy_source_revision') {
+    if (gamesWithAnySummaryTotals !== 0
+      || gamesWithCompleteSummaryTotals !== 0
+      || gamesReconciledWithStructuredPbp !== 0
+      || officialSummary.totals !== null) {
+      errors.push(`playerProfile.${index}.boxScoreTotals unavailable official-summary state is invalid.`);
+    }
+    return;
+  }
+  if (officialSummary.status === 'complete_and_reconciled') {
+    if (gamesExpected <= 0
+      || gamesWithAnySummaryTotals !== gamesExpected
+      || gamesWithCompleteSummaryTotals !== gamesExpected
+      || gamesReconciledWithStructuredPbp !== gamesExpected
+      || !officialSummary.totals
+      || typeof officialSummary.totals !== 'object'
+      || Array.isArray(officialSummary.totals)) {
+      errors.push(`playerProfile.${index}.boxScoreTotals complete official-summary state is invalid.`);
+      return;
+    }
+    for (const field of OFFICIAL_SUMMARY_PLAYER_BOX_SCORE_FIELDS) {
+      if (!Number.isSafeInteger(officialSummary.totals[field])
+        || officialSummary.totals[field] < 0
+        || Number(officialSummary.totals[field]) !== Number(box[field])) {
+        errors.push(`playerProfile.${index}.boxScoreTotals official-summary ${field} does not reconcile.`);
+      }
+    }
+    return;
+  }
+  if (officialSummary.status === 'partial_or_unreconciled') {
+    if (gamesWithAnySummaryTotals === 0 || officialSummary.totals !== null) {
+      errors.push(`playerProfile.${index}.boxScoreTotals partial official-summary state is invalid.`);
+    }
+    return;
+  }
+  errors.push(`playerProfile.${index}.boxScoreTotals official-summary status is invalid.`);
+}
+
+function checkPlayerProfile(row, onOff, index, errors, { requireExplicitBoxScoreTotals = false } = {}) {
   if (!row || typeof row !== 'object') {
     errors.push(`playerProfile.${index} is not an object.`);
     return;
@@ -838,6 +950,16 @@ function checkPlayerProfile(row, onOff, index, errors) {
     || profileCoverage.reboundsComplete !== reboundsComplete) {
     errors.push(`playerProfile.${index}.coverage status does not reconcile.`);
   }
+  checkExplicitPlayerBoxScoreTotals({
+    explicitTotals: row.boxScoreTotals,
+    box,
+    gamesAppeared: row.gamesAppeared,
+    minutes: row.minutes,
+    coverageStatus: expectedCoverageStatus,
+    index,
+    errors,
+    required: requireExplicitBoxScoreTotals,
+  });
   const expectedCoverageShares = {
     fieldGoalMadeStatusShare: box.fieldGoalAttempts > 0
       ? rounded((box.fieldGoalAttempts - profileCoverage.unknownFieldGoalMadeStatus) / box.fieldGoalAttempts, 4)
@@ -1393,6 +1515,37 @@ function checkSourceSummaryTeamReconciliation(input, sourceValidation, options, 
   }
 }
 
+function checkDirectPlayerBoxScoreTotalsAvailability(input, errors) {
+  const value = input.analyticsAvailability?.directPlayerBoxScoreTotals;
+  if (value === undefined || value === null) return false;
+  const reconciliationMetadata = value?.officialSummaryReconciliation;
+  const legacyReconciliationMetadata = reconciliationMetadata === 'not_available_in_current_legacy_source_revision';
+  const perPlayerReconciliationMetadata = reconciliationMetadata
+    && typeof reconciliationMetadata === 'object'
+    && !Array.isArray(reconciliationMetadata)
+    && reconciliationMetadata.status === 'per_player_status'
+    && reconciliationMetadata.path === 'team shards -> playerProfiles[].boxScoreTotals.officialSummaryReconciliation'
+    && Array.isArray(reconciliationMetadata.statuses)
+    && reconciliationMetadata.statuses.length === 3
+    && reconciliationMetadata.statuses.includes('not_available_in_current_legacy_source_revision')
+    && reconciliationMetadata.statuses.includes('partial_or_unreconciled')
+    && reconciliationMetadata.statuses.includes('complete_and_reconciled');
+  if (!value || typeof value !== 'object' || Array.isArray(value)
+    || value.status !== 'available_with_coverage'
+    || !Number.isSafeInteger(Number(value.rows)) || Number(value.rows) < 0
+    || value.rows !== input.tables?.playerProfiles
+    || value.path !== 'team shards -> playerProfiles[].boxScoreTotals'
+    || value.source !== 'sportradar_play_by_play_structured_statistics'
+    || value.aggregation !== 'scope_sum_of_non_rescinded_structured_statistics'
+    || value.scope !== 'scout_eligible_games'
+    || (!legacyReconciliationMetadata && !perPlayerReconciliationMetadata)
+    || typeof value.caveat !== 'string' || !value.caveat.trim()) {
+    errors.push('Direct player box-score totals availability contract is invalid.');
+    return false;
+  }
+  return true;
+}
+
 function checkChronologicalMetrics(metrics, label, errors) {
   if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)) {
     errors.push(`${label} metrics are missing.`);
@@ -1700,6 +1853,7 @@ async function validate() {
   const coverage = input.coverage ?? {};
   const phases = input.scope?.includedPhases ?? [];
   const multiseason = options.seasonStartYears.length > 1;
+  const requireExplicitBoxScoreTotals = checkDirectPlayerBoxScoreTotalsAvailability(input, errors);
 
   if (input.schemaVersion !== 4) errors.push('Unsupported Scout analytics schemaVersion.');
   if (input.metricsVersion !== 'nba-scout-metrics-v4') errors.push('Unexpected Scout metrics version.');
@@ -1947,7 +2101,7 @@ async function validate() {
       || descriptor.rows?.playerProfiles !== shardRows.playerProfiles
       || descriptor.rows?.wowy !== shardRows.wowy) errors.push(`Team shard ${shardIndex} row counts do not match.`);
     for (const { index, key, row } of deferredProfiles) {
-      checkPlayerProfile(row, onOffByPlayer.get(key), index, errors);
+      checkPlayerProfile(row, onOffByPlayer.get(key), index, errors, { requireExplicitBoxScoreTotals });
     }
     if (profileKeys.size !== onOffByPlayer.size || [...onOffByPlayer.keys()].some((key) => !profileKeys.has(key))) errors.push(`Team shard ${shardIndex} player profile coverage differs from player on/off coverage.`);
     onOffByPlayer.clear();

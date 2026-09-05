@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.shopify-theme-apply]
 verify_jwt = true
+
+[functions.scout-daily-game]
+verify_jwt = false

@@ -102,6 +102,51 @@
       },
       "updatedAt": "2026-08-31T12:30:32.6950572Z"
     },
+    "daily-scout-games": {
+      "targetKind": "new-ui",
+      "projectId": "b9c40177-7453-49ae-902d-42bdee187faf",
+      "baselineDraftId": "c43e167d-b512-401e-9ccd-537f55b6f48c",
+      "activeDraftId": "c43e167d-b512-401e-9ccd-537f55b6f48c",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/b9c40177-7453-49ae-902d-42bdee187faf/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "tools/fix-the-five/index.html",
+        "tools/fix-the-five/fix-the-five.css",
+        "tools/draft-night/index.html",
+        "tools/draft-night/draft-night.css",
+        "tools/fan-tools.css",
+        "styles.css:1:344"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        "tools/fix-the-five/index.html": "6EFA55D6F66DEAFD47A8B95E6CA79FA5C9BC2B7C169CAEFA5B54EBAF6F3F87DC",
+        "tools/fix-the-five/fix-the-five.css": "C61264F69093954B151719F61AAD07880826D8437FBD8B4B80AD985F087DAAA2",
+        "tools/draft-night/index.html": "D784A00500FC7C3C461700DC6B55D8BA197DF124CEFDA18B334F0AB536DF73C3",
+        "tools/draft-night/draft-night.css": "BA5833B461438BD53F163D70A1E2EF2E2A3999510A39FA66CCF25B945C308289",
+        "tools/fan-tools.css": "BB9EA2F0CC26EFFEADA1DD1AC535FECCD91469729CAE1246378B13314BE16CBF",
+        "styles.css": "ABC8E125A1758A73BC617011B254C30CBB21A8C874F351AB591F8EF5CC22658B"
+      },
+      "components": [],
+      "drafts": {
+        "c43e167d-b512-401e-9ccd-537f55b6f48c": {
+          "title": "Daily Scout Games — Five-Round Fix",
+          "visualDirection": "collector-native daily Scout game experience with clear source-family and season labels, five compact rounds, sealed-result clarity, and the established DJHC visual system",
+          "parentDraftId": null,
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-09-05T11:35:37.6107455Z"
+    },
     "/tools/player-card-matchups/": {
       "targetKind": "existing-ui",
       "projectId": "4ae16f51-2795-44a6-acf1-79b9c890a735",

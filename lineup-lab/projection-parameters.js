@@ -8,10 +8,10 @@
  * can replace a preset without changing the exact constraint/search layer.
  */
 
-import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260905e";
+import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260905g";
 
 export const HISTORICAL_PROJECTION_MODEL_VERSION =
-  "historical-rates-v5-evidence-workload";
+  "historical-rates-v6-paired-evidence-robust";
 
 export const DEFAULT_PROJECTION_RISK = "balanced";
 
@@ -35,6 +35,7 @@ export const PROJECTION_RISK_PRESETS = Object.freeze({
     label: "Reliable evidence",
     description: "Favors rates supported by larger roles and stronger samples.",
     priorMultiplier: 1.2,
+    decisionUncertaintyWeight: 1,
     uncertaintyReserveShare: 0.1,
     responsibilityExpansionStrength: 1,
     usageCoveragePenaltyPoints: 24,
@@ -46,6 +47,7 @@ export const PROJECTION_RISK_PRESETS = Object.freeze({
     label: "Balanced projection",
     description: "Uses a moderate evidence reserve and realistic responsibility scaling.",
     priorMultiplier: 1,
+    decisionUncertaintyWeight: 0.5,
     uncertaintyReserveShare: 0.08,
     responsibilityExpansionStrength: 0.85,
     usageCoveragePenaltyPoints: 20,
@@ -57,6 +59,7 @@ export const PROJECTION_RISK_PRESETS = Object.freeze({
     label: "More upside",
     description: "Trusts emerging rates sooner while still correcting missing team usage.",
     priorMultiplier: 0.75,
+    decisionUncertaintyWeight: 0,
     uncertaintyReserveShare: 0.04,
     responsibilityExpansionStrength: 0.65,
     usageCoveragePenaltyPoints: 14,
@@ -91,7 +94,6 @@ export function projectionParametersFor(risk = DEFAULT_PROJECTION_RISK, scope = 
     priorFieldGoalAttempts: fitted ? fitted.efgPct.prior : Math.round(500 * preset.priorMultiplier),
     priorThreePointAttempts: fitted ? fitted.threePct.prior : Math.round(180 * preset.priorMultiplier),
     priorImpactMinutes: Math.round(1200 * preset.priorMultiplier),
-    evidenceReferenceGames: 50,
     leagueAverageUsage: 0.2,
     maximumProjectedUsage: 0.38,
   });

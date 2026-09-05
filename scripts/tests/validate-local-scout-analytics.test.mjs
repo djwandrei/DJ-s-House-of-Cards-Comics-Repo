@@ -6,6 +6,7 @@ import test from 'node:test';
 import {
   checkCombinationContinuity,
   checkChronologicalRapmCalibration,
+  checkExplicitPlayerBoxScoreTotals,
   checkLineupAttributionSensitivity,
   checkOffenseDefenseRapmCalibration,
   checkProjection,
@@ -13,6 +14,146 @@ import {
   checkShardScope,
   streamTeamShardJson,
 } from '../validate-local-scout-analytics.mjs';
+
+function boxScoreFixture() {
+  return {
+    points: 11,
+    fieldGoalAttempts: 7,
+    fieldGoalsMade: 4,
+    twoPointAttempts: 4,
+    twoPointMakes: 2,
+    threePointAttempts: 3,
+    threePointersMade: 2,
+    unclassifiedFieldGoalAttempts: 0,
+    unclassifiedFieldGoalMakes: 0,
+    freeThrowAttempts: 1,
+    freeThrowsMade: 1,
+    offensiveRebounds: 1,
+    defensiveRebounds: 3,
+    rebounds: 4,
+    assists: 5,
+    steals: 2,
+    blocks: 1,
+    turnovers: 2,
+    personalFouls: 3,
+    foulsDrawn: 2,
+    shotAttemptsBlocked: 1,
+    technicalFouls: 0,
+    nonUnsportsmanlikeTechnicalFouls: 0,
+    totalTechnicalFouls: 0,
+    flagrantFouls: 0,
+    ejections: 0,
+  };
+}
+
+test('explicit player box-score totals preserve PBP provenance and reconcile to the profile', () => {
+  const box = boxScoreFixture();
+  const explicitTotals = {
+    source: 'sportradar_play_by_play_structured_statistics',
+    aggregation: 'scope_sum_of_non_rescinded_structured_statistics',
+    gameScope: 'scout_eligible_games',
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    totals: { ...box },
+    officialSummaryReconciliation: {
+      status: 'not_available_in_current_legacy_source_revision',
+      source: 'summary_endpoint',
+      gamesExpected: 2,
+      gamesWithAnySummaryTotals: 0,
+      gamesWithCompleteSummaryTotals: 0,
+      gamesReconciledWithStructuredPbp: 0,
+      totals: null,
+      caveat: 'The selected source has no retained official player totals.',
+    },
+  };
+  const validErrors = [];
+  checkExplicitPlayerBoxScoreTotals({
+    explicitTotals,
+    box,
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    index: '0.0',
+    errors: validErrors,
+    required: true,
+  });
+  assert.deepEqual(validErrors, []);
+
+  const invalidErrors = [];
+  checkExplicitPlayerBoxScoreTotals({
+    explicitTotals: { ...explicitTotals, totals: { ...box, points: 12 } },
+    box,
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    index: '0.1',
+    errors: invalidErrors,
+    required: true,
+  });
+  assert.match(invalidErrors.join('\n'), /boxScoreTotals.points does not reconcile/);
+});
+
+test('complete official Summary player totals must match the explicit PBP total', () => {
+  const box = boxScoreFixture();
+  const officialFields = [
+    'points', 'fieldGoalAttempts', 'fieldGoalsMade', 'twoPointAttempts', 'twoPointMakes',
+    'threePointAttempts', 'threePointersMade', 'freeThrowAttempts', 'freeThrowsMade',
+    'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks',
+    'turnovers', 'personalFouls',
+  ];
+  const officialTotals = Object.fromEntries(officialFields.map((field) => [field, box[field]]));
+  const explicitTotals = {
+    source: 'sportradar_play_by_play_structured_statistics',
+    aggregation: 'scope_sum_of_non_rescinded_structured_statistics',
+    gameScope: 'scout_eligible_games',
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    totals: { ...box },
+    officialSummaryReconciliation: {
+      status: 'complete_and_reconciled',
+      source: 'summary_endpoint',
+      gamesExpected: 2,
+      gamesWithAnySummaryTotals: 2,
+      gamesWithCompleteSummaryTotals: 2,
+      gamesReconciledWithStructuredPbp: 2,
+      totals: officialTotals,
+      caveat: 'Every player appearance matched the independently retained Summary totals.',
+    },
+  };
+  const validErrors = [];
+  checkExplicitPlayerBoxScoreTotals({
+    explicitTotals,
+    box,
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    index: '0.2',
+    errors: validErrors,
+    required: true,
+  });
+  assert.deepEqual(validErrors, []);
+
+  const invalidErrors = [];
+  checkExplicitPlayerBoxScoreTotals({
+    explicitTotals: {
+      ...explicitTotals,
+      officialSummaryReconciliation: {
+        ...explicitTotals.officialSummaryReconciliation,
+        totals: { ...officialTotals, points: officialTotals.points + 1 },
+      },
+    },
+    box,
+    gamesAppeared: 2,
+    minutes: 51.25,
+    coverageStatus: 'complete',
+    index: '0.3',
+    errors: invalidErrors,
+    required: true,
+  });
+  assert.match(invalidErrors.join('\n'), /official-summary points does not reconcile/);
+});
 
 function exactLineup({ games = 3, starters = 1, closers = 2 } = {}) {
   return {

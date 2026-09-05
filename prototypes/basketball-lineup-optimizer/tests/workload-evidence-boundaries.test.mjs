@@ -8,7 +8,7 @@ const makePool = (size = 8) => Array.from({ length: size }, (_, i) => ({
   games: 4, starts: 0, minutes: 24, points: 20, rebounds: 12, assists: 4,
   steals: 1, blocks: 1, turnovers: 1, fgPct: .5, efgPct: .6, threePct: .4, ftPct: .8,
   analytics: {
-    totals: { minutes: 96, fieldGoalsAttempted: 40, threePointFieldGoalsAttempted: 20 },
+    totals: { minutes: 96, points: 80, totalRebounds: 48, fieldGoalsMade: 20, fieldGoalsAttempted: 40, threePointFieldGoalsMade: 8, threePointFieldGoalsAttempted: 20 },
     leaguePer36: { points: 20, rebounds: 8, efgPct: .5, threePct: .35 },
   },
 }));
@@ -43,7 +43,7 @@ test('per-player minute aliases and Map defaults use the same production envelop
 
 test('zero-minute selected players contribute zero without NaN or an invented minimum', () => {
   const result = optimizeLineups(makePool(9), { ...config, size: 9,
-    statMinimums: { rebounds: 110 }, maxTurnovers: 20,
+    statMinimums: { rebounds: 100 }, maxTurnovers: 20,
     rotationOptions: { ...config.rotationOptions, playerBounds: { p0: { min: 0, max: 0 } } },
   });
   assert.equal(result.ok, true, JSON.stringify(result.reasons));
@@ -79,7 +79,7 @@ for (const metric of ['points', 'efgPct', 'threePct']) {
     assert.equal(result.ok, true, JSON.stringify(result.reasons));
     assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 0);
     assert.deepEqual(result.diagnostics.rotationRateStabilityEvidence.evidenceByMetric[metric], {
-      eligiblePlayers: 8, matchingSeasonSamples: 0, approximateSamples: 8, missingSamples: 0, metricAvailable: true,
+      eligiblePlayers: 8, matchingSeasonSamples: 0, observedTeamSamples: 8, approximateSamples: 0, missingSamples: 0, metricAvailable: true,
     });
     assert.equal(result.best.score, fallback.best.score);
     assert.deepEqual(result.best.rotation.byId, fallback.best.rotation.byId);

@@ -49,6 +49,12 @@ const SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS = [
   'gamesWithSummaryTeamPossessionSymmetryDiagnostics',
   'summaryTeamPossessionSymmetryDiagnostics',
 ];
+const OFFICIAL_PLAYER_BOX_SCORE_FIELDS = [
+  'points', 'fieldGoalAttempts', 'fieldGoalsMade', 'twoPointAttempts', 'twoPointMakes',
+  'threePointAttempts', 'threePointersMade', 'freeThrowAttempts', 'freeThrowsMade',
+  'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks',
+  'turnovers', 'personalFouls',
+];
 
 function parseLambda(value, name) {
   if (String(value).trim().toLowerCase() === 'auto') return 'auto';
@@ -866,6 +872,99 @@ export function addDirectPlayerStatistic(line, statistic, eventType = '') {
   return line;
 }
 
+function directBoxScoreForOfficialComparison(events) {
+  if (!events || events.unknownFieldGoalMadeStatus !== 0
+    || events.unclassifiedFieldGoalAttempts !== 0
+    || events.unclassifiedFieldGoalMakes !== 0
+    || events.unknownFreeThrowMadeStatus !== 0
+    || events.unclassifiedRebounds !== 0) return null;
+  const values = {
+    points: events.points,
+    fieldGoalAttempts: events.fieldGoalAttempts,
+    fieldGoalsMade: events.fieldGoalsMade,
+    twoPointAttempts: events.twoPointAttempts,
+    twoPointMakes: events.twoPointMakes,
+    threePointAttempts: events.threePointAttempts,
+    threePointersMade: events.threePointersMade,
+    freeThrowAttempts: events.freeThrowAttempts,
+    freeThrowsMade: events.freeThrowsMade,
+    offensiveRebounds: events.offensiveRebounds,
+    defensiveRebounds: events.defensiveRebounds,
+    rebounds: events.offensiveRebounds + events.defensiveRebounds,
+    assists: events.assists,
+    steals: events.steals,
+    blocks: events.blocks,
+    turnovers: events.turnovers,
+    personalFouls: events.personalFouls,
+  };
+  if (!OFFICIAL_PLAYER_BOX_SCORE_FIELDS.every((field) => Number.isInteger(values[field]) && values[field] >= 0)) return null;
+  const expectedPoints = (2 * values.twoPointMakes) + (3 * values.threePointersMade) + values.freeThrowsMade;
+  return values.points === expectedPoints ? values : null;
+}
+
+function officialSummaryBoxScoreForComparison(player) {
+  const official = player?.officialBoxScore;
+  const fields = official?.fields;
+  if (official?.source !== 'summary_endpoint' || !fields || typeof fields !== 'object') return null;
+  if (!OFFICIAL_PLAYER_BOX_SCORE_FIELDS.every((field) => (
+    official.availableFields?.includes(field)
+    && Number.isInteger(fields[field])
+    && fields[field] >= 0
+  ))) return null;
+  if (fields.rebounds !== fields.offensiveRebounds + fields.defensiveRebounds) return null;
+  const expectedPoints = (2 * fields.twoPointMakes) + (3 * fields.threePointersMade) + fields.freeThrowsMade;
+  if (fields.points !== expectedPoints) return null;
+  return Object.fromEntries(OFFICIAL_PLAYER_BOX_SCORE_FIELDS.map((field) => [field, fields[field]]));
+}
+
+function sameOfficialPlayerBoxScore(left, right) {
+  return OFFICIAL_PLAYER_BOX_SCORE_FIELDS.every((field) => left?.[field] === right?.[field]);
+}
+
+function addOfficialPlayerBoxScore(target, values) {
+  for (const field of OFFICIAL_PLAYER_BOX_SCORE_FIELDS) target[field] += values[field];
+}
+
+function createOfficialSummaryReconciliationState() {
+  return {
+    gamesExpected: 0,
+    gamesWithAnySummaryTotals: 0,
+    gamesWithCompleteSummaryTotals: 0,
+    gamesReconciledWithStructuredPbp: 0,
+    reconciledTotals: Object.fromEntries(OFFICIAL_PLAYER_BOX_SCORE_FIELDS.map((field) => [field, 0])),
+  };
+}
+
+export function officialSummaryReconciliationFromState(state) {
+  const source = state ?? createOfficialSummaryReconciliationState();
+  const gamesExpected = Number(source.gamesExpected ?? 0);
+  const gamesWithAnySummaryTotals = Number(source.gamesWithAnySummaryTotals ?? 0);
+  const gamesWithCompleteSummaryTotals = Number(source.gamesWithCompleteSummaryTotals ?? 0);
+  const gamesReconciledWithStructuredPbp = Number(source.gamesReconciledWithStructuredPbp ?? 0);
+  const certified = gamesExpected > 0
+    && gamesWithCompleteSummaryTotals === gamesExpected
+    && gamesReconciledWithStructuredPbp === gamesExpected;
+  const unavailable = gamesWithAnySummaryTotals === 0;
+  return {
+    status: certified
+      ? 'complete_and_reconciled'
+      : unavailable
+        ? 'not_available_in_current_legacy_source_revision'
+        : 'partial_or_unreconciled',
+    source: 'summary_endpoint',
+    gamesExpected,
+    gamesWithAnySummaryTotals,
+    gamesWithCompleteSummaryTotals,
+    gamesReconciledWithStructuredPbp,
+    totals: certified ? { ...source.reconciledTotals } : null,
+    caveat: certified
+      ? 'Every Scout-eligible player appearance had complete Summary-endpoint totals that exactly matched the independently parsed structured PBP totals for the same game and team.'
+      : unavailable
+        ? 'The selected historical records do not retain complete Summary-endpoint player box scores. These PBP totals are not labeled as independently reconciled official totals.'
+        : 'At least one player appearance lacked complete Summary totals or did not reconcile with independently parsed structured PBP, so no aggregate official total is emitted.',
+  };
+}
+
 function ratioOrNull(numerator, denominator, digits = 3) {
   return denominator > 0 ? round(numerator / denominator, digits) : null;
 }
@@ -892,7 +991,17 @@ export function homeCourtExposureAdjustmentPer100({
   return homeCourtNetEffect * exposureBalance / totalPossessions;
 }
 
-export function playerProfileFromEvents({ teamId, team, playerId, player, events, onOff, starterGames, closerGames }) {
+export function playerProfileFromEvents({
+  teamId,
+  team,
+  playerId,
+  player,
+  events,
+  onOff,
+  starterGames,
+  closerGames,
+  officialSummaryReconciliationState,
+}) {
   const minutes = finite(onOff?.onMinutes, 0);
   const onPossessions = finite(onOff?.on?.all?.totalPossessions, 0);
   const teamPossessionsWhileOnCourt = onPossessions / 2;
@@ -935,6 +1044,34 @@ export function playerProfileFromEvents({ teamId, team, playerId, player, events
       }])
   );
   const describedFieldGoalAttempts = fga - events.missingProviderShotDescription;
+  const boxScore = {
+    points: events.points,
+    fieldGoalAttempts: fga,
+    fieldGoalsMade: fgm,
+    twoPointAttempts: twoPa,
+    twoPointMakes: twoPm,
+    threePointAttempts: threePa,
+    threePointersMade: threePm,
+    unclassifiedFieldGoalAttempts: events.unclassifiedFieldGoalAttempts,
+    unclassifiedFieldGoalMakes: events.unclassifiedFieldGoalMakes,
+    freeThrowAttempts: fta,
+    freeThrowsMade: ftm,
+    offensiveRebounds: events.offensiveRebounds,
+    defensiveRebounds: events.defensiveRebounds,
+    rebounds: reb,
+    assists: events.assists,
+    steals: events.steals,
+    blocks: events.blocks,
+    turnovers: events.turnovers,
+    personalFouls: events.personalFouls,
+    foulsDrawn: events.foulsDrawn,
+    shotAttemptsBlocked: events.shotAttemptsBlocked,
+    technicalFouls: events.technicalFouls,
+    nonUnsportsmanlikeTechnicalFouls: events.nonUnsportsmanlikeTechnicalFouls,
+    totalTechnicalFouls,
+    flagrantFouls: events.flagrantFouls,
+    ejections: events.ejections,
+  };
   return {
     teamId,
     team,
@@ -970,33 +1107,23 @@ export function playerProfileFromEvents({ teamId, team, playerId, player, events
       reboundsComplete,
       caveat: 'Percentages and rates that require unresolved provider fields are null rather than treating unknown outcomes as misses or unknown shot values as two-pointers.',
     },
-    boxScore: {
-      points: events.points,
-      fieldGoalAttempts: fga,
-      fieldGoalsMade: fgm,
-      twoPointAttempts: twoPa,
-      twoPointMakes: twoPm,
-      threePointAttempts: threePa,
-      threePointersMade: threePm,
-      unclassifiedFieldGoalAttempts: events.unclassifiedFieldGoalAttempts,
-      unclassifiedFieldGoalMakes: events.unclassifiedFieldGoalMakes,
-      freeThrowAttempts: fta,
-      freeThrowsMade: ftm,
-      offensiveRebounds: events.offensiveRebounds,
-      defensiveRebounds: events.defensiveRebounds,
-      rebounds: reb,
-      assists: events.assists,
-      steals: events.steals,
-      blocks: events.blocks,
-      turnovers: events.turnovers,
-      personalFouls: events.personalFouls,
-      foulsDrawn: events.foulsDrawn,
-      shotAttemptsBlocked: events.shotAttemptsBlocked,
-      technicalFouls: events.technicalFouls,
-      nonUnsportsmanlikeTechnicalFouls: events.nonUnsportsmanlikeTechnicalFouls,
-      totalTechnicalFouls,
-      flagrantFouls: events.flagrantFouls,
-      ejections: events.ejections,
+    // `boxScore` remains the compact legacy location.  The explicit totals
+    // contract below makes its aggregation grain and source unambiguous to
+    // consumers without pretending these legacy PBP totals are Summary data.
+    boxScore,
+    boxScoreTotals: {
+      source: 'sportradar_play_by_play_structured_statistics',
+      aggregation: 'scope_sum_of_non_rescinded_structured_statistics',
+      gameScope: 'scout_eligible_games',
+      gamesAppeared,
+      minutes: round(minutes),
+      coverageStatus: fieldGoalOutcomesComplete && fieldGoalValuesComplete && freeThrowOutcomesComplete && reboundsComplete
+        ? 'complete'
+        : 'partial',
+      totals: { ...boxScore },
+      officialSummaryReconciliation: officialSummaryReconciliationFromState(
+        officialSummaryReconciliationState,
+      ),
     },
     shooting: {
       fieldGoalPercentage: fieldGoalOutcomesComplete ? ratioOrNull(fgm, fga, 4) : null,
@@ -1560,6 +1687,7 @@ async function derive() {
   const playerNames = new Map();
   const teamNames = new Map();
   const playerEventMap = new Map();
+  const playerOfficialSummaryMap = new Map();
   const lineupStartCounts = new Map();
   const lineupCloseCounts = new Map();
   const playerStartCounts = new Map();
@@ -1652,8 +1780,17 @@ async function derive() {
     return playerEventMap.get(key);
   }
 
+  function playerOfficialSummaryState(teamId, playerId) {
+    const key = `${teamId}~${playerId}`;
+    if (!playerOfficialSummaryMap.has(key)) {
+      playerOfficialSummaryMap.set(key, createOfficialSummaryReconciliationState());
+    }
+    return playerOfficialSummaryMap.get(key);
+  }
+
   function accumulateDirectPlayerEvents(record, validTeamIds) {
     const seenEventIds = new Set();
+    const gameLines = new Map();
     for (const [index, event] of (record.events ?? []).entries()) {
       if (event?.isRescinded === true) continue;
       const eventId = String(event?.id ?? '').trim() || `index:${index}`;
@@ -1664,9 +1801,13 @@ async function derive() {
         const teamId = eventStatisticTeamId(statistic);
         const playerId = eventStatisticPlayerId(statistic);
         if (!validTeamIds.has(teamId) || !playerId) continue;
+        const key = `${teamId}~${playerId}`;
+        if (!gameLines.has(key)) gameLines.set(key, createDirectPlayerEventLine());
+        addDirectPlayerStatistic(gameLines.get(key), statistic, eventType);
         addDirectPlayerStatistic(playerEventLine(teamId, playerId), statistic, eventType);
       }
     }
+    return gameLines;
   }
 
   for (let eligibleIndex = 0; eligibleIndex < eligibleRecords.length; eligibleIndex += 1) {
@@ -1687,12 +1828,35 @@ async function derive() {
     const homeTeamId = String(game.homeProviderTeamId ?? '');
     const awayTeamId = String(game.awayProviderTeamId ?? '');
     const validTeamIds = new Set([homeTeamId, awayTeamId]);
-    accumulateDirectPlayerEvents(record, validTeamIds);
+    const directPlayerEventsForGame = accumulateDirectPlayerEvents(record, validTeamIds);
     const appearedPlayersByTeam = new Map([[homeTeamId, new Set()], [awayTeamId, new Set()]]);
     for (const lineup of record.lineups ?? []) {
       const ids = exactLineup(lineup.id, maps.lineups);
       if (!ids || !appearedPlayersByTeam.has(lineup.providerTeamId)) continue;
       ids.forEach((id) => appearedPlayersByTeam.get(lineup.providerTeamId).add(id));
+    }
+    const summaryPlayersByKey = new Map((record.players ?? []).map((player) => [
+      `${player.providerTeamId}~${player.id}`,
+      player,
+    ]));
+    for (const [teamId, appeared] of appearedPlayersByTeam.entries()) {
+      for (const playerId of appeared) {
+        const state = playerOfficialSummaryState(teamId, playerId);
+        state.gamesExpected += 1;
+        const summaryPlayer = summaryPlayersByKey.get(`${teamId}~${playerId}`);
+        if (summaryPlayer?.officialBoxScore?.availableFields?.length > 0) {
+          state.gamesWithAnySummaryTotals += 1;
+        }
+        const officialTotals = officialSummaryBoxScoreForComparison(summaryPlayer);
+        if (!officialTotals) continue;
+        state.gamesWithCompleteSummaryTotals += 1;
+        const directTotals = directBoxScoreForOfficialComparison(
+          directPlayerEventsForGame.get(`${teamId}~${playerId}`) ?? createDirectPlayerEventLine(),
+        );
+        if (!sameOfficialPlayerBoxScore(directTotals, officialTotals)) continue;
+        state.gamesReconciledWithStructuredPbp += 1;
+        addOfficialPlayerBoxScore(state.reconciledTotals, officialTotals);
+      }
     }
 
     const teamStintMinutes = new Map([[homeTeamId, 0], [awayTeamId, 0]]);
@@ -2311,6 +2475,24 @@ async function derive() {
       shootingAndPlaymakingProfiles: { status: 'available_with_coverage', includes: ['2P%, 3P%, FT%, 3PA rate, true shooting, structured shot-distance zones, assists, fouls drawn, second chance, points off turnovers'] },
       defensiveDisruption: { status: 'available_with_coverage', includes: ['steals, blocks, personal fouls, per-100 rates'] },
       directPlayerProfiles: { status: 'available_with_coverage', rows: rowCounts.playerProfiles, caveat: 'Direct event statistics are descriptive and are joined to reconstructed on-court exposure; only rostered players with a same-game on/off row are emitted.' },
+      directPlayerBoxScoreTotals: {
+        status: 'available_with_coverage',
+        rows: rowCounts.playerProfiles,
+        path: 'team shards -> playerProfiles[].boxScoreTotals',
+        source: 'sportradar_play_by_play_structured_statistics',
+        aggregation: 'scope_sum_of_non_rescinded_structured_statistics',
+        scope: 'scout_eligible_games',
+        officialSummaryReconciliation: {
+          status: 'per_player_status',
+          path: 'team shards -> playerProfiles[].boxScoreTotals.officialSummaryReconciliation',
+          statuses: [
+            'not_available_in_current_legacy_source_revision',
+            'partial_or_unreconciled',
+            'complete_and_reconciled',
+          ],
+        },
+        caveat: 'Each player profile carries explicit aggregate totals plus coverage. Summary-endpoint totals are emitted only when every Scout-eligible player appearance has complete independently retained totals that exactly reconcile to parsed structured PBP; otherwise the per-player official total remains null.',
+      },
       rotationContinuity: { status: 'available_with_coverage', exactLineupSemantics: 'first/final verified exact five-player stint in each eligible game', caveat: 'Games without verified exact stints do not contribute a starting or closing assignment.' },
       periodAndHalfSplits: { status: 'available', contexts: ['period:q1', 'period:q2', 'period:q3', 'period:q4', 'period:overtime', 'half:first_half', 'half:second_half', 'half:overtime'] },
       possessionOutcomes: { status: 'available', buckets: ['0', '1', '2', '3', '4+'] },
@@ -2427,14 +2609,19 @@ async function derive() {
         onOff: row,
         starterGames: playerStartCounts.get(key) ?? 0,
         closerGames: playerCloseCounts.get(key) ?? 0,
+        officialSummaryReconciliationState: playerOfficialSummaryMap.get(key),
       });
       await appendArrayItem(writer, profileState, profile);
       playerEventMap.delete(key);
       playerStartCounts.delete(key);
       playerCloseCounts.delete(key);
+      playerOfficialSummaryMap.delete(key);
     }
     for (const key of [...playerEventMap.keys()]) {
       if (key.startsWith(`${team.teamId}~`)) playerEventMap.delete(key);
+    }
+    for (const key of [...playerOfficialSummaryMap.keys()]) {
+      if (key.startsWith(`${team.teamId}~`)) playerOfficialSummaryMap.delete(key);
     }
 
     await writer.write('],"wowy":[');
@@ -2498,11 +2685,12 @@ async function derive() {
       throw new Error(`Streamed ${field} count ${writtenRows[field]} does not match expected ${expected}.`);
     }
   }
-  if (comboMap.size || playerOnOffMap.size || wowyMap.size || teamMap.size) {
+  if (comboMap.size || playerOnOffMap.size || wowyMap.size || teamMap.size || playerOfficialSummaryMap.size) {
     throw new Error('Not every in-memory aggregate was assigned to exactly one team shard.');
   }
   comboMinutes.clear();
   playerEventMap.clear();
+  playerOfficialSummaryMap.clear();
   playerOnMinutes.clear();
   playerScopeMinutes.clear();
   teamScopeMinutes.clear();

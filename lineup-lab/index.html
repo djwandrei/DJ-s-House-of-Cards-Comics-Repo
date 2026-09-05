@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260905e">
+  <link rel="stylesheet" href="styles.css?v=20260905g">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -406,10 +406,11 @@
                           </select>
                         </label>
                       </div>
-                      <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> past team games and total minutes never restrict the plan. The model stays inside your hard limits, protects against low-opportunity spikes, and gradually tapers marginal fit above the rotation’s average workload.</p>
-                      <p class="field__help" id="rotationAllocationStyleHelp">Past usage is context only. Lineup Lab does not use source totals as a minute cap, target, or scoring input.</p>
+                      <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> the model allocates minutes inside your hard limits using evidence-adjusted rates. Sample size affects confidence, not a preferred minute range.</p>
+                      <p class="field__help" id="rotationAllocationStyleHelp">Matching observed counts inform the rate estimate and its confidence. Games with the selected team never prescribe a minute cap or target.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
-                      <p class="field__help" id="rotationRateStabilityHelp">Recommended adjusts uncertain rates toward the same-season baseline when a player is asked to handle more responsibility. Playing more minutes does not automatically mean star-level usage. Games or total minutes with the selected team never set the new minute plan.</p>
+                      <p class="field__help" id="rotationRateStabilityHelp">Recommended combines observed counts with a same-season prior and accounts for uncertain workload expansion. Extra minutes do not automatically mean star-level usage. Sample size affects confidence; only your minute limits are hard restrictions.</p>
+                      <p class="field__help" id="usageScenarioHelp">Usage scenario is a player's share of on-court possessions finished by a shot, free-throw trip, or turnover—not minutes or assists. In the Detailed player list, leave it blank to retain observed usage. An increased share widens the Historical uncertainty reserve and informs unit staggering; it does not apply an unvalidated efficiency decline or change Scout O/D. Exact usage-dependent production is awaiting reconciled box-score validation.</p>
                       <p class="field__help" id="projectionRiskHelp">Reliable is more cautious with uncertain rates. Upside trusts emerging production sooner. This choice never changes hard minute limits or player eligibility.</p>
                       <p class="field__help" id="roleBalanceHelp">This is a small soft preference for complementary creation, spacing, defense, and rebounding. It never becomes a hidden required role.</p>
                       <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from season-listed positions and minutes per appearance. Games played and source totals are excluded. Verified career positions still improve eligibility.</p>
@@ -604,7 +605,7 @@
               <span class="model-card__number">04</span>
               <h3>Honest limitations</h3>
               <p>The selected team-season pool shows players who appeared for that team; it is not a current depth chart or injury report. Box scores do not directly measure chemistry, matchups, role changes, or on-court possessions. Any per-100 view is clearly labelled as an estimate.</p>
-              <p>Rotation mode gives every candidate an exact 240-minute plan. The recommended model stabilizes each metric using its own role or attempt-volume requirement, then asks whether a larger low-usage role would require added offensive responsibility. Unsupported advantages are reduced toward the same-season baseline, and extra workload gradually adds less marginal fit, preventing a linear score difference from automatically pushing most players to their minimum or maximum. A small role-balance preference rewards complementary skills without creating a hidden requirement. Optional production rules still test conservative static rates, so adding a hard floor does not quietly change its meaning. Better players can earn larger roles, and only your displayed minimum and maximum are hard caps.</p>
+              <p>Rotation mode searches exact 240-minute plans within your requirements. Recommended Historical scoring uses paired observed counts, same-season priors, and league-anchored differences rather than amplifying tiny differences into large percentile gaps. Zero-attempt shooters receive no demonstrated spacing credit. A separate uncertainty reserve widens when the proposed workload exceeds observed support; this is a caution setting, not a learned causal fatigue effect. Production rules and result totals evaluate the same assigned-workload curve. Exact means best under these equations and constraints—not proven best in real basketball. Strong players may still reach your maximum, and only your displayed minimum and maximum are hard caps.</p>
               <p>OBPM and DBPM are player-season box-score estimates, not proof of five-player chemistry or lineup impact. Verified play-by-play impact can be added as a separate evidence layer when coverage exists; it is not inferred from raw plus-minus or team totals.</p>
             </article>
           </div>
@@ -626,8 +627,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260905e"></script>
-  <script defer src="../supabase-client.js?v=20260905e"></script>
-  <script type="module" src="app.js?v=20260905e"></script>
+  <script defer src="../backend-config.js?v=20260905g"></script>
+  <script defer src="../supabase-client.js?v=20260905g"></script>
+  <script type="module" src="app.js?v=20260905g"></script>
 </body>
 </html>

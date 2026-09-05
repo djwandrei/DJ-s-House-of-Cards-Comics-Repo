@@ -4,12 +4,12 @@
  * Minutes and usage are intentionally separate concepts. Giving a player more
  * court time does not automatically demand star-level offense. A low-usage
  * group, however, still has to finish 100% of the team's possessions. These
- * helpers estimate that extra responsibility and conservatively reduce only an
- * unproven above-baseline advantage. Team-stint games and total minutes are
- * never inputs.
+ * helpers keep requested responsibility separate and expose its evidence.
+ * All-team MPG can describe observed workload; selected-team games never set
+ * requested minutes. Usage-dependent mean effects remain validation-gated.
  */
 
-import { workloadRetention } from "./workload-model.js?v=20260905e";
+import { workloadRetention } from "./workload-model.js?v=20260905g";
 
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",
@@ -20,19 +20,6 @@ const USAGE_ALIASES = Object.freeze([
   "usgPct",
   "usg",
 ]);
-
-const RESPONSIBILITY_ELASTICITY = Object.freeze({
-  points: 0.65,
-  efgPct: 0.85,
-  threePct: 0.75,
-  rebounds: 0.1,
-  assists: 0.55,
-  steals: 0.08,
-  blocks: 0.08,
-  ballSecurity: 0.75,
-  offensiveImpact: 0.4,
-  defensiveImpact: 0.2,
-});
 
 function finiteNonNegative(value) {
   if (value == null || value === "" || typeof value === "boolean") return null;
@@ -73,10 +60,9 @@ export function readSeasonRoleMinutes(player) {
 }
 
 /**
- * Estimate how much more on-ball responsibility a common rotation role asks a
- * player to carry. A player already at or above league-average usage is not
- * penalized just for receiving more minutes. A low-usage player is moved only
- * partway toward average, in proportion to the unobserved part of the role.
+ * Read the independently requested usage share. Raising minutes alone leaves
+ * that share unchanged. Only previously fitted conditional minute-response
+ * coefficients may affect the mean here; no causal usage elasticity is assumed.
  */
 export function projectPlayerResponsibility(
   player,
@@ -87,70 +73,43 @@ export function projectPlayerResponsibility(
   const sourceMinutes = readSeasonRoleMinutes(player);
   const requestedMinutes = Math.max(0, Number(targetMinutes) || 0);
   const sourceUsage = readPlayerUsage(player);
-  const leagueUsage = Number(parameters?.leagueAverageUsage) || 0.2;
-  const strength = Number(parameters?.responsibilityExpansionStrength) || 0;
+  // Usage is a separate scenario input, not a function of assigned minutes.
+  // A catch-and-finish center can play 36 minutes at the same usage as at 12.
+  // Requesting star-like responsibility must be explicit (or unit-dependent).
+  const requestedUsage = finiteNonNegative(parameters?.offensiveResponsibilities?.[player.id]);
+  const targetUsage = requestedUsage !== null && requestedUsage <= 1 ? requestedUsage : sourceUsage;
   const expansionShare = requestedMinutes > 0
     ? Math.max(0, requestedMinutes - sourceMinutes) / requestedMinutes
     : 0;
-  const elasticity = RESPONSIBILITY_ELASTICITY[metric] ?? 0.35;
 
   if (parameters?.expansionStrengthByMetric && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
     const calibratedStrength = parameters.expansionStrengthByMetric[metric];
     return {
       available: true, source: "chronological-workload-fit", sourceMinutes,
-      targetMinutes: requestedMinutes, sourceUsage, targetUsage: sourceUsage,
-      usageRatio: sourceUsage > 0 ? 1 : null, expansionShare,
+      targetMinutes: requestedMinutes, sourceUsage, targetUsage,
+      usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null, expansionShare,
       rateRetention: workloadRetention(sourceMinutes, requestedMinutes, calibratedStrength),
       evidenceGrade: "conditional-prediction",
       reason: "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate.",
     };
   }
 
-  if (sourceUsage !== null && sourceUsage > 0) {
-    const targetUsage = sourceUsage + (
-      Math.max(0, leagueUsage - sourceUsage) * expansionShare * strength
-    );
-    const usageRatio = targetUsage / sourceUsage;
-    const rateRetention = usageRatio > 1
-      ? Math.max(0.35, Math.pow(usageRatio, -elasticity))
-      : 1;
-    return {
-      available: true,
-      source: "reported-usage",
-      sourceMinutes,
-      targetMinutes: requestedMinutes,
-      sourceUsage,
-      targetUsage,
-      usageRatio,
-      expansionShare,
-      rateRetention,
-      evidenceGrade: expansionShare === 0 ? "established" : "projected",
-      reason: expansionShare === 0
-        ? "The observed role already covers the requested workload."
-        : "The rate was tested against the extra team usage a larger low-usage role may need to absorb.",
-    };
-  }
-
-  // Older fixtures and CSV imports may not include usage. Preserve the prior
-  // conservative role-volume contract: only the share supported by observed
-  // minutes keeps an above-baseline advantage. This is intentionally stricter
-  // than the reported-usage path, because the model cannot distinguish a true
-  // low-usage specialist from a missing analytics row.
-  const fallbackRetention = requestedMinutes > 0 && sourceMinutes > 0
-    ? Math.min(1, sourceMinutes / requestedMinutes)
-    : 1;
+  // No fitted usage-response curve has passed complete-box-score validation.
+  // Remove the old invented elasticity and minute->usage conversion. Keep the
+  // conditional mean unchanged; the separate decision-uncertainty layer may
+  // penalize unsupported scenarios without calling that a learned decline.
   return {
-    available: false,
-    source: "role-volume-fallback",
+    available: sourceUsage !== null,
+    source: sourceUsage !== null ? "reported-usage" : "usage-unavailable",
     sourceMinutes,
     targetMinutes: requestedMinutes,
-    sourceUsage: null,
-    targetUsage: null,
-    usageRatio: null,
+    sourceUsage,
+    targetUsage,
+    usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null,
     expansionShare,
-    rateRetention: fallbackRetention,
-    evidenceGrade: "usage-unavailable",
-    reason: "Reported usage was unavailable, so a smaller disclosed role-volume fallback was used.",
+    rateRetention: 1,
+    evidenceGrade: "usage-response-unvalidated",
+    reason: "Minutes do not set usage. No unvalidated usage elasticity changes expected rates; expanded responsibility is a separate uncertainty scenario.",
   };
 }
 
@@ -190,95 +149,69 @@ export function projectMetricForResponsibility({
 }
 
 function candidateUsageRows(players, minutesById, parameters) {
-  const maximumUsage = Number(parameters?.maximumProjectedUsage) || 0.38;
   return players.map((player) => {
     const minutes = Math.max(0, Number(minutesById?.[player.id]) || 0);
     const sourceUsage = readPlayerUsage(player);
+    const requested = finiteNonNegative(parameters?.offensiveResponsibilities?.[player.id]);
+    const scenarioProvided = requested !== null && requested <= 1;
     return {
       id: String(player.id),
       minutes,
       sourceUsage,
-      targetUsage: sourceUsage,
-      remainingCapacity: sourceUsage === null
-        ? 0
-        : Math.max(0, (maximumUsage - sourceUsage) * minutes),
+      scenarioProvided,
+      targetUsage: scenarioProvided ? requested : sourceUsage,
     };
-  });
+  }).filter(row => row.minutes > 0);
 }
 
 /**
- * Audit whether a complete selected group contains enough observed usage to
- * account for one team possession at a time. Missing usage fails closed: the
- * model reports the gap but applies no hidden score correction unless every
- * selected row has comparable evidence.
+ * Audit minute-weighted responsibility without silently filling missing usage.
+ * A 240-player-minute rotation has 48 usage-minutes of team possessions. This
+ * is a compatibility check on the user's scenario, not a possession forecast:
+ * source USG rates came from different teammates and contexts. If the shares
+ * leave a gap or an overlap, report it instead of manufacturing star-like roles
+ * or an unvalidated group penalty. Explicit scenarios are labelled separately
+ * from measured evidence, including when a player has no measured usage.
  */
 export function projectRotationUsageDemand(players, minutesById, parameters) {
   const rows = candidateUsageRows(players, minutesById, parameters);
   const totalMinutes = rows.reduce((sum, row) => sum + row.minutes, 0);
-  const complete = totalMinutes > 0 && rows.every((row) => row.sourceUsage !== null);
+  const complete = totalMinutes > 0 && rows.every((row) => row.targetUsage !== null);
   if (!complete) {
     return {
       available: false,
       applied: false,
       adjustmentPoints: 0,
-      missingPlayerIds: rows.filter((row) => row.sourceUsage === null).map((row) => row.id),
-      reason: "Comparable usage evidence was not available for every selected player.",
+      missingPlayerIds: rows.filter((row) => row.targetUsage === null).map((row) => row.id),
+      reason: "A measured usage rate or explicit scenario was not available for every selected player.",
       players: rows,
     };
   }
 
   const requiredUsageMinutes = totalMinutes / 5;
-  const observedUsageMinutes = rows.reduce(
-    (sum, row) => sum + (row.minutes * row.sourceUsage),
-    0,
-  );
-  let remaining = Math.max(0, requiredUsageMinutes - observedUsageMinutes);
-
-  // Allocate missing possessions first to players who have both documented
-  // on-ball responsibility and remaining headroom. This is an explanatory
-  // projection; it does not assign box-score events or alter hard constraints.
-  while (remaining > 1e-9) {
-    const active = rows.filter((row) => row.remainingCapacity > 1e-9 && row.minutes > 0);
-    if (active.length === 0) break;
-    const priorityTotal = active.reduce(
-      (sum, row) => sum + (Math.sqrt(Math.max(0.01, row.sourceUsage)) * row.remainingCapacity),
-      0,
-    );
-    let distributed = 0;
-    for (const row of active) {
-      const priority = Math.sqrt(Math.max(0.01, row.sourceUsage)) * row.remainingCapacity;
-      const share = priorityTotal > 0 ? remaining * (priority / priorityTotal) : 0;
-      const addition = Math.min(row.remainingCapacity, share);
-      row.targetUsage += addition / row.minutes;
-      row.remainingCapacity -= addition;
-      distributed += addition;
-    }
-    if (!(distributed > 1e-12)) break;
-    remaining -= distributed;
-  }
-
-  const deficitShare = requiredUsageMinutes > 0
-    ? Math.max(0, requiredUsageMinutes - observedUsageMinutes) / requiredUsageMinutes
-    : 0;
-  const unresolvedShare = requiredUsageMinutes > 0 ? remaining / requiredUsageMinutes : 0;
-  const penaltyScale = Number(parameters?.usageCoveragePenaltyPoints) || 0;
-  const adjustmentPoints = -Math.min(10, deficitShare * penaltyScale + unresolvedShare * 6);
+  const observedUsageMinutes = rows.every(row => row.sourceUsage !== null)
+    ? rows.reduce((sum, row) => sum + row.minutes * row.sourceUsage, 0) : null;
+  const requestedUsageMinutes = rows.reduce((sum, row) => sum + row.minutes * row.targetUsage, 0);
+  const requestedShare = requestedUsageMinutes / requiredUsageMinutes;
+  const deficitShare = Math.max(0, 1 - requestedShare);
 
   return {
     available: true,
-    applied: deficitShare > 1e-12,
-    observedUsageShare: observedUsageMinutes / requiredUsageMinutes,
-    projectedUsageShare: (requiredUsageMinutes - remaining) / requiredUsageMinutes,
+    applied: false,
+    observedUsageShare: observedUsageMinutes === null ? null : observedUsageMinutes / requiredUsageMinutes,
+    projectedUsageShare: requestedShare,
+    scenarioPlayerIds: rows.filter(row => row.scenarioProvided).map(row => row.id),
     deficitShare,
-    unresolvedShare,
-    adjustmentPoints,
+    excessShare: Math.max(0, requestedShare - 1),
+    unresolvedShare: deficitShare,
+    adjustmentPoints: 0,
     missingPlayerIds: [],
     reason: deficitShare > 1e-12
-      ? "The selected group must expand documented player usage to account for every team possession."
-      : "The selected group already contains enough documented usage for a complete team offense.",
-    players: rows.map(({ remainingCapacity, ...row }) => ({
+      ? "The assumed roles leave an offensive responsibility gap; no extra usage or score penalty was invented."
+      : "The assumed roles cover or overlap team responsibility; this does not prove offensive effectiveness.",
+    players: rows.map(row => ({
       ...row,
-      usageExpansion: row.sourceUsage > 0 ? row.targetUsage / row.sourceUsage : 1,
+      usageExpansion: row.sourceUsage > 0 ? row.targetUsage / row.sourceUsage : null,
     })),
   };
 }

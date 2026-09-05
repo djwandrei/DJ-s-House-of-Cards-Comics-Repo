@@ -6,39 +6,39 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260905e";
+} from "./optimizer-config.js?v=20260905g";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260905e";
+} from "./player-data.js?v=20260905g";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260905e";
+} from "./supabase-nba-data.js?v=20260905g";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260905e";
+} from "./fan-analytics.js?v=20260905g";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260905e";
+} from "./opponent-gameplan.js?v=20260905g";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260905e";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905e";
+} from "./scenario-url.js?v=20260905g";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905g";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905e";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905e", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905g";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905g", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -331,6 +331,7 @@ const state = {
   weights: {},
   lockedIds: new Set(),
   excludedIds: new Set(),
+  offensiveResponsibilities: {},
   compareIds: new Set(),
   watchlistIds: loadWatchlist(),
   watchlistSnapshots: loadWatchlistSnapshots(),
@@ -1034,6 +1035,8 @@ function applyPendingScenarioPlayerSelections(dataset) {
   if (!scenario) return;
 
   const availableIds = new Set(dataset.players.map((player) => player.id));
+  state.offensiveResponsibilities = Object.fromEntries(Object.entries(scenario.offensiveResponsibilities || {})
+    .filter(([id]) => availableIds.has(id)));
   const requestedLocks = Array.isArray(scenario.lockedIds) ? scenario.lockedIds : [];
   const requestedExclusions = Array.isArray(scenario.excludedIds) ? scenario.excludedIds : [];
   const ignoredLocks = requestedLocks.filter((id) => !availableIds.has(id));
@@ -1108,6 +1111,7 @@ function sharedScenarioFromControls() {
     positionFlexibility: elements.positionFlexibility.value,
     lockedIds: [...state.lockedIds].sort(),
     excludedIds: [...state.excludedIds].sort(),
+    offensiveResponsibilities: state.experienceMode === "detailed" ? { ...state.offensiveResponsibilities } : {},
   };
 }
 
@@ -2181,7 +2185,9 @@ function renderRotationEvidencePreview() {
     player.analytics?.totals && player.analytics?.leaguePer36
   )).length;
   const impactEvidenceCount = players.filter((player) => (
-    Number.isFinite(Number(player.analytics?.advanced?.offensive_box_plus_minus))
+    player.analytics?.advanced?.offensive_box_plus_minus != null
+    && player.analytics?.advanced?.defensive_box_plus_minus != null
+    && Number.isFinite(Number(player.analytics?.advanced?.offensive_box_plus_minus))
     && Number.isFinite(Number(player.analytics?.advanced?.defensive_box_plus_minus))
   )).length;
   const seasonEvidenceCount = players.filter((player) => (
@@ -2191,9 +2197,9 @@ function renderRotationEvidencePreview() {
   const rateCopy = `${rateEvidenceCount} of ${players.length} have same-season rate evidence`;
   const impactCopy = `${impactEvidenceCount} of ${players.length} have OBPM and DBPM`;
   const seasonCopy = seasonEvidenceCount > 0
-    ? `${seasonEvidenceCount} of ${players.length} have season data across their imported teams; any unsupported metrics use the approximate per-appearance fallback`
-    : "all-team season evidence is not in this loaded snapshot, so the approximate per-appearance fallback is active";
-  elements.rotationEvidencePreview.textContent = `Source check: ${rateCopy}; ${impactCopy}; ${seasonCopy}. Past team games and total minutes do not set the proposed allocation. The separate Scout option requires authorized, validated possession-level evidence.`;
+    ? `${seasonEvidenceCount} of ${players.length} have season data across their imported teams; each metric still needs a matched count and denominator`
+    : "all-team evidence is unavailable; supported team counts are used instead, with a baseline-only prior for missing metrics";
+  elements.rotationEvidencePreview.textContent = `Source check: ${rateCopy}; ${impactCopy}; ${seasonCopy}. Sample size affects confidence, never a hard minute target or cap. The separate Scout option requires authorized, validated possession-level evidence.`;
   if ($("#modelModeInput").value === "scout") {
     elements.simpleModelSummaryCopy.textContent = "Scout ranks usable player impacts for your offense, defense, or balanced objective. Position rules and hard minute limits still apply. Basketball Reference remains context, not a second score.";
     elements.simpleModelSummaryNote.textContent = "Administrator access and matched, validated evidence are required. This is an additive player-impact estimate, not a game forecast or predicted coaching rotation.";
@@ -2205,8 +2211,8 @@ function renderRotationEvidencePreview() {
   } else {
     elements.simpleModelSummaryCopy.textContent = "The optimizer follows your game plan and hard minute limits. Historical rates are adjusted for limited evidence; workload changes are applied only by the selected projection. There is no preferred 18–32 minute range.";
     elements.simpleModelSummaryNote.textContent = seasonEvidenceCount > 0
-      ? "Matching counts across imported teams inform the estimated rates, not minute limits. Missing metrics use the approximate fallback; complete source coverage is not independently verified."
-      : "Better players can still earn larger roles. Until matching all-team evidence is available, the model uses approximate per-appearance opportunity evidence—never team-stint length."
+      ? "Matching counts across imported teams inform rate confidence, not minute limits. Missing metrics are not filled with guessed counts; complete source coverage is not independently verified."
+      : "Better-supported rates can justify larger roles. The model uses matched team counts when available; missing metrics receive a baseline-only prior, not a guessed sample."
   }
 }
 
@@ -2413,6 +2419,12 @@ function markScenarioChanged() {
 
 function setMode(mode, { preserveSize = false } = {}) {
   const isRotation = mode === "rotation";
+  // Usage scenarios have no effect on a five-player profile without minutes.
+  // Hide and disable them there; retained values return with rotation mode.
+  $$(".player-usage-scenario").forEach(label => {
+    label.hidden = !isRotation;
+    label.querySelector("input").disabled = !isRotation || state.experienceMode !== "detailed";
+  });
   elements.rotationSettings.hidden = !isRotation;
   elements.rotationScoringBasisField.hidden = !isRotation;
   elements.sizeField.hidden = !isRotation;
@@ -2424,7 +2436,7 @@ function setMode(mode, { preserveSize = false } = {}) {
     productionQualifier,
   );
   elements.productionRulesHelp.textContent = isRotation
-    ? "These hard rules use conservative rates within each player's allowed minute range, including individual overrides, then test the exact 240-minute plan. Bounds are not expected totals: they may still reject a plan a nonlinear production model could allow. Your selected objective still chooses minutes."
+    ? "These rules evaluate evidence-adjusted production at each player's assigned minutes—the same workload model used in the result. Reliable and Balanced include a downside reserve; these are planning totals, not guarantees. Your objective still chooses minutes within your limits."
     : "In lineup mode, these rules add each selected player's historical per-game line. They describe the five-player profile; they do not forecast one team box score.";
   syncRotationRoleCopy(isRotation);
   elements.size.min = isRotation ? "8" : "5";
@@ -2685,6 +2697,9 @@ function setExperienceMode(
           ? "Simple view opened with recommended defaults. Your prior detailed settings are saved until you return."
           : "Simple view uses recommended defaults and keeps the essential controls in focus.");
   }
+  $$(".player-usage-scenario input").forEach(input => {
+    input.disabled = !detailed || elements.mode.value !== "rotation";
+  });
 }
 
 function applyLoadedPhaseEligibilityDefault(seasonPhase) {
@@ -2920,6 +2935,28 @@ function renderPlayerTable({ focusTarget = null } = {}) {
     if (avatar) identity.append(avatar);
     identity.append(nameWrap);
     nameCell.append(identity);
+    // Optional per-player scenario, separate from minutes. Blank means retain
+    // observed usage. Keep it in Detailed mode; Simple never applies a hidden
+    // override. No browser field is interpreted as a learned causal effect.
+    const usageLabel = document.createElement("label");
+    usageLabel.className = "player-usage-scenario detailed-only";
+    usageLabel.hidden = elements.mode.value !== "rotation";
+    usageLabel.textContent = "Usage scenario (%)";
+    const usageInput = document.createElement("input");
+    usageInput.type = "number";
+    usageInput.min = "0";
+    usageInput.max = "100";
+    usageInput.step = "0.1";
+    usageInput.placeholder = "Observed";
+    usageInput.value = Object.hasOwn(state.offensiveResponsibilities, player.id)
+      ? String(Math.round(state.offensiveResponsibilities[player.id] * 1000) / 10) : "";
+    usageInput.dataset.action = "usage";
+    usageInput.dataset.playerId = player.id;
+    usageInput.setAttribute("aria-label", `${player.name}: offensive usage scenario percent`);
+    usageInput.setAttribute("aria-describedby", "usageScenarioHelp");
+    usageInput.disabled = elements.mode.value !== "rotation" || state.experienceMode !== "detailed";
+    usageLabel.append(usageInput);
+    nameCell.append(usageLabel);
     row.append(nameCell);
 
     createCell(row, player.positions.join("/"), "", "Position");
@@ -3026,6 +3063,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   if (clearScenario) {
     state.lockedIds.clear();
     state.excludedIds.clear();
+    state.offensiveResponsibilities = {};
     state.compareIds.clear();
     elements.playerSearch.value = "";
     clearRenderedResult();
@@ -3142,9 +3180,22 @@ function handlePlayerControl(event) {
   const control = event.target.closest("[data-action][data-player-id]");
   if (!control) return;
   const { action, playerId } = control.dataset;
-  if ((action === "watch" && event.type !== "click") || (action !== "watch" && event.type !== "change")) {
+  if (action === "usage") {
+    if (control.disabled || !["input", "change"].includes(event.type)) return;
+    // Capture edits on input, not just blur/change. A user can press Build or
+    // use a number stepper before blur commits in every browser. Invalid edits
+    // invalidate the old result but never replace the last valid scenario.
+    if (!control.checkValidity()) {
+      markScenarioChanged();
+      if (event.type === "change") control.reportValidity();
+      return;
+    }
+    if (control.value.trim() === "") delete state.offensiveResponsibilities[playerId];
+    else state.offensiveResponsibilities[playerId] = Number(control.value) / 100;
+    markScenarioChanged();
     return;
   }
+  if ((action === "watch" && event.type !== "click") || (action !== "watch" && event.type !== "change")) return;
   if (action === "watch") {
     if (state.watchlistIds.has(playerId)) {
       state.watchlistIds.delete(playerId);
@@ -3244,6 +3295,7 @@ function buildOptimizerConfig() {
       minuteFlexibility: numberFromInput(elements.rotationFlexibility, 8),
       rateStability: elements.rotationRateStability.value,
       projectionRisk: elements.projectionRisk.value,
+      offensiveResponsibilities: state.experienceMode === "detailed" ? { ...state.offensiveResponsibilities } : {},
       roleBalance: elements.roleBalance.value,
       // Possession-level Scout evidence remains a separately versioned input.
       // Authorized users may choose Scout; missing or unvalidated evidence
@@ -3487,10 +3539,11 @@ function renderExactObjectiveReasons(player, result, insight) {
     entries.slice(0, 3).forEach(([metric, item]) => {
       const row = document.createElement("li");
       const percentile = Number(item.percentile);
-      const percentileContext = item.assignedRoleAdjusted
-        ? "percentile after the extra-minute adjustment"
-        : "percentile in this search";
-      row.textContent = `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} ${percentileContext}.`;
+      const evidenceScore = rateStability?.applied && rateStability?.stabilizedMetrics?.includes(metric);
+      const percentileContext = item.assignedRoleAdjusted ? "percentile after the extra-minute adjustment" : "percentile in this search";
+      row.textContent = evidenceScore
+        ? `${resultMetricLabel(metric)}: ${formatNumber(percentile * 100)} / 100 normalized contribution${item.assignedRoleAdjusted ? " at assigned workload" : ""}. This is not a percentile or win probability.`
+        : `${resultMetricLabel(metric)}: ${formatOrdinal(percentile * 100)} ${percentileContext}.`;
       list.append(row);
     });
   } else {
@@ -3791,7 +3844,7 @@ function renderResultEvidence(result) {
     strip.append(resultEvidenceItem(
       "Minute plan",
       "Game-plan allocation",
-      "Past team games and total minutes did not affect selection or assigned minutes; only your game plan, position coverage, and hard limits did.",
+      "Team games never set a minute target or cap. Matched counts and minutes affect rate confidence, so stronger evidence can change the best allocation under your game plan and hard limits.",
     ));
   } else {
     strip.append(resultEvidenceItem(
@@ -3811,8 +3864,8 @@ function renderResultEvidence(result) {
       ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond observed roles. Uncertain advantages receive a disclosed evidence adjustment. No roster-size-based penalty or automatic target minute range is applied.`
       : "";
     const seasonEvidenceDetail = rateEvidence.seasonWideEvidencePlayers > 0
-      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching season counts across imported teams for at least one metric; ${rateEvidence.perAppearanceEvidencePlayers || 0} used approximate per-appearance evidence for at least one metric. A player can be in both groups. Complete source coverage is not independently verified.`
-      : " Matching all-team season evidence was unavailable for this pool, so supported metrics used approximate per-appearance evidence.";
+      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching season counts across imported teams for at least one metric. Other metrics require matching team counts or use a baseline-only prior. No sample size is guessed from games or MPG. Complete source coverage is not independently verified.`
+      : " Matching all-team season evidence was unavailable for this pool. Metrics require matching team counts or use a baseline-only prior; no sample size is guessed from games or MPG.";
     strip.append(resultEvidenceItem(
       "Rate projection",
       assignedRoleScoring?.applied
@@ -3820,7 +3873,7 @@ function renderResultEvidence(result) {
         : rateEvidence.roleAdjustedPlayerMetricCount > 0
           ? "Evidence confidence + role adjusted"
           : "Evidence-confidence adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? ` Standard rate parameters were tuned chronologically and checked on ${rateEvidence.workloadCalibration.testGames} held-out regular-season games using actual archived exposure. That test does not independently validate the approximate sample fallback, the browser's NBA baseline, or a lineup forecast.` : ` ${rateEvidence.uncertaintyAdjustedPlayers || 0} received an assumption-based lower-confidence reserve.`} These adjustments are not player confidence intervals. Team-stint length does not set a minute target or cap.${roleProjectionDetail}${assignedRoleDetail}`,
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? ` Standard rate parameters were tuned chronologically and checked on ${rateEvidence.workloadCalibration.testGames} held-out regular-season games using archived exposure. That test does not validate the new uncertainty reserve, the browser's NBA baseline, usage-dependent effects, or a lineup forecast.` : " An adjustable uncertainty reserve discounts less-supported rates."} These adjustments are not calibrated player confidence intervals. Team games do not set a minute target or cap.${roleProjectionDetail}${assignedRoleDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(
@@ -3838,20 +3891,22 @@ function renderResultEvidence(result) {
   const modelAdjustments = result.best?.modelAdjustments;
   if (result.best?.rotation) {
     const usage = modelAdjustments?.usageDemand;
-    const observedUsage = Number(usage?.observedUsageShare);
+    const assumedUsage = Number(usage?.projectedUsageShare);
     const deficit = Number(usage?.deficitShare);
+    const excess = Number(usage?.excessShare);
+    const usageBasis = usage?.scenarioPlayerIds?.length ? "your usage scenarios and remaining observed rates" : "the observed usage rates";
     strip.append(resultEvidenceItem(
-      "Team-usage check",
+      "Offensive responsibility check",
       usage?.available
         ? deficit > 1e-9
-          ? "More creation would be required"
-          : "Documented creation is sufficient"
+          ? "Unassigned responsibility"
+          : excess > 1e-9 ? "Roles overlap" : "Roles balance"
         : "Incomplete — no value guessed",
       usage?.available
         ? deficit > 1e-9
-          ? `The selected players' minute-weighted historical roles account for ${formatNumber(observedUsage * 100, 0)}% of a complete team offense. Individual projections already reduce unsupported expanded-role advantages; this group check is explanation only and adds no second hidden penalty.`
-          : "The selected players already account for a complete team offense at their documented usage rates. This check is explanatory and does not alter hard rules."
-        : `${usage?.missingPlayerIds?.length || 0} selected player${usage?.missingPlayerIds?.length === 1 ? " lacks" : "s lack"} comparable usage evidence. Missing usage was not treated as zero, and no group-level score adjustment was applied.`,
+          ? `At the assigned minutes, ${usageBasis} cover ${formatNumber(assumedUsage * 100, 0)}% of team responsibility. Someone would need a larger role. The model has not automatically assigned that extra usage or claimed a learned efficiency change; this check adds no score penalty.`
+          : `At the assigned minutes, ${usageBasis} total ${formatNumber(assumedUsage * 100, 0)}% of team responsibility.${excess > 1e-9 ? " Some roles would need to shrink when these players share the court." : " This is an accounting check, not proof of offensive quality."} No group-level score adjustment is applied.`
+        : `${usage?.missingPlayerIds?.length || 0} selected player${usage?.missingPlayerIds?.length === 1 ? " lacks" : "s lack"} both measured usage and an explicit scenario. Missing usage was not treated as zero, and no group-level score adjustment was applied.`,
     ));
 
     const roleFit = modelAdjustments?.roleFit;
@@ -4063,6 +4118,8 @@ function renderRotationUnitProof(best) {
     return section;
   }
   intro.textContent = "Yes. A second exact check placed five distinct players on the floor in every regulation minute while preserving every assigned player minute and guard/forward/center minute. The sample order below is one feasibility proof—not a recommendation for starters, closers, or substitution timing.";
+  const sharing = plan.sharingOptimization;
+  if (sharing?.applied) intro.textContent += ` Offensive responsibility was also spread across the units using ${sharing.exchanges} improving exchange${sharing.exchanges === 1 ? "" : "s"}. ${sharing.optimality === "relaxed-bound-attained" ? "The relaxed balance bound was reached." : "This is a locally improved schedule, not a proven global chemistry optimum."} It did not change player minutes or the Scout score.`;
 
   const checks = document.createElement("ul");
   checks.className = "unit-proof-checks";
@@ -4346,7 +4403,9 @@ function lineupDnaProfile(roleCoverage = {}) {
   const coverage = Array.isArray(roleCoverage.coverage) ? roleCoverage.coverage : [];
   const count = (status) => coverage.filter((role) => role.status === status).length;
   const primaryStrength = (roleCoverage.strengths || [])[0] || null;
-  const pressurePoint = (roleCoverage.deficiencies || [])[0] || null;
+  const pressurePoint = coverage.find((role) => role.status === "gap")
+    || coverage.find((role) => role.status === "thin")
+    || null;
   return {
     primaryStrength,
     pressurePoint,
@@ -4474,7 +4533,7 @@ function renderLineupDnaMethod(result, explanation) {
   steps.className = "lineup-dna__method";
   for (const [title, copy] of [
     ["Exact selection", sourceContext.explanation],
-    ["Role translation", `Coverage compares the selected group with ${explanation.roleCoverage.referencePlayerCount} players available in this search. Limited-evidence labels stay visible but do not count as covered by default; the DNA headline uses the strongest confirmed signal and the most severe supported gap, not display order.`],
+    ["Role translation", `Coverage compares the selected group with ${explanation.roleCoverage.referencePlayerCount} players available in this search. Limited-evidence labels stay visible but do not count as covered by default.`],
     ["One-change test", "The replacement tool locks every other selected player, excludes the player you choose, and reruns the same exact eligibility, position, production, and minute rules."],
   ]) {
     const item = document.createElement("li");
@@ -5729,6 +5788,7 @@ function resetScenario() {
   syncRotationModelControls();
   state.lockedIds.clear();
   state.excludedIds.clear();
+  state.offensiveResponsibilities = {};
   state.opponentWeightUndo = null;
   applyPreset("balanced", { invalidate: false });
   if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
@@ -5842,8 +5902,8 @@ function syncModelChoice() {
     if (riskHelp) riskHelp.textContent = scout
       ? "Historical risk settings do not change Scout O/D coefficients. They apply only to Basketball Reference context and constraints."
       : fittedSeason
-        ? "For 2025–26 regular season, fitted sample corrections replace the Reliable/Upside adjustments for standard box-score rates. This selector still controls uncalibrated impact/context assumptions; it never changes minute limits."
-        : "Reliable is more cautious with uncertain rates. Upside trusts emerging production sooner. These are uncalibrated sensitivity settings for this source, not accuracy guarantees or minute limits.";
+        ? "For 2025–26 regular season, the fitted mean is shared across settings. Reliable subtracts a larger model-based uncertainty reserve, Balanced subtracts a smaller one, and Upside uses the mean. These reserves are sensitivity assumptions, not calibrated confidence intervals; minute limits never change."
+        : "Reliable uses a larger uncertainty reserve; Balanced uses a smaller one. Upside uses the posterior mean without a reserve. Outside validated seasons the prior strengths also differ. These are sensitivity assumptions, not accuracy guarantees or minute limits.";
     // Skill-priority presets are a historical objective, not a second hidden
     // score mixed into primary Scout impact. Keep their scope unambiguous.
     $("#presetGrid").hidden = scout;
@@ -5866,6 +5926,7 @@ function bindRemainingEvents() {
     setExperienceMode("detailed", { applyDefaults: false, announce: true });
   });
   elements.playerTableBody.addEventListener("change", handlePlayerControl);
+  elements.playerTableBody.addEventListener("input", handlePlayerControl);
   elements.playerTableBody.addEventListener("click", handlePlayerControl);
   elements.activeSelectionTray.addEventListener("click", handleActiveSelectionRemoval);
   elements.resultContent.addEventListener("change", (event) => {

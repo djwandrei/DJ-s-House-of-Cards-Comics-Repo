@@ -127,7 +127,7 @@ test('extreme extrapolation stays nonnegative, concave, and below conditional ut
 
 test('hard production floors cannot pass using optimistic observed-workload rates', () => {
   const pool = players.slice(0, 8).map(p => ({ ...p, minutes: 24, rebounds: 12,
-    analytics: { totals: { minutes: 1440 }, leaguePer36: { rebounds: 8 } },
+    analytics: { totals: { minutes: 1440, totalRebounds: 720 }, leaguePer36: { rebounds: 8 } },
   }));
   const request = { mode: 'rotation', size: 8, alternatives: 1, minGames: 0, minMinutes: 0,
     weights: { rebounds: 1 }, sourceScope: { seasonEndYear: 2026, seasonPhase: 'regular', team: 'TST' },
@@ -147,7 +147,7 @@ test('hard production floors cannot pass using optimistic observed-workload rate
   // This floor is feasible at the required 30 minutes, but was incorrectly
   // rejected by the old envelope that also considered forbidden 48-minute
   // workloads. Fixed bounds now make the production envelope exact here.
-  const tighter = optimizeLineups(pool, { ...request, statMinimums: { rebounds: 110 } });
+  const tighter = optimizeLineups(pool, { ...request, statMinimums: { rebounds: Math.floor(mean.best.totals.rebounds) } });
   assert.equal(tighter.ok, true, JSON.stringify(tighter.reasons));
   assert.equal(tighter.best.totals.rebounds, mean.best.totals.rebounds);
   assert.equal(tighter.best.score, mean.best.score);

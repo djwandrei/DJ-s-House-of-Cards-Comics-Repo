@@ -1287,7 +1287,7 @@ function weightedProfile(
   player,
   percentileMaps,
   weights,
-  { scoringBasis = "perGame", playerContribution = null } = {},
+  { scoringBasis = "perGame", playerContribution = null, cardinalMetrics = [] } = {},
 ) {
   const id = playerId(player);
   const normalized = normalizedWeights(weights);
@@ -1305,6 +1305,9 @@ function weightedProfile(
         : FAN_EFFICIENCY_METRICS.includes(metric) ? "rate" : "perGame",
       percentile: Number.isFinite(percentile) ? percentile : null,
       percentileSource: optimizerEvidence === null ? "recomputed" : "optimizer",
+      // Keep the legacy numeric field for report consumers, but never call a
+      // league-anchored utility a cohort percentile in the visible explanation.
+      scoreMeaning: optimizerEvidence !== null && cardinalMetrics.includes(metric) ? "normalized-contribution" : "pool-percentile",
       weight: round(weight, 4),
       weightedContribution: Number.isFinite(percentile) ? round(percentile * weight, 4) : 0,
       lowerIsBetter: metric === "ballSecurity",
@@ -1326,7 +1329,9 @@ function weightedProfile(
 }
 
 function formatObjectiveReason(item) {
-  const percentile = formatPercentile(item.percentile);
+  const percentile = item.scoreMeaning === "normalized-contribution"
+    ? `${round(item.percentile * 100, 1)}/100 normalized contribution, not a percentile`
+    : formatPercentile(item.percentile);
   const value = item.value === null ? "unavailable" : item.metric.endsWith("Pct")
     ? `${round(item.value * 100, 1)}%`
     : round(item.value, 1);
@@ -1449,6 +1454,8 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     : "perGame";
   const percentileMaps = objectivePercentiles(poolWithSelected, { scoringBasis });
   const weights = options.weights || result?.config?.weights || {};
+  const evidence = result?.diagnostics?.rotationRateStabilityEvidence;
+  const cardinalMetrics = best.rotation && evidence?.applied ? evidence.stabilizedMetrics || [] : [];
   const roleCoverage = analyzeRoleCoverage(best.players, {
     ...options,
     referencePlayers: options.referencePlayers || poolWithSelected,
@@ -1459,6 +1466,7 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     const profile = weightedProfile(player, percentileMaps, weights, {
       scoringBasis,
       playerContribution: best.playerContributions?.[id] ?? null,
+      cardinalMetrics,
     });
     const roles = roleCoverage.matrix.find((row) => row.playerId === id)?.roles || {};
     const activeRoles = Object.values(roles).filter(Boolean);
@@ -1478,12 +1486,12 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     : Array.isArray(options.alternatives) ? options.alternatives : [];
   const replacements = summarizeReplacementAlternatives(best, alternatives, options);
   const caveats = [
-    "Objective contribution is pool-relative and explains the configured strategy; it is not a win probability or player projection.",
+    "Objective contribution explains the configured strategy; it is not a win probability or overall player rating.",
     ...(best.rotation && scoringBasis === "per36"
-      ? ["Rotation counting-stat explanations use per-36 values and the optimizer's exact percentile evidence when it is available."]
+      ? ["Rotation counting-stat explanations display raw per-36 values alongside the optimizer's supplied contributions. Raw-rate scoring uses pool percentiles; paired-evidence scoring uses league-anchored normalized differences."]
       : []),
     ...(result?.diagnostics?.rotationRateStabilityEvidence?.applied
-      ? ["Optimizer percentiles include the configured sample adjustment; displayed per-36 values remain the observed raw rates."]
+      ? ["Evidence-adjusted contributions include the configured sample and workload adjustments; displayed per-36 values remain the observed raw rates."]
       : []),
     ...(roleCoverage.caveats || []),
     ...(replacements.caveats || []),

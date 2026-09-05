@@ -155,15 +155,11 @@ const ROTATION_RATE_STABILITY_MODES = Object.freeze({
 // can overrule a user's requirements.
 export const ROTATION_STRATEGY_SHARE = 1;
 export const ROTATION_HISTORICAL_READINESS_SHARE = 0;
-// Team-stint length is provenance, not ability. A player traded after five
-// games should not receive a different proposed role than an otherwise
-// identical player with the same per-appearance workload and rates. When a
-// future adapter supplies true season-wide totals, the model prefers them.
-// Until then, opportunity evidence is standardized to this many appearances,
-// preserving MPG and attempt volume while removing the arbitrary number of
-// games spent with the selected team.
+// Team membership is provenance, not a minute target. Prefer matched all-team
+// season evidence; if only team evidence exists, keep its real sample size.
+// Confidence may differ, but no synthetic appearance count or prescribed
+// rotation recreates how long a player stayed with the selected club.
 const DEFAULT_PROJECTION_PARAMETERS = projectionParametersFor(DEFAULT_PROJECTION_RISK);
-const RATE_EVIDENCE_REFERENCE_GAMES = DEFAULT_PROJECTION_PARAMETERS.evidenceReferenceGames;
 
 // Posterior-mean shrinkage alone makes a completely unproven player look
 // exactly league-average. That is a fair *expectation*, but it is optimistic
@@ -982,12 +978,11 @@ function seasonWideAdvancedImpactMetricValue(player, metric) {
 }
 
 /**
- * Return reliability evidence without using the length of the selected team
- * stint. True season-wide totals are preferred when the data adapter supplies
- * a matching season-wide rate. A team-scoped feed otherwise supplies per-appearance
- * volume, standardized to a common number of appearances. This preserves the
- * useful distinction between a 20-FGA scorer and a 3-FGA specialist while
- * ensuring a trade on February 1 does not itself lower the player's projection.
+ * Return actual exposure for the matching scope, never an invented number of
+ * appearances. Prefer all-team counts only when the caller has a matching
+ * all-team value. Otherwise retain actual team exposure and label its scope.
+ * A short team record can mean less evidence when no all-team value exists;
+ * that changes statistical confidence, not a hard minute target or cap.
  */
 function standardizedOpportunitySample(
   player,
@@ -1023,7 +1018,7 @@ function rateStabilityEvidence(player, metric, parameters = DEFAULT_PROJECTION_P
   if (ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)) {
     if (!Number.isFinite(advancedImpactMetricValue(player, metric))) return null;
     // A season-wide BPM coefficient may use season-wide minutes. A team-stint
-    // BPM must retain the standardized per-appearance fallback; otherwise an
+    // BPM must retain actual matching team minutes; otherwise an
     // unrelated all-team box-score sample would grant confidence to the wrong
     // numerator.
     const hasSeasonWideImpact = Number.isFinite(
@@ -1539,13 +1534,13 @@ function scoutFamilyWeightsFrom(normalizedWeights) {
  * Build the minute-aware companion to the ordinary per-36 score. The static
  * score starts from the sample-adjusted observed profile. The matching-season
  * path uses fitted conditional rates and an explicitly disclosed concavity
- * guard; other seasons retain the legacy role-expansion assumption. Neither
- * path now applies an artificial curve at 240 / roster size. A
+ * guard; other seasons use disclosed priors without a fitted mean response.
+ * Neither path applies an artificial curve at 240 / roster size. A
  * low-minute player can still earn a large role, and a dominant player can
  * still reach the user's maximum.
  *
  * The plan is calculated once over the full eligible pool, not separately for
- * each candidate lineup. That keeps percentile comparisons fair and lets the
+ * each candidate lineup. That keeps the evidence/normalization fixed and lets the
  * exact combination search compare every roster under the same assumptions.
  */
 function buildRoleConditionedProjectionPlan(
@@ -1595,11 +1590,9 @@ function buildRoleConditionedProjectionPlan(
     const establishedRoleMinutes = Math.max(0, Math.min(48, sourceRoleMinutes ?? referenceMinutes));
     evidenceMinutesById.set(id, establishedRoleMinutes);
 
-    // A larger established per-appearance role earns a gentler transition.
-    // Team-stint total minutes are deliberately excluded: being traded should
-    // not make the same MPG/rate profile decay faster merely because fewer of
-    // those appearances happened for the selected team. True season-wide
-    // totals, when supplied, still take precedence inside the evidence helper.
+    // Retain transition metadata for legacy consumers. Actual exposure is
+    // labelled by scope; the compiled paired-evidence curves below supersede
+    // this legacy transition whenever supported inputs are available.
     const roleEvidence = standardizedOpportunitySample(
       player,
       player?.analytics?.totals,
@@ -1654,7 +1647,8 @@ function buildRoleConditionedProjectionPlan(
     expandedMetricPercentilesById.set(id, expandedMetrics);
 
     // Mirror the same one-way expansion assumption on the stable, league-
-    // anchored display index. The exact solver still ranks on percentiles;
+    // anchored display index. Evidence-backed scoring uses cardinal differences;
+    // legacy raw scoring still uses percentiles. These display maps are separate:
     // these maps only make the displayed NBA-baseline index match the minutes that
     // the selected rotation was actually assigned.
     const establishedBenchmarkIndexes = metricResult.benchmarkIndexesByPlayerId?.get(id) ?? {};
@@ -1708,7 +1702,9 @@ function buildRoleConditionedProjectionPlan(
             lowerIsBetter: metric === "ballSecurity" });
           const projected = decisionRateAtWorkload({ mean, standardError: input.standardError,
             sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
-            sourceUsage: input.sourceUsage, targetUsage: input.targetUsage,
+            sourceUsage: input.sourceUsage,
+            // Extra offensive responsibility is not extra defensive workload.
+            targetUsage: SCOUT_OFFENSE_OBJECTIVE_METRICS.includes(metric) ? input.targetUsage : input.sourceUsage,
             risk: projectionParameters.decisionUncertaintyWeight,
             lowerIsBetter: metric === "ballSecurity", signed: ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric) });
           const scoringValue = demonstratedShootingValue(projected.decision, input.participationPer36, metric);
@@ -1726,7 +1722,10 @@ function buildRoleConditionedProjectionPlan(
       }
       calibratedUtilityCurvesById.set(id, total);
       calibratedMetricCurvesById.set(id, curves);
-      calibratedProductionCurvesById.set(id, production);
+      // A raw m * rate table must not disable stronger linear certificates.
+      if (Object.keys(metricResult.projectionInputsById.get(id) ?? {}).length > 0) {
+        calibratedProductionCurvesById.set(id, production);
+      }
       // A display index is descriptive, not allocation utility. Use the fitted
       // conditional mean here, without the solver's concavity approximation.
       const benchmarks = {};
@@ -6542,7 +6541,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ...baseDiagnostics, category: "validation", subcategory: "minute-bounds",
     });
     rotationProjectedRates = new Map(rotationProjectedRates);
-    rotationProjectedRates.productionCurvesById = constraintProjectionPlan.calibratedProductionCurvesById;
+    if (constraintProjectionPlan.calibratedProductionCurvesById.size) {
+      rotationProjectedRates.productionCurvesById = constraintProjectionPlan.calibratedProductionCurvesById;
+    }
     baseDiagnostics.productionConstraintProjection = {
       kind: "exact-assigned-workload-curve",
       minimumMinutes: Math.min(...[...allowedBounds.values()].map(bound => bound.min)),
@@ -6555,7 +6556,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   }
   const usesRoleConditionedObjective = Boolean(roleConditionedProjectionPlan);
   const usesRoleConditionedProductionProjection = Boolean(
-    constraintProjectionPlan,
+    constraintProjectionPlan?.calibratedProductionCurvesById?.size,
   );
   const assignedRoleProjectionReason = callerRotationScores
     ? "A custom minute-score map was supplied, so the optimizer retained that caller-defined allocation objective."

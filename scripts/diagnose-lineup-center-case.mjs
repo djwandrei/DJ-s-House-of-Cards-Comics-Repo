@@ -59,16 +59,17 @@ const centersOnly = process.argv.includes('--centers-only');
 const objectives = { balanced: DEFAULT_PRESETS.balanced, offense: DEFAULT_PRESETS.scoring,
   defense: DEFAULT_PRESETS.defense, rebounding: DEFAULT_PRESETS.rebounding,
   reboundsOnly: { rebounds: 100 }, blocksOnly: { blocks: 100 }, defenseImpactOnly: { defensiveImpact: 100 } };
-for (const variant of ['raw', 'approximate-samples', 'actual-samples', 'uncalibrated-assumptions']) {
+for (const variant of ['raw', 'matched-team-samples', 'matched-season-samples', 'uncalibrated-assumptions']) {
   for (const [objective, weights] of Object.entries(objectives)) {
-    const inputPlayers = variant === 'approximate-samples' ? fallback.players : actual.players;
+    const inputPlayers = variant === 'matched-team-samples' ? fallback.players : actual.players;
     // Optional counterfactual: give both players the same C-only eligibility.
     // This isolates rate valuation from Beringer's imported F/C flexibility;
     // it is diagnostic input only and never edits the database position record.
     const players = centersOnly ? inputPlayers.map(player => centers.some(center => center.id === player.id)
       ? { ...player, positions: ['C'] } : player) : inputPlayers;
     // Holding the same nine players fixed isolates minute valuation from the
-    // combinatorial choice of teammates. Percentiles still use the full pool.
+    // combinatorial choice of teammates. Raw scoring uses pool percentiles;
+    // paired-evidence scoring keeps cardinal NBA-baseline differences.
     // Eligibility is deliberately opened to include Beringer's sub-8 MPG row.
     const result = optimizeLineups(players, { mode: 'rotation', size: 9, alternatives: 1,
       minGames: 0, minMinutes: 0, lockedIds, weights,

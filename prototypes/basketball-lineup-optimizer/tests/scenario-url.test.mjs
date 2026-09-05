@@ -2,6 +2,31 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { decodeScenarioQuery, encodeScenarioQuery, SCENARIO_URL_VERSION } from "../scenario-url.js";
 
+test("usage scenarios round-trip exact shares including zero without changing minute bounds", () => {
+  const query = encodeScenarioQuery({ experience: "detailed", mode: "rotation", rotationMax: 40,
+    offensiveResponsibilities: { creator: .315, center: .12, zero: 0 } });
+  const { scenario, warnings } = decodeScenarioQuery(query);
+  assert.deepEqual(scenario.offensiveResponsibilities, { center: .12, creator: .315, zero: 0 });
+  assert.equal(scenario.rotationMax, 40);
+  assert.deepEqual(warnings, []);
+  assert.equal(encodeScenarioQuery({ offensiveResponsibilities: { b: .2, a: .1 } }),
+    encodeScenarioQuery({ offensiveResponsibilities: { a: .1, b: .2 } }), "stable link ordering");
+});
+
+test("usage scenario links reject malformed or lossy settings rather than silently changing them", () => {
+  for (const share of [-.1, 1.01, NaN, Infinity, null, true, "0.2", .12345]) {
+    assert.throws(() => encodeScenarioQuery({ offensiveResponsibilities: { p: share } }), /Usage scenarios/);
+  }
+  assert.throws(() => encodeScenarioQuery({ offensiveResponsibilities: { "unsafe id": .2 } }), /Usage scenarios/);
+  for (const usage of ["p:200,p:300", "p:1001", "p:-1", "p:20.5", "p:abc", "p:200,", ""]) {
+    const { scenario, warnings } = decodeScenarioQuery(`v=1&usage=${encodeURIComponent(usage)}`);
+    assert.equal(scenario.offensiveResponsibilities, undefined);
+    assert.ok(warnings.some(warning => warning.includes("usage scenarios")));
+  }
+  const oversized = Object.fromEntries(Array.from({ length: 100 }, (_, i) => [`player_${i}_${"a".repeat(55)}`, .2]));
+  assert.throws(() => encodeScenarioQuery({ offensiveResponsibilities: oversized }), /too many/);
+});
+
 test("scenario URL codec round-trips valid optimizer and analytics assumptions", () => {
   const query = encodeScenarioQuery({
     team: "min",

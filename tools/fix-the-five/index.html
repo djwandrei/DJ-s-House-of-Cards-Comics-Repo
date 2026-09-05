@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta content="width=device-width,initial-scale=1" name="viewport">
   <title>Fix the Five | DJ's House of Cards &amp; Comics</title>
-  <meta content="Make one legal historical lineup swap, reveal the Lineup DNA change, and play a new five-round challenge each day." name="description">
+  <meta content="Make one legal swap on five source-labeled daily Scout boards, then reveal each validated fixed-board rank." name="description">
   <meta content="noindex,follow,max-image-preview:large" name="robots">
   <meta content="#1f2fa3" name="theme-color">
   <meta content="light dark" name="color-scheme">
   <meta content="Fix the Five | DJ's House of Cards &amp; Comics" property="og:title">
-  <meta content="One move. Five roles. Make it work in a source-labeled historical lineup challenge." property="og:description">
+  <meta content="One move. Five roles. Make it work on source-labeled daily Scout boards spanning validated seasons." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/fix-the-five/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
   <link href="../../styles.css?v=20260905g" rel="stylesheet">
@@ -20,7 +20,7 @@
   <link href="../../site.webmanifest?v=20260905g" rel="manifest">
   <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
-  <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"Game","@id":"https://www.djshouseofcards-comics.com/tools/fix-the-five/#game","url":"https://www.djshouseofcards-comics.com/tools/fix-the-five/","name":"Fix the Five","description":"A five-round, source-labeled historical lineup challenge with transparent role-coverage results.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US","gamePlatform":"Web browser","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":1}}</script>
+  <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"Game","@id":"https://www.djshouseofcards-comics.com/tools/fix-the-five/#game","url":"https://www.djshouseofcards-comics.com/tools/fix-the-five/","name":"Fix the Five","description":"A five-round, source-labeled daily lineup challenge ranked by a validated Scout model on each fixed board.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US","gamePlatform":"Web browser","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":1}}</script>
  </head>
  <body class="fan-tools-page fix-five-page" data-page="fan-tools">
   <a class="skip-link" href="#mainContent">Skip to Fix the Five</a>
@@ -52,23 +52,23 @@
     <div class="container page-hero-card fix-five-hero-card">
      <nav aria-label="Breadcrumb" class="breadcrumb-nav"><ol class="breadcrumb-list"><li class="breadcrumb-list__item"><a href="../../index.html">Home</a></li><li class="breadcrumb-list__item"><a href="../index.html">Fan Tools</a></li><li class="breadcrumb-list__item"><span aria-current="page" class="breadcrumb-current">Fix the Five</span></li></ol></nav>
      <div class="fix-five-hero-layout">
-      <div class="fix-five-hero-copy"><span class="kicker">Live historical lineup game</span><h1 class="page-title">Fix the Five.</h1><p>One move. Five roles. Make it work. Choose a legal replacement from a fixed historical board, then see exactly how the Lineup DNA changes.</p><div class="fix-five-hero-pills"><span>Five rounds</span><span>Daily seed</span><span>Local streak</span></div></div>
-      <aside aria-label="Game rules" class="fix-five-rule-card"><span class="fix-five-rule-marker" aria-hidden="true">5×</span><div><strong>Make one move</strong><p>Scores compare source-labeled role and stat fit on the published candidate board—not predicted wins.</p></div></aside>
+      <div class="fix-five-hero-copy"><span class="kicker">Daily Scout lineup game</span><h1 class="page-title">Fix the Five.</h1><p>One move. Five roles. Make it work. Repair a source-labeled lineup on five daily Scout boards, then reveal the fixed-board rank of each legal swap.</p><div class="fix-five-hero-pills"><span>Five rounds</span><span>Daily seed</span><span>Scout ranked</span></div></div>
+      <aside aria-label="Game rules" class="fix-five-rule-card"><span class="fix-five-rule-marker" aria-hidden="true">5×</span><div><strong>Make one move</strong><p>Every result is ranked by the validated Scout model within that one disclosed board—not predicted wins.</p></div></aside>
      </div>
     </div>
    </section>
    <section class="container fix-five-workspace" aria-label="Fix the Five game">
     <div class="fix-five-status-row">
-     <div><span class="kicker">Today’s run</span><h2 id="runTitle">Loading today’s five…</h2><p id="runDescription">Preparing the reviewed historical challenge pack.</p></div>
+     <div><span class="kicker">Today’s run</span><h2 id="runTitle">Loading today’s Scout five…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div>
      <div class="fix-five-scoreboard" aria-label="Local game progress"><div><span>Round</span><strong id="roundCount">—</strong></div><div><span>Best</span><strong id="bestScore">—</strong></div><div><span>Streak</span><strong id="streakCount">—</strong></div></div>
     </div>
     <div class="fix-five-progress" aria-label="Run progress" id="runProgress"></div>
-    <p aria-live="polite" class="fix-five-live-status" id="gameStatus" role="status">Loading the reviewed historical source.</p>
+    <p aria-live="polite" class="fix-five-live-status" id="gameStatus" role="status">Loading the validated Scout board.</p>
     <div class="fix-five-layout" id="gameWorkspace" hidden>
      <section class="fix-five-main-card" aria-labelledby="challengeTitle" id="challengePanel"></section>
      <aside class="fix-five-sidebar">
-      <section class="fix-five-method-card"><span class="kicker">How scoring works</span><h2>Transparent by design</h2><ol><li><strong>Choose</strong><span>Pick one legal replacement from the published board.</span></li><li><strong>Compare</strong><span>See role coverage before and after the swap.</span></li><li><strong>Score</strong><span>Earn up to 100 for distance from the best legal published answer.</span></li></ol><p class="fix-five-contract-copy">Each result is 62% direct historical objective and 38% source-bounded Lineup DNA coverage, ranked only against the legal candidates on this fixed board. Limited source-minute rates are conservatively pulled toward the roster’s minute-weighted center before ranking.</p><details class="fix-five-contract-details"><summary>Read the full scoring contract</summary><p>Role signals use only the visible historical roster snapshot. Ball pressure is a steals-and-ball-security proxy, and this game does not predict wins or claim a five actually played together.</p></details></section>
-      <section class="fix-five-source-card" aria-labelledby="sourceHeading"><span class="kicker">Source boundary</span><h2 id="sourceHeading">Historical snapshot</h2><p id="sourceCopy">This game only loads a reviewed, public historical roster snapshot.</p></section>
+      <section class="fix-five-method-card"><span class="kicker">How scoring works</span><h2>Scout ranked, source clear</h2><ol><li><strong>Choose</strong><span>Pick one legal replacement from a disclosed daily board.</span></li><li><strong>Reveal</strong><span>Get its relative rank only after you lock the swap.</span></li><li><strong>Compare</strong><span>Earn up to 100 against the legal candidates on that same board.</span></li></ol><p class="fix-five-contract-copy">The validated Scout offense/defense model determines every rank. Public historical stats describe the source player only; raw Scout values, coefficients, and archive details are never sent to the browser.</p><details class="fix-five-contract-details"><summary>Read the full scoring contract</summary><p>Today’s rotation can use a single team-season, a franchise across validated seasons, or a randomized multi-season player pool. It never substitutes an old board or a non-Scout score when a validated source is unavailable.</p></details></section>
+      <section class="fix-five-source-card" aria-labelledby="sourceHeading"><span class="kicker">Daily source</span><h2 id="sourceHeading">Scout board loading</h2><p id="sourceCopy">This game appears only when a validated Scout source is ready.</p></section>
       <section class="fix-five-run-actions" aria-label="Run controls"><button class="button-secondary" id="restartRun" type="button">Restart this run</button><a class="button-secondary" href="../index.html">More fan tools</a></section>
      </aside>
     </div>
@@ -82,6 +82,7 @@
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">↑</button>
   <script defer src="../../core.js?v=20260905g"></script>
   <script defer src="../../nav.js?v=20260905g"></script>
-  <script type="module" src="./fix-the-five.js?v=20260905g"></script>
+  <script defer src="../../supabase-client.js?v=20260905g"></script>
+  <script type="module" src="./scout-fix-the-five.js?v=20260905g"></script>
  </body>
 </html>

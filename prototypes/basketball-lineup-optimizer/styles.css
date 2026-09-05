@@ -655,6 +655,8 @@ body[data-experience-mode="simple"] .simple-only {
   display: block;
 }
 
+.player-usage-scenario { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .5rem; font-size: .8rem; }
+.player-usage-scenario input { width: 6rem; min-height: 2.5rem; padding: .4rem .5rem; font: inherit; }
 body[data-experience-mode="simple"] .detailed-only,
 body[data-experience-mode="simple"] .detailed-only-column,
 body[data-experience-mode="simple"] .player-table th:nth-child(7),

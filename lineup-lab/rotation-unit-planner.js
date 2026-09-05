@@ -14,7 +14,7 @@
  * discarded; the five real role slots form one legal on-court unit per minute.
  */
 
-export const ROTATION_UNIT_MODEL_VERSION = "exact-unit-decomposition-v1";
+export const ROTATION_UNIT_MODEL_VERSION = "exact-units-load-balance-v2";
 
 const FRAME_COUNT = 48;
 const COURT_SLOTS = Object.freeze(["S1", "S2", "S3", "S4", "S5"]);
@@ -130,8 +130,11 @@ function compressStints(frames) {
 }
 
 /** Plan exact one-minute units from an optimizer rotation result. */
-export function planRotationUnits(players, rotation) {
+export function planRotationUnits(players, rotation, { usageById = null } = {}) {
   const roster = Array.isArray(players) ? players : [];
+  if (new Set(roster.map(player => String(player.id))).size !== roster.length) {
+    return { ok: false, version: ROTATION_UNIT_MODEL_VERSION, reason: "Duplicate player identity in unit plan." };
+  }
   const byPlayer = rotation?.positionMinutes?.byPlayer;
   if (!rotation?.positionMinutes?.enforced || !byPlayer) {
     return {
@@ -260,11 +263,15 @@ export function planRotationUnits(players, rotation) {
   if (!minutesMatch) {
     return { ok: false, version: ROTATION_UNIT_MODEL_VERSION, reason: "Unit totals did not reconcile to the exact minute plan." };
   }
+  const sharingOptimization = improveUnitResponsibility(frames, usageById);
   const stints = compressStints(frames);
   return {
     ok: true,
     version: ROTATION_UNIT_MODEL_VERSION,
     exact: true,
+    // `exact` above certifies minute/role feasibility ONLY. Co-court selection
+    // is explicitly a local secondary optimization, not a global synergy fit.
+    sharingOptimization,
     frameMinutes: 1,
     frames,
     stints,
@@ -277,4 +284,58 @@ export function planRotationUnits(players, rotation) {
       roleMinutesMatch: true,
     },
   };
+}
+
+/**
+ * Stagger offensive responsibility instead of displaying arbitrary matchings.
+ * With fixed player minutes, total observed usage is constant. Minimizing the
+ * sum of squared five-player load gaps therefore spreads creators across
+ * units. This is a scheduling preference, NOT evidence that two players have
+ * a learned positive/negative chemistry effect or a better win probability.
+ *
+ * Swap only identical court roles and only between units that do not already
+ * contain the incoming player. Every swap preserves all 240 player/role
+ * minutes and five distinct players per minute. Strict descent terminates on
+ * the finite schedule space; there is no candidate shortlist/iteration cap.
+ */
+export function improveUnitResponsibility(frames, usageById) {
+  const ids = [...new Set(frames.flatMap(frame => frame.playerIds))];
+  const share = id => usageById instanceof Map ? usageById.get(id) : usageById?.[id];
+  if (!usageById || ids.some(id => typeof share(id) !== "number" || !Number.isFinite(share(id)) || share(id) < 0 || share(id) > 1)) {
+    return { applied: false, reason: "Comparable usage evidence is required for every selected player; no missing usage was imputed." };
+  }
+  const loads = frames.map(frame => frame.playerIds.reduce((sum, id) => sum + share(id), 0));
+  const loss = values => values.reduce((sum, value) => sum + (value - 1) ** 2, 0);
+  const before = loss(loads);
+  let exchanges = 0;
+  while (true) {
+    let best = null;
+    for (let first = 0; first < frames.length; first++) for (let second = first + 1; second < frames.length; second++) {
+      for (const role of ROLE_KEYS) for (const a of frames[first].roles[role]) for (const b of frames[second].roles[role]) {
+        if (a === b || frames[first].playerIds.includes(b) || frames[second].playerIds.includes(a)) continue;
+        const delta = share(b) - share(a);
+        const gain = (loads[first] - 1) ** 2 + (loads[second] - 1) ** 2
+          - (loads[first] + delta - 1) ** 2 - (loads[second] - delta - 1) ** 2;
+        if (gain > 1e-12 && (!best || gain > best.gain + 1e-12)) best = { first, second, role, a, b, delta, gain };
+      }
+    }
+    if (!best) break;
+    const { first, second, role, a, b, delta } = best;
+    for (const [index, outgoing, incoming] of [[first, a, b], [second, b, a]]) {
+      frames[index].roles[role] = frames[index].roles[role].map(id => id === outgoing ? incoming : id).sort();
+      frames[index].playerIds = ROLE_KEYS.flatMap(key => frames[index].roles[key]);
+    }
+    loads[first] += delta; loads[second] -= delta; exchanges++;
+  }
+  const meanLoad = loads.reduce((sum, value) => sum + value, 0) / frames.length;
+  const after = loss(loads);
+  // Jensen gives a valid relaxed lower bound, even when exact role splits make
+  // perfectly equal usage unattainable. Report the gap; never claim optimality
+  // just because no two-frame exchange improves the schedule.
+  const lowerBound = frames.length * (meanLoad - 1) ** 2;
+  return { applied: true, objective: "squared-unit-offensive-load-gap", exchanges,
+    before, after, relaxedLowerBound: lowerBound, boundGap: Math.max(0, after - lowerBound),
+    optimality: after <= lowerBound + 1e-10 ? "relaxed-bound-attained" : "pair-exchange-local-optimum",
+    unitUsageShares: loads, playerMinuteTotalsChanged: false,
+    reason: "Creators are staggered while exact player and role minutes are preserved. This balances offensive responsibility; it is not a fitted chemistry or matchup effect." };
 }
