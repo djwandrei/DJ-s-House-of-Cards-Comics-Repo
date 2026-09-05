@@ -20,6 +20,14 @@ const migrationUrls = [
     '../../supabase-analytics/supabase/migrations/20260904123000_add_nba_scout_rapm_calibration_allowlist.sql',
     import.meta.url,
   ),
+  new URL(
+    '../../supabase-analytics/supabase/migrations/20260904200000_add_nba_scout_chunked_import.sql',
+    import.meta.url,
+  ),
+  new URL(
+    '../../supabase-analytics/supabase/migrations/20260904210000_fix_nba_scout_chunk_expected_count_validation.sql',
+    import.meta.url,
+  ),
 ];
 
 test('Scout query index is private, immutable, and service-role RPC-only', async () => {
@@ -40,6 +48,8 @@ test('Scout query index is private, immutable, and service-role RPC-only', async
   const functions = [
     'begin_nba_scout_archive_import(jsonb)',
     'ingest_nba_scout_archive_shard(uuid, jsonb)',
+    'register_nba_scout_archive_shard(uuid, jsonb)',
+    'ingest_nba_scout_archive_shard_chunk(uuid, uuid, text, jsonb)',
     'ingest_nba_scout_rapm(uuid, jsonb)',
     'finalize_nba_scout_archive_import(uuid)',
     'nba_scout_archive_descriptor(uuid)',
@@ -63,6 +73,9 @@ test('Scout query index is private, immutable, and service-role RPC-only', async
   assert.match(sql, /constraint nba_scout_archive_imports_bucket_prefix_key unique \(archive_bucket, archive_prefix\)/);
   assert.match(sql, /payload_sha256 text not null check \(payload_sha256 ~ '\^\[a-f0-9\]\{64\}\$'\)/);
   assert.match(sql, /if p_limit is null or p_limit < 1 or p_limit > 1000 then/);
+  assert.match(sql, /if v_count < 1 or v_count > 1000 then/);
+  assert.match(sql, /chunked shard registration requires an import id plus shard and expected objects/);
+  assert.match(sql, /coalesce\(v_expected ->> v_key, ''\) !~ '\^\[0-9\]\+\$'/);
   assert.match(sql, /nba_scout_compact_jsonb_is_safe/);
   assert.doesNotMatch(sql, /grant execute on function public\.get_nba_scout_[^(]+\([^;]+\) to anon, authenticated;/);
 

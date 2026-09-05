@@ -7,6 +7,8 @@ import test from 'node:test';
 import { gzipSync } from 'node:zlib';
 import {
   buildScoutArchiveQueryPlan,
+  chunkRowsForRpc,
+  MAX_SCOUT_RPC_CHUNK_BYTES,
   optionsFromArgs,
   runScoutArchiveImport,
 } from '../import-local-scout-analytics.mjs';
@@ -257,6 +259,20 @@ test('apply requires remote verification and write confirmation before any reque
   assert.throws(() => optionsFromArgs(['--archive', '..']), /workspace/);
 });
 
+test('Scout RPC batches are bounded by the complete serialized request body', () => {
+  const rows = [{ value: 'a'.repeat(600) }, { value: 'b'.repeat(600) }];
+  const makeBody = (p_rows) => ({ p_archive_import_id: IMPORT_ID, p_rows });
+  const chunks = chunkRowsForRpc({ rows, makeBody, maximumBytes: 1_024 });
+  assert.deepEqual(chunks.map((chunk) => chunk.length), [1, 1]);
+  for (const chunk of chunks) {
+    assert.ok(Buffer.byteLength(JSON.stringify(makeBody(chunk))) <= 1_024);
+  }
+  assert.throws(
+    () => chunkRowsForRpc({ rows: [{ value: 'x'.repeat(2_000) }], makeBody, maximumBytes: 1_024 }),
+    /exceeds the 1024-byte RPC chunk limit/,
+  );
+});
+
 test('guarded apply uses only private Storage and RPC endpoints and strips raw-shaped data', async () => {
   const fixture = await fixtureArchive();
   const previous = {
@@ -272,6 +288,9 @@ test('guarded apply uses only private Storage and RPC endpoints and strips raw-s
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role';
     process.env.NBA_SCOUT_QUERY_IMPORT_ALLOW_WRITE = 'confirmed';
     const calls = [];
+    const retryDelays = [];
+    const progress = [];
+    let transientChunkFailure = true;
     const fetchImpl = async (url, options = {}) => {
       calls.push({ url, options });
       if (url.includes('/storage/v1/bucket/')) return response({ id: 'nba-scout-analytics-archive', public: false });
@@ -289,23 +308,38 @@ test('guarded apply uses only private Storage and RPC endpoints and strips raw-s
         return response(rows);
       }
       if (url.includes('/rpc/begin_nba_scout_archive_import')) return response({ archiveImportId: IMPORT_ID, mode: 'created-staging' });
-      if (url.includes('/rpc/ingest_nba_scout_archive_shard')) return response({ mode: 'ingested' });
+      if (url.includes('/rpc/register_nba_scout_archive_shard')) return response({ mode: 'registered' });
+      if (url.includes('/rpc/ingest_nba_scout_archive_shard_chunk')) {
+        if (transientChunkFailure) {
+          transientChunkFailure = false;
+          return response('temporary edge error', { status: 520 });
+        }
+        return response({ mode: 'ingested' });
+      }
       if (url.includes('/rpc/ingest_nba_scout_rapm')) return response({ mode: 'ingested' });
       if (url.includes('/rpc/finalize_nba_scout_archive_import')) return response({ status: 'ready', mode: 'ready', counts: { teams: 1 } });
       throw new Error(`Unexpected request: ${url}`);
     };
-    const result = await runScoutArchiveImport({ archiveDir: fixture.archive, reportPath: null, verifyRemote: true, apply: true }, { fetchImpl });
+    const result = await runScoutArchiveImport(
+      { archiveDir: fixture.archive, reportPath: null, verifyRemote: true, apply: true },
+      { fetchImpl, sleepImpl: async (delayMs) => retryDelays.push(delayMs), onProgress: (event) => progress.push(event) },
+    );
     assert.equal(result.import.ingestedTeams, 1);
     assert.equal(calls.some((call) => /\/storage\/v1\/object\/(?!list\/)/.test(call.url)), false);
-    assert.equal(calls.filter((call) => call.url.includes('/rest/v1/rpc/')).length, 4);
+    assert.equal(calls.filter((call) => call.url.includes('/rest/v1/rpc/')).length, 11);
+    assert.deepEqual(retryDelays, [750]);
+    assert.ok(progress.some((event) => event.event === 'database-retry' && event.status === 520));
     const requestBodies = calls.map((call) => String(call.options.body ?? '')).join('\n');
     assert.equal(requestBodies.includes('playByPlay'), false);
     assert.equal(requestBodies.includes('providerPayload'), false);
     assert.equal(requestBodies.includes('rawPbp'), false);
     assert.equal(requestBodies.includes('aOnBOn'), true);
-    const shardCall = calls.find((call) => call.url.includes('/rpc/ingest_nba_scout_archive_shard'));
-    const shardPayload = JSON.parse(shardCall.options.body).p_payload;
-    assert.deepEqual(shardPayload.lineups[0].projection, {
+    const chunkCalls = calls.filter((call) => call.url.includes('/rpc/ingest_nba_scout_archive_shard_chunk'));
+    assert.ok(chunkCalls.length >= 6);
+    assert.ok(chunkCalls.every((call) => Buffer.byteLength(String(call.options.body)) <= MAX_SCOUT_RPC_CHUNK_BYTES));
+    const shardCall = chunkCalls.find((call) => JSON.parse(call.options.body).p_section === 'lineups');
+    const shardPayload = JSON.parse(shardCall.options.body).p_rows[0];
+    assert.deepEqual(shardPayload.projection, {
       status: 'available',
       model: 'fixture-possession-lineup-v1',
       playerCount: 2,

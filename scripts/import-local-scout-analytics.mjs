@@ -31,6 +31,20 @@ const DEFAULT_BUCKET = 'nba-scout-analytics-archive';
 const WRITE_CONFIRMATION_ENV = 'NBA_SCOUT_QUERY_IMPORT_ALLOW_WRITE';
 const SUPPORTED_SCHEMA_VERSION = 4;
 const SUPPORTED_METRICS_VERSION = 'nba-scout-metrics-v4';
+// A single team's compact data is still too large for a reliable one-request
+// PostgREST write. Keep batches well below the managed gateway's payload range
+// and let the database validate each small, idempotent section write.
+export const MAX_SCOUT_RPC_CHUNK_BYTES = 750 * 1024;
+const MAX_TRANSIENT_RPC_ATTEMPTS = 4;
+const TRANSIENT_RPC_STATUSES = new Set([408, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
+const CHUNKED_SHARD_SECTIONS = Object.freeze([
+  'team_contexts',
+  'lineups',
+  'player_on_off',
+  'player_on_off_contexts',
+  'player_profiles',
+  'wowy',
+]);
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 // The two accepted names represent the same immutable package-validation
@@ -868,6 +882,71 @@ function buildShardPayload(source, descriptor, manifest) {
   return payload;
 }
 
+function encodedJsonBytes(value) {
+  return Buffer.byteLength(JSON.stringify(value), 'utf8');
+}
+
+/**
+ * Split one already-sanitized row array into bounded JSON request bodies.
+ *
+ * This deliberately measures the complete RPC body, not just its rows: URL
+ * metadata and JSON punctuation count toward the gateway limit too. A row that
+ * cannot fit alone fails locally instead of producing a hard-to-diagnose 5xx.
+ */
+export function chunkRowsForRpc({ rows, makeBody, maximumBytes = MAX_SCOUT_RPC_CHUNK_BYTES }) {
+  if (!Array.isArray(rows)) throw new Error('Scout RPC chunk rows must be an array.');
+  if (typeof makeBody !== 'function') throw new Error('Scout RPC chunk builder must be a function.');
+  if (!Number.isInteger(maximumBytes) || maximumBytes < 1_024) {
+    throw new Error('Scout RPC chunk byte limit must be at least 1024 bytes.');
+  }
+  if (rows.length === 0) return [];
+
+  // `makeBody([])` provides the stable envelope size. Verifying every emitted
+  // batch below keeps this fast calculation honest if the envelope evolves.
+  const emptyBodyBytes = encodedJsonBytes(makeBody([]));
+  const chunks = [];
+  let current = [];
+  let currentBytes = emptyBodyBytes;
+  for (const row of rows) {
+    const rowBytes = encodedJsonBytes(row);
+    const addition = rowBytes + (current.length > 0 ? 1 : 0);
+    if (current.length > 0 && currentBytes + addition > maximumBytes) {
+      if (encodedJsonBytes(makeBody(current)) > maximumBytes) {
+        throw new Error('Scout RPC chunk calculation exceeded its configured byte limit.');
+      }
+      chunks.push(current);
+      current = [];
+      currentBytes = emptyBodyBytes;
+    }
+    if (current.length === 0 && currentBytes + rowBytes > maximumBytes) {
+      throw new Error(`A compact Scout row is ${currentBytes + rowBytes} bytes and exceeds the ${maximumBytes}-byte RPC chunk limit.`);
+    }
+    current.push(row);
+    currentBytes += rowBytes + (current.length > 1 ? 1 : 0);
+  }
+  if (current.length > 0) {
+    if (encodedJsonBytes(makeBody(current)) > maximumBytes) {
+      throw new Error('Scout RPC chunk calculation exceeded its configured byte limit.');
+    }
+    chunks.push(current);
+  }
+  return chunks;
+}
+
+function shardRegistrationPayload(payload) {
+  return {
+    shard: payload.shard,
+    expected: {
+      team_contexts: payload.team_contexts.length,
+      lineups: payload.lineups.length,
+      player_on_off: payload.player_on_off.length,
+      player_on_off_contexts: payload.player_on_off_contexts.length,
+      player_profiles: payload.player_profiles.length,
+      wowy: payload.wowy.length,
+    },
+  };
+}
+
 function compactRapmModel(model, source) {
   const metadata = pickScalars(source, [
     'modelVersion',
@@ -1158,23 +1237,123 @@ function compactResponseText(value) {
   return String(value ?? '').replace(/\s+/g, ' ').slice(0, 700);
 }
 
-async function requestRpc({ projectUrl, serviceRoleKey, functionName, body, fetchImpl }) {
-  const response = await fetchImpl(`${projectUrl}/rest/v1/rpc/${encodeURIComponent(functionName)}`, {
-    method: 'POST',
-    headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-  const raw = await response.text();
-  if (!response.ok) throw new Error(`${functionName} failed with HTTP ${response.status}: ${compactResponseText(raw)}`);
-  try {
-    return raw.trim() ? JSON.parse(raw) : null;
-  } catch {
-    throw new Error(`${functionName} returned malformed JSON.`);
+function defaultSleep(delayMs) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
+/**
+ * All private import writes are either immutable registrations or row-key
+ * idempotent inserts. Retrying a gateway failure is therefore safe: a request
+ * that committed before its response was lost returns the same existing rows
+ * on its next attempt rather than duplicating data.
+ */
+async function requestRpc({
+  projectUrl,
+  serviceRoleKey,
+  functionName,
+  body,
+  fetchImpl,
+  sleepImpl = defaultSleep,
+  onRetry = null,
+}) {
+  const url = `${projectUrl}/rest/v1/rpc/${encodeURIComponent(functionName)}`;
+  const requestBody = JSON.stringify(body);
+  for (let attempt = 1; attempt <= MAX_TRANSIENT_RPC_ATTEMPTS; attempt += 1) {
+    let response;
+    try {
+      response = await fetchImpl(url, {
+        method: 'POST',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+    } catch (error) {
+      if (attempt === MAX_TRANSIENT_RPC_ATTEMPTS) {
+        throw new Error(`${functionName} request failed after ${attempt} attempts: ${compactResponseText(error?.message ?? error)}`);
+      }
+      const delayMs = 750 * (2 ** (attempt - 1));
+      onRetry?.({ functionName, attempt, maxAttempts: MAX_TRANSIENT_RPC_ATTEMPTS, delayMs, status: null });
+      await sleepImpl(delayMs);
+      continue;
+    }
+    const raw = await response.text();
+    if (!response.ok) {
+      if (TRANSIENT_RPC_STATUSES.has(response.status) && attempt < MAX_TRANSIENT_RPC_ATTEMPTS) {
+        const delayMs = 750 * (2 ** (attempt - 1));
+        onRetry?.({ functionName, attempt, maxAttempts: MAX_TRANSIENT_RPC_ATTEMPTS, delayMs, status: response.status });
+        await sleepImpl(delayMs);
+        continue;
+      }
+      throw new Error(`${functionName} failed with HTTP ${response.status}: ${compactResponseText(raw)}`);
+    }
+    try {
+      return raw.trim() ? JSON.parse(raw) : null;
+    } catch {
+      throw new Error(`${functionName} returned malformed JSON.`);
+    }
   }
+  throw new Error(`${functionName} exhausted its retry loop unexpectedly.`);
+}
+
+async function ingestShardInBoundedChunks({
+  config,
+  archiveImportId,
+  payload,
+  fetchImpl,
+  sleepImpl,
+  onRetry,
+  onProgress,
+  maximumChunkBytes,
+}) {
+  const teamId = requiredUuid(payload?.shard?.team_id, 'Scout compact shard team ID');
+  const registration = await requestRpc({
+    ...config,
+    functionName: 'register_nba_scout_archive_shard',
+    body: { p_archive_import_id: archiveImportId, p_payload: shardRegistrationPayload(payload) },
+    fetchImpl,
+    sleepImpl,
+    onRetry,
+  });
+  if (!['registered', 'already-registered'].includes(registration?.mode)) {
+    throw new Error('Private Scout shard registration returned an unexpected mode.');
+  }
+
+  let chunkCount = 0;
+  for (const section of CHUNKED_SHARD_SECTIONS) {
+    const rows = payload[section];
+    const makeBody = (chunkRows) => ({
+      p_archive_import_id: archiveImportId,
+      p_team_id: teamId,
+      p_section: section,
+      p_rows: chunkRows,
+    });
+    const chunks = chunkRowsForRpc({ rows, makeBody, maximumBytes: maximumChunkBytes });
+    for (const chunkRows of chunks) {
+      const response = await requestRpc({
+        ...config,
+        functionName: 'ingest_nba_scout_archive_shard_chunk',
+        body: makeBody(chunkRows),
+        fetchImpl,
+        sleepImpl,
+        onRetry,
+      });
+      if (!['ingested', 'already-ingested'].includes(response?.mode)) {
+        throw new Error(`Private Scout ${section} chunk returned an unexpected mode.`);
+      }
+      chunkCount += 1;
+    }
+    onProgress?.({
+      event: 'database-ingest-section',
+      teamId,
+      section,
+      rowCount: rows.length,
+      chunkCount: chunks.length,
+    });
+  }
+  return { teamId, registrationMode: registration.mode, chunkCount };
 }
 
 async function verifyPrivateStorage(queryPlan, config, fetchImpl) {
@@ -1234,7 +1413,12 @@ async function writeReport(reportPath, report) {
   return reportPath;
 }
 
-export async function runScoutArchiveImport(options, { fetchImpl = globalThis.fetch, onProgress = null } = {}) {
+export async function runScoutArchiveImport(options, {
+  fetchImpl = globalThis.fetch,
+  onProgress = null,
+  sleepImpl = defaultSleep,
+  maximumChunkBytes = MAX_SCOUT_RPC_CHUNK_BYTES,
+} = {}) {
   const queryPlan = await buildScoutArchiveQueryPlan({ archiveDir: options.archiveDir, onProgress });
   let report = reportForQueryPlan(queryPlan);
   if (!options.verifyRemote && !options.apply) {
@@ -1255,8 +1439,10 @@ export async function runScoutArchiveImport(options, { fetchImpl = globalThis.fe
     return reportPath ? { ...report, reportPath } : report;
   }
 
+  const onRetry = (retry) => onProgress?.({ event: 'database-retry', ...retry });
+  const rpcOptions = { ...config, fetchImpl, sleepImpl, onRetry };
   const begin = await requestRpc({
-    ...config,
+    ...rpcOptions,
     functionName: 'begin_nba_scout_archive_import',
     body: {
       p_payload: {
@@ -1275,7 +1461,6 @@ export async function runScoutArchiveImport(options, { fetchImpl = globalThis.fe
         expectedRows: queryPlan.expectedRows,
       },
     },
-    fetchImpl,
   });
   const archiveImportId = requiredUuid(begin?.archiveImportId, 'Private Scout import response archiveImportId');
   if (begin?.mode === 'already-ready') {
@@ -1286,32 +1471,38 @@ export async function runScoutArchiveImport(options, { fetchImpl = globalThis.fe
 
   let ingestedTeams = 0;
   await scanShardPayloads(queryPlan.plan, async (payload, progress) => {
-    const response = await requestRpc({
-      ...config,
-      functionName: 'ingest_nba_scout_archive_shard',
-      body: { p_archive_import_id: archiveImportId, p_payload: payload },
+    const chunked = await ingestShardInBoundedChunks({
+      config,
+      archiveImportId,
+      payload,
       fetchImpl,
+      sleepImpl,
+      onRetry,
+      onProgress,
+      maximumChunkBytes,
     });
-    if (!['ingested', 'already-ingested'].includes(response?.mode)) {
-      throw new Error(`Private Scout shard ingest returned an unexpected mode for ${progress.relativePath}.`);
-    }
     ingestedTeams += 1;
-    onProgress?.({ event: 'database-ingest', completedTeams: ingestedTeams, totalTeams: queryPlan.expectedRows.teams, ...progress });
+    onProgress?.({
+      event: 'database-ingest',
+      completedTeams: ingestedTeams,
+      totalTeams: queryPlan.expectedRows.teams,
+      chunkCount: chunked.chunkCount,
+      registrationMode: chunked.registrationMode,
+      ...progress,
+    });
   });
   const rapmResponse = await requestRpc({
-    ...config,
+    ...rpcOptions,
     functionName: 'ingest_nba_scout_rapm',
     body: { p_archive_import_id: archiveImportId, p_payload: queryPlan.rapm },
-    fetchImpl,
   });
   if (!['ingested', 'already-ingested'].includes(rapmResponse?.mode)) {
     throw new Error('Private Scout RAPM ingest returned an unexpected mode.');
   }
   const finalized = await requestRpc({
-    ...config,
+    ...rpcOptions,
     functionName: 'finalize_nba_scout_archive_import',
     body: { p_archive_import_id: archiveImportId },
-    fetchImpl,
   });
   if (finalized?.status !== 'ready') throw new Error('Private Scout archive did not finalize as ready.');
   const complete = {

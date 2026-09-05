@@ -108,6 +108,13 @@ Do not place these values in a committed `.env` file. The importer requires
 `SUPABASE_URL` to exactly equal `NBA_ANALYTICS_SUPABASE_URL`, so a stale
 commerce environment is rejected before any remote operation.
 
+The importer registers each immutable team artifact once, then writes its
+already-sanitized compact sections in sub-megabyte batches. Gateway failures
+such as HTTP 520 are retried with backoff; rerunning the same guarded command
+also resumes the staging import without duplicating rows. Finalization refuses
+to mark an archive ready unless every team and every expected compact row count
+matches the validated manifest.
+
 ## Private RPC surface
 
 All functions below are granted only to `service_role`:
