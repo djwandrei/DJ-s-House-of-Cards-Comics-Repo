@@ -3,6 +3,8 @@ import test from 'node:test';
 import {
   checkCombinationContinuity,
   checkOffenseDefenseRapmCalibration,
+  checkRecencyWeightedRapm,
+  checkShardScope,
 } from '../validate-local-scout-analytics.mjs';
 
 function exactLineup({ games = 3, starters = 1, closers = 2 } = {}) {
@@ -108,4 +110,118 @@ test('O/D RAPM calibration verifies held-out baseline and component-ablation rec
     [],
   );
   assert.match(malformedErrors.join('\n'), /status does not match/);
+});
+
+test('multiseason RAPM coverage reconciles only positive-weight seasons', () => {
+  const options = {
+    seasonStartYears: [2024, 2025],
+    seasonStartYear: 2024,
+    latestSeasonStartYear: 2025,
+  };
+  const rapmCoverage = {
+    gameCount: 7,
+    observationCount: 30,
+    gamesBySeason: { 2024: 3, 2025: 4 },
+    observationsBySeason: { 2024: 10, 2025: 20 },
+    pairedPossessionsBySeason: { 2024: 50, 2025: 100 },
+    offensivePossessionsBySeason: { 2024: 100, 2025: 200 },
+  };
+  const zeroWeightScope = {
+    priorSeasonWeight: 0,
+    seasonWeights: { 2024: 0, 2025: 1 },
+    includedSeasonStartYears: [2025],
+    gameCount: 4,
+    totalPairedPossessions: 100,
+    totalEffectivePairedPossessions: 100,
+    chronologicalCalibration: null,
+  };
+
+  const netErrors = [];
+  checkRecencyWeightedRapm(
+    { ...zeroWeightScope, observationCount: 20 },
+    'Net RAPM',
+    'net',
+    rapmCoverage,
+    options,
+    netErrors,
+  );
+  assert.deepEqual(netErrors, []);
+
+  const offenseDefenseErrors = [];
+  checkRecencyWeightedRapm(
+    {
+      ...zeroWeightScope,
+      pairedStintObservationCount: 20,
+      totalOffensivePossessions: 200,
+      totalEffectiveOffensivePossessions: 200,
+    },
+    'Offense/defense RAPM',
+    'offenseDefense',
+    rapmCoverage,
+    options,
+    offenseDefenseErrors,
+  );
+  assert.deepEqual(offenseDefenseErrors, []);
+
+  const malformedErrors = [];
+  checkRecencyWeightedRapm(
+    {
+      ...zeroWeightScope,
+      observationCount: 20,
+      includedSeasonStartYears: [2024, 2025],
+      totalEffectivePairedPossessions: 125,
+    },
+    'Net RAPM',
+    'net',
+    rapmCoverage,
+    options,
+    malformedErrors,
+  );
+  assert.match(malformedErrors.join('\n'), /included seasons do not match/);
+  assert.match(malformedErrors.join('\n'), /effective paired possessions/);
+});
+
+test('single-season RAPM keeps its aggregate-counter compatibility path', () => {
+  const errors = [];
+  checkRecencyWeightedRapm(
+    {
+      observationCount: 8,
+      gameCount: 2,
+      totalPairedPossessions: 40,
+      totalEffectivePairedPossessions: 40,
+    },
+    'Net RAPM',
+    'net',
+    { observationCount: 8, gameCount: 2 },
+    { seasonStartYears: [2025], seasonStartYear: 2025, latestSeasonStartYear: 2025 },
+    errors,
+  );
+  assert.deepEqual(errors, []);
+});
+
+test('multiseason shard headers must carry the exact package scope', () => {
+  const options = {
+    seasonStartYears: [2024, 2025],
+    seasonStartYear: 2024,
+    latestSeasonStartYear: 2025,
+  };
+  const validErrors = [];
+  checkShardScope({
+    seasonStartYear: 2024,
+    seasonEndYear: 2026,
+    seasonStartYears: [2024, 2025],
+    latestSeasonStartYear: 2025,
+  }, 0, options, validErrors);
+  assert.deepEqual(validErrors, []);
+
+  const malformedErrors = [];
+  checkShardScope({
+    seasonStartYear: 2024,
+    seasonEndYear: 2025,
+    seasonStartYears: [2025],
+    latestSeasonStartYear: 2024,
+  }, 1, options, malformedErrors);
+  assert.match(malformedErrors.join('\n'), /season end/);
+  assert.match(malformedErrors.join('\n'), /season list/);
+  assert.match(malformedErrors.join('\n'), /latest season/);
 });

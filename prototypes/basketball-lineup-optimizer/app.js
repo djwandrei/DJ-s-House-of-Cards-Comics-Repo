@@ -74,7 +74,8 @@ const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
 // reconstructed team-average/rotation summary. A new prefix makes the browser
 // rebuild that source context immediately instead of waiting for the old
 // 24-hour entry to expire.
-const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v5";
+// Re-fetch older snapshots that predate the read-only season-evidence reader.
+const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v6";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NBA_CACHE_MAX_ENTRIES = 24;
 const DEFAULT_TEAM_CODE = "MIN";
@@ -2189,7 +2190,7 @@ function renderRotationEvidencePreview() {
   const rateCopy = `${rateEvidenceCount} of ${players.length} have same-season rate evidence`;
   const impactCopy = `${impactEvidenceCount} of ${players.length} have OBPM and DBPM`;
   const seasonCopy = seasonEvidenceCount > 0
-    ? `${seasonEvidenceCount} of ${players.length} have all-team season data; any unsupported metrics use the approximate per-appearance fallback`
+    ? `${seasonEvidenceCount} of ${players.length} have season data across their imported teams; any unsupported metrics use the approximate per-appearance fallback`
     : "all-team season evidence is not in this loaded snapshot, so the approximate per-appearance fallback is active";
   elements.rotationEvidencePreview.textContent = `Source check: ${rateCopy}; ${impactCopy}; ${seasonCopy}. Past team games and total minutes do not set the proposed allocation. The separate Scout option requires authorized, validated possession-level evidence.`;
   if ($("#modelModeInput").value === "scout") {
@@ -2203,7 +2204,7 @@ function renderRotationEvidencePreview() {
   } else {
     elements.simpleModelSummaryCopy.textContent = "The optimizer follows your game plan and hard minute limits. Historical rates are adjusted for limited evidence; workload changes are applied only by the selected projection. There is no preferred 18–32 minute range.";
     elements.simpleModelSummaryNote.textContent = seasonEvidenceCount > 0
-      ? "Complete all-team season evidence is used when available; team-stint games and totals never restrict selection or assigned minutes."
+      ? "Matching counts across imported teams inform the estimated rates, not minute limits. Missing metrics use the approximate fallback; complete source coverage is not independently verified."
       : "Better players can still earn larger roles. Until matching all-team evidence is available, the model uses approximate per-appearance opportunity evidence—never team-stint length."
   }
 }
@@ -3439,7 +3440,7 @@ function renderExactObjectiveReasons(player, result, insight) {
         ? `Your game-plan fit selected this roster. The optional recorded-workload rule then keeps the plan close to source usage inside its disclosed capacity window${historicalGuidance.status === "expanded-for-role-coverage" ? ", including the disclosed position-coverage expansion" : ""}.`
         : `${historicalGuidance.allocationStyleReason || "Minutes shift toward the best-fitting profiles inside the displayed recorded-minutes capacity caps."}`
       : `The optional past-minutes guardrail could not be applied, so minutes use the hard limits you set. ${historicalGuidance?.reason || "The report identifies the missing minutes evidence."}`
-    : "Game-plan minutes optimize inside the hard limits you set; source usage did not affect this result.";
+    : "Game-plan minutes optimize inside the hard limits you set. Source samples can inform estimated rates, but do not impose a minute target or cap.";
   const assignedRoleScoring = result?.best?.rotation?.diagnostics?.roleConditionedScoring;
   const workloadSaturation = assignedRoleScoring?.workloadSaturation;
   const confidenceReserveCopy = rateStability?.uncertaintyAdjustedPlayerMetricCount > 0
@@ -3459,6 +3460,22 @@ function renderExactObjectiveReasons(player, result, insight) {
       ? "This rotation uses the raw per-game comparison; the contribution below also reflects the proposed minutes."
       : "This lineup gives each selected player an equal share of the configured pool-relative objective.";
   details.append(basis);
+
+  // Keep team membership and rate evidence distinct where a fan asks "why?".
+  // This is available imported exposure, not a claim that every metric used
+  // it or that the original provider's complete season has been reconciled.
+  const seasonTotals = player.analytics?.seasonTotals;
+  const seasonEvidence = player.analytics?.seasonEvidence;
+  if (rotationBasis === "per36" && rateStability?.applied
+      && seasonEvidence?.scope === "season-wide" && seasonTotals?.games > 0) {
+    const sample = document.createElement("p");
+    const teamCount = seasonEvidence.teamStintCount;
+    const teamCopy = teamCount > 0
+      ? ` across ${formatNumber(teamCount, 0)} imported team${teamCount === 1 ? "" : "s"}`
+      : " across imported teams";
+    sample.textContent = `Available season sample: ${formatNumber(seasonTotals.games, 0)} games and ${formatNumber(seasonTotals.minutes, 0)} minutes${teamCopy}. Each metric needs matching counts; missing metrics use the approximate fallback. The card's visible stats still describe the selected team.`;
+    details.append(sample);
+  }
 
   const contribution = result?.best?.playerContributions?.[player.id];
   const entries = Object.entries(contribution?.metrics || {})
@@ -3489,14 +3506,9 @@ function renderExactObjectiveReasons(player, result, insight) {
   return details;
 }
 
-function replacementResultElement(playerId) {
+function replacementResultElements(playerId) {
   return [...elements.resultContent.querySelectorAll("[data-replacement-result]")]
-    .find((element) => element.dataset.replacementResult === playerId) || null;
-}
-
-function replacementButtonElement(playerId) {
-  return [...elements.resultContent.querySelectorAll('[data-action="exact-replacement"]')]
-    .find((element) => element.dataset.playerId === playerId) || null;
+    .filter((element) => element.dataset.replacementResult === playerId);
 }
 
 function replacementAnalysisMarkup(playerId, analysis) {
@@ -3522,7 +3534,8 @@ function replacementAnalysisMarkup(playerId, analysis) {
     `AST ${formatSignedDifference(deltas.assists)}`,
     `TOV ${formatSignedDifference(deltas.turnovers)}`,
   ].filter((part) => !part.endsWith("-"));
-  output.textContent = `Exact replacement: ${analysis.replacementName}. ${deltaParts.join(" · ")}. This is the best feasible one-player swap while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.`;
+  const removedName = currentPlayer(playerId)?.name || "the selected player";
+  output.textContent = `Exact one-player swap: remove ${removedName}; add ${analysis.replacementName}. ${deltaParts.join(" · ")}. This is the best feasible replacement while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.`;
   return output;
 }
 
@@ -3797,7 +3810,7 @@ function renderResultEvidence(result) {
       ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond observed roles. Uncertain advantages receive a disclosed evidence adjustment. No roster-size-based penalty or automatic target minute range is applied.`
       : "";
     const seasonEvidenceDetail = rateEvidence.seasonWideEvidencePlayers > 0
-      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching all-team season evidence for at least one metric; ${rateEvidence.perAppearanceEvidencePlayers || 0} used approximate per-appearance evidence for at least one metric. A player can be in both groups.`
+      ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching season counts across imported teams for at least one metric; ${rateEvidence.perAppearanceEvidencePlayers || 0} used approximate per-appearance evidence for at least one metric. A player can be in both groups. Complete source coverage is not independently verified.`
       : " Matching all-team season evidence was unavailable for this pool, so supported metrics used approximate per-appearance evidence.";
     strip.append(resultEvidenceItem(
       "Rate projection",
@@ -4328,6 +4341,154 @@ function renderInsightList(headingText, entries, { warning = false, emptyText } 
   return section;
 }
 
+function lineupDnaProfile(roleCoverage = {}) {
+  const coverage = Array.isArray(roleCoverage.coverage) ? roleCoverage.coverage : [];
+  const count = (status) => coverage.filter((role) => role.status === status).length;
+  const primaryStrength = (roleCoverage.strengths || [])[0] || null;
+  const pressurePoint = coverage.find((role) => role.status === "gap")
+    || coverage.find((role) => role.status === "thin")
+    || null;
+  return {
+    primaryStrength,
+    pressurePoint,
+    counts: {
+      covered: count("covered"),
+      thin: count("thin"),
+      gap: count("gap"),
+      unassessed: count("unassessed"),
+    },
+  };
+}
+
+function lineupDnaSourceContext(result) {
+  const scoutPrimary = Boolean(result?.best?.modelAdjustments?.scoutImpact?.additiveImpactPer100);
+  return scoutPrimary
+    ? {
+      label: "Scout objective · historical role context",
+      explanation: "The authorized Scout objective selected this group. Lineup DNA uses the historical team-season evidence only to describe its basketball roles and gaps.",
+    }
+    : {
+      label: "Historical team-season evidence",
+      explanation: "The exact game-plan optimizer selected this group, and Lineup DNA translates the same historical evidence into basketball roles and gaps.",
+    };
+}
+
+function renderLineupDnaCoverageCounts(roleCoverage) {
+  const { counts } = lineupDnaProfile(roleCoverage);
+  const list = document.createElement("dl");
+  list.className = "lineup-dna__counts";
+  for (const [label, value, tone] of [
+    ["Covered", counts.covered, "covered"],
+    ["Thin", counts.thin, "thin"],
+    ["No clear signal", counts.gap, "gap"],
+    ["Not assessed", counts.unassessed, "unassessed"],
+  ]) {
+    const item = document.createElement("div");
+    item.dataset.status = tone;
+    const term = document.createElement("dt");
+    term.textContent = label;
+    const description = document.createElement("dd");
+    description.textContent = String(value);
+    item.append(term, description);
+    list.append(item);
+  }
+  return list;
+}
+
+function preferredLineupDnaSwapPlayer(result, explanation) {
+  const unlocked = (result?.best?.players || []).filter((player) => !state.lockedIds.has(player.id));
+  return unlocked.find((player) => explanation?.replacements?.byRemovedPlayerId?.[player.id])
+    || unlocked[0]
+    || null;
+}
+
+function renderLineupDnaSwapTool(result, explanation) {
+  const section = document.createElement("section");
+  section.className = "lineup-dna__swap";
+  const heading = document.createElement("h4");
+  heading.textContent = "Test one change";
+  const intro = document.createElement("p");
+  intro.textContent = "Choose one selected player to remove. The exact solver keeps every other selected player and every current rule, then finds the best valid replacement.";
+  section.append(heading, intro);
+
+  const availablePlayers = (result?.best?.players || []).filter((player) => !state.lockedIds.has(player.id));
+  const preferred = preferredLineupDnaSwapPlayer(result, explanation);
+  if (!preferred || availablePlayers.length === 0) {
+    const unavailable = document.createElement("p");
+    unavailable.className = "lineup-dna__swap-note";
+    unavailable.textContent = "Every selected player is locked. Unlock one in the player choices to test an exact one-player change.";
+    section.append(unavailable);
+    return section;
+  }
+
+  const controls = document.createElement("div");
+  controls.className = "lineup-dna__swap-controls";
+  const label = document.createElement("label");
+  label.className = "field";
+  label.htmlFor = "lineupDnaSwapPlayer";
+  const labelText = document.createElement("span");
+  labelText.textContent = "Player to replace";
+  const select = document.createElement("select");
+  select.id = "lineupDnaSwapPlayer";
+  select.dataset.action = "lineup-dna-replacement-choice";
+  availablePlayers.forEach((player) => {
+    const option = document.createElement("option");
+    option.value = player.id;
+    option.textContent = player.name;
+    option.selected = player.id === preferred.id;
+    select.append(option);
+  });
+  label.append(labelText, select);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "button";
+  button.dataset.action = "lineup-dna-replacement";
+  button.dataset.playerId = preferred.id;
+  button.dataset.idleLabel = "Find the best valid replacement";
+  button.textContent = button.dataset.idleLabel;
+  controls.append(label, button);
+
+  const cached = state.replacementAnalyses.get(`${state.scenarioVersion}:${preferred.id}`);
+  const output = replacementAnalysisMarkup(preferred.id, cached);
+  output.dataset.lineupDnaReplacementOutput = "";
+  section.append(controls, output);
+  return section;
+}
+
+function syncLineupDnaReplacementChoice(select) {
+  const section = select.closest(".lineup-dna__swap");
+  const button = section?.querySelector('[data-action="lineup-dna-replacement"]');
+  const existing = section?.querySelector("[data-lineup-dna-replacement-output]");
+  const playerId = select.value;
+  if (!section || !button || !existing || !playerId) return;
+  button.dataset.playerId = playerId;
+  const cached = state.replacementAnalyses.get(`${state.scenarioVersion}:${playerId}`);
+  const output = replacementAnalysisMarkup(playerId, cached);
+  output.dataset.lineupDnaReplacementOutput = "";
+  existing.replaceWith(output);
+}
+
+function renderLineupDnaMethod(result, explanation) {
+  const sourceContext = lineupDnaSourceContext(result);
+  const steps = document.createElement("ol");
+  steps.className = "lineup-dna__method";
+  for (const [title, copy] of [
+    ["Exact selection", sourceContext.explanation],
+    ["Role translation", `Coverage compares the selected group with ${explanation.roleCoverage.referencePlayerCount} players available in this search. Limited-evidence labels stay visible but do not count as covered by default.`],
+    ["One-change test", "The replacement tool locks every other selected player, excludes the player you choose, and reruns the same exact eligibility, position, production, and minute rules."],
+  ]) {
+    const item = document.createElement("li");
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    const body = document.createElement("span");
+    body.textContent = copy;
+    item.append(strong, body);
+    steps.append(item);
+  }
+  return steps;
+}
+
 function renderRoleCoverageSummary(roleCoverage) {
   const section = document.createElement("section");
   section.className = "fan-report__roles";
@@ -4377,13 +4538,13 @@ function renderRoleCoverageSummary(roleCoverage) {
   return section;
 }
 
-function renderFanScoutingReport(result, explanation) {
+function renderLineupDnaReport(result, explanation) {
   if (!explanation?.available || !explanation.roleCoverage) return null;
   const best = result.best;
   const source = state.dataset?.source || {};
   const report = document.createElement("section");
-  report.className = "fan-report";
-  report.setAttribute("aria-labelledby", "fanReportHeading");
+  report.className = "fan-report lineup-dna-report";
+  report.setAttribute("aria-labelledby", "lineupDnaEvidenceHeading");
 
   const header = document.createElement("div");
   header.className = "fan-report__header";
@@ -4392,12 +4553,13 @@ function renderFanScoutingReport(result, explanation) {
   eyebrow.className = "eyebrow print-only";
   // The report explains a user-defined game plan using historical statistics. It does
   // not claim to reproduce a real NBA depth chart, so lead with the useful concept.
-  eyebrow.textContent = "Lineup Lab game-plan report";
+  eyebrow.textContent = "Lineup DNA report";
   const heading = document.createElement("h3");
-  heading.id = "fanReportHeading";
-  heading.textContent = "Strengths, gaps, and evidence";
+  heading.id = "lineupDnaEvidenceHeading";
+  heading.tabIndex = -1;
+  heading.textContent = "Lineup DNA evidence";
   const intro = document.createElement("p");
-  intro.textContent = "Explore the evidence behind this result: strengths, sample context, player comparisons, and alternatives. This is historical statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
+  intro.textContent = "See how this group's roles fit together, where its coverage is thin, and which evidence supports each label. This is statistical scouting—not a game prediction, depth chart, injury report, or betting recommendation.";
   headerText.append(eyebrow, heading, intro);
   const provenance = document.createElement("p");
   provenance.className = "report-provenance";
@@ -4410,7 +4572,7 @@ function renderFanScoutingReport(result, explanation) {
     source.provider || "Source context unavailable",
   ].join(" · ");
   header.append(headerText, provenance);
-  report.append(header);
+  report.append(header, renderLineupDnaMethod(result, explanation));
 
   const grid = document.createElement("div");
   grid.className = "fan-report__grid";
@@ -4473,7 +4635,8 @@ function renderSimpleResultOverview(result, fanExplanation) {
   const best = result.best;
   const scoutImpact = best.modelAdjustments?.scoutImpact?.additiveImpactPer100;
   const panel = document.createElement("section");
-  panel.className = "simple-result-overview simple-only";
+  panel.className = "simple-result-overview lineup-dna-summary";
+  panel.setAttribute("aria-labelledby", "lineupDnaHeading");
   const benchmark = document.createElement("div");
   benchmark.className = "simple-benchmark";
   if (scoutImpact) {
@@ -4508,14 +4671,31 @@ function renderSimpleResultOverview(result, fanExplanation) {
     .sort((left, right) => Number(right[1].scoreContribution) - Number(left[1].scoreContribution))
     .slice(0, 3)
     .map(([metric]) => resultMetricLabel(metric));
-  const deficiencies = fanExplanation?.roleCoverage?.deficiencies || [];
-  const alternative = result.alternatives?.[1];
-  // Keep Simple view answer-first. The four cards below deliberately reuse
-  // evidence already produced by the exact search and explanation layer; they
-  // never calculate a second score or change the selected lineup.
+  const roleCoverage = fanExplanation?.roleCoverage || { coverage: [], strengths: [], deficiencies: [] };
+  const { primaryStrength, pressurePoint } = lineupDnaProfile(roleCoverage);
+  const sourceContext = lineupDnaSourceContext(result);
+  const header = document.createElement("div");
+  header.className = "lineup-dna__header";
+  const headerText = document.createElement("div");
+  const eyebrow = document.createElement("p");
+  eyebrow.className = "eyebrow";
+  eyebrow.textContent = "Lineup identity";
+  const heading = document.createElement("h3");
+  heading.id = "lineupDnaHeading";
+  heading.textContent = "Lineup DNA";
+  const intro = document.createElement("p");
+  intro.textContent = "A quick read on this group's signature strengths, pressure points, and role coverage—drawn from the same result, never a second ranking.";
+  headerText.append(eyebrow, heading, intro);
+  const sourceLabel = document.createElement("span");
+  sourceLabel.className = "lineup-dna__source";
+  sourceLabel.textContent = sourceContext.label;
+  header.append(headerText, sourceLabel);
+
+  // Lineup DNA translates evidence already produced by the exact result. It
+  // never calculates a second score or changes the selected group.
   const insights = document.createElement("div");
   insights.className = "simple-result-insights";
-  insights.setAttribute("aria-label", "Why this recommended group fits");
+  insights.setAttribute("aria-label", "Lineup DNA takeaways");
   const addInsight = (title, copy, tone = "") => {
     const card = document.createElement("article");
     card.className = `simple-result-insight${tone ? ` simple-result-insight--${tone}` : ""}`;
@@ -4528,42 +4708,28 @@ function renderSimpleResultOverview(result, fanExplanation) {
   };
 
   addInsight(
-    "Why this group fits",
+    "Why it won",
     best.rotation
       ? "It is the highest-ranked eligible rotation after every displayed rule, with all 240 minutes assigned inside your hard player limits."
       : "It is the highest-ranked eligible starting five after every displayed rule was checked.",
   );
   addInsight(
-    "What it does best",
-    scoutImpact
+    "Signature strength",
+    primaryStrength?.message
+      || (scoutImpact
       ? `It maximizes the Scout ${result.diagnostics?.scoutImpactModel?.objective || "balanced"} objective under your requirements. Box-score skill labels describe the result; they did not choose it.`
       : strongest.length
       ? `Its strongest game-plan contributions are ${strongest.join(", ")}.`
-      : "It is the strongest available fit for the priorities you selected.",
+      : "It is the strongest available fit for the priorities you selected."),
     "strength",
   );
   addInsight(
-    "Biggest concern",
-    deficiencies.length > 0
-      ? simpleRoleConcern(deficiencies[0])
+    "Pressure point",
+    pressurePoint
+      ? simpleRoleConcern(pressurePoint)
       : "The descriptive role screen did not flag a major coverage gap for this group.",
     "concern",
   );
-
-  if (alternative) {
-    const bestIds = new Set(best.playerIds || best.players.map((player) => player.id));
-    const alternativeIds = new Set(alternative.playerIds || alternative.players.map((player) => player.id));
-    const added = alternative.players.filter((player) => !bestIds.has(player.id)).map((player) => player.name);
-    const removed = best.players.filter((player) => !alternativeIds.has(player.id)).map((player) => player.name);
-    const indexGap = hasFiniteNumber(best.planFitIndex) && hasFiniteNumber(alternative.planFitIndex)
-      ? Math.max(0, Number(best.planFitIndex) - Number(alternative.planFitIndex))
-      : null;
-    addInsight("Closest alternative", `${scoutImpact ? "Next-best Scout result" : indexGap === null ? "Next-best group" : fitGapSummary(Math.max(0, Number(best.score) - Number(alternative.score)))}: ${added.length || removed.length
-      ? `swap ${removed.join(", ") || "the changed player"} for ${added.join(", ") || "the alternative"}.`
-      : "the same player group with a nearly identical plan."} ${summarizeAlternativeTradeoff(alternative, best)}.`, "alternative");
-  } else {
-    addInsight("Closest alternative", "No separate next-best group was returned for this completed search.", "alternative");
-  }
 
   const requestedImpact = ["offensiveImpact", "defensiveImpact"]
     .filter((metric) => Number(result.weights?.[metric]) > 0);
@@ -4578,17 +4744,25 @@ function renderSimpleResultOverview(result, fanExplanation) {
       ? "Model note: OBPM/DBPM was incomplete for this pool, so that cross-check was omitted for everyone instead of being guessed."
       : "Model note: complete OBPM/DBPM supplied a small offense/defense cross-check; your visible game-plan priorities still drove the ranking.";
   } else if (best.rotation) {
-    modelNote.textContent = "Model note: past team games and total minutes did not affect the roster or assigned minutes in this game-plan rotation.";
+    modelNote.textContent = "Model note: source samples can inform estimated production. Your hard limits and game plan determine assigned minutes; time spent with one team is not a minute target or cap.";
   } else {
     modelNote.textContent = "Model note: this is an exact optimizer result under your displayed rules, not a win forecast or real-world depth chart.";
   }
-  panel.append(benchmark, insights, modelNote);
+  panel.append(
+    benchmark,
+    header,
+    renderLineupDnaCoverageCounts(roleCoverage),
+    insights,
+    renderLineupDnaSwapTool(result, fanExplanation),
+    modelNote,
+  );
 
   const detailsButton = document.createElement("button");
   detailsButton.type = "button";
-  detailsButton.className = "button button--quiet simple-result-details";
+  detailsButton.className = "button button--quiet simple-result-details simple-only";
   detailsButton.dataset.action = "show-detailed";
-  detailsButton.textContent = "Open detailed analysis";
+  detailsButton.dataset.target = "lineupDnaEvidenceHeading";
+  detailsButton.textContent = "Open full Lineup DNA evidence";
   panel.append(detailsButton);
   return panel;
 }
@@ -4694,8 +4868,8 @@ function renderSuccess(result) {
     if (historicalBenchmark) fullAnalysis.append(historicalBenchmark);
   }
   if (result.alternatives.length > 1) fullAnalysis.append(renderAlternatives(result.alternatives, best));
-  const fanReport = renderFanScoutingReport(result, fanExplanation);
-  if (fanReport) fullAnalysis.append(fanReport);
+  const lineupDnaReport = renderLineupDnaReport(result, fanExplanation);
+  if (lineupDnaReport) fullAnalysis.append(lineupDnaReport);
   fragment.append(fullAnalysis);
   elements.resultContent.replaceChildren(fragment);
   setMobileResultCurrent(true);
@@ -4989,16 +5163,23 @@ async function runOptimizer(event) {
 }
 
 function replaceReplacementOutput(playerId, analysis) {
-  const existing = replacementResultElement(playerId);
-  if (!existing) return;
-  existing.replaceWith(replacementAnalysisMarkup(playerId, analysis));
+  replacementResultElements(playerId).forEach((existing) => {
+    const output = replacementAnalysisMarkup(playerId, analysis);
+    if (existing.hasAttribute("data-lineup-dna-replacement-output")) {
+      output.dataset.lineupDnaReplacementOutput = "";
+    }
+    existing.replaceWith(output);
+  });
 }
 
 function restoreReplacementButtons() {
-  elements.resultContent.querySelectorAll('[data-action="exact-replacement"]').forEach((button) => {
+  elements.resultContent.querySelectorAll('[data-action="exact-replacement"], [data-action="lineup-dna-replacement"]').forEach((button) => {
     const player = currentPlayer(button.dataset.playerId);
     button.disabled = !player || state.lockedIds.has(button.dataset.playerId);
-    button.textContent = "Test exact replacement";
+    button.textContent = button.dataset.idleLabel || "Test exact replacement";
+  });
+  elements.resultContent.querySelectorAll('[data-action="lineup-dna-replacement-choice"]').forEach((select) => {
+    select.disabled = false;
   });
 }
 
@@ -5006,11 +5187,14 @@ function setReplacementButtonsBusy(activePlayerId) {
   // Each counterfactual uses the same exact-search worker. Keeping one
   // request in flight makes cancellation deterministic and prevents another
   // card from being left at a misleading "Checking…" state.
-  elements.resultContent.querySelectorAll('[data-action="exact-replacement"]').forEach((button) => {
+  elements.resultContent.querySelectorAll('[data-action="exact-replacement"], [data-action="lineup-dna-replacement"]').forEach((button) => {
     button.disabled = true;
     button.textContent = button.dataset.playerId === activePlayerId
       ? "Testing exact replacement…"
       : "Replacement test running…";
+  });
+  elements.resultContent.querySelectorAll('[data-action="lineup-dna-replacement-choice"]').forEach((select) => {
+    select.disabled = true;
   });
 }
 
@@ -5057,12 +5241,11 @@ async function runExactReplacement(playerId) {
   state.replacementRunToken = jobToken;
   state.replacementPlayerId = playerId;
   setReplacementButtonsBusy(playerId);
-  const pending = replacementResultElement(playerId);
-  if (pending) {
+  replacementResultElements(playerId).forEach((pending) => {
     pending.hidden = false;
     delete pending.dataset.status;
     pending.textContent = "Checking every eligible one-player replacement under the current exact rules…";
-  }
+  });
 
   try {
     const replacementResult = await runOptimization(
@@ -5686,6 +5869,10 @@ function bindRemainingEvents() {
   elements.playerTableBody.addEventListener("change", handlePlayerControl);
   elements.playerTableBody.addEventListener("click", handlePlayerControl);
   elements.activeSelectionTray.addEventListener("click", handleActiveSelectionRemoval);
+  elements.resultContent.addEventListener("change", (event) => {
+    const select = event.target.closest('[data-action="lineup-dna-replacement-choice"]');
+    if (select) syncLineupDnaReplacementChoice(select);
+  });
   elements.resultContent.addEventListener("click", (event) => {
     const detailedButton = event.target.closest('[data-action="show-detailed"]');
     if (detailedButton) {
@@ -5698,13 +5885,16 @@ function bindRemainingEvents() {
         analysis.classList.add("is-simple-open");
         analysis.open = true;
         detailedButton.hidden = true;
-        analysis.scrollIntoView({ behavior: motionBehavior(), block: "start" });
+        const requestedTarget = detailedButton.dataset.target
+          ? document.getElementById(detailedButton.dataset.target)
+          : null;
+        (requestedTarget || analysis).scrollIntoView({ behavior: motionBehavior(), block: "start" });
         showToast("Full result details opened. Your model settings did not change.");
-        requestAnimationFrame(() => analysis.querySelector("summary")?.focus({ preventScroll: true }));
+        requestAnimationFrame(() => (requestedTarget || analysis.querySelector("summary"))?.focus({ preventScroll: true }));
       }
       return;
     }
-    const button = event.target.closest('[data-action="exact-replacement"]');
+    const button = event.target.closest('[data-action="exact-replacement"], [data-action="lineup-dna-replacement"]');
     if (!button || button.disabled) return;
     runExactReplacement(button.dataset.playerId).catch((error) => {
       showToast(error instanceof Error ? error.message : "The exact replacement check could not run.");

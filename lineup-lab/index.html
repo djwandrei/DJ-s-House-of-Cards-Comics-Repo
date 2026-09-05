@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DJ's Lineup Lab | NBA Lineup and Rotation Optimizer</title>
-  <meta name="description" content="Build and compare historical NBA lineups and rotations with an exact, constraint-based optimizer.">
+  <meta name="description" content="Build historical NBA lineups and rotations with an exact optimizer, then explore each group's Lineup DNA, role coverage, and one-player tradeoffs.">
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://www.djshouseofcards-comics.com/lineup-lab/">
   <meta name="color-scheme" content="light dark">
@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260905c">
+  <link rel="stylesheet" href="styles.css?v=20260905e">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -53,7 +53,7 @@
         <div class="hero__copy">
           <p class="eyebrow">Historical NBA lineup optimizer</p>
           <h1><span class="hero__title-primary">Build the best group</span><span>for your game plan.</span></h1>
-          <p class="hero__lede">Choose a historical team, decide what matters most, and get the best eligible lineup or 240-minute rotation with the tradeoffs explained in plain English.</p>
+          <p class="hero__lede">Choose a historical team, decide what matters most, and get the best eligible lineup or 240-minute rotation with its Lineup DNA and tradeoffs explained in plain English.</p>
           <div class="hero__actions">
             <a class="button" href="#workspace">Open the builder</a>
             <button class="button button--quiet detailed-only" type="button" data-view-target="model">How the model works</button>
@@ -61,15 +61,15 @@
           <ul class="hero__proof" aria-label="How to use Lineup Lab">
             <li>Pick a team-season</li>
             <li>Set the game plan</li>
-            <li>See the best fit and tradeoffs</li>
+            <li>Read its Lineup DNA and test a swap</li>
           </ul>
         </div>
         <aside class="hero-outcomes" aria-label="What your Lineup Lab result answers">
           <p class="hero-outcomes__eyebrow">What your result answers</p>
           <ol class="hero-outcomes__list">
             <li><strong>Who fits your plan?</strong><span>The highest-ranked eligible group under the exact rules you set.</span></li>
-            <li><strong>Why did it win?</strong><span>Its strongest skills, role coverage, and every constraint check.</span></li>
-            <li><strong>What would change?</strong><span>The next-best alternative and the specific tradeoff it creates.</span></li>
+            <li><strong>What is its Lineup DNA?</strong><span>Its signature strength, pressure point, and role coverage in one readable profile.</span></li>
+            <li><strong>What would one change cost?</strong><span>Remove one player and rerun the exact rules for the best valid replacement.</span></li>
           </ol>
         </aside>
       </div>
@@ -104,7 +104,7 @@
                 <h2 id="liveDataHeading">Which team and season should the model use?</h2>
               </div>
             </div>
-            <p>Select an imported NBA team-season from 1980 forward. If a player changed teams, the tool uses the stats recorded with the team you selected. Past team usage is context only—it does not set a player’s proposed minutes. The data is saved on this device for faster repeat visits.</p>
+            <p>Select an imported NBA team-season from 1980 forward. Visible stats describe games played with this team. Rotation estimates can also use that player's same-season stats across imported teams; those records do not set minute limits. Data is saved on this device for faster repeat visits.</p>
           </div>
           <div class="live-data-panel__controls">
             <label class="field">
@@ -626,8 +626,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260905c"></script>
-  <script defer src="../supabase-client.js?v=20260905c"></script>
-  <script type="module" src="app.js?v=20260905c"></script>
+  <script defer src="../backend-config.js?v=20260905e"></script>
+  <script defer src="../supabase-client.js?v=20260905e"></script>
+  <script type="module" src="app.js?v=20260905e"></script>
 </body>
 </html>

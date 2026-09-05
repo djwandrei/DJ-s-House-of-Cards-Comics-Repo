@@ -264,7 +264,8 @@ test("creates a valid single-team data set with optional confirmed media", () =>
   assert.equal(dataset.source.teamAverages.points, (2177 + 1040) / 79);
   assert.deepEqual(dataset.source.rotation.map((player) => player.id), ["edwaran01", "goberru01"]);
   assert.equal(dataset.source.label, "Minnesota Timberwolves 2024-25 Regular season player pool");
-  assert.match(dataset.source.note, /team-stint totals/i);
+  assert.match(dataset.source.note, /Visible per-game stats describe this team only/);
+  assert.match(dataset.source.note, /do not set minute limits/);
 });
 
 test("attaches a source-backed fan analytics envelope from optional player-pool fields", () => {
@@ -415,7 +416,8 @@ test("attaches audited season-wide evidence without replacing team membership co
   });
   assert.deepEqual(player.analytics.seasonEvidence, {
     scope: "season-wide",
-    method: "aggregate of every non-provider-aggregate team stint for this player, season, and phase",
+    method: "aggregate of imported real-team rows for this player, season, and phase",
+    completeness: "imported-rows-only",
     teamStintCount: 2,
     playerPossessions: 5080,
     playerPossessionsPerGame: null,
@@ -486,6 +488,56 @@ test("keeps legacy player-pool rows compatible when fan analytics fields are abs
   assert.equal(player.analytics.totals.offensiveRebounds, 0);
   assert.equal(player.analytics.totals.defensiveRebounds, 0);
   assert.equal(player.analytics.totals.personalFouls, 0);
+});
+
+test("season counts reject coercion and cannot silently change phase or hide duplicates", () => {
+  const evidence = { player_id: "edwaran01", season_end_year: 2025,
+    season_phase: "regular", games_played: 82, minutes_played: 2460 };
+  const build = seasonEvidenceRows => createSupabaseNbaTeamDataset([savedRow()], {
+    team: "MIN", season: 2025, seasonPhase: "regular", seasonEvidenceRows,
+  });
+  for (const bad of [true, false, "", " ", null, [], {}, -1, 1.5]) {
+    const [player] = build([{ ...evidence, points: bad }]).players;
+    assert.equal(player.analytics.seasonTotals.points, undefined);
+  }
+  const [zeroPlayer] = build([{ ...evidence, points: "0", total_rebounds: null, rebounds: 50 }]).players;
+  assert.equal(zeroPlayer.analytics.seasonTotals.points, 0);
+  assert.equal(zeroPlayer.analytics.seasonTotals.totalRebounds, undefined, "null canonical count cannot borrow an alias");
+  assert.equal(build([{ ...evidence, minutes_played: 0 }]).source.analytics.seasonEvidencePlayers, 0);
+  assert.throws(() => build([{ ...evidence, season_phase: undefined }]), /phase explicitly/);
+  assert.throws(() => build([{ ...evidence, minutes_played: null }, evidence]), /Duplicate season-wide/);
+});
+
+test("optional season-reader errors and invalid payloads fall back without losing a valid team pool", async () => {
+  const originalDJ = globalThis.DJ;
+  const evidence = { player_id: "edwaran01", season_end_year: 2025,
+    season_phase: "regular", games_played: 82, minutes_played: 2460, points: 1600 };
+  try {
+    for (const [payload, status] of [
+      [null, "invalid-response"],
+      [[{ ...evidence, season_end_year: 2024 }], "invalid-response"],
+      [[{ ...evidence, season_phase: undefined }], "invalid-response"],
+      [[evidence, evidence], "invalid-response"],
+      [[], "no-matching-rows"],
+      [new Error("Temporary read error"), "temporarily-unavailable"],
+    ]) {
+      globalThis.DJ = { remoteCatalog: {
+        async listNbaTeamSeasonPlayers() { return [savedRow()]; },
+        async listNbaPlayerSeasonEvidence() {
+          if (payload instanceof Error) throw payload;
+          return payload;
+        },
+      } };
+      const dataset = await fetchSupabaseNbaTeamDataset({ team: "MIN", season: 2025, seasonPhase: "regular" });
+      assert.equal(dataset.players.length, 1);
+      assert.equal(dataset.source.analytics.seasonEvidencePlayers, 0);
+      assert.equal(dataset.source.analytics.seasonEvidenceStatus, status);
+      assert.equal(dataset.players[0].analytics.seasonTotals, undefined);
+    }
+  } finally {
+    if (originalDJ === undefined) delete globalThis.DJ;
+    else globalThis.DJ = originalDJ;
+  }
 });
 
 test("drops malformed optional fan analytics values without rejecting a valid legacy row", () => {

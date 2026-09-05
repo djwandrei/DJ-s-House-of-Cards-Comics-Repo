@@ -81,9 +81,10 @@ function isPlainObject(value) {
  *
  * The selected player-pool row remains a real team stint because that answers
  * "who played for this team?". Reliability is a different question. A traded
- * player's complete season across every team is the better sample for judging
- * whether his rate is established, so the shared data layer may supply one
- * aggregate row from `nba_player_season_totals` for each selected player.
+ * player's available season across teams is the better sample for judging
+ * whether his rate is established. The shared reader sums the imported real
+ * team rows, preserving missing fields instead of relying on SQL SUM's
+ * null-skipping behavior. This does not certify complete source coverage.
  *
  * Missing optional columns stay missing rather than becoming zero. That lets
  * the optimizer fall back metric by metric without treating an incomplete
@@ -109,16 +110,20 @@ function seasonEvidenceForRow(row) {
   };
   const totals = {};
   for (const [target, candidates] of Object.entries(aliases)) {
-    const source = candidates.find((key) => row[key] !== null && row[key] !== undefined && row[key] !== "");
+    // An explicitly missing canonical field must not be rescued by a stale
+    // alias. Counts accept numeric strings, but never boolean/blank coercion.
+    const source = candidates.find((key) => Object.hasOwn(row, key));
     if (!source) continue;
-    const value = optionalNonNegativeNumber(row[source], null);
-    if (value !== null) totals[target] = value;
+    const raw = row[source];
+    if (typeof raw !== "number" && (typeof raw !== "string" || !/^\d+$/.test(raw))) continue;
+    const value = Number(raw);
+    if (Number.isSafeInteger(value) && value >= 0) totals[target] = value;
   }
 
   // A season-wide claim needs both an appearance count and total minutes.
   // Without those anchors, a partial payload cannot safely replace the
   // selected-team rate or establish a season-level role size.
-  if (!(totals.games > 0) || !(totals.minutes >= 0)) return null;
+  if (!(totals.games > 0) || !(totals.minutes > 0)) return null;
 
   const advanced = safeMetricObject(
     isPlainObject(row.season_advanced_metrics)
@@ -141,7 +146,13 @@ function seasonEvidenceForRow(row) {
     playerPossessionsPerGame,
     source: {
       scope: "season-wide",
-      method: "aggregate of every non-provider-aggregate team stint for this player, season, and phase",
+      method: "aggregate of imported real-team rows for this player, season, and phase",
+      // Neither the legacy aggregate nor the read-only reader independently
+      // reconciles every source game/team. Keep that limitation machine-readable.
+      completeness: "imported-rows-only",
+      ...(row.evidence_contract === "imported-team-totals-v1"
+        ? { missingFieldPolicy: "unavailable-if-any-contributor-missing" }
+        : {}),
     },
   };
 }
@@ -155,18 +166,24 @@ function seasonEvidenceByPlayerId(rows, { playerIds, season, seasonPhase }) {
   const evidence = new Map();
   if (!Array.isArray(rows)) return evidence;
   const allowedIds = new Set(playerIds.map((id) => String(id)));
+  const seenIds = new Set();
   for (const row of rows) {
     if (!isPlainObject(row)) throw new Error("Season-wide evidence rows must be objects.");
     const playerId = requireText(row.player_id ?? row.playerId, "Season evidence player ID");
     if (!allowedIds.has(playerId)) continue;
     const rowSeason = requireSeasonEndYear(row.season_end_year ?? row.seasonEndYear);
-    const rowPhase = requireSeasonPhase(row.season_phase ?? row.seasonPhase);
+    const phaseValue = row.season_phase ?? row.seasonPhase;
+    if (typeof phaseValue !== "string" || !phaseValue.trim()) {
+      throw new Error("Season-wide evidence must identify its season phase explicitly.");
+    }
+    const rowPhase = requireSeasonPhase(phaseValue);
     if (rowSeason !== season || rowPhase !== seasonPhase) {
       throw new Error(`Season-wide evidence for ${playerId} does not match the selected season and phase.`);
     }
-    if (evidence.has(playerId)) {
+    if (seenIds.has(playerId)) {
       throw new Error(`Duplicate season-wide evidence was returned for ${playerId}.`);
     }
+    seenIds.add(playerId);
     const normalized = seasonEvidenceForRow(row);
     if (normalized) evidence.set(playerId, normalized);
   }
@@ -603,9 +620,9 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
       seasonEvidencePlayers: seasonEvidence.size,
       seasonEvidenceStatus: options.seasonEvidenceStatus
         || (seasonEvidence.size > 0 ? "available" : "not-supplied"),
-      seasonEvidenceMethod: "Player-season aggregates across every non-provider-aggregate team stint; team-stint length never becomes a minute target or cap.",
+      seasonEvidenceMethod: "Matching player-season counts across imported real-team rows; complete source coverage is not independently verified. Missing metrics use the approximate fallback. Games with a particular team never become a minute target or cap.",
     },
-    note: "Basketball Reference team-stint totals, converted to per-game values. Players who changed teams are scoped only to this team stint.",
+    note: "Visible per-game stats describe this team only. When available, the rotation model uses matching counts across the player's imported teams for the same season and phase; these do not set minute limits.",
   };
   const rawPlayers = rows.map((row) => mapSupabaseNbaPlayer(row, { team, season, seasonPhase }));
   const dataset = normalizeDataset({ schemaVersion: 1, source, players: rawPlayers }, {
@@ -708,29 +725,29 @@ export async function fetchSupabaseNbaTeamDataset(options = {}) {
   if (!Array.isArray(rows) || rows.length === 0) {
     throw new Error(`No ${phaseLabel(seasonPhase).toLowerCase()} player totals were found for ${team} in ${nbaSeasonLabel(season)}.`);
   }
-  // The shared Supabase boundary may expose this method once the dedicated
-  // analytics project publishes its reviewed season-evidence view. Keeping the
-  // call feature-detected makes today's live player-pool contract backward
-  // compatible while allowing the stronger evidence model to activate without
-  // another Lineup Lab rewrite. A temporary evidence failure never blocks the
-  // core team-stint dataset; the UI reports the fallback honestly.
+  // The shared Supabase boundary owns the read-only season aggregation. Keep
+  // feature detection for older deployed/cached shared clients, and validate
+  // inside the optional path: malformed evidence must not block a valid team
+  // pool. The direct dataset constructor remains strict for callers/tests.
   let seasonEvidenceRows = [];
   let seasonEvidenceStatus = "shared-reader-not-available";
   if (typeof catalog.listNbaPlayerSeasonEvidence === "function") {
     try {
+      seasonEvidenceStatus = "temporarily-unavailable";
       seasonEvidenceRows = await catalog.listNbaPlayerSeasonEvidence({
         playerIds: rows.map((row) => requireText(row.player_id, "Player ID")),
         seasonEndYear: season,
         seasonPhase,
         force: options.force,
       });
-      seasonEvidenceStatus = Array.isArray(seasonEvidenceRows)
-        ? "available"
-        : "invalid-response";
-      if (!Array.isArray(seasonEvidenceRows)) seasonEvidenceRows = [];
+      seasonEvidenceStatus = "invalid-response";
+      if (!Array.isArray(seasonEvidenceRows)) throw new Error("Invalid season evidence response.");
+      const usableEvidence = seasonEvidenceByPlayerId(seasonEvidenceRows, {
+        playerIds: rows.map((row) => requireText(row.player_id, "Player ID")), season, seasonPhase,
+      });
+      seasonEvidenceStatus = usableEvidence.size > 0 ? "available" : "no-matching-rows";
     } catch {
       seasonEvidenceRows = [];
-      seasonEvidenceStatus = "temporarily-unavailable";
     }
   }
   return createSupabaseNbaTeamDataset(rows, {

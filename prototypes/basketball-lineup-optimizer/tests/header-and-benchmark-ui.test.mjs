@@ -67,6 +67,38 @@ test("fan-first layout keeps the functional optimizer in a clear numbered flow",
   assert.match(app, /\? "Your recommended rotation"\s*:\s*"Your recommended lineup"/);
 });
 
+test("season-evidence copy separates available samples from hard minute limits", async () => {
+  const app = await sourceFile("app.js");
+  const html = await sourceFile("index.html");
+  assert.match(html, /Visible stats describe games played with this team/);
+  assert.match(app, /Available season sample:/);
+  assert.match(app, /Each metric needs matching counts/);
+  assert.match(app, /Complete source coverage is not independently verified/);
+  assert.doesNotMatch(app, /source usage did not affect this result|past team games and total minutes did not affect the roster/);
+});
+
+test("Lineup DNA turns the exact result into a source-labeled strength, gap, and one-player test", async () => {
+  const [app, html, css] = await Promise.all([
+    sourceFile("app.js"),
+    sourceFile("index.html"),
+    sourceFile("styles.css"),
+  ]);
+
+  assert.match(html, /What is its Lineup DNA\?/);
+  assert.match(html, /Remove one player and rerun the exact rules/);
+  assert.match(app, /function lineupDnaProfile\(roleCoverage = \{\}\)/);
+  assert.match(app, /heading\.textContent = "Lineup DNA"/);
+  assert.match(app, /Scout objective · historical role context/);
+  assert.match(app, /Historical team-season evidence/);
+  assert.match(app, /function renderLineupDnaSwapTool\(result, explanation\)/);
+  assert.match(app, /The exact solver keeps every other selected player and every current rule/);
+  assert.match(app, /function renderLineupDnaReport\(result, explanation\)/);
+  assert.match(app, /lineupDnaReport = renderLineupDnaReport\(result, fanExplanation\)/);
+  assert.match(css, /\.lineup-dna__counts\s*\{/);
+  assert.match(css, /\.lineup-dna__swap-controls\s*\{/);
+  assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.lineup-dna__method/);
+});
+
 test("rotation searches expose cancellation, consent, and display-only progress", async () => {
   const [app, html, css, worker] = await Promise.all([
     sourceFile("app.js"),

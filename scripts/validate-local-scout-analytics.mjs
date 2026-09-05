@@ -11,7 +11,16 @@ const MODULE_PATH = fileURLToPath(import.meta.url);
 const IS_MAIN = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(MODULE_PATH);
 
 function parseArgs(argv) {
-  const options = { input: null, validationReport: null, output: null, seasonStartYear: 2025 };
+  const options = {
+    input: null,
+    validationReport: null,
+    output: null,
+    seasonStartYears: [2025],
+    seasonStartYear: 2025,
+    latestSeasonStartYear: 2025,
+  };
+  let sawSeason = false;
+  let sawSeasons = false;
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     const [name, inline] = token.split(/=(.*)/s, 2);
@@ -20,11 +29,123 @@ function parseArgs(argv) {
     if (name === '--input') options.input = path.resolve(value);
     else if (name === '--validation-report') options.validationReport = path.resolve(value);
     else if (name === '--output') options.output = path.resolve(value);
-    else if (name === '--season') options.seasonStartYear = Number.parseInt(value, 10);
+    else if (name === '--season') {
+      sawSeason = true;
+      options.seasonStartYears = [Number.parseInt(value, 10)];
+    } else if (name === '--seasons') {
+      sawSeasons = true;
+      options.seasonStartYears = value.split(',').map((item) => Number.parseInt(item.trim(), 10));
+    }
     else throw new Error(`Unknown option: ${name}`);
   }
   if (!options.input) throw new Error('--input is required.');
+  if (sawSeason && sawSeasons) throw new Error('--season and --seasons are mutually exclusive.');
+  if (!options.seasonStartYears.length
+    || options.seasonStartYears.some((year) => !Number.isInteger(year) || year < 1947)) {
+    throw new Error('--season/--seasons must contain valid NBA season start years.');
+  }
+  options.seasonStartYears = [...new Set(options.seasonStartYears)].sort((left, right) => left - right);
+  options.seasonStartYear = options.seasonStartYears[0];
+  options.latestSeasonStartYear = options.seasonStartYears[options.seasonStartYears.length - 1];
   return options;
+}
+
+function seasonLabel(seasonStartYears) {
+  const first = seasonStartYears[0];
+  const last = seasonStartYears[seasonStartYears.length - 1];
+  return `${first}-${String(last + 1).slice(-2)}`;
+}
+
+function sameNumberArray(left, right) {
+  return Array.isArray(left)
+    && Array.isArray(right)
+    && left.length === right.length
+    && left.every((value, index) => Number(value) === Number(right[index]));
+}
+
+function own(object, key) {
+  return object !== null && typeof object === 'object' && Object.hasOwn(object, key);
+}
+
+function seasonValueMap(value, label, seasonStartYears, errors, { required = false } = {}) {
+  if (value === undefined || value === null) {
+    if (required) errors.push(`${label} is required for a multiseason package.`);
+    return null;
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    errors.push(`${label} must be an object keyed by season start year.`);
+    return null;
+  }
+  const expectedKeys = seasonStartYears.map(String);
+  const actualKeys = Object.keys(value).sort((left, right) => Number(left) - Number(right));
+  if (!sameNumberArray(actualKeys, expectedKeys)) {
+    errors.push(`${label} does not contain exactly the selected season start years.`);
+  }
+  return value;
+}
+
+function checkSeasonCoverageMap(value, label, seasonStartYears, expectedTotal, errors, { required = false } = {}) {
+  const map = seasonValueMap(value, label, seasonStartYears, errors, { required });
+  if (!map) return null;
+  let total = 0;
+  let valid = true;
+  for (const year of seasonStartYears) {
+    const count = Number(map[year]);
+    if (!Number.isInteger(count) || count < 0) {
+      errors.push(`${label}.${year} is invalid.`);
+      valid = false;
+      continue;
+    }
+    total += count;
+  }
+  if (total !== expectedTotal) {
+    errors.push(`${label} does not reconcile to its aggregate coverage total.`);
+    valid = false;
+  }
+  return valid ? map : null;
+}
+
+function checkSeasonExposureMap(value, label, seasonStartYears, expectedTotal, errors, { required = false } = {}) {
+  const map = seasonValueMap(value, label, seasonStartYears, errors, { required });
+  if (!map) return null;
+  let total = 0;
+  let valid = true;
+  for (const year of seasonStartYears) {
+    const exposure = Number(map[year]);
+    if (!Number.isFinite(exposure) || exposure < 0) {
+      errors.push(`${label}.${year} is invalid.`);
+      valid = false;
+      continue;
+    }
+    total += exposure;
+  }
+  if (!closeEnough(total, expectedTotal, 0.001)) {
+    errors.push(`${label} does not reconcile to its aggregate coverage total.`);
+    valid = false;
+  }
+  return valid ? map : null;
+}
+
+function sumSeasonValues(map, seasonStartYears, seasonWeights = null) {
+  return seasonStartYears.reduce(
+    (total, seasonStartYear) => total + Number(map[seasonStartYear])
+      * (seasonWeights ? Number(seasonWeights[seasonStartYear]) : 1),
+    0,
+  );
+}
+
+function checkEffectiveExposure(value, raw, label, errors, { required = false } = {}) {
+  if (value === undefined || value === null) {
+    if (required) errors.push(`${label} is required for a multiseason RAPM model.`);
+    return;
+  }
+  const effective = Number(value);
+  const rawValue = Number(raw);
+  if (!Number.isFinite(effective) || effective < 0
+    || !Number.isFinite(rawValue) || rawValue < 0
+    || effective > rawValue + 0.001) {
+    errors.push(`${label} is invalid.`);
+  }
 }
 
 function rounded(value, digits = 3) {
@@ -372,7 +493,7 @@ function checkMetric(metric, label, errors) {
   checkExtendedProfiles(metric, label, errors);
 }
 
-function checkContextMap(contexts, label, phases, errors) {
+function checkContextMap(contexts, label, phases, errors, seasonStartYears = []) {
   if (!contexts?.all) {
     errors.push(`${label} is missing the all context.`);
     return;
@@ -387,6 +508,20 @@ function checkContextMap(contexts, label, phases, errors) {
   checkPartition(contexts.all, sumMetrics(contexts, LEVERAGE_CONTEXTS), `${label}.leverage`, errors);
   checkPartition(contexts.all, sumMetrics(contexts, CLUTCH_CONTEXTS), `${label}.clutch`, errors);
   checkPartition(contexts.all, sumMetrics(contexts, phases.map((phase) => `phase:${phase}`)), `${label}.phase`, errors);
+  if (seasonStartYears.length) {
+    const expectedSeasonContexts = seasonStartYears.map((year) => `season:${year}`);
+    const actualSeasonContexts = Object.keys(contexts).filter((context) => context.startsWith('season:'));
+    const unexpectedSeasonContexts = actualSeasonContexts.filter((context) => !expectedSeasonContexts.includes(context));
+    if (unexpectedSeasonContexts.length) {
+      errors.push(`${label} has contexts outside the selected seasons: ${unexpectedSeasonContexts.join(', ')}.`);
+    }
+    // Individual player and lineup rows may have no exposure in an otherwise
+    // selected season, so missing season contexts are zero rather than an
+    // error.  The selected contexts still must partition every aggregate.
+    if (seasonStartYears.length > 1 || actualSeasonContexts.length) {
+      checkPartition(contexts.all, sumMetrics(contexts, expectedSeasonContexts), `${label}.season`, errors);
+    }
+  }
   for (const window of ['window:last_5', 'window:last_10', 'window:last_20']) {
     const value = contexts[window];
     if (!value) continue;
@@ -396,9 +531,9 @@ function checkContextMap(contexts, label, phases, errors) {
   }
 }
 
-function checkOnOff(row, index, phases, errors) {
-  checkContextMap(row.on, `onOff.${index}.on`, phases, errors);
-  checkContextMap(row.off, `onOff.${index}.off`, phases, errors);
+function checkOnOff(row, index, phases, errors, seasonStartYears = []) {
+  checkContextMap(row.on, `onOff.${index}.on`, phases, errors, seasonStartYears);
+  checkContextMap(row.off, `onOff.${index}.off`, phases, errors, seasonStartYears);
   const expected = row.on?.all?.netRating === null || row.off?.all?.netRating === null
     ? null
     : rounded(row.on.all.netRating - row.off.all.netRating);
@@ -810,6 +945,333 @@ export function checkOffenseDefenseRapmCalibration(calibration, odRapm, errors, 
   }
 }
 
+function checkScope(input, options, errors) {
+  const scope = input.scope ?? {};
+  const multiseason = options.seasonStartYears.length > 1;
+  if (scope.seasonStartYear !== options.seasonStartYear) errors.push('Season scope does not match the requested season.');
+  if ((multiseason || own(scope, 'seasonStartYears'))
+    && !sameNumberArray(scope.seasonStartYears, options.seasonStartYears)) {
+    errors.push('Season scope does not contain exactly the requested seasons.');
+  }
+  if ((multiseason || own(scope, 'latestSeasonStartYear'))
+    && Number(scope.latestSeasonStartYear) !== options.latestSeasonStartYear) {
+    errors.push('Season scope latest season does not match the requested seasons.');
+  }
+  if ((multiseason || own(scope, 'seasonEndYear'))
+    && Number(scope.seasonEndYear) !== options.latestSeasonStartYear + 1) {
+    errors.push('Season scope end year does not match the requested seasons.');
+  }
+  if ((multiseason || own(scope, 'seasonLabel'))
+    && scope.seasonLabel !== seasonLabel(options.seasonStartYears)) {
+    errors.push('Season scope label does not match the requested seasons.');
+  }
+  const expectedContexts = options.seasonStartYears.map((year) => `season:${year}`);
+  if ((multiseason || own(scope, 'seasonContexts'))
+    && (!Array.isArray(scope.seasonContexts) || scope.seasonContexts.length !== expectedContexts.length
+      || scope.seasonContexts.some((context, index) => context !== expectedContexts[index]))) {
+    errors.push('Season scope contexts do not match the requested seasons.');
+  }
+}
+
+export function checkShardScope(shard, shardIndex, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  if ((multiseason || own(shard, 'seasonStartYear'))
+    && Number(shard?.seasonStartYear) !== options.seasonStartYear) {
+    errors.push(`Team shard ${shardIndex} season start does not match the manifest scope.`);
+  }
+  if ((multiseason || own(shard, 'seasonEndYear'))
+    && Number(shard?.seasonEndYear) !== options.latestSeasonStartYear + 1) {
+    errors.push(`Team shard ${shardIndex} season end does not match the manifest scope.`);
+  }
+  if ((multiseason || own(shard, 'seasonStartYears'))
+    && !sameNumberArray(shard?.seasonStartYears, options.seasonStartYears)) {
+    errors.push(`Team shard ${shardIndex} season list does not match the manifest scope.`);
+  }
+  if ((multiseason || own(shard, 'latestSeasonStartYear'))
+    && Number(shard?.latestSeasonStartYear) !== options.latestSeasonStartYear) {
+    errors.push(`Team shard ${shardIndex} latest season does not match the manifest scope.`);
+  }
+}
+
+function checkSourceValidationSeasonPresence(value, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  if (value === undefined || value === null) {
+    if (multiseason) errors.push('Source validation season-presence provenance is required for a multiseason package.');
+    return;
+  }
+  if (!Array.isArray(value)) {
+    errors.push('Source validation season-presence provenance is invalid.');
+    return;
+  }
+  const byYear = new Map();
+  for (const entry of value) {
+    const year = Number(entry?.seasonStartYear);
+    if (!Number.isInteger(year) || byYear.has(year)) {
+      errors.push('Source validation season-presence provenance has an invalid or duplicate season.');
+      continue;
+    }
+    byYear.set(year, entry?.present);
+  }
+  if (!sameNumberArray([...byYear.keys()].sort((left, right) => left - right), options.seasonStartYears)) {
+    errors.push('Source validation season-presence provenance does not match the requested seasons.');
+  }
+  for (const year of options.seasonStartYears) {
+    if (byYear.get(year) !== true) errors.push(`Source validation does not confirm season ${year}.`);
+  }
+}
+
+function checkChronologicalMetrics(metrics, label, errors) {
+  if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)) {
+    errors.push(`${label} metrics are missing.`);
+    return;
+  }
+  for (const field of ['weightedMse', 'weightedRmsePer100', 'weightedMaePer100', 'heldOutPossessions', 'directionalObservationCount']) {
+    if (finiteCalibrationNumber(metrics[field]) === null || Number(metrics[field]) < 0) {
+      errors.push(`${label}.${field} is invalid.`);
+    }
+  }
+  if (!closeEnough(metrics.weightedRmsePer100, 100 * Math.sqrt(metrics.weightedMse), 1e-9)) {
+    errors.push(`${label}.weightedRmsePer100 does not reconcile.`);
+  }
+}
+
+function checkChronologicalRapmCalibration(calibration, rapm, model, latestSeasonStartYear, errors, { required = false } = {}) {
+  if (calibration === undefined) {
+    if (required) errors.push(`${model} RAPM chronological calibration is required for a multiseason package.`);
+    return;
+  }
+  if (calibration === null) return;
+  if (!calibration || typeof calibration !== 'object' || Array.isArray(calibration)) {
+    errors.push(`${model} RAPM chronological calibration is invalid.`);
+    return;
+  }
+  if (calibration.version !== 'chronological_latest_season_tune_test_v1'
+    || calibration.model !== model
+    || calibration.latestSeasonStartYear !== latestSeasonStartYear
+    || calibration.method !== 'prior_seasons_plus_chronological_latest_season_train_tune_test_v1') {
+    errors.push(`${model} RAPM chronological calibration metadata is invalid.`);
+  }
+  if (!closeEnough(calibration.selectedPriorSeasonWeight, rapm.priorSeasonWeight, 1e-12)
+    || !closeEnough(calibration.selectedLambda, rapm.lambda, 1e-12)) {
+    errors.push(`${model} RAPM chronological calibration does not match the fitted model.`);
+  }
+  for (const field of ['tuningGameFraction', 'testGameFraction']) {
+    const value = finiteCalibrationNumber(calibration[field]);
+    if (value === null || value <= 0 || value >= 0.5) errors.push(`${model} RAPM chronological calibration ${field} is invalid.`);
+  }
+  if (Number(calibration.tuningGameFraction) + Number(calibration.testGameFraction) >= 1) {
+    errors.push(`${model} RAPM chronological calibration fractions are invalid.`);
+  }
+  const selection = calibration.tuningSelection;
+  if (!selection || selection.fitStatus !== 'scored'
+    || !closeEnough(selection.priorSeasonWeight, calibration.selectedPriorSeasonWeight, 1e-12)
+    || !closeEnough(selection.lambda, calibration.selectedLambda, 1e-12)) {
+    errors.push(`${model} RAPM chronological tuning selection is invalid.`);
+  }
+  if (!Array.isArray(calibration.candidates)
+    || !calibration.candidates.some((candidate) => candidate?.fitStatus === 'scored'
+      && closeEnough(candidate.priorSeasonWeight, calibration.selectedPriorSeasonWeight, 1e-12)
+      && closeEnough(candidate.lambda, calibration.selectedLambda, 1e-12))) {
+    errors.push(`${model} RAPM chronological candidates do not contain the selected fit.`);
+  }
+  checkChronologicalMetrics(calibration.test?.fullModel, `${model} RAPM chronological test full model`, errors);
+  checkChronologicalMetrics(calibration.test?.fixedEffectsBaseline, `${model} RAPM chronological test baseline`, errors);
+  const fullMse = finiteCalibrationNumber(calibration.test?.fullModel?.weightedMse);
+  const baselineMse = finiteCalibrationNumber(calibration.test?.fixedEffectsBaseline?.weightedMse);
+  const expectedImprovement = calibrationMseImprovement(baselineMse, fullMse);
+  if (expectedImprovement === null
+    || !closeEnough(calibration.test?.fullModelMseImprovementVsFixedEffectsBaseline, expectedImprovement, 1e-9)) {
+    errors.push(`${model} RAPM chronological test improvement does not reconcile.`);
+  }
+  const expectedImprovesBaseline = expectedImprovement !== null && expectedImprovement > 1e-9;
+  if (calibration.test?.fullModelImprovesBaseline !== expectedImprovesBaseline
+    || calibration.test?.status !== (expectedImprovesBaseline ? 'validated' : 'not_validated')) {
+    errors.push(`${model} RAPM chronological test status does not reconcile.`);
+  }
+}
+
+export function checkRecencyWeightedRapm(rapm, label, model, rapmCoverage, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  const priorSeasonWeight = Number(rapm?.priorSeasonWeight);
+  const validPriorSeasonWeight = Number.isFinite(priorSeasonWeight)
+    && priorSeasonWeight >= 0
+    && priorSeasonWeight <= 1;
+  if ((multiseason || rapm?.priorSeasonWeight !== undefined || rapm?.seasonWeights !== undefined)
+    && !validPriorSeasonWeight) {
+    errors.push(`${label} prior-season weight is invalid.`);
+  }
+  const seasonWeights = seasonValueMap(
+    rapm?.seasonWeights,
+    `${label} season weights`,
+    options.seasonStartYears,
+    errors,
+    { required: multiseason },
+  );
+  let contributingSeasonStartYears = null;
+  if (seasonWeights) {
+    let weightsAreValid = validPriorSeasonWeight;
+    for (const seasonStartYear of options.seasonStartYears) {
+      const actualWeight = Number(seasonWeights[seasonStartYear]);
+      const expectedWeight = priorSeasonWeight ** (options.latestSeasonStartYear - seasonStartYear);
+      if (!Number.isFinite(actualWeight)
+        || actualWeight < 0
+        || actualWeight > 1
+        || !closeEnough(actualWeight, expectedWeight, 1e-12)) {
+        errors.push(`${label} season weight for ${seasonStartYear} is invalid.`);
+        weightsAreValid = false;
+      }
+    }
+    const expectedIncludedSeasonStartYears = options.seasonStartYears
+      .filter((seasonStartYear) => Number(seasonWeights[seasonStartYear]) > 0);
+    if (!sameNumberArray(rapm?.includedSeasonStartYears, expectedIncludedSeasonStartYears)) {
+      errors.push(`${label} included seasons do not match positive season weights.`);
+      weightsAreValid = false;
+    }
+    if (weightsAreValid) contributingSeasonStartYears = expectedIncludedSeasonStartYears;
+  } else if (rapm?.includedSeasonStartYears !== undefined && rapm?.includedSeasonStartYears !== null) {
+    errors.push(`${label} included seasons require season weights.`);
+  } else if (!multiseason) {
+    contributingSeasonStartYears = [...options.seasonStartYears];
+  }
+  checkEffectiveExposure(
+    rapm?.totalEffectivePairedPossessions,
+    rapm?.totalPairedPossessions,
+    `${label} effective paired possessions`,
+    errors,
+    { required: multiseason },
+  );
+  if (model === 'offenseDefense') {
+    checkEffectiveExposure(
+      rapm?.totalEffectiveOffensivePossessions,
+      rapm?.totalOffensivePossessions,
+      `${label} effective offensive possessions`,
+      errors,
+      { required: multiseason },
+    );
+  }
+  if (contributingSeasonStartYears
+    && rapmCoverage?.gamesBySeason
+    && rapmCoverage?.observationsBySeason
+    && rapmCoverage?.pairedPossessionsBySeason
+    && rapmCoverage?.offensivePossessionsBySeason) {
+    const expectedGameCount = sumSeasonValues(rapmCoverage.gamesBySeason, contributingSeasonStartYears);
+    const expectedObservationCount = sumSeasonValues(rapmCoverage.observationsBySeason, contributingSeasonStartYears);
+    const expectedRawPairedPossessions = sumSeasonValues(
+      rapmCoverage.pairedPossessionsBySeason,
+      contributingSeasonStartYears,
+    );
+    const expectedEffectivePairedPossessions = sumSeasonValues(
+      rapmCoverage.pairedPossessionsBySeason,
+      contributingSeasonStartYears,
+      seasonWeights,
+    );
+    if (Number(rapm?.gameCount) !== expectedGameCount) {
+      errors.push(`${label} game count does not reconcile to contributing seasons.`);
+    }
+    const modelObservationCount = model === 'net'
+      ? Number(rapm?.observationCount)
+      : Number(rapm?.pairedStintObservationCount);
+    if (modelObservationCount !== expectedObservationCount) {
+      errors.push(`${label} observation count does not reconcile to contributing seasons.`);
+    }
+    if (!closeEnough(rapm?.totalPairedPossessions, expectedRawPairedPossessions, 0.001)) {
+      errors.push(`${label} raw paired possessions do not reconcile to contributing seasons.`);
+    }
+    if (!closeEnough(rapm?.totalEffectivePairedPossessions, expectedEffectivePairedPossessions, 0.001)) {
+      errors.push(`${label} effective paired possessions do not reconcile to season weights.`);
+    }
+    if (model === 'offenseDefense') {
+      const expectedRawOffensivePossessions = sumSeasonValues(
+        rapmCoverage.offensivePossessionsBySeason,
+        contributingSeasonStartYears,
+      );
+      const expectedEffectiveOffensivePossessions = sumSeasonValues(
+        rapmCoverage.offensivePossessionsBySeason,
+        contributingSeasonStartYears,
+        seasonWeights,
+      );
+      if (!closeEnough(rapm?.totalOffensivePossessions, expectedRawOffensivePossessions, 0.001)) {
+        errors.push(`${label} raw offensive possessions do not reconcile to contributing seasons.`);
+      }
+      if (!closeEnough(rapm?.totalEffectiveOffensivePossessions, expectedEffectiveOffensivePossessions, 0.001)) {
+        errors.push(`${label} effective offensive possessions do not reconcile to season weights.`);
+      }
+    }
+  } else if (!multiseason) {
+    if (model === 'net' && Number(rapm?.observationCount) !== Number(rapmCoverage?.observationCount)) {
+      errors.push('Net RAPM observation count does not reconcile.');
+    }
+    if (Number(rapm?.gameCount) !== Number(rapmCoverage?.gameCount)) {
+      errors.push(`${label} game count does not reconcile.`);
+    }
+  }
+  checkChronologicalRapmCalibration(
+    rapm?.chronologicalCalibration,
+    rapm,
+    model,
+    options.latestSeasonStartYear,
+    errors,
+    { required: multiseason },
+  );
+}
+
+function checkMultiseasonProvenance(input, sourceValidation, coverage, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  const provenance = input.provenance ?? {};
+  const manifestHashes = seasonValueMap(
+    provenance.manifestSha256BySeason,
+    'Manifest SHA-256 provenance by season',
+    options.seasonStartYears,
+    errors,
+    { required: multiseason },
+  );
+  if (manifestHashes) {
+    for (const year of options.seasonStartYears) {
+      if (!/^[a-f0-9]{64}$/i.test(String(manifestHashes[year] ?? ''))) {
+        errors.push(`Manifest SHA-256 provenance for season ${year} is invalid.`);
+      }
+    }
+    const manifestSetSha256 = sha256(JSON.stringify(manifestHashes));
+    if (provenance.manifestSetSha256 !== manifestSetSha256) {
+      errors.push('Manifest-set SHA-256 provenance does not reconcile.');
+    }
+    const expectedManifestSha256 = multiseason
+      ? manifestSetSha256
+      : manifestHashes[options.seasonStartYear];
+    if (provenance.manifestSha256 !== expectedManifestSha256) {
+      errors.push('Manifest SHA-256 provenance does not match the selected season scope.');
+    }
+  }
+  checkSourceValidationSeasonPresence(provenance.sourceArchiveValidationSeasonsPresent, options, errors);
+
+  if (!sourceValidation) return;
+  if (sourceValidation.passed !== true) errors.push('Supplied source archive validation report did not pass.');
+  const sourceSeasons = new Map();
+  for (const season of sourceValidation.seasons ?? []) {
+    const year = Number(season?.seasonStartYear);
+    if (Number.isInteger(year) && !sourceSeasons.has(year)) sourceSeasons.set(year, season);
+  }
+  for (const year of options.seasonStartYears) {
+    const sourceSeason = sourceSeasons.get(year);
+    if (!sourceSeason) {
+      errors.push(`Source validation does not contain requested season ${year}.`);
+      continue;
+    }
+    if (manifestHashes && sourceSeason.manifestSha256 && manifestHashes[year] !== sourceSeason.manifestSha256) {
+      errors.push(`Source manifest hash does not match output provenance for season ${year}.`);
+    } else if (!manifestHashes && !multiseason && sourceSeason.manifestSha256
+      && provenance.manifestSha256 !== sourceSeason.manifestSha256) {
+      errors.push('Source manifest hash does not match output provenance.');
+    }
+    const discoveredArchives = coverage.archivesDiscoveredBySeason
+      ? coverage.archivesDiscoveredBySeason[year]
+      : (!multiseason ? coverage.archivesDiscovered : undefined);
+    if (Number(discoveredArchives) !== Number(sourceSeason.files?.discoveredGameFiles)) {
+      errors.push(`Discovered archive count differs from source validation for season ${year}.`);
+    }
+  }
+}
+
 async function validate() {
   const options = parseArgs(process.argv.slice(2));
   const [inputRaw, validationRaw] = await Promise.all([
@@ -822,10 +1284,11 @@ async function validate() {
   const warnings = [];
   const coverage = input.coverage ?? {};
   const phases = input.scope?.includedPhases ?? [];
+  const multiseason = options.seasonStartYears.length > 1;
 
   if (input.schemaVersion !== 4) errors.push('Unsupported Scout analytics schemaVersion.');
   if (input.metricsVersion !== 'nba-scout-metrics-v4') errors.push('Unexpected Scout metrics version.');
-  if (input.scope?.seasonStartYear !== options.seasonStartYear) errors.push('Season scope does not match the requested season.');
+  checkScope(input, options, errors);
   if (input.scope?.networkAccess !== 'not used' || input.scope?.supabaseWrites !== 'none') errors.push('Output is not explicitly offline/no-write.');
   if (input.scope?.transientReconstructionReplay !== true) warnings.push('Current reconstruction replay was disabled.');
   if (!Array.isArray(phases) || !phases.length || phases.includes('preseason')) errors.push('Primary phase scope is invalid.');
@@ -834,16 +1297,7 @@ async function validate() {
   if (sourceValidation && input.provenance?.sourceValidationReportSha256 !== sha256(validationRaw)) {
     errors.push('Source validation report hash does not match output provenance.');
   }
-  if (sourceValidation) {
-    const season = sourceValidation.seasons?.find((item) => item.seasonStartYear === options.seasonStartYear);
-    if (!season) errors.push('Source validation does not contain the requested season.');
-    else {
-      if (coverage.archivesDiscovered !== season.files?.discoveredGameFiles) errors.push('Discovered archive count differs from source validation.');
-      if (season.manifestSha256 && input.provenance?.manifestSha256 !== season.manifestSha256) {
-        errors.push('Source manifest hash does not match output provenance.');
-      }
-    }
-  }
+  checkMultiseasonProvenance(input, sourceValidation, coverage, options, errors);
 
   if (coverage.archivesExcludedByPhase + coverage.archivesPhaseCandidates !== coverage.archivesDiscovered) errors.push('Phase archive counts do not reconcile.');
   if (coverage.archivesExcludedNonFranchise + coverage.archivesOfficialCandidates !== coverage.archivesPhaseCandidates) errors.push('Official-team archive counts do not reconcile.');
@@ -855,6 +1309,95 @@ async function validate() {
   if ((coverage.contextPossessions?.clutch_v1 ?? 0) + (coverage.contextPossessions?.non_clutch_v1 ?? 0) + (coverage.contextPossessions?.clutchUnclassified ?? 0) !== coverage.exactLineupPossessions) errors.push('Clutch coverage does not reconcile.');
   if (Object.values(coverage.fourFactorCoverage ?? {}).reduce((sum, value) => sum + Number(value ?? 0), 0) !== coverage.exactLineupPossessions) errors.push('Four-factor possession coverage does not reconcile.');
   if (!Number.isInteger(coverage.nominalDefensePoints) || coverage.nominalDefensePoints < 0) errors.push('Nominal-defense point coverage is invalid.');
+  checkSeasonCoverageMap(
+    coverage.archivesDiscoveredBySeason,
+    'Coverage archives discovered by season',
+    options.seasonStartYears,
+    coverage.archivesDiscovered,
+    errors,
+    { required: multiseason },
+  );
+  const archivesEligibleBySeason = checkSeasonCoverageMap(
+    coverage.archivesEligibleBySeason,
+    'Coverage archives eligible by season',
+    options.seasonStartYears,
+    coverage.archivesEligible,
+    errors,
+    { required: multiseason },
+  );
+  const exactLineupPossessionsBySeason = checkSeasonCoverageMap(
+    coverage.exactLineupPossessionsBySeason,
+    'Coverage exact-lineup possessions by season',
+    options.seasonStartYears,
+    coverage.exactLineupPossessions,
+    errors,
+    { required: multiseason },
+  );
+  const rapmCoverage = {
+    gameCount: coverage.archivesEligible,
+    observationCount: coverage.rapmGroupedObservations,
+    gamesBySeason: checkSeasonCoverageMap(
+      coverage.rapmGroupedGamesBySeason,
+      'RAPM grouped games by season',
+      options.seasonStartYears,
+      coverage.archivesEligible,
+      errors,
+      { required: multiseason },
+    ),
+    observationsBySeason: checkSeasonCoverageMap(
+      coverage.rapmGroupedObservationsBySeason,
+      'RAPM grouped observations by season',
+      options.seasonStartYears,
+      coverage.rapmGroupedObservations,
+      errors,
+      { required: multiseason },
+    ),
+    pairedPossessionsBySeason: checkSeasonExposureMap(
+      coverage.rapmGroupedPairedPossessionsBySeason,
+      'RAPM grouped paired possessions by season',
+      options.seasonStartYears,
+      Number(coverage.exactLineupPossessions) / 2,
+      errors,
+      { required: multiseason },
+    ),
+    offensivePossessionsBySeason: checkSeasonExposureMap(
+      coverage.rapmGroupedOffensivePossessionsBySeason,
+      'RAPM grouped offensive possessions by season',
+      options.seasonStartYears,
+      coverage.exactLineupPossessions,
+      errors,
+      { required: multiseason },
+    ),
+  };
+  if (rapmCoverage.gamesBySeason && archivesEligibleBySeason) {
+    for (const seasonStartYear of options.seasonStartYears) {
+      if (Number(rapmCoverage.gamesBySeason[seasonStartYear]) !== Number(archivesEligibleBySeason[seasonStartYear])) {
+        errors.push(`RAPM grouped games for ${seasonStartYear} do not reconcile to eligible archives.`);
+      }
+    }
+  }
+  if (rapmCoverage.offensivePossessionsBySeason && exactLineupPossessionsBySeason) {
+    for (const seasonStartYear of options.seasonStartYears) {
+      if (!closeEnough(
+        rapmCoverage.offensivePossessionsBySeason[seasonStartYear],
+        exactLineupPossessionsBySeason[seasonStartYear],
+        0.001,
+      )) {
+        errors.push(`RAPM grouped offensive possessions for ${seasonStartYear} do not reconcile to exact lineups.`);
+      }
+    }
+  }
+  if (rapmCoverage.pairedPossessionsBySeason && rapmCoverage.offensivePossessionsBySeason) {
+    for (const seasonStartYear of options.seasonStartYears) {
+      if (!closeEnough(
+        Number(rapmCoverage.pairedPossessionsBySeason[seasonStartYear]) * 2,
+        rapmCoverage.offensivePossessionsBySeason[seasonStartYear],
+        0.001,
+      )) {
+        errors.push(`RAPM grouped paired possessions for ${seasonStartYear} do not reconcile to offensive possessions.`);
+      }
+    }
+  }
 
   const netRapm = input.rapm?.net ?? {};
   const odRapm = input.rapm?.offenseDefense ?? {};
@@ -903,11 +1446,12 @@ async function validate() {
       errors.push(`Unable to verify team shard ${shardIndex} gzip: ${String(error?.message ?? error)}`);
     }
     if (shard.schemaVersion !== input.schemaVersion || shard.metricsVersion !== input.metricsVersion) errors.push(`Team shard ${shardIndex} schema does not match the manifest.`);
+    checkShardScope(shard, shardIndex, options, errors);
     if (shard.team?.teamId !== descriptor.teamId) errors.push(`Team shard ${shardIndex} team does not match its descriptor.`);
     if (shardTeamIds.has(descriptor.teamId)) errors.push(`Duplicate team shard for ${descriptor.teamId}.`);
     shardTeamIds.add(descriptor.teamId);
     teamCount += 1;
-    checkContextMap(shard.team?.contexts, `team.${shardIndex}`, phases, errors);
+    checkContextMap(shard.team?.contexts, `team.${shardIndex}`, phases, errors, options.seasonStartYears);
 
     const combinations = shard.lineupsAndCombinations ?? [];
     const onOffRows = shard.playerOnOff ?? [];
@@ -932,7 +1476,7 @@ async function validate() {
       if (!Array.isArray(row.playerIds) || row.playerIds.length !== row.size || new Set(row.playerIds).size !== row.size) errors.push(`Invalid player IDs at combination row ${index}.`);
       if ([...(row.playerIds ?? [])].sort((a, b) => String(a).localeCompare(String(b))).join('|') !== (row.playerIds ?? []).join('|')) errors.push(`Combination player IDs are not canonical at row ${index}.`);
       if (!Number.isFinite(row.minutes) || row.minutes < 0) errors.push(`Combination minutes are invalid at row ${index}.`);
-      checkContextMap(row.contexts, `combination.${index}`, phases, errors);
+      checkContextMap(row.contexts, `combination.${index}`, phases, errors, options.seasonStartYears);
       checkCombinationContinuity(row, index, errors);
       checkProjection(row, playerRapm, netRapm, index, errors);
       const total = comboTotalsBySize.get(row.size) ?? zeroMetric();
@@ -946,7 +1490,7 @@ async function validate() {
       if (playerKeys.has(key)) errors.push(`Duplicate on/off key at row ${index}.`);
       playerKeys.add(key);
       if (row.teamId !== descriptor.teamId) errors.push(`On/off row ${index} belongs to the wrong shard.`);
-      checkOnOff(row, index, phases, errors);
+      checkOnOff(row, index, phases, errors, options.seasonStartYears);
       for (const field of TOTAL_FIELDS) playerOnTotals[field] += Number(row.on?.all?.[field] ?? 0);
     }
 
@@ -971,7 +1515,7 @@ async function validate() {
       if (String(row.playerAId).localeCompare(String(row.playerBId)) >= 0) errors.push(`WOWY player IDs are not canonical at row ${index}.`);
       for (const [cell, contexts] of Object.entries(row.cells ?? {})) {
         if (!['a_on_b_on', 'a_on_b_off', 'a_off_b_on', 'a_off_b_off'].includes(cell)) errors.push(`Invalid WOWY cell at row ${index}.`);
-        checkContextMap(contexts, `wowy.${index}.${cell}`, phases, errors);
+        checkContextMap(contexts, `wowy.${index}.${cell}`, phases, errors, options.seasonStartYears);
       }
       for (const field of TOTAL_FIELDS) wowyTogetherTotals[field] += Number(row.cells?.a_on_b_on?.all?.[field] ?? 0);
     }
@@ -1016,9 +1560,9 @@ async function validate() {
   if (odRapm.lambdaSelection && odRapm.lambdaSelection.selectedLambda !== odRapm.lambda) errors.push('Offense/defense RAPM selected lambda does not reconcile.');
   if (netRapm.lambdaSelection?.selectedAtBoundary) warnings.push(`Net RAPM selected the ${netRapm.lambdaSelection.selectedBoundary} lambda-grid boundary.`);
   if (odRapm.lambdaSelection?.selectedAtBoundary) warnings.push(`Offense/defense RAPM selected the ${odRapm.lambdaSelection.selectedBoundary} lambda-grid boundary.`);
+  checkRecencyWeightedRapm(netRapm, 'Net RAPM', 'net', rapmCoverage, options, errors);
+  checkRecencyWeightedRapm(odRapm, 'Offense/defense RAPM', 'offenseDefense', rapmCoverage, options, errors);
   checkOffenseDefenseRapmCalibration(odRapm.calibration, odRapm, errors, warnings);
-  if (netRapm.observationCount !== coverage.rapmGroupedObservations) errors.push('Net RAPM observation count does not reconcile.');
-  if (netRapm.gameCount !== coverage.archivesEligible || odRapm.gameCount !== coverage.archivesEligible) errors.push('RAPM game counts do not reconcile.');
   if (!Array.isArray(netRapm.players) || !netRapm.players.length) errors.push('Net RAPM players are missing.');
   if (!Array.isArray(odRapm.players) || odRapm.players.length !== netRapm.players?.length) errors.push('Offense/defense RAPM player coverage differs from net RAPM.');
   const venueDiagnostics = odRapm.venueExposureDiagnostics ?? {};

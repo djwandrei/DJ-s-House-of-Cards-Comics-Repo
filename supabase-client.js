@@ -1208,6 +1208,120 @@ window.DJ = window.DJ || {};
   }
 
   /**
+   * Read actual all-team season exposure for Lineup Lab, without new storage.
+   *
+   * The existing SUM-based season view cannot distinguish an absent statistic
+   * in one stint from a real zero. Read only the public box-score columns of
+   * the underlying RLS-protected NBA table and aggregate complete fields here.
+   * No commerce identity/session, private Scout payload, advanced coefficient,
+   * or import metadata is requested. The result describes ALL IMPORTED team
+   * rows, not a claim that every source row has been independently reconciled.
+   */
+  async function listNbaPlayerSeasonEvidence(options = {}) {
+    const seasonEndYear = normalizeNbaSeasonEndYear(options.seasonEndYear);
+    // Unlike optional team-page filters, evidence scope must be explicit.
+    if (typeof options.seasonPhase !== 'string' || !options.seasonPhase.trim()) {
+      throw new Error('Season evidence requires an explicit season phase.');
+    }
+    const seasonPhase = normalizeNbaSeasonPhase(options.seasonPhase);
+    if (!Array.isArray(options.playerIds)) throw new Error('Season evidence requires player IDs.');
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const playerIds = [...new Set(options.playerIds.map(id => {
+      if (typeof id !== 'string' || !uuid.test(id.trim())) throw new Error('Choose valid NBA player IDs for season evidence.');
+      return id.trim().toLowerCase();
+    }))].sort();
+    if (!playerIds.length) return [];
+    const cacheKey = `nba-season-evidence-v1:${seasonEndYear}:${seasonPhase}:${playerIds.join(',')}`;
+    const cachedPromise = getCachedRemotePromise(cacheKey, { force: options.force });
+    if (cachedPromise) return cachedPromise;
+    const fields = [
+      'games_played', 'games_started', 'minutes_played', 'field_goals_made',
+      'field_goals_attempted', 'three_point_field_goals_made',
+      'three_point_field_goals_attempted', 'free_throws_made', 'free_throws_attempted',
+      'offensive_rebounds', 'defensive_rebounds', 'total_rebounds', 'assists',
+      'steals', 'blocks', 'turnovers', 'personal_fouls', 'points'
+    ];
+    const columns = ['id', 'player_id', 'season_end_year', 'season_phase',
+      'team_code', 'is_multi_team_aggregate', ...fields].join(',');
+    const count = value => {
+      // JSON null/blank/boolean must not become zero. A real zero attempt count
+      // is retained; it does not acquire fictitious shooting observations.
+      if (!['number', 'string'].includes(typeof value) ||
+          (typeof value === 'string' && !/^\d+$/.test(value))) return null;
+      const number = Number(value);
+      return Number.isSafeInteger(number) && number >= 0 ? number : null;
+    };
+
+    const pending = (async () => {
+      const client = await getRequiredNbaAnalyticsClient();
+      const byPlayer = new Map();
+      const seenRows = new Set();
+      const seenTeams = new Set();
+      // Batching limits request size, never the number of candidate players.
+      // Cursor pages continue until exhausted, so a server row limit cannot
+      // silently turn a multi-team season into only its first returned rows.
+      for (let start = 0; start < playerIds.length; start += 50) {
+        const batch = playerIds.slice(start, start + 50);
+        const allowed = new Set(batch);
+        let cursor = 0;
+        for (;;) {
+          const { data, error } = await client.from('nba_player_team_season_stats')
+            .select(columns)
+            .eq('season_end_year', seasonEndYear)
+            .eq('season_phase', seasonPhase)
+            .eq('is_multi_team_aggregate', false)
+            .in('player_id', batch)
+            .gt('id', cursor)
+            .order('id', { ascending: true })
+            .limit(100);
+          if (error) throw createFriendlyError(error, 'listNbaPlayerSeasonEvidence');
+          if (!Array.isArray(data)) throw new Error('Season evidence returned an invalid response.');
+          if (!data.length) break;
+          for (const row of data) {
+            const id = count(row?.id);
+            const playerId = typeof row?.player_id === 'string' ? row.player_id.toLowerCase() : '';
+            if (!(id > cursor) || seenRows.has(id) || !allowed.has(playerId) ||
+                row.season_end_year !== seasonEndYear || row.season_phase !== seasonPhase ||
+                row.is_multi_team_aggregate !== false ||
+                typeof row.team_code !== 'string' || !/^[A-Z0-9]{2,8}$/.test(row.team_code) ||
+                /^(TOT|[2-9]TM)$/.test(row.team_code)) {
+              throw new Error('Season evidence has duplicate, out-of-order, or mismatched source rows.');
+            }
+            const teamKey = `${playerId}:${row.team_code}`;
+            if (seenTeams.has(teamKey)) throw new Error('Season evidence contains duplicate team records.');
+            seenRows.add(id); seenTeams.add(teamKey); cursor = id;
+            const aggregate = byPlayer.get(playerId) || {
+              player_id: playerId, season_end_year: seasonEndYear, season_phase: seasonPhase,
+              team_stint_count: 0, ...Object.fromEntries(fields.map(field => [field, 0]))
+            };
+            aggregate.team_stint_count++;
+            for (const field of fields) {
+              const value = count(row[field]);
+              // Once any contributing row is missing a field, its season sum
+              // stays unavailable. Never combine a partial numerator with full
+              // exposure or independently average team shooting percentages.
+              const sum = aggregate[field] === null || value === null ? null : aggregate[field] + value;
+              aggregate[field] = Number.isSafeInteger(sum) ? sum : null;
+            }
+            byPlayer.set(playerId, aggregate);
+          }
+        }
+      }
+      return playerIds.flatMap(playerId => {
+        const row = byPlayer.get(playerId);
+        if (!row || !(row.games_played > 0) || !(row.minutes_played > 0)) return [];
+        return [{ ...row, evidence_contract: 'imported-team-totals-v1' }];
+      });
+    })();
+    if (!options.force) setCachedRemotePromise(cacheKey, pending);
+    try { return await pending; }
+    catch (error) {
+      if (!options.force) remoteCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  /**
    * Read the fixed-shape, public-safe NBA Slab-to-Stats payload for one visible
    * catalog product. Mapping evidence and review notes remain behind the RPC.
    */
@@ -1666,6 +1780,7 @@ window.DJ = window.DJ || {};
     listNbaLineupSeasons,
     listNbaLineupTeams,
     listNbaTeamSeasonPlayers,
+    listNbaPlayerSeasonEvidence,
     getNbaProductSlabStats,
     getProSportsProductSlabStats,
     listOrders,

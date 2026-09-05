@@ -1010,6 +1010,8 @@ function rapmModelOutput(model, players) {
     totalOffensivePossessions: model.totalOffensivePossessions,
     totalEffectiveOffensivePossessions: model.totalEffectiveOffensivePossessions,
     priorSeasonWeight: model.priorSeasonWeight ?? 1,
+    seasonWeights: model.seasonWeights ?? null,
+    includedSeasonStartYears: model.includedSeasonStartYears ?? null,
     chronologicalCalibration: model.chronologicalCalibration ?? null,
     excludedStintCount: model.excludedStintCount,
     skippedDirectionalObservationCount: model.skippedDirectionalObservationCount,
@@ -1273,6 +1275,13 @@ async function derive() {
     excludedPossessionsMissingLineup: 0,
     excludedPossessionsInvalidTeam: 0,
     rapmGroupedObservations: 0,
+    // These preserve the unweighted source exposure before recency weighting
+    // removes a zero-weight prior season from a fitted RAPM input. Keeping
+    // that distinction makes the final model scope auditable.
+    rapmGroupedGamesBySeason: Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0])),
+    rapmGroupedObservationsBySeason: Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0])),
+    rapmGroupedPairedPossessionsBySeason: Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0])),
+    rapmGroupedOffensivePossessionsBySeason: Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0])),
     contextPossessions: {
       all: 0,
       clutch_v1: 0,
@@ -1583,6 +1592,24 @@ async function derive() {
 
   let rapmInput = [...rapmGroups.values()];
   counters.rapmGroupedObservations = rapmInput.length;
+  const rapmGameIdsBySeason = new Map(
+    OPTIONS.seasonStartYears.map((seasonStartYear) => [seasonStartYear, new Set()]),
+  );
+  for (const row of rapmInput) {
+    const seasonStartYear = Number(row.seasonStartYear);
+    if (!Object.hasOwn(counters.rapmGroupedObservationsBySeason, seasonStartYear)) {
+      throw new Error(`RAPM observation has a season outside the selected scope: ${seasonStartYear}.`);
+    }
+    const offensivePossessions = finite(row.homeOffensivePossessions) + finite(row.awayOffensivePossessions);
+    counters.rapmGroupedObservationsBySeason[seasonStartYear] += 1;
+    counters.rapmGroupedOffensivePossessionsBySeason[seasonStartYear] += offensivePossessions;
+    counters.rapmGroupedPairedPossessionsBySeason[seasonStartYear] += offensivePossessions / 2;
+    rapmGameIdsBySeason.get(seasonStartYear).add(String(row.gameId));
+  }
+  for (const seasonStartYear of OPTIONS.seasonStartYears) {
+    counters.rapmGroupedGamesBySeason[seasonStartYear] = rapmGameIdsBySeason.get(seasonStartYear).size;
+  }
+  rapmGameIdsBySeason.clear();
   const seasonPhase = `${OPTIONS.includedPhases.join('_')}_official_franchise_${NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION}_possession_start_lineups`;
   const rapmOptions = {
     lambdaCandidates: OPTIONS.lambdaCandidates,
@@ -1631,14 +1658,30 @@ async function derive() {
   });
   const netRapmInput = weightedRapmInput(netPriorSeasonWeight);
   const offenseDefenseRapmInput = weightedRapmInput(offenseDefensePriorSeasonWeight);
+  const seasonWeightsFor = (priorSeasonWeight) => Object.fromEntries(
+    OPTIONS.seasonStartYears.map((seasonStartYear) => [
+      seasonStartYear,
+      seasonStartYear === OPTIONS.latestSeasonStartYear
+        ? 1
+        : Number(priorSeasonWeight) ** (OPTIONS.latestSeasonStartYear - seasonStartYear),
+    ]),
+  );
   const netRapm = fitWeightedRidgeRapm(netRapmInput, { ...rapmOptions, lambda: netLambda });
   netRapm.priorSeasonWeight = netPriorSeasonWeight;
+  netRapm.seasonWeights = seasonWeightsFor(netPriorSeasonWeight);
+  netRapm.includedSeasonStartYears = Object.entries(netRapm.seasonWeights)
+    .filter(([, weight]) => weight > 0)
+    .map(([seasonStartYear]) => Number(seasonStartYear));
   netRapm.chronologicalCalibration = netChronologicalCalibration;
   const offenseDefenseRapm = fitWeightedRidgeOffenseDefenseRapm(offenseDefenseRapmInput, {
     ...rapmOptions,
     lambda: offenseDefenseLambda,
   });
   offenseDefenseRapm.priorSeasonWeight = offenseDefensePriorSeasonWeight;
+  offenseDefenseRapm.seasonWeights = seasonWeightsFor(offenseDefensePriorSeasonWeight);
+  offenseDefenseRapm.includedSeasonStartYears = Object.entries(offenseDefenseRapm.seasonWeights)
+    .filter(([, weight]) => weight > 0)
+    .map(([seasonStartYear]) => Number(seasonStartYear));
   offenseDefenseRapm.chronologicalCalibration = offenseDefenseChronologicalCalibration;
   // Evaluate the selected numeric lambda on complete held-out games. If the
   // derive command chose lambda automatically, its selected value is frozen
@@ -1995,7 +2038,7 @@ async function derive() {
       || String(left).localeCompare(String(right))
     );
 
-    await writer.write(`{"schemaVersion":${OUTPUT_SCHEMA_VERSION},"metricsVersion":${JSON.stringify(SCOUT_METRICS_VERSION)},"seasonStartYear":${OPTIONS.seasonStartYear},"seasonEndYear":${OPTIONS.seasonStartYear + 1},"team":${JSON.stringify(team)},"lineupsAndCombinations":[`);
+    await writer.write(`{"schemaVersion":${OUTPUT_SCHEMA_VERSION},"metricsVersion":${JSON.stringify(SCOUT_METRICS_VERSION)},"seasonStartYear":${OPTIONS.seasonStartYear},"seasonEndYear":${OPTIONS.latestSeasonStartYear + 1},"seasonStartYears":${JSON.stringify(OPTIONS.seasonStartYears)},"latestSeasonStartYear":${OPTIONS.latestSeasonStartYear},"team":${JSON.stringify(team)},"lineupsAndCombinations":[`);
     const combinationKeys = sortedKeysForTeam(comboMap, team.teamId, (left, right) => (
       left.size - right.size || left.playerIds.join('|').localeCompare(right.playerIds.join('|'))
     ));
@@ -2126,7 +2169,7 @@ async function derive() {
     shardGzipBytes,
     caveat: 'Uncompressed shards are retained for inspection; gzip shards are the preferred transport/archive representation. Team shards are streamed into a staging directory and the completed directory is renamed into place only after the manifest is complete.',
   };
-  const filename = `nba-scout-analytics-${OPTIONS.seasonStartYear}-${String(OPTIONS.seasonStartYear + 1).slice(-2)}.json`;
+  const filename = `nba-scout-analytics-${seasonLabel(OPTIONS.seasonStartYears)}.json`;
   const stagedOutputPath = path.join(stagingOutputDirectory, filename);
   const stagedGzipPath = `${stagedOutputPath}.gz`;
   const stagedSummaryPath = path.join(stagingOutputDirectory, 'README.md');
@@ -2135,14 +2178,17 @@ async function derive() {
   const outputHash = sha256(outputRaw);
   const outputBytes = Buffer.byteLength(outputRaw);
   const gzip = await gzipFile(stagedOutputPath, stagedGzipPath);
-  const summary = `# NBA Scout analytics — ${OPTIONS.seasonStartYear}-${String(OPTIONS.seasonStartYear + 1).slice(-2)}\n\n`
+  const summary = `# NBA Scout analytics — ${seasonLabel(OPTIONS.seasonStartYears)}\n\n`
     + `Generated offline from the preserved local Sportradar archive with transient ${NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION} replay. No API request and no Supabase write was made.\n\n`
     + `- Source archives: ${counters.archivesDiscovered}; selected official candidates: ${counters.archivesOfficialCandidates}; Scout-eligible after replay: ${counters.archivesEligible}.\n`
     + `- Included phases: ${OPTIONS.includedPhases.join(', ')}; excluded by phase: ${counters.archivesExcludedByPhase}; non-franchise exclusions: ${counters.archivesExcludedNonFranchise}.\n`
     + `- Eligible events/stints/possessions: ${counters.eventsInEligibleArchives}/${counters.stintsInEligibleArchives}/${counters.possessionsInEligibleArchives}.\n`
     + `- Possessions with valid start lineups used: ${counters.exactLineupPossessions}; start-lineup-attributed mid-change possessions: ${counters.possessionStartLineupAttributedMidChange}; excluded: ${counters.excludedPossessions}.\n`
     + `- Rows: ${rowCounts.lineupsAndCombinations} combinations; ${rowCounts.playerOnOff} player on/off; ${rowCounts.playerProfiles} direct player profiles; ${rowCounts.wowy} WOWY pairs; ${rapmPlayers.length} net RAPM players.\n`
-    + `- Net RAPM lambda: ${netRapm.lambda}; offense/defense RAPM lambda: ${offenseDefenseRapm.lambda}; both use deterministic game-fold selection when configured as auto.\n`
+    + `- Net RAPM lambda: ${netRapm.lambda}; prior-season weight: ${netRapm.priorSeasonWeight}; offense/defense RAPM lambda: ${offenseDefenseRapm.lambda}; prior-season weight: ${offenseDefenseRapm.priorSeasonWeight}.\n`
+    + (multiseason
+      ? `- Chronological tuning/test: net ${netChronologicalCalibration ? 'completed' : 'fixed settings'}; offense/defense ${offenseDefenseChronologicalCalibration ? 'completed' : 'fixed settings'}. Latest season is ${OPTIONS.latestSeasonStartYear}-${String(OPTIONS.latestSeasonStartYear + 1).slice(-2)}.\n`
+      : '')
     + `- Offense/defense held-out calibration: ${offenseDefenseRapm.calibration.status}; full-model MSE improvement vs venue baseline: ${round((offenseDefenseRapm.calibration.fullModelMseImprovementVsVenueBaseline ?? 0) * 100, 3)}%.\n`
     + `- Added phase, venue, quarter/half, last-5/10/20, clutch, transition, score-state, garbage-time proxy, leverage, four-factor, shot-zone, possession-extension, rotation-continuity, player-profile, reliability, interval, O/D RAPM, and lineup-projection fields.\n`
     + `- Manifest JSON: ${outputBytes} bytes, SHA-256 ${outputHash}.\n`

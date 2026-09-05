@@ -334,3 +334,66 @@ Seven of those changes are cache-revision propagation only. No manifest was
 changed, and `workload-calibration.js` remains identical to the prior release.
 The unrelated concurrent `scripts/lib/nba-rapm.mjs` change is excluded from
 this handoff; it was not edited or staged by this task.
+
+## September 5 follow-up: release and read-only season integration
+
+### Completed release
+
+The user's GitHub `main` commit `8499f14cdfc1fa5f67cc7e3f51f3e0e55a57bf1a`
+was verified remotely. The reviewed 20-file `20260905c` Lineup release was
+uploaded to cPanel using the existing env-based FTPS workflow, with no deletes.
+The post-upload audit found 20 identical files, zero missing/different files,
+and zero unverified/error results. A production starting-five smoke search
+checked all 1,287 groups, found 196 feasible groups, and showed no captured
+JavaScript errors or broken visible images. No Git push was performed here.
+
+### New local work, not part of that deployment
+
+`listNbaPlayerSeasonEvidence` in the shared browser adapter now reads narrow
+public count columns from the existing dedicated NBA project's RLS-protected
+`nba_player_team_season_stats` table. It does not use the existing SUM view:
+SQL SUM skips missing fields, which could pair partial counts with full minutes.
+The client aggregation leaves a metric unavailable if any contributing team
+row is missing it. Real zero remains zero; provider TOT/multi-team aggregate
+rows are excluded to avoid double counting. Explicit phase/player scope,
+duplicate detection, 50-ID batches, and exhaustive cursor pagination are tested.
+These are transport batches, not a player or rotation-candidate cap.
+
+No new Supabase storage, migration, grant, RLS policy, or data write was needed.
+Public anonymous read access and the security-invoker view were checked live.
+Private Scout/archive work remains separate. This bridge deliberately does not
+invent full-season BPM, possessions, or source-completeness certification.
+
+The prototype now distinguishes imported season evidence from selected-team
+card stats, rejects malformed optional evidence without blocking a valid team
+pool, and explains the available sample in each player's collapsed selection
+details. Snapshot cache version v6 invalidates older pre-reader cached pools.
+Generated Lineup files match the builder at local revision `20260905d`.
+
+Verification: 227 focused tests pass, site integrity reports zero issues, the
+secret audit passes, and generated parity passes. Browser checks confirm
+season evidence for MIN 2026 regular (21/21), LAL 1980 regular (15/15), DET 2004
+regular (17/17), and DET 2004 playoffs (12/12). A local nine-player MIN rotation
+checked 220 groups, accepted 98, and assigned all 240 minutes. At 1280×900 and
+390×844 there was no horizontal page overflow or broken visible image; no
+JavaScript errors were captured. Ayo Dosunmu's 69-game/1,881-minute/two-team
+sample and Kyle Anderson's 43-game/853-minute/three-team sample match a separate
+database aggregation, while their cards retain Minnesota-only stats.
+
+Source changes: `supabase-client.js`; prototype `app.js`, `index.html`, and
+`supabase-nba-data.js`; prototype tests `supabase-nba-data.test.mjs` and
+`header-and-benchmark-ui.test.mjs`; builder `scripts/build-lineup-lab-release.mjs`;
+new shared-reader tests `scripts/tests/nba-season-evidence-reader.test.mjs`.
+Generated changes: `lineup-lab/app.js`, `index.html`, `supabase-nba-data.js`, plus
+revision propagation in `lineup-role-model.js`, `opponent-gameplan.js`,
+`optimizer-core.js`, `optimizer-worker.js`, `player-projection.js`, and
+`projection-parameters.js`. No release manifest was changed. Shared storefront
+cache alignment/release review is still needed before publishing the new
+shared adapter; this local revision has not been pushed or deployed.
+
+The subsequent user-requested Gobert/Beringer diagnostic is documented in
+`docs/lineup-gobert-beringer-diagnostic.md`, with a read-only reproduction at
+`scripts/diagnose-lineup-center-case.mjs`. Its 56 controlled scenarios expose
+remaining shooting-opportunity and role-extrapolation problems. Fix and
+validate those before promoting the next model release; correct sample counts
+alone do not establish a better player-quality or expanded-role forecast.

@@ -8,6 +8,7 @@ import {
   playerProfileFromEvents,
   selectPossessionObservedBoundaryLineups,
   sourceArchiveValidationStatus,
+  sourceArchiveValidationStatuses,
 } from '../derive-local-scout-analytics.mjs';
 
 test('calibration-only derivation writes a bounded report instead of a full package', () => {
@@ -44,6 +45,53 @@ test('calibration provenance uses the checkpoint report verdict instead of a non
     seasons: [{ seasonStartYear: 2025 }],
   }, 2025);
   assert.equal(failedReport.sourceArchiveValidationPassed, false);
+});
+
+test('multiseason options preserve single-season defaults and reject ambiguous scope', () => {
+  const defaultOptions = optionsFromArgs(['--archive-dir', 'outputs/fixture-source']);
+  assert.deepEqual(defaultOptions.seasonStartYears, [2025]);
+  assert.equal(defaultOptions.seasonStartYear, 2025);
+  assert.equal(defaultOptions.latestSeasonStartYear, 2025);
+
+  const multiseason = optionsFromArgs([
+    '--archive-dir', 'outputs/fixture-source',
+    '--seasons', '2025,2024,2025',
+    '--rapm-prior-season-weight', 'auto',
+    '--offense-defense-rapm-prior-season-weight', '0.5',
+    '--chronological-tuning-game-fraction', '0.2',
+    '--chronological-test-game-fraction', '0.2',
+  ]);
+  assert.deepEqual(multiseason.seasonStartYears, [2024, 2025]);
+  assert.equal(multiseason.seasonStartYear, 2024);
+  assert.equal(multiseason.latestSeasonStartYear, 2025);
+  assert.equal(multiseason.rapmPriorSeasonWeight, 'auto');
+  assert.equal(multiseason.offenseDefenseRapmPriorSeasonWeight, 0.5);
+  assert.match(multiseason.outputDir, /scout-analytics[\\/]2024-26$/);
+
+  assert.throws(
+    () => optionsFromArgs(['--archive-dir', 'outputs/fixture-source', '--season', '2025', '--seasons', '2024,2025']),
+    /mutually exclusive/,
+  );
+  assert.throws(
+    () => optionsFromArgs(['--archive-dir', 'outputs/fixture-source', '--season', '2025', '--rapm-prior-season-weight', 'auto']),
+    /require at least two seasons/,
+  );
+});
+
+test('multiseason checkpoint provenance fails closed unless every selected season is present', () => {
+  const report = {
+    passed: true,
+    seasons: [{ seasonStartYear: 2024 }, { seasonStartYear: 2025 }],
+  };
+  const valid = sourceArchiveValidationStatuses(report, [2024, 2025]);
+  assert.equal(valid.sourceArchiveValidationReportPassed, true);
+  assert.equal(valid.sourceArchiveValidationAllSeasonsPresent, true);
+  assert.equal(valid.sourceArchiveValidationPassed, true);
+  assert.deepEqual(valid.selectedSeasons.map((season) => season.seasonStartYear), [2024, 2025]);
+
+  const missing = sourceArchiveValidationStatuses(report, [2024, 2025, 2026]);
+  assert.equal(missing.sourceArchiveValidationAllSeasonsPresent, false);
+  assert.equal(missing.sourceArchiveValidationPassed, false);
 });
 
 test('lineup home-court context scales the net RAPM venue effect by observed exposure', () => {
