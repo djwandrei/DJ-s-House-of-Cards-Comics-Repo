@@ -786,6 +786,46 @@ function nullableStatisticBoolean(record, aliases, label) {
   return optionalBoolean(statisticValue(record, aliases), label);
 }
 
+// The Summary endpoint is fetched separately from play-by-play and supplies
+// the authoritative per-game box score.  Preserve a deliberately narrow,
+// canonical subset that can later be reconciled against PBP-derived totals.
+// Keeping the source label and the provider-present fields prevents absent
+// statistics from being mistaken for zeroes during a backfill or validation.
+const OFFICIAL_BOX_SCORE_FIELDS = [
+  ['points', ['points']],
+  ['fieldGoalsMade', ['field_goals_made', 'fieldGoalsMade']],
+  ['fieldGoalAttempts', ['field_goals_att', 'field_goals_attempted', 'fieldGoalsAtt', 'fieldGoalsAttempted']],
+  ['twoPointMakes', ['two_points_made', 'twoPointsMade']],
+  ['twoPointAttempts', ['two_points_att', 'two_points_attempted', 'twoPointsAtt', 'twoPointsAttempted']],
+  ['threePointersMade', ['three_points_made', 'threePointersMade']],
+  ['threePointAttempts', ['three_points_att', 'three_points_attempted', 'threePointsAtt', 'threePointsAttempted']],
+  ['freeThrowsMade', ['free_throws_made', 'freeThrowsMade']],
+  ['freeThrowAttempts', ['free_throws_att', 'free_throws_attempted', 'freeThrowsAtt', 'freeThrowsAttempted']],
+  ['offensiveRebounds', ['offensive_rebounds', 'offensiveRebounds']],
+  ['defensiveRebounds', ['defensive_rebounds', 'defensiveRebounds']],
+  ['rebounds', ['rebounds', 'total_rebounds', 'totalRebounds']],
+  ['assists', ['assists']],
+  ['steals', ['steals']],
+  ['blocks', ['blocks']],
+  ['turnovers', ['turnovers']],
+  ['personalFouls', ['personal_fouls', 'personalFouls']],
+];
+
+function normalizeOfficialBoxScore(record, label) {
+  const fields = {};
+  const availableFields = [];
+  for (const [field, aliases] of OFFICIAL_BOX_SCORE_FIELDS) {
+    const raw = statisticValue(record, aliases);
+    if (raw !== undefined && raw !== null && raw !== '') availableFields.push(field);
+    fields[field] = nullableStatisticInteger(record, aliases, `${label}.${field}`, { minimum: 0 });
+  }
+  return {
+    source: 'summary_endpoint',
+    availableFields,
+    fields,
+  };
+}
+
 function normalizeSummaryPlayer(value, team, index) {
   const player = requireObject(value, `summary ${team.id} players[${index}]`);
   const id = requireUuid(player.id, `summary player ${index}.id`);
@@ -810,7 +850,8 @@ function normalizeSummaryPlayer(value, team, index) {
     defensiveRating: nullableStatisticNumber(player, ['defensive_rating', 'defensiveRating', 'def_rating'], `summary player ${id}.defensive_rating`),
     isStarter: nullableStatisticBoolean(player, ['starter', 'is_starter', 'isStarter'], `summary player ${id}.starter`),
     isActive: nullableStatisticBoolean(player, ['active', 'is_active', 'isActive'], `summary player ${id}.active`),
-    isOnCourt: nullableStatisticBoolean(player, ['on_court', 'is_on_court', 'isOnCourt'], `summary player ${id}.on_court`)
+    isOnCourt: nullableStatisticBoolean(player, ['on_court', 'is_on_court', 'isOnCourt'], `summary player ${id}.on_court`),
+    officialBoxScore: normalizeOfficialBoxScore(player, `summary player ${id}.official_box_score`),
   };
 }
 

@@ -268,6 +268,13 @@ function renderRound() {
 function createRolePanel(title, roles, inverse = false) {
   const panel = createElement('section', 'fix-five-dna-panel');
   panel.append(createElement('h4', '', title));
+  if (inverse) {
+    panel.append(createElement(
+      'p',
+      'draft-night-role-note',
+      'Ordered by this board\'s objective priority and remaining coverage gap; it is not a claim that every listed role is completely absent.',
+    ));
+  }
   const list = createElement('ul', 'fix-five-dna-list');
   roles.forEach((role) => {
     const item = createElement('li', inverse ? 'is-loss' : '');

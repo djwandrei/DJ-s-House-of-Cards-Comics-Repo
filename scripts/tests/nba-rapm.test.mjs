@@ -385,6 +385,17 @@ test('chronological multiseason tuning is deterministic and keeps a final latest
   assert.equal(offenseDefense.split.latestSeasonTest.gameCount, 2);
   assert.equal(offenseDefense.candidates.length, 6);
   assert.ok(Number.isFinite(offenseDefense.test.fullModel.weightedMse));
+
+  const fixed = selectChronologicalRapmHyperparameters(stints, {
+    ...options,
+    model: 'net',
+    priorSeasonWeightCandidates: [0.5],
+    lambdaCandidates: [10],
+  });
+  assert.equal(fixed.candidates.length, 1);
+  assert.equal(fixed.selectedPriorSeasonWeight, 0.5);
+  assert.equal(fixed.selectedLambda, 10);
+  assert.ok(Number.isFinite(fixed.test.fullModel.weightedMse));
 });
 
 test('RAPM rejects a zero or negative ridge lambda', () => {

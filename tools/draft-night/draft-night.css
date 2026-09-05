@@ -163,6 +163,13 @@
   text-align: left;
 }
 
+.draft-night-role-note {
+  color: rgba(255, 255, 255, .78);
+  font-size: .78rem;
+  line-height: 1.4;
+  margin: .35rem 0 .65rem;
+}
+
 .draft-night-result-caveat {
   color: var(--fix-muted);
   font-size: .84rem;

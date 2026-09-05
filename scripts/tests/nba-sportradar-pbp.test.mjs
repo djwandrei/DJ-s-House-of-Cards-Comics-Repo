@@ -217,7 +217,15 @@ test('normalizes provider summary ratings, possessions, and player minutes', () 
         last_name: 'Player',
         position: 'G',
         jersey_number: '3',
-        statistics: { minutes: '30:30', plus_minus: 8, offensive_rating: 118.2, defensive_rating: 106.4 },
+        statistics: {
+          minutes: '30:30', plus_minus: 8, offensive_rating: 118.2, defensive_rating: 106.4,
+          points: 21, field_goals_made: 7, field_goals_att: 13,
+          two_points_made: 4, two_points_att: 7,
+          three_points_made: 3, three_points_att: 6,
+          free_throws_made: 4, free_throws_att: 5,
+          offensive_rebounds: 2, defensive_rebounds: 5, rebounds: 7,
+          assists: 6, steals: 1, blocks: 2, turnovers: 3, personal_fouls: 4,
+        },
         starter: true,
         active: true,
         on_court: false
@@ -235,7 +243,24 @@ test('normalizes provider summary ratings, possessions, and player minutes', () 
   assert.equal(parsed.players[0].minutesPlayed, 30.5);
   assert.equal(parsed.players[0].plusMinus, 8);
   assert.equal(parsed.players[0].isStarter, true);
+  assert.deepEqual(parsed.players[0].officialBoxScore, {
+    source: 'summary_endpoint',
+    availableFields: [
+      'points', 'fieldGoalsMade', 'fieldGoalAttempts', 'twoPointMakes', 'twoPointAttempts',
+      'threePointersMade', 'threePointAttempts', 'freeThrowsMade', 'freeThrowAttempts',
+      'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks',
+      'turnovers', 'personalFouls',
+    ],
+    fields: {
+      points: 21, fieldGoalsMade: 7, fieldGoalAttempts: 13, twoPointMakes: 4, twoPointAttempts: 7,
+      threePointersMade: 3, threePointAttempts: 6, freeThrowsMade: 4, freeThrowAttempts: 5,
+      offensiveRebounds: 2, defensiveRebounds: 5, rebounds: 7, assists: 6, steals: 1, blocks: 2,
+      turnovers: 3, personalFouls: 4,
+    },
+  });
   assert.equal(parsed.players[1].minutesPlayed, 29.5);
+  assert.deepEqual(parsed.players[1].officialBoxScore.availableFields, []);
+  assert.equal(parsed.players[1].officialBoxScore.fields.points, null);
   assert.equal(parsed.teams.length, 2);
 });
 

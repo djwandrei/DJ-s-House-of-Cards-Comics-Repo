@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import test from 'node:test';
 import {
   addDirectPlayerStatistic,
@@ -6,9 +7,14 @@ import {
   homeCourtExposureAdjustmentPer100,
   optionsFromArgs,
   playerProfileFromEvents,
+  requireSourceSummaryTeamReconciliation,
+  requireSourceValidationFileHashes,
+  requireSourceValidationManifestHashes,
+  requireTrialSourceAccessLevels,
   selectPossessionObservedBoundaryLineups,
   sourceArchiveValidationStatus,
   sourceArchiveValidationStatuses,
+  verifiedSourceFileDescriptor,
 } from '../derive-local-scout-analytics.mjs';
 
 test('calibration-only derivation writes a bounded report instead of a full package', () => {
@@ -92,6 +98,151 @@ test('multiseason checkpoint provenance fails closed unless every selected seaso
   const missing = sourceArchiveValidationStatuses(report, [2024, 2025, 2026]);
   assert.equal(missing.sourceArchiveValidationAllSeasonsPresent, false);
   assert.equal(missing.sourceArchiveValidationPassed, false);
+
+  const duplicate = sourceArchiveValidationStatuses({
+    passed: true,
+    seasons: [{ seasonStartYear: 2024 }, { seasonStartYear: 2025 }, { seasonStartYear: 2025 }],
+  }, [2024, 2025]);
+  assert.equal(duplicate.sourceArchiveValidationAllSeasonsExactlyOnce, false);
+  assert.equal(duplicate.sourceArchiveValidationPassed, false);
+});
+
+test('source manifests must be trial, internally scoped, and exact for every requested season', () => {
+  const raw = (seasonStartYear, accessLevel = 'trial') => JSON.stringify({ seasonStartYear, accessLevel });
+  const entries = [
+    { seasonStartYear: 2024, raw: raw(2024) },
+    { seasonStartYear: 2025, raw: raw(2025) },
+  ];
+  assert.deepEqual(requireTrialSourceAccessLevels(entries, [2024, 2025]), {
+    2024: 'trial',
+    2025: 'trial',
+  });
+  assert.throws(
+    () => requireTrialSourceAccessLevels([{ seasonStartYear: 2024, raw: raw(2024, 'production') }], [2024]),
+    /must declare accessLevel "trial"/,
+  );
+  assert.throws(
+    () => requireTrialSourceAccessLevels([{ seasonStartYear: 2024, raw: raw(2025) }], [2024]),
+    /does not match its requested season/,
+  );
+  assert.throws(
+    () => requireTrialSourceAccessLevels([...entries, entries[1]], [2024, 2025]),
+    /duplicate season/,
+  );
+  assert.throws(
+    () => requireTrialSourceAccessLevels(entries, [2024, 2025, 2026]),
+    /do not cover every requested season exactly once/,
+  );
+});
+
+test('source validation binds the selected manifest hashes before records are loaded', () => {
+  const entries = [
+    { seasonStartYear: 2024, raw: JSON.stringify({ seasonStartYear: 2024, accessLevel: 'trial' }) },
+    { seasonStartYear: 2025, raw: JSON.stringify({ seasonStartYear: 2025, accessLevel: 'trial' }) },
+  ];
+  const hash = (raw) => crypto.createHash('sha256').update(raw).digest('hex');
+  const report = {
+    passed: true,
+    seasons: entries.map((entry) => ({ seasonStartYear: entry.seasonStartYear, manifestSha256: hash(entry.raw) })),
+  };
+  const result = requireSourceValidationManifestHashes(report, entries, [2024, 2025]);
+  assert.equal(result.sourceValidation.sourceArchiveValidationPassed, true);
+  assert.equal(result.manifestSha256BySeason[2024], hash(entries[0].raw));
+
+  assert.throws(
+    () => requireSourceValidationManifestHashes({
+      ...report,
+      seasons: [{ seasonStartYear: 2024, manifestSha256: hash(entries[0].raw) }, { seasonStartYear: 2025, manifestSha256: 'f'.repeat(64) }],
+    }, entries, [2024, 2025]),
+    /does not match the validated checkpoint/,
+  );
+});
+
+test('source validation binds every game-file digest and its v4 summary-team counters', () => {
+  const hash = (value) => crypto.createHash('sha256').update(value).digest('hex');
+  const compressed = Buffer.from('compressed game fixture');
+  const uncompressed = Buffer.from('{"game":"fixture"}');
+  const sourceRecord = {
+    relativePath: 'games/game-1.json.gz',
+    gameId: 'game-1',
+    byteLength: compressed.byteLength,
+    gzipSha256: hash(compressed),
+    uncompressedByteLength: uncompressed.byteLength,
+    uncompressedSha256: hash(uncompressed),
+    normalizedJsonSha256: 'a'.repeat(64),
+  };
+  const quality = {
+    gamesWithSummaryTeamScoreNonReconciliation: 0,
+    gamesWithSummaryTeamOffensiveRatingAlgebraDiagnostics: 0,
+    summaryTeamOffensiveRatingAlgebraDiagnostics: 0,
+    gamesWithSummaryTeamDefensiveRatingAlgebraDiagnostics: 0,
+    summaryTeamDefensiveRatingAlgebraDiagnostics: 0,
+    gamesWithSummaryTeamPossessionSymmetryDiagnostics: 0,
+    summaryTeamPossessionSymmetryDiagnostics: 0,
+  };
+  const report = {
+    passed: true,
+    validatorVersion: 'sportradar-nba-local-archive-validator-v4',
+    seasons: [{
+      seasonStartYear: 2025,
+      files: {
+        expectedCompletedFiles: 1,
+        discoveredGameFiles: 1,
+        aggregateFileHash: 'b'.repeat(64),
+        records: [sourceRecord],
+      },
+      dataQuality: quality,
+    }],
+  };
+  const inventory = requireSourceValidationFileHashes(report, [2025]);
+  const expected = inventory[2025].expectedFiles.get('game-1.json.gz');
+  assert.equal(inventory[2025].expectedFileCount, 1);
+  assert.equal(expected.gameId, 'game-1');
+  assert.deepEqual(verifiedSourceFileDescriptor({
+    expected,
+    filename: 'game-1.json.gz',
+    compressed,
+    uncompressed,
+    gameId: 'game-1',
+  }), {
+    relativePath: 'games/game-1.json.gz',
+    byteLength: compressed.byteLength,
+    gzipSha256: hash(compressed),
+    uncompressedByteLength: uncompressed.byteLength,
+    uncompressedSha256: hash(uncompressed),
+  });
+  assert.throws(
+    () => verifiedSourceFileDescriptor({
+      expected,
+      filename: 'game-1.json.gz',
+      compressed: Buffer.from('changed compressed fixture'),
+      uncompressed,
+      gameId: 'game-1',
+    }),
+    /validated gzip digest/,
+  );
+  assert.throws(
+    () => verifiedSourceFileDescriptor({
+      expected,
+      filename: 'orphan.json.gz',
+      compressed,
+      uncompressed,
+      gameId: 'game-1',
+    }),
+    /absent from the validated file inventory/,
+  );
+  assert.deepEqual(requireSourceSummaryTeamReconciliation(report, [2025]), { 2025: quality });
+  assert.throws(
+    () => requireSourceSummaryTeamReconciliation({ ...report, validatorVersion: 'sportradar-nba-local-archive-validator-v3' }, [2025]),
+    /requires source validator/,
+  );
+  assert.throws(
+    () => requireSourceSummaryTeamReconciliation({
+      ...report,
+      seasons: [{ ...report.seasons[0], dataQuality: {} }],
+    }, [2025]),
+    /no valid gamesWithSummaryTeamScoreNonReconciliation counter/,
+  );
 });
 
 test('lineup home-court context scales the net RAPM venue effect by observed exposure', () => {

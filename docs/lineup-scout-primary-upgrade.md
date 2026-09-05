@@ -241,11 +241,14 @@ Run the reviewed local benchmark without changing runtime defaults:
 node scripts/benchmark-lineup-workload.mjs --archive outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/data/2025 --out outputs/lineup-scout-upgrade/workload-validation-v2.json
 ```
 
-`chronological-workload-v2` uses whole UTC days, explicit unique game/player
+`chronological-workload-v3` uses whole UTC days, explicit unique game/player
 identities, strict future-only evaluation, and metric-specific paired counts
 and denominators. It records exclusions instead of converting missing evidence
-to zero. Free-throw attempts/makes are retained for future offensive-load
-research; they do not activate a new usage coefficient.
+to zero. When a refreshed archive retains complete Summary-endpoint official
+box scores, V3 requires them to reconcile with independently parsed PBP before
+using those official totals; mixed or partial retention is rejected. Free-throw
+attempts/makes are retained for future offensive-load research; they do not
+activate a new usage coefficient.
 
 The local run accepts 856 eligible regular-season games: 515 training, 168
 tuning, and 173 test games (March 14–April 13, 2026 UTC). Five subgroup checks
@@ -273,19 +276,23 @@ unmodeled. Subgroup intervals are exploratory, without multiplicity correction.
 
 The rebounding workload correction's improvement over shrink-only is uncertain.
 Other metrics select zero workload strength and equal shrink-only predictions.
-This does **not** support adding a universal minute-expansion penalty. V1 and
-V2 results are not directly comparable: split boundaries and shooting-metric
-eligibility changed. The V1 runtime parameters remain untouched.
+This does **not** support adding a universal minute-expansion penalty. V1, V2,
+and V3 results are not directly comparable when their source-retention policy,
+split boundaries, or shooting-metric eligibility differs. The V1 runtime
+parameters remain untouched.
 
 ### Evidence gaps and the next implementation boundary
 
 The archive audit found 18,550 active player appearances across these 856 games.
-Team scoring and source minutes are checked, but independent official player
-and team box-score totals were not retained by the archive normalizer. All-stat
-reconciliation is therefore unavailable, not implicitly passed. The manifest
-also contains 381 completed regular-tagged games excluded from publication;
-their phase/quality exclusions need review before broadening inclusion. Archive
-exposure is not a verified complete-season sample.
+Team scoring and source minutes are checked. The archive normalizer now retains
+a separately labeled official Summary-endpoint player box score for future
+refreshes, and V3 will use it only after player-level PBP reconciliation. The
+current historical archive predates that retention, so it remains explicitly
+legacy: all-stat reconciliation is unavailable until a summary-only refresh is
+completed into a new revision. The manifest also contains 381 completed
+regular-tagged games excluded from publication; their phase/quality exclusions
+need review before broadening inclusion. Archive exposure is not a verified
+complete-season sample.
 
 The prototype accepts all-team season evidence, but the shared browser catalog
 currently has no `listNbaPlayerSeasonEvidence` reader. Thus this pass does **not**

@@ -5,6 +5,8 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   checkCombinationContinuity,
+  checkChronologicalRapmCalibration,
+  checkLineupAttributionSensitivity,
   checkOffenseDefenseRapmCalibration,
   checkProjection,
   checkRecencyWeightedRapm,
@@ -54,6 +56,32 @@ test('co-presence continuity rejects exact-lineup role fields', () => {
   assert.match(errors.join('\n'), /must be null/);
 });
 
+test('lineup-attribution sensitivity reconciles its exposure counters', () => {
+  const coverage = {
+    exactLineupPossessions: 200,
+    possessionStartLineupAttributedMidChange: 27,
+  };
+  const value = {
+    method: 'possession_start_lineup_with_mid_possession_change_count_v1',
+    exactLineupPossessions: 200,
+    possessionStartLineupAttributedMidChange: 27,
+    possessionStartLineupAttributedMidChangeShare: 0.135,
+    caveat: 'A documented sensitivity diagnostic.',
+  };
+  const validErrors = [];
+  checkLineupAttributionSensitivity(value, coverage, validErrors);
+  assert.deepEqual(validErrors, []);
+
+  const invalidErrors = [];
+  checkLineupAttributionSensitivity(
+    { ...value, possessionStartLineupAttributedMidChange: 28, possessionStartLineupAttributedMidChangeShare: 0.135 },
+    coverage,
+    invalidErrors,
+  );
+  assert.match(invalidErrors.join('\n'), /mid-change possessions/);
+  assert.match(invalidErrors.join('\n'), /share does not reconcile/);
+});
+
 function calibrationMetrics(weightedMse, heldOutPossessions = 80) {
   return {
     weightedMse,
@@ -64,6 +92,52 @@ function calibrationMetrics(weightedMse, heldOutPossessions = 80) {
     directionalObservationCount: 8,
   };
 }
+
+function chronologicalCalibration({ fullMse = 0.8, baselineMse = 1, priorSeasonWeight = 1, lambda = 10, model = 'net' } = {}) {
+  const improvement = (baselineMse - fullMse) / baselineMse;
+  const improves = improvement > 1e-9;
+  return {
+    version: 'chronological_latest_season_tune_test_v1',
+    model,
+    latestSeasonStartYear: 2025,
+    method: 'prior_seasons_plus_chronological_latest_season_train_tune_test_v1',
+    selectedPriorSeasonWeight: priorSeasonWeight,
+    selectedLambda: lambda,
+    tuningGameFraction: 0.2,
+    testGameFraction: 0.2,
+    tuningSelection: { fitStatus: 'scored', priorSeasonWeight, lambda },
+    candidates: [{ fitStatus: 'scored', priorSeasonWeight, lambda }],
+    test: {
+      fullModel: calibrationMetrics(fullMse),
+      fixedEffectsBaseline: calibrationMetrics(baselineMse),
+      fullModelMseImprovementVsFixedEffectsBaseline: improvement,
+      fullModelImprovesBaseline: improves,
+      status: improves ? 'validated' : 'not_validated',
+    },
+  };
+}
+
+test('multiseason chronological RAPM calibration is required and must beat its untouched baseline', () => {
+  const rapm = { priorSeasonWeight: 1, lambda: 10 };
+  const missingErrors = [];
+  checkChronologicalRapmCalibration(null, rapm, 'net', 2025, missingErrors, { required: true });
+  assert.match(missingErrors.join('\n'), /is required/);
+
+  const validErrors = [];
+  checkChronologicalRapmCalibration(chronologicalCalibration(), rapm, 'net', 2025, validErrors, { required: true });
+  assert.deepEqual(validErrors, []);
+
+  const noGainErrors = [];
+  checkChronologicalRapmCalibration(
+    chronologicalCalibration({ fullMse: 1, baselineMse: 1 }),
+    rapm,
+    'net',
+    2025,
+    noGainErrors,
+    { required: true },
+  );
+  assert.match(noGainErrors.join('\n'), /did not beat/);
+});
 
 test('O/D RAPM calibration verifies held-out baseline and component-ablation reconciliation', () => {
   const odRapm = {
@@ -196,12 +270,16 @@ test('multiseason RAPM coverage reconciles only positive-weight seasons', () => 
     gameCount: 4,
     totalPairedPossessions: 100,
     totalEffectivePairedPossessions: 100,
-    chronologicalCalibration: null,
+    lambda: 10,
   };
 
   const netErrors = [];
   checkRecencyWeightedRapm(
-    { ...zeroWeightScope, observationCount: 20 },
+    {
+      ...zeroWeightScope,
+      observationCount: 20,
+      chronologicalCalibration: chronologicalCalibration({ priorSeasonWeight: 0 }),
+    },
     'Net RAPM',
     'net',
     rapmCoverage,
@@ -217,6 +295,7 @@ test('multiseason RAPM coverage reconciles only positive-weight seasons', () => 
       pairedStintObservationCount: 20,
       totalOffensivePossessions: 200,
       totalEffectiveOffensivePossessions: 200,
+      chronologicalCalibration: chronologicalCalibration({ priorSeasonWeight: 0, model: 'offenseDefense' }),
     },
     'Offense/defense RAPM',
     'offenseDefense',
@@ -233,6 +312,7 @@ test('multiseason RAPM coverage reconciles only positive-weight seasons', () => 
       observationCount: 20,
       includedSeasonStartYears: [2024, 2025],
       totalEffectivePairedPossessions: 125,
+      chronologicalCalibration: chronologicalCalibration({ priorSeasonWeight: 0 }),
     },
     'Net RAPM',
     'net',

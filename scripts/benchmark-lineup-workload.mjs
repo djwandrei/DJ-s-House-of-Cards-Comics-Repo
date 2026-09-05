@@ -21,6 +21,10 @@ const blank = () => ({ minutes: 0, games: 0, fga: 0, tpa: 0, fta: 0, ftm: 0, poi
 const nonnegative = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 const positive = value => nonnegative(value) && value > 0;
 const evidence = () => Object.fromEntries(Object.keys(METRICS).map(metric => [metric, { numerator: 0, exposure: 0, games: 0 }]));
+const OFFICIAL_WORKLOAD_FIELDS = Object.freeze([
+  'points', 'fieldGoalsMade', 'fieldGoalAttempts', 'threePointersMade', 'threePointAttempts',
+  'freeThrowsMade', 'freeThrowAttempts', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers',
+]);
 
 // These descriptive slices are fixed before looking at held-out outcomes.
 // They diagnose a model; they do NOT cap players' minutes in the optimizer.
@@ -32,12 +36,24 @@ export const SUBGROUPS = Object.freeze({
   highMinutes: { definition: 'Training observed MPG at least 28', matches: p => p.minutes / p.games >= 28 },
 });
 
-export function gameRows(archive) {
+function activePlayerRows(archive) {
   // A Map would silently keep only the last duplicate player. Reject the
   // entire ambiguous game before constructing benchmark ground truth.
-  const active = archive.players.filter(p => p.minutesPlayed > 0);
-  if (new Set(active.map(p => p.id)).size !== active.length || active.some(p => typeof p.id !== 'string' || !p.id)) return [];
-  const rows = new Map(archive.players.filter(p => p.minutesPlayed > 0).map(p => [p.id, { ...blank(), id: p.id, team: p.providerTeamId, minutes: p.minutesPlayed, games: 1 }]));
+  const active = Array.isArray(archive?.players) ? archive.players.filter(p => p.minutesPlayed > 0) : [];
+  if (!active.length || new Set(active.map(p => p.id)).size !== active.length || active.some(p => typeof p.id !== 'string' || !p.id)) return null;
+  return active;
+}
+
+function scoreRowsReconcile(rows, archive) {
+  for (const [team, points] of [[archive?.game?.homeProviderTeamId, archive?.game?.homePoints], [archive?.game?.awayProviderTeamId, archive?.game?.awayPoints]]) {
+    if (!Number.isInteger(points) || points < 0
+      || rows.filter(row => row.team === team).reduce((sum, row) => sum + row.points, 0) !== points) return false;
+  }
+  return true;
+}
+
+function pbpRows(archive, active) {
+  const rows = new Map(active.map(p => [p.id, { ...blank(), id: p.id, team: p.providerTeamId, minutes: p.minutesPlayed, games: 1 }]));
   const seen = new Set();
   for (const event of archive.events || []) {
     if (event.isRescinded || seen.has(event.id)) continue;
@@ -63,10 +79,71 @@ export function gameRows(archive) {
     }
   }
   // Incomplete or inconsistent event scoring is unsuitable ground truth.
-  for (const [team, points] of [[archive.game.homeProviderTeamId, archive.game.homePoints], [archive.game.awayProviderTeamId, archive.game.awayPoints]]) {
-    if ([...rows.values()].filter(r => r.team === team).reduce((n, r) => n + r.points, 0) !== points) return [];
+  const output = [...rows.values()];
+  if (!scoreRowsReconcile(output, archive)) return [];
+  return output.map(row => ({ ...row, gameId: archive.game.providerGameId, date: archive.game.scheduledAt }));
+}
+
+function officialBoxScoreRow(player) {
+  const source = player?.officialBoxScore;
+  const fields = source?.fields;
+  if (source?.source !== 'summary_endpoint' || !fields || typeof fields !== 'object') return null;
+  if (!OFFICIAL_WORKLOAD_FIELDS.every(field => source.availableFields?.includes(field) && Number.isInteger(fields[field]) && fields[field] >= 0)) return null;
+  if (fields.rebounds !== (fields.offensiveRebounds ?? 0) + (fields.defensiveRebounds ?? 0)
+    && (Number.isInteger(fields.offensiveRebounds) || Number.isInteger(fields.defensiveRebounds))) return null;
+  const madeTwoPointers = fields.fieldGoalsMade - fields.threePointersMade;
+  if (madeTwoPointers < 0
+    || fields.points !== (2 * madeTwoPointers) + (3 * fields.threePointersMade) + fields.freeThrowsMade) return null;
+  return {
+    ...blank(),
+    id: player.id,
+    team: player.providerTeamId,
+    minutes: player.minutesPlayed,
+    games: 1,
+    fga: fields.fieldGoalAttempts,
+    tpa: fields.threePointAttempts,
+    fta: fields.freeThrowAttempts,
+    ftm: fields.freeThrowsMade,
+    points: fields.points,
+    assists: fields.assists,
+    rebounds: fields.rebounds,
+    steals: fields.steals,
+    blocks: fields.blocks,
+    ballSecurity: fields.turnovers,
+    efgPct: fields.fieldGoalsMade + (0.5 * fields.threePointersMade),
+    threePct: fields.threePointersMade,
+  };
+}
+
+function rowsReconcileWithOfficialBoxScore(pbp, official) {
+  if (pbp.length !== official.length) return false;
+  const officialByPlayerId = new Map(official.map(row => [row.id, row]));
+  for (const row of pbp) {
+    const expected = officialByPlayerId.get(row.id);
+    if (!expected || expected.team !== row.team) return false;
+    for (const field of ['points', 'fga', 'tpa', 'fta', 'ftm', 'assists', 'rebounds', 'steals', 'blocks', 'ballSecurity', 'efgPct', 'threePct']) {
+      if (row[field] !== expected[field]) return false;
+    }
   }
-  return [...rows.values()].map(row => ({ ...row, gameId: archive.game.providerGameId, date: archive.game.scheduledAt }));
+  return true;
+}
+
+/**
+ * Use retained Summary player totals only when they are complete for every
+ * active player and exactly reconcile with independently parsed PBP.  Legacy
+ * archives without any retained official fields retain their existing PBP
+ * score gate; mixed/partial Summary retention fails closed.
+ */
+export function gameRows(archive) {
+  const active = activePlayerRows(archive);
+  if (!active) return [];
+  const hasAnyOfficialBoxScore = active.some(player => player?.officialBoxScore?.availableFields?.length > 0);
+  if (!hasAnyOfficialBoxScore) return pbpRows(archive, active);
+  const official = active.map(officialBoxScoreRow);
+  if (official.some(row => row === null) || !scoreRowsReconcile(official, archive)) return [];
+  const fromPbp = pbpRows(archive, active);
+  if (!fromPbp.length || !rowsReconcileWithOfficialBoxScore(fromPbp, official)) return [];
+  return official.map(row => ({ ...row, gameId: archive.game.providerGameId, date: archive.game.scheduledAt }));
 }
 
 export function fitProfiles(games) {
@@ -174,10 +251,10 @@ export function runBenchmark(games, { bootstrapIterations = 1000, bootstrapSeed 
       expandedRole: { definition: 'Descriptive, outcome-conditioned slice: supplied test MPG at least 8 above training MPG, with training MPG below 24; not a pre-outcome subgroup.', ...compare(metric, chosen, { expandedOnly: true }) },
       subgroups: Object.fromEntries(Object.entries(SUBGROUPS).map(([key, group]) => [key, { definition: group.definition, ...compare(metric, chosen, { subgroup: key }) }])) };
   }
-  return { version: 'chronological-workload-v2', evaluation: 'conditional production at supplied minutes; not predicted minutes or causal fatigue',
+  return { version: 'chronological-workload-v3', evaluation: 'conditional production at supplied minutes; not predicted minutes or causal fatigue',
     validation: { grain: 'one player appearance per game', metricWeighting: METRICS, subgroupEvidence: 'train+tune appearances only; independent of held-out outcomes except the explicitly labeled legacy expandedRole slice', bootstrap: 'paired whole-game percentile intervals conditional on fitted parameters; exploratory subgroup intervals are not multiplicity-adjusted', missingEvidence: 'excluded explicitly per metric; missing numerators never become zeros',
       sourceCoverage: 'Eligible archived games only; accumulated exposure is not a verified complete NBA season.',
-      sourceReconciliation: 'The archive adapter reconciles reconstructed player scoring to final team scores. Independent official player/team boxscore totals are not retained in this archive, so all-metric reconciliation is unavailable. Team-only rebounds and turnovers are not assigned to players.' },
+      sourceReconciliation: 'When complete Summary-endpoint officialBoxScore fields are retained for every active player, the adapter requires player-level reconciliation with independently parsed PBP before using those official totals. Legacy archives without retained official fields use the existing PBP-to-final-team-score gate only; mixed or partial official retention is rejected. Team-only rebounds and turnovers are not assigned to players.' },
     split: { method: 'nearest-60-20-20-whole-UTC-calendar-days', timezone: 'UTC', trainGames: train.length, tuningGames: tune.length, testGames: test.length, trainingEnds: train.at(-1).date, tuningEnds: tune.at(-1).date, testStarts: test[0].date, testEnds: test.at(-1).date },
     sourceGameIdsSha256: crypto.createHash('sha256').update(ordered.map(g => g.id).join('\n')).digest('hex'), metrics };
 }

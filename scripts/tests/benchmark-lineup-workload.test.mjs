@@ -46,6 +46,43 @@ test('source adapter retains free throw evidence and honors explicit three point
   archive.players.push(archive.players[0]);
   assert.deepEqual(gameRows(archive), []);
 });
+
+test('retained Summary box scores become independent workload ground truth only after PBP reconciliation', () => {
+  const fields = {
+    points: 4, fieldGoalsMade: 1, fieldGoalAttempts: 1,
+    twoPointMakes: 0, twoPointAttempts: 0,
+    threePointersMade: 1, threePointAttempts: 1,
+    freeThrowsMade: 1, freeThrowAttempts: 2,
+    offensiveRebounds: 0, defensiveRebounds: 0, rebounds: 0,
+    assists: 0, steals: 0, blocks: 0, turnovers: 0, personalFouls: 0,
+  };
+  const archive = {
+    players: [{
+      id: 'p', minutesPlayed: 20, providerTeamId: 'home',
+      officialBoxScore: {
+        source: 'summary_endpoint',
+        availableFields: Object.keys(fields),
+        fields,
+      },
+    }],
+    events: [
+      { id: 'shot', eventType: 'fieldgoal', statistics: [{ type: 'fieldgoal', player: { id: 'p' }, made: true, three_point_shot: true }] },
+      { id: 'ft-1', statistics: [{ type: 'freethrow', player: { id: 'p' }, made: true }] },
+      { id: 'ft-2', statistics: [{ type: 'freethrow', player: { id: 'p' }, made: false }] },
+    ],
+    game: { providerGameId: 'official-a', scheduledAt: games[0].date, homeProviderTeamId: 'home', awayProviderTeamId: 'away', homePoints: 4, awayPoints: 0 },
+  };
+  const [row] = gameRows(archive);
+  assert.equal(row.points, 4);
+  assert.equal(row.efgPct, 1.5);
+  assert.equal(row.gameId, 'official-a');
+
+  archive.players[0].officialBoxScore.fields.points = 5;
+  assert.deepEqual(gameRows(archive), []);
+  archive.players[0].officialBoxScore.fields.points = 4;
+  archive.players[0].officialBoxScore.availableFields = archive.players[0].officialBoxScore.availableFields.filter((field) => field !== 'assists');
+  assert.deepEqual(gameRows(archive), []);
+});
 test('incomplete source scoring cannot become benchmark ground truth', () => {
   const archive = { players: [{ id: 'p', minutesPlayed: 20, providerTeamId: 'home' }], events: [], game: { homeProviderTeamId: 'home', awayProviderTeamId: 'away', homePoints: 100, awayPoints: 90 } };
   assert.deepEqual(gameRows(archive), []);

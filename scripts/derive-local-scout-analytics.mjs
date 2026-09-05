@@ -39,6 +39,16 @@ const VALID_PHASES = new Set(['regular', 'in_season_tournament', 'play_in', 'pla
 const DEFAULT_INCLUDED_PHASES = ['regular', 'in_season_tournament', 'play_in', 'playoffs'];
 const DEFAULT_LAMBDA_CANDIDATES = [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000];
 const OUTPUT_SCHEMA_VERSION = 4;
+const REQUIRED_SOURCE_VALIDATOR_VERSION = 'sportradar-nba-local-archive-validator-v4';
+const SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS = [
+  'gamesWithSummaryTeamScoreNonReconciliation',
+  'gamesWithSummaryTeamOffensiveRatingAlgebraDiagnostics',
+  'summaryTeamOffensiveRatingAlgebraDiagnostics',
+  'gamesWithSummaryTeamDefensiveRatingAlgebraDiagnostics',
+  'summaryTeamDefensiveRatingAlgebraDiagnostics',
+  'gamesWithSummaryTeamPossessionSymmetryDiagnostics',
+  'summaryTeamPossessionSymmetryDiagnostics',
+];
 
 function parseLambda(value, name) {
   if (String(value).trim().toLowerCase() === 'auto') return 'auto';
@@ -305,6 +315,16 @@ export function sourceArchiveValidationStatuses(validation, seasonStartYears) {
     seasonStartYear,
     ...sourceArchiveValidationStatus(validation, seasonStartYear),
   }));
+  const occurrencesByYear = new Map();
+  for (const season of validation?.seasons ?? []) {
+    const year = Number(season?.seasonStartYear);
+    if (seasonStartYears.includes(year)) {
+      occurrencesByYear.set(year, (occurrencesByYear.get(year) ?? 0) + 1);
+    }
+  }
+  const sourceArchiveValidationAllSeasonsExactlyOnce = seasonStartYears.every(
+    (seasonStartYear) => occurrencesByYear.get(seasonStartYear) === 1,
+  );
   return {
     seasons,
     selectedSeasons: seasons.map((season) => season.selectedSeason).filter(Boolean),
@@ -312,9 +332,230 @@ export function sourceArchiveValidationStatuses(validation, seasonStartYears) {
     sourceArchiveValidationAllSeasonsPresent: seasons.every(
       (season) => season.sourceArchiveValidationSeasonPresent,
     ),
+    sourceArchiveValidationAllSeasonsExactlyOnce,
     sourceArchiveValidationPassed: validation?.passed === true
-      && seasons.every((season) => season.sourceArchiveValidationSeasonPresent),
+      && seasons.every((season) => season.sourceArchiveValidationSeasonPresent)
+      && sourceArchiveValidationAllSeasonsExactlyOnce,
   };
+}
+
+/**
+ * The Scout package is deliberately trial-only.  Check that policy from the
+ * selected raw manifests before touching the large game archive, rather than
+ * accepting an access-level assertion made later in a derived report.
+ */
+export function requireTrialSourceAccessLevels(manifestEntries, seasonStartYears) {
+  if (!Array.isArray(manifestEntries)) throw new TypeError('Selected source manifests must be an array.');
+  if (!Array.isArray(seasonStartYears) || !seasonStartYears.length) {
+    throw new TypeError('Selected source seasons must be a non-empty array.');
+  }
+  const selectedYears = [...new Set(seasonStartYears.map(Number))].sort((left, right) => left - right);
+  if (selectedYears.length !== seasonStartYears.length || selectedYears.some((year) => !Number.isInteger(year))) {
+    throw new TypeError('Selected source seasons must be unique integer years.');
+  }
+  const byYear = new Map();
+  for (const entry of manifestEntries) {
+    const requestedYear = Number(entry?.seasonStartYear);
+    if (!Number.isInteger(requestedYear) || byYear.has(requestedYear)) {
+      throw new Error('Selected source manifests contain an invalid or duplicate season.');
+    }
+    let manifest;
+    try {
+      manifest = typeof entry?.raw === 'string' ? JSON.parse(entry.raw) : entry?.manifest;
+    } catch (error) {
+      throw new Error(`Selected source manifest for season ${requestedYear} is not valid JSON: ${String(error?.message ?? error)}`);
+    }
+    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+      throw new Error(`Selected source manifest for season ${requestedYear} is invalid.`);
+    }
+    if (Number(manifest.seasonStartYear) !== requestedYear) {
+      throw new Error(`Selected source manifest season does not match its requested season: ${requestedYear}.`);
+    }
+    if (manifest.accessLevel !== 'trial') {
+      throw new Error(`Selected source manifest for season ${requestedYear} must declare accessLevel "trial".`);
+    }
+    byYear.set(requestedYear, manifest.accessLevel);
+  }
+  if (byYear.size !== selectedYears.length || selectedYears.some((year) => !byYear.has(year))) {
+    throw new Error('Selected source manifests do not cover every requested season exactly once.');
+  }
+  return Object.fromEntries(selectedYears.map((year) => [year, byYear.get(year)]));
+}
+
+/**
+ * Bind the selected manifests to the already-approved checkpoint before the
+ * costly archive read.  A passing report for a different raw snapshot is not
+ * sufficient evidence for a new package.
+ */
+export function requireSourceValidationManifestHashes(validation, manifestEntries, seasonStartYears) {
+  const sourceValidation = sourceArchiveValidationStatuses(validation, seasonStartYears);
+  if (!sourceValidation.sourceArchiveValidationPassed) {
+    throw new Error('Source archive validation must pass and contain every requested season before Scout derivation.');
+  }
+  const manifestSha256BySeason = Object.fromEntries(manifestEntries.map((entry) => [
+    Number(entry.seasonStartYear), sha256(entry.raw),
+  ]));
+  for (const sourceSeason of sourceValidation.seasons) {
+    const expected = String(sourceSeason.selectedSeason?.manifestSha256 ?? '');
+    const actual = manifestSha256BySeason[sourceSeason.seasonStartYear];
+    if (!/^[a-f0-9]{64}$/i.test(expected)) {
+      throw new Error(`Source archive validation has no valid manifest hash for season ${sourceSeason.seasonStartYear}.`);
+    }
+    if (actual !== expected) {
+      throw new Error(`Selected source manifest hash does not match the validated checkpoint for season ${sourceSeason.seasonStartYear}.`);
+    }
+  }
+  return { sourceValidation, manifestSha256BySeason };
+}
+
+function isSha256(value) {
+  return /^[a-f0-9]{64}$/i.test(String(value ?? ''));
+}
+
+function validatedSourceFileDescriptor(record) {
+  const relativePath = String(record?.relativePath ?? '').replaceAll('\\', '/');
+  if (!/^games\/[^/]+\.json\.gz$/.test(relativePath)) {
+    throw new Error(`Source archive validation contains an invalid game-file path: ${relativePath || '(missing)'}.`);
+  }
+  const byteLength = Number(record?.byteLength);
+  const uncompressedByteLength = Number(record?.uncompressedByteLength);
+  const gzipSha256 = String(record?.gzipSha256 ?? '');
+  const uncompressedSha256 = String(record?.uncompressedSha256 ?? '');
+  const normalizedJsonSha256 = String(record?.normalizedJsonSha256 ?? '');
+  const gameId = String(record?.gameId ?? '').trim();
+  if (!gameId) {
+    throw new Error(`Source archive validation has no game identifier for ${relativePath}.`);
+  }
+  if (!Number.isSafeInteger(byteLength) || byteLength < 0
+    || !Number.isSafeInteger(uncompressedByteLength) || uncompressedByteLength < 0
+    || !isSha256(gzipSha256) || !isSha256(uncompressedSha256) || !isSha256(normalizedJsonSha256)) {
+    throw new Error(`Source archive validation has invalid file integrity metadata for ${relativePath}.`);
+  }
+  return {
+    relativePath,
+    filename: relativePath.slice('games/'.length),
+    gameId,
+    byteLength,
+    gzipSha256,
+    uncompressedByteLength,
+    uncompressedSha256,
+    normalizedJsonSha256,
+  };
+}
+
+/**
+ * Bind the actual compressed game inventory to the archive checkpoint.  The
+ * manifest is an important selection contract, but it only identifies game
+ * paths and statuses.  This inventory makes a post-validation source edit,
+ * substitution, omission, or orphaned game file a hard derivation failure.
+ */
+export function requireSourceValidationFileHashes(validation, seasonStartYears) {
+  const sourceValidation = sourceArchiveValidationStatuses(validation, seasonStartYears);
+  if (!sourceValidation.sourceArchiveValidationPassed) {
+    throw new Error('Source archive validation must pass and contain every requested season before binding game-file hashes.');
+  }
+  const bySeason = {};
+  for (const sourceSeason of sourceValidation.seasons) {
+    const year = sourceSeason.seasonStartYear;
+    const files = sourceSeason.selectedSeason?.files;
+    const records = files?.records;
+    const expectedCompletedFiles = Number(files?.expectedCompletedFiles);
+    const discoveredGameFiles = Number(files?.discoveredGameFiles);
+    const aggregateFileHash = String(files?.aggregateFileHash ?? '');
+    if (!Array.isArray(records)
+      || !Number.isSafeInteger(expectedCompletedFiles)
+      || !Number.isSafeInteger(discoveredGameFiles)
+      || expectedCompletedFiles < 0
+      || discoveredGameFiles < 0
+      || records.length !== expectedCompletedFiles
+      || records.length !== discoveredGameFiles
+      || !isSha256(aggregateFileHash)) {
+      throw new Error(`Source archive validation has incomplete game-file integrity metadata for season ${year}.`);
+    }
+    const expectedFiles = new Map();
+    const descriptors = [];
+    for (const record of records) {
+      const descriptor = validatedSourceFileDescriptor(record);
+      if (expectedFiles.has(descriptor.filename)) {
+        throw new Error(`Source archive validation contains a duplicate game-file path for season ${year}: ${descriptor.relativePath}.`);
+      }
+      expectedFiles.set(descriptor.filename, descriptor);
+      descriptors.push({
+        relativePath: descriptor.relativePath,
+        byteLength: descriptor.byteLength,
+        gzipSha256: descriptor.gzipSha256,
+        uncompressedByteLength: descriptor.uncompressedByteLength,
+        uncompressedSha256: descriptor.uncompressedSha256,
+      });
+    }
+    descriptors.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
+    bySeason[year] = {
+      aggregateFileHash,
+      expectedFiles,
+      expectedFileCount: descriptors.length,
+      fileIntegritySha256: sha256(JSON.stringify(descriptors)),
+    };
+  }
+  return bySeason;
+}
+
+function sourceFileIntegrityProvenance(bySeason) {
+  return Object.fromEntries(Object.entries(bySeason).map(([year, integrity]) => [year, {
+    validatedAggregateFileHash: integrity.aggregateFileHash,
+    expectedFileCount: integrity.expectedFileCount,
+    fileIntegritySha256: integrity.fileIntegritySha256,
+  }]));
+}
+
+export function verifiedSourceFileDescriptor({ expected, filename, compressed, uncompressed, gameId }) {
+  if (!expected || expected.filename !== filename) {
+    throw new Error('Source archive file is absent from the validated file inventory.');
+  }
+  const gzipSha256 = sha256(compressed);
+  if (compressed.byteLength !== expected.byteLength || gzipSha256 !== expected.gzipSha256) {
+    throw new Error(`Source archive file does not match its validated gzip digest: ${expected.relativePath}.`);
+  }
+  const uncompressedSha256 = sha256(uncompressed);
+  if (uncompressed.byteLength !== expected.uncompressedByteLength || uncompressedSha256 !== expected.uncompressedSha256) {
+    throw new Error(`Source archive file does not match its validated uncompressed digest: ${expected.relativePath}.`);
+  }
+  if (gameId !== expected.gameId) {
+    throw new Error(`Source archive file does not match its validated game identifier: ${expected.relativePath}.`);
+  }
+  return {
+    relativePath: expected.relativePath,
+    byteLength: compressed.byteLength,
+    gzipSha256,
+    uncompressedByteLength: uncompressed.byteLength,
+    uncompressedSha256,
+  };
+}
+
+/**
+ * Summary-team reconciliation is source quality evidence, not a default-zero
+ * cosmetic counter.  Require the validator revision that computes it and all
+ * of its explicit counters before any package can describe the diagnostics.
+ */
+export function requireSourceSummaryTeamReconciliation(validation, seasonStartYears) {
+  if (validation?.validatorVersion !== REQUIRED_SOURCE_VALIDATOR_VERSION) {
+    throw new Error(`Scout derivation requires source validator ${REQUIRED_SOURCE_VALIDATOR_VERSION}.`);
+  }
+  const sourceValidation = sourceArchiveValidationStatuses(validation, seasonStartYears);
+  if (!sourceValidation.sourceArchiveValidationPassed) {
+    throw new Error('Source archive validation must pass before binding summary-team reconciliation diagnostics.');
+  }
+  return Object.fromEntries(sourceValidation.seasons.map((sourceSeason) => {
+    const dataQuality = sourceSeason.selectedSeason?.dataQuality;
+    const counters = {};
+    for (const field of SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS) {
+      const value = Number(dataQuality?.[field]);
+      if (!Number.isSafeInteger(value) || value < 0) {
+        throw new Error(`Source archive validation has no valid ${field} counter for season ${sourceSeason.seasonStartYear}.`);
+      }
+      counters[field] = value;
+    }
+    return [sourceSeason.seasonStartYear, counters];
+  }));
 }
 
 function finite(value, fallback = 0) {
@@ -835,25 +1076,60 @@ function compactRecord(record, filename) {
   };
 }
 
-async function loadRecords() {
+async function loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason) {
   const records = [];
   const seenGameIds = new Set();
   for (const seasonPath of SEASON_PATHS) {
+    const expectedIntegrity = sourceFileIntegrityBySeason?.[seasonPath.seasonStartYear];
+    const expectedAccessLevel = sourceAccessLevelsBySeason?.[seasonPath.seasonStartYear];
+    if (!expectedIntegrity?.expectedFiles) {
+      throw new Error(`No validated source game-file inventory is available for season ${seasonPath.seasonStartYear}.`);
+    }
+    if (expectedAccessLevel !== 'trial') {
+      throw new Error(`No valid trial source access level is available for season ${seasonPath.seasonStartYear}.`);
+    }
     const entries = (await fs.readdir(seasonPath.gamesDirectory, { withFileTypes: true }))
       .filter((entry) => entry.isFile() && entry.name.endsWith('.json.gz'))
       .sort((left, right) => left.name.localeCompare(right.name));
+    if (entries.length !== expectedIntegrity.expectedFileCount) {
+      throw new Error(`Source game-file count does not match the validated checkpoint for season ${seasonPath.seasonStartYear}.`);
+    }
+    const verifiedDescriptors = [];
     for (const entry of entries) {
       const filePath = path.join(seasonPath.gamesDirectory, entry.name);
-      const record = JSON.parse(gunzipSync(await fs.readFile(filePath)).toString('utf8'));
+      const expected = expectedIntegrity.expectedFiles.get(entry.name);
+      if (!expected) {
+        throw new Error(`Source archive contains an unvalidated game file for season ${seasonPath.seasonStartYear}: games/${entry.name}.`);
+      }
+      const compressed = await fs.readFile(filePath);
+      const uncompressed = gunzipSync(compressed);
+      const record = JSON.parse(uncompressed.toString('utf8'));
+      if (record?.source?.accessLevel !== expectedAccessLevel) {
+        throw new Error(`Source game-file access level does not match the validated manifest for season ${seasonPath.seasonStartYear}: ${expected.relativePath}.`);
+      }
       const recordSeasonStartYear = Number(record.game?.seasonStartYear ?? seasonPath.seasonStartYear);
       if (recordSeasonStartYear !== seasonPath.seasonStartYear) {
         throw new Error(`Archive ${seasonPath.seasonStartYear}/${entry.name} declares season ${recordSeasonStartYear}.`);
       }
       const gameId = String(record.game?.providerGameId ?? '').trim();
+      if (gameId !== expected.gameId) {
+        throw new Error(`Source game file identifier does not match the validated checkpoint for season ${seasonPath.seasonStartYear}: ${expected.relativePath}.`);
+      }
       if (gameId && seenGameIds.has(gameId)) {
         throw new Error(`Duplicate provider game ${gameId} appears across selected season archives.`);
       }
       if (gameId) seenGameIds.add(gameId);
+      try {
+        verifiedDescriptors.push(verifiedSourceFileDescriptor({
+          expected,
+          filename: entry.name,
+          compressed,
+          uncompressed,
+          gameId,
+        }));
+      } catch (error) {
+        throw new Error(`Source game file does not match the validated checkpoint for season ${seasonPath.seasonStartYear}: ${String(error?.message ?? error)}`);
+      }
       records.push(compactRecord({
         ...record,
         game: {
@@ -862,6 +1138,15 @@ async function loadRecords() {
           seasonEndYear: Number(record.game?.seasonEndYear ?? recordSeasonStartYear + 1),
         },
       }, `${seasonPath.seasonStartYear}/${entry.name}`));
+    }
+    for (const filename of expectedIntegrity.expectedFiles.keys()) {
+      if (!entries.some((entry) => entry.name === filename)) {
+        throw new Error(`Source archive is missing a validated game file for season ${seasonPath.seasonStartYear}: games/${filename}.`);
+      }
+    }
+    verifiedDescriptors.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
+    if (sha256(JSON.stringify(verifiedDescriptors)) !== expectedIntegrity.fileIntegritySha256) {
+      throw new Error(`Source game-file inventory does not match the validated checkpoint for season ${seasonPath.seasonStartYear}.`);
     }
   }
   records.sort((left, right) => (
@@ -1053,7 +1338,13 @@ function rapmModelOutput(model, players) {
  * possession-validity rules as the full derivation, so its input remains
  * directly comparable to the package it is meant to certify.
  */
-async function deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw, loadedRecords }) {
+async function deriveOffenseDefenseCalibrationOnly({
+  manifestRaw,
+  validationRaw,
+  loadedRecords,
+  sourceAccessLevelsBySeason,
+  sourceFileIntegrityBySeason,
+}) {
   const validation = JSON.parse(validationRaw);
   // Check the report at the level where the checkpoint validator actually
   // publishes pass/fail.  A season entry is descriptive coverage/provenance,
@@ -1159,6 +1450,8 @@ async function deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw,
     source: {
       manifestSha256: sha256(manifestRaw),
       sourceValidationReportSha256: sha256(validationRaw),
+      sourceAccessLevelsBySeason,
+      sourceGameFileIntegrityBySeason: sourceFileIntegrityProvenance(sourceFileIntegrityBySeason),
       sourceArchiveValidationPassed,
       sourceArchiveValidationReportPassed,
       sourceArchiveValidationSeasonPresent,
@@ -1170,6 +1463,7 @@ async function deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw,
     offenseDefenseRapm: {
       modelVersion: offenseDefenseRapm.modelVersion,
       lambda: offenseDefenseRapm.lambda,
+      lambdaSelection: offenseDefenseRapm.lambdaSelection,
       observationCount: offenseDefenseRapm.observationCount,
       directionalObservationCount: offenseDefenseRapm.directionalObservationCount,
       gameCount: offenseDefenseRapm.gameCount,
@@ -1199,26 +1493,48 @@ async function derive() {
   // existing report just like the normal atomic package writer.
   if (OPTIONS.calibrationOnly) await assertOutputFileAbsent(OPTIONS.calibrationReport);
   else await assertOutputDirectoryAbsent(OPTIONS.outputDir);
-  const [manifestEntries, validationRaw, loadedRecords] = await Promise.all([
+  const [manifestEntries, validationRaw] = await Promise.all([
     Promise.all(SEASON_PATHS.map(async (seasonPath) => ({
       seasonStartYear: seasonPath.seasonStartYear,
       raw: await fs.readFile(seasonPath.manifestPath, 'utf8'),
     }))),
     fs.readFile(VALIDATION_PATH, 'utf8'),
-    loadRecords(),
   ]);
-  if (OPTIONS.calibrationOnly) {
-    await deriveOffenseDefenseCalibrationOnly({ manifestRaw: manifestEntries[0].raw, validationRaw, loadedRecords });
-    return;
-  }
+  const sourceAccessLevelsBySeason = requireTrialSourceAccessLevels(
+    manifestEntries,
+    OPTIONS.seasonStartYears,
+  );
   const validation = JSON.parse(validationRaw);
+  const { sourceValidation, manifestSha256BySeason } = requireSourceValidationManifestHashes(
+    validation,
+    manifestEntries,
+    OPTIONS.seasonStartYears,
+  );
+  const sourceFileIntegrityBySeason = requireSourceValidationFileHashes(
+    validation,
+    OPTIONS.seasonStartYears,
+  );
+  const sourceSummaryTeamReconciliationBySeason = requireSourceSummaryTeamReconciliation(
+    validation,
+    OPTIONS.seasonStartYears,
+  );
+  const manifestSetSha256 = sha256(JSON.stringify(manifestSha256BySeason));
   const validationSeasons = new Map(OPTIONS.seasonStartYears.map((seasonStartYear) => [
     seasonStartYear,
     validation.seasons?.find((season) => season.seasonStartYear === seasonStartYear) ?? null,
   ]));
-  const sourceValidation = sourceArchiveValidationStatuses(validation, OPTIONS.seasonStartYears);
-  if (!sourceValidation.sourceArchiveValidationPassed) {
-    throw new Error('Source archive validation must pass and contain every requested season before Scout derivation.');
+  // Provenance and access policy have now passed.  Only at this point is it
+  // safe to load the multi-gigabyte game corpus.
+  const loadedRecords = await loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason);
+  if (OPTIONS.calibrationOnly) {
+    await deriveOffenseDefenseCalibrationOnly({
+      manifestRaw: manifestEntries[0].raw,
+      validationRaw,
+      loadedRecords,
+      sourceAccessLevelsBySeason,
+      sourceFileIntegrityBySeason,
+    });
+    return;
   }
   const sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
   const phaseRecords = loadedRecords.filter(({ game }) => OPTIONS.includedPhases.includes(String(game.primaryPhase ?? '').trim().toLowerCase()));
@@ -1638,7 +1954,10 @@ async function derive() {
     testGameFraction: OPTIONS.chronologicalTestGameFraction,
   };
   const tuneChronologically = (model, priorWeight, lambda) => {
-    if (!multiseason || (priorWeight !== 'auto' && lambda !== 'auto')) return null;
+    // Fixed choices still need a latest-season holdout evaluation.  Passing
+    // singleton candidate grids preserves the requested values while making
+    // the untouched test block auditable for every multiseason package.
+    if (!multiseason) return null;
     return selectChronologicalRapmHyperparameters(rapmInput, {
       ...chronologicalOptions,
       model,
@@ -1856,10 +2175,6 @@ async function derive() {
     playerProfiles: playerOnOffMap.size,
     wowy: wowyMap.size,
   };
-  const manifestSha256BySeason = Object.fromEntries(
-    manifestEntries.map((entry) => [entry.seasonStartYear, sha256(entry.raw)]),
-  );
-  const manifestSetSha256 = sha256(JSON.stringify(manifestSha256BySeason));
   const sourceReconstructionMethodVersionsBySeason = Object.fromEntries(
     OPTIONS.seasonStartYears.map((seasonStartYear) => [
       seasonStartYear,
@@ -1887,6 +2202,24 @@ async function derive() {
       }
     }
     return totals;
+  };
+  const sourceSummaryTeamReconciliation = Object.fromEntries(SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS.map((field) => [
+    field,
+    Object.values(sourceSummaryTeamReconciliationBySeason).reduce(
+      (total, season) => total + finite(season[field]),
+      0,
+    ),
+  ]));
+  const lineupAttributionSensitivity = {
+    method: 'possession_start_lineup_with_mid_possession_change_count_v1',
+    exactLineupPossessions: counters.exactLineupPossessions,
+    possessionStartLineupAttributedMidChange: counters.possessionStartLineupAttributedMidChange,
+    possessionStartLineupAttributedMidChangeShare: ratioOrNull(
+      counters.possessionStartLineupAttributedMidChange,
+      counters.exactLineupPossessions,
+      6,
+    ),
+    caveat: 'A verified possession-start lineup remains the attribution rule when a later lineup change occurs. This is a sensitivity diagnostic, not a reassignment of scoring to an unobserved split lineup.',
   };
 
   const output = {
@@ -1916,6 +2249,8 @@ async function derive() {
       manifestSha256: manifestEntries.length === 1 ? manifestSha256BySeason[OPTIONS.seasonStartYear] : manifestSetSha256,
       manifestSetSha256,
       manifestSha256BySeason,
+      sourceAccessLevelsBySeason,
+      sourceGameFileIntegrityBySeason: sourceFileIntegrityProvenance(sourceFileIntegrityBySeason),
       sourceValidationReportSha256: sha256(validationRaw),
       sourceValidatorVersion: validation.validatorVersion,
       sourceArchiveValidationPassed: validation.passed === true,
@@ -1941,6 +2276,9 @@ async function derive() {
       sourceValidationErrors: sumQualityCategories('errors'),
       sourceValidationWarnings: sumQualityCategories('warnings'),
       sourceValidationBySeason: dataQualityBySeason,
+      sourceSummaryTeamReconciliation,
+      sourceSummaryTeamReconciliationBySeason,
+      lineupAttributionSensitivity,
       exclusionPolicy: 'non-target phases, non-franchise teams, and current reconstruction partial/ineligible games are retained in the raw checkpoint but excluded from Scout aggregates',
       confidenceIntervalMethod: 'normal approximation from per-possession scoring sample variance; descriptive, not causal',
       lineupChangePolicy: 'remaining mid-possession lineup changes use the verified possession-start lineup and are counted explicitly',

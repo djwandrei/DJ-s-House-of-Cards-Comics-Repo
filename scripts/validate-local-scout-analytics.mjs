@@ -9,6 +9,16 @@ import { fileURLToPath } from 'node:url';
 
 const MODULE_PATH = fileURLToPath(import.meta.url);
 const IS_MAIN = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(MODULE_PATH);
+const REQUIRED_SOURCE_VALIDATOR_VERSION = 'sportradar-nba-local-archive-validator-v4';
+const SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS = [
+  'gamesWithSummaryTeamScoreNonReconciliation',
+  'gamesWithSummaryTeamOffensiveRatingAlgebraDiagnostics',
+  'summaryTeamOffensiveRatingAlgebraDiagnostics',
+  'gamesWithSummaryTeamDefensiveRatingAlgebraDiagnostics',
+  'summaryTeamDefensiveRatingAlgebraDiagnostics',
+  'gamesWithSummaryTeamPossessionSymmetryDiagnostics',
+  'summaryTeamPossessionSymmetryDiagnostics',
+];
 
 function parseArgs(argv) {
   const options = {
@@ -1259,6 +1269,130 @@ function checkSourceValidationSeasonPresence(value, options, errors) {
   }
 }
 
+function checkSourceAccessLevels(value, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  const accessLevels = seasonValueMap(
+    value,
+    'Source access-level provenance by season',
+    options.seasonStartYears,
+    errors,
+    { required: multiseason },
+  );
+  if (!accessLevels) return;
+  for (const year of options.seasonStartYears) {
+    if (accessLevels[year] !== 'trial') {
+      errors.push(`Source access-level provenance for season ${year} must be trial.`);
+    }
+  }
+}
+
+function sourceValidationFileIntegritySha256(records) {
+  if (!Array.isArray(records)) return null;
+  const descriptors = [];
+  for (const record of records) {
+    const relativePath = String(record?.relativePath ?? '').replaceAll('\\', '/');
+    const byteLength = Number(record?.byteLength);
+    const uncompressedByteLength = Number(record?.uncompressedByteLength);
+    const gzipSha256 = String(record?.gzipSha256 ?? '');
+    const uncompressedSha256 = String(record?.uncompressedSha256 ?? '');
+    if (!/^games\/[^/]+\.json\.gz$/.test(relativePath)
+      || !Number.isSafeInteger(byteLength) || byteLength < 0
+      || !Number.isSafeInteger(uncompressedByteLength) || uncompressedByteLength < 0
+      || !/^[a-f0-9]{64}$/i.test(gzipSha256)
+      || !/^[a-f0-9]{64}$/i.test(uncompressedSha256)) {
+      return null;
+    }
+    descriptors.push({
+      relativePath,
+      byteLength,
+      gzipSha256,
+      uncompressedByteLength,
+      uncompressedSha256,
+    });
+  }
+  descriptors.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
+  return sha256(JSON.stringify(descriptors));
+}
+
+function checkSourceGameFileIntegrity(value, sourceValidation, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  const integrityBySeason = seasonValueMap(
+    value,
+    'Source game-file integrity provenance by season',
+    options.seasonStartYears,
+    errors,
+    { required: multiseason },
+  );
+  if (!integrityBySeason || !sourceValidation) return;
+  const sourceSeasons = new Map((sourceValidation.seasons ?? []).map((season) => [
+    Number(season?.seasonStartYear),
+    season,
+  ]));
+  for (const year of options.seasonStartYears) {
+    const integrity = integrityBySeason[year];
+    const sourceFiles = sourceSeasons.get(year)?.files;
+    const expectedFingerprint = sourceValidationFileIntegritySha256(sourceFiles?.records);
+    if (!integrity || typeof integrity !== 'object' || Array.isArray(integrity)
+      || !sourceFiles
+      || !Number.isSafeInteger(Number(integrity.expectedFileCount))
+      || Number(integrity.expectedFileCount) < 0
+      || !/^[a-f0-9]{64}$/i.test(String(integrity.validatedAggregateFileHash ?? ''))
+      || !/^[a-f0-9]{64}$/i.test(String(integrity.fileIntegritySha256 ?? ''))
+      || !expectedFingerprint) {
+      errors.push(`Source game-file integrity provenance for season ${year} is invalid.`);
+      continue;
+    }
+    if (Number(integrity.expectedFileCount) !== Number(sourceFiles.discoveredGameFiles)
+      || Number(integrity.expectedFileCount) !== Number(sourceFiles.expectedCompletedFiles)
+      || integrity.validatedAggregateFileHash !== sourceFiles.aggregateFileHash
+      || integrity.fileIntegritySha256 !== expectedFingerprint) {
+      errors.push(`Source game-file integrity provenance does not match source validation for season ${year}.`);
+    }
+  }
+}
+
+function checkSourceSummaryTeamReconciliation(input, sourceValidation, options, errors) {
+  const multiseason = options.seasonStartYears.length > 1;
+  const quality = input.quality ?? {};
+  const bySeason = seasonValueMap(
+    quality.sourceSummaryTeamReconciliationBySeason,
+    'Source summary-team reconciliation by season',
+    options.seasonStartYears,
+    errors,
+    { required: multiseason },
+  );
+  if (!bySeason) return;
+  if (input.provenance?.sourceValidatorVersion !== REQUIRED_SOURCE_VALIDATOR_VERSION) {
+    errors.push(`Source summary-team reconciliation requires validator ${REQUIRED_SOURCE_VALIDATOR_VERSION}.`);
+  }
+  const aggregate = quality.sourceSummaryTeamReconciliation;
+  if (!aggregate || typeof aggregate !== 'object' || Array.isArray(aggregate)) {
+    errors.push('Source summary-team reconciliation aggregate is invalid.');
+    return;
+  }
+  const sourceSeasons = new Map((sourceValidation?.seasons ?? []).map((season) => [
+    Number(season?.seasonStartYear),
+    season,
+  ]));
+  for (const field of SOURCE_SUMMARY_TEAM_RECONCILIATION_FIELDS) {
+    let expectedTotal = 0;
+    for (const year of options.seasonStartYears) {
+      const actual = Number(bySeason[year]?.[field]);
+      const expected = Number(sourceSeasons.get(year)?.dataQuality?.[field]);
+      if (!Number.isSafeInteger(actual) || actual < 0
+        || !Number.isSafeInteger(expected) || expected < 0
+        || actual !== expected) {
+        errors.push(`Source summary-team reconciliation ${field} does not match source validation for season ${year}.`);
+        continue;
+      }
+      expectedTotal += expected;
+    }
+    if (Number(aggregate[field]) !== expectedTotal) {
+      errors.push(`Source summary-team reconciliation ${field} aggregate does not reconcile.`);
+    }
+  }
+}
+
 function checkChronologicalMetrics(metrics, label, errors) {
   if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)) {
     errors.push(`${label} metrics are missing.`);
@@ -1274,12 +1408,11 @@ function checkChronologicalMetrics(metrics, label, errors) {
   }
 }
 
-function checkChronologicalRapmCalibration(calibration, rapm, model, latestSeasonStartYear, errors, { required = false } = {}) {
-  if (calibration === undefined) {
+export function checkChronologicalRapmCalibration(calibration, rapm, model, latestSeasonStartYear, errors, { required = false } = {}) {
+  if (calibration === undefined || calibration === null) {
     if (required) errors.push(`${model} RAPM chronological calibration is required for a multiseason package.`);
     return;
   }
-  if (calibration === null) return;
   if (!calibration || typeof calibration !== 'object' || Array.isArray(calibration)) {
     errors.push(`${model} RAPM chronological calibration is invalid.`);
     return;
@@ -1326,6 +1459,9 @@ function checkChronologicalRapmCalibration(calibration, rapm, model, latestSeaso
   if (calibration.test?.fullModelImprovesBaseline !== expectedImprovesBaseline
     || calibration.test?.status !== (expectedImprovesBaseline ? 'validated' : 'not_validated')) {
     errors.push(`${model} RAPM chronological test status does not reconcile.`);
+  }
+  if (required && expectedImprovesBaseline !== true) {
+    errors.push(`${model} RAPM did not beat its untouched latest-season fixed-effects baseline.`);
   }
 }
 
@@ -1482,9 +1618,15 @@ function checkMultiseasonProvenance(input, sourceValidation, coverage, options, 
     }
   }
   checkSourceValidationSeasonPresence(provenance.sourceArchiveValidationSeasonsPresent, options, errors);
+  checkSourceAccessLevels(provenance.sourceAccessLevelsBySeason, options, errors);
 
-  if (!sourceValidation) return;
+  if (!sourceValidation) {
+    if (multiseason) errors.push('A source archive validation report is required for a multiseason package.');
+    return;
+  }
   if (sourceValidation.passed !== true) errors.push('Supplied source archive validation report did not pass.');
+  checkSourceGameFileIntegrity(provenance.sourceGameFileIntegrityBySeason, sourceValidation, options, errors);
+  checkSourceSummaryTeamReconciliation(input, sourceValidation, options, errors);
   const sourceSeasons = new Map();
   for (const season of sourceValidation.seasons ?? []) {
     const year = Number(season?.seasonStartYear);
@@ -1508,6 +1650,40 @@ function checkMultiseasonProvenance(input, sourceValidation, coverage, options, 
     if (Number(discoveredArchives) !== Number(sourceSeason.files?.discoveredGameFiles)) {
       errors.push(`Discovered archive count differs from source validation for season ${year}.`);
     }
+  }
+}
+
+export function checkLineupAttributionSensitivity(value, coverage, errors) {
+  if (value === undefined || value === null) return;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    errors.push('Lineup-attribution sensitivity diagnostics are invalid.');
+    return;
+  }
+  if (value.method !== 'possession_start_lineup_with_mid_possession_change_count_v1') {
+    errors.push('Lineup-attribution sensitivity method is invalid.');
+  }
+  const exactLineupPossessions = Number(value.exactLineupPossessions);
+  const midChangePossessions = Number(value.possessionStartLineupAttributedMidChange);
+  if (!Number.isInteger(exactLineupPossessions) || exactLineupPossessions < 0
+    || exactLineupPossessions !== Number(coverage?.exactLineupPossessions)) {
+    errors.push('Lineup-attribution sensitivity exact-lineup possessions do not reconcile.');
+  }
+  if (!Number.isInteger(midChangePossessions) || midChangePossessions < 0
+    || midChangePossessions > exactLineupPossessions
+    || midChangePossessions !== Number(coverage?.possessionStartLineupAttributedMidChange)) {
+    errors.push('Lineup-attribution sensitivity mid-change possessions do not reconcile.');
+  }
+  const expectedShare = exactLineupPossessions > 0 ? midChangePossessions / exactLineupPossessions : null;
+  if ((expectedShare === null && value.possessionStartLineupAttributedMidChangeShare !== null)
+    || (expectedShare !== null && !closeEnough(
+      value.possessionStartLineupAttributedMidChangeShare,
+      expectedShare,
+      1e-6,
+    ))) {
+    errors.push('Lineup-attribution sensitivity share does not reconcile.');
+  }
+  if (typeof value.caveat !== 'string' || !value.caveat.trim()) {
+    errors.push('Lineup-attribution sensitivity caveat is missing.');
   }
 }
 
@@ -1542,6 +1718,7 @@ async function validate() {
   if (coverage.archivesExcludedNonFranchise + coverage.archivesOfficialCandidates !== coverage.archivesPhaseCandidates) errors.push('Official-team archive counts do not reconcile.');
   if (coverage.archivesEligible + coverage.archivesReplayPartial + coverage.archivesReplayIneligible !== coverage.archivesOfficialCandidates) errors.push('Replay archive counts do not reconcile.');
   if (coverage.exactLineupPossessions + coverage.excludedPossessions !== coverage.possessionsInEligibleArchives) errors.push('Possession inclusion counts do not reconcile.');
+  checkLineupAttributionSensitivity(input.quality?.lineupAttributionSensitivity, coverage, errors);
   if (Object.values(coverage.eligibleArchivesByPhase ?? {}).reduce((sum, value) => sum + Number(value ?? 0), 0) !== coverage.archivesEligible) errors.push('Eligible phase counts do not reconcile.');
   if ((coverage.contextPossessions?.provider_fastbreak_v1 ?? 0) + (coverage.contextPossessions?.non_provider_fastbreak ?? 0) + (coverage.contextPossessions?.transitionUnclassified ?? 0) !== coverage.exactLineupPossessions) errors.push('Transition coverage does not reconcile.');
   if ((coverage.contextPossessions?.garbageTimeProxy ?? 0) + (coverage.contextPossessions?.competitiveProxy ?? 0) + (coverage.contextPossessions?.competitionUnclassified ?? 0) !== coverage.exactLineupPossessions) errors.push('Competition coverage does not reconcile.');
