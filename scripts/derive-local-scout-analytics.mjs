@@ -12,6 +12,7 @@ import {
   fitWeightedRidgeRapm,
   RAPM_MODEL_VERSION,
   RAPM_OFFENSE_DEFENSE_MODEL_VERSION,
+  selectChronologicalRapmHyperparameters,
 } from './lib/nba-rapm.mjs';
 import {
   addScoutAggregate,
@@ -46,22 +47,46 @@ function parseLambda(value, name) {
   return parsed;
 }
 
+function parsePriorSeasonWeight(value, name) {
+  if (String(value).trim().toLowerCase() === 'auto') return 'auto';
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+    throw new Error(`${name} must be "auto" or a number from zero through one.`);
+  }
+  return parsed;
+}
+
+function seasonLabel(seasonStartYears) {
+  const first = seasonStartYears[0];
+  const last = seasonStartYears[seasonStartYears.length - 1];
+  return `${first}-${String(last + 1).slice(-2)}`;
+}
+
 export function optionsFromArgs(argv) {
   const options = {
     archiveDir: null,
+    seasonStartYears: [2025],
     seasonStartYear: 2025,
+    latestSeasonStartYear: 2025,
     outputDir: null,
     validationReport: null,
     calibrationOnly: false,
     calibrationReport: null,
     rapmLambda: 'auto',
     offenseDefenseRapmLambda: 'auto',
+    rapmPriorSeasonWeight: 1,
+    offenseDefenseRapmPriorSeasonWeight: 1,
+    priorSeasonWeightCandidates: [0, 0.25, 0.5, 0.75, 1],
+    chronologicalTuningGameFraction: 0.2,
+    chronologicalTestGameFraction: 0.2,
     lambdaCandidates: [...DEFAULT_LAMBDA_CANDIDATES],
     lambdaFoldCount: 5,
     includedPhases: [...DEFAULT_INCLUDED_PHASES],
     replayReconstruction: true,
     synergyPriorPossessions: 400,
   };
+  let sawSeason = false;
+  let sawSeasons = false;
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--no-replay-reconstruction') {
@@ -77,12 +102,31 @@ export function optionsFromArgs(argv) {
     const value = inline ?? argv[++index];
     if (!value || value.startsWith('--')) throw new Error(`${name} requires a value.`);
     if (name === '--archive-dir') options.archiveDir = path.resolve(value);
-    else if (name === '--season') options.seasonStartYear = Number.parseInt(value, 10);
+    else if (name === '--season') {
+      sawSeason = true;
+      options.seasonStartYears = [Number.parseInt(value, 10)];
+    } else if (name === '--seasons') {
+      sawSeasons = true;
+      options.seasonStartYears = value.split(',').map((item) => Number.parseInt(item.trim(), 10));
+    }
     else if (name === '--output-dir') options.outputDir = path.resolve(value);
     else if (name === '--validation-report') options.validationReport = path.resolve(value);
     else if (name === '--calibration-report') options.calibrationReport = path.resolve(value);
     else if (name === '--rapm-lambda') options.rapmLambda = parseLambda(value, name);
     else if (name === '--offense-defense-rapm-lambda') options.offenseDefenseRapmLambda = parseLambda(value, name);
+    else if (name === '--rapm-prior-season-weight') options.rapmPriorSeasonWeight = parsePriorSeasonWeight(value, name);
+    else if (name === '--offense-defense-rapm-prior-season-weight') options.offenseDefenseRapmPriorSeasonWeight = parsePriorSeasonWeight(value, name);
+    else if (name === '--prior-season-weight-candidates') {
+      options.priorSeasonWeightCandidates = value.split(',').map(Number);
+      if (!options.priorSeasonWeightCandidates.length
+        || options.priorSeasonWeightCandidates.some((candidate) => !Number.isFinite(candidate) || candidate < 0 || candidate > 1)) {
+        throw new Error('--prior-season-weight-candidates must be a comma-separated list of numbers from zero through one.');
+      }
+    } else if (name === '--chronological-tuning-game-fraction') {
+      options.chronologicalTuningGameFraction = Number(value);
+    } else if (name === '--chronological-test-game-fraction') {
+      options.chronologicalTestGameFraction = Number(value);
+    }
     else if (name === '--lambda-candidates') {
       options.lambdaCandidates = value.split(',').map(Number);
       if (!options.lambdaCandidates.length || options.lambdaCandidates.some((candidate) => !Number.isFinite(candidate) || candidate <= 0)) {
@@ -99,16 +143,41 @@ export function optionsFromArgs(argv) {
     } else throw new Error(`Unknown option: ${name}`);
   }
   if (!options.archiveDir) throw new Error('--archive-dir is required.');
-  if (!Number.isInteger(options.seasonStartYear) || options.seasonStartYear < 1947) throw new Error('--season must be a valid NBA season start year.');
+  if (sawSeason && sawSeasons) throw new Error('--season and --seasons are mutually exclusive.');
+  if (!options.seasonStartYears.length
+    || options.seasonStartYears.some((year) => !Number.isInteger(year) || year < 1947)) {
+    throw new Error('--season/--seasons must contain valid NBA season start years.');
+  }
+  options.seasonStartYears = [...new Set(options.seasonStartYears)].sort((left, right) => left - right);
+  options.seasonStartYear = options.seasonStartYears[0];
+  options.latestSeasonStartYear = options.seasonStartYears[options.seasonStartYears.length - 1];
+  if (options.seasonStartYears.length === 1
+    && (options.rapmPriorSeasonWeight === 'auto' || options.offenseDefenseRapmPriorSeasonWeight === 'auto')) {
+    throw new Error('Automatic prior-season weights require at least two seasons.');
+  }
+  if (options.calibrationOnly && options.seasonStartYears.length !== 1) {
+    throw new Error('--calibration-only currently accepts exactly one season; multiseason tuning is embedded in the full package derivation.');
+  }
   if (!Number.isInteger(options.lambdaFoldCount) || options.lambdaFoldCount < 2) throw new Error('--lambda-folds must be an integer of at least two.');
   if (!Number.isFinite(options.synergyPriorPossessions) || options.synergyPriorPossessions <= 0) throw new Error('--synergy-prior-possessions must be greater than zero.');
-  if (!options.outputDir) options.outputDir = path.join(options.archiveDir, '..', 'scout-analytics', String(options.seasonStartYear));
+  for (const [name, fraction] of [
+    ['--chronological-tuning-game-fraction', options.chronologicalTuningGameFraction],
+    ['--chronological-test-game-fraction', options.chronologicalTestGameFraction],
+  ]) {
+    if (!Number.isFinite(fraction) || fraction <= 0 || fraction >= 0.5) {
+      throw new Error(`${name} must be greater than zero and less than 0.5.`);
+    }
+  }
+  if (options.chronologicalTuningGameFraction + options.chronologicalTestGameFraction >= 1) {
+    throw new Error('Chronological tuning and test fractions must total less than one.');
+  }
+  if (!options.outputDir) options.outputDir = path.join(options.archiveDir, '..', 'scout-analytics', seasonLabel(options.seasonStartYears));
   if (options.calibrationOnly && !options.calibrationReport) {
     options.calibrationReport = path.join(
       options.archiveDir,
       '..',
       'work',
-      `nba-scout-${options.seasonStartYear}-${String(options.seasonStartYear + 1).slice(-2)}-od-rapm-calibration.json`,
+      `nba-scout-${seasonLabel(options.seasonStartYears)}-od-rapm-calibration.json`,
     );
   }
   return options;
@@ -117,9 +186,17 @@ export function optionsFromArgs(argv) {
 const MODULE_PATH = fileURLToPath(import.meta.url);
 const IS_MAIN = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(MODULE_PATH);
 const OPTIONS = IS_MAIN ? optionsFromArgs(process.argv.slice(2)) : null;
-const SEASON_DIR = OPTIONS ? path.join(OPTIONS.archiveDir, String(OPTIONS.seasonStartYear)) : '';
-const GAMES_DIR = SEASON_DIR ? path.join(SEASON_DIR, 'games') : '';
-const MANIFEST_PATH = SEASON_DIR ? path.join(SEASON_DIR, 'manifest.json') : '';
+const SEASON_PATHS = OPTIONS
+  ? OPTIONS.seasonStartYears.map((seasonStartYear) => {
+    const seasonDirectory = path.join(OPTIONS.archiveDir, String(seasonStartYear));
+    return {
+      seasonStartYear,
+      seasonDirectory,
+      gamesDirectory: path.join(seasonDirectory, 'games'),
+      manifestPath: path.join(seasonDirectory, 'manifest.json'),
+    };
+  })
+  : [];
 const VALIDATION_PATH = OPTIONS
   ? OPTIONS.validationReport || path.join(OPTIONS.archiveDir, '..', 'validation', 'rerun-20260831', 'checkpoint-validation-report.json')
   : '';
@@ -220,6 +297,23 @@ export function sourceArchiveValidationStatus(validation, seasonStartYear) {
     sourceArchiveValidationSeasonPresent,
     sourceArchiveValidationPassed: sourceArchiveValidationReportPassed
       && sourceArchiveValidationSeasonPresent,
+  };
+}
+
+export function sourceArchiveValidationStatuses(validation, seasonStartYears) {
+  const seasons = seasonStartYears.map((seasonStartYear) => ({
+    seasonStartYear,
+    ...sourceArchiveValidationStatus(validation, seasonStartYear),
+  }));
+  return {
+    seasons,
+    selectedSeasons: seasons.map((season) => season.selectedSeason).filter(Boolean),
+    sourceArchiveValidationReportPassed: validation?.passed === true,
+    sourceArchiveValidationAllSeasonsPresent: seasons.every(
+      (season) => season.sourceArchiveValidationSeasonPresent,
+    ),
+    sourceArchiveValidationPassed: validation?.passed === true
+      && seasons.every((season) => season.sourceArchiveValidationSeasonPresent),
   };
 }
 
@@ -742,15 +836,38 @@ function compactRecord(record, filename) {
 }
 
 async function loadRecords() {
-  const entries = (await fs.readdir(GAMES_DIR, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.json.gz'))
-    .sort((left, right) => left.name.localeCompare(right.name));
   const records = [];
-  for (const entry of entries) {
-    const filePath = path.join(GAMES_DIR, entry.name);
-    records.push(compactRecord(JSON.parse(gunzipSync(await fs.readFile(filePath)).toString('utf8')), entry.name));
+  const seenGameIds = new Set();
+  for (const seasonPath of SEASON_PATHS) {
+    const entries = (await fs.readdir(seasonPath.gamesDirectory, { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.json.gz'))
+      .sort((left, right) => left.name.localeCompare(right.name));
+    for (const entry of entries) {
+      const filePath = path.join(seasonPath.gamesDirectory, entry.name);
+      const record = JSON.parse(gunzipSync(await fs.readFile(filePath)).toString('utf8'));
+      const recordSeasonStartYear = Number(record.game?.seasonStartYear ?? seasonPath.seasonStartYear);
+      if (recordSeasonStartYear !== seasonPath.seasonStartYear) {
+        throw new Error(`Archive ${seasonPath.seasonStartYear}/${entry.name} declares season ${recordSeasonStartYear}.`);
+      }
+      const gameId = String(record.game?.providerGameId ?? '').trim();
+      if (gameId && seenGameIds.has(gameId)) {
+        throw new Error(`Duplicate provider game ${gameId} appears across selected season archives.`);
+      }
+      if (gameId) seenGameIds.add(gameId);
+      records.push(compactRecord({
+        ...record,
+        game: {
+          ...record.game,
+          seasonStartYear: recordSeasonStartYear,
+          seasonEndYear: Number(record.game?.seasonEndYear ?? recordSeasonStartYear + 1),
+        },
+      }, `${seasonPath.seasonStartYear}/${entry.name}`));
+    }
   }
-  records.sort((left, right) => String(left.game.scheduledAt ?? '').localeCompare(String(right.game.scheduledAt ?? '')));
+  records.sort((left, right) => (
+    String(left.game.scheduledAt ?? '').localeCompare(String(right.game.scheduledAt ?? ''))
+      || String(left.game.providerGameId ?? left.filename).localeCompare(String(right.game.providerGameId ?? right.filename))
+  ));
   return records;
 }
 
@@ -889,7 +1006,11 @@ function rapmModelOutput(model, players) {
     pairedStintObservationCount: model.pairedStintObservationCount,
     gameCount: model.gameCount,
     totalPairedPossessions: model.totalPairedPossessions,
+    totalEffectivePairedPossessions: model.totalEffectivePairedPossessions,
     totalOffensivePossessions: model.totalOffensivePossessions,
+    totalEffectiveOffensivePossessions: model.totalEffectiveOffensivePossessions,
+    priorSeasonWeight: model.priorSeasonWeight ?? 1,
+    chronologicalCalibration: model.chronologicalCalibration ?? null,
     excludedStintCount: model.excludedStintCount,
     skippedDirectionalObservationCount: model.skippedDirectionalObservationCount,
     inputSha256: model.inputSha256,
@@ -1076,23 +1197,39 @@ async function derive() {
   // existing report just like the normal atomic package writer.
   if (OPTIONS.calibrationOnly) await assertOutputFileAbsent(OPTIONS.calibrationReport);
   else await assertOutputDirectoryAbsent(OPTIONS.outputDir);
-  const [manifestRaw, validationRaw, loadedRecords] = await Promise.all([
-    fs.readFile(MANIFEST_PATH, 'utf8'),
+  const [manifestEntries, validationRaw, loadedRecords] = await Promise.all([
+    Promise.all(SEASON_PATHS.map(async (seasonPath) => ({
+      seasonStartYear: seasonPath.seasonStartYear,
+      raw: await fs.readFile(seasonPath.manifestPath, 'utf8'),
+    }))),
     fs.readFile(VALIDATION_PATH, 'utf8'),
     loadRecords(),
   ]);
   if (OPTIONS.calibrationOnly) {
-    await deriveOffenseDefenseCalibrationOnly({ manifestRaw, validationRaw, loadedRecords });
+    await deriveOffenseDefenseCalibrationOnly({ manifestRaw: manifestEntries[0].raw, validationRaw, loadedRecords });
     return;
   }
   const validation = JSON.parse(validationRaw);
-  const validationSeason = validation.seasons?.find((season) => season.seasonStartYear === OPTIONS.seasonStartYear);
+  const validationSeasons = new Map(OPTIONS.seasonStartYears.map((seasonStartYear) => [
+    seasonStartYear,
+    validation.seasons?.find((season) => season.seasonStartYear === seasonStartYear) ?? null,
+  ]));
+  const sourceValidation = sourceArchiveValidationStatuses(validation, OPTIONS.seasonStartYears);
+  if (!sourceValidation.sourceArchiveValidationPassed) {
+    throw new Error('Source archive validation must pass and contain every requested season before Scout derivation.');
+  }
   const sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
   const phaseRecords = loadedRecords.filter(({ game }) => OPTIONS.includedPhases.includes(String(game.primaryPhase ?? '').trim().toLowerCase()));
   const officialRecords = phaseRecords.filter(isOfficialFranchiseGame);
   const replayedRecords = officialRecords.map(transientReplay);
   const eligibleRecords = replayedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true);
   const rollingByTeam = rollingGameMemberships(eligibleRecords);
+  const countRecordsBySeason = (records) => Object.fromEntries(OPTIONS.seasonStartYears.map(
+    (seasonStartYear) => [
+      seasonStartYear,
+      records.filter(({ game }) => Number(game.seasonStartYear) === seasonStartYear).length,
+    ],
+  ));
 
   const comboMap = new Map();
   const comboMinutes = new Map();
@@ -1112,10 +1249,12 @@ async function derive() {
   const rapmGroups = new Map();
   const counters = {
     archivesDiscovered: loadedRecords.length,
+    archivesDiscoveredBySeason: countRecordsBySeason(loadedRecords),
     archivesSourceEligibleV2: sourceEligibleCount,
     archivesPhaseCandidates: phaseRecords.length,
     archivesOfficialCandidates: officialRecords.length,
     archivesEligible: eligibleRecords.length,
+    archivesEligibleBySeason: countRecordsBySeason(eligibleRecords),
     archivesExcludedByPhase: loadedRecords.length - phaseRecords.length,
     archivesExcludedNonFranchise: phaseRecords.length - officialRecords.length,
     archivesReplayPartial: replayedRecords.filter(({ record }) => record.analytics?.coverageStatus === 'partial').length,
@@ -1128,6 +1267,7 @@ async function derive() {
     stintsInEligibleArchives: 0,
     possessionsInEligibleArchives: 0,
     exactLineupPossessions: 0,
+    exactLineupPossessionsBySeason: Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0])),
     possessionStartLineupAttributedMidChange: 0,
     excludedPossessions: 0,
     excludedPossessionsMissingLineup: 0,
@@ -1204,6 +1344,10 @@ async function derive() {
     counters.pseudoPlayerRowsExcluded += finite(record.source?.skippedSummaryPlayerRows);
 
     const gameId = String(game.providerGameId || filename);
+    const recordSeasonStartYear = Number(game.seasonStartYear);
+    if (!OPTIONS.seasonStartYears.includes(recordSeasonStartYear)) {
+      throw new Error(`Eligible game ${gameId} is outside the requested season scope.`);
+    }
     const homeTeamId = String(game.homeProviderTeamId ?? '');
     const awayTeamId = String(game.awayProviderTeamId ?? '');
     const validTeamIds = new Set([homeTeamId, awayTeamId]);
@@ -1270,6 +1414,7 @@ async function derive() {
         continue;
       }
       counters.exactLineupPossessions += 1;
+      counters.exactLineupPossessionsBySeason[recordSeasonStartYear] += 1;
       if (possession.hasLineupChangeMidPossession === true) counters.possessionStartLineupAttributedMidChange += 1;
       const offensePoints = finite(possession.offensePoints);
       const defensePoints = finite(possession.defensePoints);
@@ -1304,6 +1449,9 @@ async function derive() {
         rapmGroups.set(rapmKey, {
           gameId,
           stintOrdinal: rapmGroups.size + 1,
+          seasonStartYear: recordSeasonStartYear,
+          scheduledAt: game.scheduledAt,
+          sampleWeight: 1,
           homePlayerIds,
           awayPlayerIds,
           homePoints: 0,
@@ -1348,10 +1496,10 @@ async function derive() {
           opponentFourFactorCoverage: isOffense ? null : eventStats.coverage,
           defensiveEventExtras: isOffense ? null : { ...eventStats.defensiveEventExtras, ...possessionTacticalExtras },
         };
-        const contexts = possessionContexts(possession, side.side, {
+        const contexts = [...possessionContexts(possession, side.side, {
           phase: primaryPhase,
           rollingWindowMemberships: membershipsFor(side.teamId, gameId, rollingByTeam),
-        });
+        }), `season:${recordSeasonStartYear}`];
 
         if (!teamMap.has(side.teamId)) {
           teamMap.set(side.teamId, { teamId: side.teamId, team: teamNames.get(side.teamId) || side.teamId, contexts: new Map() });
@@ -1439,25 +1587,72 @@ async function derive() {
   const rapmOptions = {
     lambdaCandidates: OPTIONS.lambdaCandidates,
     lambdaFoldCount: OPTIONS.lambdaFoldCount,
-    seasonEndYear: OPTIONS.seasonStartYear + 1,
+    seasonEndYear: OPTIONS.latestSeasonStartYear + 1,
     seasonPhase,
   };
-  const netRapm = fitWeightedRidgeRapm(rapmInput, { ...rapmOptions, lambda: OPTIONS.rapmLambda });
-  const offenseDefenseRapm = fitWeightedRidgeOffenseDefenseRapm(rapmInput, {
-    ...rapmOptions,
-    lambda: OPTIONS.offenseDefenseRapmLambda,
+  const multiseason = OPTIONS.seasonStartYears.length > 1;
+  const chronologicalOptions = {
+    latestSeasonStartYear: OPTIONS.latestSeasonStartYear,
+    tuningGameFraction: OPTIONS.chronologicalTuningGameFraction,
+    testGameFraction: OPTIONS.chronologicalTestGameFraction,
+  };
+  const tuneChronologically = (model, priorWeight, lambda) => {
+    if (!multiseason || (priorWeight !== 'auto' && lambda !== 'auto')) return null;
+    return selectChronologicalRapmHyperparameters(rapmInput, {
+      ...chronologicalOptions,
+      model,
+      priorSeasonWeightCandidates: priorWeight === 'auto'
+        ? OPTIONS.priorSeasonWeightCandidates
+        : [priorWeight],
+      lambdaCandidates: lambda === 'auto' ? OPTIONS.lambdaCandidates : [lambda],
+    });
+  };
+  const netChronologicalCalibration = tuneChronologically(
+    'net',
+    OPTIONS.rapmPriorSeasonWeight,
+    OPTIONS.rapmLambda,
+  );
+  const offenseDefenseChronologicalCalibration = tuneChronologically(
+    'offenseDefense',
+    OPTIONS.offenseDefenseRapmPriorSeasonWeight,
+    OPTIONS.offenseDefenseRapmLambda,
+  );
+  const netPriorSeasonWeight = netChronologicalCalibration?.selectedPriorSeasonWeight
+    ?? OPTIONS.rapmPriorSeasonWeight;
+  const offenseDefensePriorSeasonWeight = offenseDefenseChronologicalCalibration?.selectedPriorSeasonWeight
+    ?? OPTIONS.offenseDefenseRapmPriorSeasonWeight;
+  const netLambda = netChronologicalCalibration?.selectedLambda ?? OPTIONS.rapmLambda;
+  const offenseDefenseLambda = offenseDefenseChronologicalCalibration?.selectedLambda
+    ?? OPTIONS.offenseDefenseRapmLambda;
+  const weightedRapmInput = (priorSeasonWeight) => rapmInput.flatMap((row) => {
+    const age = OPTIONS.latestSeasonStartYear - Number(row.seasonStartYear);
+    const sampleWeight = age === 0 ? 1 : Number(priorSeasonWeight) ** age;
+    return sampleWeight > 0 ? [{ ...row, sampleWeight }] : [];
   });
+  const netRapmInput = weightedRapmInput(netPriorSeasonWeight);
+  const offenseDefenseRapmInput = weightedRapmInput(offenseDefensePriorSeasonWeight);
+  const netRapm = fitWeightedRidgeRapm(netRapmInput, { ...rapmOptions, lambda: netLambda });
+  netRapm.priorSeasonWeight = netPriorSeasonWeight;
+  netRapm.chronologicalCalibration = netChronologicalCalibration;
+  const offenseDefenseRapm = fitWeightedRidgeOffenseDefenseRapm(offenseDefenseRapmInput, {
+    ...rapmOptions,
+    lambda: offenseDefenseLambda,
+  });
+  offenseDefenseRapm.priorSeasonWeight = offenseDefensePriorSeasonWeight;
+  offenseDefenseRapm.chronologicalCalibration = offenseDefenseChronologicalCalibration;
   // Evaluate the selected numeric lambda on complete held-out games. If the
   // derive command chose lambda automatically, its selected value is frozen
   // here; calibration never quietly reuses the same held-out fold to retune it.
   // This adds a model-quality report without changing the fitted coefficients.
-  offenseDefenseRapm.calibration = evaluateOffenseDefenseRapmCalibration(rapmInput, {
+  offenseDefenseRapm.calibration = evaluateOffenseDefenseRapmCalibration(offenseDefenseRapmInput, {
     lambda: offenseDefenseRapm.lambda,
     foldCount: OPTIONS.lambdaFoldCount,
   });
   rapmGroups.clear();
   rapmInput.length = 0;
   rapmInput = null;
+  netRapmInput.length = 0;
+  offenseDefenseRapmInput.length = 0;
   requestGarbageCollection();
 
   const odByPlayer = new Map(offenseDefenseRapm.players.map((row) => [row.providerPlayerId, row]));
@@ -1470,6 +1665,8 @@ async function derive() {
     combinedOffenseDefenseRapmPer100: odByPlayer.get(row.providerPlayerId)?.combinedRapmPer100 ?? null,
     offensivePossessions: odByPlayer.get(row.providerPlayerId)?.offensivePossessions ?? 0,
     defensivePossessions: odByPlayer.get(row.providerPlayerId)?.defensivePossessions ?? 0,
+    effectiveOffensivePossessions: odByPlayer.get(row.providerPlayerId)?.effectiveOffensivePossessions ?? 0,
+    effectiveDefensivePossessions: odByPlayer.get(row.providerPlayerId)?.effectiveDefensivePossessions ?? 0,
   })).sort(sortBy((row) => row.playerName, (row) => row.providerPlayerId));
 
   function comboRow(entry) {
@@ -1602,6 +1799,38 @@ async function derive() {
     playerProfiles: playerOnOffMap.size,
     wowy: wowyMap.size,
   };
+  const manifestSha256BySeason = Object.fromEntries(
+    manifestEntries.map((entry) => [entry.seasonStartYear, sha256(entry.raw)]),
+  );
+  const manifestSetSha256 = sha256(JSON.stringify(manifestSha256BySeason));
+  const sourceReconstructionMethodVersionsBySeason = Object.fromEntries(
+    OPTIONS.seasonStartYears.map((seasonStartYear) => [
+      seasonStartYear,
+      validationSeasons.get(seasonStartYear)?.totals?.reconstructionMethodVersionCounts ?? {},
+    ]),
+  );
+  const sourceReconstructionReplayMatchedGamesBySeason = Object.fromEntries(
+    OPTIONS.seasonStartYears.map((seasonStartYear) => [
+      seasonStartYear,
+      validationSeasons.get(seasonStartYear)?.totals?.reconstructionReplayMatchedGames ?? null,
+    ]),
+  );
+  const dataQualityBySeason = Object.fromEntries(OPTIONS.seasonStartYears.map((seasonStartYear) => {
+    const season = validationSeasons.get(seasonStartYear);
+    return [seasonStartYear, {
+      errors: season?.dataQuality?.analyticsValidationErrorsByCategory ?? {},
+      warnings: season?.dataQuality?.analyticsValidationWarningsByCategory ?? {},
+    }];
+  }));
+  const sumQualityCategories = (field) => {
+    const totals = {};
+    for (const season of Object.values(dataQualityBySeason)) {
+      for (const [category, count] of Object.entries(season[field] ?? {})) {
+        totals[category] = (totals[category] ?? 0) + Number(count ?? 0);
+      }
+    }
+    return totals;
+  };
 
   const output = {
     schemaVersion: OUTPUT_SCHEMA_VERSION,
@@ -1609,32 +1838,52 @@ async function derive() {
     provider: 'Sportradar NBA v8 licensed local archive',
     scope: {
       seasonStartYear: OPTIONS.seasonStartYear,
-      seasonEndYear: OPTIONS.seasonStartYear + 1,
+      seasonEndYear: OPTIONS.latestSeasonStartYear + 1,
+      seasonStartYears: [...OPTIONS.seasonStartYears],
+      latestSeasonStartYear: OPTIONS.latestSeasonStartYear,
+      seasonLabel: seasonLabel(OPTIONS.seasonStartYears),
       archiveDirectory: path.relative(process.cwd(), OPTIONS.archiveDir),
       eligibility: 'selected official competition phases, two official franchise teams, and transient current-version reconstruction eligibleForPublication=true',
       includedPhases: [...OPTIONS.includedPhases],
       excludedPhases: [...ARCHIVE_PHASES].filter((phase) => !OPTIONS.includedPhases.includes(phase)),
       officialFranchiseTeamRule: 'both normalized teams require a non-empty Sportradar sr:team identifier',
       possessionLineupAttribution: 'verified five-player lineup at possession start; safe untouched dead-ball substitutions are rebased by reconstruction v3',
-      rollingWindows: 'last 5, 10, and 20 eligible games for each team as of the archive snapshot',
+      rollingWindows: 'last 5, 10, and 20 eligible games for each team across the selected chronological archive as of the snapshot',
+      seasonContexts: OPTIONS.seasonStartYears.map((year) => `season:${year}`),
       rawArchivePreserved: true,
       transientReconstructionReplay: OPTIONS.replayReconstruction,
       networkAccess: 'not used',
       supabaseWrites: 'none',
     },
     provenance: {
-      manifestSha256: sha256(manifestRaw),
+      manifestSha256: manifestEntries.length === 1 ? manifestSha256BySeason[OPTIONS.seasonStartYear] : manifestSetSha256,
+      manifestSetSha256,
+      manifestSha256BySeason,
       sourceValidationReportSha256: sha256(validationRaw),
       sourceValidatorVersion: validation.validatorVersion,
       sourceArchiveValidationPassed: validation.passed === true,
-      sourceReconstructionMethodVersions: validationSeason?.totals?.reconstructionMethodVersionCounts ?? {},
+      sourceArchiveValidationSeasonsPresent: sourceValidation.seasons.map((season) => ({
+        seasonStartYear: season.seasonStartYear,
+        present: season.sourceArchiveValidationSeasonPresent,
+      })),
+      sourceReconstructionMethodVersions: OPTIONS.seasonStartYears.length === 1
+        ? sourceReconstructionMethodVersionsBySeason[OPTIONS.seasonStartYear]
+        : sourceReconstructionMethodVersionsBySeason,
+      sourceReconstructionMethodVersionsBySeason,
       derivedReconstructionMethodVersion: NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION,
-      sourceReconstructionReplayMatchedGames: validationSeason?.totals?.reconstructionReplayMatchedGames ?? null,
+      sourceReconstructionReplayMatchedGames: OPTIONS.seasonStartYears.length === 1
+        ? sourceReconstructionReplayMatchedGamesBySeason[OPTIONS.seasonStartYear]
+        : Object.values(sourceReconstructionReplayMatchedGamesBySeason).reduce(
+          (total, count) => total + Number(count ?? 0),
+          0,
+        ),
+      sourceReconstructionReplayMatchedGamesBySeason,
     },
     coverage: counters,
     quality: {
-      sourceValidationErrors: validationSeason?.dataQuality?.analyticsValidationErrorsByCategory ?? {},
-      sourceValidationWarnings: validationSeason?.dataQuality?.analyticsValidationWarningsByCategory ?? {},
+      sourceValidationErrors: sumQualityCategories('errors'),
+      sourceValidationWarnings: sumQualityCategories('warnings'),
+      sourceValidationBySeason: dataQualityBySeason,
       exclusionPolicy: 'non-target phases, non-franchise teams, and current reconstruction partial/ineligible games are retained in the raw checkpoint but excluded from Scout aggregates',
       confidenceIntervalMethod: 'normal approximation from per-possession scoring sample variance; descriptive, not causal',
       lineupChangePolicy: 'remaining mid-possession lineup changes use the verified possession-start lineup and are counted explicitly',
