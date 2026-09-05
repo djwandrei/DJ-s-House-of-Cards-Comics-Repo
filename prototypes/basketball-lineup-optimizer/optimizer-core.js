@@ -20,6 +20,7 @@ import {
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
+  readPlayerUsage,
 } from "./player-projection.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue,
@@ -7356,7 +7357,8 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     // keeps next-best groups fully auditable too: an alternative is not called
     // feasible merely because its 240 aggregate minutes add up on paper.
     const unitPlan = rotation
-      ? planRotationUnits(alternative.players, rotation)
+      ? planRotationUnits(alternative.players, rotation, { usageById: Object.fromEntries(alternative.players.map(player =>
+        [player.id, normalizedConfig.offensiveResponsibilities[player.id] ?? readPlayerUsage(player)])) })
       : null;
     alternatives.push({
       rank: index + 1,

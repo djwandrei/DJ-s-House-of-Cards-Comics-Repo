@@ -1304,6 +1304,16 @@ async function derive() {
     nominalDefensePoints: 0,
   };
 
+  // Everything above has consumed the full raw/replayed archive needed for
+  // provenance and eligibility counters. Retain only eligible replay records
+  // for the aggregation pass so non-eligible game payloads do not remain live
+  // while the large context maps grow.
+  loadedRecords.length = 0;
+  phaseRecords.length = 0;
+  officialRecords.length = 0;
+  replayedRecords.length = 0;
+  requestGarbageCollection();
+
   function rememberNames(record) {
     for (const team of record.teams ?? []) teamNames.set(team.id, teamName(team) || team.id);
     const players = new Map((record.players ?? []).map((player) => [player.id, player]));
@@ -1343,7 +1353,8 @@ async function derive() {
     }
   }
 
-  for (const { record, game, maps, filename } of eligibleRecords) {
+  for (let eligibleIndex = 0; eligibleIndex < eligibleRecords.length; eligibleIndex += 1) {
+    const { record, game, maps, filename } = eligibleRecords[eligibleIndex];
     rememberNames(record);
     const primaryPhase = String(game.primaryPhase ?? '').trim().toLowerCase();
     counters.eligibleArchivesByPhase[primaryPhase] = (counters.eligibleArchivesByPhase[primaryPhase] ?? 0) + 1;
@@ -1578,15 +1589,18 @@ async function derive() {
         }
       }
     }
+
+    // No later game needs this replay payload: rolling membership was computed
+    // before aggregation, and every aggregate update for this game is done.
+    // Clearing the slot allows V8 to reclaim its events/lineups/possessions as
+    // aggregate maps grow rather than retaining every eligible game until the
+    // output-writing phase.
+    eligibleRecords[eligibleIndex] = null;
+    if ((eligibleIndex + 1) % 50 === 0) requestGarbageCollection();
   }
 
-  // The raw checkpoint is intentionally preserved on disk.  Drop its decoded
-  // records before serializing aggregates so output construction does not hold
-  // both the source archive and its expanded Scout package in the heap.
-  loadedRecords.length = 0;
-  phaseRecords.length = 0;
-  officialRecords.length = 0;
-  replayedRecords.length = 0;
+  // The raw checkpoint remains preserved on disk. Eligible payloads were
+  // released progressively above; drop the now-empty index before serializing.
   eligibleRecords.length = 0;
   requestGarbageCollection();
 
