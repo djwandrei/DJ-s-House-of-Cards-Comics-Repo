@@ -6,6 +6,9 @@ const spacing = Object.freeze({ points: 14, efgPct: 20, threePct: 36, rebounds: 
 const creation = Object.freeze({ points: 18, efgPct: 8, threePct: 10, rebounds: 6, assists: 36, steals: 8, blocks: 4, ballSecurity: 10 });
 const defense = Object.freeze({ points: 6, efgPct: 6, threePct: 6, rebounds: 22, assists: 8, steals: 25, blocks: 20, ballSecurity: 7 });
 const glass = Object.freeze({ points: 8, efgPct: 12, threePct: 6, rebounds: 38, assists: 8, steals: 10, blocks: 12, ballSecurity: 6 });
+const closing = Object.freeze({ points: 8, efgPct: 18, threePct: 12, rebounds: 8, assists: 28, steals: 10, blocks: 4, ballSecurity: 12 });
+const scoring = Object.freeze({ points: 42, efgPct: 24, threePct: 16, rebounds: 6, assists: 5, steals: 2, blocks: 1, ballSecurity: 4 });
+const rim = Object.freeze({ points: 4, efgPct: 8, threePct: 2, rebounds: 30, assists: 4, steals: 8, blocks: 38, ballSecurity: 6 });
 
 const ROUNDS = Object.freeze([
   Object.freeze({ id: 'lead', title: 'Lead creator', prompt: 'Set the tempo with one source-listed guard.', candidateIds: Object.freeze(['dangelo-russell', 'patrick-beverley', 'jordan-mclaughlin']) }),
@@ -27,12 +30,12 @@ function deck(id, title, brief, focus, objectiveWeights) {
     objectiveWeights,
     positionMinimums: Object.freeze({ G: 2, F: 2, C: 1 }),
     rounds: ROUNDS,
-    reviewNote: 'Every 3×3×3×3×3 combination is re-evaluated by the published Draft Night scoring engine before release.',
+    reviewNote: 'This is a curated release deck whose 3×3×3×3×3 board is re-evaluated by the published Draft Night scoring engine before release; it is not an independent scouting review.',
   });
 }
 
 /**
- * Five source-labeled historical draft boards. The candidates remain small,
+ * Eight source-labeled historical draft boards. The candidates remain small,
  * distinct, and fully reviewable; the daily seed picks one objective before
  * the visitor begins drafting.
  */
@@ -71,6 +74,27 @@ export const DRAFT_NIGHT_DECKS = Object.freeze([
     'Draft a five that makes finishing possessions the priority.',
     'Rebounding is the largest objective weight on this fixed historical-board comparison.',
     glass,
+  ),
+  deck(
+    'min-2022-closing-build',
+    'Close with control',
+    'Draft a five that keeps decision-making and efficient possessions at the center of the published comparison.',
+    'Assists, ball security, and efficiency lead this fixed historical-board comparison.',
+    closing,
+  ),
+  deck(
+    'min-2022-scoring-build',
+    'Chase points',
+    'Build the board\'s strongest source-bounded scoring five without turning the result into a game forecast.',
+    'Scoring volume, efficiency, and 3-point accuracy lead this fixed historical-board comparison.',
+    scoring,
+  ),
+  deck(
+    'min-2022-rim-build',
+    'Protect the paint',
+    'Draft a five that emphasizes finishing possessions and source-visible interior activity.',
+    'Blocks and rebounds lead this fixed historical-board comparison; they remain box-score signals, not team-defense proof.',
+    rim,
   ),
 ]);
 

@@ -8,7 +8,7 @@ const MINNESOTA_2022_SOURCE = Object.freeze({
   phase: 'regular',
   label: 'Minnesota 2021–22 historical snapshot',
   url: '../../lineup-lab/fixtures/timberwolves-2021-22.json?v=20260905g',
-  note: 'This first challenge pack uses the reviewed Minnesota historical snapshot bundled with Lineup Lab. It is a historical box-score snapshot, not a live roster or game forecast.',
+  note: 'This first challenge pack uses the curated, test-validated Minnesota historical snapshot bundled with Lineup Lab. It is a historical box-score snapshot, not a live roster or game forecast.',
 });
 
 const balanced = Object.freeze({ points: 18, efgPct: 12, threePct: 12, rebounds: 16, assists: 16, steals: 12, blocks: 8, ballSecurity: 6 });
@@ -33,12 +33,12 @@ function fixture(id, title, brief, lineupIds, removeId, candidateIds, objectiveW
     objectiveWeights,
     positionMinimums: Object.freeze({ G: 2, F: 2, C: 1 }),
     answerId,
-    reviewNote: 'Candidate ranking is revalidated by the pure Fix the Five scoring contract in automated tests.',
+    reviewNote: 'This is a curated release fixture whose candidate ranking is revalidated by the pure Fix the Five scoring contract in automated tests; it is not an independent scouting review.',
   });
 }
 
 /**
- * Ten reviewed historical five-player scenarios. All candidates are actual
+ * Fifteen curated, test-validated historical five-player scenarios. All candidates are actual
  * player rows from the same source snapshot, and every answer is established
  * by the published game engine rather than hand-authored result prose.
  */
@@ -62,7 +62,7 @@ export const FIX_THE_FIVE_FIXTURES = Object.freeze([
     'jaylen-nowell',
     ['dangelo-russell', 'patrick-beverley', 'jordan-mclaughlin'],
     creation,
-    'jordan-mclaughlin',
+     'dangelo-russell',
     'Favor playmaking and ball security, with the rest of the five held constant.',
   ),
   fixture(
@@ -152,6 +152,61 @@ export const FIX_THE_FIVE_FIXTURES = Object.freeze([
     balanced,
     'jarred-vanderbilt',
     'This final prompt deliberately keeps the candidate board small and fully inspectable.',
+  ),
+  fixture(
+    'min-2022-stabilize-the-guard',
+    'Complete the guard line',
+    'Keep the two-way frontcourt in place and replace one starting guard with the strongest source-bounded fit for this stated brief.',
+    ['anthony-edwards', 'dangelo-russell', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'dangelo-russell',
+    ['patrick-beverley', 'jordan-mclaughlin', 'jaylen-nowell'],
+    creation,
+    'jaylen-nowell',
+    'Read this as a fixed historical playmaking-and-ball-security comparison, not a claim about a real starting assignment.',
+  ),
+  fixture(
+    'min-2022-refresh-the-defense',
+    'Refresh the defense',
+    'The five has its size in place. Choose the guard or wing swap that adds the strongest published disruption signal.',
+    ['anthony-edwards', 'malik-beasley', 'jaden-mcdaniels', 'taurean-prince', 'karl-anthony-towns'],
+    'malik-beasley',
+    ['dangelo-russell', 'patrick-beverley', 'josh-okogie'],
+    defense,
+    'patrick-beverley',
+    'Steals and blocks remain box-score evidence here; they do not establish a matchup assignment or team defensive result.',
+  ),
+  fixture(
+    'min-2022-restore-the-connector',
+    'Restore the connector',
+    'The primary stars stay fixed. Repair the complementary guard slot with one legal source-listed answer.',
+    ['anthony-edwards', 'jaylen-nowell', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jaylen-nowell',
+    ['dangelo-russell', 'patrick-beverley', 'jordan-mclaughlin'],
+    balanced,
+    'patrick-beverley',
+    'The board compares only the three disclosed candidates after the same minute-aware historical rate treatment.',
+  ),
+  fixture(
+    'min-2022-stretch-the-frontcourt',
+    'Stretch the frontcourt',
+    'Keep the two guards and interior anchor, then find the wing answer that best supports the spacing-focused brief.',
+    ['anthony-edwards', 'dangelo-russell', 'josh-okogie', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'josh-okogie',
+    ['jaden-mcdaniels', 'malik-beasley', 'taurean-prince'],
+    spacing,
+    'taurean-prince',
+    'Three-point percentage is a source-visible accuracy signal, not movement-shooting tracking or a five-player forecast.',
+  ),
+  fixture(
+    'min-2022-finish-the-guard-line',
+    'Finish the guard line',
+    'A balanced five needs a stronger final guard contribution without changing its wing and big structure.',
+    ['dangelo-russell', 'jordan-mclaughlin', 'jaden-mcdaniels', 'jarred-vanderbilt', 'karl-anthony-towns'],
+    'jordan-mclaughlin',
+    ['anthony-edwards', 'jaylen-nowell', 'malik-beasley'],
+    balanced,
+    'jaylen-nowell',
+    'Each option is legal under the same published 2G/2F/1C court shape; the score is confined to this small board.',
   ),
 ]);
 

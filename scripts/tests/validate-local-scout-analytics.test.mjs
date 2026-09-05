@@ -1,10 +1,15 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 import {
   checkCombinationContinuity,
   checkOffenseDefenseRapmCalibration,
+  checkProjection,
   checkRecencyWeightedRapm,
   checkShardScope,
+  streamTeamShardJson,
 } from '../validate-local-scout-analytics.mjs';
 
 function exactLineup({ games = 3, starters = 1, closers = 2 } = {}) {
@@ -49,13 +54,13 @@ test('co-presence continuity rejects exact-lineup role fields', () => {
   assert.match(errors.join('\n'), /must be null/);
 });
 
-function calibrationMetrics(weightedMse) {
+function calibrationMetrics(weightedMse, heldOutPossessions = 80) {
   return {
     weightedMse,
     weightedRmsePer100: 100 * Math.sqrt(weightedMse),
     weightedMaePer100: 50,
     weightedBiasPredictedMinusObservedPer100: 0,
-    heldOutPossessions: 80,
+    heldOutPossessions,
     directionalObservationCount: 8,
   };
 }
@@ -102,6 +107,23 @@ test('O/D RAPM calibration verifies held-out baseline and component-ablation rec
   assert.deepEqual(errors, []);
   assert.deepEqual(warnings, []);
 
+  const recencyWeightedCalibration = {
+    ...calibration,
+    heldOutPossessions: 60,
+    fullModel: calibrationMetrics(0.8, 60),
+    venueBaseline: calibrationMetrics(1, 60),
+    withoutOffensePlayerEffects: calibrationMetrics(0.9, 60),
+    withoutDefensePlayerEffects: calibrationMetrics(0.95, 60),
+  };
+  const recencyWeightedErrors = [];
+  checkOffenseDefenseRapmCalibration(
+    recencyWeightedCalibration,
+    { ...odRapm, totalEffectiveOffensivePossessions: 60 },
+    recencyWeightedErrors,
+    [],
+  );
+  assert.deepEqual(recencyWeightedErrors, []);
+
   const malformedErrors = [];
   checkOffenseDefenseRapmCalibration(
     { ...calibration, status: 'validated', allComponentsImproved: false },
@@ -110,6 +132,47 @@ test('O/D RAPM calibration verifies held-out baseline and component-ablation rec
     [],
   );
   assert.match(malformedErrors.join('\n'), /status does not match/);
+});
+
+test('exact lineup projection permits an intentional unavailable result outside the net RAPM scope', () => {
+  const netRapm = {
+    modelVersion: 'weighted_ridge_rapm_v1',
+    homeCourtSignConvention: 'positive_increases_home_net_rating_relative_to_away',
+    homeCourtNetRatingEffectPer100: 1.25,
+  };
+  const row = {
+    size: 5,
+    playerIds: ['player-a', 'player-b', 'player-c', 'player-d', 'player-missing'],
+    projection: {
+      status: 'unavailable',
+      reason: 'exactly_five_players_with_finite_rapm_required',
+      model: 'rapm_sum_plus_possession_shrunk_observed_synergy_v1',
+      homeCourtAdjustmentSource: {
+        modelVersion: netRapm.modelVersion,
+        signConvention: netRapm.homeCourtSignConvention,
+        homeCourtNetRatingEffectPer100: netRapm.homeCourtNetRatingEffectPer100,
+        signedExposureBalance: 0,
+      },
+    },
+  };
+  const scopedErrors = [];
+  checkProjection(row, {
+    'player-a': 1,
+    'player-b': 2,
+    'player-c': 3,
+    'player-d': 4,
+  }, netRapm, '0.0', scopedErrors);
+  assert.deepEqual(scopedErrors, []);
+
+  const completeCoverageErrors = [];
+  checkProjection(row, {
+    'player-a': 1,
+    'player-b': 2,
+    'player-c': 3,
+    'player-d': 4,
+    'player-missing': 5,
+  }, netRapm, '0.1', completeCoverageErrors);
+  assert.match(completeCoverageErrors.join('\n'), /unavailable despite complete net RAPM coverage/);
 });
 
 test('multiseason RAPM coverage reconciles only positive-weight seasons', () => {
@@ -224,4 +287,64 @@ test('multiseason shard headers must carry the exact package scope', () => {
   assert.match(malformedErrors.join('\n'), /season end/);
   assert.match(malformedErrors.join('\n'), /season list/);
   assert.match(malformedErrors.join('\n'), /latest season/);
+});
+
+test('team-shard scanner streams array rows across read boundaries without retaining arrays', async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'scout-team-shard-scanner-'));
+  const filePath = path.join(directory, 'team.json');
+  const escaped = 'quote " and slash \\ and braces {[]}';
+  const largeValue = 'x'.repeat((1024 * 1024) + 8192);
+  const fixture = {
+    schemaVersion: 'nba_local_scout_analytics_v4',
+    metricsVersion: 'test_metrics_v1',
+    seasonStartYears: [2024, 2025],
+    team: { teamId: 'team-1' },
+    lineupsAndCombinations: [{ kind: 'combination', escaped, largeValue }],
+    playerOnOff: [{ kind: 'on-off', playerId: 'player-1' }],
+    playerProfiles: [{ kind: 'profile', playerId: 'player-1' }],
+    wowy: [{ kind: 'wowy', playerAId: 'player-1', playerBId: 'player-2' }],
+  };
+  await fs.writeFile(filePath, JSON.stringify(fixture));
+
+  try {
+    const headers = {};
+    const rows = [];
+    const result = await streamTeamShardJson(filePath, {
+      onHeader(field, value) {
+        headers[field] = value;
+      },
+      onArrayItem(field, index, row) {
+        rows.push({ field, index, row });
+      },
+    });
+
+    assert.equal(headers.schemaVersion, fixture.schemaVersion);
+    assert.deepEqual(headers.seasonStartYears, fixture.seasonStartYears);
+    assert.deepEqual(headers.team, fixture.team);
+    assert.deepEqual(rows.map(({ field, index }) => ({ field, index })), [
+      { field: 'lineupsAndCombinations', index: 0 },
+      { field: 'playerOnOff', index: 0 },
+      { field: 'playerProfiles', index: 0 },
+      { field: 'wowy', index: 0 },
+    ]);
+    assert.equal(rows[0].row.escaped, escaped);
+    assert.equal(rows[0].row.largeValue.length, largeValue.length);
+    assert.deepEqual(result.seenFields, Object.keys(fixture));
+    assert.equal(Object.hasOwn(result, 'lineupsAndCombinations'), false);
+
+    await assert.rejects(
+      streamTeamShardJson(filePath, { maxBufferedValueBytes: 256 }),
+      /bounded parser limit/,
+    );
+
+    const malformedPath = path.join(directory, 'malformed.json');
+    await fs.writeFile(malformedPath, '{"schemaVersion":"test","lineupsAndCombinations":[],}');
+    await assert.rejects(streamTeamShardJson(malformedPath), /invalid property name/);
+
+    const unsupportedArrayPath = path.join(directory, 'unsupported-array.json');
+    await fs.writeFile(unsupportedArrayPath, '{"schemaVersion":"test","unrecognizedRows":[]}');
+    await assert.rejects(streamTeamShardJson(unsupportedArrayPath), /unsupported array field/);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
 });

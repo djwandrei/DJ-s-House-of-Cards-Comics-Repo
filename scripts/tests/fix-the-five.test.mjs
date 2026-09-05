@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
+  buildGameRoleModel,
   buildChallengeRun,
   evaluateFixTheFiveChallenge,
   formatSignedPoints,
@@ -18,9 +19,9 @@ const roster = JSON.parse(fs.readFileSync(
   'utf8',
 )).players;
 
-test('Fix the Five ships ten reviewed legal historical fixtures', () => {
+test('Fix the Five ships fifteen curated, test-validated legal historical fixtures', () => {
   const results = validateFixTheFiveFixtures(FIX_THE_FIVE_FIXTURES, roster);
-  assert.equal(results.length, 10);
+  assert.equal(results.length, 15);
 
   results.forEach((result) => {
     assert.equal(result.best.candidateId, result.challenge.answerId);
@@ -56,8 +57,33 @@ test('Fix the Five exposes a source-bounded DNA delta for every candidate', () =
     assert.equal(candidate.coverageDelta.length, 7);
     assert.equal(candidate.dna.strengths.length, 3);
     assert.equal(candidate.dna.needs.length, 3);
+    assert.equal(
+      Number((candidate.scoreBreakdown.directContribution + candidate.scoreBreakdown.dnaContribution).toFixed(8)),
+      Number(candidate.composite.toFixed(8)),
+    );
     assert.match(candidate.dna.evidence, /proxy/i);
+    assert.match(candidate.dna.evidence, /minute-weighted center/i);
   });
+});
+
+test('Fix the Five exposes lower source-minute reliability without hiding a player row', () => {
+  const model = buildGameRoleModel(roster);
+  assert.ok(model.sampleReliabilityById.get('nathan-knight') < model.sampleReliabilityById.get('karl-anthony-towns'));
+  assert.equal(model.ratePriorMinutes, 360);
+});
+
+test('Fix the Five rejects a published candidate that cannot satisfy the court shape', () => {
+  const fixture = FIX_THE_FIVE_FIXTURES[0];
+  const invalid = {
+    ...fixture,
+    id: 'min-2022-invalid-court-shape',
+    candidateIds: ['malik-beasley', 'taurean-prince', 'jordan-mclaughlin'],
+    answerId: 'taurean-prince',
+  };
+  assert.throws(
+    () => evaluateFixTheFiveChallenge(invalid, roster),
+    /breaks its required court shape/i,
+  );
 });
 
 test('Fix the Five normalizes rounded signed zero for result copy', () => {

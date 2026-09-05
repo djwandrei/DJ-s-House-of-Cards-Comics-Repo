@@ -167,14 +167,28 @@
 .fix-five-progress-step {
   align-items: center;
   background: #dfe5f3;
+  border: 0;
   border-radius: 999px;
   color: #56647f;
+  cursor: pointer;
   display: inline-flex;
+  font: inherit;
   font-size: .75rem;
   font-weight: 800;
   gap: .35rem;
   min-height: 2rem;
   padding: .28rem .65rem .28rem .35rem;
+  text-align: left;
+}
+
+.fix-five-progress-step:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+.fix-five-progress-step:focus-visible {
+  outline: 3px solid rgba(32, 94, 196, .42);
+  outline-offset: 2px;
 }
 
 .fix-five-progress-step::before {
@@ -488,6 +502,192 @@
   color: #ffd3d8;
 }
 
+.fix-five-dna-list li.is-neutral {
+  color: rgba(255, 255, 255, .82);
+  justify-content: flex-start;
+  line-height: 1.4;
+}
+
+.fix-five-score-breakdown {
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+  margin: 1rem 0;
+  padding: .85rem;
+}
+
+.fix-five-score-breakdown h3,
+.fix-five-score-breakdown h4 {
+  color: #fff;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.fix-five-score-breakdown > p {
+  color: rgba(255,255,255,.82);
+  font-size: .8rem;
+  line-height: 1.45;
+  margin: .35rem 0 .7rem;
+}
+
+.fix-five-score-breakdown__list {
+  display: grid;
+  gap: .45rem;
+  margin: 0;
+}
+
+.fix-five-score-breakdown__list > div {
+  align-items: center;
+  background: rgba(255,255,255,.08);
+  border-radius: 8px;
+  display: flex;
+  gap: .75rem;
+  justify-content: space-between;
+  padding: .5rem .6rem;
+}
+
+.fix-five-score-breakdown__list dt {
+  color: rgba(255,255,255,.88);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.fix-five-score-breakdown__list dd {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: .08rem;
+  margin: 0;
+}
+
+.fix-five-score-breakdown__list strong {
+  color: #fff;
+  font-size: .88rem;
+}
+
+.fix-five-score-breakdown__list span {
+  color: rgba(255,255,255,.72);
+  font-size: .7rem;
+  text-align: right;
+}
+
+.fix-five-candidate-board {
+  border-top: 1px solid rgba(255,255,255,.22);
+  color: rgba(255,255,255,.86);
+  font-size: .82rem;
+  margin-top: 1rem;
+  padding-top: .75rem;
+}
+
+.fix-five-candidate-board summary {
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.fix-five-candidate-board > p {
+  line-height: 1.45;
+  margin: .55rem 0;
+}
+
+.fix-five-candidate-board ol {
+  display: grid;
+  gap: .45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fix-five-candidate-board li {
+  align-items: center;
+  background: rgba(255,255,255,.08);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  display: flex;
+  gap: .65rem;
+  justify-content: space-between;
+  padding: .5rem .6rem;
+}
+
+.fix-five-candidate-board li.is-selected {
+  border-color: rgba(255,255,255,.7);
+}
+
+.fix-five-candidate-board li.is-best {
+  background: rgba(109, 212, 155, .16);
+}
+
+.fix-five-candidate-board li > div,
+.fix-five-candidate-board small {
+  display: grid;
+  gap: .08rem;
+}
+
+.fix-five-candidate-board strong {
+  color: #fff;
+}
+
+.fix-five-candidate-board span,
+.fix-five-candidate-board small {
+  color: rgba(255,255,255,.74);
+  font-size: .72rem;
+}
+
+.fix-five-run-review {
+  margin: 1rem auto 0;
+  max-width: 680px;
+  text-align: left;
+}
+
+.fix-five-run-review h3 {
+  color: var(--fix-ink);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.fix-five-run-review > p {
+  color: var(--fix-muted);
+  font-size: .82rem;
+  line-height: 1.45;
+  margin: .35rem 0 .65rem;
+}
+
+.fix-five-run-review ol {
+  display: grid;
+  gap: .45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fix-five-run-review button {
+  align-items: center;
+  background: #f7f9ff;
+  border: 1px solid var(--fix-border);
+  border-radius: 10px;
+  color: var(--fix-ink);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: .65rem;
+  justify-content: space-between;
+  padding: .65rem .75rem;
+  text-align: left;
+  width: 100%;
+}
+
+.fix-five-run-review button:hover,
+.fix-five-run-review button:focus-visible {
+  border-color: var(--fix-blue);
+  box-shadow: 0 5px 14px rgba(20, 43, 96, .12);
+}
+
+.fix-five-run-review button span {
+  color: var(--fix-muted);
+  font-size: .76rem;
+  text-align: right;
+}
+
 .fix-five-result-actions {
   align-items: center;
   display: flex;
@@ -754,6 +954,19 @@
   .fix-five-complete-actions .button,
   .fix-five-complete-actions .button-secondary {
     justify-content: center;
+  }
+
+  .fix-five-score-breakdown__list > div,
+  .fix-five-candidate-board li,
+  .fix-five-run-review button {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fix-five-score-breakdown__list dd,
+  .fix-five-run-review button span {
+    align-items: flex-start;
+    text-align: left;
   }
 }
 

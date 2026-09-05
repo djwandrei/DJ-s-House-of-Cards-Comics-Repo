@@ -189,6 +189,226 @@ function requestGarbageCollection() {
   if (typeof global.gc === 'function') global.gc();
 }
 
+const TEAM_SHARD_ARRAY_FIELDS = new Set([
+  'lineupsAndCombinations',
+  'playerOnOff',
+  'playerProfiles',
+  'wowy',
+]);
+const TEAM_SHARD_HEADER_ARRAY_FIELDS = new Set(['seasonStartYears']);
+const MAX_STREAMED_SHARD_ITEM_BYTES = 64 * 1024 * 1024;
+
+function isJsonWhitespace(character) {
+  return character === ' ' || character === '\n' || character === '\r'
+    || character === '\t' || character === '\uFEFF';
+}
+
+function skipJsonWhitespace(source, index) {
+  let cursor = index;
+  while (cursor < source.length && isJsonWhitespace(source[cursor])) cursor += 1;
+  return cursor;
+}
+
+function jsonStringEnd(source, start) {
+  let escaped = false;
+  for (let index = start + 1; index < source.length; index += 1) {
+    const character = source[index];
+    if (escaped) {
+      escaped = false;
+    } else if (character === '\\') {
+      escaped = true;
+    } else if (character === '"') {
+      return index + 1;
+    }
+  }
+  return -1;
+}
+
+function jsonValueEnd(source, start) {
+  const first = source[start];
+  if (first === '"') return jsonStringEnd(source, start);
+  if (first === '{' || first === '[') {
+    const expectedClosers = [];
+    let inString = false;
+    let escaped = false;
+    for (let index = start; index < source.length; index += 1) {
+      const character = source[index];
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (character === '\\') escaped = true;
+        else if (character === '"') inString = false;
+        continue;
+      }
+      if (character === '"') {
+        inString = true;
+      } else if (character === '{') {
+        expectedClosers.push('}');
+      } else if (character === '[') {
+        expectedClosers.push(']');
+      } else if (character === '}' || character === ']') {
+        if (expectedClosers.at(-1) !== character) {
+          throw new Error('Malformed JSON nesting in a team shard.');
+        }
+        expectedClosers.pop();
+        if (expectedClosers.length === 0) return index + 1;
+      }
+    }
+    return -1;
+  }
+  let index = start;
+  while (index < source.length && !',}]'.includes(source[index]) && !isJsonWhitespace(source[index])) {
+    index += 1;
+  }
+  return index === source.length ? -1 : index;
+}
+
+/**
+ * Parse an emitted team shard without constructing its multi-hundred-megabyte
+ * JSON document or table arrays in memory. The writer emits one top-level
+ * object with four known row arrays; this scanner buffers only the current
+ * header value or array item and hands rows to the caller immediately.
+ */
+export async function streamTeamShardJson(filePath, {
+  onHeader,
+  onArrayItem,
+  maxBufferedValueBytes = MAX_STREAMED_SHARD_ITEM_BYTES,
+} = {}) {
+  if (!Number.isSafeInteger(maxBufferedValueBytes) || maxBufferedValueBytes < 1) {
+    throw new Error('Team-shard parser buffer limit must be a positive safe integer.');
+  }
+  let buffer = '';
+  let state = 'open';
+  let currentField = null;
+  let currentArrayIndex = 0;
+  const seenFields = new Set();
+
+  const consume = async () => {
+    let cursor = 0;
+    while (true) {
+      cursor = skipJsonWhitespace(buffer, cursor);
+      if (state === 'open') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] !== '{') throw new Error('Team shard must begin with a JSON object.');
+        cursor += 1;
+        state = 'fieldOrEnd';
+      } else if (state === 'fieldOrEnd') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] === '}') {
+          cursor += 1;
+          state = 'done';
+          continue;
+        }
+        if (buffer[cursor] !== '"') throw new Error('Team shard object has an invalid property name.');
+        const end = jsonStringEnd(buffer, cursor);
+        if (end < 0) break;
+        currentField = JSON.parse(buffer.slice(cursor, end));
+        if (seenFields.has(currentField)) throw new Error(`Team shard repeats top-level field ${currentField}.`);
+        seenFields.add(currentField);
+        cursor = end;
+        state = 'colon';
+      } else if (state === 'field') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] !== '"') throw new Error('Team shard object has an invalid property name.');
+        const end = jsonStringEnd(buffer, cursor);
+        if (end < 0) break;
+        currentField = JSON.parse(buffer.slice(cursor, end));
+        if (seenFields.has(currentField)) throw new Error(`Team shard repeats top-level field ${currentField}.`);
+        seenFields.add(currentField);
+        cursor = end;
+        state = 'colon';
+      } else if (state === 'colon') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] !== ':') throw new Error(`Team shard field ${currentField} is missing a colon.`);
+        cursor += 1;
+        state = 'value';
+      } else if (state === 'value') {
+        if (cursor >= buffer.length) break;
+        if (TEAM_SHARD_ARRAY_FIELDS.has(currentField)) {
+          if (buffer[cursor] !== '[') throw new Error(`Team shard field ${currentField} must be an array.`);
+          cursor += 1;
+          currentArrayIndex = 0;
+          state = 'arrayValueOrEnd';
+          continue;
+        }
+        if (buffer[cursor] === '[' && !TEAM_SHARD_HEADER_ARRAY_FIELDS.has(currentField)) {
+          throw new Error(`Team shard has an unsupported array field ${currentField}.`);
+        }
+        const end = jsonValueEnd(buffer, cursor);
+        if (end < 0) break;
+        const value = JSON.parse(buffer.slice(cursor, end));
+        await onHeader?.(currentField, value);
+        currentField = null;
+        cursor = end;
+        state = 'commaOrEnd';
+      } else if (state === 'arrayValueOrEnd') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] === ']') {
+          cursor += 1;
+          currentField = null;
+          state = 'commaOrEnd';
+          continue;
+        }
+        const end = jsonValueEnd(buffer, cursor);
+        if (end < 0) break;
+        const item = JSON.parse(buffer.slice(cursor, end));
+        await onArrayItem?.(currentField, currentArrayIndex, item);
+        currentArrayIndex += 1;
+        cursor = end;
+        state = 'arrayCommaOrEnd';
+      } else if (state === 'arrayValue') {
+        if (cursor >= buffer.length) break;
+        const end = jsonValueEnd(buffer, cursor);
+        if (end < 0) break;
+        const item = JSON.parse(buffer.slice(cursor, end));
+        await onArrayItem?.(currentField, currentArrayIndex, item);
+        currentArrayIndex += 1;
+        cursor = end;
+        state = 'arrayCommaOrEnd';
+      } else if (state === 'arrayCommaOrEnd') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] === ',') {
+          cursor += 1;
+          state = 'arrayValue';
+        } else if (buffer[cursor] === ']') {
+          cursor += 1;
+          currentField = null;
+          state = 'commaOrEnd';
+        } else {
+          throw new Error(`Team shard array ${currentField} is missing a separator.`);
+        }
+      } else if (state === 'commaOrEnd') {
+        if (cursor >= buffer.length) break;
+        if (buffer[cursor] === ',') {
+          cursor += 1;
+          state = 'field';
+        } else if (buffer[cursor] === '}') {
+          cursor += 1;
+          state = 'done';
+        } else {
+          throw new Error('Team shard object is missing a separator.');
+        }
+      } else if (state === 'done') {
+        if (cursor < buffer.length) throw new Error('Team shard has trailing non-whitespace content.');
+        break;
+      }
+    }
+    buffer = buffer.slice(cursor);
+    if (Buffer.byteLength(buffer) > maxBufferedValueBytes) {
+      throw new Error('A single team-shard JSON value exceeds the bounded parser limit.');
+    }
+  };
+
+  for await (const chunk of createReadStream(filePath, { encoding: 'utf8', highWaterMark: 1024 * 1024 })) {
+    buffer += chunk;
+    await consume();
+  }
+  await consume();
+  if (state !== 'done' || buffer.trim().length > 0) {
+    throw new Error('Team shard ended before its JSON document was complete.');
+  }
+  return { seenFields: [...seenFields] };
+}
+
 function closeEnough(left, right, tolerance = 0.002) {
   return left === null || right === null ? left === right : Math.abs(Number(left) - Number(right)) <= tolerance;
 }
@@ -768,20 +988,21 @@ export function checkCombinationContinuity(row, index, errors) {
   }
 }
 
-function checkProjection(row, playerRapm, netRapm, index, errors) {
+export function checkProjection(row, playerRapm, netRapm, index, errors) {
   if (row.size !== 5) {
     if (row.projection) errors.push(`combination.${index} non-five-player row has a projection.`);
     return;
   }
   const projection = row.projection;
-  if (!projection || projection.status !== 'available') {
-    errors.push(`combination.${index} exact lineup projection is unavailable.`);
+  if (!projection || typeof projection !== 'object' || Array.isArray(projection)) {
+    errors.push(`combination.${index} exact lineup has no projection payload.`);
     return;
   }
-  const expectedSum = rounded(row.playerIds.reduce((total, id) => total + Number(playerRapm[id]), 0));
-  if (!closeEnough(projection.rapmSumPer100, expectedSum)) errors.push(`combination.${index} RAPM projection sum does not reconcile.`);
-  const expectedObserved = rounded(projection.rapmSumPer100 - projection.averageOpponentLineupRapmPer100 + projection.homeCourtExposureAdjustmentPer100);
-  if (!closeEnough(projection.expectedObservedNetRatingPer100, expectedObserved)) errors.push(`combination.${index} contextual projection does not reconcile.`);
+  const playerIds = Array.isArray(row.playerIds) ? row.playerIds : [];
+  const hasCompleteRapm = playerIds.length === 5 && playerIds.every((id) => {
+    const value = playerRapm[id];
+    return value !== null && value !== undefined && Number.isFinite(Number(value));
+  });
   const homeCourtSource = projection.homeCourtAdjustmentSource ?? {};
   if (homeCourtSource.modelVersion !== netRapm.modelVersion
     || homeCourtSource.signConvention !== netRapm.homeCourtSignConvention
@@ -791,12 +1012,28 @@ function checkProjection(row, playerRapm, netRapm, index, errors) {
   const exposureBalance = Number(homeCourtSource.signedExposureBalance);
   if (!Number.isFinite(exposureBalance) || Math.abs(exposureBalance) > 1.000001) {
     errors.push(`combination.${index} home-court exposure balance is invalid.`);
-  } else {
+  } else if (hasCompleteRapm) {
     const expectedHomeCourtAdjustment = rounded(netRapm.homeCourtNetRatingEffectPer100 * exposureBalance);
     if (!closeEnough(projection.homeCourtExposureAdjustmentPer100, expectedHomeCourtAdjustment, 0.002)) {
       errors.push(`combination.${index} home-court projection adjustment does not reconcile.`);
     }
   }
+  if (!hasCompleteRapm) {
+    if (projection.status !== 'unavailable'
+      || projection.reason !== 'exactly_five_players_with_finite_rapm_required'
+      || projection.model !== 'rapm_sum_plus_possession_shrunk_observed_synergy_v1') {
+      errors.push(`combination.${index} projection availability does not match the net RAPM player scope.`);
+    }
+    return;
+  }
+  if (projection.status !== 'available') {
+    errors.push(`combination.${index} exact lineup projection is unavailable despite complete net RAPM coverage.`);
+    return;
+  }
+  const expectedSum = rounded(playerIds.reduce((total, id) => total + Number(playerRapm[id]), 0));
+  if (!closeEnough(projection.rapmSumPer100, expectedSum)) errors.push(`combination.${index} RAPM projection sum does not reconcile.`);
+  const expectedObserved = rounded(projection.rapmSumPer100 - projection.averageOpponentLineupRapmPer100 + projection.homeCourtExposureAdjustmentPer100);
+  if (!closeEnough(projection.expectedObservedNetRatingPer100, expectedObserved)) errors.push(`combination.${index} contextual projection does not reconcile.`);
   const expectedNeutral = rounded(projection.rapmSumPer100 + projection.shrunkSynergyPer100);
   if (!closeEnough(projection.projectedNetRatingPer100, expectedNeutral)) errors.push(`combination.${index} neutral projection does not reconcile.`);
 }
@@ -855,9 +1092,11 @@ export function checkOffenseDefenseRapmCalibration(calibration, odRapm, errors, 
     || calibration.foldCount > calibration.gameCount) {
     errors.push('Offense/defense RAPM calibration fold counts are invalid.');
   }
+  const fittedCalibrationPossessions = finiteCalibrationNumber(odRapm.totalEffectiveOffensivePossessions)
+    ?? odRapm.totalOffensivePossessions;
   if (calibration.gameCount !== odRapm.gameCount
     || calibration.directionalObservationCount !== odRapm.directionalObservationCount
-    || !closeEnough(calibration.heldOutPossessions, odRapm.totalOffensivePossessions, 0.001)) {
+    || !closeEnough(calibration.heldOutPossessions, fittedCalibrationPossessions, 0.001)) {
     errors.push('Offense/defense RAPM calibration coverage does not reconcile to the fitted model.');
   }
   if (calibration.unseenPlayerDirectionPossessions < 0 || calibration.unseenPlayerDirectionCount < 0
@@ -1419,19 +1658,26 @@ async function validate() {
   if (!Array.isArray(input.dataShards) || !input.dataShards.length) errors.push('Team shard manifest is missing.');
   for (const [shardIndex, descriptor] of (input.dataShards ?? []).entries()) {
     const shardPath = path.resolve(path.dirname(options.input), descriptor.jsonPath ?? '');
-    let shardRaw;
-    let shard;
+    const shard = {};
+    const onOffByPlayer = new Map();
+    const profileKeys = new Set();
+    const deferredProfiles = [];
+    const shardRows = {
+      lineupsAndCombinations: 0,
+      playerOnOff: 0,
+      playerProfiles: 0,
+      wowy: 0,
+    };
+    let seenFields;
     try {
-      shardRaw = await fs.readFile(shardPath, 'utf8');
-      shard = JSON.parse(shardRaw);
+      const raw = await fileSha256AndSize(shardPath);
+      if (raw.sha256 !== descriptor.jsonSha256) errors.push(`Team shard ${shardIndex} SHA-256 does not match.`);
+      if (raw.bytes !== descriptor.jsonBytes) errors.push(`Team shard ${shardIndex} byte count does not match.`);
+      shardJsonBytes += raw.bytes;
     } catch (error) {
       errors.push(`Unable to read team shard ${shardIndex}: ${String(error?.message ?? error)}`);
       continue;
     }
-    const rawBytes = Buffer.byteLength(shardRaw);
-    if (sha256(shardRaw) !== descriptor.jsonSha256) errors.push(`Team shard ${shardIndex} SHA-256 does not match.`);
-    if (rawBytes !== descriptor.jsonBytes) errors.push(`Team shard ${shardIndex} byte count does not match.`);
-    shardJsonBytes += rawBytes;
     const shardGzipPath = path.resolve(path.dirname(options.input), descriptor.gzipPath ?? '');
     try {
       const compressed = await fileSha256AndSize(shardGzipPath);
@@ -1445,6 +1691,68 @@ async function validate() {
     } catch (error) {
       errors.push(`Unable to verify team shard ${shardIndex} gzip: ${String(error?.message ?? error)}`);
     }
+    try {
+      ({ seenFields } = await streamTeamShardJson(shardPath, {
+        onHeader(field, value) {
+          shard[field] = value;
+        },
+        onArrayItem(field, rowIndex, row) {
+          shardRows[field] += 1;
+          const index = `${shardIndex}.${rowIndex}`;
+          if (!row || typeof row !== 'object' || Array.isArray(row)) {
+            errors.push(`Team shard ${shardIndex} has an invalid ${field} row at ${rowIndex}.`);
+            return;
+          }
+          if (field === 'lineupsAndCombinations') {
+            const key = `${row.teamId}~${row.size}~${(row.playerIds ?? []).join('|')}`;
+            if (comboKeys.has(key)) errors.push(`Duplicate combination key at row ${index}.`);
+            comboKeys.add(key);
+            if (row.teamId !== descriptor.teamId) errors.push(`Combination ${index} belongs to the wrong shard.`);
+            if (![2, 3, 4, 5].includes(row.size)) errors.push(`Invalid combination size at row ${index}.`);
+            if (!Array.isArray(row.playerIds) || row.playerIds.length !== row.size || new Set(row.playerIds).size !== row.size) errors.push(`Invalid player IDs at combination row ${index}.`);
+            if ([...(row.playerIds ?? [])].sort((a, b) => String(a).localeCompare(String(b))).join('|') !== (row.playerIds ?? []).join('|')) errors.push(`Combination player IDs are not canonical at row ${index}.`);
+            if (!Number.isFinite(row.minutes) || row.minutes < 0) errors.push(`Combination minutes are invalid at row ${index}.`);
+            checkContextMap(row.contexts, `combination.${index}`, phases, errors, options.seasonStartYears);
+            checkCombinationContinuity(row, index, errors);
+            checkProjection(row, playerRapm, netRapm, index, errors);
+            const total = comboTotalsBySize.get(row.size) ?? zeroMetric();
+            for (const fieldName of TOTAL_FIELDS) total[fieldName] += Number(row.contexts?.all?.[fieldName] ?? 0);
+            comboTotalsBySize.set(row.size, total);
+          } else if (field === 'playerOnOff') {
+            const key = `${row.teamId}~${row.playerId}`;
+            if (playerKeys.has(key)) errors.push(`Duplicate on/off key at row ${index}.`);
+            playerKeys.add(key);
+            if (row.teamId !== descriptor.teamId) errors.push(`On/off row ${index} belongs to the wrong shard.`);
+            checkOnOff(row, index, phases, errors, options.seasonStartYears);
+            for (const fieldName of TOTAL_FIELDS) playerOnTotals[fieldName] += Number(row.on?.all?.[fieldName] ?? 0);
+            onOffByPlayer.set(key, row);
+          } else if (field === 'playerProfiles') {
+            const key = `${row.teamId}~${row.playerId}`;
+            if (profileKeys.has(key)) errors.push(`Duplicate player profile key at row ${index}.`);
+            profileKeys.add(key);
+            if (row.teamId !== descriptor.teamId) errors.push(`Player profile ${index} belongs to the wrong shard.`);
+            deferredProfiles.push({ index, key, row });
+          } else if (field === 'wowy') {
+            const key = `${row.teamId}~${row.playerAId}~${row.playerBId}`;
+            if (wowyKeys.has(key)) errors.push(`Duplicate WOWY key at row ${index}.`);
+            wowyKeys.add(key);
+            if (row.teamId !== descriptor.teamId) errors.push(`WOWY row ${index} belongs to the wrong shard.`);
+            if (String(row.playerAId).localeCompare(String(row.playerBId)) >= 0) errors.push(`WOWY player IDs are not canonical at row ${index}.`);
+            for (const [cell, contexts] of Object.entries(row.cells ?? {})) {
+              if (!['a_on_b_on', 'a_on_b_off', 'a_off_b_on', 'a_off_b_off'].includes(cell)) errors.push(`Invalid WOWY cell at row ${index}.`);
+              checkContextMap(contexts, `wowy.${index}.${cell}`, phases, errors, options.seasonStartYears);
+            }
+            for (const fieldName of TOTAL_FIELDS) wowyTogetherTotals[fieldName] += Number(row.cells?.a_on_b_on?.all?.[fieldName] ?? 0);
+          }
+        },
+      }));
+    } catch (error) {
+      errors.push(`Unable to read team shard ${shardIndex}: ${String(error?.message ?? error)}`);
+      continue;
+    }
+    for (const field of TEAM_SHARD_ARRAY_FIELDS) {
+      if (!seenFields.includes(field)) errors.push(`Team shard ${shardIndex} is missing ${field}.`);
+    }
     if (shard.schemaVersion !== input.schemaVersion || shard.metricsVersion !== input.metricsVersion) errors.push(`Team shard ${shardIndex} schema does not match the manifest.`);
     checkShardScope(shard, shardIndex, options, errors);
     if (shard.team?.teamId !== descriptor.teamId) errors.push(`Team shard ${shardIndex} team does not match its descriptor.`);
@@ -1453,74 +1761,21 @@ async function validate() {
     teamCount += 1;
     checkContextMap(shard.team?.contexts, `team.${shardIndex}`, phases, errors, options.seasonStartYears);
 
-    const combinations = shard.lineupsAndCombinations ?? [];
-    const onOffRows = shard.playerOnOff ?? [];
-    const playerProfiles = shard.playerProfiles ?? [];
-    const wowyRows = shard.wowy ?? [];
-    combinationCount += combinations.length;
-    playerOnOffCount += onOffRows.length;
-    playerProfileCount += playerProfiles.length;
-    wowyCount += wowyRows.length;
-    if (descriptor.rows?.lineupsAndCombinations !== combinations.length
-      || descriptor.rows?.playerOnOff !== onOffRows.length
-      || descriptor.rows?.playerProfiles !== playerProfiles.length
-      || descriptor.rows?.wowy !== wowyRows.length) errors.push(`Team shard ${shardIndex} row counts do not match.`);
-
-    for (const [rowIndex, row] of combinations.entries()) {
-      const index = `${shardIndex}.${rowIndex}`;
-      const key = `${row.teamId}~${row.size}~${(row.playerIds ?? []).join('|')}`;
-      if (comboKeys.has(key)) errors.push(`Duplicate combination key at row ${index}.`);
-      comboKeys.add(key);
-      if (row.teamId !== descriptor.teamId) errors.push(`Combination ${index} belongs to the wrong shard.`);
-      if (![2, 3, 4, 5].includes(row.size)) errors.push(`Invalid combination size at row ${index}.`);
-      if (!Array.isArray(row.playerIds) || row.playerIds.length !== row.size || new Set(row.playerIds).size !== row.size) errors.push(`Invalid player IDs at combination row ${index}.`);
-      if ([...(row.playerIds ?? [])].sort((a, b) => String(a).localeCompare(String(b))).join('|') !== (row.playerIds ?? []).join('|')) errors.push(`Combination player IDs are not canonical at row ${index}.`);
-      if (!Number.isFinite(row.minutes) || row.minutes < 0) errors.push(`Combination minutes are invalid at row ${index}.`);
-      checkContextMap(row.contexts, `combination.${index}`, phases, errors, options.seasonStartYears);
-      checkCombinationContinuity(row, index, errors);
-      checkProjection(row, playerRapm, netRapm, index, errors);
-      const total = comboTotalsBySize.get(row.size) ?? zeroMetric();
-      for (const field of TOTAL_FIELDS) total[field] += Number(row.contexts?.all?.[field] ?? 0);
-      comboTotalsBySize.set(row.size, total);
-    }
-
-    for (const [rowIndex, row] of onOffRows.entries()) {
-      const index = `${shardIndex}.${rowIndex}`;
-      const key = `${row.teamId}~${row.playerId}`;
-      if (playerKeys.has(key)) errors.push(`Duplicate on/off key at row ${index}.`);
-      playerKeys.add(key);
-      if (row.teamId !== descriptor.teamId) errors.push(`On/off row ${index} belongs to the wrong shard.`);
-      checkOnOff(row, index, phases, errors, options.seasonStartYears);
-      for (const field of TOTAL_FIELDS) playerOnTotals[field] += Number(row.on?.all?.[field] ?? 0);
-    }
-
-    const onOffByPlayer = new Map(onOffRows.map((row) => [`${row.teamId}~${row.playerId}`, row]));
-    const profileKeys = new Set();
-    for (const [rowIndex, row] of playerProfiles.entries()) {
-      const index = `${shardIndex}.${rowIndex}`;
-      const key = `${row.teamId}~${row.playerId}`;
-      if (profileKeys.has(key)) errors.push(`Duplicate player profile key at row ${index}.`);
-      profileKeys.add(key);
-      if (row.teamId !== descriptor.teamId) errors.push(`Player profile ${index} belongs to the wrong shard.`);
+    combinationCount += shardRows.lineupsAndCombinations;
+    playerOnOffCount += shardRows.playerOnOff;
+    playerProfileCount += shardRows.playerProfiles;
+    wowyCount += shardRows.wowy;
+    if (descriptor.rows?.lineupsAndCombinations !== shardRows.lineupsAndCombinations
+      || descriptor.rows?.playerOnOff !== shardRows.playerOnOff
+      || descriptor.rows?.playerProfiles !== shardRows.playerProfiles
+      || descriptor.rows?.wowy !== shardRows.wowy) errors.push(`Team shard ${shardIndex} row counts do not match.`);
+    for (const { index, key, row } of deferredProfiles) {
       checkPlayerProfile(row, onOffByPlayer.get(key), index, errors);
     }
     if (profileKeys.size !== onOffByPlayer.size || [...onOffByPlayer.keys()].some((key) => !profileKeys.has(key))) errors.push(`Team shard ${shardIndex} player profile coverage differs from player on/off coverage.`);
-
-    for (const [rowIndex, row] of wowyRows.entries()) {
-      const index = `${shardIndex}.${rowIndex}`;
-      const key = `${row.teamId}~${row.playerAId}~${row.playerBId}`;
-      if (wowyKeys.has(key)) errors.push(`Duplicate WOWY key at row ${index}.`);
-      wowyKeys.add(key);
-      if (row.teamId !== descriptor.teamId) errors.push(`WOWY row ${index} belongs to the wrong shard.`);
-      if (String(row.playerAId).localeCompare(String(row.playerBId)) >= 0) errors.push(`WOWY player IDs are not canonical at row ${index}.`);
-      for (const [cell, contexts] of Object.entries(row.cells ?? {})) {
-        if (!['a_on_b_on', 'a_on_b_off', 'a_off_b_on', 'a_off_b_off'].includes(cell)) errors.push(`Invalid WOWY cell at row ${index}.`);
-        checkContextMap(contexts, `wowy.${index}.${cell}`, phases, errors, options.seasonStartYears);
-      }
-      for (const field of TOTAL_FIELDS) wowyTogetherTotals[field] += Number(row.cells?.a_on_b_on?.all?.[field] ?? 0);
-    }
-    shard = null;
-    shardRaw = null;
+    onOffByPlayer.clear();
+    profileKeys.clear();
+    deferredProfiles.length = 0;
     requestGarbageCollection();
   }
   if (teamCount !== 30) errors.push('Scout package must contain exactly 30 NBA franchise shards.');
@@ -1564,7 +1819,7 @@ async function validate() {
   checkRecencyWeightedRapm(odRapm, 'Offense/defense RAPM', 'offenseDefense', rapmCoverage, options, errors);
   checkOffenseDefenseRapmCalibration(odRapm.calibration, odRapm, errors, warnings);
   if (!Array.isArray(netRapm.players) || !netRapm.players.length) errors.push('Net RAPM players are missing.');
-  if (!Array.isArray(odRapm.players) || odRapm.players.length !== netRapm.players?.length) errors.push('Offense/defense RAPM player coverage differs from net RAPM.');
+  if (!Array.isArray(odRapm.players) || !odRapm.players.length) errors.push('Offense/defense RAPM players are missing.');
   const venueDiagnostics = odRapm.venueExposureDiagnostics ?? {};
   if (venueDiagnostics.method !== 'player_home_vs_away_possession_side_balance_v1'
     || venueDiagnostics.playerCount !== odRapm.players?.length) {
@@ -1573,7 +1828,24 @@ async function validate() {
   let oneSidedVenuePlayers = 0;
   let venuePlayersAbove025 = 0;
   const absoluteVenueBalances = [];
+  const odRapmIds = new Set();
   for (const [index, row] of (odRapm.players ?? []).entries()) {
+    if (!row?.providerPlayerId || typeof row.providerPlayerId !== 'string') {
+      errors.push(`Offense/defense RAPM player ${index} has an invalid provider player ID.`);
+    } else if (odRapmIds.has(row.providerPlayerId)) {
+      errors.push(`Duplicate offense/defense RAPM player at row ${index}.`);
+    } else {
+      odRapmIds.add(row.providerPlayerId);
+    }
+    for (const field of [
+      'offensiveRapmPer100',
+      'defensiveRapmPer100',
+      'combinedRapmPer100',
+      'offensivePossessions',
+      'defensivePossessions',
+    ]) {
+      if (!Number.isFinite(Number(row?.[field]))) errors.push(`Invalid offense/defense RAPM ${field} at row ${index}.`);
+    }
     const venue = row.venueExposure ?? {};
     const home = Number(venue.homePossessionSides);
     const away = Number(venue.awayPossessionSides);

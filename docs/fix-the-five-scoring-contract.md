@@ -7,7 +7,7 @@ result, or rate the real-world value of a player.
 
 ## Release boundary
 
-- Every release contains at least ten versioned challenge fixtures.
+- Every release contains at least fifteen versioned challenge fixtures.
 - Each fixture uses one named historical team-season snapshot and a stable
   source URL.
 - A fixture contains five distinct starting-player IDs, one removed-player ID,
@@ -19,11 +19,18 @@ result, or rate the real-world value of a player.
   required court slot, not several at once.
 - Tests re-evaluate every fixture. A release fails when an answer ID, court
   shape, source row, or schema version is no longer valid.
+- `reviewStatus: "reviewed"` means the fixture was curated for this release and
+  passed the published automated validation. It does not claim independent
+  scout, historian, or real-game review.
 
 ## Source-bounded Lineup DNA
 
 The game derives seven coverage signals from the roster's visible historical
-per-game values, expressed per 36 minutes where appropriate:
+per-game values, expressed per 36 minutes where appropriate. Before
+roster-relative percentiles are calculated, low-minute source rates are
+conservatively shrunk toward that roster's minute-weighted center using a
+published 360-source-minute prior. This limits a tiny source sample without
+claiming a projection or inventing missing events:
 
 | Signal | Inputs | Boundary |
 | --- | --- | --- |
@@ -48,7 +55,9 @@ For every legal candidate, the game calculates:
    scoring, efficiency, spacing, rebounding, creation, steals, blocks, and
    ball security. Values are percentile-ranked inside the reviewed roster only.
 2. A Lineup DNA fit index that weights the seven role-coverage signals by the
-   same objective.
+   same objective. Its short strength and pressure-point lists are ordered by
+   objective relevance as well as raw coverage, while raw coverage remains
+   visible in the result.
 3. A transparent composite: 62% direct objective score and 38% DNA fit index.
 
 The best legal published candidate has a round score of 100. Every other
@@ -98,4 +107,5 @@ claim that a chosen five actually played together.
 
 Changes to an existing challenge's roster, choices, answer, source, or
 scoring version require a new fixture ID or release-bank version so saved and
-shared runs remain explainable.
+shared runs remain explainable. The current release uses scoring version
+`fix-the-five-v2`.

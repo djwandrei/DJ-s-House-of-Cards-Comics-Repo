@@ -5,6 +5,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
   buildDraftNightDeck,
+  evaluateDraftNightDeck,
   hasLegalPositionAssignment,
   validateDraftNightDecks,
 } from '../../tools/fix-the-five/game-engine.js';
@@ -16,9 +17,9 @@ const roster = JSON.parse(fs.readFileSync(
   'utf8',
 )).players;
 
-test('Draft Night ships five reviewed decks with fully legal published boards', () => {
+test('Draft Night ships eight curated, test-validated decks with fully legal published boards', () => {
   const results = validateDraftNightDecks(DRAFT_NIGHT_DECKS, roster);
-  assert.equal(results.length, 5);
+  assert.equal(results.length, 8);
 
   results.forEach((result) => {
     assert.equal(result.combinations.length, 243);
@@ -30,12 +31,24 @@ test('Draft Night ships five reviewed decks with fully legal published boards', 
       assert.equal(outcome.selectionIds.length, 5);
       assert.equal(new Set(outcome.selectionIds).size, 5);
       assert.ok(outcome.roundScore >= 0 && outcome.roundScore <= 100);
+      assert.equal(outcome.onePickAlternatives.length, 3);
       assert.equal(
         hasLegalPositionAssignment(outcome.selected, result.deck.positionMinimums),
         true,
       );
     });
   });
+});
+
+test('Draft Night returns transparent one-pick learning paths after a board reveal', () => {
+  const result = evaluateDraftNightDeck(DRAFT_NIGHT_DECKS[0], roster);
+  const nonBest = result.combinations.find((outcome) => !outcome.isBest);
+  assert.ok(nonBest);
+  const alternative = nonBest.onePickAlternatives[0];
+  assert.equal(alternative.roundId, result.deck.rounds.find((round) => round.title === alternative.roundTitle)?.id);
+  assert.equal(alternative.fromId, nonBest.selectionIds.find((id) => id === alternative.fromId));
+  assert.notEqual(alternative.fromId, alternative.toId);
+  assert.ok(Number.isFinite(alternative.compositeChange));
 });
 
 test('Draft Night seeds select a stable reviewed board and explicit deck IDs remain valid', () => {
@@ -50,6 +63,7 @@ test('Draft Night page retains its source and scoring disclosures', () => {
   assert.match(html, /data-page="fan-tools"/);
   assert.match(html, /id="draftPanel"/);
   assert.match(html, /id="draftProgress"/);
+  assert.match(html, /id="draftBoardPicker"/);
   assert.match(html, /Read the full scoring contract/);
   assert.match(html, /243-path board/);
   assert.match(html, /type="module"[^>]+draft-night\.js/);

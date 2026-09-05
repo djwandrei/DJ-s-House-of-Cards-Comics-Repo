@@ -1151,6 +1151,17 @@ function roleCoverageStatus(matches, target, evidenceAvailable) {
   return "gap";
 }
 
+function roleCoverageSignal(matches, target) {
+  if (!matches.length) return null;
+  // A row may have more confirmed players than its role target. The strongest
+  // supporting signal is what makes the identity concise, while the target
+  // still controls whether the role is classified as covered.
+  const count = Math.max(1, Math.floor(target));
+  const strongest = matches.slice(0, count);
+  const total = strongest.reduce((sum, entry) => sum + Number(entry.role.score || 0), 0);
+  return round(total / strongest.length, 3);
+}
+
 /**
  * Produce a role matrix plus plain-language group strengths and gaps. A gap is
  * a planning signal, not a claim that a real NBA lineup cannot function. The
@@ -1187,6 +1198,7 @@ export function analyzeRoleCoverage(players, options = {}) {
     const evidenceAvailable = definition.id !== "movementShooter"
       || classification.records.some((record) => record.values.threePointVolume !== null);
     const status = roleCoverageStatus(matches, target, evidenceAvailable);
+    const coverageScore = roleCoverageSignal(matches, target);
     const baseMessage = status === "covered"
       ? `${matches.length} selected player${matches.length === 1 ? "" : "s"} cover ${definition.label.toLowerCase()}.`
       : status === "thin"
@@ -1202,6 +1214,7 @@ export function analyzeRoleCoverage(players, options = {}) {
       label: definition.label,
       target,
       status,
+      coverageScore,
       evidenceMode: definition.evidence,
       coverageUsesProvisional: includeProvisionalRoleCoverage,
       players: matches.map(({ record, role }) => ({
@@ -1219,8 +1232,24 @@ export function analyzeRoleCoverage(players, options = {}) {
       message,
     };
   });
-  const strengths = coverage.filter((item) => item.status === "covered");
-  const deficiencies = coverage.filter((item) => item.status === "thin" || item.status === "gap");
+  // The simple Lineup DNA summary should name the strongest confirmed signal,
+  // not whichever role happens to appear first in the definitions array.
+  const strengths = coverage
+    .filter((item) => item.status === "covered")
+    .slice()
+    .sort((left, right) => (
+      Number(right.coverageScore ?? -1) - Number(left.coverageScore ?? -1)
+      || stableCompare(left.roleId, right.roleId)
+    ));
+  const deficiencySeverity = { gap: 2, thin: 1 };
+  const deficiencies = coverage
+    .filter((item) => item.status === "thin" || item.status === "gap")
+    .slice()
+    .sort((left, right) => (
+      (deficiencySeverity[right.status] || 0) - (deficiencySeverity[left.status] || 0)
+      || Number(left.coverageScore ?? -1) - Number(right.coverageScore ?? -1)
+      || stableCompare(left.roleId, right.roleId)
+    ));
   const provisionalSignalCount = coverage.reduce((total, item) => total + item.provisionalPlayers.length, 0);
   const caveats = [...new Set([
     ...classification.records.flatMap((record) => record.caveats),

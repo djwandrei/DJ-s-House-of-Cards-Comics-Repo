@@ -3,12 +3,13 @@ import {
   chicagoDailySeed,
   evaluateDraftNightDeck,
   formatRolePercent,
+  formatSignedPoints,
   validateDraftNightDecks,
 } from '../fix-the-five/game-engine.js?v=20260905g';
 import { DRAFT_NIGHT_DECKS, DRAFT_NIGHT_SOURCE } from './decks.js?v=20260905g';
 
-const STORAGE_KEY = 'djhc.draft-night.v1';
-const STORAGE_VERSION = 1;
+const STORAGE_KEY = 'djhc.draft-night.v2';
+const STORAGE_VERSION = 2;
 
 const elements = {
   runTitle: document.getElementById('runTitle'),
@@ -22,6 +23,7 @@ const elements = {
   panel: document.getElementById('draftPanel'),
   completionPanel: document.getElementById('completionPanel'),
   sourceCopy: document.getElementById('sourceCopy'),
+  boardPicker: document.getElementById('draftBoardPicker'),
   restart: document.getElementById('restartDraft'),
   undo: document.getElementById('undoPick'),
 };
@@ -173,8 +175,8 @@ function renderScoreboard() {
   elements.runTitle.textContent = `Draft board · ${state.seed}`;
   elements.runDescription.textContent = isComplete()
     ? 'Your full five is in. Review its source-bounded Lineup DNA result or replay the same board locally.'
-    : `${state.deck.title}: five picks from a fixed, source-labeled historical board.`;
-  elements.undo.disabled = currentIndex() === 0 || isComplete();
+    : `${state.deck.title}: ${state.deck.brief}`;
+  elements.undo.disabled = currentIndex() === 0;
 }
 
 function renderSelectedPlayers(parent) {
@@ -200,6 +202,28 @@ function addSourceLink(parent) {
   link.target = '_blank';
   link.rel = 'noopener';
   parent.append(link);
+}
+
+function renderBoardPicker() {
+  if (!elements.boardPicker || !state.deck) return;
+  elements.boardPicker.replaceChildren();
+  DRAFT_NIGHT_DECKS.forEach((deck) => {
+    const option = document.createElement('option');
+    option.value = deck.id;
+    option.selected = deck.id === state.deck.id;
+    option.textContent = `${deck.title} — ${deck.brief}`;
+    elements.boardPicker.append(option);
+  });
+  elements.boardPicker.disabled = false;
+}
+
+function changeBoard(deckId) {
+  if (!DRAFT_NIGHT_DECKS.some((deck) => deck.id === deckId) || deckId === state.deck?.id) return;
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.searchParams.set('seed', state.seed);
+  url.searchParams.set('deck', deckId);
+  window.location.assign(url.toString());
 }
 
 function renderRound() {
@@ -252,6 +276,55 @@ function createRolePanel(title, roles, inverse = false) {
   });
   panel.append(list);
   return panel;
+}
+
+function createScoreBreakdown(outcome) {
+  const breakdown = outcome.scoreBreakdown;
+  const panel = createElement('section', 'fix-five-score-breakdown draft-night-score-breakdown');
+  panel.append(createElement('h3', '', 'How the board scored this five'));
+  panel.append(createElement('p', '', 'The published composite is calculated before rank. Your 0–100 result is its distance from the strongest legal five on this one board.'));
+  const list = createElement('dl', 'fix-five-score-breakdown__list');
+  for (const [label, value, detail] of [
+    ['Direct objective contribution', breakdown.directContribution, `${breakdown.directObjective.toFixed(1)} fit × 62%`],
+    ['Lineup DNA contribution', breakdown.dnaContribution, `${breakdown.dnaFit.toFixed(1)} fit × 38%`],
+    ['Published composite', breakdown.composite, 'Compared only with the 243 disclosed paths'],
+  ]) {
+    const row = createElement('div');
+    const term = createElement('dt', '', label);
+    const description = createElement('dd');
+    description.append(createElement('strong', '', value.toFixed(1)), createElement('span', '', detail));
+    row.append(term, description);
+    list.append(row);
+  }
+  panel.append(list);
+  return panel;
+}
+
+function createOnePickLearning(outcome) {
+  const section = createElement('section', 'draft-night-learning');
+  section.append(createElement('h3', '', outcome.isBest ? 'Board check' : 'One-pick learning'));
+  const improvements = (outcome.onePickAlternatives || []).filter((option) => option.compositeChange > 0.0001);
+  if (outcome.isBest) {
+    section.append(createElement('p', '', 'No one-pick change on this published board improves the underlying composite. You can still edit the final pick and explore a different lineup identity.'));
+    return section;
+  }
+  if (!improvements.length) {
+    section.append(createElement('p', '', 'No single-pick change improves the underlying composite. A stronger published path requires rebuilding more than one choice.'));
+    return section;
+  }
+  section.append(createElement('p', '', 'These are nearby published alternatives after the reveal—not recommendations for a real game or player evaluation.'));
+  const list = createElement('ol');
+  improvements.slice(0, 2).forEach((option) => {
+    const item = createElement('li');
+    const scoreChange = formatSignedPoints(option.scoreChange);
+    item.append(
+      createElement('strong', '', `${option.roundTitle}: ${option.fromPlayer.name} → ${option.toPlayer.name}`),
+      createElement('span', '', `${scoreChange} board-score points · rank ${option.rank} of ${state.evaluation.combinations.length}`),
+    );
+    list.append(item);
+  });
+  section.append(list);
+  return section;
 }
 
 function lineupLabUrl(outcome) {
@@ -311,7 +384,7 @@ function renderCompletion() {
     createRolePanel('Strongest coverage', outcome.dna.strengths),
     createRolePanel('Coverage to watch', outcome.dna.needs, true),
   );
-  elements.completionPanel.append(roles);
+  elements.completionPanel.append(roles, createScoreBreakdown(outcome), createOnePickLearning(outcome));
   elements.completionPanel.append(createElement('p', 'draft-night-result-caveat', outcome.dna.evidence));
 
   const actions = createElement('div', 'fix-five-complete-actions');
@@ -325,9 +398,12 @@ function renderCompletion() {
   const replay = createElement('button', 'button-secondary', 'Draft again');
   replay.type = 'button';
   replay.dataset.action = 'restart';
+  const edit = createElement('button', 'button-secondary', 'Edit last pick');
+  edit.type = 'button';
+  edit.dataset.action = 'undo';
   const tools = createElement('a', 'button-secondary', 'Explore more fan tools');
   tools.href = '../index.html';
-  actions.append(labLink, share, replay, tools);
+  actions.append(edit, labLink, share, replay, tools);
   elements.completionPanel.append(actions);
 }
 
@@ -356,7 +432,7 @@ function restartDraft() {
 }
 
 function undoPick() {
-  if (!state.selections.length || isComplete()) return;
+  if (!state.selections.length) return;
   const removed = state.selections.pop();
   persistSelections();
   setStatus(`${playerFor(removed)?.name || 'Last pick'} removed. Choose again from the same round.`);
@@ -403,9 +479,11 @@ function bindEvents() {
     if (!button) return;
     if (button.dataset.action === 'restart') restartDraft();
     if (button.dataset.action === 'share') shareDraft();
+    if (button.dataset.action === 'undo') undoPick();
   });
   elements.restart.addEventListener('click', restartDraft);
   elements.undo.addEventListener('click', undoPick);
+  elements.boardPicker?.addEventListener('change', (event) => changeBoard(event.target.value));
 }
 
 async function loadGame() {
@@ -415,18 +493,20 @@ async function loadGame() {
     const dataset = await response.json();
     if (!Array.isArray(dataset?.players)) throw new Error('Historical source did not provide a player roster.');
     state.roster = dataset.players;
-    validateDraftNightDecks(DRAFT_NIGHT_DECKS, state.roster);
+    const reviewedDecks = validateDraftNightDecks(DRAFT_NIGHT_DECKS, state.roster);
     state.deck = DRAFT_NIGHT_DECKS.find((deck) => deck.id === state.requestedDeckId)
       || buildDraftNightDeck(DRAFT_NIGHT_DECKS, state.seed);
-    state.evaluation = evaluateDraftNightDeck(state.deck, state.roster);
+    state.evaluation = reviewedDecks.find((evaluation) => evaluation.deck.id === state.deck.id)
+      || evaluateDraftNightDeck(state.deck, state.roster);
     state.selections = readValidSelections();
     persistSelections();
+    renderBoardPicker();
     elements.sourceCopy.textContent = DRAFT_NIGHT_SOURCE.note;
     setStatus('Historical draft board loaded. Make five legal picks, then reveal its source-bounded Lineup DNA.');
     render();
   } catch (error) {
     elements.workspace.hidden = true;
-    setStatus(`Draft Night could not load its reviewed historical source. ${error instanceof Error ? error.message : 'Please refresh and try again.'}`, 'error');
+    setStatus(`Draft Night could not load its curated, test-validated historical source. ${error instanceof Error ? error.message : 'Please refresh and try again.'}`, 'error');
   }
 }
 

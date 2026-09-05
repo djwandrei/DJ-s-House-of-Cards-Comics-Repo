@@ -4346,9 +4346,7 @@ function lineupDnaProfile(roleCoverage = {}) {
   const coverage = Array.isArray(roleCoverage.coverage) ? roleCoverage.coverage : [];
   const count = (status) => coverage.filter((role) => role.status === status).length;
   const primaryStrength = (roleCoverage.strengths || [])[0] || null;
-  const pressurePoint = coverage.find((role) => role.status === "gap")
-    || coverage.find((role) => role.status === "thin")
-    || null;
+  const pressurePoint = (roleCoverage.deficiencies || [])[0] || null;
   return {
     primaryStrength,
     pressurePoint,
@@ -4476,7 +4474,7 @@ function renderLineupDnaMethod(result, explanation) {
   steps.className = "lineup-dna__method";
   for (const [title, copy] of [
     ["Exact selection", sourceContext.explanation],
-    ["Role translation", `Coverage compares the selected group with ${explanation.roleCoverage.referencePlayerCount} players available in this search. Limited-evidence labels stay visible but do not count as covered by default.`],
+    ["Role translation", `Coverage compares the selected group with ${explanation.roleCoverage.referencePlayerCount} players available in this search. Limited-evidence labels stay visible but do not count as covered by default; the DNA headline uses the strongest confirmed signal and the most severe supported gap, not display order.`],
     ["One-change test", "The replacement tool locks every other selected player, excludes the player you choose, and reruns the same exact eligibility, position, production, and minute rules."],
   ]) {
     const item = document.createElement("li");

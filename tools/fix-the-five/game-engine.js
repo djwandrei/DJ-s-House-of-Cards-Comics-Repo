@@ -6,8 +6,8 @@
  */
 
 export const FIX_THE_FIVE_SCHEMA_VERSION = 1;
-export const FIX_THE_FIVE_SCORING_VERSION = 'fix-the-five-v1';
-export const DRAFT_NIGHT_SCORING_VERSION = 'draft-night-v1';
+export const FIX_THE_FIVE_SCORING_VERSION = 'fix-the-five-v2';
+export const DRAFT_NIGHT_SCORING_VERSION = 'draft-night-v2';
 
 export const GAME_ROLE_DEFINITIONS = Object.freeze([
   Object.freeze({ id: 'primaryCreator', label: 'Lead playmaker' }),
@@ -32,6 +32,22 @@ const OBJECTIVE_METRICS = Object.freeze([
   'ballSecurity',
 ]);
 const POSITION_KEYS = Object.freeze(['G', 'F', 'C']);
+const GAME_RATE_METRICS = Object.freeze([
+  'points',
+  'rebounds',
+  'assists',
+  'steals',
+  'blocks',
+  'turnovers',
+  'efgPct',
+  'threePct',
+]);
+// The game pack contains public per-game rows rather than attempt-level or
+// possession-level source data. This modest prior keeps a handful of source
+// minutes from dominating a roster-relative percentile without pretending the
+// result is a projection. A player at 360 source minutes receives half of the
+// raw-rate distance from the roster's minute-weighted center.
+const GAME_RATE_PRIOR_MINUTES = 360;
 
 function number(value, fallback = 0) {
   const parsed = Number(value);
@@ -53,6 +69,42 @@ function compareId(left, right) {
 function per36(player, field) {
   const minutes = number(player?.minutes);
   return minutes > 0 ? (number(player?.[field]) / minutes) * 36 : 0;
+}
+
+function sourceMinutes(player) {
+  const games = number(player?.games);
+  const minutesPerGame = number(player?.minutes);
+  if (games > 0 && minutesPerGame >= 0) return games * minutesPerGame;
+  return Math.max(0, minutesPerGame);
+}
+
+function gameRateValue(player, metric) {
+  if (metric === 'efgPct' || metric === 'threePct') return number(player?.[metric]);
+  return per36(player, metric);
+}
+
+function minuteWeightedAverage(roster, metric) {
+  let weightedTotal = 0;
+  let totalMinutes = 0;
+  for (const player of roster) {
+    const value = gameRateValue(player, metric);
+    const minutes = sourceMinutes(player);
+    if (!Number.isFinite(value) || !(minutes > 0)) continue;
+    weightedTotal += value * minutes;
+    totalMinutes += minutes;
+  }
+  return totalMinutes > 0 ? weightedTotal / totalMinutes : 0;
+}
+
+function sampleReliability(player) {
+  const minutes = sourceMinutes(player);
+  return minutes > 0 ? clamp(minutes / (minutes + GAME_RATE_PRIOR_MINUTES)) : 0;
+}
+
+function shrinkRateToRosterCenter(player, metric, baseline) {
+  const raw = gameRateValue(player, metric);
+  const reliability = sampleReliability(player);
+  return baseline + (raw - baseline) * reliability;
 }
 
 function weighted(...pairs) {
@@ -136,15 +188,27 @@ export function hasLegalPositionAssignment(players = [], minimums = {}) {
  */
 export function buildGameRoleModel(roster = []) {
   assertRoster(roster);
+  const baselines = Object.freeze(Object.fromEntries(
+    GAME_RATE_METRICS.map((metric) => [metric, minuteWeightedAverage(roster, metric)]),
+  ));
+  const adjustedRatesById = new Map();
+  const sampleReliabilityById = new Map();
+  for (const player of roster) {
+    const id = normalizeId(player.id);
+    adjustedRatesById.set(id, Object.freeze(Object.fromEntries(
+      GAME_RATE_METRICS.map((metric) => [metric, shrinkRateToRosterCenter(player, metric, baselines[metric])]),
+    )));
+    sampleReliabilityById.set(id, sampleReliability(player));
+  }
   const percentile = {
-    points: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'points') }))),
-    rebounds: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'rebounds') }))),
-    assists: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'assists') }))),
-    steals: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'steals') }))),
-    blocks: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'blocks') }))),
-    turnovers: percentileMap(roster.map((player) => ({ id: player.id, value: per36(player, 'turnovers') })), { lowerIsBetter: true }),
-    efgPct: percentileMap(roster.map((player) => ({ id: player.id, value: number(player?.efgPct) }))),
-    threePct: percentileMap(roster.map((player) => ({ id: player.id, value: number(player?.threePct) }))),
+    points: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).points }))),
+    rebounds: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).rebounds }))),
+    assists: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).assists }))),
+    steals: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).steals }))),
+    blocks: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).blocks }))),
+    turnovers: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).turnovers })), { lowerIsBetter: true }),
+    efgPct: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).efgPct }))),
+    threePct: percentileMap(roster.map((player) => ({ id: player.id, value: adjustedRatesById.get(normalizeId(player.id)).threePct }))),
   };
 
   const signalsById = new Map();
@@ -188,6 +252,10 @@ export function buildGameRoleModel(roster = []) {
     playerCount: roster.length,
     percentile,
     signalsById,
+    adjustedRatesById,
+    sampleReliabilityById,
+    ratePriorMinutes: GAME_RATE_PRIOR_MINUTES,
+    rateBaselines: baselines,
   });
 }
 
@@ -236,17 +304,43 @@ export function describeLineupDna(players = [], roleModel, objectiveWeights = {}
     label: ROLE_BY_ID.get(id)?.label || id,
     coverage: coverage[id],
     priority: priorities[id],
+    priorityWeightedCoverage: coverage[id] * priorities[id],
+    priorityWeightedNeed: (1 - coverage[id]) * priorities[id],
   }));
   const fitIndex = roleRows.reduce((total, role) => total + role.coverage * role.priority * 100, 0);
-  const strengths = roleRows.slice().sort((left, right) => right.coverage - left.coverage || compareId(left.id, right.id)).slice(0, 3);
-  const needs = roleRows.slice().sort((left, right) => left.coverage - right.coverage || compareId(left.id, right.id)).slice(0, 3);
+  // A spacing-first board should not call a low-priority rebound signal its
+  // defining strength merely because that raw coverage number is largest.
+  // Keep raw coverage visible, while ranking the short DNA takeaways by the
+  // objective that the visitor actually chose.
+  const strengths = roleRows.slice().sort((left, right) => (
+    right.priorityWeightedCoverage - left.priorityWeightedCoverage
+    || right.coverage - left.coverage
+    || compareId(left.id, right.id)
+  )).slice(0, 3);
+  const needs = roleRows.slice().sort((left, right) => (
+    right.priorityWeightedNeed - left.priorityWeightedNeed
+    || left.coverage - right.coverage
+    || compareId(left.id, right.id)
+  )).slice(0, 3);
   return Object.freeze({
     fitIndex,
     coverage,
     priorities,
     strengths,
     needs,
-    evidence: 'Historical per-game box-score snapshot. Ball pressure is a steals-and-ball-security proxy; this does not establish matchup assignments or team defense.',
+    evidence: 'Historical per-game box-score snapshot. Per-36 rate signals are conservatively shrunk toward this roster\'s minute-weighted center for limited source minutes. Ball pressure is a steals-and-ball-security proxy; this does not establish matchup assignments or team defense.',
+  });
+}
+
+function scoreBreakdown(directObjective, dna) {
+  const directContribution = directObjective * 0.62;
+  const dnaContribution = dna.fitIndex * 0.38;
+  return Object.freeze({
+    directObjective,
+    dnaFit: dna.fitIndex,
+    directContribution,
+    dnaContribution,
+    composite: directContribution + dnaContribution,
   });
 }
 
@@ -331,6 +425,7 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
   const remaining = lineup.filter((player) => player.id !== challenge.removeId);
   const baselineDna = describeLineupDna(lineup, roleModel, challenge.objectiveWeights);
   const baselineDirect = directObjectiveScore(lineup, roleModel, challenge.objectiveWeights);
+  const baselineBreakdown = scoreBreakdown(baselineDirect, baselineDna);
   const minimums = challenge.positionMinimums || { G: 1, F: 1, C: 1 };
 
   const candidateResults = challenge.candidateIds.map((candidateId) => {
@@ -339,7 +434,7 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
     const legal = hasLegalPositionAssignment(selected, minimums);
     const dna = describeLineupDna(selected, roleModel, challenge.objectiveWeights);
     const directObjective = directObjectiveScore(selected, roleModel, challenge.objectiveWeights);
-    const composite = directObjective * 0.62 + dna.fitIndex * 0.38;
+    const breakdown = scoreBreakdown(directObjective, dna);
     return {
       candidateId,
       candidate,
@@ -347,10 +442,15 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
       legal,
       dna,
       directObjective,
-      composite,
+      scoreBreakdown: breakdown,
+      composite: breakdown.composite,
       coverageDelta: coverageDelta(baselineDna, dna),
     };
-  }).filter((result) => result.legal);
+  });
+
+  if (candidateResults.some((result) => !result.legal)) {
+    throw new Error(`${challenge.id} includes a published candidate that breaks its required court shape.`);
+  }
 
   if (candidateResults.length < 2) {
     throw new Error(`${challenge.id} needs at least two legal published candidates.`);
@@ -364,6 +464,8 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
   const evaluated = ranked.map((result, index) => {
     const distanceToBest = best.composite > 0 ? clamp(result.composite / best.composite) : 1;
     const roleGain = result.dna.fitIndex - baselineDna.fitIndex;
+    const directImprovement = result.directObjective - baselineDirect;
+    const compositeImprovement = result.composite - baselineBreakdown.composite;
     // DNA coverage is already 38% of the transparent candidate composite.
     // Scaling that composite to the best legal answer keeps a reference-best
     // choice at 100 while still making a role regression visibly costly.
@@ -374,6 +476,8 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
       rank: index + 1,
       distanceToBest,
       roleImprovement,
+      directImprovement,
+      compositeImprovement,
       roundScore,
       isBest: result.candidateId === best.candidateId,
     });
@@ -385,7 +489,11 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
     challenge,
     lineup,
     removed: rosterById.get(challenge.removeId),
-    baseline: Object.freeze({ dna: baselineDna, directObjective: baselineDirect }),
+    baseline: Object.freeze({
+      dna: baselineDna,
+      directObjective: baselineDirect,
+      scoreBreakdown: baselineBreakdown,
+    }),
     candidates: evaluated,
     best: byCandidateId[best.candidateId],
     byCandidateId,
@@ -395,8 +503,8 @@ export function evaluateFixTheFiveChallenge(challenge, roster = []) {
 
 /** Validate a static fixture bank before its browser release. */
 export function validateFixTheFiveFixtures(fixtures = [], roster = []) {
-  if (!Array.isArray(fixtures) || fixtures.length < 10) {
-    throw new Error('Fix the Five needs at least ten reviewed historical fixtures.');
+  if (!Array.isArray(fixtures) || fixtures.length < 15) {
+    throw new Error('Fix the Five needs at least fifteen curated, test-validated historical fixtures.');
   }
   const ids = fixtures.map((fixture) => normalizeId(fixture?.id));
   if (ids.some((id) => !id) || new Set(ids).size !== ids.length) {
@@ -427,6 +535,38 @@ function enumerateDraftSelections(rounds = [], cursor = 0, selected = [], result
     enumerateDraftSelections(rounds, cursor + 1, [...selected, candidateId], result);
   });
   return result;
+}
+
+function draftOnePickAlternatives(outcome, outcomes, rounds) {
+  const alternatives = outcomes
+    .map((candidate) => {
+      const changedIndexes = candidate.selectionIds.reduce((indexes, candidateId, index) => (
+        candidateId === outcome.selectionIds[index] ? indexes : [...indexes, index]
+      ), []);
+      if (changedIndexes.length !== 1) return null;
+      const index = changedIndexes[0];
+      return {
+        roundId: rounds[index]?.id || `round-${index + 1}`,
+        roundTitle: rounds[index]?.title || `Pick ${index + 1}`,
+        fromId: outcome.selectionIds[index],
+        fromPlayer: outcome.selected[index],
+        toId: candidate.selectionIds[index],
+        toPlayer: candidate.selected[index],
+        rank: candidate.rank,
+        roundScore: candidate.roundScore,
+        compositeChange: candidate.composite - outcome.composite,
+        scoreChange: candidate.roundScore - outcome.roundScore,
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => (
+      right.compositeChange - left.compositeChange
+      || left.rank - right.rank
+      || compareId(left.toId, right.toId)
+    ))
+    .slice(0, 3)
+    .map((alternative) => Object.freeze(alternative));
+  return Object.freeze(alternatives);
 }
 
 function assertDraftNightDeckShape(deck, rosterById) {
@@ -476,6 +616,7 @@ export function evaluateDraftNightDeck(deck, roster = []) {
     const legal = hasLegalPositionAssignment(selected, minimums);
     const dna = describeLineupDna(selected, roleModel, deck.objectiveWeights);
     const directObjective = directObjectiveScore(selected, roleModel, deck.objectiveWeights);
+    const breakdown = scoreBreakdown(directObjective, dna);
     return {
       selectionIds: Object.freeze(selectionIds.slice()),
       signature: draftSelectionSignature(selectionIds),
@@ -483,7 +624,8 @@ export function evaluateDraftNightDeck(deck, roster = []) {
       legal,
       dna,
       directObjective,
-      composite: directObjective * 0.62 + dna.fitIndex * 0.38,
+      scoreBreakdown: breakdown,
+      composite: breakdown.composite,
     };
   });
   if (outcomes.some((outcome) => !outcome.legal)) {
@@ -501,11 +643,15 @@ export function evaluateDraftNightDeck(deck, roster = []) {
     roundScore: Math.round(best.composite > 0 ? clamp(outcome.composite / best.composite) * 100 : 100),
     isBest: outcome.signature === best.signature,
   }));
-  const bySelectionSignature = Object.freeze(Object.fromEntries(evaluated.map((outcome) => [outcome.signature, outcome])));
+  const enriched = evaluated.map((outcome) => Object.freeze({
+    ...outcome,
+    onePickAlternatives: draftOnePickAlternatives(outcome, evaluated, deck.rounds),
+  }));
+  const bySelectionSignature = Object.freeze(Object.fromEntries(enriched.map((outcome) => [outcome.signature, outcome])));
   return Object.freeze({
     scoringVersion: DRAFT_NIGHT_SCORING_VERSION,
     deck,
-    combinations: evaluated,
+    combinations: enriched,
     best: bySelectionSignature[best.signature],
     bySelectionSignature,
     evidence: 'Every result is ranked against the fully published historical draft board. It reports a source-bounded stat-and-role fit, not a real lineup result or future forecast.',
@@ -514,8 +660,8 @@ export function evaluateDraftNightDeck(deck, roster = []) {
 
 /** Validate the release bank and each published Draft Night combination. */
 export function validateDraftNightDecks(decks = [], roster = []) {
-  if (!Array.isArray(decks) || decks.length < 5) {
-    throw new Error('Draft Night needs at least five reviewed historical decks.');
+  if (!Array.isArray(decks) || decks.length < 8) {
+    throw new Error('Draft Night needs at least eight curated, test-validated historical decks.');
   }
   const ids = decks.map((deck) => normalizeId(deck?.id));
   if (ids.some((id) => !id) || new Set(ids).size !== ids.length) {

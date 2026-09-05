@@ -75,7 +75,7 @@ export const TOOL_REGISTRY = Object.freeze([
     eyebrow: 'Live historical lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './fix-the-five/',
-    summary: 'Make one legal historical lineup swap at a time, then see the source-bounded Lineup DNA gains, trade-offs, and published-board score.',
+    summary: 'Make one legal historical lineup swap at a time, then see source-bounded Lineup DNA gains, trade-offs, and a curated, test-validated board score.',
     capabilities: [
       'Five-round daily historical challenge',
       'Legal replacement board and role-coverage reveal',
@@ -87,7 +87,7 @@ export const TOOL_REGISTRY = Object.freeze([
       'Local-only progress'
     ],
     dependencies: [
-      'Reviewed historical roster snapshot',
+      'Curated, test-validated historical roster snapshot',
       'Versioned game rules and transparent role coverage'
     ],
     implementationNotes: 'Every result stays inside a fixed published player board and labels its box-score role evidence, proxies, and limits plainly.'
@@ -149,12 +149,12 @@ export const TOOL_REGISTRY = Object.freeze([
       'Full-board feasibility and Lineup DNA reveal'
     ],
     highlights: [
-      '243 reviewed paths',
+      '243 test-validated paths per board',
       'Five-pick replay loop',
       'Local-only score'
     ],
     dependencies: [
-      'Historical player-season data and role definitions',
+      'Curated, test-validated historical player-season data and role definitions',
       'Deterministic draft pools and lineup feasibility checks'
     ],
     implementationNotes: 'The complete published board is re-evaluated before release; role definitions and box-score defensive activity remain transparent and labeled as proxies.'

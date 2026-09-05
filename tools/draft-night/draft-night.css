@@ -116,6 +116,34 @@
   color: #6941b2;
 }
 
+.draft-night-board-card .field {
+  display: grid;
+  gap: .35rem;
+  margin-top: .8rem;
+}
+
+.draft-night-board-card .field > span {
+  color: var(--fix-ink);
+  font-size: .82rem;
+  font-weight: 800;
+}
+
+.draft-night-board-card select {
+  background: #fff;
+  border: 1px solid rgba(105, 65, 178, .34);
+  border-radius: 9px;
+  color: var(--fix-ink);
+  font: inherit;
+  min-height: 2.6rem;
+  padding: .45rem .55rem;
+  width: 100%;
+}
+
+.draft-night-board-card select:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
 .draft-night-page .fix-five-complete {
   background: linear-gradient(145deg, #fff, #fcf9ff);
 }
@@ -141,6 +169,80 @@
   line-height: 1.45;
   margin: .5rem auto 1.1rem;
   max-width: 70ch;
+}
+
+.draft-night-complete .fix-five-score-breakdown {
+  background: #faf7ff;
+  border-color: rgba(105, 65, 178, .2);
+  margin: 1rem auto;
+  max-width: 680px;
+  text-align: left;
+}
+
+.draft-night-complete .fix-five-score-breakdown h3,
+.draft-night-complete .fix-five-score-breakdown h4,
+.draft-night-complete .fix-five-score-breakdown__list strong {
+  color: #392960;
+}
+
+.draft-night-complete .fix-five-score-breakdown > p,
+.draft-night-complete .fix-five-score-breakdown__list dt,
+.draft-night-complete .fix-five-score-breakdown__list span {
+  color: #655b78;
+}
+
+.draft-night-complete .fix-five-score-breakdown__list > div {
+  background: #fff;
+}
+
+.draft-night-learning {
+  background: linear-gradient(145deg, #f7f0ff, #fff);
+  border: 1px solid rgba(105, 65, 178, .2);
+  border-radius: 12px;
+  margin: 1rem auto;
+  max-width: 680px;
+  padding: .9rem;
+  text-align: left;
+}
+
+.draft-night-learning h3 {
+  color: #392960;
+  font-size: .96rem;
+  margin: 0;
+}
+
+.draft-night-learning > p {
+  color: #655b78;
+  font-size: .82rem;
+  line-height: 1.45;
+  margin: .35rem 0 0;
+}
+
+.draft-night-learning ol {
+  display: grid;
+  gap: .45rem;
+  list-style: none;
+  margin: .7rem 0 0;
+  padding: 0;
+}
+
+.draft-night-learning li {
+  background: #fff;
+  border: 1px solid rgba(105, 65, 178, .16);
+  border-radius: 9px;
+  display: grid;
+  gap: .14rem;
+  padding: .6rem .7rem;
+}
+
+.draft-night-learning strong {
+  color: #392960;
+  font-size: .82rem;
+}
+
+.draft-night-learning span {
+  color: #655b78;
+  font-size: .74rem;
 }
 
 .draft-night-page .fix-five-complete .button {

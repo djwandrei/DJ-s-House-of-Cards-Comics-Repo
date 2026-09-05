@@ -9,8 +9,8 @@ import {
 import { FIX_THE_FIVE_FIXTURES, FIX_THE_FIVE_SOURCE } from './fixtures.js?v=20260905g';
 
 const RUN_LENGTH = 5;
-const STORAGE_KEY = 'djhc.fix-the-five.v1';
-const STORAGE_VERSION = 1;
+const STORAGE_KEY = 'djhc.fix-the-five.v2';
+const STORAGE_VERSION = 2;
 
 const elements = {
   runTitle: document.getElementById('runTitle'),
@@ -171,14 +171,20 @@ function addSourceLink(parent, fixture) {
 function roleRows(delta, direction) {
   const eligible = delta.filter((row) => (
     direction === 'gain' ? row.change > 0.015 : row.change < -0.015
-  )).slice(0, 3);
-  return eligible.length ? eligible : delta.slice(0, 2);
+  ));
+  return eligible.slice(0, 3);
 }
 
 function createDnaPanel(title, rows, loss = false) {
   const panel = createElement('section', 'fix-five-dna-panel');
   panel.append(createElement('h4', '', title));
   const list = createElement('ul', 'fix-five-dna-list');
+  if (!rows.length) {
+    const item = createElement('li', 'is-neutral', loss
+      ? 'No material role trade-off crossed the display threshold.'
+      : 'No material role gain crossed the display threshold.');
+    list.append(item);
+  }
   rows.forEach((row) => {
     const item = createElement('li', loss ? 'is-loss' : '');
     item.append(
@@ -189,6 +195,50 @@ function createDnaPanel(title, rows, loss = false) {
   });
   panel.append(list);
   return panel;
+}
+
+function createScoreBreakdown(choice) {
+  const breakdown = choice.scoreBreakdown;
+  const panel = createElement('section', 'fix-five-score-breakdown');
+  panel.append(createElement('h4', '', 'What made this score'));
+  const intro = createElement('p', '', 'The candidate composite is calculated before its published-board rank. The round score then compares that composite with the best legal answer.');
+  const list = createElement('dl', 'fix-five-score-breakdown__list');
+  for (const [label, value, detail] of [
+    ['Direct objective contribution', breakdown.directContribution, `${breakdown.directObjective.toFixed(1)} fit × 62%`],
+    ['Lineup DNA contribution', breakdown.dnaContribution, `${breakdown.dnaFit.toFixed(1)} fit × 38%`],
+    ['Published composite', breakdown.composite, 'Compared only with this candidate board'],
+  ]) {
+    const row = createElement('div');
+    const term = createElement('dt', '', label);
+    const description = createElement('dd');
+    description.append(createElement('strong', '', value.toFixed(1)), createElement('span', '', detail));
+    row.append(term, description);
+    list.append(row);
+  }
+  panel.append(intro, list);
+  return panel;
+}
+
+function createCandidateBoard(evaluation, choice) {
+  const details = createElement('details', 'fix-five-candidate-board');
+  const summary = createElement('summary', '', 'Compare every published candidate');
+  const intro = createElement('p', '', 'These results are revealed only after your choice. Scores and ranks stay inside this fixed, legal historical board.');
+  const list = createElement('ol');
+  evaluation.candidates.forEach((candidate) => {
+    const item = createElement('li');
+    if (candidate.candidateId === choice.candidateId) item.classList.add('is-selected');
+    if (candidate.isBest) item.classList.add('is-best');
+    const copy = createElement('div');
+    copy.append(
+      createElement('strong', '', candidate.candidate.name),
+      createElement('span', '', `Rank ${candidate.rank} · ${candidate.roundScore}/100`),
+    );
+    const reading = createElement('small', '', `Objective ${candidate.directObjective.toFixed(1)} · DNA ${candidate.dna.fitIndex.toFixed(1)}`);
+    item.append(copy, reading);
+    list.append(item);
+  });
+  details.append(summary, intro, list);
+  return details;
 }
 
 function relatedLineupLabUrl(fixture, outcome) {
@@ -238,18 +288,22 @@ function createResult(evaluation, choice) {
     createDnaPanel('DNA gains', roleRows(choice.coverageDelta, 'gain')),
     createDnaPanel('Trade-offs to watch', roleRows(choice.coverageDelta.slice().sort((left, right) => left.change - right.change), 'loss'), true),
   );
-  result.append(dnaGrid);
+  result.append(dnaGrid, createScoreBreakdown(choice), createCandidateBoard(evaluation, choice));
   result.append(createElement('p', 'fix-five-result-caveat', choice.dna.evidence));
 
   const actions = createElement('div', 'fix-five-result-actions');
+  const change = createElement('button', 'button-secondary', 'Try a different swap');
+  change.type = 'button';
+  change.dataset.action = 'change';
   const labLink = createElement('a', 'button-secondary', 'Open related Lineup Lab scenario');
   labLink.href = relatedLineupLabUrl(evaluation.challenge, choice);
   labLink.target = '_blank';
   labLink.rel = 'noopener';
-  const next = createElement('button', 'button', currentIndex() >= state.run.length ? 'Review run' : 'Next challenge');
+  const isFinalReview = isComplete() && currentIndex() === state.run.length - 1;
+  const next = createElement('button', 'button', isFinalReview ? 'Finish run' : 'Next challenge');
   next.type = 'button';
   next.dataset.action = 'next';
-  actions.append(labLink, next);
+  actions.append(change, labLink, next);
   result.append(actions);
   return result;
 }
@@ -308,9 +362,17 @@ function renderChallenge() {
 
 function renderProgress() {
   elements.runProgress.replaceChildren();
+  const firstIncomplete = firstIncompleteIndex();
   state.run.forEach((fixture, index) => {
-    const step = createElement('span', 'fix-five-progress-step', `Challenge ${index + 1}`);
+    const step = createElement('button', 'fix-five-progress-step', `Challenge ${index + 1}`);
+    step.type = 'button';
+    step.dataset.action = 'review';
+    step.dataset.index = String(index);
     step.dataset.round = String(index + 1);
+    step.disabled = !state.selections[fixture.id] && index !== firstIncomplete;
+    step.setAttribute('aria-label', state.selections[fixture.id]
+      ? `Review challenge ${index + 1}: ${fixture.title}`
+      : `Open challenge ${index + 1}: ${fixture.title}`);
     if (state.selections[fixture.id]) step.classList.add('is-complete');
     else if (index === currentIndex()) step.classList.add('is-current');
     elements.runProgress.append(step);
@@ -324,8 +386,10 @@ function renderScoreboard() {
   elements.bestScore.textContent = savedBest > 0 ? `${savedBest}/500` : `${total}/500`;
   elements.streakCount.textContent = `${state.store.streak} day${state.store.streak === 1 ? '' : 's'}`;
   elements.runTitle.textContent = `Daily five · ${state.seed}`;
-  elements.runDescription.textContent = isComplete()
+  elements.runDescription.textContent = isComplete() && currentIndex() >= state.run.length
     ? 'Run complete. Replay it locally or share the same seeded five with a friend.'
+    : isComplete()
+      ? 'Reviewing a completed local choice. Change it, then continue through the same seeded run.'
     : 'Five source-labeled historical lineup decisions. Your progress stays in this browser.';
 }
 
@@ -344,10 +408,34 @@ function recordCompletion() {
   }
   state.store.completed[state.seed] = {
     bestScore,
-    completedAt: new Date().toISOString(),
+    completedAt: prior?.completedAt || new Date().toISOString(),
     rounds: state.run.length,
   };
   persistSelections();
+}
+
+function createRunReviewList() {
+  const section = createElement('section', 'fix-five-run-review');
+  section.append(createElement('h3', '', 'Review a decision'));
+  section.append(createElement('p', '', 'Open any completed round to compare the full published board or change that local choice.'));
+  const list = createElement('ol');
+  state.run.forEach((fixture, index) => {
+    const evaluation = evaluationFor(fixture);
+    const choice = evaluation.byCandidateId[state.selections[fixture.id]];
+    const button = createElement('button');
+    button.type = 'button';
+    button.dataset.action = 'review';
+    button.dataset.index = String(index);
+    button.append(
+      createElement('strong', '', `Round ${index + 1} · ${fixture.title}`),
+      createElement('span', '', choice ? `${choice.candidate.name} · ${choice.roundScore}/100` : 'No local choice'),
+    );
+    const item = createElement('li');
+    item.append(button);
+    list.append(item);
+  });
+  section.append(list);
+  return section;
 }
 
 function renderCompletion() {
@@ -362,7 +450,7 @@ function renderCompletion() {
   elements.completionPanel.append(createElement('p', '', 'Your result is local to this browser. The same seed recreates this exact reviewed challenge order for anyone who opens the shared link.'));
   const score = createElement('div', 'fix-five-total-score');
   score.append(createElement('strong', '', `${total}/500`), createElement('span', '', `Best local score ${Math.max(total, Number(state.store.completed[state.seed]?.bestScore || 0))}/500`));
-  elements.completionPanel.append(score);
+  elements.completionPanel.append(score, createRunReviewList());
   const actions = createElement('div', 'fix-five-complete-actions');
   const share = createElement('button', 'button', 'Share this run');
   share.type = 'button';
@@ -379,7 +467,7 @@ function renderCompletion() {
 function render() {
   renderProgress();
   renderScoreboard();
-  if (isComplete()) renderCompletion();
+  if (isComplete() && currentIndex() >= state.run.length) renderCompletion();
   else renderChallenge();
 }
 
@@ -402,6 +490,25 @@ function nextChallenge() {
     return;
   }
   state.activeIndex = Math.min(currentIndex() + 1, state.run.length);
+  render();
+}
+
+function changeCurrentChoice() {
+  const fixture = state.run[currentIndex()];
+  if (!fixture || !state.selections[fixture.id]) return;
+  delete state.selections[fixture.id];
+  persistSelections();
+  setStatus(`Your ${fixture.title} choice is open again. Compare the same published candidates and lock a new swap when ready.`);
+  render();
+}
+
+function reviewChallenge(index) {
+  const fixture = state.run[index];
+  if (!fixture || (!state.selections[fixture.id] && index !== firstIncompleteIndex())) return;
+  state.activeIndex = index;
+  setStatus(state.selections[fixture.id]
+    ? `Reviewing ${fixture.title}. You can compare the board or try a different local swap.`
+    : `Opening ${fixture.title}. Pick the legal swap you trust most.`);
   render();
 }
 
@@ -448,12 +555,18 @@ function bindEvents() {
     if (!button) return;
     if (button.dataset.action === 'choose') selectCandidate(button.dataset.candidateId);
     if (button.dataset.action === 'next') nextChallenge();
+    if (button.dataset.action === 'change') changeCurrentChoice();
   });
   elements.completionPanel.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');
     if (!button) return;
     if (button.dataset.action === 'restart') restartRun();
     if (button.dataset.action === 'share') shareRun();
+    if (button.dataset.action === 'review') reviewChallenge(Number(button.dataset.index));
+  });
+  elements.runProgress.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-action="review"]');
+    if (button && !button.disabled) reviewChallenge(Number(button.dataset.index));
   });
   elements.restartRun.addEventListener('click', restartRun);
 }
@@ -465,7 +578,11 @@ async function loadGame() {
     const dataset = await response.json();
     if (!Array.isArray(dataset?.players)) throw new Error('Historical source did not provide a player roster.');
     state.roster = dataset.players;
-    validateFixTheFiveFixtures(FIX_THE_FIVE_FIXTURES, state.roster);
+    const reviewedEvaluations = validateFixTheFiveFixtures(FIX_THE_FIVE_FIXTURES, state.roster);
+    // Release validation already evaluates every fixture. Reuse those immutable
+    // results for this local run instead of rebuilding the same role model
+    // once per card after the source has loaded.
+    state.evaluations = new Map(reviewedEvaluations.map((evaluation) => [evaluation.challenge.id, evaluation]));
     state.run = buildChallengeRun(FIX_THE_FIVE_FIXTURES, state.seed, RUN_LENGTH);
     state.selections = currentRunRecord().selections;
     const validSelections = Object.fromEntries(Object.entries(state.selections).filter(([fixtureId, candidateId]) => {
@@ -481,7 +598,7 @@ async function loadGame() {
     render();
   } catch (error) {
     elements.workspace.hidden = true;
-    setStatus(`Fix the Five could not load its reviewed historical source. ${error instanceof Error ? error.message : 'Please refresh and try again.'}`, 'error');
+    setStatus(`Fix the Five could not load its curated, test-validated historical source. ${error instanceof Error ? error.message : 'Please refresh and try again.'}`, 'error');
   }
 }
 
