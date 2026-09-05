@@ -149,6 +149,8 @@ export function encodeScenarioQuery(input = {}) {
   if (PHASE_VALUES.has(input.phase)) params.set("phase", input.phase);
   if (EXPERIENCE_VALUES.has(input.experience)) params.set("experience", input.experience);
   if (MODE_VALUES.has(input.mode)) params.set("mode", input.mode);
+  if (["historical", "scout"].includes(input.modelMode)) params.set("modelMode", input.modelMode);
+  if (["balanced", "offense", "defense"].includes(input.scoutObjective)) params.set("scoutObjective", input.scoutObjective);
   addFiniteParameter(params, "size", input.size, { minimum: 5, maximum: 12, integer: true });
   addFiniteParameter(params, "alts", input.alternatives, { minimum: 1, maximum: 50, integer: true });
   if (PRESET_VALUES.has(input.preset)) params.set("preset", input.preset);
@@ -270,6 +272,8 @@ export function decodeScenarioQuery(search = "") {
     ["mode", MODE_VALUES],
     ["preset", PRESET_VALUES],
     ["experience", EXPERIENCE_VALUES],
+    ["modelMode", new Set(["historical", "scout"])],
+    ["scoutObjective", new Set(["balanced", "offense", "defense"])],
   ]) {
     const value = params.get(key);
     if (!value) continue;

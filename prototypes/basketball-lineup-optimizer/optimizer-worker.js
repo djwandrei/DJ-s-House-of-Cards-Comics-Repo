@@ -14,9 +14,17 @@ self.addEventListener("message", (event) => {
     return;
   }
   try {
+    const onProgress = (progress) => {
+      self.postMessage({
+        requestId,
+        type: "progress",
+        progress,
+      });
+    };
     self.postMessage({
       requestId,
-      result: optimizeLineups(players, config),
+      type: "result",
+      result: optimizeLineups(players, config, { onProgress }),
     });
   } catch (error) {
     self.postMessage({

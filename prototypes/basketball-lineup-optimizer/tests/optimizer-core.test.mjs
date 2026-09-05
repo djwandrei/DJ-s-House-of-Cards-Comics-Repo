@@ -556,6 +556,44 @@ test("rotation exact search ignores legacy candidate-count ceilings", () => {
   assert.ok(result.alternatives.every((alternative) => alternative.unitPlan?.ok === true));
 });
 
+test("rotation progress is observational and preserves the exact result", () => {
+  const players = Array.from({ length: 12 }, (_, index) =>
+    player(`p${index + 1}`, {
+      positions: ["G", "F", "C"],
+      points: 10 + index,
+    }),
+  );
+  const config = {
+    mode: "rotation",
+    size: 8,
+    alternatives: 2,
+    weights: { points: 1 },
+    rotationOptions: { minMinutes: 8, maxMinutes: 40 },
+  };
+  const baseline = optimizeLineups(players, config);
+  const progress = [];
+  const observed = optimizeLineups(players, config, {
+    onProgress(update) {
+      progress.push(update);
+    },
+  });
+
+  assert.deepEqual(observed, baseline);
+  assert.ok(progress.length >= 2, "the rotation search should report its start and completion");
+  assert.equal(progress[0].phase, "enumerating");
+  assert.equal(progress[0].estimatedCombinations, 495);
+  assert.equal(progress.at(-1).phase, "complete");
+  assert.equal(progress.at(-1).combinationsEvaluated, observed.combinationsEvaluated);
+  assert.equal(progress.at(-1).feasibleCombinations, observed.diagnostics.feasibleCombinations);
+
+  const callbackFailureStillExact = optimizeLineups(players, config, {
+    onProgress() {
+      throw new Error("display-only callback failure");
+    },
+  });
+  assert.deepEqual(callbackFailureStillExact, baseline);
+});
+
 test("allocates exactly 240 integer minutes within player bounds", () => {
   const players = Array.from({ length: 10 }, (_, index) =>
     player(`p${index + 1}`, { minutes: 15 + index }),
@@ -789,7 +827,7 @@ test("shifts exactly one minute to satisfy the reviewer rebound threshold repro"
   assert.equal(result.best.rotation.diagnostics.projectedConstraints.adjustedAllocation, true);
 });
 
-test("equal-fit players share workloads and satisfy a rebound threshold without a repair", () => {
+test("equal-fit raw players satisfy a rebound threshold without an imposed equal-minute target", () => {
   const players = ["a", "b", "c", "d", "e", "f", "g", "h"].map((id, index) =>
     player(id, {
       positions: ["G", "F", "C"],
@@ -808,21 +846,19 @@ test("equal-fit players share workloads and satisfy a rebound threshold without 
   });
 
   assert.equal(result.ok, true);
-  // The old linear objective arbitrarily put 239 minutes on five equal scorers,
-  // then moved one minute to a rebounder. Workload saturation correctly treats
-  // all eight equal-fit players alike, so each receives 30 minutes and the
-  // vacuous floor is already satisfied by the ordinary exact optimum.
-  assert.equal(result.best.totals.rebounds, 90);
+  // Every rate is equal, so any feasible minute plan attains the same score.
+  // The hard floor must hold, but equal minutes are not a model requirement.
+  assert.ok(result.best.totals.rebounds >= 1);
   assert.equal(result.best.score, 50);
   assert.equal(
     ["f", "g", "h"].reduce(
       (total, id) => total + result.best.rotation.byId[id],
       0,
     ),
-    90,
+    result.best.totals.rebounds,
   );
-  assert.ok(Object.values(result.best.rotation.byId).every((minutes) => minutes === 30));
-  assert.equal(result.best.rotation.diagnostics.projectedConstraints.adjustedAllocation, false);
+  assert.equal(Object.values(result.best.rotation.byId).reduce((a, b) => a + b, 0), 240);
+  assert.equal(result.best.constraintAudit.statMinimums.checks.rebounds.passed, true);
 });
 
 test("shifts one minute to satisfy a projected turnover ceiling before ranking", () => {

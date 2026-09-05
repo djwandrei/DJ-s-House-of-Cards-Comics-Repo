@@ -1,6 +1,6 @@
 // Match the app shell's revision so the worker cannot run an older solver from
 // an existing browser cache after a targeted cPanel release.
-import { optimizeLineups } from "./optimizer-core.js?v=20260904b";
+import { optimizeLineups } from "./optimizer-core.js?v=20260905a";
 
 self.addEventListener("message", (event) => {
   const { requestId, players, config } = event.data || {};
@@ -14,9 +14,17 @@ self.addEventListener("message", (event) => {
     return;
   }
   try {
+    const onProgress = (progress) => {
+      self.postMessage({
+        requestId,
+        type: "progress",
+        progress,
+      });
+    };
     self.postMessage({
       requestId,
-      result: optimizeLineups(players, config),
+      type: "result",
+      result: optimizeLineups(players, config, { onProgress }),
     });
   } catch (error) {
     self.postMessage({

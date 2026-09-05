@@ -8,6 +8,7 @@ import {
 } from "../scout-impact.js";
 
 const players = ["a", "b", "c", "d", "e"].map((id) => ({ id }));
+const validatedModel = { calibration: { status: "validated", allComponentsImproved: true } };
 
 function nearlyEqual(actual, expected, tolerance = 1e-10) {
   assert.ok(
@@ -18,6 +19,7 @@ function nearlyEqual(actual, expected, tolerance = 1e-10) {
 
 function completeEvidence(overridesById = {}) {
   return {
+    model: validatedModel,
     players: Object.fromEntries(players.map(({ id }) => [id, {
       offense: 1,
       defense: 1,
@@ -29,6 +31,7 @@ function completeEvidence(overridesById = {}) {
 
 test("missing Scout evidence fails closed instead of becoming zero", () => {
   const model = buildScoutImpactModel(players, {
+    model: validatedModel,
     players: { a: { offense: 1, defense: 1, reliability: 1 } },
   }, { mode: "hybrid" });
   assert.equal(model.available, false);
@@ -64,6 +67,7 @@ test("nullish Scout components fail closed while explicit zero remains valid", (
 
 test("RAPM aliases and user offense-defense priorities produce a bounded minute objective", () => {
   const evidence = {
+    model: validatedModel,
     players: Object.fromEntries(players.map(({ id }, index) => [id, {
       // The production private RAPM response uses these names and a ridge
       // reliability proxy rather than the compact test-only aliases above.

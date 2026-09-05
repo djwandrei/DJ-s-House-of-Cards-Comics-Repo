@@ -13,12 +13,14 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // Keep Lineup Lab's generated page aligned with the current site-wide asset
 // version. This builder owns the Lineup-specific query strings, while the
 // shared cache/version values remain owned by their respective site modules.
-const RELEASE_ASSET_VERSION = "20260904b";
+const RELEASE_ASSET_VERSION = "20260905a";
 const releaseFiles = [
   "index.html",
   "app.js",
   "optimizer-config.js",
   "projection-parameters.js",
+  "workload-calibration.js",
+  "workload-model.js",
   "player-projection.js",
   "lineup-role-model.js",
   "scout-impact.js",

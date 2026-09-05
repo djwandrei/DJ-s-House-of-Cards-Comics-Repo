@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260904b";
+import { normalizeDataset } from "./player-data.js?v=20260905a";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 const TRUSTED_MEDIA_HOSTS = new Set([
@@ -646,6 +646,29 @@ function getRemoteCatalog() {
     throw new Error("The site data connection is not available. Refresh the page and try again.");
   }
   return catalog;
+}
+
+/**
+ * Fetch only a bounded, administrator-authorized Scout projection. The shared
+ * site adapter owns Auth and attaches its session; this module never sees a
+ * service key or accesses the private archive. Do not put this response in the
+ * historical localStorage cache, scenario URL, or watchlist.
+ */
+export async function fetchSupabaseScoutEvidence({ seasonEndYear, team, playerIds }) {
+  const catalog = getRemoteCatalog();
+  const session = await catalog.getSession();
+  if (!session) throw new Error("Sign in with your site administrator account to use the private Scout preview.");
+  const evidence = await catalog.invokeFunction("lineup-scout-preview", {
+    seasonEndYear: requireSeasonEndYear(seasonEndYear),
+    team: requireTeamCode(team), playerIds,
+  });
+  if (evidence?.contractVersion !== 1 || evidence?.model?.calibration?.status !== "validated"
+    || evidence?.model?.calibration?.allComponentsImproved !== true
+    || evidence?.scope?.seasonEndYear !== Number(seasonEndYear)
+    || evidence?.scope?.team !== team || evidence?.scope?.seasonPhase !== "combined") {
+    throw new Error("Scout evidence does not match this selection or has not passed validation. Historical mode remains available.");
+  }
+  return evidence;
 }
 
 /** Read the imported 1980+ season list through the shared Supabase adapter. */

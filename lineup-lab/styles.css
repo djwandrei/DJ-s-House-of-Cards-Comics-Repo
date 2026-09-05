@@ -2315,6 +2315,27 @@ body[data-experience-mode="simple"] .simple-model-summary {
   border-color: #efc0c5;
 }
 
+.optimizer-cancel {
+  color: #a31226;
+}
+
+.optimizer-cancel:hover {
+  color: #7d0718;
+  background: #fff4f5;
+  border-color: #e4aeb7;
+}
+
+.optimization-progress {
+  margin: 0.72rem 0 0;
+  padding: 0.62rem 0.72rem;
+  color: #344568;
+  background: #f3f6fc;
+  border: 1px solid #ccd5e8;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
 .solver-status[data-tone="success"] {
   color: var(--success);
 }
@@ -3911,6 +3932,23 @@ body[data-experience-mode="simple"] .simple-model-summary {
     font-size: 1rem;
   }
 
+  .mobile-solve-bar .mobile-cancel {
+    min-height: 44px;
+    width: auto;
+    margin: 0;
+    padding-inline: 0.9rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+  }
+
+  .mobile-solve-bar .mobile-cancel:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.62);
+  }
+
   .mobile-solve-bar.is-result-current {
     position: static;
     right: auto;
@@ -4416,7 +4454,8 @@ body[data-experience-mode="simple"] .simple-model-summary {
     white-space: nowrap;
   }
 
-  .mobile-solve-bar .button--solve {
+  .mobile-solve-bar .button--solve,
+  .mobile-solve-bar .mobile-cancel {
     width: auto;
     flex: 1 1 auto;
   }

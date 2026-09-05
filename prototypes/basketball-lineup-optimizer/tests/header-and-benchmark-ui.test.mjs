@@ -66,3 +66,28 @@ test("fan-first layout keeps the functional optimizer in a clear numbered flow",
   assert.match(app, /fragment\.append\(renderSimpleResultOverview\(result, fanExplanation\), lineup\);/);
   assert.match(app, /\? "Your recommended rotation"\s*:\s*"Your recommended lineup"/);
 });
+
+test("rotation searches expose cancellation, consent, and display-only progress", async () => {
+  const [app, html, css, worker] = await Promise.all([
+    sourceFile("app.js"),
+    sourceFile("index.html"),
+    sourceFile("styles.css"),
+    sourceFile("optimizer-worker.js"),
+  ]);
+
+  assert.match(html, /id="cancelOptimizeButton"[^>]*type="button"[^>]*aria-describedby="solverStatus optimizationProgress"[^>]*hidden/);
+  assert.match(html, /id="mobileCancelOptimizeButton"[^>]*type="button"[^>]*aria-describedby="solverStatus optimizationProgress"[^>]*hidden/);
+  assert.match(html, /id="optimizationProgress" aria-live="off" hidden/);
+  assert.match(css, /\.optimizer-cancel\s*\{/);
+  assert.match(css, /\.mobile-solve-bar \.mobile-cancel\s*\{/);
+
+  assert.match(app, /ROTATION_SEARCH_CONFIRMATION_CANDIDATE_THRESHOLD = 1_000_000/);
+  assert.match(app, /function confirmLargeRotationSearch\(\)/);
+  assert.match(app, /window\.confirm\(/);
+  assert.match(app, /function cancelCurrentOptimization\(\)/);
+  assert.match(app, /function formatRotationSearchProgress\(progress = \{\}\)/);
+  assert.match(app, /message\.type === "progress"/);
+  assert.match(app, /elements\.cancelOptimize\.addEventListener\("click", cancelCurrentOptimization\)/);
+  assert.match(worker, /type: "progress"/);
+  assert.match(worker, /optimizeLineups\(players, config, \{ onProgress \}\)/);
+});

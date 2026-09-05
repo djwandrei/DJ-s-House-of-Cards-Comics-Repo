@@ -4,6 +4,7 @@ const MODULE_SPECIFIERS = Object.freeze({
   optimizerConfig: "./optimizer-config.js?v=__LINEUP_LAB_ASSET_VERSION__",
   projectionParameters: "./projection-parameters.js?v=__LINEUP_LAB_ASSET_VERSION__",
   playerProjection: "./player-projection.js?v=__LINEUP_LAB_ASSET_VERSION__",
+  workloadModel: "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__",
   lineupRoleModel: "./lineup-role-model.js?v=__LINEUP_LAB_ASSET_VERSION__",
   scoutImpact: "./scout-impact.js?v=__LINEUP_LAB_ASSET_VERSION__",
   rotationUnitPlanner: "./rotation-unit-planner.js?v=__LINEUP_LAB_ASSET_VERSION__",
@@ -25,6 +26,8 @@ export async function loadOptimizerCore() {
   const sources = Object.fromEntries(await Promise.all([
     ["optimizerConfig", "optimizer-config.js"],
     ["projectionParameters", "projection-parameters.js"],
+    ["workloadCalibration", "workload-calibration.js"],
+    ["workloadModel", "workload-model.js"],
     ["playerProjection", "player-projection.js"],
     ["lineupRoleModel", "lineup-role-model.js"],
     ["scoutImpact", "scout-impact.js"],
@@ -41,7 +44,9 @@ export async function loadOptimizerCore() {
     }
   }
 
-  const playerProjectionUrl = javascriptDataUrl(sources.playerProjection);
+  const playerProjectionUrl = javascriptDataUrl(sources.playerProjection.replaceAll(
+    "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__", javascriptDataUrl(sources.workloadModel),
+  ));
   const lineupRoleUrl = javascriptDataUrl(
     sources.lineupRoleModel.replaceAll(
       MODULE_SPECIFIERS.playerProjection,
@@ -50,8 +55,11 @@ export async function loadOptimizerCore() {
   );
   const moduleUrls = {
     optimizerConfig: javascriptDataUrl(sources.optimizerConfig),
-    projectionParameters: javascriptDataUrl(sources.projectionParameters),
+    projectionParameters: javascriptDataUrl(sources.projectionParameters.replaceAll(
+      "./workload-calibration.js?v=__LINEUP_LAB_ASSET_VERSION__", javascriptDataUrl(sources.workloadCalibration),
+    )),
     playerProjection: playerProjectionUrl,
+    workloadModel: javascriptDataUrl(sources.workloadModel),
     lineupRoleModel: lineupRoleUrl,
     scoutImpact: javascriptDataUrl(sources.scoutImpact),
     rotationUnitPlanner: javascriptDataUrl(sources.rotationUnitPlanner),

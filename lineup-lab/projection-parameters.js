@@ -8,8 +8,10 @@
  * can replace a preset without changing the exact constraint/search layer.
  */
 
+import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260905a";
+
 export const HISTORICAL_PROJECTION_MODEL_VERSION =
-  "historical-rates-v4-usage-responsibility";
+  "historical-rates-v5-evidence-workload";
 
 export const DEFAULT_PROJECTION_RISK = "balanced";
 
@@ -66,18 +68,28 @@ export const PROJECTION_RISK_PRESETS = Object.freeze({
 export const PROJECTION_RISK_KEYS = Object.freeze(Object.keys(PROJECTION_RISK_PRESETS));
 
 /** Resolve a complete parameter object after config validation. */
-export function projectionParametersFor(risk = DEFAULT_PROJECTION_RISK) {
+export function projectionParametersFor(risk = DEFAULT_PROJECTION_RISK, scope = null) {
   const preset = PROJECTION_RISK_PRESETS[risk] || PROJECTION_RISK_PRESETS[DEFAULT_PROJECTION_RISK];
+  // One season's holdout is not validation for every era. Only matching regular
+  // season data uses the fitted model; other sources retain disclosed priors.
+  const calibrated = Number(scope?.seasonEndYear) === WORKLOAD_CALIBRATION.seasonEndYear
+    && scope?.seasonPhase === WORKLOAD_CALIBRATION.phase;
+  const fitted = calibrated ? WORKLOAD_CALIBRATION.metrics : null;
   return Object.freeze({
     ...preset,
+    calibration: calibrated ? WORKLOAD_CALIBRATION : null,
+    expansionStrengthByMetric: fitted ? Object.fromEntries(Object.entries(fitted).map(([metric, row]) => [metric, row.strength])) : null,
+    // Fitted posterior means already handle sampling noise. Keep risk reserves
+    // separate from expected production; this calibrated path uses the mean.
+    uncertaintyReserveShare: calibrated ? 0 : preset.uncertaintyReserveShare,
     priorMinutesByMetric: Object.freeze(Object.fromEntries(
       Object.entries(BASE_PRIOR_MINUTES).map(([metric, minutes]) => [
         metric,
-        Math.round(minutes * preset.priorMultiplier),
+        fitted ? fitted[metric].prior : Math.round(minutes * preset.priorMultiplier),
       ]),
     )),
-    priorFieldGoalAttempts: Math.round(500 * preset.priorMultiplier),
-    priorThreePointAttempts: Math.round(180 * preset.priorMultiplier),
+    priorFieldGoalAttempts: fitted ? fitted.efgPct.prior : Math.round(500 * preset.priorMultiplier),
+    priorThreePointAttempts: fitted ? fitted.threePct.prior : Math.round(180 * preset.priorMultiplier),
     priorImpactMinutes: Math.round(1200 * preset.priorMultiplier),
     evidenceReferenceGames: 50,
     leagueAverageUsage: 0.2,

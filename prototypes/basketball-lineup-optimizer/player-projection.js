@@ -9,6 +9,8 @@
  * never inputs.
  */
 
+import { workloadRetention } from "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
+
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",
   "usagePercentage",
@@ -33,6 +35,7 @@ const RESPONSIBILITY_ELASTICITY = Object.freeze({
 });
 
 function finiteNonNegative(value) {
+  if (value == null || value === "" || typeof value === "boolean") return null;
   const number = Number(value);
   return Number.isFinite(number) && number >= 0 ? number : null;
 }
@@ -46,6 +49,7 @@ function advancedSources(player) {
 export function readPlayerUsage(player) {
   for (const source of advancedSources(player)) {
     for (const alias of USAGE_ALIASES) {
+      if (source[alias] == null || source[alias] === "" || typeof source[alias] === "boolean") continue;
       const raw = Number(source[alias]);
       if (!Number.isFinite(raw) || raw < 0) continue;
       const normalized = raw > 1 && raw <= 100 ? raw / 100 : raw;
@@ -89,6 +93,18 @@ export function projectPlayerResponsibility(
     ? Math.max(0, requestedMinutes - sourceMinutes) / requestedMinutes
     : 0;
   const elasticity = RESPONSIBILITY_ELASTICITY[metric] ?? 0.35;
+
+  if (parameters?.expansionStrengthByMetric && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
+    const calibratedStrength = parameters.expansionStrengthByMetric[metric];
+    return {
+      available: true, source: "chronological-workload-fit", sourceMinutes,
+      targetMinutes: requestedMinutes, sourceUsage, targetUsage: sourceUsage,
+      usageRatio: sourceUsage > 0 ? 1 : null, expansionShare,
+      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, calibratedStrength),
+      evidenceGrade: "conditional-prediction",
+      reason: "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate.",
+    };
+  }
 
   if (sourceUsage !== null && sourceUsage > 0) {
     const targetUsage = sourceUsage + (

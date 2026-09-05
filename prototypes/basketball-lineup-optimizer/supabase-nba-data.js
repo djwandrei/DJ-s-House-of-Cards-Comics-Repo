@@ -648,6 +648,29 @@ function getRemoteCatalog() {
   return catalog;
 }
 
+/**
+ * Fetch only a bounded, administrator-authorized Scout projection. The shared
+ * site adapter owns Auth and attaches its session; this module never sees a
+ * service key or accesses the private archive. Do not put this response in the
+ * historical localStorage cache, scenario URL, or watchlist.
+ */
+export async function fetchSupabaseScoutEvidence({ seasonEndYear, team, playerIds }) {
+  const catalog = getRemoteCatalog();
+  const session = await catalog.getSession();
+  if (!session) throw new Error("Sign in with your site administrator account to use the private Scout preview.");
+  const evidence = await catalog.invokeFunction("lineup-scout-preview", {
+    seasonEndYear: requireSeasonEndYear(seasonEndYear),
+    team: requireTeamCode(team), playerIds,
+  });
+  if (evidence?.contractVersion !== 1 || evidence?.model?.calibration?.status !== "validated"
+    || evidence?.model?.calibration?.allComponentsImproved !== true
+    || evidence?.scope?.seasonEndYear !== Number(seasonEndYear)
+    || evidence?.scope?.team !== team || evidence?.scope?.seasonPhase !== "combined") {
+    throw new Error("Scout evidence does not match this selection or has not passed validation. Historical mode remains available.");
+  }
+  return evidence;
+}
+
 /** Read the imported 1980+ season list through the shared Supabase adapter. */
 export async function listSupabaseNbaSeasons(options = {}) {
   const catalog = getRemoteCatalog();

@@ -7,16 +7,16 @@
  *
  * There are two deliberately separate kinds of Scout evidence:
  *
- * 1. Player RAPM affects the *minute objective*. We convert the complete
- *    eligible pool's reliability-shrunk offense/defense signal into a modest
- *    percentile blend, so it can change both roster choice and minutes without
- *    silently replacing the visitor's game-plan weights.
+ * 1. Primary Scout uses validated player O/D RAPM as its whole objective.
+ *    An affine rescaling preserves impact gaps and the exact optimum. Ridge-
+ *    regularized coefficients are not multiplied by reliability a second time.
+ *    Historical box scores remain context and hard constraints, not hidden fit.
  * 2. A five-player residual is a group-only signal. It is used only for an
- *    exact five with publishable, already-shrunk lineup evidence. A rotation
- *    roster is not a five-man unit, so it never receives a made-up residual.
+ *    exact five in legacy hybrid experiments only. Primary Scout excludes it
+ *    until independent incremental validation avoids double-counting RAPM.
  */
 
-export const SCOUT_IMPACT_MODEL_VERSION = "scout-impact-v2";
+export const SCOUT_IMPACT_MODEL_VERSION = "scout-impact-v3-primary-od";
 export const SCOUT_MODEL_MODES = Object.freeze(["historical", "hybrid", "scout"]);
 
 const PLAYER_IMPACT_ALIASES = Object.freeze({
@@ -36,11 +36,9 @@ const PLAYER_IMPACT_ALIASES = Object.freeze({
   ],
 });
 
-// Scout deliberately remains a supporting signal. At the most extreme, a
-// Scout-only player estimate can move a player profile by 12 score points;
-// hybrid mode uses half of that. Blending within [0, 1] preserves the exact
-// allocator's non-negative, bounded minute-score contract.
-const SCOUT_BLEND_BY_MODE = Object.freeze({ historical: 0, hybrid: 0.06, scout: 0.12 });
+// Hybrid is retained for reproducible older API experiments; the UI exposes
+// only Historical and primary Scout. Scout is not the former 12% blend.
+const SCOUT_BLEND_BY_MODE = Object.freeze({ historical: 0, hybrid: 0.06, scout: 1 });
 
 function finite(value) {
   // Number(null), Number(false), and Number("") all equal zero in JavaScript.
@@ -103,19 +101,14 @@ function reliabilityValue(row) {
 }
 
 /**
- * A hand-authored local test fixture may provide player rows directly, so a
- * missing `model` object remains backward-compatible. A real private
- * `get_nba_scout_rapm` response, however, always includes its compact model
- * metadata. Once that contract is present, require a completed held-out O/D
+ * All callers, including test fixtures, must provide compact model metadata.
+ * A missing model must never bypass validation. Require a completed held-out O/D
  * calibration before those numbers can influence a user-facing exact solve.
  * This prevents a merely converged in-sample fit from being mistaken for a
  * validated offense/defense signal.
  */
 function modelCalibrationGate(evidence) {
   const model = evidence?.model;
-  if (model === null || model === undefined) {
-    return { required: false, available: true, reason: null };
-  }
   if (!model || typeof model !== "object" || Array.isArray(model)) {
     return {
       required: true,
@@ -192,7 +185,7 @@ function emptyMinuteObjective(baseScoresById, reason) {
  * A `displayEligible: false` row is intentionally treated as unavailable: the
  * Scout package has already identified it as below its own presentation floor.
  */
-export function buildScoutImpactModel(players, evidence, { mode = "historical" } = {}) {
+export function buildScoutImpactModel(players, evidence, { mode = "historical", expectedScope = null } = {}) {
   if (mode === "historical") {
     return {
       version: SCOUT_IMPACT_MODEL_VERSION,
@@ -208,6 +201,16 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical" }
     };
   }
   const calibrationGate = modelCalibrationGate(evidence);
+  if (expectedScope && (evidence?.contractVersion !== 1
+    || evidence?.archive?.sourceValidationPassed !== true
+    || evidence?.scope?.seasonEndYear !== expectedScope.seasonEndYear
+    || evidence?.scope?.team !== expectedScope.team
+    || evidence?.scope?.seasonPhase !== "combined"
+    || evidence?.model?.seasonEndYear !== expectedScope.seasonEndYear
+    || evidence?.model?.seasonPhase !== "regular_in_season_tournament_play_in_playoffs_official_franchise_sportradar-nba-lineup-reconstruction-v3_possession_start_lineups")) {
+    calibrationGate.available = false;
+    calibrationGate.reason = "Scout evidence did not match this team, season, and explicitly combined-season model scope.";
+  }
   if (!calibrationGate.available) {
     return {
       version: SCOUT_IMPACT_MODEL_VERSION,
@@ -244,8 +247,10 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical" }
       // their mix later. Reliability is applied once, here, before percentile
       // ranking; neither a null component nor a low-sample component is ever
       // promoted by a later numeric coercion.
-      offense: offense * reliability,
-      defense: defense * reliability,
+      // Ridge already shrinks these coefficients. The package's reliability
+      // proxy is a diagnostic, NOT another fitted shrinkage coefficient.
+      offense: row.alreadyRegularized === true ? offense : offense * reliability,
+      defense: row.alreadyRegularized === true ? defense : defense * reliability,
       reliability,
       rawOffense: offense,
       rawDefense: defense,
@@ -295,8 +300,10 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical" }
     missingPlayerIds,
     calibrationRequired: calibrationGate.required,
     calibrationAvailable: calibrationGate.available,
+    calibration: evidence?.model?.calibration ?? null,
+    scope: evidence?.scope ?? null,
     reason: available
-      ? "Reliability-shrunk possession impact is available for every eligible player."
+      ? "Validated possession impact is available for every eligible player; ridge coefficients are not shrunk twice."
       : "Scout mode requires comparable possession evidence for every eligible player; missing rows were not imputed as zero.",
   };
 }
@@ -338,13 +345,20 @@ export function buildScoutMinuteObjective(
   const scoutPercentilesById = percentileRanks(
     players.map((player) => ({ id: player.id, value: rawImpactsById.get(player.id) })),
   );
-  const blend = SCOUT_BLEND_BY_MODE[model.mode] ?? 0;
+  // Scout is now an O/D objective in its own right. An affine transformation
+  // preserves coefficient magnitudes and exact ordering when total minutes are
+  // fixed. Percentile ranks would discard the distance between players. The
+  // legacy hybrid mode remains experimental, never presented as calibrated.
+  const minimumImpact = Math.min(...rawImpactsById.values());
+  const impactRange = Math.max(...rawImpactsById.values()) - minimumImpact;
+  const blend = model.mode === "scout" ? 1 : (SCOUT_BLEND_BY_MODE[model.mode] ?? 0);
   const scoresById = new Map();
   const adjustmentScoresById = new Map();
   for (const player of players) {
     const base = bases.get(player.id);
     const scoutPercentile = scoutPercentilesById.get(player.id);
-    const adjusted = clamp(base + (blend * (scoutPercentile - base)), 0, 1);
+    const impactScore = impactRange > 1e-12 ? (rawImpactsById.get(player.id) - minimumImpact) / impactRange : 0.5;
+    const adjusted = model.mode === "scout" ? impactScore : clamp(base + (blend * (scoutPercentile - base)), 0, 1);
     scoresById.set(player.id, adjusted);
     adjustmentScoresById.set(player.id, adjusted - base);
   }
@@ -357,7 +371,9 @@ export function buildScoutMinuteObjective(
     adjustmentScoresById,
     scoutPercentilesById,
     rawImpactsById,
-    reason: blend > 0
+    reason: model.mode === "scout"
+      ? "Scout O/D RAPM is the primary objective. Affine scaling preserves impact gaps; Basketball Reference provides separate context and hard constraints."
+      : blend > 0
       ? "Reliability-shrunk Scout offense/defense percentiles were blended into the exact player-minute objective."
       : "The selected model mode does not apply Scout evidence to minutes.",
   };
@@ -415,7 +431,7 @@ export function scoreScoutCandidate(
   if (players.length === 5) {
     const key = players.map((player) => String(player.id)).sort().join("\u0001");
     const evidence = model.exactLineupResiduals.get(key);
-    if (evidence) {
+    if (evidence && model.mode !== "scout") {
       exactLineupResidual = evidence.residual;
       // The residual is already on a per-100-possession scale. Keep its
       // contribution intentionally smaller than the full player-minute blend
@@ -428,6 +444,7 @@ export function scoreScoutCandidate(
     }
   }
   const adjustmentPoints = minuteAdjustmentPoints + exactLineupAdjustmentPoints;
+  const additiveImpact = side => players.reduce((sum, player) => sum + model.impactsById.get(player.id)[side] * normalizedMinutes.get(player.id) / 48, 0);
   return {
     applied: true,
     adjustmentPoints,
@@ -439,6 +456,14 @@ export function scoreScoutCandidate(
     impact: minuteAdjustmentPoints,
     exactLineupResidual,
     exactLineupSource,
+    // These are sums of player coefficients at approximate possession shares,
+    // not validated forecasts for an unseen rotation or an opponent matchup.
+    additiveImpactPer100: {
+      offense: additiveImpact("offense"), defense: additiveImpact("defense"),
+      net: additiveImpact("offense") + additiveImpact("defense"),
+      label: "Additive player-impact estimate; not a game forecast",
+      validatedLineupForecast: false,
+    },
     reason: exactLineupResidual === null
       ? "Scout player impact was applied through the exact minute objective."
       : "Scout player impact was applied through exact minutes; a verified publishable exact-five residual was added separately.",

@@ -507,7 +507,7 @@ test("season-wide rates replace a traded player's team-stint spike without using
   assert.ok(fallbackOnly.best.playerIds.includes("team-stint-spike"));
   assert.equal(
     seasonAware.diagnostics.rotationRateStabilityEvidence.modelVersion,
-    "historical-rates-v4-usage-responsibility",
+    "historical-rates-v5-evidence-workload",
   );
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideRatePlayers, 1);
@@ -560,7 +560,8 @@ test("season-wide MPG establishes role evidence without becoming a minute target
   assert.equal(seasonAware.ok, true);
   assert.equal(fallbackOnly.ok, true);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
-  assert.ok(fallbackOnly.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount > 0);
+  assert.equal(fallbackOnly.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
+  assert.equal(fallbackOnly.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, true);
   assert.equal(seasonAware.best.rotation.totalMinutes, 240);
   // The model is free to assign a different result from the 30-MPG evidence;
   // the evidence only controls rate projection, never a target or hard limit.
@@ -605,7 +606,7 @@ test("season-wide minutes cannot grant confidence to a team-stint impact estimat
   assert.equal(result.ok, true);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
-  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v4-usage-responsibility");
+  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v5-evidence-workload");
   assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "separate-not-active");
 });
 
@@ -740,9 +741,11 @@ test("role-expansion projection prevents a low-usage scoring spike from winning 
   assert.equal(raw.ok, true);
   assert.equal(adjusted.ok, true);
   assert.ok(raw.best.playerIds.includes("low-role-scorer"));
-  assert.ok(!adjusted.best.playerIds.includes("low-role-scorer"));
-  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.roleMinutesTarget, 30);
-  assert.ok(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount > 0);
+  // A specialist can still deserve a small role; the test is whether inflated
+  // rates buy an unjustified large role, not whether he is automatically cut.
+  assert.ok((adjusted.best.rotation.byId["low-role-scorer"] || 0) < raw.best.rotation.byId["low-role-scorer"]);
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.roleMinutesTarget, 36);
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
   assert.equal(adjusted.diagnostics.rotationHistoricalReadiness.applied, false);
 });
 
@@ -1189,7 +1192,7 @@ test("fixed-role Pareto proof closes a one-threshold integer gap without generic
   assert.ok(projectedTurnovers <= 61);
 });
 
-test("workload saturation preserves the same-season NBA-baseline index while totals remain conservative", () => {
+test("removing roster-average saturation preserves the same-season NBA-baseline index", () => {
   const players = Array.from({ length: 8 }, (_, index) => player(`baseline-${index + 1}`, {
     minutes: 30,
     points: 15,
@@ -1228,8 +1231,8 @@ test("workload saturation preserves the same-season NBA-baseline index while tot
   // the exact decision. This keeps 100 intuitive without promising the full
   // average rate as if limited evidence carried no risk.
   assert.equal(result.best.totals.points, 116.8);
-  assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied, true);
-  assert.ok(result.best.score < 100, "workload utility should remain distinct from the league-anchored index");
+  assert.equal(result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied, false);
+  assert.ok(result.best.score <= 100, "fit remains a separate pool-relative index");
 });
 
 test("confidence reserve remains intact after the expected larger-role projection", () => {
@@ -1276,9 +1279,15 @@ test("confidence reserve remains intact after the expected larger-role projectio
   });
 
   assert.equal(result.ok, true);
-  assert.equal(result.best.totals.points, 98.173913);
-  assert.equal(result.best.planFitIndex, 101.2);
-  assert.equal(result.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayers, 1);
+  // V5 shrinks the observed rate once, then integrates the assigned-role curve.
+  // It no longer projects to an average role and penalizes expansion again.
+  const reliability = 400 / 1150;
+  const lowRate = 15 + reliability * 15 - 15 * .08 * (1 - reliability);
+  const transition = 4 + 12 * 400 / 1100;
+  const expected = 7 * 30 / 36 * 14.6 + (8 * lowRate + 22 * 15 + (lowRate - 15) * transition * (1 - Math.exp(-22 / transition))) / 36;
+  assert.ok(Math.abs(result.best.totals.points - expected) < .000001);
+  assert.ok(result.best.planFitIndex > 100);
+  assert.equal(result.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayers, 0);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayers, 8);
 });
 
@@ -1383,7 +1392,7 @@ test("assigned-role projection lowers extra-role totals without changing a requi
   assert.equal(roleConditioned.best.rotation.byId["low-role-scorer"], 40);
   assert.equal(staticAdjusted.best.rotation.byId["low-role-scorer"], 40);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.applied, true);
-  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.expandedMinutes, 10);
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.expandedMinutes, 32);
   assert.ok(roleConditioned.best.totals.points < staticAdjusted.best.totals.points);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, true);
   const contributionTotal = Object.values(roleConditioned.best.playerContributions)
@@ -1561,7 +1570,7 @@ test("role-expansion projection also tempers tiny-sample shooting efficiency", (
   assert.ok(
     adjusted.diagnostics.rotationRateStabilityEvidence.uncertaintyAdjustedPlayerMetricCount > 0,
   );
-  assert.ok(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount > 0);
+  assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
 });
 
 test("missing rate metadata cannot create a ranking advantage over an identical short sample", () => {
@@ -1729,7 +1738,7 @@ test("open what-if rotation uses game-plan fit only for both roster ranking and 
       assert.equal(result.best.rotation.strategy, "objective-constrained");
       assert.equal(
         result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied,
-        true,
+        false,
       );
       assert.equal(
         result.diagnostics.rotationRateStabilityEvidence.assignedRoleProjection.enabledForExactSearch,
@@ -1740,23 +1749,22 @@ test("open what-if rotation uses game-plan fit only for both roster ranking and 
         false,
       );
     } else {
-      // The ordinary what-if model now uses diminishing marginal workload
-      // value. It still gives the best player the largest role, but no longer
-      // sends four merely tied second-tier players to their hard maximum.
+      // With identical raw rates there is no evidence to enforce a smoother
+      // distribution. Any exact tied optimum within the hard limits is valid.
       assert.equal(
         ["p2", "p3", "p4", "p5", "p6"]
           .filter((id) => result.best.rotation.byId[id] === 48)
           .length,
-        0,
+        4,
       );
       assert.ok(
         ["p2", "p3", "p4", "p5", "p6"]
-          .every((id) => result.best.rotation.byId[id] >= 38),
+          .every((id) => result.best.rotation.byId[id] >= 0 && result.best.rotation.byId[id] <= 48),
       );
       assert.equal(result.best.rotation.strategy, "objective-role-conditioned");
       assert.equal(
         result.best.rotation.diagnostics.roleConditionedScoring.workloadSaturation.applied,
-        true,
+        false,
       );
       ordinaryMinutes = result.best.rotation.byId;
       ordinaryStrategyFit = result.best.strategyFitScore;
@@ -1945,6 +1953,7 @@ test("complete Scout RAPM changes exact minutes and reconciles to the returned p
     blocks: 0.5,
   }));
   const scoutEvidence = {
+    model: { calibration: { status: "validated", allComponentsImproved: true } },
     players: Object.fromEntries(players.map((item, index) => [item.id, {
       // Player one is offense-first; player eight is defense-first. The six
       // middle players are neutral, and every row is explicitly eligible and
@@ -1975,10 +1984,12 @@ test("complete Scout RAPM changes exact minutes and reconciles to the returned p
   };
   const offenseFirst = optimizeLineups(players, {
     ...baseConfig,
+    scoutObjective: "offense",
     weights: { points: 1 },
   });
   const defenseFirst = optimizeLineups(players, {
     ...baseConfig,
+    scoutObjective: "defense",
     weights: { blocks: 1 },
   });
   const historical = optimizeLineups(players, {
@@ -1992,7 +2003,7 @@ test("complete Scout RAPM changes exact minutes and reconciles to the returned p
     assert.equal(result.best.rotation.totalMinutes, 240);
   }
   assert.equal(offenseFirst.diagnostics.scoutImpactModel.minuteObjective.applied, true);
-  assert.equal(offenseFirst.diagnostics.scoutImpactModel.minuteObjective.blend, 0.12);
+  assert.equal(offenseFirst.diagnostics.scoutImpactModel.minuteObjective.blend, 1);
   assert.ok(
     offenseFirst.best.rotation.byId["scout-1"] > offenseFirst.best.rotation.byId["scout-8"],
     "offense-first game plans should favor the offense-first RAPM player",
@@ -2002,7 +2013,7 @@ test("complete Scout RAPM changes exact minutes and reconciles to the returned p
     "defense-first game plans should favor the defense-first RAPM player",
   );
   assert.ok(
-    offenseFirst.best.rotation.byId["scout-1"] > historical.best.rotation.byId["scout-1"],
+    defenseFirst.best.rotation.byId["scout-1"] < historical.best.rotation.byId["scout-1"],
     "the Scout minute objective must change the allocation, not only the displayed score",
   );
 

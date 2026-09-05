@@ -13,7 +13,7 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260904b">
+  <link rel="stylesheet" href="styles.css?v=20260905a">
 </head>
 <body data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -214,6 +214,26 @@
                     <p class="weight-share-summary" id="weightShareSummary"></p>
                   </details>
 
+                  <div class="model-choice" aria-label="Optimization model">
+                    <div class="field-row">
+                      <label class="field"><span>Evidence used to optimize</span>
+                        <select id="modelModeInput" aria-describedby="modelModeHelp">
+                          <option value="historical">Historical — Basketball Reference</option>
+                          <option value="scout">Scout — advanced O/D impact (private preview)</option>
+                        </select>
+                      </label>
+                      <label class="field" id="scoutObjectiveField" hidden><span>Scout objective</span>
+                        <select id="scoutObjectiveInput" aria-describedby="modelModeHelp">
+                          <option value="balanced">Balanced — offense + defense</option>
+                          <option value="offense">Offense — create more points</option>
+                          <option value="defense">Defense — prevent more points</option>
+                        </select>
+                      </label>
+                    </div>
+                    <p class="field__help" id="modelModeHelp">Historical uses your skill priorities and Basketball Reference stats. Scout uses validated possession-based impact as its primary objective; a site administrator sign-in is required.</p>
+                    <p class="field__help" id="scoutEvidenceStatus" role="status" hidden></p>
+                  </div>
+
                   <details class="analytics-panel detailed-only" id="analyticsPanel">
                     <summary>Choose a stat display <span>(advanced)</span></summary>
                     <p class="helper"><strong>These options explain the result; they do not weaken the exact constraints.</strong> Per 36 puts counting stats on an equal playing-time scale. The per-100 view is labelled an estimate because historical team possessions are reconstructed from available team totals.</p>
@@ -315,7 +335,7 @@
                       <div class="rotation-model-intro">
                         <div>
                           <strong>Assign minutes to match your game plan.</strong>
-                          <p>The optimizer gives the best-fitting group all 240 game minutes. Better players can earn larger roles, but extra minutes gradually provide less added value so small rating gaps do not force everyone to a minimum or maximum.</p>
+                          <p>The optimizer assigns all 240 player-minutes within your limits. Rate confidence accounts for noisy samples. There is no automatic target minute range; a player can legitimately reach a limit when that best serves your objective.</p>
                         </div>
                         <span class="model-status-chip">Exact 240-minute plan</span>
                       </div>
@@ -356,7 +376,7 @@
                         <label class="field" id="rotationRateStabilityField">
                           <span>Protect against inflated small-role stats</span>
                           <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
-                            <option value="sampleAdjusted" selected>Conservative rates + diminishing returns — recommended</option>
+                            <option value="sampleAdjusted" selected>Evidence-adjusted rates — recommended</option>
                             <option value="raw">Use raw rates — advanced</option>
                           </select>
                         </label>
@@ -490,6 +510,8 @@
                     <strong id="searchScopeValue">Loading the player pool…</strong>
                   </div>
                   <button class="button button--full button--solve" id="optimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Build the lineup</button>
+                  <button class="text-button text-button--center optimizer-cancel" id="cancelOptimizeButton" type="button" aria-describedby="solverStatus optimizationProgress" hidden>Cancel exact search</button>
+                  <p class="optimization-progress" id="optimizationProgress" aria-live="off" hidden></p>
                   <button class="text-button text-button--center" id="resetScenarioButton" type="button">Reset scenario</button>
                   <p class="run-card__note" id="runCardNote">Historical stats support exploration—not predictions or betting.</p>
                 </div>
@@ -498,6 +520,7 @@
             </div>
             <div class="mobile-solve-bar">
               <span id="mobileSolveLabel">Starting five</span>
+              <button class="button button--quiet mobile-cancel" id="mobileCancelOptimizeButton" type="button" aria-describedby="solverStatus optimizationProgress" hidden>Cancel</button>
               <button class="button button--solve" id="mobileOptimizeButton" type="submit" aria-describedby="solverStatus searchScope runCardNote">Build lineup</button>
             </div>
           </form>
@@ -603,8 +626,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260904b"></script>
-  <script defer src="../supabase-client.js?v=20260904b"></script>
-  <script type="module" src="app.js?v=20260904b"></script>
+  <script defer src="../backend-config.js?v=20260905a"></script>
+  <script defer src="../supabase-client.js?v=20260905a"></script>
+  <script type="module" src="app.js?v=20260905a"></script>
 </body>
 </html>
