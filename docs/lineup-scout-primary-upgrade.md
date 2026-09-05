@@ -153,7 +153,7 @@ signal, not additive lineup forecasts, causal player effects, or unseen chemistr
 
 ## Verification checkpoint
 
-- 181 prototype tests pass, including independent exhaustive roster AND integer
+- 182 prototype tests pass, including independent exhaustive roster AND integer
   minute enumeration for Scout offense, defense and balanced objectives.
 - Six backend/benchmark tests pass: authorization ordering, no-store responses,
   target isolation, malformed/oversized request rejection, split leakage, trade
@@ -197,3 +197,12 @@ assets are generated from the prototype; release manifest:
 `scripts/cpanel-lineup-lab-20260905a-release.txt`. It contains only 20 Lineup Lab
 files and performs no deletes. A local build alone is not cPanel or Git parity;
 final release results must be verified separately after upload/push.
+
+Release verification: implementation commit `db6c21f8` reached GitHub main;
+all 20 cPanel files matched the local build byte-for-byte. The deployed browser
+shows both model options and correct unsigned Scout guidance. No raw Scout
+data or product records were uploaded. A subsequent regression also verifies
+that unavailable historical priorities cannot veto complete primary Scout
+evidence. The final response records the resulting follow-up commit/parity.
+That follow-up uses Lineup-specific asset revision `20260905b` so a browser
+cannot retain the earlier module graph under the same cache key.

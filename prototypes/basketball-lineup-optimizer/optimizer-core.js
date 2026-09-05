@@ -6292,7 +6292,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ? `Disabled incomplete source metric${effectiveObjective.disabledRequestedMetrics.length === 1 ? "" : "s"} for every eligible player and redistributed the remaining priorities proportionally.`
       : "Every requested objective metric had complete source evidence for the eligible pool.",
   };
-  if (!(effectiveObjective.total > 0)) {
+  // Historical priority availability must not veto an independently complete
+  // Scout objective. Missing box-score context stays unavailable, not guessed.
+  if (!(effectiveObjective.total > 0) && normalizedConfig.modelMode !== "scout") {
     return failureResult(mode, size, [
       "The selected priorities depend only on advanced metrics that are incomplete for this eligible player pool. Choose a standard skill priority or load a source with complete OBPM/DBPM evidence.",
     ], {

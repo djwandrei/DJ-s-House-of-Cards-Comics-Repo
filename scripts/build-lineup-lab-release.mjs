@@ -10,10 +10,9 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // storefront's shared cache contract. Bump this only when the generated Lab
 // files change so a later reviewed path-list release cannot serve stale model
 // logic or interface copy from a browser cache.
-// Keep Lineup Lab's generated page aligned with the current site-wide asset
-// version. This builder owns the Lineup-specific query strings, while the
-// shared cache/version values remain owned by their respective site modules.
-const RELEASE_ASSET_VERSION = "20260905a";
+// A follow-up model fix must also invalidate already loaded Lab modules.
+// Lineup Lab has its own revision; storefront cache values remain untouched.
+const RELEASE_ASSET_VERSION = "20260905b";
 const releaseFiles = [
   "index.html",
   "app.js",

@@ -54,6 +54,12 @@ test('Scout preserves effect gaps and does not shrink ridge twice', () => {
   assert.ok((scores.get('p0') - scores.get('p1')) / (scores.get('p1') - scores.get('p2')) > 28);
 });
 
+test('missing historical priority metrics do not block complete primary Scout evidence', () => {
+  const result = optimizeLineups(players, { ...config, scoutObjective: 'offense', weights: { offensiveImpact: 1 } });
+  assert.equal(result.ok, true, JSON.stringify(result.reasons));
+  assert.ok(Math.abs(result.best.modelAdjustments.scoutImpact.additiveImpactPer100.offense - bruteForce('offense')) < 1e-8);
+});
+
 test('missing model, unknown player, or stale scope cannot qualify as Scout', () => {
   assert.equal(buildScoutImpactModel(players, { players: evidence.players }, { mode: 'scout' }).available, false);
   const missing = structuredClone(evidence); delete missing.players.p0;

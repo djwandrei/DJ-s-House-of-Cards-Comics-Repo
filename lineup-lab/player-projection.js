@@ -9,7 +9,7 @@
  * never inputs.
  */
 
-import { workloadRetention } from "./workload-model.js?v=20260905a";
+import { workloadRetention } from "./workload-model.js?v=20260905b";
 
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",

@@ -10,31 +10,31 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260905a";
+} from "./optimizer-config.js?v=20260905b";
 import {
   DEFAULT_PROJECTION_RISK,
   HISTORICAL_PROJECTION_MODEL_VERSION,
   PROJECTION_RISK_KEYS,
   projectionParametersFor,
-} from "./projection-parameters.js?v=20260905a";
+} from "./projection-parameters.js?v=20260905b";
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
-} from "./player-projection.js?v=20260905a";
-import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260905a";
+} from "./player-projection.js?v=20260905b";
+import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260905b";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
   ROLE_BALANCE_KEYS,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260905a";
+} from "./lineup-role-model.js?v=20260905b";
 import {
   buildScoutImpactModel,
   buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
-} from "./scout-impact.js?v=20260905a";
-import { planRotationUnits } from "./rotation-unit-planner.js?v=20260905a";
+} from "./scout-impact.js?v=20260905b";
+import { planRotationUnits } from "./rotation-unit-planner.js?v=20260905b";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,
@@ -6292,7 +6292,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ? `Disabled incomplete source metric${effectiveObjective.disabledRequestedMetrics.length === 1 ? "" : "s"} for every eligible player and redistributed the remaining priorities proportionally.`
       : "Every requested objective metric had complete source evidence for the eligible pool.",
   };
-  if (!(effectiveObjective.total > 0)) {
+  // Historical priority availability must not veto an independently complete
+  // Scout objective. Missing box-score context stays unavailable, not guessed.
+  if (!(effectiveObjective.total > 0) && normalizedConfig.modelMode !== "scout") {
     return failureResult(mode, size, [
       "The selected priorities depend only on advanced metrics that are incomplete for this eligible player pool. Choose a standard skill priority or load a source with complete OBPM/DBPM evidence.",
     ], {
