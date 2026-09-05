@@ -302,17 +302,23 @@ function calendarDateBefore(seed) {
 }
 
 function recordCompletion() {
-  if (!isComplete() || state.store.completed[storageKey()]) return;
+  if (!isComplete()) return;
   const score = totalScore();
-  state.store.completed[storageKey()] = { bestScore: score, completedAt: new Date().toISOString() };
-  if (state.store.lastStreakSeed === state.seed) {
-    // A replay cannot inflate a daily streak.
-  } else if (state.store.lastStreakSeed === calendarDateBefore(state.seed)) {
-    state.store.streak += 1;
-    state.store.lastStreakSeed = state.seed;
-  } else {
-    state.store.streak = 1;
-    state.store.lastStreakSeed = state.seed;
+  const existing = state.store.completed[storageKey()];
+  state.store.completed[storageKey()] = {
+    bestScore: Math.max(score, Number(existing?.bestScore || 0)),
+    completedAt: existing?.completedAt || new Date().toISOString(),
+  };
+  if (!existing) {
+    if (state.store.lastStreakSeed === state.seed) {
+      // A replay cannot inflate a daily streak.
+    } else if (state.store.lastStreakSeed === calendarDateBefore(state.seed)) {
+      state.store.streak += 1;
+      state.store.lastStreakSeed = state.seed;
+    } else {
+      state.store.streak = 1;
+      state.store.lastStreakSeed = state.seed;
+    }
   }
   writeStore();
 }

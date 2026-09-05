@@ -19,7 +19,7 @@ const roster = JSON.parse(fs.readFileSync(
   'utf8',
 )).players;
 
-test('Fix the Five ships fifteen curated, test-validated legal historical fixtures', () => {
+test('archived Fix the Five fixture compiler retains fifteen legal historical fixtures', () => {
   const results = validateFixTheFiveFixtures(FIX_THE_FIVE_FIXTURES, roster);
   assert.equal(results.length, 15);
 
@@ -40,7 +40,7 @@ test('Fix the Five ships fifteen curated, test-validated legal historical fixtur
   });
 });
 
-test('Fix the Five daily runs are deterministic, bounded, and non-repeating', () => {
+test('archived Fix the Five runs remain deterministic, bounded, and non-repeating', () => {
   const first = buildChallengeRun(FIX_THE_FIVE_FIXTURES, '2026-09-05');
   const repeat = buildChallengeRun(FIX_THE_FIVE_FIXTURES, '2026-09-05');
   const next = buildChallengeRun(FIX_THE_FIVE_FIXTURES, '2026-09-06');
@@ -51,7 +51,7 @@ test('Fix the Five daily runs are deterministic, bounded, and non-repeating', ()
   assert.notDeepEqual(first.map((fixture) => fixture.id), next.map((fixture) => fixture.id));
 });
 
-test('Fix the Five exposes a source-bounded DNA delta for every candidate', () => {
+test('archived Fix the Five fixture compiler retains its source-bounded DNA deltas', () => {
   const result = evaluateFixTheFiveChallenge(FIX_THE_FIVE_FIXTURES[0], roster);
   result.candidates.forEach((candidate) => {
     assert.equal(candidate.coverageDelta.length, 7);
@@ -66,13 +66,13 @@ test('Fix the Five exposes a source-bounded DNA delta for every candidate', () =
   });
 });
 
-test('Fix the Five exposes lower source-minute reliability without hiding a player row', () => {
+test('archived Fix the Five fixture compiler retains lower-minute reliability labels', () => {
   const model = buildGameRoleModel(roster);
   assert.ok(model.sampleReliabilityById.get('nathan-knight') < model.sampleReliabilityById.get('karl-anthony-towns'));
   assert.equal(model.ratePriorMinutes, 360);
 });
 
-test('Fix the Five rejects a published candidate that cannot satisfy the court shape', () => {
+test('archived Fix the Five fixture compiler rejects an invalid court shape', () => {
   const fixture = FIX_THE_FIVE_FIXTURES[0];
   const invalid = {
     ...fixture,
@@ -86,7 +86,7 @@ test('Fix the Five rejects a published candidate that cannot satisfy the court s
   );
 });
 
-test('Fix the Five normalizes rounded signed zero for result copy', () => {
+test('archived Fix the Five fixture compiler normalizes rounded signed zero', () => {
   assert.equal(formatSignedPoints(-0.01), '±0');
   assert.equal(formatSignedPoints(1.24), '+1.2');
   assert.equal(formatSignedPoints(-1.24), '−1.2');

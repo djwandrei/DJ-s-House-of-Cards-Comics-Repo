@@ -17,7 +17,7 @@ const roster = JSON.parse(fs.readFileSync(
   'utf8',
 )).players;
 
-test('Draft Night ships eight curated, test-validated decks with fully legal published boards', () => {
+test('archived Draft Night fixture compiler retains eight curated, legal boards', () => {
   const results = validateDraftNightDecks(DRAFT_NIGHT_DECKS, roster);
   assert.equal(results.length, 8);
 
@@ -40,7 +40,7 @@ test('Draft Night ships eight curated, test-validated decks with fully legal pub
   });
 });
 
-test('Draft Night returns transparent one-pick learning paths after a board reveal', () => {
+test('archived Draft Night fixture compiler retains transparent one-pick learning paths', () => {
   const result = evaluateDraftNightDeck(DRAFT_NIGHT_DECKS[0], roster);
   const nonBest = result.combinations.find((outcome) => !outcome.isBest);
   assert.ok(nonBest);
@@ -51,20 +51,21 @@ test('Draft Night returns transparent one-pick learning paths after a board reve
   assert.ok(Number.isFinite(alternative.compositeChange));
 });
 
-test('Draft Night seeds select a stable reviewed board and explicit deck IDs remain valid', () => {
+test('archived Draft Night fixture decks retain stable seeded selection', () => {
   const first = buildDraftNightDeck(DRAFT_NIGHT_DECKS, '2026-09-05');
   const repeat = buildDraftNightDeck(DRAFT_NIGHT_DECKS, '2026-09-05');
   assert.equal(first.id, repeat.id);
   assert.ok(DRAFT_NIGHT_DECKS.some((deck) => deck.id === first.id));
 });
 
-test('Draft Night page retains its source and scoring disclosures', () => {
+test('Draft Night live page uses the validation-gated Scout client and source disclosures', () => {
   const html = fs.readFileSync(path.join(root, 'tools', 'draft-night', 'index.html'), 'utf8');
   assert.match(html, /data-page="fan-tools"/);
   assert.match(html, /id="draftPanel"/);
   assert.match(html, /id="draftProgress"/);
-  assert.match(html, /id="draftBoardPicker"/);
   assert.match(html, /Read the full scoring contract/);
-  assert.match(html, /243-path board/);
-  assert.match(html, /type="module"[^>]+draft-night\.js/);
+  assert.match(html, /243 Scout paths/);
+  assert.match(html, /supabase-client\.js/);
+  assert.match(html, /type="module"[^>]+scout-draft-night\.js/);
+  assert.doesNotMatch(html, /type="module"[^>]+src="\.\/draft-night\.js/);
 });

@@ -39,7 +39,7 @@ const ALLOWED_POSITION_TOKENS = new Set(['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F'])
 const PUBLIC_STAT_KEYS = Object.freeze([
   'games', 'minutes', 'points', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers', 'efgPct', 'threePct',
 ]);
-const PRIVATE_KEY_PATTERN = /(?:offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)|rawscore)/i;
+const PRIVATE_KEY_PATTERN = /(?:offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)?|rawscore)/i;
 
 function requireText(value, label) {
   const text = String(value ?? '').trim();
@@ -579,4 +579,3 @@ export function assertScoutDailyGamePublicBoard(value) {
   assertNoPrivateScoutFields(value);
   return value;
 }
-

@@ -68,7 +68,11 @@ test('Scout daily games are deterministic, legal, and score with private Scout i
     : value && typeof value === 'object'
       ? Object.entries(value).flatMap(([key, nested]) => [key, ...collectKeys(nested)])
       : [];
-  assert.ok(collectKeys(first.publicBoard).every((key) => !/(offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)|rawscore)/i.test(key)));
+  assert.ok(collectKeys(first.publicBoard).every((key) => !/(offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)?|rawscore)/i.test(key)));
+  assert.throws(
+    () => assertScoutDailyGamePublicBoard({ ...first.publicBoard, scout: { offense: 1 } }),
+    /private Scout value/i,
+  );
 });
 
 test('Draft Night has all 243 legal paths and only returns relative Scout outcomes', () => {

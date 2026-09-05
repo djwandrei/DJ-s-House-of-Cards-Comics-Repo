@@ -534,7 +534,11 @@ async function inspectFanGames(client, baseUrl) {
     await setViewport(client, viewport.width);
     for (const game of games) {
       client.consumeEvents();
-      const seed = `smoke-${game.id}-${viewport.width}`;
+      // Scout Daily Games accept only a calendar date. The function may be
+      // intentionally unavailable until its private catalog passes the
+      // validation gate, so the smoke check recognizes that explicit state
+      // rather than requiring the retired fixture fallback.
+      const seed = '2026-09-05';
       await navigate(client, `${baseUrl}${game.path}?seed=${seed}`);
       const state = await client.evaluate(`(async () => {
         const pause = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -542,29 +546,38 @@ async function inspectFanGames(client, baseUrl) {
         const panelId = game.id === 'fix-the-five' ? 'challengePanel' : 'draftPanel';
         const panel = document.getElementById(panelId);
         const completion = document.getElementById('completionPanel');
-        for (let attempt = 0; attempt < 40 && !panel?.querySelector('button[data-action="choose"]'); attempt += 1) {
+        const status = document.getElementById('gameStatus');
+        for (let attempt = 0; attempt < 40 && !panel?.querySelector('button[data-action="choose"]')
+          && !/validated Scout board is not available right now/i.test(status?.textContent || ''); attempt += 1) {
           await pause(100);
         }
+        const unavailable = /validated Scout board is not available right now/i.test(status?.textContent || '');
         const initialCandidates = panel?.querySelectorAll('button[data-action="choose"]').length || 0;
         let firstResultVisible = false;
-        for (let round = 0; round < game.rounds; round += 1) {
-          const choice = panel?.querySelector('button[data-action="choose"]');
-          if (!choice) break;
-          choice.click();
-          await pause(90);
-          if (round === 0 && game.id === 'fix-the-five') {
-            firstResultVisible = /Published rank/.test(panel?.textContent || '');
-          }
-          const next = panel?.querySelector('button[data-action="next"]');
-          if (next) {
-            next.click();
-            await pause(90);
+        if (!unavailable) {
+          for (let round = 0; round < game.rounds; round += 1) {
+            const choice = panel?.querySelector('button[data-action="choose"]');
+            if (!choice) break;
+            choice.click();
+            for (let attempt = 0; attempt < 20 && !panel?.querySelector('button[data-action="next"]'); attempt += 1) {
+              await pause(100);
+            }
+            if (round === 0 && game.id === 'fix-the-five') {
+              firstResultVisible = /Rank\s+\d+\s+of\s+3/.test(panel?.textContent || '');
+            }
+            const next = panel?.querySelector('button[data-action="next"]');
+            if (next) {
+              next.click();
+              await pause(100);
+            }
           }
         }
-        await pause(120);
+        await pause(unavailable ? 120 : 400);
         return {
           title: document.title,
           h1: document.querySelector('h1')?.textContent?.trim() || '',
+          unavailable,
+          status: status?.textContent || '',
           initialCandidates,
           firstResultVisible,
           completionVisible: !!completion && !completion.hidden && completion.getBoundingClientRect().height > 0,
@@ -575,10 +588,16 @@ async function inspectFanGames(client, baseUrl) {
       })()`);
       const failures = [];
       if (!state.h1) failures.push('missing h1');
-      if (state.initialCandidates < 3) failures.push(`expected at least three initial choices, got ${state.initialCandidates}`);
-      if (game.id === 'fix-the-five' && !state.firstResultVisible) failures.push('choice did not reveal the per-round explanation before advancing');
-      if (!state.completionVisible) failures.push('five-pick run did not reach a visible completion panel');
-      if (game.id === 'draft-night' && state.selectedCount !== 5) failures.push(`expected five result players, got ${state.selectedCount}`);
+      if (state.unavailable) {
+        if (!/will not substitute an older roster or a non-Scout score/i.test(state.status)) {
+          failures.push('unavailable Scout board did not state its no-fallback contract');
+        }
+      } else {
+        if (state.initialCandidates < 3) failures.push(`expected at least three initial choices, got ${state.initialCandidates}`);
+        if (game.id === 'fix-the-five' && !state.firstResultVisible) failures.push('choice did not reveal the per-round Scout rank before advancing');
+        if (!state.completionVisible) failures.push('five-pick run did not reach a visible completion panel');
+        if (game.id === 'draft-night' && state.selectedCount !== 5) failures.push(`expected five result players, got ${state.selectedCount}`);
+      }
       if (state.overflow > 2) failures.push(`horizontal overflow ${state.overflow}px`);
       const badEvents = eventFailures(client.consumeEvents()).filter((event) => !/\/favicon\.ico(?:$|\?)/i.test(event));
       failures.push(...badEvents.map((event) => `browser error: ${event}`));
