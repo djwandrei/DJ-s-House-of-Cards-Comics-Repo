@@ -5,6 +5,7 @@ tools/fan-tools.css
 tools/fan-tools.js
 tools/registry.js
 tools/player-card-matchups/player-card-matchups.css
+tools/player-card-matchups/player-card-matchups.js
 tools/workshop/definitions.js
 tools/workshop/tool-workshop.css
 tools/workshop/tool-workshop.js

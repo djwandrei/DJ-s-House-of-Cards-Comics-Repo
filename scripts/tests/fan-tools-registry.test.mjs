@@ -35,6 +35,11 @@ test('fan tool registry has unique, complete metadata', () => {
         assert.equal(routeUrl.searchParams.get('experience'), tool.id, `${tool.id} workshop route must identify its experience`);
         assert.equal(tool.launchLabel, 'Open framework', `${tool.id} workshop route needs an honest launch label`);
       }
+      if (tool.status !== TOOL_STATUSES.LIVE) {
+        assert.equal(tool.status, TOOL_STATUSES.PLANNED, `${tool.id} non-live route must be a planned framework`);
+        assert.equal(routeUrl.pathname, '/tools/workshop/', `${tool.id} planned route must use the local workshop`);
+        assert.equal(tool.launchLabel, 'Open framework', `${tool.id} planned route needs an honest launch label`);
+      }
     } else if (tool.status === TOOL_STATUSES.LIVE) {
       assert.fail(`${tool.id} is live but has no route`);
     } else {
@@ -73,19 +78,19 @@ test('fan tool filters preserve registry order and status boundaries', () => {
   assert.deepEqual(filterRegistry('all'), TOOL_REGISTRY);
   assert.deepEqual(
     filterRegistry(TOOL_STATUSES.LIVE).map((tool) => tool.id),
-    ['lineup-lab']
+    ['lineup-lab', 'card-matchup-explorer']
   );
-  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 15);
+  assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 14);
   assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 4);
   assert.equal(formatToolsStatus('all', TOOL_REGISTRY.length), `Showing ${TOOL_REGISTRY.length} fan tools.`);
   assert.equal(formatToolsStatus(TOOL_STATUSES.LIVE, 1), 'Showing 1 live fan tool.');
-  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 15), 'Showing 15 planned fan tools.');
+  assert.equal(formatToolsStatus(TOOL_STATUSES.PLANNED, 14), 'Showing 14 planned fan tools.');
 });
 
 test('fan tool status summary is derived from the registry', () => {
   assert.deepEqual(countRegistryByStatus(), {
-    [TOOL_STATUSES.LIVE]: 1,
-    [TOOL_STATUSES.PLANNED]: 15,
+    [TOOL_STATUSES.LIVE]: 2,
+    [TOOL_STATUSES.PLANNED]: 14,
     [TOOL_STATUSES.RESEARCH]: 4
   });
 });

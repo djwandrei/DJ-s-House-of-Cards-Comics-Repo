@@ -84,7 +84,8 @@ window.DJ = window.DJ || {};
     'products-basketball.json': 'products-bootstrap-basketball.json',
     'products-football.json': 'products-bootstrap-football.json',
     'products-comics.json': 'products-bootstrap-comics.json',
-    'products-collectibles.json': 'products-bootstrap-collectibles.json'
+    'products-collectibles.json': 'products-bootstrap-collectibles.json',
+    'products-sports.json': 'products-bootstrap-sports.json'
   };
 
   const DEFAULT_PRODUCT_SOURCE = 'products-public.json';

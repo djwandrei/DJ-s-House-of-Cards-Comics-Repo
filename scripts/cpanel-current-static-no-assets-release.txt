@@ -20,6 +20,7 @@ contact.html
 contact.js
 core.js
 football-cards.html
+home-search.js
 feeds/facebook-products.csv
 index.html
 inbox.html
@@ -54,6 +55,7 @@ products-bootstrap-basketball.json
 products-bootstrap-collectibles.json
 products-bootstrap-comics.json
 products-bootstrap-football.json
+products-bootstrap-sports.json
 products-collectibles.json
 products-comics.json
 products-data-baseball.js
@@ -76,6 +78,7 @@ shop.html
 site.webmanifest
 sitemap.xml
 sports-cards.html
+sports-cards-redirect.js
 styles.css
 styles-mobile-overrides.css
 supabase-client.js

@@ -1,4 +1,4 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js';
+import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260905a';
 import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js';
 import {
   clearWorkshopDraft,

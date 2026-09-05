@@ -14,10 +14,14 @@ Lineup Lab source harness.
 - a plain-language `summary`;
 - a non-empty `capabilities` list;
 - a non-empty `dependencies` list; and
-- an `implementationNotes` boundary.
+- an `implementationNotes` boundary; and
+- an `href` only when there is a public entry point that matches the status.
 
-Only live entries may have an `href`. Planned and research-gated entries remain
-non-links until their data, tests, and release path are ready.
+Live entries must link to their functional public experience. A planned entry
+may link only to its local `/tools/workshop/?experience=<id>` framework and
+must use the visible label `Open framework`; that route may collect reversible
+setup choices but cannot claim to run analytics or scoring. Research-gated
+entries remain non-links until their data, tests, and release path are ready.
 
 ## Implementation boundary
 
@@ -45,6 +49,6 @@ Before changing a registry entry to `live`:
 4. Add only the reviewed tool paths to a cPanel path-list release.
 5. Recheck byte parity after deployment; a local page is not a live release.
 
-The hub itself remains `noindex` until more than the initial Lineup Lab is live.
-That keeps the roadmap discoverable to visitors without presenting planned
-features as finished products in search results.
+The hub remains `noindex` until its collection is deliberately promoted for
+search indexing. That keeps the roadmap discoverable to visitors without
+presenting planned features as finished products in search results.

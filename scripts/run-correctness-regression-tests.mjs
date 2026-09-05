@@ -844,7 +844,12 @@ function createDeferred() {
   return { promise, resolve, reject };
 }
 
-function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ user: { email: 'collector@example.com' } }) }) {
+function evaluatePayments({
+  signIn,
+  invokeFunction,
+  getSession = async () => ({ user: { email: 'collector@example.com' } }),
+  syncWishlistWithAccount = async () => {}
+}) {
   const source = readFileSync(path.join(root, 'payments.js'), 'utf8');
   const hookedSource = source.replace(
     '  DJ.payments = {',
@@ -904,13 +909,19 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
   };
   let invokeCount = 0;
   const invocations = [];
+  const backgroundSyncWarnings = [];
+  const testConsole = {
+    log: (...args) => console.log(...args),
+    warn: (...args) => backgroundSyncWarnings.push(args),
+    error: (...args) => backgroundSyncWarnings.push(args)
+  };
   const window = {
     DJ: {
       normalizeProductId: (value) => Number.isSafeInteger(Number(value)) && Number(value) > 0 ? Number(value) : null,
       normalizeCartQuantity: (value) => Math.max(1, Math.min(99, Math.floor(Number(value) || 1))),
       isDirectCheckoutEligible: () => true,
       availableQuantity: () => 9,
-      syncWishlistWithAccount: async () => {},
+      syncWishlistWithAccount,
       clearAccountWishlistCache() {},
       restoreFocus() {},
       trackEvent() {},
@@ -945,7 +956,7 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
     sessionStorage: createStorage(),
     CustomEvent: class CustomEvent { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
     HTMLElement: class HTMLElement {},
-    console,
+    console: testConsole,
     setTimeout,
     clearTimeout,
     URLSearchParams
@@ -956,7 +967,8 @@ function evaluatePayments({ signIn, invokeFunction, getSession = async () => ({ 
     cartStatus,
     getInvokeCount: () => invokeCount,
     getInvocations: () => invocations.map(([name, payload]) => ({ name, payload: { ...payload } })),
-    getAuthModal: () => fields.customerAuthModal || null
+    getAuthModal: () => fields.customerAuthModal || null,
+    getBackgroundSyncWarnings: () => [...backgroundSyncWarnings]
   };
 }
 
@@ -1051,6 +1063,50 @@ async function testCheckoutIntentCancellation() {
   assert(unauthenticated.getAuthModal()?.classList.contains('active'), 'Unauthenticated checkout must keep the sign-in modal open.');
 }
 
+async function testWishlistSyncDoesNotBlockAuthenticatedCheckout() {
+  const session = { user: { id: 'wishlist-sync-user', email: 'collector@example.com' } };
+  const rejectedSync = evaluatePayments({
+    signIn: async () => ({}),
+    getSession: async () => session,
+    syncWishlistWithAccount: async () => {
+      throw new Error('Mock wishlist sync failure.');
+    },
+    invokeFunction: async () => ({ url: 'https://example.test/checkout/rejected-sync' })
+  });
+  const rejectedIntent = 'checkout-rejected-wishlist-sync';
+  rejectedSync.hooks.setPendingCheckout({
+    items: [{ productId: 4, quantity: 1, product: { id: 4 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: rejectedIntent
+  });
+  rejectedSync.hooks.continueCheckoutIfExistingSession({}, '/cart.html', rejectedIntent);
+  await wait(0);
+  assert(rejectedSync.hooks.getState().session?.user?.id === session.user.id, 'A rejected wishlist sync must not clear a valid authenticated session.');
+  assert(rejectedSync.hooks.getState().authReady, 'A rejected wishlist sync must leave auth ready for checkout.');
+  assert(rejectedSync.getInvokeCount() === 1, 'A rejected wishlist sync must not block checkout continuation.');
+  assert(rejectedSync.getBackgroundSyncWarnings().length === 1, 'Rejected wishlist sync must be handled as a background warning.');
+
+  const hungSync = evaluatePayments({
+    signIn: async () => ({}),
+    getSession: async () => session,
+    syncWishlistWithAccount: () => new Promise(() => {}),
+    invokeFunction: async () => ({ url: 'https://example.test/checkout/hung-sync' })
+  });
+  const hungIntent = 'checkout-hung-wishlist-sync';
+  hungSync.hooks.setPendingCheckout({
+    items: [{ productId: 5, quantity: 1, product: { id: 5 } }],
+    options: {},
+    returnPath: '/cart.html',
+    intentId: hungIntent
+  });
+  hungSync.hooks.continueCheckoutIfExistingSession({}, '/cart.html', hungIntent);
+  await wait(0);
+  assert(hungSync.hooks.getState().session?.user?.id === session.user.id, 'A hung wishlist sync must not clear a valid authenticated session.');
+  assert(hungSync.hooks.getState().authReady, 'A hung wishlist sync must leave auth ready for checkout.');
+  assert(hungSync.getInvokeCount() === 1, 'A hung wishlist sync must not block checkout continuation.');
+}
+
 async function main() {
   const { DJ } = evaluateCore();
   equal(DJ.escapeHtml(`<>&"'`), '&lt;&gt;&amp;&quot;&#39;', 'HTML escaping must preserve every supported entity.');
@@ -1070,6 +1126,7 @@ async function main() {
   testMetricsAggregation();
   await testCheckoutIdentityPayloads();
   await testCheckoutIntentCancellation();
+  await testWishlistSyncDoesNotBlockAuthenticatedCheckout();
   console.log('Correctness regression tests passed: core helpers and nested asset paths, public/admin catalog separation, pinned SDK loading, cart reconciliation, catalog fallback/search, saved-state resilience, analytics/metrics, and guest/verified checkout payloads.');
 }
 

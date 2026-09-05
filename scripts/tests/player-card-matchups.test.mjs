@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildCandidateProducts,
+  createStaticCatalogFallbackLoader,
   extractVerifiedMatches,
+  getCandidateBatch,
+  getResultWindow,
   getStaticCatalogFallbackUrl,
   isNbaCatalogProduct,
   matchesSearch,
@@ -31,12 +34,70 @@ test('candidate narrowing preserves only buyer-safe NBA catalog products', () =>
   assert.deepEqual(buildCandidateProducts(products, 'curry').map((product) => product.id), [2, 1]);
 });
 
+test('candidate batches are explicit without silently dropping later matches', () => {
+  const manyCandidates = Array.from({ length: 30 }, (_, index) => ({
+    id: index + 10,
+    category: 'Basketball',
+    league: 'NBA',
+    sport: 'Basketball',
+    playerAthlete: 'Stephen Curry',
+    name: `Curry card ${index + 1}`,
+    year: 2000 + index
+  }));
+  const candidates = buildCandidateProducts(manyCandidates, 'curry');
+  assert.equal(candidates.length, 30);
+  assert.deepEqual(getCandidateBatch(candidates, 0, 24).map((product) => product.id).length, 24);
+  assert.deepEqual(getCandidateBatch(candidates, 24, 24).map((product) => product.id).length, 6);
+  assert.deepEqual(getCandidateBatch(candidates, 30, 24), []);
+});
+
+test('result windows retain every confirmed product and expose the remaining page', () => {
+  const window = getResultWindow([
+    { product: { id: 2, year: 2022 }, player: { athleteId: 'athlete-2', name: 'Stephen Curry' } },
+    { product: { id: 1, year: 2021 }, player: { athleteId: 'athlete-1', name: 'Stephen Curry' } },
+    { product: { id: 1, year: 2021 }, player: { athleteId: 'athlete-3', name: 'Ayesha Curry' } }
+  ], 1);
+  assert.equal(window.total, 2);
+  assert.equal(window.visible.length, 1);
+  assert.equal(window.remaining, 1);
+  assert.equal(window.all[1].product.id, 1);
+  assert.equal(window.all[1].player.name, 'Ayesha Curry');
+});
+
 test('static fallback uses the current shared catalog version and basketball segment', () => {
   assert.equal(
     getStaticCatalogFallbackUrl({ versionedProductAsset: (path) => `/resolved/${path}?v=current` }),
     '/resolved/products-basketball.json?v=current'
   );
   assert.equal(getStaticCatalogFallbackUrl({}), '../../products-basketball.json');
+});
+
+test('static basketball fallback is cached for the page lifetime by versioned URL', async () => {
+  const requests = [];
+  const loadStaticCatalog = createStaticCatalogFallbackLoader(async (url, options) => {
+    requests.push({ url, options });
+    return { ok: true, json: async () => [{ id: 1 }] };
+  });
+  const DJ = { versionedProductAsset: (path) => `/catalog/${path}?v=reviewed` };
+  const [first, second] = await Promise.all([loadStaticCatalog(DJ), loadStaticCatalog(DJ)]);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].url, '/catalog/products-basketball.json?v=reviewed');
+  assert.equal(requests[0].options.cache, 'force-cache');
+  assert.equal(first, second);
+  assert.deepEqual(first, [{ id: 1 }]);
+});
+
+test('a failed static fallback request is not retained as a broken cache entry', async () => {
+  let requests = 0;
+  const loadStaticCatalog = createStaticCatalogFallbackLoader(async () => {
+    requests += 1;
+    if (requests === 1) return { ok: false, status: 503 };
+    return { ok: true, json: async () => [] };
+  });
+  await assert.rejects(loadStaticCatalog({}), /503/);
+  await Promise.resolve();
+  assert.deepEqual(await loadStaticCatalog({}), []);
+  assert.equal(requests, 2);
 });
 
 test('verified extraction rejects title-only and wrong-product payloads', () => {

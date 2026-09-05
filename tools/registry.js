@@ -283,8 +283,8 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'tool',
     marker: 'Cards',
     title: 'Player & Card Matchups',
-    eyebrow: 'Planned collector tool',
-    status: TOOL_STATUSES.PLANNED,
+    eyebrow: 'Live collector tool',
+    status: TOOL_STATUSES.LIVE,
     href: './player-card-matchups/',
     summary: 'Connect a player or Lineup Lab scenario to verified cards in the DJHC catalog and show useful season context.',
     capabilities: [

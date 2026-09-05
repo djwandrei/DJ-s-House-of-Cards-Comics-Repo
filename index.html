@@ -14,8 +14,8 @@
 <link as="font" crossorigin="" href="assets/fonts/lobster-two-700.woff2" rel="preload" type="font/woff2"/>
 <link as="image" fetchpriority="high" href="assets/grass.webp" rel="preload" type="image/webp"/>
 <link as="image" href="assets/dj-logo.png" rel="preload"/>
- <link href="styles.css?v=20260904b" rel="stylesheet"/>
-<link href="styles-mobile-overrides.css?v=20260904b" rel="stylesheet"/>
+ <link href="styles.css?v=20260905a" rel="stylesheet"/>
+<link href="styles-mobile-overrides.css?v=20260905a" rel="stylesheet"/>
 <meta content="index,follow,max-image-preview:large" name="robots"/>
 <meta content="#1f2fa3" name="theme-color"/>
 <meta content="light dark" name="color-scheme"/>
@@ -31,7 +31,7 @@
 <meta content="Shop vintage sports cards, graded favorites, Bronze Age comics, autographs, relics, and collectible finds at DJ's House of Cards &amp; Comics." name="twitter:description"/>
 <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" name="twitter:image"/>
 <link href="https://www.djshouseofcards-comics.com/" rel="canonical"/>
-<link href="site.webmanifest?v=20260904b" rel="manifest"/>
+<link href="site.webmanifest?v=20260905a" rel="manifest"/>
 <link href="assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
 <link href="assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
 <!-- Shared JavaScript bundles. Load order matters because later files depend on window.DJ helpers. -->
@@ -577,74 +577,11 @@ Facebook
 <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">
    &uarr;
   </button>
-<script defer="" src="core.js?v=20260904b">
+<script defer="" src="core.js?v=20260905a">
 </script>
-<script defer="" src="seo.js?v=20260904b"></script>
-<script defer="" src="nav.js?v=20260904b">
+<script defer="" src="seo.js?v=20260905a"></script>
+<script defer="" src="nav.js?v=20260905a">
 </script>
-<script>
-(() => {
-  const form = document.getElementById('homeCatalogSearch');
-  const input = document.getElementById('homeCatalogSearchInput');
-  const submit = document.getElementById('homeCatalogSearchSubmit');
-  const scope = document.getElementById('homeSearchScope');
-  const term = document.getElementById('homeSearchScopeTerm');
-  const status = document.getElementById('homeSearchStatus');
-  if (!form || !input || !submit || !scope || !term || !status) return;
-
-  const closeScope = () => {
-    scope.hidden = true;
-    submit.setAttribute('aria-expanded', 'false');
-    status.textContent = '';
-  };
-
-  const updateScope = ({ announce = false } = {}) => {
-    const query = input.value.trim();
-    if (!query) {
-      closeScope();
-      input.focus();
-      status.textContent = 'Enter a search term before choosing a department.';
-      return false;
-    }
-
-    term.textContent = `“${query}”`;
-    scope.querySelectorAll('[data-search-base]').forEach((link) => {
-      link.href = `${link.dataset.searchBase}?search=${encodeURIComponent(query)}`;
-    });
-    scope.hidden = false;
-    submit.setAttribute('aria-expanded', 'true');
-    if (announce) {
-      status.textContent = `Choose a department to search for ${query}.`;
-    }
-    return true;
-  };
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    updateScope({ announce: true });
-  });
-
-  input.addEventListener('input', () => {
-    if (!scope.hidden) updateScope();
-  });
-
-  form.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      updateScope({ announce: true });
-      return;
-    }
-
-    if (event.key === 'Escape' && !scope.hidden) {
-      closeScope();
-      input.focus();
-    }
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!form.contains(event.target)) closeScope();
-  });
-})();
-</script>
+<script defer src="home-search.js?v=20260905a"></script>
 </body>
 </html>

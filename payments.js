@@ -134,6 +134,15 @@ window.DJ = window.DJ || {};
     await DJ.syncWishlistWithAccount(session);
   }
 
+  function syncCustomerAccountInBackground(session) {
+    if (!session?.user) return;
+    Promise.resolve()
+      .then(() => syncCustomerAccount(session))
+      .catch((error) => {
+        console.warn('Wishlist could not be synced to the customer account.', error);
+      });
+  }
+
   function emitAuthChange(event, session) {
     window.dispatchEvent(new CustomEvent('dj:authchange', {
       detail: { event, session: session || null }
@@ -471,7 +480,7 @@ window.DJ = window.DJ || {};
         DJ.clearAccountWishlistCache();
         return;
       }
-      syncCustomerAccount(state.session).catch(console.error);
+      syncCustomerAccountInBackground(state.session);
     });
   }
 
@@ -497,7 +506,9 @@ window.DJ = window.DJ || {};
         state.session = await DJ.remoteCatalog.getSession();
         state.authReady = true;
         bindAuthStateSync();
-        await syncCustomerAccount(state.session);
+        // Wishlist reconciliation is optional account enrichment. It must not
+        // delay checkout or turn a valid Supabase session into a signed-out one.
+        syncCustomerAccountInBackground(state.session);
         emitAuthChange('INITIAL_SESSION', state.session);
       } catch {
         state.session = null;

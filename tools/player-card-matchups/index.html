@@ -12,12 +12,12 @@
   <meta content="Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260904b" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260904b" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260904b" rel="stylesheet">
-  <link href="./player-card-matchups.css?v=20260904b" rel="stylesheet">
+  <link href="../../styles.css?v=20260905a" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260905a" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260905a" rel="stylesheet">
+  <link href="./player-card-matchups.css?v=20260905a" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260904b" rel="manifest">
+  <link href="../../site.webmanifest?v=20260905a" rel="manifest">
   <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/#webpage","url":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/","name":"Player & Card Matchups | DJ's House of Cards & Comics","description":"Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
@@ -73,7 +73,7 @@
      </nav>
      <div class="matchup-hero-layout">
       <div class="matchup-hero-copy">
-       <span class="kicker">Planned collector tool</span>
+      <span class="kicker">Live collector tool</span>
        <h1 class="page-title">Player &amp; Card Matchups.</h1>
        <p>Explore verified relationships between NBA athletes and physical collectibles in the DJHC catalog. Search is read-only, and a card appears here only after its mapping passes the public verification boundary.</p>
       </div>
@@ -104,11 +104,19 @@
       <section aria-labelledby="resultsHeading" class="matchup-results-section" hidden id="matchupResultsSection">
        <div class="matchup-results-heading"><h2 id="resultsHeading">Verified card results</h2><span class="matchup-result-count" id="matchupResultCount"></span></div>
        <div class="matchup-results-grid" id="matchupResults"></div>
+       <div class="matchup-result-actions" hidden id="matchupResultActions">
+        <p id="matchupResultPagination"></p>
+        <button class="button-secondary" id="matchupShowMoreResults" type="button"></button>
+       </div>
       </section>
       <section aria-labelledby="noMatchHeading" class="matchup-empty-state" id="noMatchState">
        <div aria-hidden="true" class="matchup-empty-icon">⌕</div>
        <h2 id="noMatchHeading">No verified mapping selected</h2>
        <p>Search above to check the buyer-safe catalog. If an item appears in the Shop but not here, its player relationship is still unmatched, ambiguous, or outside this NBA mapping release.</p>
+      </section>
+      <section aria-label="Continue exact mapping lookup" class="matchup-candidate-continuation" hidden id="matchupCandidateContinuation">
+       <p id="matchupCandidateProgress"></p>
+       <button class="button-secondary" id="matchupCheckMoreCandidates" type="button"></button>
       </section>
      </div>
      <aside class="matchup-sidebar">
@@ -145,10 +153,10 @@
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics &bull; Independent collector storefront</span><span>Actual-item photography &bull; Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../../core.js?v=20260904b"></script>
-  <script defer src="../../nav.js?v=20260904b"></script>
-  <script defer src="../../backend-config.js?v=20260904b"></script>
-  <script defer src="../../supabase-client.js?v=20260904b"></script>
-  <script type="module" src="./player-card-matchups.js?v=20260904b"></script>
+  <script defer src="../../core.js?v=20260905a"></script>
+  <script defer src="../../nav.js?v=20260905a"></script>
+  <script defer src="../../backend-config.js?v=20260905a"></script>
+  <script defer src="../../supabase-client.js?v=20260905a"></script>
+  <script type="module" src="./player-card-matchups.js?v=20260905a"></script>
  </body>
 </html>

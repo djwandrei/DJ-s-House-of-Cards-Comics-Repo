@@ -34,7 +34,8 @@ const BOOTSTRAP_FILES = {
   'products-basketball.json': 'products-bootstrap-basketball.json',
   'products-football.json': 'products-bootstrap-football.json',
   'products-comics.json': 'products-bootstrap-comics.json',
-  'products-collectibles.json': 'products-bootstrap-collectibles.json'
+  'products-collectibles.json': 'products-bootstrap-collectibles.json',
+  'products-sports.json': 'products-bootstrap-sports.json'
 };
 const MIRROR_FIELDS = [
   'name', 'category', 'team', 'year', 'condition', 'price',
@@ -119,6 +120,13 @@ if (!assetVersion) issues.push({ file: 'core.js', type: 'missing product asset v
 const backendConfig = read('backend-config.js');
 const csp = read('.htaccess')
   .match(/Content-Security-Policy\s+"([^"]+)"/i)?.[1] || '';
+const scriptSources = csp
+  .split(';')
+  .map((directive) => directive.trim())
+  .find((directive) => directive.startsWith('script-src ')) || '';
+if (/'unsafe-inline'/i.test(scriptSources)) {
+  issues.push({ file: '.htaccess', type: 'CSP script-src permits unsafe inline scripts' });
+}
 const connectSources = csp
   .split(';')
   .map((directive) => directive.trim())
@@ -196,6 +204,15 @@ for (const file of HTML_FILES) {
     }
   }
 
+  for (const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    const attributes = tagAttributes(`<script${match[1]}>`);
+    const scriptType = String(attributes.type || '').toLowerCase();
+    const isDataScript = scriptType === 'application/ld+json' || scriptType === 'application/json';
+    if (!attributes.src && !isDataScript && match[2].trim()) {
+      issues.push({ file, type: 'executable inline script is not allowed by CSP' });
+    }
+  }
+
   const versionedAssets = [...html.matchAll(/[?&]v=([0-9]+[a-z]?)/g)].map((match) => match[1]);
   const staleVersions = file.startsWith('lineup-lab/')
     ? []
@@ -255,6 +272,13 @@ for (const manifest of fs.readdirSync(path.join(root, 'scripts')).filter((file) 
 }
 
 const catalogs = Object.fromEntries(CATALOG_FILES.map((file) => [file, JSON.parse(read(file))]));
+const catalogClient = read('catalog.js');
+for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {
+  const mapping = `'${sourceFile}': '${bootstrapFile}'`;
+  if (!catalogClient.includes(mapping)) {
+    issues.push({ file: 'catalog.js', type: 'missing catalog bootstrap source mapping', value: mapping });
+  }
+}
 const canonicalProducts = JSON.parse(read('products.json'));
 const fullCatalog = new Map(canonicalProducts.map((item) => [String(item.id), item]));
 for (const [sourceFile, bootstrapFile] of Object.entries(BOOTSTRAP_FILES)) {

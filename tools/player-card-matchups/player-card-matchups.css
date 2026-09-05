@@ -400,6 +400,39 @@
   gap:1rem;
 }
 
+.matchup-result-actions,
+.matchup-candidate-continuation {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-top:1rem;
+  padding:1rem 1.05rem;
+  border:1px solid rgba(31,47,163,.13);
+  border-radius:14px;
+  background:rgba(31,47,163,.04);
+}
+
+.matchup-result-actions {
+  margin-inline:.2rem;
+}
+
+.matchup-result-actions p,
+.matchup-candidate-continuation p {
+  max-width:60ch;
+  margin:0;
+  color:#465069;
+  font-size:.82rem;
+  line-height:1.5;
+}
+
+.matchup-result-actions .button-secondary,
+.matchup-candidate-continuation .button-secondary {
+  flex:0 0 auto;
+  min-height:42px;
+  text-align:center;
+}
+
 .matchup-result-card {
   display:flex;
   min-width:0;
@@ -700,6 +733,17 @@ body.dark-mode .matchup-card-meta span {
   color:#d7dced;
 }
 
+body.dark-mode .matchup-result-actions,
+body.dark-mode .matchup-candidate-continuation {
+  border-color:rgba(145,166,255,.22);
+  background:rgba(145,166,255,.08);
+}
+
+body.dark-mode .matchup-result-actions p,
+body.dark-mode .matchup-candidate-continuation p {
+  color:#c4cce1;
+}
+
 body.dark-mode .matchup-search-row input {
   border-color:rgba(255,255,255,.16);
   background:#151f36;
@@ -786,6 +830,17 @@ body.dark-mode .matchup-result-link:focus-visible {
   .matchup-results-grid,
   .matchup-sidebar {
     grid-template-columns:1fr;
+  }
+
+  .matchup-result-actions,
+  .matchup-candidate-continuation {
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .matchup-result-actions .button-secondary,
+  .matchup-candidate-continuation .button-secondary {
+    width:100%;
   }
 }
 
