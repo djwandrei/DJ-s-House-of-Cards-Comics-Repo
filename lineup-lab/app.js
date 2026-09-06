@@ -6,41 +6,41 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260905i";
+} from "./optimizer-config.js?v=20260905j";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260905i";
+} from "./player-data.js?v=20260905j";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260905i";
+} from "./supabase-nba-data.js?v=20260905j";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260905i";
+} from "./fan-analytics.js?v=20260905j";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260905i";
+} from "./opponent-gameplan.js?v=20260905j";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260905i";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905i";
-import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260905i";
-import { createWorkflowView } from "./workflow-view.js?v=20260905i";
+} from "./scenario-url.js?v=20260905j";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905j";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260905j";
+import { createWorkflowView } from "./workflow-view.js?v=20260905j";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905i";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905i", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905j";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905j", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
