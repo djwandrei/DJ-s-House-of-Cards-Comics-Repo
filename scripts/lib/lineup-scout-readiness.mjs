@@ -99,8 +99,15 @@ export function assessLineupScoutReadiness({
         errors.push(`${name}: fitted RAPM model is missing.`);
         continue;
       }
-      if (model.seasonEndYear !== latest + 1 || model.solver?.converged !== true) {
-        errors.push(`${name}: fitted season or solver convergence is not confirmed.`);
+      if (model.seasonEndYear !== latest + 1) {
+        errors.push(`${name}: fitted season does not match the requested package.`);
+      }
+      // Schema v4's net export omits solver diagnostics; its completed package
+      // validation and chronological test are still required below. The O/D
+      // model actually used by Scout DOES export diagnostics and must converge.
+      // If any model explicitly supplies diagnostics, never ignore a failure.
+      if ((name === 'offenseDefense' || model.solver != null) && model.solver?.converged !== true) {
+        errors.push(`${name}: solver convergence is not confirmed.`);
       }
       checkChronologicalRapmCalibration(model.chronologicalCalibration, model, name, latest, errors, { required: true });
       checkChronologicalExposure(model.chronologicalCalibration, name, errors, warnings);

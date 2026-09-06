@@ -53,6 +53,16 @@ test('zero attempts and missing coverage do not become zero-percent shooting', (
   assert.equal(metric(describeScoutPlayer(row, 'p0'), 'points').value, null);
 });
 
+test('impossible fractions and an inconsistent sample gate are withheld', () => {
+  const row = rawPlayer(); row.boxScore.threePointersMade = 151;
+  row.shooting.shotZones.atRim.makes = 101;
+  const result = describeScoutPlayer(row, 'p0');
+  assert.equal(metric(result, 'threePointAccuracy').value, null);
+  assert.equal(result.tendencies.zones[0].accuracy, null);
+  const sample = rawSample(); sample.reliability.thresholds.publishablePossessions = 1000;
+  assert.equal(describeScoutSample(sample).netRating, null);
+});
+
 test('zero is preserved when the denominator and source are valid', () => {
   const row = rawPlayer(); row.boxScore.assists = 0;
   assert.equal(metric(describeScoutPlayer(row, 'p0'), 'assists').value, 0);
@@ -131,6 +141,9 @@ test('local server permits only bounded read-only routes, not archives or cross-
   const base = `http://127.0.0.1:${server.address().port}`;
   assert.equal((await fetch(`${base}/api/scout-studio/status`)).status, 200);
   assert.equal((await fetch(`${base}/tools/scout-studio/`)).status, 200);
+  const navigation = await fetch(`${base}/tools/index.html`, { redirect: 'manual' });
+  assert.equal(navigation.status, 302);
+  assert.equal(navigation.headers.get('location'), 'https://www.djshouseofcards-comics.com/tools/index.html');
   for (const url of ['/outputs/private.json', '/.env', '/scripts/lib/scout-studio.mjs', '/%2e%2e/.env']) {
     assert.equal((await fetch(base + url)).status, 404);
   }

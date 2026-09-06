@@ -26,11 +26,18 @@ try {
   const errors = [];
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
     const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+    await context.addInitScript(() => localStorage.setItem('theme', 'light'));
     await context.route('**/*', route => route.request().url().startsWith(base) ? route.continue() : route.abort());
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`${base}/tools/scout-studio/`);
     await page.getByRole('heading', { name: 'Validated for local integration review' }).waitFor();
+    assert.equal(await page.locator('body').evaluate(body => body.classList.contains('dark-mode')), false);
+    assert.ok(await page.locator('.skip-link').evaluate(link => link.getBoundingClientRect().bottom < 0));
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('.skip-link').evaluate(link => document.activeElement === link), true);
+    assert.ok(await page.locator('.skip-link').evaluate(link => link.getBoundingClientRect().top >= 0));
+    await page.keyboard.press('Tab');
     await page.getByRole('button', { name: 'Load team evidence' }).click();
     await page.getByText('6 source player profiles loaded.', { exact: false }).waitFor();
     await page.locator('#compareSelect').selectOption('p1');

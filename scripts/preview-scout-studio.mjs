@@ -17,6 +17,10 @@ const staticFiles = new Map([
   ['/core.js', ['core.js', 'text/javascript']],
   ['/nav.js', ['nav.js', 'text/javascript']],
   ['/assets/dj-logo.png', ['assets/dj-logo.png', 'image/png']],
+  ['/assets/fonts/inter-400.woff2', ['assets/fonts/inter-400.woff2', 'font/woff2']],
+  ['/assets/fonts/inter-700.woff2', ['assets/fonts/inter-700.woff2', 'font/woff2']],
+  ['/assets/fonts/bebas-neue-400.woff2', ['assets/fonts/bebas-neue-400.woff2', 'font/woff2']],
+  ['/assets/fonts/lobster-two-700.woff2', ['assets/fonts/lobster-two-700.woff2', 'font/woff2']],
 ]);
 
 export function createScoutStudioServer(source) {
@@ -38,6 +42,10 @@ export function createScoutStudioServer(source) {
     if ((request.url || '').length > 2048) return reply({ error: 'Request is too large.' }, 414);
     try {
       const url = new URL(request.url, origin);
+      if (['/index.html', '/tools/index.html', '/lineup-lab/index.html'].includes(url.pathname)) {
+        response.writeHead(302, { Location: `https://www.djshouseofcards-comics.com${url.pathname}` });
+        response.end(); return;
+      }
       if (url.pathname === '/api/scout-studio/status') return reply(await source.status());
       if (url.pathname === '/api/scout-studio/roster' || url.pathname === '/api/scout-studio/chemistry') {
         const team = url.searchParams.get('team') || '', snapshot = url.searchParams.get('snapshot') || '';

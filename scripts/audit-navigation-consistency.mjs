@@ -28,7 +28,7 @@ const htmlFiles = [
   ...fs.readdirSync(root).filter((name) => name.endsWith('.html')),
   ...discoverToolsHtml()
 ].sort();
-const excludedPages = new Set(['offline']);
+const excludedPages = new Set(['offline', 'scout-studio']);
 const normalizeLineEndings = (value) => value.replace(/\r\n?/g, '\n');
 const canonicalNav = `<nav aria-label="Primary navigation" class="site-nav" id="siteNav">
      <ul class="primary-nav__list">

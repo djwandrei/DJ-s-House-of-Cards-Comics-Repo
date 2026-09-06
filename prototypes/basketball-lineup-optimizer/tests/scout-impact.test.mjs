@@ -123,6 +123,69 @@ test("contract-backed Scout RAPM requires a passed held-out offense/defense cali
   assert.equal(passed.calibrationAvailable, true);
 });
 
+function multiseasonEvidence() {
+  const evidence = completeEvidence(Object.fromEntries(players.map(({ id }) => [id, {
+    offense: 2, defense: -1, reliability: 0.2, displayEligible: true,
+  }])));
+  evidence.model = {
+    ...validatedModel, modelVersion: "weighted_ridge_offense_defense_rapm_v2",
+    seasonEndYear: 2026, includedSeasonStartYears: [2022, 2023, 2024, 2025],
+    lambda: 2500, priorSeasonWeight: 0.5, solver: { converged: true },
+    chronologicalCalibration: {
+      version: "chronological_latest_season_tune_test_v1", model: "offenseDefense",
+      method: "prior_seasons_plus_chronological_latest_season_train_tune_test_v1",
+      latestSeasonStartYear: 2025, selectedLambda: 2500, selectedPriorSeasonWeight: 0.5,
+      test: {
+        status: "validated", fullModelImprovesBaseline: true,
+        fullModelMseImprovementVsFixedEffectsBaseline: 0.2,
+        fullModel: { weightedMse: 0.8, heldOutPossessions: 100, directionalObservationCount: 20 },
+        fixedEffectsBaseline: { weightedMse: 1, heldOutPossessions: 100, directionalObservationCount: 20 },
+      },
+    },
+  };
+  return evidence;
+}
+
+test("native multiseason ridge rows retain their fitted O/D values without a transport flag", () => {
+  const model = buildScoutImpactModel(players, multiseasonEvidence(), { mode: "scout" });
+  assert.equal(model.available, true, model.reason);
+  assert.equal(model.impactsById.get("a").offense, 2);
+  assert.equal(model.impactsById.get("a").defense, -1);
+  assert.equal(model.impactsById.get("a").reliability, 0.2);
+});
+
+for (const [name, mutate] of [
+  ["missing chronology", model => { delete model.chronologicalCalibration; }],
+  ["duplicate years", model => { model.includedSeasonStartYears = [2025, 2025]; }],
+  ["future season", model => { model.includedSeasonStartYears.push(2026); }],
+  ["wrong test season", model => { model.chronologicalCalibration.latestSeasonStartYear = 2024; }],
+  ["wrong lambda", model => { model.chronologicalCalibration.selectedLambda = 100; }],
+  ["wrong recency weight", model => { model.chronologicalCalibration.selectedPriorSeasonWeight = 1; }],
+  ["unconverged fit", model => { model.solver.converged = false; }],
+  ["no baseline improvement", model => { model.chronologicalCalibration.test.fullModel.weightedMse = 1.1; }],
+  ["missing MSE", model => { model.chronologicalCalibration.test.fullModel.weightedMse = null; }],
+  ["different test samples", model => { model.chronologicalCalibration.test.fixedEffectsBaseline.heldOutPossessions = 200; }],
+  ["empty test sample", model => { model.chronologicalCalibration.test.fullModel.heldOutPossessions = 0; }],
+]) {
+  test(`multiseason evidence stays disabled: ${name}`, () => {
+    const evidence = multiseasonEvidence(); mutate(evidence.model);
+    const model = buildScoutImpactModel(players, evidence, { mode: "scout" });
+    assert.equal(model.available, false);
+    assert.match(model.reason, /chronological prediction test/);
+  });
+}
+
+test("invalid reliability and missing native display eligibility cannot qualify a player", () => {
+  for (const reliability of [-0.1, 1.1, Infinity, null]) {
+    const evidence = multiseasonEvidence(); evidence.players.a.reliability = reliability;
+    const model = buildScoutImpactModel(players, evidence, { mode: "scout" });
+    assert.equal(model.available, false);
+    assert.deepEqual(model.missingPlayerIds, ["a"]);
+  }
+  const evidence = multiseasonEvidence(); delete evidence.players.a.displayEligible;
+  assert.equal(buildScoutImpactModel(players, evidence, { mode: "scout" }).available, false);
+});
+
 test("minute deltas reconcile separately from exact-five residuals", () => {
   const evidence = {
     ...completeEvidence(),

@@ -34,6 +34,7 @@ const crawlableNoindex = new Set([
   'tools/draft-night/index.html',
   'tools/fix-the-five/index.html',
   'tools/player-card-matchups/index.html',
+  'tools/scout-studio/index.html',
   'tools/workshop/index.html',
   'offline.html'
 ]);
@@ -77,6 +78,7 @@ function expectedCanonical(file) {
   if (file === 'tools/draft-night/index.html') return `${SITE_ORIGIN}/tools/draft-night/`;
   if (file === 'tools/fix-the-five/index.html') return `${SITE_ORIGIN}/tools/fix-the-five/`;
   if (file === 'tools/player-card-matchups/index.html') return `${SITE_ORIGIN}/tools/player-card-matchups/`;
+  if (file === 'tools/scout-studio/index.html') return `${SITE_ORIGIN}/tools/scout-studio/`;
   if (file === 'tools/workshop/index.html') return `${SITE_ORIGIN}/tools/workshop/`;
   return file === 'index.html' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}/${file}`;
 }

@@ -64,7 +64,7 @@ function discoverToolsHtml(relativeDirectory = 'tools') {
   return readdirSync(relativeDirectory, { withFileTypes: true }).flatMap((entry) => {
     const relativePath = path.posix.join(relativeDirectory.replaceAll('\\', '/'), entry.name);
     if (entry.isDirectory()) return discoverToolsHtml(relativePath);
-    return entry.isFile() && entry.name.endsWith('.html') ? [relativePath] : [];
+    return entry.isFile() && entry.name.endsWith('.html') && relativePath !== 'tools/scout-studio/index.html' ? [relativePath] : [];
   });
 }
 

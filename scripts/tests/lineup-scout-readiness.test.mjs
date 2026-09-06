@@ -65,6 +65,8 @@ function fixture() {
     archiveScope: { seasons: [2022, 2023, 2024, 2025] }, errors: [], warnings: [],
   };
   const sourceValidationSha256 = digest(JSON.stringify(sourceValidation));
+  const net = model('net');
+  delete net.solver; // Actual schema-v4 net exports omit this optional field.
   const manifest = {
     schemaVersion: 4, metricsVersion: 'nba-scout-metrics-v4',
     scope: { seasonStartYear: 2022, seasonStartYears: [2022, 2023, 2024, 2025], latestSeasonStartYear: 2025, seasonEndYear: 2026 },
@@ -73,7 +75,7 @@ function fixture() {
       sourceArchiveValidationPassed: true, sourceValidatorVersion: sourceValidation.validatorVersion,
       sourceValidationReportSha256: sourceValidationSha256,
     },
-    rapm: { net: model('net'), offenseDefense: od },
+    rapm: { net, offenseDefense: od },
   };
   const manifestSha256 = digest(JSON.stringify(manifest));
   return {
@@ -117,6 +119,8 @@ const blockedCases = [
   ['missing team coverage', input => { input.packageValidation.checks.teams = 29; }],
   ['no player profiles', input => { input.packageValidation.checks.playerProfiles = 0; }],
   ['unconverged solver', input => { input.manifest.rapm.offenseDefense.solver.converged = false; }],
+  ['missing required O/D solver', input => { delete input.manifest.rapm.offenseDefense.solver; }],
+  ['explicit net solver failure', input => { input.manifest.rapm.net.solver = { converged: false }; }],
   ['missing model', input => { delete input.manifest.rapm.offenseDefense; }],
   ['missing component calibration', input => { delete input.manifest.rapm.offenseDefense.calibration; }],
   ['component status contradicts metrics', input => { input.manifest.rapm.offenseDefense.calibration.allComponentsImproved = false; }],

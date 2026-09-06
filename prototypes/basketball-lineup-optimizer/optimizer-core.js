@@ -6269,7 +6269,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       evidenceLayer: HISTORICAL_RATE_MODEL_VERSION,
       scoutImpactLayer: normalizedConfig.modelMode === "historical"
         ? "separate-not-active"
-        : "scout-impact-v3-primary-od",
+        : "scout-impact-v4-multiseason-evidence",
       // Possession-level RAPM and lineup synergy have different units,
       // uncertainty, and interaction terms from the box-score benchmark. Explicitly
       // reserve a separate layer so a later Scout model cannot silently alter

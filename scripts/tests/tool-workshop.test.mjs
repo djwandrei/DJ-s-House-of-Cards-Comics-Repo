@@ -36,7 +36,7 @@ class MemoryStorage {
 test('workshop definitions are allowlisted planned registry entries', () => {
   const ids = WORKSHOP_DEFINITIONS.map((definition) => definition.id);
   assert.equal(new Set(ids).size, ids.length);
-  assert.equal(ids.length, 9);
+  assert.equal(ids.length, 3);
 
   WORKSHOP_DEFINITIONS.forEach((definition) => {
     const tool = TOOL_REGISTRY.find((entry) => entry.id === definition.id);
@@ -67,12 +67,23 @@ test('workshop definitions are allowlisted planned registry entries', () => {
 });
 
 test('workshop resolver never exposes an unregistered query experience', () => {
-  assert.equal(resolveWorkshopExperience('?experience=statline-sleuth')?.id, 'statline-sleuth');
+  assert.equal(resolveWorkshopExperience('?experience=scouts-call')?.id, 'scouts-call');
   assert.equal(resolveWorkshopExperience('?experience=lineup-dna')?.id, WORKSHOP_DEFINITIONS[0].id);
   assert.equal(resolveWorkshopExperience('?experience=five-role-draft')?.id, WORKSHOP_DEFINITIONS[0].id);
   assert.equal(resolveWorkshopExperience('?experience=not-a-real-tool')?.id, WORKSHOP_DEFINITIONS[0].id);
   assert.equal(resolveWorkshopExperience('')?.id, WORKSHOP_DEFINITIONS[0].id);
   assert.equal(getWorkshopDefinition('not-a-real-tool'), null);
+});
+
+test('user-retired concepts cannot return to the registry or workshop picker', () => {
+  for (const id of ['two-truths-one-box-score', 'evidence-court', 'statline-sleuth',
+    'optimizer-sensitivity-studio', 'franchise-fingerprints', 'phase-flip']) {
+    assert.equal(TOOL_REGISTRY.some(tool => tool.id === id), false, `${id} remains in the roadmap`);
+    assert.equal(getWorkshopDefinition(id), null);
+    assert.equal(resolveWorkshopExperience(`?experience=${id}`)?.id, WORKSHOP_DEFINITIONS[0].id,
+      'A retired deep link must use the existing honest unrecognized-framework fallback');
+  }
+  assert.deepEqual(WORKSHOP_DEFINITIONS.map(definition => definition.id), ['rotation-rescue', 'scouts-call', 'what-breaks-this-five']);
 });
 
 test('workshop local drafts are namespaced and restricted to declared fields', () => {

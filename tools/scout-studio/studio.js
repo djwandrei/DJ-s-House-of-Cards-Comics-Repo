@@ -10,11 +10,16 @@ const el = (tag, text, className) => {
 let state = null, players = [], selected = [], loadedTeam = null, generation = 0, controller = null, busy = false;
 
 function table(headers, rows, caption) {
+  const block = el('div');
+  // Keep the explanation outside the horizontally scrollable table so a
+  // narrow-screen reader sees the complete qualification before the numbers.
+  const explanation = el('p', caption, 'studio-muted');
+  block.append(explanation);
   const wrap = el('div', undefined, 'studio-table-wrap');
   wrap.tabIndex = 0;
   wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', caption);
   const node = el('table', undefined, 'studio-table');
-  node.append(el('caption', caption));
+  node.setAttribute('aria-label', caption);
   const head = el('thead'), header = el('tr');
   headers.forEach(label => { const cell = el('th', label); cell.scope = 'col'; header.append(cell); });
   head.append(header); node.append(head);
@@ -24,7 +29,9 @@ function table(headers, rows, caption) {
     if (index === 0) cell.scope = 'row';
     tr.append(cell);
   }); body.append(tr); });
-  node.append(body); wrap.append(node); return wrap;
+  node.append(body); wrap.append(node); block.append(wrap);
+  block.append(el('p', 'On a narrow screen, scroll the table sideways to see every column.', 'studio-table-hint studio-muted'));
+  return block;
 }
 
 function setBusy(value) {
@@ -75,7 +82,8 @@ async function refresh() {
       ? `Choose a team below. ${result.warnings?.length || 0} validation warning(s) remain available in the private reports for review.`
       : result.phase === 'blocked' ? 'The supplied evidence did not clear the integration checks. Results remain unavailable; review the private validation reports.'
         : 'The completed four-season manifest and its matching validation report are not available yet. The older package will not be substituted.';
-    byId('sourceScope').textContent = `${result.source?.aggregation || ''} ${ready ? `Included phases: ${(result.source?.phases || []).join(', ')}.` : ''}`;
+    const phaseLabels = { regular: 'regular season', in_season_tournament: 'in-season tournament', play_in: 'play-in', playoffs: 'playoffs' };
+    byId('sourceScope').textContent = `${result.source?.aggregation || ''} ${ready ? `Included phases: ${(result.source?.phases || []).map(phase => phaseLabels[phase] || phase).join(', ')}.` : ''}`;
     byId('workspace').hidden = !ready; byId('pendingPanel').hidden = ready;
     byId('teamSelect').replaceChildren(...result.teams.map(team => {
       const option = el('option', team.name); option.value = team.id; return option;

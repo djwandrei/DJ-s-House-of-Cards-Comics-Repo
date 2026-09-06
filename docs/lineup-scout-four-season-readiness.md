@@ -27,12 +27,14 @@ The three possible results are:
   **not deployment approval** and does not certify every player's box scores.
 
 Checks include exact season scope, SHA-256 binding of both validation layers,
-completed-package status, team/profile coverage, solver convergence, and the
+completed-package status, team/profile coverage, primary O/D solver convergence, and the
 existing package validator's chronological prediction and O/D ablation checks.
 Additional checks require dated, nonempty train/tune/test blocks and identical
 nonzero test denominators for the model and baseline. Equal scheduled times
 at a split boundary produce a review warning, not an invented leakage claim.
 Game-ID disjointness cannot be proved from aggregate date ranges alone.
+Schema v4 does not export the net model's solver diagnostics. Their absence is
+not a failure; an explicitly reported net solver failure is still rejected.
 
 The preflight reuses `validate-local-scout-analytics.mjs` checks; it does not
 replace that script's full streaming shard/replay validation. Rerun the full

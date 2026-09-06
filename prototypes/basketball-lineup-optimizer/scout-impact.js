@@ -16,7 +16,7 @@
  *    until independent incremental validation avoids double-counting RAPM.
  */
 
-export const SCOUT_IMPACT_MODEL_VERSION = "scout-impact-v3-primary-od";
+export const SCOUT_IMPACT_MODEL_VERSION = "scout-impact-v4-multiseason-evidence";
 export const SCOUT_MODEL_MODES = Object.freeze(["historical", "hybrid", "scout"]);
 
 const PLAYER_IMPACT_ALIASES = Object.freeze({
@@ -94,7 +94,9 @@ function reliabilityValue(row) {
   for (const source of evidenceObjects(row)) {
     for (const alias of ["reliability", "ridgeReliabilityProxy", "reliabilityProxy"]) {
       const value = finite(source?.[alias]);
-      if (value !== null) return clamp(value, 0, 1);
+      // Bad evidence must not become perfect reliability through clamping.
+      // A real zero is valid; an out-of-range value is a contract failure.
+      if (value !== null) return value >= 0 && value <= 1 ? value : null;
     }
   }
   return null;
@@ -124,12 +126,57 @@ function modelCalibrationGate(evidence) {
     && calibration.status === "validated"
     && calibration.allComponentsImproved === true
   ) {
-    return { required: true, available: true, reason: null };
+    return chronologicalModelGate(model);
   }
   return {
     required: true,
     available: false,
     reason: "Scout model metadata did not pass its held-out offense/defense calibration, so its RAPM values stayed separate from the optimizer.",
+  };
+}
+
+/**
+ * Single-season legacy previews have only the O/D game-fold report. A model
+ * advertising a training window/chronological test must also provide the new
+ * evidence. Never allow a multi-year fit to reuse just the older PASS flags.
+ * This compact consumer check supplements, not replaces, the offline package
+ * validator (which checks shards, temporal splits, tuning, and provenance).
+ */
+function chronologicalModelGate(model) {
+  const years = model.includedSeasonStartYears;
+  const report = model.chronologicalCalibration;
+  if (years == null && report == null) return { required: true, available: true, reason: null };
+  const latest = model.seasonEndYear - 1;
+  const full = report?.test?.fullModel;
+  const baseline = report?.test?.fixedEffectsBaseline;
+  const mse = finite(full?.weightedMse);
+  const baselineMse = finite(baseline?.weightedMse);
+  const improvement = baselineMse > 0 && mse !== null ? (baselineMse - mse) / baselineMse : null;
+  const reportedImprovement = finite(report?.test?.fullModelMseImprovementVsFixedEffectsBaseline);
+  const possessions = finite(full?.heldOutPossessions);
+  const observations = finite(full?.directionalObservationCount);
+  const lambda = finite(model.lambda);
+  const priorWeight = finite(model.priorSeasonWeight);
+  const passed = Array.isArray(years) && years.length > 0
+    && years.every(year => Number.isInteger(year) && year >= 1947 && year <= latest)
+    && new Set(years).size === years.length && years.includes(latest)
+    && Number.isInteger(model.seasonEndYear)
+    && report?.version === "chronological_latest_season_tune_test_v1"
+    && report?.method === "prior_seasons_plus_chronological_latest_season_train_tune_test_v1"
+    && report?.model === "offenseDefense" && report?.latestSeasonStartYear === latest
+    && lambda !== null && lambda > 0 && finite(report.selectedLambda) === lambda
+    && priorWeight !== null && priorWeight >= 0 && priorWeight <= 1
+    && finite(report.selectedPriorSeasonWeight) === priorWeight
+    && model.solver?.converged === true
+    && mse !== null && mse >= 0 && improvement > 1e-9
+    && reportedImprovement !== null && Math.abs(reportedImprovement - improvement) <= 1e-9
+    && report.test.status === "validated" && report.test.fullModelImprovesBaseline === true
+    && possessions > 0 && finite(baseline?.heldOutPossessions) === possessions
+    && Number.isSafeInteger(observations) && observations > 0
+    && finite(baseline?.directionalObservationCount) === observations;
+  return {
+    required: true, available: passed,
+    reason: passed ? null : "Scout's multiseason model needs a matching, passed chronological prediction test before it can affect this solve.",
   };
 }
 
@@ -226,6 +273,11 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical", 
     };
   }
   const rows = evidence?.players;
+  // Native package rows are already ridge-regularized even if a transport
+  // adapter has not added the older per-row `alreadyRegularized` flag. Model
+  // identity plus the gates above are authoritative; a reliability proxy is
+  // not a second fitted penalty or a player-specific confidence interval.
+  const ridgeModel = evidence?.model?.modelVersion === "weighted_ridge_offense_defense_rapm_v2";
   const impactsById = new Map();
   const missingPlayerIds = [];
   for (const player of players) {
@@ -234,7 +286,7 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical", 
     const defense = impactValue(row, "defense");
     const reliability = reliabilityValue(row);
     if (
-      row?.displayEligible === false ||
+      (ridgeModel ? row?.displayEligible !== true : row?.displayEligible === false) ||
       offense === null ||
       defense === null ||
       reliability === null
@@ -243,14 +295,10 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical", 
       continue;
     }
     impactsById.set(player.id, {
-      // Store both values so the user's offense/defense priorities can choose
-      // their mix later. Reliability is applied once, here, before percentile
-      // ranking; neither a null component nor a low-sample component is ever
-      // promoted by a later numeric coercion.
-      // Ridge already shrinks these coefficients. The package's reliability
-      // proxy is a diagnostic, NOT another fitted shrinkage coefficient.
-      offense: row.alreadyRegularized === true ? offense : offense * reliability,
-      defense: row.alreadyRegularized === true ? defense : defense * reliability,
+      // Preserve separate offense and defense so the user's priorities can
+      // choose their mix. Only legacy unregularized values use the old proxy.
+      offense: ridgeModel || row.alreadyRegularized === true ? offense : offense * reliability,
+      defense: ridgeModel || row.alreadyRegularized === true ? defense : defense * reliability,
       reliability,
       rawOffense: offense,
       rawDefense: defense,

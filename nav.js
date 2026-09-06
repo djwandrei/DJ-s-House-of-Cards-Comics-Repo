@@ -33,6 +33,7 @@ window.DJ = window.DJ || {};
     metrics: { target: 'admin.html', label: 'Conversion & Performance Metrics' },
     offer: { target: 'shop.html', label: 'Make an Offer' },
     'fan-tools': { target: '/tools/', label: 'Fan Tools' },
+    'scout-studio': { target: '/tools/', label: 'Scout Studio' },
     policies: { target: 'about.html', label: 'Policies & Authenticity' },
     policy: { target: 'about.html', label: 'Policies & Authenticity' },
     'sell-trade-want-list': { target: 'contact.html', label: 'Sell, Trade & Want List' }
