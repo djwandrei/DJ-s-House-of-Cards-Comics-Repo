@@ -24,7 +24,7 @@ window.DJ = window.DJ || {};
   });
   // Bump this whenever storefront product bundles change so JSON/script fallbacks
   // immediately bypass stale browser and service-worker catalog caches.
-  const PRODUCT_ASSET_VERSION = '20260905g';
+  const PRODUCT_ASSET_VERSION = '20260905u';
   const ASSET_HELPER_CACHE_LIMIT = 5000;
   // Below this width the theme button moves into the open navigation drawer so
   // the header can preserve the logo/menu lockup without duplicating controls.
@@ -893,12 +893,12 @@ window.DJ = window.DJ || {};
     themeToggle.setAttribute('aria-label', isDarkMode ? 'Switch to light mode' : 'Switch to dark mode');
   }
 
-  function applySavedTheme() {
-    const theme = safeStorageGet(STORAGE_KEYS.theme) || 'light';
+  function applySavedTheme(theme = safeStorageGet(STORAGE_KEYS.theme)) {
     const themeToggle = document.getElementById('themeToggle');
-    const isDarkMode = theme === 'dark';
+    const isDarkMode = theme !== 'light';
 
     document.body.classList.toggle('dark-mode', isDarkMode);
+    document.body.style.colorScheme = isDarkMode ? 'dark' : 'light';
 
     if (themeToggle) {
       renderThemeToggleState(isDarkMode);
@@ -907,9 +907,9 @@ window.DJ = window.DJ || {};
   }
 
   function toggleTheme() {
-    const nextTheme = (safeStorageGet(STORAGE_KEYS.theme) || 'light') === 'dark' ? 'light' : 'dark';
+    const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
     safeStorageSet(STORAGE_KEYS.theme, nextTheme);
-    applySavedTheme();
+    applySavedTheme(nextTheme);
   }
 
   function initThemeToggle() {

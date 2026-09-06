@@ -424,6 +424,7 @@ function Test-DeployablePath {
     "supabase-client.js",
     "sw.js",
     "terms.html",
+    "theme-init.js",
     "returns.html",
     "sell-trade-want-list.html",
     "wishlist.html"

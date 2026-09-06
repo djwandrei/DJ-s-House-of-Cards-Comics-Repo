@@ -6,7 +6,7 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "browser"],
-  "background_color": "#f3f6fb",
+  "background_color": "#08122f",
   "theme_color": "#1f2fa3",
   "description": "Sports cards, comics, and collectibles storefront.",
   "categories": ["shopping", "sports", "books", "collectibles"],

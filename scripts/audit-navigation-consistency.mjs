@@ -29,6 +29,7 @@ const htmlFiles = [
   ...discoverToolsHtml()
 ].sort();
 const excludedPages = new Set(['offline']);
+const normalizeLineEndings = (value) => value.replace(/\r\n?/g, '\n');
 const canonicalNav = `<nav aria-label="Primary navigation" class="site-nav" id="siteNav">
      <ul class="primary-nav__list">
       <li class="primary-nav__item">
@@ -102,7 +103,7 @@ function applyCanonicalNav(html, file) {
 
 function verifyCanonicalNav(html, file) {
   const navMarkup = getNavMarkup(html, file);
-  if (navMarkup !== canonicalNav) {
+  if (normalizeLineEndings(navMarkup) !== canonicalNav) {
     throw new Error(`${file}: primary navigation differs from the canonical header.`);
   }
   if ((navMarkup.match(/data-cart-link/g) || []).length !== 1) {
