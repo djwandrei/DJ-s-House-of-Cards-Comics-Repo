@@ -10,6 +10,14 @@ const htmlEntries = [
     .filter((name) => String(name).endsWith('.html'))
     .map((name) => path.posix.join('tools', String(name).replaceAll('\\', '/'))),
 ];
+const core = readFileSync(path.join(root, 'core.js'), 'utf8');
+const assetVersionMatch = core.match(/const PRODUCT_ASSET_VERSION = '([^']+)'/);
+assert.ok(assetVersionMatch, 'core.js must define PRODUCT_ASSET_VERSION');
+const assetVersion = assetVersionMatch[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const themeBootstrapPattern = new RegExp(
+  `<body\\b(?=[^>]*\\bclass=(['\"])[^'\"]*\\bdark-mode\\b[^'\"]*\\1)[^>]*>\\s*<script\\s+src=(['\"])(?:\\.\\.\\/)*theme-init\\.js\\?v=${assetVersion}\\2>`,
+  'i',
+);
 
 test('every shared storefront entry defaults dark before page content and honors light storage', () => {
   assert.ok(htmlEntries.length >= 20);
@@ -17,7 +25,7 @@ test('every shared storefront entry defaults dark before page content and honors
     const html = readFileSync(path.join(root, entry), 'utf8');
     assert.match(
       html,
-      /<body\b(?=[^>]*\bclass=(['\"])[^'\"]*\bdark-mode\b[^'\"]*\1)[^>]*>\s*<script\s+src=(['\"])(?:\.\.\/)*theme-init\.js\?v=20260905u\2>/i,
+      themeBootstrapPattern,
       entry + ' must bootstrap the dark default before visible content',
     );
   }
@@ -27,7 +35,6 @@ test('every shared storefront entry defaults dark before page content and honors
 });
 
 test('the existing theme control preserves an explicit choice and PWA opens dark', () => {
-  const core = readFileSync(path.join(root, 'core.js'), 'utf8');
   assert.match(core, /const isDarkMode = theme !== 'light'/);
   assert.match(core, /const nextTheme = document\.body\.classList\.contains\('dark-mode'\) \? 'light' : 'dark'/);
   assert.match(core, /safeStorageSet\(STORAGE_KEYS\.theme, nextTheme\)/);
