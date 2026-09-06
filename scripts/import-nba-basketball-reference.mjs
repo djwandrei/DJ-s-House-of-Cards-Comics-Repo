@@ -1374,6 +1374,7 @@ async function fetchMediaAsset(url, cacheFile, fetchPage) {
 function buildMediaSql({ runId, mediaRows }) {
   if (!mediaRows.length) return '';
   return `
+begin;
 do $$
 begin
   if to_regclass('public.nba_headshot_url_overrides') is null then
@@ -1381,7 +1382,6 @@ begin
   end if;
 end $$;
 
-begin;
 create temporary table _nba_bref_media_stage (
   subject_type text not null,
   external_id text,
