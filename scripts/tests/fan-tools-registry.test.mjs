@@ -94,3 +94,16 @@ test('fan tool status summary is derived from the registry', () => {
     [TOOL_STATUSES.RESEARCH]: 4
   });
 });
+
+test('retired tool definitions and registry dependencies use the current cache revision', () => {
+  const core = fs.readFileSync(path.join(root, 'core.js'), 'utf8');
+  const version = core.match(/PRODUCT_ASSET_VERSION\s*=\s*'([^']+)'/)[1];
+  for (const [file, dependencies] of [
+    ['tools/fan-tools.js', ['./registry.js']],
+    ['tools/workshop/tool-workshop.js', ['../registry.js', './definitions.js', './workshop-state.js']],
+    ['tools/workshop/workshop-state.js', ['./definitions.js']]
+  ]) {
+    const source = fs.readFileSync(path.join(root, file), 'utf8');
+    for (const dependency of dependencies) assert.ok(source.includes(`'${dependency}?v=${version}'`), `${file}: stale ${dependency}`);
+  }
+});

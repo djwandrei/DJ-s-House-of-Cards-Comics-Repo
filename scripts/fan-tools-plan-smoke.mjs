@@ -32,7 +32,8 @@ const server = createServer(async (request, response) => {
   } catch { response.writeHead(404); response.end(); }
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-const base = `http://127.0.0.1:${server.address().port}`;
+const live = process.argv.includes('--live');
+const base = live ? 'https://www.djshouseofcards-comics.com' : `http://127.0.0.1:${server.address().port}`;
 let browser;
 try {
   const executablePath = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
@@ -42,13 +43,25 @@ try {
   const errors = [];
   for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
     const context = await browser.newContext({ viewport });
-    await context.route('**/*', route => route.request().url().startsWith(base) ? route.continue() : route.abort());
+    // Production smoke checks never submit analytics, checkout, or other writes.
+    await context.route('**/*', route => new URL(route.request().url()).origin === base
+      && ['GET', 'HEAD'].includes(route.request().method()) ? route.continue() : route.abort());
     const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
-    await page.goto(`${base}/tools/`);
+    await page.goto(`${base}/tools/?release-check=20260906a`);
     await page.locator('#toolsGrid article').first().waitFor({ state: 'attached' });
     assert.equal(await page.locator('#toolsGrid article').count(), 6);
     assert.equal(await page.locator('[data-status-count="planned"]').innerText(), '6');
     assert.equal(await page.locator('#toolsFeatured article').count(), 5);
+    await page.locator('[data-play-filter="games"]').click();
+    assert.equal(await page.locator('#toolsFeatured article:visible').count(), 2);
+    await page.locator('[data-play-filter="tools"]').click();
+    assert.equal(await page.locator('#toolsFeatured article:visible').count(), 3);
+    await page.locator('#suggestPlay').click();
+    assert.equal(await page.locator('#toolsFeatured article.is-suggested:visible').count(), 1);
+    await page.locator('[data-play-filter="all"]').click();
+    assert.equal(await page.locator('#toolsFeatured article:visible').count(), 5);
+    await page.locator('#playNow').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: path.join(output, `play-picker-${viewport.width}.png`) });
     for (const id of removed) assert.equal(await page.locator(`[data-tool-id="${id}"]`).count(), 0);
     await page.locator('.tools-roadmap-disclosure summary').click();
     await page.locator('#toolsRoadmap').scrollIntoViewIfNeeded();
@@ -72,7 +85,8 @@ try {
   }
   assert.deepEqual(errors, []);
   console.log(JSON.stringify({ passed: true, viewports: [1440, 390], planned: 6, workshops: 3,
-    checked: ['all six absent from hub and picker', 'retired deep links', 'retained workshop save/reload'], screenshots: output }));
+    environment: live ? 'production' : 'local',
+    checked: ['all six absent from hub and picker', 'live experience filters and suggestion', 'retired deep links', 'retained workshop save/reload'], screenshots: output }));
 } finally {
   await browser?.close();
   await new Promise(resolve => { server.closeAllConnections(); server.close(resolve); });

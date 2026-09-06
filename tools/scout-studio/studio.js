@@ -1,4 +1,4 @@
-import { compareBlueprints, formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260905u';
+import { compareBlueprints, formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260906a';
 
 const byId = id => document.getElementById(id);
 const el = (tag, text, className) => {

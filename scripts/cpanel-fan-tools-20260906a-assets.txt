@@ -1,0 +1,8 @@
+# Scoped fan-tools retirement release. Upload before pages. No deletes.
+core.js
+tools/fan-tools.css
+tools/fan-tools.js
+tools/workshop/tool-workshop.js
+tools/workshop/workshop-state.js
+tools/registry.js
+tools/workshop/definitions.js
