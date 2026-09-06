@@ -191,7 +191,7 @@ function normalizedPossessionImpact(evidence) {
   if (
     evidence?.validation?.sourceProvenancePassed !== true
     || evidence?.validation?.boxScoreReconciled !== true
-    || evidence.displayEligible === false
+    || evidence.displayEligible !== true
   ) {
     return {
       available: false,

@@ -1374,6 +1374,13 @@ async function fetchMediaAsset(url, cacheFile, fetchPage) {
 function buildMediaSql({ runId, mediaRows }) {
   if (!mediaRows.length) return '';
   return `
+do $$
+begin
+  if to_regclass('public.nba_headshot_url_overrides') is null then
+    raise exception 'NBA headshot override registry is unavailable; apply the corresponding analytics migration before importing media.';
+  end if;
+end $$;
+
 begin;
 create temporary table _nba_bref_media_stage (
   subject_type text not null,
@@ -1400,7 +1407,7 @@ from jsonb_to_recordset(${sqlJson(mediaRows)}) as row_data(
 
 update public.nba_media_assets as media
 set
-  asset_url = stage.asset_url,
+  asset_url = coalesce(headshot_overrides.asset_url, stage.asset_url),
   alt_text = stage.alt_text,
   source_name = ${sqlLiteral(BASKETBALL_REFERENCE_SOURCE)},
   source_url = stage.source_url,
@@ -1412,6 +1419,9 @@ left join public.nba_player_external_ids as external_ids
   on stage.subject_type = 'player'
  and external_ids.source_name = ${sqlLiteral(BASKETBALL_REFERENCE_SOURCE)}
  and external_ids.external_id = stage.external_id
+left join public.nba_headshot_url_overrides as headshot_overrides
+  on stage.subject_type = 'player'
+ and headshot_overrides.player_id = external_ids.player_id
 left join public.nba_team_seasons as team_seasons
   on stage.subject_type = 'team'
  and team_seasons.season_end_year = stage.season_end_year
@@ -1434,7 +1444,7 @@ select
   case when stage.subject_type = 'player' then external_ids.player_id end,
   case when stage.subject_type = 'team' then team_seasons.id end,
   stage.asset_kind,
-  stage.asset_url,
+  coalesce(headshot_overrides.asset_url, stage.asset_url),
   stage.alt_text,
   ${sqlLiteral(BASKETBALL_REFERENCE_SOURCE)},
   stage.source_url,
@@ -1446,6 +1456,9 @@ left join public.nba_player_external_ids as external_ids
   on stage.subject_type = 'player'
  and external_ids.source_name = ${sqlLiteral(BASKETBALL_REFERENCE_SOURCE)}
  and external_ids.external_id = stage.external_id
+left join public.nba_headshot_url_overrides as headshot_overrides
+  on stage.subject_type = 'player'
+ and headshot_overrides.player_id = external_ids.player_id
 left join public.nba_team_seasons as team_seasons
   on stage.subject_type = 'team'
  and team_seasons.season_end_year = stage.season_end_year

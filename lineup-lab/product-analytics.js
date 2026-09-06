@@ -595,7 +595,7 @@ function validatedObservedSynergy(evidence, selectedIds) {
   if (
     evidence?.validation?.sourceProvenancePassed !== true
     || evidence?.validation?.boxScoreReconciled !== true
-    || evidence?.displayEligible === false
+    || evidence?.displayEligible !== true
     || evidence?.publishable === false
     || !String(evidence?.modelVersion || "").trim()
   ) {
@@ -753,7 +753,7 @@ function adjustedImpact(evidence) {
   if (
     validation.sourceProvenancePassed !== true
     || validation.boxScoreReconciled !== true
-    || evidence.displayEligible === false
+    || evidence.displayEligible !== true
   ) {
     return { available: false, reason: "Possession impact failed provenance, box-score reconciliation, or display-eligibility gates." };
   }
@@ -867,6 +867,10 @@ export function assessBasketballProductReadiness(options = {}) {
   const possessionImpactReady = players.some((player, index) => adjustedImpact(
     impactEvidenceForPlayer(options.impactEvidenceById, playerId(player, index)),
   ).available);
+  const individualEvaluationSet = players.length > 0 ? evaluateIndividualPlayers(players, options) : null;
+  const boxModelReady = individualEvaluationSet?.records.some(
+    (record) => record.coverage.boxModelMetricCount > 0,
+  ) === true;
   const records = [
     {
       id: "optimalLineup",
@@ -916,9 +920,13 @@ export function assessBasketballProductReadiness(options = {}) {
     },
     {
       id: "playerImpact",
-      status: possessionImpactReady ? "partial" : "box-model-only",
-      available: players.length > 0,
-      reason: "Production, box-score impact, possession-adjusted impact, and fit remain separate with independent availability gates.",
+      status: possessionImpactReady ? "partial" : boxModelReady ? "box-model-only" : "evidence-gated",
+      available: possessionImpactReady || boxModelReady,
+      reason: possessionImpactReady
+        ? "Validated possession-adjusted impact is available alongside any box-score model evidence."
+        : boxModelReady
+          ? "Advanced box-score impact is available; possession-adjusted impact remains independently gated."
+          : "No advanced box-score impact or validated possession-adjusted impact is available.",
     },
     {
       id: "skillDecomposition",
@@ -951,6 +959,7 @@ export function assessBasketballProductReadiness(options = {}) {
       hasValidatedTracking: validatedTracking,
       hasValidatedMatchups: validatedMatchups,
       hasValidatedCareerModel: validatedCareerModel,
+      hasBoxModelImpact: boxModelReady,
       hasValidatedPossessionImpact: possessionImpactReady,
     },
     records,

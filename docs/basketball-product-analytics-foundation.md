@@ -31,8 +31,10 @@ The individual evaluator currently retains:
 
 Each available metric returns its raw value, unit, cohort percentile, direction,
 metric-specific comparison count and coverage, evidence mode, cumulative/rate
-status, and sample confidence. Fewer than five comparable values can still be
-shown descriptively but cannot enter a quality index. Usage and attempt rates
+status, and sample confidence. At least two comparable values are required for
+a percentile; fewer than five comparable values can still be shown
+descriptively but cannot enter a quality index. The selected player snapshot is
+authoritative when an older reference-cohort row has the same ID. Usage and attempt rates
 are descriptive: a higher value is not automatically better. Cumulative metrics
 are explicitly marked because opportunity affects them. An overall index is
 created only when a product supplies visible category weights.

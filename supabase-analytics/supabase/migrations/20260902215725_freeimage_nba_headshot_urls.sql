@@ -1,9 +1,20 @@
--- Repoint NBA headshots to the user's verified FreeImage direct-image URLs.
--- Original provider provenance remains in source_name/source_url.
-do $$
-declare
-  changed_rows integer;
-begin
+-- Record NBA headshot URL overrides before any media import happens.  This
+-- historical migration must be able to replay against an empty local database,
+-- where nba_media_assets deliberately has no rows yet.
+create table if not exists public.nba_headshot_url_overrides (
+  player_id uuid primary key,
+  asset_url text not null check (length(trim(asset_url)) > 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.nba_headshot_url_overrides enable row level security;
+revoke all on table public.nba_headshot_url_overrides from public, anon, authenticated, service_role;
+grant select on table public.nba_headshot_url_overrides to service_role;
+
+comment on table public.nba_headshot_url_overrides is
+  'Private canonical NBA player-headshot URL overrides. Player IDs intentionally have no foreign key so a clean schema bootstrap can load reviewed URLs before player/media imports.';
+
 with freeimage_headshots(player_id, asset_url) as (
 values
   ('001c5294-3163-4b7d-8d10-a0aa8d3f0405'::uuid, 'https://iili.io/nHx8249.jpg'),
@@ -2332,15 +2343,34 @@ values
   ('ffbe870c-4c3e-4879-805a-de9d652ee115'::uuid, 'https://iili.io/nHzVC5N.jpg'),
   ('fffe47ae-5857-444c-9c12-6cfb1b8c8b4f'::uuid, 'https://iili.io/nHTUvR9.jpg')
 )
-update public.nba_media_assets as media
-set asset_url = freeimage_headshots.asset_url
+insert into public.nba_headshot_url_overrides (player_id, asset_url)
+select player_id, asset_url
 from freeimage_headshots
-where media.player_id = freeimage_headshots.player_id
-  and media.asset_kind = 'headshot'
-  and media.asset_url is distinct from freeimage_headshots.asset_url;
+on conflict (player_id) do update set
+  asset_url = excluded.asset_url,
+  updated_at = now();
 
-get diagnostics changed_rows = row_count;
-if changed_rows <> 2325 then
-  raise exception 'Expected 2325 NBA FreeImage headshot updates; changed %.', changed_rows;
-end if;
+do $$
+declare
+  expected_rows constant integer := 2325;
+  override_rows integer;
+begin
+  select count(*)::integer
+  into override_rows
+  from public.nba_headshot_url_overrides;
+
+  if override_rows <> expected_rows then
+    raise exception 'Expected % NBA headshot URL overrides; found %.', expected_rows, override_rows;
+  end if;
 end $$;
+
+-- Original provider provenance remains in source_name/source_url. Reconcile
+-- only media that exists at this point; later imports read the same registry.
+update public.nba_media_assets as media
+set
+  asset_url = overrides.asset_url,
+  updated_at = now()
+from public.nba_headshot_url_overrides as overrides
+where media.player_id = overrides.player_id
+  and media.asset_kind = 'headshot'
+  and media.asset_url is distinct from overrides.asset_url;

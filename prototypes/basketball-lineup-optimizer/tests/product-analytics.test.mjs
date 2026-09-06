@@ -168,6 +168,7 @@ test("keeps explainable fit separate from independently validated observed syner
       rawSynergyPer100: 5,
       possessions: 1000,
       priorPossessions: 1000,
+      displayEligible: true,
       modelVersion: "lineup-test-v1",
       validation: { sourceProvenancePassed: true, boxScoreReconciled: true },
     },
@@ -189,6 +190,7 @@ test("requires certified reliability before publishing already-shrunk synergy", 
     shrunkSynergyPer100: 2.2,
     alreadyShrunk: true,
     publishable: true,
+    displayEligible: true,
     modelVersion: "lineup-test-v2",
     validation: { sourceProvenancePassed: true, boxScoreReconciled: true },
   };
@@ -247,9 +249,68 @@ test("does not promote an invalid possession evidence container to partial readi
   });
 
   assert.equal(readiness.byId.playerImpact.status, "box-model-only");
+  assert.equal(readiness.generatedFrom.hasBoxModelImpact, true);
   assert.equal(readiness.generatedFrom.hasValidatedPossessionImpact, false);
   assert.equal(readiness.byId.chemistry.available, false);
   assert.equal(readiness.byId.chemistry.status, "needs-input");
+});
+
+test("does not advertise player impact when only descriptive advanced rates exist", () => {
+  const descriptiveOnly = {
+    id: "descriptive-only",
+    name: "Descriptive only",
+    games: 70,
+    minutes: 30,
+    points: 14,
+    assists: 4,
+    rebounds: 5,
+    analytics: {
+      seasonTotals: { games: 70, minutes: 2100 },
+      seasonAdvanced: {
+        true_shooting_percentage: 0.58,
+        usage_percentage: 0.2,
+        assist_percentage: 0.18,
+      },
+    },
+  };
+  const readiness = assessBasketballProductReadiness({ players: [descriptiveOnly] });
+
+  assert.equal(readiness.byId.playerImpact.status, "evidence-gated");
+  assert.equal(readiness.byId.playerImpact.available, false);
+  assert.equal(readiness.generatedFrom.hasBoxModelImpact, false);
+  assert.equal(readiness.generatedFrom.hasValidatedPossessionImpact, false);
+});
+
+test("requires explicit display eligibility for observed synergy and possession impact", () => {
+  const players = cohort().slice(0, 2);
+  const validation = { sourceProvenancePassed: true, boxScoreReconciled: true };
+  const chemistry = analyzeLineupChemistry(players, {
+    referencePlayers: cohort(),
+    observedLineupEvidence: {
+      playerIds: players.map((item) => item.id),
+      rawSynergyPer100: 3,
+      possessions: 500,
+      modelVersion: "lineup-test-v3",
+      validation,
+    },
+  });
+  const value = buildPlayerValueProfiles([players[0]], {
+    referencePlayers: cohort(),
+    impactEvidenceById: {
+      [players[0].id]: {
+        offensiveRapm: 2,
+        defensiveRapm: 1,
+        reliability: 0.8,
+        modelVersion: "rapm-test-v2",
+        validation,
+      },
+    },
+  }).records[0];
+
+  assert.equal(chemistry.observedSynergy.available, false);
+  assert.match(chemistry.observedSynergy.reason, /display eligibility/i);
+  assert.equal(value.impact.possessionAdjusted.available, false);
+  assert.match(value.impact.possessionAdjusted.reason, /display eligibility/i);
 });
 
 test("requires a model version for otherwise validated possession impact", () => {

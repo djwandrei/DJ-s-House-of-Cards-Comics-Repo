@@ -59,6 +59,21 @@ test("supports zero pace variance and neutral equal-team inputs without a hidden
   assert.equal(Number((result.results.home.probability + result.results.away.probability).toFixed(4)), 1);
 });
 
+test("supports a zero score variance deterministic boundary", () => {
+  const result = simulateGame(gameInput({
+    possessions: { mean: 100, standardDeviation: 0, minimum: 90, maximum: 110 },
+    scoreStandardDeviation: 0,
+    neutralSite: true,
+  }), { iterations: 500, seed: "deterministic-score" });
+
+  assert.equal(result.assumptions.scoreStandardDeviation, 0);
+  assert.equal(result.results.home.score.mean, 118);
+  assert.equal(result.results.home.score.standardDeviation, 0);
+  assert.equal(result.results.away.score.mean, 108);
+  assert.equal(result.results.away.score.standardDeviation, 0);
+  assert.equal(result.results.home.probability, 1);
+});
+
 test("simulates a best-of-seven schedule and stops after either team reaches four wins", () => {
   const result = simulateSeries({
     teamA: { id: "A", expectedPointsPer100: 116 },

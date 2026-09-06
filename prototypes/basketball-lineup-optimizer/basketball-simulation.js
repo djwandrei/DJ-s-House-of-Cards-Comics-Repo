@@ -145,7 +145,7 @@ function normalizeGameInput(input, options = {}) {
     input?.possessions?.standardDeviation,
     "possessions.standardDeviation",
   );
-  const scoreStandardDeviation = positive(input?.scoreStandardDeviation, "scoreStandardDeviation");
+  const scoreStandardDeviation = nonNegative(input?.scoreStandardDeviation, "scoreStandardDeviation");
   const scoreCorrelation = finite(input?.scoreCorrelation ?? 0, "scoreCorrelation");
   if (scoreCorrelation < -0.95 || scoreCorrelation > 0.95) {
     throw new RangeError("scoreCorrelation must be from -0.95 through 0.95.");

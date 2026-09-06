@@ -156,15 +156,19 @@ production so their units do not get mixed:
 - When same-season evidence exists, `sampleAdjusted` first blends each observed
   rate toward the imported league baseline before percentile ranking:
   `baseline + n / (n + k) * (observed - baseline)`. The sample `n` uses
-  standardized per-appearance opportunity over 50 appearances so a trade or
-  short team stint cannot reduce a player's projection. True season-wide totals
-  take precedence when available. Metric-specific conservative priors are 750
+  actual matched opportunity from the same numerator/denominator scope. Complete
+  season-wide totals take precedence; otherwise a complete selected-team pair
+  can be used with that narrower scope disclosed. Missing counts receive a
+  baseline-only prior and never an imagined 50-game sample. Metric-specific
+  conservative priors are 750
   minutes for points, 500 for rebounds, 700 for assists and ball security, 900
   for steals and blocks, 500 field-goal attempts for eFG%, 180 three-point
-  attempts for 3P%, and 1,200 minutes for OBPM/DBPM. The versioned parameters
-  apply a documented multiplier to these priors for Reliable, Balanced, or
-  Upside mode. These are transparent projection settings, not fitted
-  player-impact coefficients.
+  attempts for 3P%, and 1,200 minutes for OBPM/DBPM. Those posterior-mean priors
+  are identical across Reliable, Balanced, and Upside. Risk mode changes the
+  separately reported downside reserve and responsibility-expansion sensitivity,
+  not the expected-rate evidence. Shooting accuracy and demonstrated attempt
+  frequency retain separate support calculations. These are transparent
+  projection settings, not fitted player-impact coefficients.
 - The responsibility layer reads reported usage when comparable data exists. It
   estimates only the extra on-ball burden needed when a low-usage player expands
   beyond his established role, with metric-specific elasticity. It removes only
