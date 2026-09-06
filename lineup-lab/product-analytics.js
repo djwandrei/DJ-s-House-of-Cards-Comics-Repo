@@ -1,13 +1,13 @@
 import {
   classifyPlayerSeasonRolePool,
   derivePlayerRateViews,
-} from "./fan-analytics.js?v=20260905j";
+} from "./fan-analytics.js?v=20260906a";
 import {
   buildLineupRoleModel,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260905j";
-import { readPlayerUsage } from "./player-projection.js?v=20260905j";
-import { evaluateIndividualPlayers } from "./individual-player-evaluation.js?v=20260905j";
+} from "./lineup-role-model.js?v=20260906a";
+import { readPlayerUsage } from "./player-projection.js?v=20260906a";
+import { evaluateIndividualPlayers } from "./individual-player-evaluation.js?v=20260906a";
 
 /**
  * Shared, browser-safe analytics contracts for future basketball products.

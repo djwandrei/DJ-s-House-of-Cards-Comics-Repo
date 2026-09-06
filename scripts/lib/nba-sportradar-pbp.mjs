@@ -814,15 +814,33 @@ const OFFICIAL_BOX_SCORE_FIELDS = [
 function normalizeOfficialBoxScore(record, label) {
   const fields = {};
   const availableFields = [];
+  const invalidFields = [];
+  const rejectedValues = {};
   for (const [field, aliases] of OFFICIAL_BOX_SCORE_FIELDS) {
     const raw = statisticValue(record, aliases);
-    if (raw !== undefined && raw !== null && raw !== '') availableFields.push(field);
-    fields[field] = nullableStatisticInteger(record, aliases, `${label}.${field}`, { minimum: 0 });
+    try {
+      fields[field] = nullableStatisticInteger(record, aliases, `${label}.${field}`, { minimum: 0 });
+      if (fields[field] !== null) availableFields.push(field);
+    } catch (error) {
+      if (!(error instanceof SportradarNbaNormalizationError)) throw error;
+      // A provider sentinel/invalid count must not become zero, nor discard
+      // every valid player, event, and stat from the same game. Keep this one
+      // field unknown and retain its rejected scalar for source review. The
+      // independent reconciliation gate will NOT certify it as complete.
+      fields[field] = null;
+      invalidFields.push(field);
+      rejectedValues[field] = typeof raw === 'number' && Number.isFinite(raw) ? raw
+        : typeof raw === 'number' || typeof raw === 'boolean' ? String(raw)
+          : typeof raw === 'string' ? raw.slice(0, 256) : null;
+    }
   }
   return {
     source: 'summary_endpoint',
     availableFields,
     fields,
+    // Preserve the legacy shape for valid records. Add diagnostics only for
+    // an actual invalid field, so existing consumers stay backwards compatible.
+    ...(invalidFields.length ? { invalidFields, rejectedValues, validationStatus: 'partial_invalid_source_fields' } : {}),
   };
 }
 

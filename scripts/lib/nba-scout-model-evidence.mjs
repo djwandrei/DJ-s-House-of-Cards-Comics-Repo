@@ -163,6 +163,13 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
     // Five seconds is an explicit reconciliation tolerance, not extra playing
     // time, a role prior, or a minute restriction in the optimizer.
     const minutesReconciled = officialMinutes !== null && Math.abs(officialMinutes - observed.minutes) <= 5 / 60;
+    // PBP totals span the entire game, but reconstruction can miss part of a
+    // player's court time. Dividing those totals by an incomplete stint sum
+    // would manufacture inflated per-36 production. Use the independent
+    // full-game minute exposure only after the two sources reconcile. Keep
+    // official-source rates separate: they can remain descriptive even when
+    // the PBP reconstruction is unusable for workload training.
+    const pbpRateMinutes = minutesReconciled ? officialMinutes : null;
     const fieldReconciliation = Object.fromEntries(BOX_FIELDS.map(field => [field,
       official[field] === null || pbp[field] === null ? 'unavailable' : official[field] === pbp[field] ? 'matched' : 'mismatch',
     ]));
@@ -173,9 +180,15 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
       opponentTeamId: teamIds.find(teamId => teamId !== observed.teamId), isHome: observed.teamId === teamIds[0],
       officialMinutes, pbpTotals: pbp, officialTotals: official,
       fieldReconciliation, boxScoreReconciled, minutesReconciled,
+      invalidOfficialFields: BOX_FIELDS.filter(field => summary?.officialBoxScore?.invalidFields?.includes(field)),
       missingOfficialFields, mismatchedFields, unverifiedFields, officialIdentityIssues: officialIssues, pbpIdentityIssues: pbpIssues,
       trainingEligible: boxScoreReconciled && minutesReconciled && officialMinutes > 0 && reconstruction.isEligible === true,
-      rates: boxRates(pbp, observed.minutes),
+      rates: boxRates(pbp, pbpRateMinutes),
+      officialRates: boxRates(official, officialMinutes),
+      rateExposure: {
+        pbpPer36Minutes: pbpRateMinutes, officialPer36Minutes: officialMinutes,
+        definition: 'Full-game independent Summary minutes; PBP per-36 withheld when reconstructed minutes do not reconcile.',
+      },
       // Full-game player counts must NOT be divided by filtered possession
       // exposure: leave that rate unknown until numerators share its scope.
       possessionRateUnavailableReason: 'Full-game box numerator and verified-lineup-only possession denominator have different inclusion scopes.',
@@ -214,6 +227,7 @@ export function aggregatePlayerSeasons(gameRows) {
       const observed = rows.filter(row => row.pbpTotals[field] !== null);
       const official = rows.filter(row => row.officialTotals[field] !== null);
       return [field, { expectedGames: rows.length, pbpKnownGames: observed.length, officialKnownGames: official.length,
+        invalidOfficialGames: rows.filter(row => row.invalidOfficialFields?.includes(field)).length,
         matchedGames: rows.filter(row => row.fieldReconciliation[field] === 'matched').length,
         pbpPartialTotal: observed.reduce((sum, row) => sum + row.pbpTotals[field], 0),
         officialPartialTotal: official.reduce((sum, row) => sum + row.officialTotals[field], 0),
@@ -221,12 +235,21 @@ export function aggregatePlayerSeasons(gameRows) {
         officialTotal: official.length === rows.length ? official.reduce((sum, row) => sum + row.officialTotals[field], 0) : null }];
     }));
     const minutes = rows.reduce((sum, row) => sum + row.minutes, 0);
+    const officialMinutes = sumIfComplete(rows.map(row => row.officialMinutes));
+    // A trade or one incomplete game must not quietly shrink the denominator
+    // while keeping every game's numerator. Preserve the observed stint sum
+    // above for diagnostics, and withhold complete PBP per-36 season rates if
+    // any game's exposure was unverified. Official rates use their own complete
+    // totals/minutes, never the PBP totals as a substitute for a missing field.
+    const pbpRateMinutes = rows.every(row => row.minutesReconciled) ? officialMinutes : null;
     return { ...scope, games: games.size, teamIds: [...new Set(rows.map(row => row.teamId))].sort(), minutes,
       firstGameAt: rows.map(row => row.scheduledAt).sort()[0], lastGameAt: rows.map(row => row.scheduledAt).sort().at(-1),
-      officialMinutes: sumIfComplete(rows.map(row => row.officialMinutes)),
+      officialMinutes,
       reconciledGames: rows.filter(row => row.boxScoreReconciled).length,
       trainingEligibleGames: rows.filter(row => row.trainingEligible).length,
-      fieldEvidence, rates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].pbpTotal])), minutes),
+      fieldEvidence, rates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].pbpTotal])), pbpRateMinutes),
+      officialRates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].officialTotal])), officialMinutes),
+      rateExposure: { pbpPer36Minutes: pbpRateMinutes, officialPer36Minutes: officialMinutes },
       aggregation: 'season_and_phase_separate; ALL_TEAMS counts each player-game once; no four-season totals labeled as one season',
     };
   });

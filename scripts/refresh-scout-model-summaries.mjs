@@ -6,12 +6,36 @@ import { fileURLToPath } from 'node:url';
 import { gunzipSync } from 'node:zlib';
 import { buildSportradarNbaSummaryUrl, normalizeSportradarSummary, fetchSportradarNbaJson } from './lib/nba-sportradar-pbp.mjs';
 import { BOX_FIELDS, readOfficialBox } from './lib/nba-scout-model-evidence.mjs';
-import { rebuildOptions, rebuildScoutModelEvidence } from './rebuild-scout-model-evidence.mjs';
+import { rebuildOptions } from './rebuild-scout-model-evidence.mjs';
 import { readReadinessMetadata, runReadinessAudit } from './audit-lineup-scout-readiness.mjs';
 
 const SCRIPT = fileURLToPath(import.meta.url);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value);
+
+/** A local request budget is a safety stop, not a claim about provider quota. */
+export function summaryRefreshOptions(argv) {
+  const rebuildArgs = []; let requestBudget = null;
+  for (let index = 0; index < argv.length; index += 2) {
+    const name = argv[index], value = argv[index + 1];
+    if (name !== '--request-budget') { rebuildArgs.push(name, value); continue; }
+    if (requestBudget !== null || !/^[1-9]\d*$/.test(value ?? '') || !Number.isSafeInteger(Number(value))) {
+      throw new Error('--request-budget must be one positive integer.');
+    }
+    requestBudget = Number(value);
+  }
+  return { rebuildArgs, requestBudget };
+}
+
+export function summaryQuotaHeaders(headers) {
+  // Only numeric, allowlisted metering headers may enter progress/logs. Missing
+  // headers mean unknown allowance, never an assumed fresh 1,000-call balance.
+  const read = name => {
+    const value = headers?.get?.(name);
+    return /^\d+$/.test(value ?? '') && Number.isSafeInteger(Number(value)) ? Number(value) : null;
+  };
+  return { allotted: read('x-plan-quota-allotted'), used: read('x-plan-quota-current'), remaining: read('x-plan-quota-remaining') };
+}
 
 export function normalizeSummaryOverlay(payload, expectedGame, source = {}) {
   // Provider pseudo-players are not real people; omit only rows lacking an ID,
@@ -44,7 +68,8 @@ export function normalizeSummaryOverlay(payload, expectedGame, source = {}) {
  * Credentials are inherited from the launcher and are never serialized.
  */
 export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarNbaJson, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
-  const options = rebuildOptions(argv);
+  const { rebuildArgs, requestBudget } = summaryRefreshOptions(argv);
+  const options = rebuildOptions(rebuildArgs);
   assert.ok(options.overlay, '--summary-overlay is required.');
   assert.equal((await runReadinessAudit(options.core)).readyForIntegrationReview, true);
   const { data: base } = await readReadinessMetadata(options.readiness.manifest);
@@ -56,9 +81,10 @@ export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarN
   const lock = await fs.open(lockPath, 'wx');
   await lock.writeFile(JSON.stringify({ processId: process.pid, startedAt: new Date().toISOString() }));
   let downloaded = 0, reused = 0, retained = 0, requestCount = 0;
+  let reportedQuota = null;
   const emit = async status => {
     const value = { phase: 'official_summary_refresh', status, downloaded, reused, retained,
-      requestCount, updatedAt: new Date().toISOString(), processId: process.pid };
+      requestCount, requestBudget, reportedQuota, updatedAt: new Date().toISOString(), processId: process.pid };
     const temporary = path.join(options.overlay, `progress.${process.pid}.tmp`);
     await fs.writeFile(temporary, JSON.stringify(value));
     await fs.rename(temporary, path.join(options.overlay, 'progress.json'));
@@ -66,7 +92,9 @@ export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarN
   };
   try {
     await emit('running');
-    for (const year of options.readiness.seasons) {
+    // Current-season evidence is most useful for the user's current-player
+    // workload cases. Scope is unchanged; older missing games follow afterward.
+    for (const year of [...options.readiness.seasons].sort((a, b) => b - a)) {
       const season = sourceReport.seasons.find(row => row.seasonStartYear === year);
       for (const file of season.files.records) {
         const target = path.resolve(options.archive, String(year), file.relativePath);
@@ -91,12 +119,21 @@ export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarN
           assert.equal(previous.awayTeamId, game.awayProviderTeamId);
           reused++; continue;
         } catch (error) { if (error.code !== 'ENOENT') throw error; }
+        if (requestBudget !== null && requestCount >= requestBudget) {
+          await emit('paused_request_budget');
+          return { complete: false, downloaded, reused, retained, requestCount };
+        }
         if (requestCount > 0) await sleep(2000);
         const apiKey = keys[requestCount % keys.length]; requestCount++;
         // On authentication, access, rate, or quota errors stop the job. Never
         // switch keys in response to an error or persist an error body.
         const response = await fetchJson(buildSportradarNbaSummaryUrl({ gameId: game.providerGameId, accessLevel: 'trial' }),
-          { apiKey, maxAttempts: 1, signal: AbortSignal.timeout(45000) });
+          { apiKey, maxAttempts: 1, signal: AbortSignal.timeout(45000), fetchImpl: async (url, init) => {
+            // Do not forward an authentication header through a redirect.
+            const result = await fetch(url, { ...init, redirect: 'error' });
+            reportedQuota = summaryQuotaHeaders(result.headers);
+            return result;
+          } });
         const overlay = { ...normalizeSummaryOverlay(response.payload, game, response), sourceGzipSha256: file.gzipSha256 };
         await fs.mkdir(path.dirname(output), { recursive: true });
         const temporary = `${output}.${process.pid}.tmp`;
@@ -107,7 +144,7 @@ export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarN
       }
     }
     await emit('complete');
-    return { downloaded, reused, retained };
+    return { complete: true, downloaded, reused, retained, requestCount };
   } catch (error) {
     await emit('stopped_needs_review');
     throw error;
@@ -119,14 +156,17 @@ export async function refreshScoutSummaries(argv, { fetchJson = fetchSportradarN
 
 if (process.argv[1] && path.resolve(process.argv[1]) === SCRIPT) {
   try {
-    await refreshScoutSummaries(process.argv.slice(2));
-    // Full rebuild and validation follow automatically without depending on
-    // another assistant turn. A failed refresh never promotes partial output.
-    await rebuildScoutModelEvidence(process.argv.slice(2));
+    const args = process.argv.slice(2);
+    const refreshed = await refreshScoutSummaries(args);
+    // Import only. The user requested that every season's required data be
+    // present and checked before rebuilding. Even a completed Summary queue
+    // is not permission to derive a new package or refit its coefficients.
+    process.stdout.write(`${JSON.stringify({ ...refreshed, rebuildStarted: false })}\n`);
   } catch (error) {
     // The shared fetch wrapper has sanitized messages; prefer codes/status to
     // unknown provider text in long-lived process logs nonetheless.
-    process.stderr.write(`Scout refresh/rebuild stopped: ${error.code ?? 'VALIDATION_ERROR'}${error.status ? ` HTTP ${error.status}` : ''}. Checkpoint retained; no package promoted.\n`);
+    const limit = ['quota_exceeded', 'throttled', 'rate_limited_unknown'].includes(error.providerLimit) ? ` (${error.providerLimit})` : '';
+    process.stderr.write(`Scout refresh/rebuild stopped: ${error.code ?? 'VALIDATION_ERROR'}${error.status ? ` HTTP ${error.status}` : ''}${limit}. Checkpoint retained; no package promoted.\n`);
     process.exitCode = 1;
   }
 }

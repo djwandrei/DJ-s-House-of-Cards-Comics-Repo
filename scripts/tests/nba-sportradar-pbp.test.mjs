@@ -264,6 +264,29 @@ test('normalizes provider summary ratings, possessions, and player minutes', () 
   assert.equal(parsed.teams.length, 2);
 });
 
+test('invalid official stat preserves the game but cannot masquerade as a known zero', () => {
+  const payload = { id: IDS.game, status: 'closed',
+    home: { ...team(IDS.home, 'HOM', 'Home', 'Homes'), points: 100,
+      players: [{ id: IDS.homePlayers[0], statistics: { minutes: 30, points: 10, steals: -1 } }] },
+    away: { ...team(IDS.away, 'AWY', 'Away', 'Aways'), points: 99, players: [] } };
+  const before = structuredClone(payload);
+  const parsed = normalizeSportradarSummary(payload, { expectedGameId: IDS.game });
+  assert.deepEqual(payload, before, 'Never mutate the raw provider response.');
+  const box = parsed.players[0].officialBoxScore;
+  assert.equal(box.fields.points, 10);
+  assert.equal(box.fields.steals, null);
+  assert.deepEqual(box.invalidFields, ['steals']);
+  assert.equal(box.rejectedValues.steals, -1);
+  assert.ok(!box.availableFields.includes('steals'));
+  assert.equal(box.validationStatus, 'partial_invalid_source_fields');
+  for (const invalid of [1.5, false, 'unknown']) {
+    payload.home.players[0].statistics.steals = invalid;
+    const candidate = normalizeSportradarSummary(payload).players[0].officialBoxScore;
+    assert.equal(candidate.fields.steals, null);
+    assert.ok(candidate.invalidFields.includes('steals'));
+  }
+});
+
 test('uses an injected fetch implementation, retries transient provider responses, and exposes no request key', async () => {
   const calls = [];
   const waits = [];

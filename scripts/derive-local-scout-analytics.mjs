@@ -736,6 +736,7 @@ export function createDirectPlayerEventLine() {
     steals: 0,
     blocks: 0,
     turnovers: 0,
+    offensiveFouls: 0,
     personalFouls: 0,
     foulsDrawn: 0,
     shotAttemptsBlocked: 0,
@@ -844,9 +845,18 @@ export function addDirectPlayerStatistic(line, statistic, eventType = '') {
   } else if (type === 'block') {
     line.recognizedStatisticRows += 1;
     line.blocks += 1;
-  } else if (type === 'turnover' || type === 'offensivefoul') {
+  } else if (type === 'turnover') {
     line.recognizedStatisticRows += 1;
     line.turnovers += 1;
+  } else if (type === 'offensivefoul') {
+    line.recognizedStatisticRows += 1;
+    // The provider supplies a separate turnover row for the same offensive
+    // foul. Treating both row types as turnovers double-counts that play and
+    // biases possession-ending involvement. These are DIRECT box-score totals:
+    // count explicit turnover rows only, and retain the foul as its own signal.
+    // If a turnover row is absent, independent Summary reconciliation exposes
+    // the gap; it must not be silently inferred or patched from the foul.
+    line.offensiveFouls = (line.offensiveFouls ?? 0) + 1;
   } else if (type === 'personalfoul') {
     line.recognizedStatisticRows += 1;
     line.personalFouls += 1;

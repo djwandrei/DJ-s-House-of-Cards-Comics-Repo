@@ -177,6 +177,11 @@ export async function rebuildScoutModelEvidence(argv) {
       assert.equal(row.trainingEligible, row.boxScoreReconciled && row.minutesReconciled && row.officialMinutes > 0
         && gamesById.get(row.gameId)?.reconstructionEligible === true);
     }
+    // Data-first gate requested by the user: neither offline mode nor a
+    // structurally valid old package may promote an incomplete new import.
+    // Keep checkpoints for inspection, but do not emit replacement tables,
+    // link base shards, or label a new package complete while fields are absent.
+    assert.equal(refresh.length, 0, `Official Summary data is still missing for ${refresh.length} games. Finish the import before rebuilding.`);
     const seasons = aggregatePlayerSeasons(allPlayers);
     const descriptors = {};
     // Discrete game/season samples support future fits without forcing the
@@ -221,8 +226,13 @@ export async function rebuildScoutModelEvidence(argv) {
     for (const name of Object.keys(base)) assert.deepEqual(outputManifest[name], base[name], `Existing ${name} must remain unchanged.`);
     const manifestName = path.basename(options.readiness.manifest);
     await atomicJson(path.join(stage, manifestName), outputManifest);
+    // Keep the compact manifest available in both formats, just like the base
+    // package. Its compressed bytes must describe the NEW additive manifest,
+    // never an old manifest copied alongside updated JSON.
+    await fs.writeFile(path.join(stage, `${manifestName}.gz`), gzipSync(Buffer.from(json(outputManifest))));
     await atomicJson(path.join(stage, 'model-evidence-validation.json'), { passed: true, generatedAt: new Date().toISOString(),
       version: MODEL_EVIDENCE_VERSION, sourceGameHashesVerified: completed, baseFilesVerified: linkedFiles,
+      officialSummaryComplete: refresh.length === 0,
       coverage, checks: ['round-trip row counts', 'unique player/game identities', 'fieldwise missingness propagation', 'replayed eligible-game parity', 'exact preservation of base manifest fields and shard hashes'],
       workloadResponseFitted: false });
     await atomicJson(path.join(stage, 'model-evidence-capabilities.json'), BLUEPRINT_CAPABILITIES);

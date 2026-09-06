@@ -10,34 +10,34 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260905j";
+} from "./optimizer-config.js?v=20260906a";
 import {
   DEFAULT_PROJECTION_RISK,
   HISTORICAL_PROJECTION_MODEL_VERSION,
   PROJECTION_RISK_KEYS,
   projectionParametersFor,
-} from "./projection-parameters.js?v=20260905j";
+} from "./projection-parameters.js?v=20260906a";
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
   readPlayerUsage,
-} from "./player-projection.js?v=20260905j";
-import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260905j";
+} from "./player-projection.js?v=20260906a";
+import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260906a";
 import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
-  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260905j";
+  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260906a";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
   ROLE_BALANCE_KEYS,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260905j";
+} from "./lineup-role-model.js?v=20260906a";
 import {
   buildScoutImpactModel,
   buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
-} from "./scout-impact.js?v=20260905j";
-import { planRotationUnits } from "./rotation-unit-planner.js?v=20260905j";
+} from "./scout-impact.js?v=20260906a";
+import { planRotationUnits } from "./rotation-unit-planner.js?v=20260906a";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,
@@ -6269,7 +6269,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       evidenceLayer: HISTORICAL_RATE_MODEL_VERSION,
       scoutImpactLayer: normalizedConfig.modelMode === "historical"
         ? "separate-not-active"
-        : "scout-impact-v3-primary-od",
+        : "scout-impact-v4-multiseason-evidence",
       // Possession-level RAPM and lineup synergy have different units,
       // uncertainty, and interaction terms from the box-score benchmark. Explicitly
       // reserve a separate layer so a later Scout model cannot silently alter

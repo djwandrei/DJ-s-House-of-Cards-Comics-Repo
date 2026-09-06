@@ -1,6 +1,13 @@
-# Additive Scout package rebuild — 2022–23 through 2025–26
+# Additive Scout evidence — expanded target: 2020–21 through 2025–26
 
 ## Scope
+
+**Latest instruction:** finish the six-season data import and validation before
+rebuilding. The earlier four-season offline rebuild was stopped at 4,700
+processed games; its `.building` directory is an incomplete checkpoint, not a
+completed or deployable package. The two added source seasons must be separately
+validated and included in a new, six-season source revision. The existing
+four-season RAPM calibration must not be relabeled as a six-season fit.
 
 This rebuild preserves **all existing package analytics and fitted coefficients**
 and adds compact modeling tables. It does not replace the existing RAPM,
@@ -59,16 +66,29 @@ are preserved verbatim as JSON values.
 2. **Compare each field.** Missing, matching, and contradictory fields stay
    distinct. Partial totals remain available under explicitly partial names,
    while complete totals stay null when any contributing game is missing.
+   An invalid provider count no longer discards the entire game: that field
+   stays null, with `invalidFields` and `rejectedValues` retained in the source.
+   Game/season modeling rows retain the invalid-field flag and count. Neither
+   independent reconciliation nor the data-first gate can treat it as zero.
 3. **Validate minute exposure separately.** An otherwise reconciled game is not
    workload-training eligible if official and reconstructed player minutes differ
    by more than five seconds. That tolerance is not a minute target or cap.
 4. **Separate minutes and responsibility.** `FGA + 0.44 × FTA + TOV` is a named
    possession-ending involvement proxy. It is not observed touches, creation
    share, or a fitted usage elasticity. No new decline coefficients are invented.
+   Direct player turnovers count explicit `turnover` rows only. The provider's
+   `offensivefoul` label is retained separately, because the same play commonly
+   has its own turnover row. Counting both creates an artificial second turnover.
+   A missing explicit row remains a discrepancy, not an inferred correction.
 5. **Keep numerator and denominator scope equal.** Full-game player totals are
    not divided by verified-lineup-only possessions. Those per-100 rates remain
    null in the new table until matching-scope numerators are available; the
    existing package's separately defined possession metrics remain intact.
+   PBP per-36 rates also require reconciled full-game minutes. The independent
+   Summary minutes supply the denominator, not a potentially incomplete stint
+   sum. `officialRates` uses only official counts/minutes; the PBP `rates` field
+   stays separate. One game's missing exposure withholds the complete season
+   rate instead of inflating it, including after an all-team trade aggregation.
 6. **No leakage claim from aggregate metadata.** Dates and chronological tests
    support checking temporal order, but future workload/chemistry fits must
    split by game and avoid repeated tuning against the final test set.
@@ -81,8 +101,8 @@ command-line arguments, or env files by these scripts. Requests are serial and
 spaced at least two seconds apart across both keys. Authentication/access/rate/
 quota failures stop the job; key rotation never bypasses those failures.
 
-The worker refreshes missing official summaries, then automatically builds the
-additions and runs full package validation. Closing this chat or reaching a
+The default worker imports missing official summaries **only**. It does not
+automatically rebuild, fit, validate a new package, upload, or deploy. Closing this chat or reaching a
 token limit does not stop the worker. The computer must remain on and awake.
 Reboots terminate the process, but its completed downloads/checkpoints survive.
 
@@ -92,7 +112,14 @@ downloads. A stale writer lock after a crash requires verifying its process is
 gone before removing only that lock. The scripts never delete an existing
 source package or automatically remove old analytics.
 
-The replacement initially lives in a `.building` directory. Per-game outputs
+After data completion has been verified, an explicitly **offline** rebuild can
+use the launcher's `-Offline` switch. Do not run that switch while data is incomplete.
+No API key is required and no provider request runs. Existing overlays are
+used where available; the builder now refuses to promote an output when any
+required official Summary field is missing. Passing structural validation
+still is not a claim of a newly fitted workload model.
+
+When a rebuild is eventually started, it initially lives in a `.building` directory. Per-game outputs
 are checkpointed and bound to source/code hashes. Any source/code changes
 require a fresh checkpoint version; they cannot silently mix old and new work.
 The 30 existing team shards are hard-linked into the replacement, never edited,
@@ -106,15 +133,35 @@ is not automatically uploaded, made public, or enabled in Lineup Lab.
 
 ## Current run
 
-Started September 6, 2026. Target under the private NBA archive:
+Data-first scope expanded September 6, 2026:
+
+- Source seasons 2020/2021: `data-2020-2021-trial/`.
+- Source seasons 2022–2025: `data-2022-2025-trial-composed/`.
+- Active Summary import: `summary-overlays/2022-2025-20260906-v3-data-first/`.
+- Sequential controller: `scripts/continue-scout-data-import.mjs` first resumes
+  older source games, then imports newer summaries within an explicit local
+  request budget. It cannot launch a package rebuild.
+- Progress audit: `scripts/audit-scout-import-completeness.mjs` distinguishes
+  unattempted games, failed archives, missing official fields, and contradictory
+  fields. It does not relabel an actively changing archive as validated.
+
+Original four-season target, **stopped and not complete**:
 
 `scout-analytics/2022-26-final-20260906-v2-model-evidence`
 
-Official-summary checkpoint:
+The initial refresh stopped safely on HTTP 429 after 2,000 successful new
+summaries. No further provider requests are made by the offline rebuild.
+The original validated package and all completed summary files are retained.
+
+Original stopped official-summary checkpoint:
 
 `summary-overlays/2022-2025-20260906-v2/progress.json`
 
-After the refresh, build progress:
+Current official-summary checkpoint (read only while its worker is active):
+
+`summary-overlays/2022-2025-20260906-v3-data-first/progress.json`
+
+Stopped four-season build checkpoint (not active):
 
 `scout-analytics/2022-26-final-20260906-v2-model-evidence.building/progress.json`
 
@@ -124,6 +171,7 @@ These files, not this document, are the authority for current progress.
 
 ```powershell
 node --test scripts/tests/nba-scout-model-evidence.test.mjs scripts/tests/lineup-scout-readiness.test.mjs
+node --test scripts/tests/scout-import-completeness.test.mjs
 node --test prototypes/basketball-lineup-optimizer/tests/scout-impact.test.mjs prototypes/basketball-lineup-optimizer/tests/scout-primary-benchmark.test.mjs
 ```
 
