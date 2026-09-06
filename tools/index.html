@@ -72,11 +72,11 @@
      <div class="tools-hero-layout">
       <div class="tools-hero-copy">
        <span class="kicker">Fan Tools &amp; Games</span>
-       <h1 class="page-title">More ways to play with the hobby.</h1>
-       <p>Try a live NBA lineup or collector tool today, then follow a clear roadmap of games and collector tools being built around trusted data and simple rules.</p>
+       <h1 class="page-title">Make the call.<br/>See what happens.</h1>
+       <p>Fix a five. Draft your team. Build a game plan. Pick your kind of challenge and explore the hobby from a different angle.</p>
        <div class="tools-hero-actions">
-        <a class="button" href="../lineup-lab/">Open NBA Lineup Lab</a>
-        <a class="button-secondary tools-hero-secondary" href="#toolsRoadmap">Explore the roadmap</a>
+        <a class="button" href="#playNow">Find your next play</a>
+        <a class="button-secondary tools-hero-secondary" href="#toolsRoadmap">See what’s coming</a>
        </div>
       </div>
       <aside aria-label="Live fan tool spotlight" class="tools-live-panel" id="toolsLiveSpotlight">
@@ -93,6 +93,24 @@
        </div>
       </aside>
      </div>
+    </div>
+   </section>
+   <section class="section tools-play-section" id="playNow" aria-labelledby="playNowHeading">
+    <div class="container">
+     <div class="section-heading">
+      <div><span class="kicker">Pick your play</span><h2 class="section-title" id="playNowHeading">What are you in the mood for?</h2></div>
+      <p class="tools-intro">A quick challenge or a deeper experiment? Start anywhere. Daily games open when a verified board is available.</p>
+     </div>
+     <div class="tools-play-controls">
+      <div class="tools-play-filters" role="group" aria-label="Choose a type of fan experience">
+       <button type="button" data-play-filter="all" aria-pressed="true">All experiences</button>
+       <button type="button" data-play-filter="games" aria-pressed="false">Play a game</button>
+       <button type="button" data-play-filter="tools" aria-pressed="false">Build &amp; explore</button>
+      </div>
+      <button class="button-secondary" id="suggestPlay" type="button">Pick one for me ↗</button>
+     </div>
+     <p id="playStatus" class="tools-play-status" role="status" aria-live="polite">Choose an experience below.</p>
+     <div class="tools-featured" id="toolsFeatured"></div>
     </div>
    </section>
    <section aria-label="Fan tool release status" class="container tools-status-strip">
@@ -119,9 +137,11 @@
       <p class="tools-intro">Each idea has a visible release state and a narrow dependency, so new experiences can grow without crossing into catalog, checkout, or private account data.</p>
      </div>
      <p aria-live="polite" class="sr-only" id="toolsStatus">21 fan experiences: 5 live, 12 planned, and 4 research gated.</p>
-     <div class="tools-featured" id="toolsFeatured"></div>
-     <div aria-label="Planned fan tools" class="tools-grid" id="toolsGrid"></div>
-     <div aria-label="Research-gated fan tools" class="tools-research" id="toolsResearch"></div>
+     <details class="tools-roadmap-disclosure">
+      <summary>Open the roadmap · planned tools &amp; research</summary>
+      <div aria-label="Planned fan tools" class="tools-grid" id="toolsGrid"></div>
+      <div aria-label="Research-gated fan tools" class="tools-research" id="toolsResearch"></div>
+     </details>
      <noscript>
       <p class="noscript">The roadmap needs JavaScript to show every planned experience. You can still open the <a href="../lineup-lab/">NBA Lineup Lab</a> or <a href="./player-card-matchups/">Player &amp; Card Matchups</a>.</p>
      </noscript>

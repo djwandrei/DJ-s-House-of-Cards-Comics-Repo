@@ -7,6 +7,8 @@ import {
   scoutDailyGameUnavailableMessage,
 } from '../scout-daily-game-client.js?v=20260905g';
 
+import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
+
 const GAME_KIND = 'draft-night';
 const PICK_COUNT = 5;
 const STORAGE_KEY = 'djhc.draft-night.scout.v1';
@@ -167,6 +169,8 @@ function renderProgress() {
   (deck()?.rounds || []).forEach((round, index) => {
     const step = createElement('span', 'fix-five-progress-step', round.title);
     step.dataset.round = String(index + 1);
+    step.setAttribute('aria-label', `${round.title}: ${index < currentIndex() ? 'completed' : index === currentIndex() ? 'current pick' : 'up next'}`);
+    if (index === currentIndex()) step.setAttribute('aria-current', 'step');
     if (index < currentIndex()) step.classList.add('is-complete');
     else if (index === currentIndex()) step.classList.add('is-current');
     elements.progress.append(step);
@@ -339,6 +343,7 @@ function renderCompletion() {
   tools.href = '../index.html';
   actions.append(edit, replay, tools);
   elements.completionPanel.append(actions);
+  if (outcome) elements.completionPanel.append(createNextPlay(GAME_KIND));
 }
 
 function render() {
@@ -383,6 +388,7 @@ async function selectCandidate(candidateId) {
   setStatus(`${player?.name || 'Pick'} locked. ${isComplete() ? 'Checking the full five now.' : 'The next source-listed role is ready.'}`);
   render();
   if (isComplete()) await resolveOutcome(false);
+  focusGameStage(document.getElementById(isComplete() ? 'completionTitle' : 'draftTitle'));
 }
 
 function undoPick() {
@@ -392,6 +398,7 @@ function undoPick() {
   persistSelections();
   setStatus(`${playerFor(removed)?.name || 'Last pick'} removed. Choose again from the same Scout board.`);
   render();
+  focusGameStage(document.getElementById('draftTitle'));
 }
 
 function restartDraft() {
@@ -401,6 +408,7 @@ function restartDraft() {
   persistSelections();
   setStatus('This local draft is reset. The same source-labeled Scout board remains in place.');
   render();
+  focusGameStage(document.getElementById('draftTitle'));
 }
 
 async function shareDraft() {

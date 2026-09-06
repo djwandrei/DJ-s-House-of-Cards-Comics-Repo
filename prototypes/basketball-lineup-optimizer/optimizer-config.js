@@ -142,8 +142,13 @@ export const OBJECTIVE_FAMILY_DEFINITIONS = Object.freeze({
   }),
   spacing: Object.freeze({
     label: "Spacing",
-    description: "Three-point accuracy, shot efficiency, and offensive impact",
-    metrics: Object.freeze({ threePct: 0.6, efgPct: 0.3, offensiveImpact: 0.1 }),
+    description: "Three-point accuracy and supported attempt frequency; not a measured gravity rating",
+    // General eFG% rewarded non-shooting finishers for a spacing preference
+    // and duplicated the Scoring family's finishing/impact terms. Spacing is
+    // now solely the evidence-aware three-point component; user family shares
+    // still sum/normalize exactly as before. This is a semantic correction,
+    // not a fitted claim that these weights predict wins.
+    metrics: Object.freeze({ threePct: 1 }),
   }),
   creation: Object.freeze({
     label: "Creation",

@@ -1449,13 +1449,14 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
     ? options.candidatePool
     : best.players;
   const poolWithSelected = dedupePlayers([...candidatePool, ...best.players]);
-  const scoringBasis = best.rotation && result?.diagnostics?.rotationScoringBasis === "per36"
+  const scoringBasis = (result?.diagnostics?.objectiveScoringBasis
+    || (best.rotation ? result?.diagnostics?.rotationScoringBasis : null)) === "per36"
     ? "per36"
     : "perGame";
   const percentileMaps = objectivePercentiles(poolWithSelected, { scoringBasis });
   const weights = options.weights || result?.config?.weights || {};
-  const evidence = result?.diagnostics?.rotationRateStabilityEvidence;
-  const cardinalMetrics = best.rotation && evidence?.applied ? evidence.stabilizedMetrics || [] : [];
+  const evidence = result?.diagnostics?.objectiveRateEvidence || result?.diagnostics?.rotationRateStabilityEvidence;
+  const cardinalMetrics = evidence?.applied ? evidence.stabilizedMetrics || [] : [];
   const roleCoverage = analyzeRoleCoverage(best.players, {
     ...options,
     referencePlayers: options.referencePlayers || poolWithSelected,
@@ -1487,11 +1488,14 @@ export function explainOptimizationSelection(resultOrBest, options = {}) {
   const replacements = summarizeReplacementAlternatives(best, alternatives, options);
   const caveats = [
     "Objective contribution explains the configured strategy; it is not a win probability or overall player rating.",
-    ...(best.rotation && scoringBasis === "per36"
-      ? ["Rotation counting-stat explanations display raw per-36 values alongside the optimizer's supplied contributions. Raw-rate scoring uses pool percentiles; paired-evidence scoring uses league-anchored normalized differences."]
+    ...(scoringBasis === "per36"
+      ? ["Counting-stat explanations display raw per-36 values alongside the optimizer's supplied contributions. Raw-rate scoring uses pool percentiles; paired-evidence scoring uses league-anchored normalized differences."]
       : []),
-    ...(result?.diagnostics?.rotationRateStabilityEvidence?.applied
+    ...(evidence?.applied
       ? ["Evidence-adjusted contributions include the configured sample and workload adjustments; displayed per-36 values remain the observed raw rates."]
+      : []),
+    ...(evidence?.shootingObjective
+      ? ["Shooting accuracy and attempt frequency use separate evidence reserves. Three-point priority rewards supported frequency and accuracy; the eFG component rewards or penalizes shooting efficiency relative to the NBA baseline at that volume. Neither is a calibrated spacing or shot-difficulty forecast."]
       : []),
     ...(roleCoverage.caveats || []),
     ...(replacements.caveats || []),

@@ -13,9 +13,10 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260905g">
+  <link rel="stylesheet" href="styles.css?v=20260905i">
+  <link rel="stylesheet" href="workflow.css?v=20260905i">
 </head>
-<body data-experience-mode="simple">
+<body class="lab-guided" data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
   <header class="lab-header">
@@ -52,8 +53,8 @@
       <div class="shell hero__grid">
         <div class="hero__copy">
           <p class="eyebrow">Historical NBA lineup optimizer</p>
-          <h1><span class="hero__title-primary">Build the best group</span><span>for your game plan.</span></h1>
-          <p class="hero__lede">Choose a historical team, decide what matters most, and get the best eligible lineup or 240-minute rotation with its Lineup DNA and tradeoffs explained in plain English.</p>
+          <h1><span class="hero__title-primary">Your team. Your calls.</span><span>Find your best five.</span></h1>
+          <p class="hero__lede">A starting five or a full rotation. Make the coaching decisions; the Lab checks the possibilities.</p>
           <div class="hero__actions">
             <a class="button" href="#workspace">Open the builder</a>
             <button class="button button--quiet detailed-only" type="button" data-view-target="model">How the model works</button>
@@ -80,7 +81,7 @@
         <section class="experience-switcher panel" aria-labelledby="experienceModeLabel" aria-describedby="experienceModeHelp">
           <div class="experience-switcher__copy">
             <strong id="experienceModeLabel">Choose your view</strong>
-            <span id="experienceModeHelp">Simple uses recommended settings and keeps only the essential choices. Detailed lets you edit eligibility, position coverage, minute limits, and reports.</span>
+            <span id="experienceModeHelp">Simple keeps recommended rules. Detailed unlocks custom controls. Your previous Detailed settings are kept when you switch back.</span>
           </div>
           <div class="experience-switcher__buttons" role="group" aria-label="Lineup Lab detail level">
             <button class="experience-switcher__button is-active" id="simpleModeButton" type="button" aria-pressed="true">Simple</button>
@@ -274,7 +275,7 @@
                     <span class="simple-model-summary__mark" aria-hidden="true">✓</span>
                     <div>
                       <strong id="simpleModelSummaryHeading">Accuracy safeguards are on</strong>
-                      <p id="simpleModelSummaryCopy">The optimizer uses stats recorded with this team, applies the visible sample filter, and protects against low-opportunity rate spikes. In rotation mode, it compares rates fairly and gradually reduces the value of extra workload before assigning all 240 minutes.</p>
+                      <p id="simpleModelSummaryCopy">Both builds compare evidence-adjusted per-36 profiles where matching counts and NBA baselines exist. Shooting accuracy and attempt frequency are checked separately. Full rotation also assigns all 240 minutes inside your limits.</p>
                       <small id="simpleModelSummaryNote">Past team games and total minutes do not affect selection or assigned minutes. Open Detailed only when you want to change advanced rules.</small>
                     </div>
                   </aside>
@@ -394,7 +395,7 @@
                           <select id="projectionRiskInput" aria-describedby="projectionRiskHelp">
                             <option value="reliable">Reliable evidence — more cautious</option>
                             <option value="balanced" selected>Balanced projection — recommended</option>
-                            <option value="upside">More upside — trust emerging rates sooner</option>
+                            <option value="upside">Expected rates — no extra downside reserve</option>
                           </select>
                         </label>
                         <label class="field">
@@ -411,8 +412,8 @@
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
                       <p class="field__help" id="rotationRateStabilityHelp">Recommended combines observed counts with a same-season prior and accounts for uncertain workload expansion. Extra minutes do not automatically mean star-level usage. Sample size affects confidence; only your minute limits are hard restrictions.</p>
                       <p class="field__help" id="usageScenarioHelp">Usage scenario is a player's share of on-court possessions finished by a shot, free-throw trip, or turnover—not minutes or assists. In the Detailed player list, leave it blank to retain observed usage. An increased share widens the Historical uncertainty reserve and informs unit staggering; it does not apply an unvalidated efficiency decline or change Scout O/D. Exact usage-dependent production is awaiting reconciled box-score validation.</p>
-                      <p class="field__help" id="projectionRiskHelp">Reliable is more cautious with uncertain rates. Upside trusts emerging production sooner. This choice never changes hard minute limits or player eligibility.</p>
-                      <p class="field__help" id="roleBalanceHelp">This is a small soft preference for complementary creation, spacing, defense, and rebounding. It never becomes a hidden required role.</p>
+                      <p class="field__help" id="projectionRiskHelp">All risk settings share the same estimated rates. Reliable applies a larger downside reserve, Balanced a smaller one, and Upside none. Neither eligibility nor hard minute limits change.</p>
+                      <p class="field__help" id="roleBalanceHelp">Rotation role coverage is descriptive only. A player earns no bonus just for being on the roster; court-time combinations are not yet jointly optimized for role coverage.</p>
                       <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from season-listed positions and minutes per appearance. Games played and source totals are excluded. Verified career positions still improve eligibility.</p>
                       <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking rate and impact evidence for this roster…</p>
                       <div class="rotation-hard-limits">
@@ -627,8 +628,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260905g"></script>
-  <script defer src="../supabase-client.js?v=20260905g"></script>
-  <script type="module" src="app.js?v=20260905g"></script>
+  <script defer src="../backend-config.js?v=20260905i"></script>
+  <script defer src="../supabase-client.js?v=20260905i"></script>
+  <script type="module" src="app.js?v=20260905i"></script>
 </body>
 </html>

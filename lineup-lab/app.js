@@ -6,39 +6,41 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260905g";
+} from "./optimizer-config.js?v=20260905i";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260905g";
+} from "./player-data.js?v=20260905i";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260905g";
+} from "./supabase-nba-data.js?v=20260905i";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260905g";
+} from "./fan-analytics.js?v=20260905i";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260905g";
+} from "./opponent-gameplan.js?v=20260905i";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260905g";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905g";
+} from "./scenario-url.js?v=20260905i";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260905i";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260905i";
+import { createWorkflowView } from "./workflow-view.js?v=20260905i";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905g";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905g", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260905i";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260905i", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -312,10 +314,15 @@ const elements = {
 };
 
 const decodedInitialScenario = decodeScenarioQuery(window.location.search);
+let draftStorage;
+try { draftStorage = window.localStorage; } catch { /* Storage can be unavailable in private browsing. */ }
+const initialWorkflowDraft = decodedInitialScenario.scenario ? null : readWorkflowDraft(draftStorage);
+let workflowView = null;
 
 const state = {
   scoutEvidence: null,
   dataset: null,
+  datasetKind: null,
   experienceMode: decodedInitialScenario.scenario?.experience === "detailed" ? "detailed" : "simple",
   // Simple mode deliberately replaces hidden advanced settings with a known,
   // safe baseline. Keep one in-memory snapshot so returning to Detailed does
@@ -837,8 +844,8 @@ function cancelCurrentOptimization() {
   if (state.activeOptimizationToken === null) return;
   cancelOptimization("Optimization cancelled by you.");
   setOptimizeButtons({ disabled: false, label: solveActionLabel({ update: Boolean(state.lastResult) }) });
-  setSolverStatus("Exact rotation search cancelled", "warning");
-  showToast("Exact rotation search cancelled. Your settings were kept.");
+  setSolverStatus("Exact search cancelled", "warning");
+  showToast("Exact search cancelled. Your settings were kept.");
 }
 
 function formatRotationSearchProgress(progress = {}) {
@@ -1275,9 +1282,11 @@ function setLiveDataLoading(loading, loadingLabel = "Loading stats...") {
     elements.opponentTeam.disabled = true;
     elements.loadOpponent.disabled = true;
   } else {
+    if (!elements.liveTeam.value || !elements.liveSeason.value) elements.loadLiveData.textContent = "Retry historical data";
     updateLiveSelectionState({ preserveStatus: true });
     populateOpponentTeamOptions({ preferredTeam: state.opponentDataset?.source?.team });
   }
+  workflowView?.refresh();
 }
 
 function selectedLiveTeam() {
@@ -2206,7 +2215,7 @@ function renderRotationEvidencePreview() {
     return;
   }
   if (elements.mode.value !== "rotation") {
-    elements.simpleModelSummaryCopy.textContent = "The optimizer uses stats recorded with this team, applies the visible sample filter, and compares five-player profiles under your game plan.";
+    elements.simpleModelSummaryCopy.textContent = "The optimizer compares five equal player profiles using evidence-adjusted per-36 rates where matching counts and NBA baselines are available. Shooting accuracy and attempt frequency are checked separately. The visible sample filters decide who is eligible.";
     elements.simpleModelSummaryNote.textContent = "Recommended sample and position rules are already active. Open Detailed only to change them.";
   } else {
     elements.simpleModelSummaryCopy.textContent = "The optimizer follows your game plan and hard minute limits. Historical rates are adjusted for limited evidence; workload changes are applied only by the selected projection. There is no preferred 18–32 minute range.";
@@ -2280,7 +2289,7 @@ function syncRotationModelControls() {
     ? "Choose whether limited samples receive evidence-based rate adjustments"
     : "Per-game comparison uses raw source values, so rate stabilization does not apply";
   elements.rotationRateStabilityHelp.textContent = usesPer36Rates
-    ? "Evidence-adjusted rates reduce small-sample inflation. For 2025–26 regular season, projection strengths were chosen on held-out games; other seasons use disclosed conservative assumptions. More minutes do not imply star-level usage. No adjustment starts at the average roster role."
+    ? "Accuracy and shooting frequency receive separate evidence reserves. Matching 2025–26 rate parameters were chosen on tuning games, then tested on later games; the new volume reserve is not yet calibrated. More minutes do not imply star-level usage or a fixed target range."
     : "Per-game comparison uses raw historical per-game lines. Limited-role adjustment is available only with per-36 comparison.";
   syncModelChoice();
   renderRotationEvidencePreview();
@@ -2369,6 +2378,7 @@ function cancelOptimization(message = "Optimization cancelled because the scenar
   state.activeOptimizationToken = null;
   elements.form.removeAttribute("aria-busy");
   setOptimizationCancellationAvailable(false);
+  workflowView?.cancelled();
   if (reject) {
     const error = new Error(message);
     error.name = "AbortError";
@@ -2415,6 +2425,7 @@ function markScenarioChanged() {
   }
   setOptimizeButtons({ label: solveActionLabel({ update: Boolean(state.lastResult) }) });
   updateSearchScope();
+  workflowView?.changed();
 }
 
 function setMode(mode, { preserveSize = false } = {}) {
@@ -2700,6 +2711,7 @@ function setExperienceMode(
   $$(".player-usage-scenario input").forEach(input => {
     input.disabled = !detailed || elements.mode.value !== "rotation";
   });
+  workflowView?.refresh();
 }
 
 function applyLoadedPhaseEligibilityDefault(seasonPhase) {
@@ -3040,7 +3052,7 @@ function renderPoolSummary(visiblePlayers = state.dataset?.players.length || 0) 
   }
 }
 
-function setDataset(dataset, { clearScenario = true, liveSelection = null, notice = "" } = {}) {
+function setDataset(dataset, { clearScenario = true, liveSelection = null, notice = "", datasetKind = "csv" } = {}) {
   state.scoutEvidence = null;
   const validation = validateDataset(dataset);
   if (!validation.valid) {
@@ -3054,6 +3066,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   }
   state.scenarioVersion += 1;
   state.dataset = dataset;
+  state.datasetKind = liveSelection ? "live" : datasetKind;
   state.loadedLiveSelection = liveSelection;
   state.playerMediaStatus.clear();
   state.teamLogoStatus = "unavailable";
@@ -3089,6 +3102,7 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   setSolverStatus("Ready to solve");
   setOptimizeButtons({ label: solveActionLabel() });
   if (notice) showToast(notice);
+  workflowView?.refresh();
 }
 
 function renderDatasetMeta() {
@@ -3169,7 +3183,7 @@ async function loadFixture({ notice = "" } = {}) {
     const rawDataset = await response.json();
     if (!datasetLoadIsCurrent(loadGeneration)) return;
     const dataset = normalizeDataset(rawDataset, { strict: true, warnOnGeneratedId: false });
-    setDataset(dataset, { notice });
+    setDataset(dataset, { notice, datasetKind: "demo" });
   } catch (error) {
     if (!datasetLoadIsCurrent(loadGeneration)) return;
     throw error;
@@ -3484,7 +3498,7 @@ function renderExactObjectiveReasons(player, result, insight) {
   details.append(summary);
 
   const rotationBasis = result?.diagnostics?.rotationScoringBasis;
-  const rateStability = result?.diagnostics?.rotationRateStabilityEvidence;
+  const rateStability = result?.diagnostics?.objectiveRateEvidence || result?.diagnostics?.rotationRateStabilityEvidence;
   const minutePlan = result?.best?.rotation?.minutePlan;
   const historicalGuidance = result?.best?.rotation?.historicalGuidance;
   const minutePlanExplanation = minutePlan === "historicalAware"
@@ -3497,7 +3511,7 @@ function renderExactObjectiveReasons(player, result, insight) {
   const assignedRoleScoring = result?.best?.rotation?.diagnostics?.roleConditionedScoring;
   const workloadSaturation = assignedRoleScoring?.workloadSaturation;
   const confidenceReserveCopy = rateStability?.uncertaintyAdjustedPlayerMetricCount > 0
-    ? " Limited-opportunity rates also receive a modest lower-confidence reserve; team-stint length is not part of that calculation."
+    ? " A separate downside reserve reflects actual matched sample size; past team games never set a minute target."
     : "";
   const roleProjectionCopy = assignedRoleScoring?.applied
     ? `Rates are stabilized toward the same-season NBA baseline.${confidenceReserveCopy} Expanded workloads use the selected rate projection. No automatic taper starts at a roster-average minute target. `
@@ -3511,7 +3525,7 @@ function renderExactObjectiveReasons(player, result, insight) {
     ? `${roleProjectionCopy}Counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
     : rotationBasis === "perGame"
       ? "This rotation uses the raw per-game comparison; the contribution below also reflects the proposed minutes."
-      : "This lineup gives each selected player an equal share of the configured pool-relative objective.";
+      : `This lineup compares equal player profiles on a per-36 basis. ${rateStability?.applied ? "Supported metrics use evidence-adjusted contributions, not pool percentiles. Shooting frequency is checked separately from accuracy." : "The source lacks supporting evidence, so the comparison uses raw rates."} Production totals below remain sums of the players' recorded per-game lines, not a team forecast.`;
   details.append(basis);
 
   // Keep team membership and rate evidence distinct where a fan asks "why?".
@@ -3526,7 +3540,7 @@ function renderExactObjectiveReasons(player, result, insight) {
     const teamCopy = teamCount > 0
       ? ` across ${formatNumber(teamCount, 0)} imported team${teamCount === 1 ? "" : "s"}`
       : " across imported teams";
-    sample.textContent = `Available season sample: ${formatNumber(seasonTotals.games, 0)} games and ${formatNumber(seasonTotals.minutes, 0)} minutes${teamCopy}. Each metric needs matching counts; missing metrics use the approximate fallback. The card's visible stats still describe the selected team.`;
+    sample.textContent = `Available season sample: ${formatNumber(seasonTotals.games, 0)} games and ${formatNumber(seasonTotals.minutes, 0)} minutes${teamCopy}. Each metric needs matching counts. Missing metrics use a baseline-only prior, or an explicitly raw comparison when no baseline exists; sample sizes are never guessed. The card's visible stats still describe the selected team.`;
     details.append(sample);
   }
 
@@ -3854,9 +3868,9 @@ function renderResultEvidence(result) {
     ));
   }
 
-  const rateEvidence = result.diagnostics?.rotationRateStabilityEvidence;
+  const rateEvidence = result.diagnostics?.objectiveRateEvidence || result.diagnostics?.rotationRateStabilityEvidence;
   const assignedRoleScoring = result.best?.rotation?.diagnostics?.roleConditionedScoring;
-  if (result.best?.rotation && rateEvidence?.applied) {
+  if (rateEvidence?.applied) {
     const roleProjectionDetail = rateEvidence.roleAdjustedPlayerMetricCount > 0
       ? ` ${rateEvidence.roleAdjustedPlayers} player${rateEvidence.roleAdjustedPlayers === 1 ? " also had" : "s also had"} at least one rate adjusted for the projected workload.`
       : "";
@@ -5090,6 +5104,8 @@ function runOptimization(players, config, jobToken, { onProgress = null } = {}) 
 
 async function runOptimizer(event) {
   event?.preventDefault();
+  if (state.activeOptimizationToken !== null) return;
+  if (workflowView && !workflowView.beforeSubmit(event)) return;
   if (!state.dataset) return;
   if (!canOptimizeCurrentDataset()) {
     setLiveDataStatus("Load the selected team-season before running an exact search.", "warning");
@@ -5098,7 +5114,7 @@ async function runOptimizer(event) {
   }
   updateSearchScope();
   if (!state.searchScopeCanRun) return;
-  if (!elements.form.reportValidity()) return;
+  if (!workflowView && !elements.form.reportValidity()) return;
   if (!confirmLargeRotationSearch()) return;
   if (state.replacementRunToken !== null) {
     // The main exact search owns the same worker as a one-player test. Close
@@ -5114,13 +5130,14 @@ async function runOptimizer(event) {
   elements.resultFreshness.textContent = "";
   setOptimizeButtons({ disabled: true, label: solveActionLabel({ busy: true }) });
   const runningRotation = elements.mode.value === "rotation";
-  setOptimizationCancellationAvailable(runningRotation);
+  setOptimizationCancellationAvailable(true);
   if (runningRotation) {
     setOptimizationProgress(
       `Preparing exact rotation search: 0 of ${(Number(state.rotationCandidateEstimate) || 0).toLocaleString()} candidate groups checked.`,
     );
   }
   elements.form.setAttribute("aria-busy", "true");
+  workflowView?.start();
   setSolverStatus(
     runningRotation ? "Running an exact rotation search. You can cancel it at any time." : "Running an exact search...",
     "working",
@@ -5177,6 +5194,7 @@ async function runOptimizer(event) {
     syncShareScenarioAvailability();
     elements.printReport.disabled = !result.ok;
     setSolverStatus(result.ok ? "Exact result ready" : "Scenario needs attention", result.ok ? "success" : "warning");
+    workflowView?.finish();
     elements.resultsHeading.focus({ preventScroll: true });
     elements.results.scrollIntoView({ behavior: motionBehavior(), block: "start" });
   } catch (error) {
@@ -5209,6 +5227,7 @@ async function runOptimizer(event) {
     elements.printReport.disabled = true;
     setSolverStatus("Scenario needs attention", "warning");
     showToast(detail);
+    workflowView?.finish();
   } finally {
     if (jobToken !== state.optimizationRunId || scenarioVersion !== state.scenarioVersion) return;
     state.activeOptimizationToken = null;
@@ -5895,7 +5914,7 @@ function syncModelChoice() {
     $("#scoutEvidenceStatus").hidden = !scout;
     $("#modelModeHelp").textContent = scout
       ? "Scout optimizes the advanced package's offense/defense impact. The current validated package combines regular season and postseason. Basketball Reference supplies positions, eligibility, production constraints, and comparison context. Missing Scout evidence stops the solve; it is never assumed average."
-      : "Historical optimizes your skill priorities using Basketball Reference stats. Rotations can adjust small-sample rates; starting fives compare equal player profiles. The model never targets a fixed minute range.";
+      : "Historical optimizes your skill priorities using Basketball Reference stats. Starting five and full rotation share evidence-adjusted scoring; rotation also assigns minutes. Shooting frequency and accuracy are checked separately. The model never targets a fixed minute range.";
     const fittedSeason = Number(state.loadedLiveSelection?.season) === 2026
       && state.loadedLiveSelection?.seasonPhase === "regular";
     const riskHelp = $("#projectionRiskHelp");
@@ -5903,7 +5922,11 @@ function syncModelChoice() {
       ? "Historical risk settings do not change Scout O/D coefficients. They apply only to Basketball Reference context and constraints."
       : fittedSeason
         ? "For 2025–26 regular season, the fitted mean is shared across settings. Reliable subtracts a larger model-based uncertainty reserve, Balanced subtracts a smaller one, and Upside uses the mean. These reserves are sensitivity assumptions, not calibrated confidence intervals; minute limits never change."
-        : "Reliable uses a larger uncertainty reserve; Balanced uses a smaller one. Upside uses the posterior mean without a reserve. Outside validated seasons the prior strengths also differ. These are sensitivity assumptions, not accuracy guarantees or minute limits.";
+        : "All settings share the same estimated rates and sample-size priors. Reliable uses a larger downside reserve; Balanced uses a smaller one; Upside adds no reserve. Shooting volume has its own evidence check. These are sensitivity assumptions, not accuracy guarantees or minute limits.";
+    elements.roleBalance.disabled = scout || elements.mode.value === "rotation";
+    $("#roleBalanceHelp").textContent = scout || elements.mode.value === "rotation"
+      ? "Rotation and Scout role coverage is descriptive only. A player earns no bonus just for being on the roster; court-time combinations are not yet jointly optimized for role coverage."
+      : "A small, optional starting-five preference uses the same adjusted skill signals and respects your offensive/defensive priorities. It never adds a required role.";
     // Skill-priority presets are a historical objective, not a second hidden
     // score mixed into primary Scout impact. Keep their scope unambiguous.
     $("#presetGrid").hidden = scout;
@@ -6009,10 +6032,14 @@ function bindRemainingEvents() {
   elements.shareScenario.addEventListener("click", copyScenarioLink);
   elements.downloadResult.addEventListener("click", downloadResult);
   elements.printReport.addEventListener("click", printScoutingReport);
-  elements.loadLiveData.addEventListener("click", () => {
-    loadLiveDataset({ force: true }).catch((error) => {
+  elements.loadLiveData.addEventListener("click", async () => {
+    try {
+      if (!elements.liveTeam.value || !elements.liveSeason.value) await populateLiveDataControls();
+      await loadLiveDataset({ force: true });
+    } catch (error) {
       showToast(error instanceof Error ? `Couldn't load team data: ${error.message}` : "Team data could not be loaded.");
-    });
+      setLiveDataStatus("Historical data could not be loaded. Retry, or continue with your current roster.", "warning");
+    }
   });
   const handleSeasonOrPhaseChange = () => {
     // The selector value changes synchronously, while the team list refreshes
@@ -6077,7 +6104,81 @@ function bindRemainingEvents() {
   });
 }
 
+function captureWorkflowForm() {
+  const snapshot = state.detailedSettingsSnapshot;
+  const snapshotFields = snapshot ? Object.fromEntries(Object.entries(snapshot.fields).map(([key, value]) => [elements[key]?.id, value]).filter(([key]) => key)) : null;
+  return {
+    source: state.loadedLiveSelection ? { kind: "live", team: state.loadedLiveSelection.team, season: Number(state.loadedLiveSelection.season), phase: state.loadedLiveSelection.seasonPhase } : { kind: state.datasetKind },
+    fields: Object.fromEntries(Object.values(WORKFLOW_FIELDS).flat().map(id => [id, document.getElementById(id).value])),
+    experienceMode: state.experienceMode, activePreset: state.activePreset,
+    familyWeights: { ...state.familyWeights }, weights: { ...state.weights }, analyticsView: state.analyticsView,
+    lockedIds: [...state.lockedIds], excludedIds: [...state.excludedIds],
+    offensiveResponsibilities: { ...state.offensiveResponsibilities },
+    detailedSettings: snapshot ? { ...snapshot, fields: snapshotFields } : null,
+  };
+}
+
+function restoreWorkflowForm(draft) {
+  const saved = draft?.form;
+  if (!saved) return false;
+  const source = saved.source;
+  const matches = source.kind === "demo" ? state.datasetKind === "demo" : liveSelectionMatches(state.loadedLiveSelection, { team: source.team, season: source.season, seasonPhase: source.phase });
+  if (!matches) { showToast("The saved roster could not be loaded. Your draft was not applied to a different team."); return false; }
+  setExperienceMode(saved.experienceMode, { applyDefaults: false });
+  elements.mode.value = saved.fields.modeInput === "rotation" ? "rotation" : "lineup";
+  setMode(elements.mode.value);
+  for (const [id, value] of Object.entries(saved.fields)) {
+    const input = document.getElementById(id);
+    if (!input || (input.tagName === "SELECT" && ![...input.options].some(option => option.value === value))) continue;
+    input.value = value;
+  }
+  state.familyWeights = { ...state.familyWeights, ...saved.familyWeights };
+  state.weights = { ...saved.weights };
+  state.activePreset = saved.activePreset;
+  state.analyticsView = saved.analyticsView;
+  const ids = new Set(state.dataset.players.map(player => player.id));
+  state.lockedIds = new Set(saved.lockedIds.filter(id => ids.has(id)));
+  state.excludedIds = new Set(saved.excludedIds.filter(id => ids.has(id) && !state.lockedIds.has(id)));
+  state.offensiveResponsibilities = Object.fromEntries(Object.entries(saved.offensiveResponsibilities).filter(([id]) => ids.has(id)));
+  if (saved.detailedSettings) {
+    const byId = Object.fromEntries(Object.entries(elements).filter(([, node]) => node?.id).map(([key, node]) => [node.id, key]));
+    state.detailedSettingsSnapshot = { ...saved.detailedSettings, fields: Object.fromEntries(Object.entries(saved.detailedSettings.fields).map(([id, value]) => [byId[id], value]).filter(([key]) => key)) };
+  }
+  // Drafts never restore private Scout data. The regular solve will authorize
+  // and fetch it anew if the visitor selects that model.
+  state.scoutEvidence = null;
+  syncModelChoice(); syncRotationModelControls(); syncRotationRoleCopy();
+  renderPresetState(); renderWeightControls(); renderPlayerTable(); updateRunSummary();
+  showToast("Your saved game plan is back. Review it before building.");
+  return true;
+}
+
+function workflowValidation() {
+  updateSearchScope();
+  const invalidFields = [];
+  for (const [step, ids] of Object.entries(WORKFLOW_FIELDS)) for (const id of ids) {
+    const input = document.getElementById(id);
+    if (!input || input.disabled || (elements.mode.value !== "rotation" && input.closest("#rotationSettings"))) continue;
+    if (state.experienceMode === "simple" && input.closest(".detailed-only")) continue;
+    const optional = ["minPointsInput", "minReboundsInput", "minAssistsInput", "minStealsInput", "minBlocksInput", "maxTurnoversInput"].includes(id);
+    const validity = input.validity;
+    if (validity.badInput || validity.rangeOverflow || validity.rangeUnderflow || validity.stepMismatch || (!optional && input.type === "number" && input.value === "")) {
+      const label = input.closest("label")?.querySelector("span")?.textContent || "This value";
+      invalidFields.push({ step, id, message: `${label}: enter a valid ${input.step === "1" ? "whole " : ""}number${input.min !== "" ? ` from ${input.min}` : ""}${input.max !== "" ? ` to ${input.max}` : ""}.` });
+    }
+  }
+  const errors = validateWorkflow({
+    datasetReady: Boolean(state.dataset), datasetMatches: canOptimizeCurrentDataset(), loading: state.liveDataLoading,
+    config: buildOptimizerConfig(), players: state.dataset ? optimizerPlayersForCurrentScenario() : [], invalidFields,
+    detailed: state.experienceMode === "detailed",
+  });
+  if ($("#modelModeInput").value === "scout" && !state.loadedLiveSelection) errors.push({ step: "plan", field: "modelModeInput", message: "Scout requires an authorized database team-season. Choose Historical for a demo or CSV roster." });
+  if (!errors.length && !state.searchScopeCanRun) errors.push({ step: "rules", field: "minGamesInput", message: elements.searchScopeValue.textContent });
+  return errors;
+}
+
 async function initialize() {
+  workflowView = createWorkflowView({ state, form: elements.form, capture: captureWorkflowForm, validate: workflowValidation, reset: resetScenario, storage: draftStorage, draft: initialWorkflowDraft });
   // Private evidence lives only in memory. Clear it and any rendered private
   // result when Auth changes; a fresh solve must authorize again at the server.
   const catalog = globalThis.DJ?.remoteCatalog;
@@ -6099,19 +6200,26 @@ async function initialize() {
   setMode("lineup", { preserveSize: true });
   setExperienceMode(state.experienceMode, { applyDefaults: false });
   const sharedScenario = state.pendingScenario;
+  const draftSource = initialWorkflowDraft?.form.source;
+  const initialSelection = sharedScenario || (draftSource?.kind === "live" ? { team: draftSource.team, season: draftSource.season, phase: draftSource.phase } : null);
   applySharedScenarioControls(sharedScenario);
   if (state.experienceMode === "simple") applySimpleModelDefaults({ invalidate: false });
   try {
-    await populateLiveDataControls({ sharedScenario });
+    await populateLiveDataControls({ sharedScenario: initialSelection });
     if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
-    await loadLiveDataset({ intentGeneration: initialLoadGeneration });
-    if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
+    if (draftSource?.kind === "demo") await loadFixture();
+    else {
+      await loadLiveDataset({ intentGeneration: initialLoadGeneration });
+      if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
+    }
+    workflowView.ready(restoreWorkflowForm(initialWorkflowDraft));
     await replaySharedScenarioAfterLoad(sharedScenario);
   } catch (error) {
     if (!datasetLoadIsCurrent(initialLoadGeneration)) return;
     try {
       await loadFixture({ notice: "Historical data was unavailable, so the course-project demo was loaded." });
       setLiveDataStatus("Using the stable course-project demo. Historical team data could not be loaded.", "warning");
+      workflowView.ready(restoreWorkflowForm(initialWorkflowDraft));
     } catch (fixtureError) {
       elements.playerTableBody.replaceChildren();
       const row = document.createElement("tr");
@@ -6126,6 +6234,7 @@ async function initialize() {
       showToast("Player data could not be loaded. Refresh the page and try again.");
     }
   } finally {
+    if (!state.workflow.ready) workflowView.ready();
     flushPendingScenarioWarnings();
   }
 }

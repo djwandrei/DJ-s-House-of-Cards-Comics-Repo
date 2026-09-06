@@ -20,32 +20,25 @@
       "contextFiles": [
         ".superdesign/lineup-lab-design-system.md",
         "prototypes/basketball-lineup-optimizer/index.html",
-        "prototypes/basketball-lineup-optimizer/app.js:3399:3700",
-        "prototypes/basketball-lineup-optimizer/app.js:4331:4705",
-        "prototypes/basketball-lineup-optimizer/styles.css:1:70",
-        "prototypes/basketball-lineup-optimizer/styles.css:151:235",
-        "prototypes/basketball-lineup-optimizer/styles.css:2638:2820",
-        "prototypes/basketball-lineup-optimizer/styles.css:3506:3700",
-        "prototypes/basketball-lineup-optimizer/styles.css:4845:4940",
-        "prototypes/basketball-lineup-optimizer/optimizer-core.js:2000:2245"
+        "prototypes/basketball-lineup-optimizer/styles.css:1:175",
+        "prototypes/basketball-lineup-optimizer/styles.css:4664:4830",
+        "prototypes/basketball-lineup-optimizer/styles.css:5126:5290"
       ],
       "fingerprints": {
         ".superdesign/lineup-lab-design-system.md": "32B04B9628BB968A14C9FCF87E757462E89FF84BB20C5045A634ADD342B2DD47",
-        "prototypes/basketball-lineup-optimizer/index.html": "CA2A54D447D612C8E6586418BC72E84D9A7E5A12919D3CB426C2AEBA774332A2",
-        "prototypes/basketball-lineup-optimizer/app.js": "09891BCF1ABA915E6C0AE33B4742DC63AD2115FEEC3AA417152646D15972BB2A",
-        "prototypes/basketball-lineup-optimizer/styles.css": "65C3E28A427E715319500A7990FD454C3E2252F0E343AF02C715610D543BE83A",
-        "prototypes/basketball-lineup-optimizer/optimizer-core.js": "2FCDEB87DEE1414BC0CE48B6E1B45522D2790B74CB199F5E078C49F4D197F502"
+        "prototypes/basketball-lineup-optimizer/index.html": "4D6802DB43E588202FF004B1BF8E85E420A62B474A7D09641BA48BCBA2B47884",
+        "prototypes/basketball-lineup-optimizer/styles.css": "8C90488D22115DA2CDA71E668CB871A03D38CDF6E347581AAFC76ABBFD4F1631"
       },
       "components": [],
       "drafts": {
         "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484": {
-          "title": "DJ's Lineup Lab — Lineup DNA Results",
-          "visualDirection": "fan-first result explanation with a compact Lineup DNA snapshot, progressive role coverage and evidence layer, exact one-swap context, and the existing DJHC visual system",
+          "title": "DJ's Lineup Lab — Coaching Journey Builder",
+          "visualDirection": "Five-step coaching journey with a navy progress rail, editable game-plan ticket, progressive advanced controls, truthful exact-search feedback, and the existing DJHC brand and results.",
           "parentDraftId": null,
-          "currentVersion": 3
+          "currentVersion": 4
         }
       },
-      "updatedAt": "2026-09-05T05:37:17.1153973Z"
+      "updatedAt": "2026-09-05T23:12:17Z"
     },
     "/tools/": {
       "targetKind": "existing-ui",

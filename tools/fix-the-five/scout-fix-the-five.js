@@ -7,6 +7,8 @@ import {
   scoutDailyGameUnavailableMessage,
 } from '../scout-daily-game-client.js?v=20260905g';
 
+import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
+
 const GAME_KIND = 'fix-the-five';
 const RUN_LENGTH = 5;
 const STORAGE_KEY = 'djhc.fix-the-five.scout.v1';
@@ -272,7 +274,8 @@ function renderProgress() {
     step.dataset.index = String(index);
     const complete = Boolean(state.selections[challenge.id]);
     step.disabled = state.pending || (!complete && index !== firstIncomplete);
-    step.setAttribute('aria-label', complete ? `Review challenge ${index + 1}` : `Open challenge ${index + 1}`);
+    step.setAttribute('aria-label', complete ? `Completed: review challenge ${index + 1}` : `Open challenge ${index + 1}`);
+    if (index === state.activeIndex) step.setAttribute('aria-current', 'step');
     if (complete) step.classList.add('is-complete');
     else if (index === state.activeIndex) step.classList.add('is-current');
     elements.runProgress.append(step);
@@ -363,6 +366,7 @@ function renderCompletion() {
   tools.href = '../index.html';
   actions.append(share, replay, tools);
   elements.completionPanel.append(actions);
+  elements.completionPanel.append(createNextPlay(GAME_KIND));
 }
 
 function render() {
@@ -395,6 +399,7 @@ async function chooseCandidate(candidateId) {
   } finally {
     state.pending = false;
     render();
+    focusGameStage(document.getElementById('challengeTitle'));
   }
 }
 
@@ -406,6 +411,7 @@ function changeCurrentSwap() {
   persistSelections();
   setStatus('Choose a different legal replacement from this same Scout board.');
   render();
+  focusGameStage(document.getElementById('challengeTitle'));
 }
 
 function nextChallenge() {
@@ -415,6 +421,7 @@ function nextChallenge() {
   state.activeIndex = Math.min(state.activeIndex + 1, RUN_LENGTH);
   setStatus(state.activeIndex >= RUN_LENGTH ? 'Your five-round Scout run is ready to finish.' : 'The next source-labeled Scout challenge is ready.');
   render();
+  focusGameStage(document.getElementById(state.activeIndex >= RUN_LENGTH ? 'completionTitle' : 'challengeTitle'));
 }
 
 function restartRun() {
@@ -425,6 +432,7 @@ function restartRun() {
   persistSelections();
   setStatus('This local run is reset. The same daily Scout boards remain in place.');
   render();
+  focusGameStage(document.getElementById('challengeTitle'));
 }
 
 async function shareRun() {
@@ -493,6 +501,7 @@ function bindEvents() {
     if (!Number.isInteger(index) || state.pending) return;
     state.activeIndex = index;
     render();
+    focusGameStage(document.getElementById('challengeTitle'));
   });
   elements.completionPanel.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');

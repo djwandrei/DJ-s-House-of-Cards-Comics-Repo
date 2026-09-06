@@ -95,7 +95,7 @@ test("returns exact-size lineups and evaluates every combination", () => {
   assert.ok(result.alternatives.every((lineup) => lineup.constraintAudit.exactSize.passed));
 });
 
-test("visible role balance participates in exact candidate ranking", () => {
+test("visible role balance respects a points-only objective without adding hidden defense", () => {
   const fixed = [
     player("creator", { assists: 12, turnovers: 2.5, analytics: { advanced: { usage_percentage: 0.3 } } }),
     player("shooter", { threePct: 0.46, efgPct: 0.67 }),
@@ -129,12 +129,12 @@ test("visible role balance participates in exact candidate ranking", () => {
   assert.equal(explanationOnly.ok, true);
   assert.equal(recommended.ok, true);
   assert.equal(explanationOnly.best.playerIds.includes("a-redundant"), true);
-  assert.equal(recommended.best.playerIds.includes("z-rim-help"), true);
+  assert.equal(recommended.best.playerIds.includes("a-redundant"), true);
   assert.equal(recommended.best.modelAdjustments.roleFit.applied, true);
   assert.notEqual(recommended.best.modelAdjustments.totalAdjustmentPoints, 0);
 });
 
-test("NBA-baseline index stays anchored when an irrelevant eligible player changes pool percentiles", () => {
+test("NBA-baseline index and evidence-adjusted starting-five scores stay anchored to the source", () => {
   const withLeagueEvidence = (id, points) => player(id, {
     minutes: 30,
     points,
@@ -164,7 +164,7 @@ test("NBA-baseline index stays anchored when an irrelevant eligible player chang
   assert.deepEqual(expandedPool.best.playerIds, base.best.playerIds);
   assert.equal(expandedPool.best.planFitIndex, base.best.planFitIndex);
   assert.equal(expandedPool.best.offenseIndex, base.best.offenseIndex);
-  assert.notEqual(expandedPool.best.score, base.best.score);
+  assert.equal(expandedPool.best.score, base.best.score);
   assert.equal(base.best.benchmarkMetricCount, 1);
   assert.equal(base.best.benchmarkMetricIndexes.points > 100, true);
 });

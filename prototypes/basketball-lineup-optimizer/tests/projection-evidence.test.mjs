@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue,
-  decisionRateAtWorkload, concaveDecisionCurve } from '../projection-evidence.js';
+  decisionRateAtWorkload, concaveDecisionCurve, shootingOpportunity } from '../projection-evidence.js';
 import { loadOptimizerCore } from './load-optimizer-core.mjs';
 const { optimizeLineups, allocateRotationMinutes } = await loadOptimizerCore();
 
@@ -47,6 +47,67 @@ test('cardinal differences remain small, preserve negative impact and reverse tu
   assert.ok(gap > 0 && gap < .02, 'a .2 BPM gap cannot manufacture a huge rank gap');
   assert.ok(cardinalMetricScore(-4, 0, 'offensiveImpact') < cardinalMetricScore(-1, 0, 'offensiveImpact'));
   assert.ok(cardinalMetricScore(1, 2, 'ballSecurity') > cardinalMetricScore(3, 2, 'ballSecurity'));
+});
+
+test('identical per-36 frequency does not imply identical volume evidence', () => {
+  const small = shootingOpportunity({ sample: 1, minutes: 6 });
+  const established = shootingOpportunity({ sample: 360, minutes: 2160 });
+  assert.equal(small.observedPer36, 6);
+  assert.equal(established.observedPer36, 6);
+  assert.ok(small.decisionPer36 < established.decisionPer36);
+  assert.equal(shootingOpportunity({ sample: 1, minutes: 6 }, 0).decisionPer36, 6);
+  assert.equal(shootingOpportunity({ sample: 0, minutes: 600 }).decisionPer36, 0);
+  assert.equal(shootingOpportunity({ sample: null, minutes: 600 }).available, false);
+});
+
+test('shooting frequency credit grows smoothly with supporting exposure, not games or MPG', () => {
+  let last = 0;
+  for (const attempts of [1, 2, 10, 100, 1000, 10000]) {
+    const row = shootingOpportunity({ sample: attempts, minutes: attempts * 6 });
+    assert.ok(row.decisionPer36 > last && row.decisionPer36 <= 6);
+    assert.equal(row.observedPer36, 6);
+    last = row.decisionPer36;
+  }
+  const benchShooter = shootingOpportunity({ sample: 300, minutes: 1200 });
+  const starter = shootingOpportunity({ sample: 180, minutes: 2160 });
+  assert.ok(benchShooter.decisionPer36 > starter.decisionPer36,
+    'strong evidence for a real high-frequency reserve is preserved');
+});
+
+test('eFG objective is surplus efficiency at volume, with neutral zero-attempt credit', () => {
+  assert.equal(demonstratedShootingValue(.6, 0, 'efgPct', .54), 0);
+  assert.equal(demonstratedShootingValue(.54, 20, 'efgPct', .54), 0);
+  assert.equal(cardinalMetricScore(0, .54, 'efgPct'), .5);
+  const lowVolume = demonstratedShootingValue(.6, 1, 'efgPct', .54);
+  const highVolume = demonstratedShootingValue(.6, 12, 'efgPct', .54);
+  assert.ok(highVolume > lowVolume && lowVolume > 0);
+  assert.ok(demonstratedShootingValue(.45, 12, 'efgPct', .54) < 0);
+});
+
+test('more caution cannot improve shooting utility, including below-average efficiency', () => {
+  for (const metric of ['efgPct', 'threePct']) for (const raw of [.2, .36, .54, .8]) {
+    const evidence = { metric, sample: 40, minutes: 120, prior: 180,
+      baseline: metric === 'efgPct' ? .54 : .36, secondMomentTotal: raw * 40 };
+    const posterior = posteriorRate(raw, evidence);
+    let previous = Infinity;
+    for (const risk of [0, .1, .5, 1, 2, 4]) {
+      const accuracy = Math.max(0, posterior.mean - risk * posterior.standardError);
+      const volume = shootingOpportunity(evidence, risk);
+      const utility = demonstratedShootingValue(accuracy, volume.decisionPer36, metric,
+        evidence.baseline, volume.observedPer36);
+      assert.ok(utility <= previous + 1e-12, `${metric} ${raw} ${risk}`);
+      previous = utility;
+    }
+  }
+});
+
+test('shooting volume uses one complete team/season pair rather than mixed exposure', () => {
+  const p = { analytics: { seasonTotals: { minutes: 2400, threePointFieldGoalsAttempted: 300,
+    threePointFieldGoalsMade: null }, totals: { minutes: 60, threePointFieldGoalsAttempted: 10,
+      threePointFieldGoalsMade: 4 } } };
+  const e = pairedMetricEvidence(p, 'threePct');
+  assert.equal(e.minutes, 60); assert.equal(e.sample, 10);
+  assert.deepEqual(shootingOpportunity(e), shootingOpportunity({ sample: 10, minutes: 60 }));
 });
 
 test('uncertainty widens independently with minutes or requested usage, never changes the mean', () => {

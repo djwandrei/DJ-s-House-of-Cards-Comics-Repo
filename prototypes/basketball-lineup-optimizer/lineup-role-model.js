@@ -10,7 +10,7 @@ import { readPlayerUsage } from "./player-projection.js?v=__LINEUP_LAB_ASSET_VER
  * diminishing value; no role is a new hard constraint.
  */
 
-export const LINEUP_ROLE_MODEL_VERSION = "role-complementarity-v1";
+export const LINEUP_ROLE_MODEL_VERSION = "role-complementarity-v2-evidence-aligned";
 // Direct API callers retain the historical no-composition default for backward
 // compatibility. The Lineup Lab UI deliberately sends `recommended`, making
 // the small complementarity preference visible and shareable rather than a
@@ -55,6 +55,7 @@ function impact(player, aliases) {
   for (const source of [player?.analytics?.seasonAdvanced, player?.analytics?.advanced]) {
     if (!source || typeof source !== "object" || Array.isArray(source)) continue;
     for (const alias of aliases) {
+      if (source[alias] == null || source[alias] === "" || typeof source[alias] === "boolean") continue;
       const value = Number(source[alias]);
       if (Number.isFinite(value)) return value;
     }
@@ -89,7 +90,7 @@ function weighted(...pairs) {
 }
 
 /** Build role signals once over the full eligible pool so candidates share one scale. */
-export function buildLineupRoleModel(players = []) {
+export function buildLineupRoleModel(players = [], { normalizedMetrics = null } = {}) {
   const roster = Array.isArray(players) ? players : [];
   const measurements = {
     points: roster.map((player) => ({ id: player.id, value: per36(player, "points") })),
@@ -114,6 +115,24 @@ export function buildLineupRoleModel(players = []) {
     key,
     percentiles(entries, key === "turnovers"),
   ]));
+  if (normalizedMetrics instanceof Map) {
+    // A secondary role signal must not sneak raw low-minute spikes back into
+    // a sample-adjusted objective. Reuse the exact solver's contributions,
+    // including its per-metric raw fallback where evidence is unavailable.
+    // This also prevents supported signals from moving with unrelated rows.
+    for (const key of Object.keys(pct)) {
+      const metric = key === "turnovers" ? "ballSecurity" : key;
+      pct[key] = new Map(roster.map(player => {
+        if (key === "usage") {
+          const usage = readPlayerUsage(player);
+          // Missing usage remains neutral, not a made-up 20% observation.
+          return [player.id, usage === null ? .5 : Math.max(0, Math.min(1, usage / .4))];
+        }
+        const value = normalizedMetrics.get(player.id)?.[metric];
+        return [player.id, Number.isFinite(value) ? value : .5];
+      }));
+    }
+  }
   const signalsById = new Map();
   for (const player of roster) {
     const id = player.id;
@@ -124,12 +143,9 @@ export function buildLineupRoleModel(players = []) {
         [pct.points.get(id), 0.18],
         [pct.offensiveImpact.get(id), 0.1],
       ),
-      floorSpacer: weighted(
-        [pct.threePct.get(id), 0.55],
-        [pct.efgPct.get(id), 0.25],
-        [pct.points.get(id), 0.1],
-        [pct.offensiveImpact.get(id), 0.1],
-      ),
+      // Finishing inside the arc is not evidence of floor spacing. The shared
+      // three-point signal already includes accuracy and supported frequency.
+      floorSpacer: pct.threePct.get(id),
       connector: weighted(
         [pct.assists.get(id), 0.5],
         [pct.turnovers.get(id), 0.35],
@@ -158,6 +174,7 @@ export function buildLineupRoleModel(players = []) {
   return {
     version: LINEUP_ROLE_MODEL_VERSION,
     eligiblePlayerCount: roster.length,
+    evidenceBasis: normalizedMetrics instanceof Map ? "optimizer-contributions" : "raw-profile-compatibility",
     signalsById,
   };
 }
@@ -165,13 +182,15 @@ export function buildLineupRoleModel(players = []) {
 function rolePriorityWeights(objectiveWeights = {}) {
   const value = (key) => Math.max(0, number(objectiveWeights[key]));
   const weights = {
-    primaryCreator: 0.35 + value("assists") + value("offensiveImpact") * 0.5,
-    floorSpacer: 0.35 + value("threePct") + value("efgPct") * 0.35,
-    connector: 0.3 + value("assists") * 0.5 + value("ballSecurity") * 0.8,
-    efficientFinisher: 0.35 + value("points") * 0.65 + value("efgPct") * 0.7,
-    pointOfAttack: 0.35 + value("steals") + value("defensiveImpact") * 0.5,
-    rimProtector: 0.35 + value("blocks") + value("defensiveImpact") * 0.4,
-    rebounder: 0.35 + value("rebounds"),
+    // No all-role intercept: a points-only request must not acquire a hidden
+    // defense preference, and blocks-only must not secretly demand creators.
+    primaryCreator: value("assists") + value("offensiveImpact") * 0.5,
+    floorSpacer: value("threePct"),
+    connector: value("assists") * 0.5 + value("ballSecurity") * 0.8,
+    efficientFinisher: value("points") * 0.65 + value("efgPct") * 0.7,
+    pointOfAttack: value("steals") + value("defensiveImpact") * 0.5,
+    rimProtector: value("blocks") + value("defensiveImpact") * 0.4,
+    rebounder: value("rebounds"),
   };
   const total = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
   return Object.fromEntries(Object.entries(weights).map(([role, weight]) => [

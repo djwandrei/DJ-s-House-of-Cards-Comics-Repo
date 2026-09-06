@@ -23,7 +23,7 @@ import {
   readPlayerUsage,
 } from "./player-projection.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
-import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue,
+import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
   decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import {
   buildLineupRoleModel,
@@ -161,17 +161,11 @@ export const ROTATION_HISTORICAL_READINESS_SHARE = 0;
 // rotation recreates how long a player stayed with the selected club.
 const DEFAULT_PROJECTION_PARAMETERS = projectionParametersFor(DEFAULT_PROJECTION_RISK);
 
-// Posterior-mean shrinkage alone makes a completely unproven player look
-// exactly league-average. That is a fair *expectation*, but it is optimistic
-// for an optimizer that must commit scarce rotation minutes: a league-average
-// estimate backed by eight MPG should not carry the same decision confidence
-// as the same estimate backed by a full role. The recommended model therefore
-// keeps a small, one-sided reserve below the posterior mean (above it for
-// turnovers, where lower is better). At zero opportunity the reserve is eight
-// percent of the same-season baseline and fades linearly with the existing
-// metric-specific reliability. This is a transparent risk setting—not a
-// fitted player-impact coefficient, team-stint penalty, minute cap, or attempt
-// to reproduce a coach's historical rotation.
+// A prior-only mean is not measured league-average ability. Posterior working
+// uncertainty supplies a separate downside reserve; there is no fixed 8%
+// discount or imaginary appearance sample. Shooting opportunity has its own
+// count/exposure reserve. These are disclosed decision sensitivities, not
+// calibrated player intervals, hard minute bounds, or coaching targets.
 // BPM is centered at league average (zero) and is expressed as estimated
 // points per 100 possessions. Fit vs. NBA Baseline is an explanatory index rather than a
 // literal point differential, so a moderate five index points per BPM point
@@ -179,21 +173,11 @@ const DEFAULT_PROJECTION_PARAMETERS = projectionParametersFor(DEFAULT_PROJECTION
 // priorities.
 const PLAN_FIT_INDEX_POINTS_PER_BPM = 5;
 
-// The default rate correction compares every player at the rotation's average
-// workload. A second, minute-aware layer uses this scale to value any minutes
-// beyond a player's established role. Costs remain safely below Number's exact
-// integer ceiling even across a full 240-minute regulation allocation.
+// Integer-flow edge costs encode each assigned-minute utility difference.
+// The posterior is formed once from matching observed evidence; conditional
+// workload sensitivity is then applied at the actual proposed minutes, never
+// at 240 / roster size. Keep costs below Number's exact integer ceiling.
 const ROLE_CONDITIONED_UTILITY_COST_SCALE = 1_000_000_000;
-// Weighted percentiles are excellent for comparing player profiles, but a
-// linear "one percentile point per minute" objective has an undesirable
-// mathematical side effect: the exact optimizer fills the best player to his
-// maximum, then the next-best player, while leaving the rest at their minimums.
-// That boundary-heavy answer is correct for the *linear* equation but is a poor
-// representation of marginal basketball value. After the rotation's average
-// workload, each additional minute now retains a smaller share of its prior
-// marginal fit. The curve is deliberately independent of recorded MPG, games,
-// or team-stint totals; it models workload saturation, not coaching history.
-// A 35% floor still lets a truly dominant player reach the user's maximum.
 const POSITION_KEYS = Object.freeze(["G", "F", "C"]);
 // A regulation NBA game contains five simultaneous court roles for 48 minutes:
 // two guard roles, two forward roles, and one center role. Rotation roster
@@ -694,6 +678,7 @@ function normalizeConfig(config = {}) {
   if (!(weightTotal > 0)) {
     reasons.push("At least one objective weight must be greater than zero.");
   }
+  if (!Number.isFinite(weightTotal)) reasons.push("The combined objective weights must be finite; reduce their scale while keeping the same proportions.");
   const normalizedWeights = Object.fromEntries(
     OBJECTIVE_METRICS.map((metric) => [metric, weightTotal > 0 ? weights[metric] / weightTotal : 0]),
   );
@@ -851,6 +836,10 @@ export function percentileNormalize(entries, { lowerIsBetter = false } = {}) {
  */
 function objectiveMetricValue(player, metric, scoringBasis) {
   if (ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)) {
+    // A matching all-team BPM value must accompany all-team minutes. Never
+    // shrink the selected-team coefficient using another scope's exposure.
+    const seasonValue = seasonWideAdvancedImpactMetricValue(player, metric);
+    if (scoringBasis === ROTATION_SCORING_BASES.PER_36 && Number.isFinite(seasonValue)) return seasonValue;
     return advancedImpactMetricValue(player, metric);
   }
   const sourceField = metric === "ballSecurity" ? "turnovers" : metric;
@@ -1016,7 +1005,7 @@ function rateStabilityEvidence(player, metric, parameters = DEFAULT_PROJECTION_P
   const baseline = isPlainObject(analytics?.leaguePer36) ? analytics.leaguePer36 : null;
 
   if (ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)) {
-    if (!Number.isFinite(advancedImpactMetricValue(player, metric))) return null;
+    if (!Number.isFinite(objectiveMetricValue(player, metric, ROTATION_SCORING_BASES.PER_36))) return null;
     // A season-wide BPM coefficient may use season-wide minutes. A team-stint
     // BPM must retain actual matching team minutes; otherwise an
     // unrelated all-team box-score sample would grant confidence to the wrong
@@ -1109,10 +1098,9 @@ function stabilizedObjectiveMetricValue(
     };
   }
 
-  // First correct limited opportunity/role volume. For the team-scoped feed,
-  // `evidence.sample` is standardized per appearance so a short stint caused
-  // by a trade does not create a penalty by itself. Low MPG or low shot volume
-  // still receives less confidence before we ask what happens in a larger role.
+  // Use actual matched exposure, never a standardized/imagined appearance
+  // count. Team sample size affects confidence only when no complete all-team
+  // pair exists; it never specifies an assigned-minute target.
   const sampleReliability = evidence.sample + evidence.prior > 0 ? evidence.sample / (evidence.sample + evidence.prior) : 0;
   const posterior = posteriorRate(raw, evidence);
   const sampleAdjustedValue = posterior.mean;
@@ -1159,6 +1147,9 @@ function stabilizedObjectiveMetricValue(
     : ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)
       ? roleAdjustedMean - uncertaintyReserve : Math.max(0, roleAdjustedMean - uncertaintyReserve);
   const uncertaintyAdjusted = uncertaintyReserve > 1e-12;
+  const opportunity = metric === "threePct" || metric === "efgPct"
+    ? shootingOpportunity(evidence, applyUncertaintyReserve ? projectionParameters.decisionUncertaintyWeight : 0)
+    : null;
   return {
     value: confidenceAdjustedValue,
     adjusted: true,
@@ -1178,7 +1169,8 @@ function stabilizedObjectiveMetricValue(
     posteriorMean: roleAdjustedMean,
     standardError: posterior.standardError,
     baseline: evidence.baseline,
-    participationPer36: evidence.participationPer36,
+    participationPer36: opportunity?.decisionPer36 ?? evidence.participationPer36,
+    shootingOpportunity: opportunity,
   };
 }
 
@@ -1335,15 +1327,15 @@ function buildNormalizedMetrics(
         }
       }
       return { id: player.id, value: canStabilizeMetric
-        ? demonstratedShootingValue(value.value, value.participationPer36, metric) : value.value };
+        ? demonstratedShootingValue(value.value, value.participationPer36, metric, value.baseline,
+          value.shootingOpportunity?.observedPer36) : value.value };
     });
     players.forEach((player, index) => {
       if (!metricAvailable) return;
       const evidence = evidenceByPlayer[index];
       if (!evidence || !(evidence.prior >= 0)) return;
-      // Lineup mode does not assign minutes, so a 36-minute reference gives its
-      // benchmark the same interpretable unit as rotation mode. Rotation mode
-      // supplies its common planned role (240 / roster size).
+      // Both builds use the same per-36 comparison unit, not an assumed role
+      // of 240 / roster size. Rotation curves evaluate actual assigned minutes.
       //
       // Keep the explanatory Fit-vs.-NBA-Baseline benchmark on the posterior-mean
       // projection, without the one-sided decision reserve. The exact search
@@ -1380,7 +1372,7 @@ function buildNormalizedMetrics(
         benchmarkIndex = ratio * 100;
       }
       // A bounded display avoids one near-zero denominator dominating a group
-      // index. The exact ranking continues to use uncapped pool percentiles.
+      // index. It remains distinct from evidence-adjusted objective utility.
       benchmarkIndexesByPlayerId.get(player.id)[metric] = round(
         Math.max(0, Math.min(200, benchmarkIndex)),
       );
@@ -1394,15 +1386,12 @@ function buildNormalizedMetrics(
         cardinalMetricScore(entry.value, evidenceByPlayer[index].baseline, metric)]))
       : percentileNormalize(measured, { lowerIsBetter: metric === "ballSecurity" });
     if (canStabilizeMetric) {
-      // A baseline can sit above or below a particular team pool. Convert it to
-      // the same pool-relative percentile scale as the player values instead of
-      // assuming that league average always means the 50th percentile locally.
-      // The source normally supplies one league value for every row; evaluating
-      // each row independently keeps the result safe if a future adapter mixes
-      // otherwise compatible evidence envelopes.
+      // Keep the baseline on the SAME cardinal scale. eFG objective utility
+      // is surplus shooting value, so league-average efficiency is zero before
+      // normalization, not a raw .54/.55 percentage on the surplus-points axis.
       players.forEach((player, index) => {
         baselinePercentilesByPlayerId.get(player.id)[metric] = cardinalMetricScore(
-          evidenceByPlayer[index].baseline, evidenceByPlayer[index].baseline, metric);
+          metric === "efgPct" ? 0 : evidenceByPlayer[index].baseline, evidenceByPlayer[index].baseline, metric);
       });
     }
     for (const player of players) {
@@ -1458,6 +1447,13 @@ function buildNormalizedMetrics(
       evidenceReferenceGames: null,
       objectiveScale: "league-anchored-cardinal-with-raw-compatibility-fallback",
       evidenceByMetric,
+      shootingObjective: {
+        accuracyEvidence: "Actual matching makes and attempts; posterior mean plus a separate downside reserve.",
+        frequencyEvidence: "Matching total attempts and minutes; observed rate with a Poisson-score downside sensitivity, not a fitted role forecast.",
+        threePct: "Supported three-point accuracy times a saturating supported attempt-frequency factor.",
+        efgPct: "Two times efficiency above/below the same-season baseline times supported FGA per 36; deficits retain observed volume.",
+        calibratedVolumeResponse: false,
+      },
       uncertainty: {
         calibratedPlayerIntervalsAvailable: false,
         decisionWeight: projectionParameters.decisionUncertaintyWeight,
@@ -1468,7 +1464,7 @@ function buildNormalizedMetrics(
       // as sample-adjusted in that branch would mix unlike units.
       reason:
         scoringBasis !== ROTATION_SCORING_BASES.PER_36
-          ? "Rate stabilization applies only to the per-36 rotation basis."
+          ? "Rate stabilization applies only to the per-36 comparison basis."
           : rateStability === ROTATION_RATE_STABILITY_MODES.RAW
             ? "Rate stabilization was disabled for this result, so the model used raw per-36 rates."
             : adjustedPlayerMetricCount > 0
@@ -1707,7 +1703,8 @@ function buildRoleConditionedProjectionPlan(
             targetUsage: SCOUT_OFFENSE_OBJECTIVE_METRICS.includes(metric) ? input.targetUsage : input.sourceUsage,
             risk: projectionParameters.decisionUncertaintyWeight,
             lowerIsBetter: metric === "ballSecurity", signed: ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric) });
-          const scoringValue = demonstratedShootingValue(projected.decision, input.participationPer36, metric);
+          const scoringValue = demonstratedShootingValue(projected.decision, input.participationPer36, metric, input.baseline,
+            input.shootingOpportunity?.observedPer36);
           predictions.push(minute * cardinalMetricScore(scoringValue, input.baseline, metric));
           quantities.push(minute * projected.decision / 36);
         }
@@ -6269,9 +6266,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   const baseDiagnostics = {
     modelIdentity: {
       constraintLayer: "exact-constraint-optimizer-v1",
-      evidenceLayer: normalizedConfig.mode === "rotation"
-        ? HISTORICAL_RATE_MODEL_VERSION
-        : "historical-team-profile-v1",
+      evidenceLayer: HISTORICAL_RATE_MODEL_VERSION,
       scoutImpactLayer: normalizedConfig.modelMode === "historical"
         ? "separate-not-active"
         : "scout-impact-v3-primary-od",
@@ -6297,8 +6292,8 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     maxCombinations: normalizedConfig.maxCombinations,
     candidateCombinationLimitApplied: normalizedConfig.mode !== "rotation",
     requestedAlternatives: normalizedConfig.alternatives,
-    // This is intentionally absent from lineup mode: its equal-player profile
-    // keeps the historical per-game comparison users already expect.
+    // Allocation-only settings remain absent from the equal-player build.
+    // Its shared rate evidence is reported separately below.
     ...(normalizedConfig.mode === "rotation"
       ? {
           rotationScoringBasis: normalizedConfig.rotationScoringBasis,
@@ -6332,20 +6327,13 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     });
   }
 
-  // A five-player profile remains an equal-player, per-game comparison. For a
-  // rotation, the exact allocator gives players proposed game minutes, so use
-  // per-36 counting rates by default before those players compete for minutes.
-  // The explicit perGame option remains available to API callers who need the
-  // legacy comparison for a historical experiment.
+  // Both recommended builds compare the same evidence-adjusted per-36 skill
+  // profiles. Starting five gives each player equal objective exposure; it
+  // does not silently revert to raw percentages. An explicitly requested raw
+  // or perGame basis remains available for compatibility experiments.
   const normalizedMetricResult = buildNormalizedMetrics(eligiblePlayers, {
-    scoringBasis:
-      normalizedConfig.mode === "rotation"
-        ? normalizedConfig.rotationScoringBasis
-        : ROTATION_SCORING_BASES.PER_GAME,
-    rateStability:
-      normalizedConfig.mode === "rotation"
-        ? normalizedConfig.rotationRateStability
-        : ROTATION_RATE_STABILITY_MODES.RAW,
+    scoringBasis: normalizedConfig.rotationScoringBasis,
+    rateStability: normalizedConfig.rotationRateStability,
     // Per-36 is a comparison unit, not a prescribed role. Stabilize at observed
     // season-wide MPG once; the allocation plan evaluates expanded workloads
     // at the actual assigned minutes. Never project twice at 240 / roster size.
@@ -6386,6 +6374,8 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   let rotationProjectedRates = normalizedConfig.mode === "rotation"
     ? normalizedMetricResult.projectedRatesByPlayerId
     : null;
+  baseDiagnostics.objectiveScoringBasis = normalizedConfig.rotationScoringBasis;
+  baseDiagnostics.objectiveRateEvidence = normalizedMetricResult.rateStability;
   if (normalizedConfig.mode === "rotation") {
     // This small summary makes a result auditable without exposing every raw
     // row value in the solver payload. Individual player rates remain visible
@@ -6405,7 +6395,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ),
     ]),
   );
-  const lineupRoleModel = buildLineupRoleModel(eligiblePlayers);
+  const lineupRoleModel = buildLineupRoleModel(eligiblePlayers, { normalizedMetrics });
   const scoutImpactModel = buildScoutImpactModel(
     eligiblePlayers,
     normalizedConfig.scoutEvidence,
@@ -6428,7 +6418,10 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   const playerStrategyScores = scoutMinuteObjective.scoresById;
   baseDiagnostics.compositionModel = {
     version: lineupRoleModel.version,
-    balance: normalizedConfig.roleBalance,
+    requestedBalance: normalizedConfig.roleBalance,
+    balance: normalizedConfig.modelMode === "scout" || normalizedConfig.mode === "rotation"
+      ? "off" : normalizedConfig.roleBalance,
+    evidenceBasis: lineupRoleModel.evidenceBasis,
     eligiblePlayerCount: lineupRoleModel.eligiblePlayerCount,
     hardConstraint: false,
   };
@@ -6651,8 +6644,17 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       objectiveWeights: effectiveObjective.normalizedWeights,
       // A heuristic role bonus in fit-index units cannot be added to an O/D
       // impact objective. Keep role coverage explanatory in primary Scout mode.
-      balance: normalizedConfig.modelMode === "scout" ? "off" : normalizedConfig.roleBalance,
+      // A roster-only bonus is constant while minutes are solved, yet can
+      // reward players assigned zero court time when candidates are compared.
+      // It is not a jointly optimized court-coverage objective. Keep rotation
+      // coverage explanatory until that nonseparable objective is implemented.
+      balance: normalizedConfig.modelMode === "scout" || normalizedConfig.mode === "rotation"
+        ? "off" : normalizedConfig.roleBalance,
     });
+    if (normalizedConfig.mode === "rotation") {
+      roleFit.requestedBalance = normalizedConfig.roleBalance;
+      roleFit.reason = "Rotation role coverage is descriptive: roster membership alone earns no bonus without a jointly optimized court-time coverage objective.";
+    }
     const minutesById = rotation?.byId || Object.fromEntries(
       selectedPlayers.map((player) => [player.id, 48]),
     );
@@ -6735,11 +6737,10 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       // extrapolating an unproven raw rate unchanged into a starter-sized role.
       projectedRates: rotationProjectedRates,
       projectedProductionCurves: rotationProjectedRates?.productionCurvesById,
-      // Keep the same diminishing-return workload utility when optional hard
-      // production thresholds are active. Constraint feasibility still uses
-      // the conservative common-role rates above, so every visible threshold
-      // remains a linear, auditable inequality even though the optimizer ranks
-      // feasible minute plans by the more realistic concave workload curve.
+      // Optional production requirements evaluate the exact same assigned-
+      // minute tables as reporting, not a separate fixed-role approximation.
+      // Concave decision utility and production totals are distinct tables;
+      // the latter may require the nonlinear constrained-search proof.
       roleConditionedScorePlan: usesRoleConditionedObjective
         ? roleConditionedProjectionPlan
         : null,

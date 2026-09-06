@@ -10,6 +10,17 @@ const KIND_LABELS = Object.freeze({
   tool: 'Fan tool',
   game: 'Fan game'
 });
+const PLAY_LABELS = Object.freeze({
+  'lineup-lab': ['Make the coaching calls', 'Choose a team → set your plan → meet your lineup', 'Build my lineup'],
+  'lineup-dna': ['Discover what makes a five tick', 'Build a group → read its strengths → test one swap', 'Explore Lineup DNA'],
+  'fix-the-five': ['One swap can change everything', 'Read the board → lock a swap → reveal the tradeoff', 'Fix the Five'],
+  'draft-night': ['You’re on the clock. No rush.', 'Five picks → one lineup → reveal your board rank', 'Start drafting'],
+  'card-matchup-explorer': ['Put your collector instincts to work', 'Choose players → compare the context → explore cards', 'Compare players & cards'],
+});
+
+export function filterPlayableTools(filter = 'all') {
+  return TOOL_REGISTRY.filter(tool => tool.status === TOOL_STATUSES.LIVE && (filter === 'all' || (filter === 'games' ? tool.kind === 'game' : tool.kind === 'tool')));
+}
 
 function appendText(parent, tagName, className, text) {
   const element = document.createElement(tagName);
@@ -37,6 +48,8 @@ function createFeaturedTool(tool) {
   const card = document.createElement('article');
   const titleId = `tool-title-${tool.id}`;
   card.className = 'tools-featured-card';
+  card.dataset.toolId = tool.id;
+  card.dataset.toolKind = tool.kind;
   card.setAttribute('aria-labelledby', titleId);
 
   const content = document.createElement('div');
@@ -44,8 +57,11 @@ function createFeaturedTool(tool) {
   appendMarker(content, tool, 'tools-featured-card__marker');
 
   const copy = document.createElement('div');
+  const play = PLAY_LABELS[tool.id];
+  if (play) appendText(copy, 'span', 'tools-play-eyebrow', play[0]);
   appendText(copy, 'h3', '', tool.title).id = titleId;
   appendText(copy, 'p', '', tool.summary);
+  if (play) appendText(copy, 'p', 'tools-play-path', play[1]);
   appendPills(copy, [STATUS_LABELS[tool.status], KIND_LABELS[tool.kind], tool.highlights[0] || tool.capabilities[0]], 'tools-featured-card__meta');
   content.append(copy);
   card.append(content);
@@ -53,7 +69,7 @@ function createFeaturedTool(tool) {
   const link = document.createElement('a');
   link.className = 'button';
   link.href = tool.href;
-  link.textContent = 'Launch tool';
+  link.textContent = play?.[2] || 'Launch tool';
   card.append(link);
   return card;
 }
@@ -175,6 +191,35 @@ function renderTools() {
   research.replaceChildren(...researchTools.map(createResearchTool));
   enhanceLiveSpotlight(liveTools[0]);
   updateStatusSummary(countRegistryByStatus());
+  bindPlayPicker();
+}
+
+function bindPlayPicker() {
+  const filters = [...document.querySelectorAll('[data-play-filter]')];
+  const cards = [...document.querySelectorAll('#toolsFeatured .tools-featured-card')];
+  const status = document.getElementById('playStatus');
+  let selection = 'all';
+  let suggestedId = '';
+  const apply = filter => {
+    selection = filter;
+    const ids = new Set(filterPlayableTools(filter).map(tool => tool.id));
+    cards.forEach(card => { card.hidden = !ids.has(card.dataset.toolId); card.classList.remove('is-suggested'); });
+    filters.forEach(control => control.setAttribute('aria-pressed', String(control.dataset.playFilter === filter)));
+    if (status) status.textContent = `${ids.size} ${filter === 'games' ? 'games' : filter === 'tools' ? 'tools' : 'experiences'} to explore. Choose one to get started.`;
+  };
+  filters.forEach(control => control.addEventListener('click', () => apply(control.dataset.playFilter)));
+  document.getElementById('suggestPlay')?.addEventListener('click', () => {
+    const choices = filterPlayableTools(selection).filter(tool => tool.id !== suggestedId);
+    const tool = choices[Math.floor(Math.random() * choices.length)];
+    if (!tool) return;
+    suggestedId = tool.id;
+    const card = cards.find(item => item.dataset.toolId === tool.id);
+    cards.forEach(item => item.classList.toggle('is-suggested', item === card));
+    if (status) status.textContent = `Your next play: ${tool.title}. ${PLAY_LABELS[tool.id]?.[0] || tool.summary}`;
+    card?.querySelector('a')?.focus({ preventScroll: true });
+    card?.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+  });
+  apply('all');
 }
 
 if (typeof document !== 'undefined') {

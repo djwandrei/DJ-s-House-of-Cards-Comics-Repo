@@ -4,6 +4,36 @@
     radial-gradient(circle at 92% 18%,rgba(239,24,35,.07),transparent 24rem);
 }
 
+/* Play-first hub. Filters act only on published registry entries; a roadmap
+   idea never becomes a live game because of a visual selection. */
+.tools-play-section { scroll-margin-top: 7rem; }
+.tools-play-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.85rem; }
+.tools-play-filters { display:flex; flex-wrap:wrap; gap:.5rem; }
+.tools-play-filters button { min-height:46px; padding:.65rem 1rem; border:1px solid var(--border); border-radius:12px; background:var(--surface-strong); color:var(--text); font:inherit; font-weight:700; cursor:pointer; }
+.tools-play-filters button[aria-pressed="true"] { background:#15204a; color:#fff; border-color:#15204a; box-shadow:inset 0 -3px #e8b84c; }
+.tools-play-status { color:var(--muted); min-height:1.5em; font-size:.9rem; margin-block:1rem; }
+.fan-tools-page .tools-featured { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.fan-tools-page .tools-featured-card { grid-template-columns:1fr; align-content:space-between; border-left:0; border-top:3px solid #e8b84c; border-radius:20px; gap:1.25rem; transition:transform 160ms ease, box-shadow 160ms ease; }
+.fan-tools-page .tools-featured-card[hidden] { display:none; }
+.fan-tools-page .tools-featured-card.is-suggested { outline:3px solid #e8b84c; outline-offset:4px; }
+.fan-tools-page .tools-featured-card > .button { justify-self:start; }
+.tools-play-eyebrow { display:block; color:#f5cb70; font-size:.8rem; font-weight:700; margin-bottom:.7rem; }
+.tools-featured-card p.tools-play-path { padding-top:.9rem; margin-top:.9rem; border-top:1px solid #536082; color:#eef3ff; font-size:.8rem; }
+.tools-roadmap-disclosure { border:1px solid var(--border); border-radius:18px; padding:1rem; background:var(--surface-strong); }
+.tools-roadmap-disclosure > summary { min-height:44px; padding:.5rem; font-weight:700; cursor:pointer; }
+.tools-roadmap-disclosure[open] > summary { margin-bottom:1rem; }
+@media (hover:hover) { .fan-tools-page .tools-featured-card:hover { transform:translateY(-3px); box-shadow:0 20px 36px rgba(16,27,57,.2); } }
+@media (max-width:760px) {
+  .fan-tools-page .tools-featured { grid-template-columns:1fr; }
+  .tools-play-controls { align-items:stretch; }
+  .tools-play-filters { width:100%; display:grid; grid-template-columns:1fr 1fr; }
+  .tools-play-filters button:first-child { grid-column:1/-1; }
+  .tools-play-controls > button { width:100%; }
+  .fan-tools-page .tools-featured-card > .button { width:100%; }
+  .tools-featured-card p { font-size:1rem; }
+}
+@media (prefers-reduced-motion:reduce) { .fan-tools-page .tools-featured-card { transition:none; transform:none !important; } }
+
 .fan-tools-page .page-hero {
   padding-bottom:1rem;
 }

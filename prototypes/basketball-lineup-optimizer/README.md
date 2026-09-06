@@ -54,6 +54,18 @@ the beta.
 - A separately versioned Scout Impact contract that fails closed when verified
   possession evidence is incomplete. The public Historical model does not
   silently substitute missing RAPM or synergy with zero.
+- A reusable player-product analytics layer with cohort-relative skill
+  decomposition, multi-label archetype memberships, explainable lineup-fit
+  components, and separate production, impact, and fit branches. Box-score
+  proxies remain labeled, and tracking-only claims are withheld.
+- A first-class individual advanced-stat scorecard covering efficiency, shot
+  profile, creation, rebounding, defensive box events, role context, box-score
+  impact models, and separately validated possession impact. Descriptive usage
+  and shot-frequency rates never become quality points by accident.
+- A deterministic Monte Carlo game and playoff-series engine that accepts
+  caller-supplied matchup expectations and returns its assumptions, score
+  distributions, win probabilities, and sampling uncertainty. It does not
+  invent injuries, fatigue, coaching, travel, or matchup effects.
 
 ## Run locally
 
@@ -82,7 +94,34 @@ search safeguard, infeasible scenarios, alternative ordering, 240-minute
 allocation, optional recorded-minutes guardrails, small-sample and role-expansion
 rate projections, usage-responsibility separation, role complementarity,
 custom role-minute proofs, exact five-player unit decomposition, Scout-data
-fail-closed behavior, and the legacy local-server safeguards.
+fail-closed behavior, individual advanced-stat evaluation, skill and archetype
+contracts, explainable chemistry diagnostics, deterministic game/series
+simulation, and the legacy local-server safeguards.
+
+## Shared product-analytics foundation
+
+The public release includes three pure modules for building additional tools
+without moving private provider payloads into the browser:
+
+- `individual-player-evaluation.js` exposes every supported advanced metric as
+  a raw value, cohort percentile, evidence type, sample confidence, and category
+  coverage. It reads season-wide evidence before a selected-team stint. PER,
+  BPM, win shares, and VORP stay identified as box-derived models; RAPM appears
+  only after provenance and independent box-score-reconciliation gates pass.
+- `product-analytics.js` builds the shared player skill graph, uncalibrated
+  multi-label archetype memberships, duo/trio/lineup compatibility components,
+  and the separate player production/impact/fit envelope. Fine-grained
+  tracking skills and causal chemistry remain machine-readable unavailable
+  fields instead of inferred ratings.
+- `basketball-simulation.js` provides reproducible game and best-of-series
+  Monte Carlo draws from explicit offensive expectations, pace, variance,
+  home-court adjustment, and a labeled validated or exploratory model context.
+
+No universal player grade is imposed. A caller can request a custom advanced
+stat composite only by supplying explicit category weights; missing categories
+are disclosed and the effective weights are returned. The readiness API tells
+future interfaces whether a concept is supported, proxy-only, input-ready, or
+evidence-gated.
 
 ## Understanding the game-plan fit index
 
