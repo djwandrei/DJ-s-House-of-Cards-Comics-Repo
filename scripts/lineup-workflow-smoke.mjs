@@ -109,6 +109,19 @@ try {
   await retry(async () => (await current()) === "results", "exact result", 55000);
   assert.match(await evaluate("document.querySelector('#resultsHeading').textContent"), /recommended lineup/);
   await screenshot("desktop-results");
+  assert.match(await evaluate("document.querySelector('.lineup-dna__swap').textContent"), /Decision brief:/);
+  await click('[data-action="lineup-dna-replacement"]');
+  await retry(() => evaluate("document.querySelector('[data-lineup-dna-replacement-output]')?.textContent.includes('Role check:')"), "DNA exact substitution", 55000);
+  assert.match(await evaluate("document.querySelector('[data-lineup-dna-replacement-output]').textContent"), /original selection has not been replaced/);
+  assert.equal(await evaluate("document.querySelector('[data-lineup-dna-replacement-output] details').open"), false);
+  await retry(() => evaluate("!document.querySelector('#toast').classList.contains('is-visible')"), "transient toast cleared");
+  await evaluate("document.querySelector('.lineup-dna__swap').scrollIntoView({block:'start'})");
+  await screenshot("desktop-dna-decision");
+  await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await evaluate("document.querySelector('.lineup-dna__swap').scrollIntoView({block:'start'})");
+  assert.ok(await evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"), "DNA mobile overflow");
+  await screenshot("mobile-dna-decision");
+  await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await click("#workflowRevise"); await assertStage("plan");
   await setValue("#modeInput", "rotation", "change");
   await click('[data-workflow-target="rules"]');
@@ -172,7 +185,7 @@ try {
     assert.equal(await evaluate("document.querySelectorAll('#toolsFeatured article:not([hidden])').length"), 5);
   }
   assert.deepEqual(exceptions, []);
-  console.log(JSON.stringify({ ok: true, sourcePath, checks: ["single active step", "gated navigation", "focus", "locks", "role and production conflicts", "draft restore", "exact lineup", "minute conflicts", "cancel", "390px all stages", "back/forward", "reduced motion", "fan hub"], screenshots: output }, null, 2));
+  console.log(JSON.stringify({ ok: true, sourcePath, checks: ["single active step", "gated navigation", "focus", "locks", "role and production conflicts", "draft restore", "exact lineup", "DNA exact swap and role debrief", "collapsed interpretation", "minute conflicts", "cancel", "390px all stages", "back/forward", "reduced motion", "fan hub"], screenshots: output }, null, 2));
 } catch (error) {
   console.error(error);
   if (websocket?.readyState === 1) { console.error(await evaluate("({heading:document.querySelector('#workflowHeading')?.textContent,status:document.querySelector('#liveDataStatus')?.textContent,errors:document.querySelector('#workflowErrors')?.textContent})").catch(() => null)); await screenshot("failure").catch(() => {}); }

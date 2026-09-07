@@ -8,6 +8,8 @@ import {
 } from '../scout-daily-game-client.js?v=20260905g';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
+import { publicStatLine, validOnePickAlternatives } from '../game-decision-model.js?v=20260907b';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260907b';
 
 const GAME_KIND = 'draft-night';
 const PICK_COUNT = 5;
@@ -37,6 +39,7 @@ const state = {
   selections: [],
   outcome: null,
   pending: false,
+  previewId: '',
   store: readStore(),
 };
 
@@ -132,12 +135,7 @@ function playerContext(player) {
 }
 
 function playerStatText(player) {
-  const stats = player?.stats && typeof player.stats === 'object' ? player.stats : {};
-  const entries = [];
-  if (Number.isFinite(Number(stats.points))) entries.push(`${Number(stats.points).toFixed(1)} pts`);
-  if (Number.isFinite(Number(stats.assists))) entries.push(`${Number(stats.assists).toFixed(1)} ast`);
-  if (Number.isFinite(Number(stats.rebounds))) entries.push(`${Number(stats.rebounds).toFixed(1)} reb`);
-  return entries.join(' · ') || 'Source stats available on the daily board';
+  return publicStatLine(player);
 }
 
 function sourceFamilyLabel(family) {
@@ -219,6 +217,7 @@ function createCandidateButton(round, candidate) {
   button.type = 'button';
   button.dataset.action = 'choose';
   button.dataset.candidateId = candidate.id;
+  button.setAttribute('aria-pressed', String(state.previewId === candidate.id));
   button.disabled = state.pending;
   button.setAttribute('aria-label', `Draft ${candidate.name} as ${round.title}`);
   button.append(
@@ -226,7 +225,7 @@ function createCandidateButton(round, candidate) {
     createElement('strong', '', candidate.name),
     createElement('small', '', playerContext(candidate)),
     createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
-    createElement('span', 'game-choice-action', state.pending ? 'Checking…' : 'Draft this player →'),
+    createElement('span', 'game-choice-action', state.previewId === candidate.id ? 'Selected for review' : 'Preview this pick →'),
   );
   return button;
 }
@@ -246,36 +245,43 @@ function renderRound() {
   header.append(createElement('p', '', round.prompt));
   elements.panel.append(header);
   elements.panel.append(createElement('p', 'fix-five-focus', `${sourceFamilyLabel(deck().source.family)} · ${deck().source.seasonLabels.join(', ')} · ${deck().objective.label}`));
+  elements.panel.append(decisionBrief(deck(), 'Choose one player per slot. Preview before committing; the Scout rank stays sealed until all five are selected. There is no shot clock or speed bonus.'));
+  elements.panel.append(draftChecklist(deck(), state.selections));
   renderSelectedPlayers(elements.panel);
   elements.panel.append(createElement('h3', 'fix-five-section-title', state.pending ? 'Checking your five against the Scout board…' : 'Make this pick'));
   const candidates = createElement('div', 'fix-five-candidate-grid draft-night-candidate-grid');
   round.candidates.forEach((candidate) => candidates.append(createCandidateButton(round, candidate)));
   elements.panel.append(candidates);
+  elements.panel.append(candidateComparison(round.candidates));
+  const preview = round.candidates.find(player => player.id === state.previewId);
+  if (preview) elements.panel.append(decisionPreview(preview, { action: currentIndex() === PICK_COUNT - 1 ? 'Confirm final pick & reveal' : 'Confirm this pick', pending: state.pending,
+    description: `${round.title}: this fills one board slot. Your earlier picks stay in place; you can undo the last committed pick. Public source stats do not determine the sealed rank.` }));
 }
 
 function createOnePickLearning(outcome) {
   const section = createElement('section', 'draft-night-learning');
   section.append(createElement('h3', '', outcome.isBest ? 'Board check' : 'One-pick learning'));
-  const alternatives = Array.isArray(outcome.onePickAlternatives) ? outcome.onePickAlternatives : [];
+  const alternatives = validOnePickAlternatives(deck(), state.selections, outcome);
   if (outcome.isBest) {
     section.append(createElement('p', '', 'No one-pick change on this fixed Scout board improves your relative result. You can still edit and explore another lineup identity.'));
     return section;
   }
   if (!alternatives.length) {
-    section.append(createElement('p', '', 'No one-pick change improves this result on the fixed board. A stronger path would require rebuilding more than one pick.'));
+    section.append(createElement('p', '', 'No usable one-pick improvement was supplied with this reveal. You can edit a pick and ask Scout to evaluate that exact five; no alternative score is invented here.'));
     return section;
   }
   section.append(createElement('p', '', 'These nearby alternatives are comparisons inside today’s board, not advice for a real game or a player valuation.'));
   const list = createElement('ol');
   alternatives.slice(0, 3).forEach((alternative) => {
-    const round = deck().rounds.find((entry) => entry.id === alternative.roundId);
-    const fromPlayer = playerFor(alternative.fromPlayerId);
-    const toPlayer = playerFor(alternative.toPlayerId);
     const item = createElement('li');
     item.append(
-      createElement('strong', '', `${round?.title || 'One pick'}: ${fromPlayer?.name || 'Selected player'} → ${toPlayer?.name || 'Alternative'}`),
+      createElement('strong', '', `${alternative.title}: ${alternative.from.name} → ${alternative.to.name}`),
       createElement('span', '', `+${alternative.scoreChange} board-score points · rank ${alternative.rank} of ${deck().publishedPathCount}`),
     );
+    const tryChange = createElement('button', 'button-secondary', 'Try & reveal this one-pick change');
+    tryChange.type = 'button'; tryChange.dataset.action = 'try-alternative';
+    tryChange.dataset.candidateId = alternative.to.id; tryChange.disabled = state.pending;
+    item.append(tryChange);
     list.append(item);
   });
   section.append(list);
@@ -326,6 +332,11 @@ function renderCompletion() {
       createElement('span', '', sourceFamilyLabel(deck().source.family)),
     );
     elements.completionPanel.append(resultPills, createOnePickLearning(outcome));
+    elements.completionPanel.append(decisionDebrief('Your draft, explained', [
+      `You filled ${deck().rounds.map(round => round.title).join(', ')} from the same fixed board.`,
+      `${deck().objective.label} decided the sealed rank. The role checklist described legal slots, not an extra chemistry bonus.`,
+      'Use a supplied one-pick change to keep four choices fixed and compare again. Undo or restart affects only this browser; it does not alter the daily board.',
+    ]));
     elements.completionPanel.append(createElement('p', 'fix-five-result-caveat', `${outcome.scoring?.description || state.board.scoring} Visible source stats are context only; raw Scout inputs remain private.`));
   }
 
@@ -356,6 +367,7 @@ function renderCompletion() {
 }
 
 function render() {
+  elements.restart.disabled = state.pending;
   elements.workspace.setAttribute('aria-busy', String(state.pending));
   elements.completionPanel.setAttribute('aria-busy', String(state.pending));
   renderProgress();
@@ -393,6 +405,7 @@ async function selectCandidate(candidateId) {
   const round = deck()?.rounds[currentIndex()];
   if (state.pending || !round || !round.candidates.some((candidate) => candidate.id === candidateId)) return;
   state.selections.push(candidateId);
+  state.previewId = '';
   state.outcome = null;
   persistSelections();
   const player = playerFor(candidateId);
@@ -405,6 +418,7 @@ async function selectCandidate(candidateId) {
 function undoPick() {
   if (state.pending || !state.selections.length) return;
   const removed = state.selections.pop();
+  state.previewId = '';
   state.outcome = null;
   persistSelections();
   setStatus(`${playerFor(removed)?.name || 'Last pick'} removed. Choose again from the same Scout board.`);
@@ -415,6 +429,7 @@ function undoPick() {
 function restartDraft() {
   if (state.pending) return;
   state.selections = [];
+  state.previewId = '';
   state.outcome = null;
   persistSelections();
   setStatus('This local draft is reset. The same source-labeled Scout board remains in place.');
@@ -463,8 +478,18 @@ function restoreSelections() {
 
 function bindEvents() {
   elements.panel.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-action="choose"]');
-    if (button) selectCandidate(button.dataset.candidateId);
+    const button = event.target.closest('button[data-action]');
+    if (!button || state.pending) return;
+    if (button.dataset.action === 'choose') {
+      if (!deck()?.rounds[currentIndex()]?.candidates.some(player => player.id === button.dataset.candidateId)) return;
+      state.previewId = button.dataset.candidateId; render();
+      focusGameStage(document.getElementById('decisionPreviewTitle'));
+    }
+    if (button.dataset.action === 'confirm') selectCandidate(state.previewId);
+    if (button.dataset.action === 'cancel-preview') {
+      const id = state.previewId; state.previewId = ''; render();
+      elements.panel.querySelector(`[data-candidate-id="${CSS.escape(id)}"]`)?.focus();
+    }
   });
   elements.completionPanel.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');
@@ -473,6 +498,12 @@ function bindEvents() {
     if (button.dataset.action === 'undo') undoPick();
     if (button.dataset.action === 'restart') restartDraft();
     if (button.dataset.action === 'share') shareDraft();
+    if (button.dataset.action === 'try-alternative' && !state.pending && state.outcome) {
+      const alternative = validOnePickAlternatives(deck(), state.selections, state.outcome).find(item => item.to.id === button.dataset.candidateId);
+      if (!alternative) return;
+      state.selections[alternative.index] = alternative.to.id; state.outcome = null; state.previewId = '';
+      persistSelections(); resolveOutcome().then(() => focusGameStage(document.getElementById('completionTitle')));
+    }
   });
   elements.restart.addEventListener('click', restartDraft);
   elements.undo.addEventListener('click', undoPick);

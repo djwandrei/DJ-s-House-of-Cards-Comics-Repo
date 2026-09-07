@@ -6,41 +6,42 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260907a";
+} from "./optimizer-config.js?v=20260907b";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260907a";
+} from "./player-data.js?v=20260907b";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260907a";
+} from "./supabase-nba-data.js?v=20260907b";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
-} from "./fan-analytics.js?v=20260907a";
+  explainLineupRoleChange,
+} from "./fan-analytics.js?v=20260907b";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260907a";
+} from "./opponent-gameplan.js?v=20260907b";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260907a";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260907a";
-import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260907a";
-import { createWorkflowView } from "./workflow-view.js?v=20260907a";
+} from "./scenario-url.js?v=20260907b";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260907b";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260907b";
+import { createWorkflowView } from "./workflow-view.js?v=20260907b";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260907a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260907a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260907b";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260907b", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -3580,7 +3581,7 @@ function replacementResultElements(playerId) {
 }
 
 function replacementAnalysisMarkup(playerId, analysis) {
-  const output = document.createElement("p");
+  const output = document.createElement("div");
   output.className = "exact-replacement__result";
   output.dataset.replacementResult = playerId;
   // Do not imply that a replacement is infeasible before the visitor asks the
@@ -3596,14 +3597,36 @@ function replacementAnalysisMarkup(playerId, analysis) {
     return output;
   }
   const deltas = analysis.deltas || {};
+  const deltaLabel = key => hasFiniteNumber(deltas[key]) ? formatSignedDifference(deltas[key]) : "Unavailable";
   const deltaParts = [
-    `PTS ${formatSignedDifference(deltas.points)}`,
-    `REB ${formatSignedDifference(deltas.rebounds)}`,
-    `AST ${formatSignedDifference(deltas.assists)}`,
-    `TOV ${formatSignedDifference(deltas.turnovers)}`,
-  ].filter((part) => !part.endsWith("-"));
+    `PTS ${deltaLabel("points")}`,
+    `REB ${deltaLabel("rebounds")}`,
+    `AST ${deltaLabel("assists")}`,
+    `TOV ${deltaLabel("turnovers")}`,
+  ];
   const removedName = currentPlayer(playerId)?.name || "the selected player";
-  output.textContent = `Exact one-player swap: remove ${removedName}; add ${analysis.replacementName}. ${deltaParts.join(" · ")}. This is the best feasible replacement while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.`;
+  const title = document.createElement("strong");
+  title.textContent = `${removedName} out → ${analysis.replacementName} in`;
+  const production = document.createElement("p");
+  production.textContent = `Production comparison: ${deltaParts.join(" · ")}.`;
+  output.append(title, production);
+  const method = document.createElement("details"), methodTitle = document.createElement("summary"), methodCopy = document.createElement("p");
+  methodTitle.textContent = "What this exact comparison means";
+  methodCopy.textContent = "This is the best feasible replacement while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.";
+  method.append(methodTitle, methodCopy);
+  const roles = analysis.roleChanges;
+  if (roles?.available) {
+    const label = status => ({ covered: "covered", thin: "thin", gap: "no clear signal", unassessed: "not assessed" })[status];
+    const changes = roles.changes.length ? roles.changes.map(role => `${role.label}: ${label(role.before)} → ${label(role.after)}`).join("; ") : "No role-coverage category changed; the two players are not necessarily equivalent.";
+    const change = document.createElement("p"), remaining = document.createElement("p"), note = document.createElement("p");
+    change.textContent = `Role check: ${changes}`;
+    remaining.textContent = `Remaining pressure points: ${roles.remaining.join(", ") || "none flagged by this descriptive screen"}.`;
+    note.textContent = `${roles.unassessed.length ? `Not assessed: ${roles.unassessed.join(", ")}. ` : ""}${roles.note}`;
+    output.append(change, remaining); method.append(note);
+  }
+  const unchanged = document.createElement("p");
+  unchanged.textContent = "What-if only: your original selection has not been replaced.";
+  output.append(unchanged, method);
   return output;
 }
 
@@ -4482,6 +4505,11 @@ function renderLineupDnaSwapTool(result, explanation) {
   const intro = document.createElement("p");
   intro.textContent = "Choose one selected player to remove. The exact solver keeps every other selected player and every current rule, then finds the best valid replacement.";
   section.append(heading, intro);
+  const goal = document.createElement("p");
+  goal.className = "lineup-dna__swap-note";
+  const pressurePoint = lineupDnaProfile(explanation?.roleCoverage).pressurePoint;
+  goal.textContent = `Decision brief: keep your current ${result?.best?.modelAdjustments?.scoutImpact?.additiveImpactPer100 ? `Scout ${result.diagnostics?.scoutImpactModel?.objective || "balanced"} objective` : "game-plan objective"} and every hard rule. ${pressurePoint ? `Inspect whether the change affects ${pressurePoint.label.toLowerCase()}.` : "Check what you give up when changing one player."} Compare the production differences and remaining role concerns below; this test does not apply the swap.`;
+  section.append(goal);
 
   const availablePlayers = (result?.best?.players || []).filter((player) => !state.lockedIds.has(player.id));
   const preferred = preferredLineupDnaSwapPlayer(result, explanation);
@@ -5353,7 +5381,8 @@ async function runExactReplacement(playerId) {
         const deltas = Object.fromEntries(
           ["points", "rebounds", "assists", "turnovers"].map((metric) => [
             metric,
-            Number(replacementResult.best.totals?.[metric]) - Number(originalBest.totals?.[metric]),
+            hasFiniteNumber(replacementResult.best.totals?.[metric]) && hasFiniteNumber(originalBest.totals?.[metric])
+              ? Number(replacementResult.best.totals[metric]) - Number(originalBest.totals[metric]) : null,
           ]),
         );
         analysis = {
@@ -5361,6 +5390,9 @@ async function runExactReplacement(playerId) {
           replacementId: replacement.id,
           replacementName: replacement.name,
           deltas,
+          roleChanges: explainLineupRoleChange(originalBest.players, replacementResult.best.players, {
+            referencePlayers: comparisonPool(), comparisonLabel: "players available in this search",
+          }),
         };
       }
     }

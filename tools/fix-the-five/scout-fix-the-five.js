@@ -8,6 +8,8 @@ import {
 } from '../scout-daily-game-client.js?v=20260905g';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
+import { publicStatLine } from '../game-decision-model.js?v=20260907b';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260907b';
 
 const GAME_KIND = 'fix-the-five';
 const RUN_LENGTH = 5;
@@ -37,6 +39,7 @@ const state = {
   outcomes: new Map(),
   activeIndex: 0,
   pending: false,
+  previewId: '',
   store: readStore(),
 };
 
@@ -142,12 +145,7 @@ function playerContext(player) {
 }
 
 function playerStatText(player) {
-  const stats = player?.stats && typeof player.stats === 'object' ? player.stats : {};
-  const entries = [];
-  if (Number.isFinite(Number(stats.points))) entries.push(`${Number(stats.points).toFixed(1)} pts`);
-  if (Number.isFinite(Number(stats.assists))) entries.push(`${Number(stats.assists).toFixed(1)} ast`);
-  if (Number.isFinite(Number(stats.rebounds))) entries.push(`${Number(stats.rebounds).toFixed(1)} reb`);
-  return entries.join(' · ') || 'Source stats available on the daily board';
+  return publicStatLine(player);
 }
 
 function sourceFamilyLabel(family) {
@@ -179,6 +177,7 @@ function createCandidateButton(challenge, candidate) {
   button.type = 'button';
   button.dataset.action = 'choose';
   button.dataset.candidateId = candidate.id;
+  button.setAttribute('aria-pressed', String(state.previewId === candidate.id));
   button.disabled = state.pending;
   button.setAttribute('aria-label', `Choose ${candidate.name}`);
   button.append(
@@ -186,7 +185,7 @@ function createCandidateButton(challenge, candidate) {
     createElement('strong', '', candidate.name),
     createElement('small', '', playerContext(candidate)),
     createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
-    createElement('span', 'game-choice-action', state.pending ? 'Checking…' : 'Lock this swap →'),
+    createElement('span', 'game-choice-action', state.previewId === candidate.id ? 'Selected for review' : 'Preview this swap →'),
   );
   return button;
 }
@@ -212,6 +211,12 @@ function createResult(challenge, candidate, outcome) {
     createElement('span', '', sourceFamilyLabel(challenge.source.family)),
   );
   result.append(pills);
+  const removed = challenge.lineup.find(player => player.id === challenge.removeId);
+  result.append(decisionDebrief('Your decision, explained', [
+    `${removed?.name || 'The marked player'} out; ${candidate.name} in. The other four players stayed fixed.`,
+    `The revealed rank evaluates ${challenge.objective.label} among these three replacements—not improvement over the outgoing player.`,
+    'The public stats below describe the change in personnel. They do not explain the private model’s causal reasoning or predict how this five will play.',
+  ]), candidateComparison([candidate], removed));
   result.append(createElement('p', 'fix-five-result-caveat', `${outcome.scoring?.description || state.board.scoring} This is a fixed-board comparison, not a prediction of wins or a claim that these five played together.`));
 
   const actions = createElement('div', 'fix-five-result-actions');
@@ -247,10 +252,11 @@ function renderChallenge() {
 
   const sourceBadge = createElement('p', 'fix-five-focus', `${sourceFamilyLabel(challenge.source.family)} · ${challenge.source.seasonLabels.join(', ')} · ${challenge.objective.label}`);
   elements.challengePanel.append(sourceBadge);
+  elements.challengePanel.append(decisionBrief(challenge, 'Keep four players. Preview one replacement, then confirm to reveal its rank. Trying another swap keeps the same board and objective.'));
   elements.challengePanel.append(createElement('h3', 'fix-five-section-title', `The five — replace ${challenge.lineup.find((player) => player.id === challenge.removeId)?.name || 'the marked player'}`));
   const lineup = createElement('ul', 'fix-five-lineup-list');
   challenge.lineup.forEach((player) => lineup.append(createPlayerChip(player, player.id === challenge.removeId)));
-  elements.challengePanel.append(lineup, createElement('p', 'fix-five-focus', challenge.focus));
+  elements.challengePanel.append(lineup);
 
   const selectedId = state.selections[challenge.id];
   const selected = challenge.candidates.find((candidate) => candidate.id === selectedId);
@@ -264,6 +270,10 @@ function renderChallenge() {
   const candidates = createElement('div', 'fix-five-candidate-grid');
   challenge.candidates.forEach((candidate) => candidates.append(createCandidateButton(challenge, candidate)));
   elements.challengePanel.append(candidates);
+  elements.challengePanel.append(candidateComparison(challenge.candidates, challenge.lineup.find(player => player.id === challenge.removeId)));
+  const preview = challenge.candidates.find(player => player.id === state.previewId);
+  if (preview) elements.challengePanel.append(decisionPreview(preview, { action: 'Confirm swap & reveal', pending: state.pending,
+    description: 'This is a preview, not a submitted guess. Confirm to request the sealed Scout rank; the other four players and current objective stay fixed.' }));
 }
 
 function renderProgress() {
@@ -374,6 +384,7 @@ function renderCompletion() {
 
 function render() {
   elements.workspace.setAttribute('aria-busy', String(state.pending));
+  elements.restartRun.disabled = state.pending;
   renderProgress();
   renderScoreboard();
   if (isComplete() && state.activeIndex >= RUN_LENGTH) renderCompletion();
@@ -396,6 +407,7 @@ async function chooseCandidate(candidateId) {
     });
     state.selections[challenge.id] = candidateId;
     state.outcomes.set(challenge.id, outcome);
+    state.previewId = '';
     persistSelections();
     setStatus(`${challenge.candidates.find((candidate) => candidate.id === candidateId)?.name || 'Your swap'} is locked. Scout rank revealed on this fixed board.`);
   } catch {
@@ -412,6 +424,7 @@ function changeCurrentSwap() {
   if (!challenge || state.pending) return;
   delete state.selections[challenge.id];
   state.outcomes.delete(challenge.id);
+  state.previewId = '';
   persistSelections();
   setStatus('Choose a different legal replacement from this same Scout board.');
   render();
@@ -423,6 +436,7 @@ function nextChallenge() {
   const challenge = challengeAt(state.activeIndex);
   if (!challenge || !state.selections[challenge.id]) return;
   state.activeIndex = Math.min(state.activeIndex + 1, RUN_LENGTH);
+  state.previewId = '';
   setStatus(state.activeIndex >= RUN_LENGTH ? 'Your five-round Scout run is ready to finish.' : 'The next source-labeled Scout challenge is ready.');
   render();
   focusGameStage(document.getElementById(state.activeIndex >= RUN_LENGTH ? 'completionTitle' : 'challengeTitle'));
@@ -433,6 +447,7 @@ function restartRun() {
   state.selections = {};
   state.outcomes.clear();
   state.activeIndex = 0;
+  state.previewId = '';
   persistSelections();
   setStatus('This local run is reset. The same daily Scout boards remain in place.');
   render();
@@ -495,7 +510,18 @@ function bindEvents() {
   elements.challengePanel.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');
     if (!button) return;
-    if (button.dataset.action === 'choose') chooseCandidate(button.dataset.candidateId);
+    if (state.pending) return;
+    if (button.dataset.action === 'choose') {
+      const challenge = challengeAt(state.activeIndex);
+      if (!challenge?.candidates.some(player => player.id === button.dataset.candidateId)) return;
+      state.previewId = button.dataset.candidateId;
+      render(); focusGameStage(document.getElementById('decisionPreviewTitle'));
+    }
+    if (button.dataset.action === 'confirm') chooseCandidate(state.previewId);
+    if (button.dataset.action === 'cancel-preview') {
+      const id = state.previewId; state.previewId = ''; render();
+      elements.challengePanel.querySelector(`[data-candidate-id="${CSS.escape(id)}"]`)?.focus();
+    }
     if (button.dataset.action === 'change') changeCurrentSwap();
     if (button.dataset.action === 'next') nextChallenge();
   });
@@ -504,6 +530,7 @@ function bindEvents() {
     const index = Number(button?.dataset.index);
     if (!Number.isInteger(index) || state.pending) return;
     state.activeIndex = index;
+    state.previewId = '';
     render();
     focusGameStage(document.getElementById('challengeTitle'));
   });

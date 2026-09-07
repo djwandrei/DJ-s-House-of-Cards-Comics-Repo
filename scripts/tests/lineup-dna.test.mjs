@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   analyzeRoleCoverage,
   explainOptimizationSelection,
+  explainLineupRoleChange,
 } from '../../lineup-lab/fan-analytics.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -43,4 +44,19 @@ test('Lineup DNA explanation keeps the evidence-ordered role coverage intact', (
   assert.ok(explanation.roleCoverage.deficiencies.every((entry) => (
     entry.status === 'gap' || entry.status === 'thin'
   )));
+});
+
+test('DNA substitution explains role changes on one fixed reference without altering selections', () => {
+  const before = structuredClone(selected);
+  const alternative = [...selected.slice(0, -1), roster.find(player => !selected.some(item => item.id === player.id))];
+  const report = explainLineupRoleChange(selected, alternative, { referencePlayers: roster });
+  assert.equal(report.available, true);
+  const nextRoles = analyzeRoleCoverage(alternative, { referencePlayers: roster });
+  assert.deepEqual(report.remaining, nextRoles.deficiencies.map(role => role.label));
+  assert.match(report.note, /not causal chemistry/);
+  assert.deepEqual(selected, before);
+  assert.deepEqual(report, explainLineupRoleChange(selected, alternative, { referencePlayers: roster }));
+  assert.equal(explainLineupRoleChange(selected, selected, { referencePlayers: roster }).available, false);
+  assert.equal(explainLineupRoleChange(selected, alternative).available, false);
+  assert.equal(explainLineupRoleChange(selected, alternative.slice(1), { referencePlayers: roster }).available, false);
 });

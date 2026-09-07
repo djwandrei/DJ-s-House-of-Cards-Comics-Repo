@@ -9,7 +9,7 @@
  * requested minutes. Usage-dependent mean effects remain validation-gated.
  */
 
-import { workloadRetention } from "./workload-model.js?v=20260907a";
+import { workloadRetention } from "./workload-model.js?v=20260907b";
 
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",

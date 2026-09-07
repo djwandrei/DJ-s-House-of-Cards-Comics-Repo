@@ -1147,5 +1147,25 @@ body.dark-mode.fix-five-page .fix-five-complete > p { color:#c2cfe5; }
 .fan-next-play > div { display:flex; flex-wrap:wrap; gap:.75rem; }
 .fix-five-progress-step[aria-current="step"] { box-shadow:inset 0 -3px #e8b84c; }
 #draftTitle, #challengeTitle, #completionTitle { scroll-margin-top:7.5rem; }
+#decisionPreviewTitle { scroll-margin-top:7.5rem; }
+/* Shared decision surfaces use the existing collector theme; no extra HUD layer. */
+.game-decision-brief,.game-draft-needs,.game-decision-preview,.game-decision-debrief { margin-block:1rem; padding:.85rem 1rem; border-left:3px solid var(--brand,#1f2fa3); background:var(--surface-strong); color:var(--text); border-radius:0 10px 10px 0; }
+.game-decision-brief p,.game-draft-needs p { margin:.45rem 0; }
+.game-decision-brief small,.game-draft-needs small,.game-decision-details p,.game-decision-details small { color:var(--muted); }
+.game-decision-preview { border-color:#e8b84c; }
+.fix-five-page .game-decision-preview .button { background:var(--brand-blue); color:var(--brand-white); }
+.fix-five-page .game-decision-preview .button-secondary,.fix-five-page .draft-night-learning .button-secondary { background:var(--surface-strong); color:var(--text); border:1px solid var(--border); }
+.game-decision-preview h3,.game-decision-debrief h3 { margin-top:0; }
+.game-decision-debrief li { margin-block:.6rem; }
+.game-decision-details { margin-block:1rem; }
+.game-decision-details summary { min-height:44px; padding-block:.7rem; cursor:pointer; font-weight:700; }
+.game-decision-table { overflow-x:auto; margin-block:.7rem; }
+.game-decision-table table { width:100%; border-collapse:collapse; font-size:.85rem; }
+.game-decision-table caption { text-align:left; margin-bottom:.5rem; }
+.game-decision-table th,.game-decision-table td { padding:.65rem; border-bottom:1px solid var(--border); text-align:left; min-width:5rem; }
+.game-decision-table thead th { min-width:8rem; }
+.game-decision-table td { font-variant-numeric:tabular-nums; }
+.fix-five-page .fix-five-candidate[aria-pressed="true"] { border-color:#e8b84c; box-shadow:inset 0 0 0 2px #e8b84c; }
+.game-decision-details :focus-visible { outline:3px solid #e8b84c; outline-offset:3px; }
 .fix-five-page .fix-five-candidate:focus-visible, .draft-night-page .fix-five-candidate:focus-visible { outline:3px solid #1f2fa3; outline-offset:4px; box-shadow:0 0 0 2px #fff; }
 @media (max-width:700px) { .fan-next-play .button-secondary { width:100%; } }

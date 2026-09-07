@@ -23,6 +23,7 @@ import {
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
+  explainLineupRoleChange,
 } from "./fan-analytics.js?v=__LINEUP_LAB_ASSET_VERSION__";
 import {
   buildOpponentGamePlan,
@@ -3580,7 +3581,7 @@ function replacementResultElements(playerId) {
 }
 
 function replacementAnalysisMarkup(playerId, analysis) {
-  const output = document.createElement("p");
+  const output = document.createElement("div");
   output.className = "exact-replacement__result";
   output.dataset.replacementResult = playerId;
   // Do not imply that a replacement is infeasible before the visitor asks the
@@ -3596,14 +3597,36 @@ function replacementAnalysisMarkup(playerId, analysis) {
     return output;
   }
   const deltas = analysis.deltas || {};
+  const deltaLabel = key => hasFiniteNumber(deltas[key]) ? formatSignedDifference(deltas[key]) : "Unavailable";
   const deltaParts = [
-    `PTS ${formatSignedDifference(deltas.points)}`,
-    `REB ${formatSignedDifference(deltas.rebounds)}`,
-    `AST ${formatSignedDifference(deltas.assists)}`,
-    `TOV ${formatSignedDifference(deltas.turnovers)}`,
-  ].filter((part) => !part.endsWith("-"));
+    `PTS ${deltaLabel("points")}`,
+    `REB ${deltaLabel("rebounds")}`,
+    `AST ${deltaLabel("assists")}`,
+    `TOV ${deltaLabel("turnovers")}`,
+  ];
   const removedName = currentPlayer(playerId)?.name || "the selected player";
-  output.textContent = `Exact one-player swap: remove ${removedName}; add ${analysis.replacementName}. ${deltaParts.join(" · ")}. This is the best feasible replacement while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.`;
+  const title = document.createElement("strong");
+  title.textContent = `${removedName} out → ${analysis.replacementName} in`;
+  const production = document.createElement("p");
+  production.textContent = `Production comparison: ${deltaParts.join(" · ")}.`;
+  output.append(title, production);
+  const method = document.createElement("details"), methodTitle = document.createElement("summary"), methodCopy = document.createElement("p");
+  methodTitle.textContent = "What this exact comparison means";
+  methodCopy.textContent = "This is the best feasible replacement while preserving every other selected player and current rule. Fit-score change is omitted because removing a player changes the percentile comparison pool.";
+  method.append(methodTitle, methodCopy);
+  const roles = analysis.roleChanges;
+  if (roles?.available) {
+    const label = status => ({ covered: "covered", thin: "thin", gap: "no clear signal", unassessed: "not assessed" })[status];
+    const changes = roles.changes.length ? roles.changes.map(role => `${role.label}: ${label(role.before)} → ${label(role.after)}`).join("; ") : "No role-coverage category changed; the two players are not necessarily equivalent.";
+    const change = document.createElement("p"), remaining = document.createElement("p"), note = document.createElement("p");
+    change.textContent = `Role check: ${changes}`;
+    remaining.textContent = `Remaining pressure points: ${roles.remaining.join(", ") || "none flagged by this descriptive screen"}.`;
+    note.textContent = `${roles.unassessed.length ? `Not assessed: ${roles.unassessed.join(", ")}. ` : ""}${roles.note}`;
+    output.append(change, remaining); method.append(note);
+  }
+  const unchanged = document.createElement("p");
+  unchanged.textContent = "What-if only: your original selection has not been replaced.";
+  output.append(unchanged, method);
   return output;
 }
 
@@ -4482,6 +4505,11 @@ function renderLineupDnaSwapTool(result, explanation) {
   const intro = document.createElement("p");
   intro.textContent = "Choose one selected player to remove. The exact solver keeps every other selected player and every current rule, then finds the best valid replacement.";
   section.append(heading, intro);
+  const goal = document.createElement("p");
+  goal.className = "lineup-dna__swap-note";
+  const pressurePoint = lineupDnaProfile(explanation?.roleCoverage).pressurePoint;
+  goal.textContent = `Decision brief: keep your current ${result?.best?.modelAdjustments?.scoutImpact?.additiveImpactPer100 ? `Scout ${result.diagnostics?.scoutImpactModel?.objective || "balanced"} objective` : "game-plan objective"} and every hard rule. ${pressurePoint ? `Inspect whether the change affects ${pressurePoint.label.toLowerCase()}.` : "Check what you give up when changing one player."} Compare the production differences and remaining role concerns below; this test does not apply the swap.`;
+  section.append(goal);
 
   const availablePlayers = (result?.best?.players || []).filter((player) => !state.lockedIds.has(player.id));
   const preferred = preferredLineupDnaSwapPlayer(result, explanation);
@@ -5353,7 +5381,8 @@ async function runExactReplacement(playerId) {
         const deltas = Object.fromEntries(
           ["points", "rebounds", "assists", "turnovers"].map((metric) => [
             metric,
-            Number(replacementResult.best.totals?.[metric]) - Number(originalBest.totals?.[metric]),
+            hasFiniteNumber(replacementResult.best.totals?.[metric]) && hasFiniteNumber(originalBest.totals?.[metric])
+              ? Number(replacementResult.best.totals[metric]) - Number(originalBest.totals[metric]) : null,
           ]),
         );
         analysis = {
@@ -5361,6 +5390,9 @@ async function runExactReplacement(playerId) {
           replacementId: replacement.id,
           replacementName: replacement.name,
           deltas,
+          roleChanges: explainLineupRoleChange(originalBest.players, replacementResult.best.players, {
+            referencePlayers: comparisonPool(), comparisonLabel: "players available in this search",
+          }),
         };
       }
     }

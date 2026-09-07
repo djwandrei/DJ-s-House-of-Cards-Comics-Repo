@@ -1204,6 +1204,7 @@ export function analyzeRoleCoverage(players, options = {}) {
       status,
       evidenceMode: definition.evidence,
       coverageUsesProvisional: includeProvisionalRoleCoverage,
+      coverageScore: matches[0]?.role.score ?? null,
       players: matches.map(({ record, role }) => ({
         playerId: record.playerId,
         playerName: record.playerName,
@@ -1219,7 +1220,8 @@ export function analyzeRoleCoverage(players, options = {}) {
       message,
     };
   });
-  const strengths = coverage.filter((item) => item.status === "covered");
+  const strengths = coverage.filter((item) => item.status === "covered")
+    .sort((a, b) => (b.coverageScore ?? 0) - (a.coverageScore ?? 0) || stableCompare(a.roleId, b.roleId));
   const deficiencies = coverage.filter((item) => item.status === "thin" || item.status === "gap");
   const provisionalSignalCount = coverage.reduce((total, item) => total + item.provisionalPlayers.length, 0);
   const caveats = [...new Set([
@@ -1239,6 +1241,26 @@ export function analyzeRoleCoverage(players, options = {}) {
     coverageUsesProvisional: includeProvisionalRoleCoverage,
     caveats,
   };
+}
+
+// Compare one exact substitution against the same reference population. This
+// describes role evidence only; it never changes the objective or feasibility.
+export function explainLineupRoleChange(beforePlayers, afterPlayers, options = {}) {
+  if (!Array.isArray(beforePlayers) || !Array.isArray(afterPlayers) || !beforePlayers.length
+    || beforePlayers.length !== afterPlayers.length || !Array.isArray(options.referencePlayers) || !options.referencePlayers.length) return { available: false, changes: [], remaining: [] };
+  const beforeIds = new Set(beforePlayers.map(player => player.id)), afterIds = new Set(afterPlayers.map(player => player.id));
+  if (beforeIds.size !== beforePlayers.length || afterIds.size !== afterPlayers.length
+    || [...beforeIds].filter(id => !afterIds.has(id)).length !== 1
+    || [...afterIds].filter(id => !beforeIds.has(id)).length !== 1) return { available: false, changes: [], remaining: [] };
+  const before = analyzeRoleCoverage(beforePlayers, options), after = analyzeRoleCoverage(afterPlayers, options);
+  const changes = after.coverage.flatMap(role => {
+    const previous = before.coverage.find(item => item.roleId === role.roleId);
+    if (!previous || previous.status === role.status) return [];
+    return [{ label: role.label, before: previous.status, after: role.status }];
+  });
+  return { available: true, changes, remaining: after.deficiencies.map(role => role.label),
+    unassessed: after.coverage.filter(role => role.status === "unassessed").map(role => role.label),
+    note: "Same reference pool and sample policy. Role signals describe source evidence, not causal chemistry, projected wins, or an extra scoring bonus." };
 }
 
 function normalizedWeights(weights = {}) {
