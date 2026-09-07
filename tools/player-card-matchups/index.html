@@ -12,18 +12,19 @@
   <meta content="Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260907b" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260907b" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260907b" rel="stylesheet">
-  <link href="./player-card-matchups.css?v=20260907b" rel="stylesheet">
+  <link href="../../styles.css?v=20260907c" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260907c" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260907c" rel="stylesheet">
+  <link href="./player-card-matchups.css?v=20260907c" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/player-card-matchups/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260907b" rel="manifest">
+  <link href="../../site.webmanifest?v=20260907c" rel="manifest">
   <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/#webpage","url":"https://www.djshouseofcards-comics.com/tools/player-card-matchups/","name":"Player & Card Matchups | DJ's House of Cards & Comics","description":"Explore exact, read-only NBA player-to-card mappings from the DJHC catalog, with season context and clear verification boundaries.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
+  <link rel="stylesheet" href="../basketball-theme.css?v=20260907c">
  </head>
-<body class="fan-tools-page matchup-page dark-mode" data-page="fan-tools">
-<script src="../../theme-init.js?v=20260907b"></script>
+<body class="fan-tools-page matchup-page dark-mode court-themed" data-page="fan-tools">
+<script src="../../theme-init.js?v=20260907c"></script>
   <a class="skip-link" href="#mainContent">Skip to player and card matchups</a>
   <header class="site-header">
    <div class="container header-inner">
@@ -76,12 +77,12 @@
       <div class="matchup-hero-copy">
       <span class="kicker">Live collector tool</span>
        <h1 class="page-title">Player &amp; Card Matchups.</h1>
-       <p>Explore verified relationships between NBA athletes and physical collectibles in the DJHC catalog. Search is read-only, and a card appears here only after its mapping passes the public verification boundary.</p>
+       <p>Start with a player. Find the cards connected to them through verified catalog matches, then explore a historical lineup in the Lab.</p>
       </div>
       <aside aria-label="Verified data status" class="matchup-hero-panel">
        <div class="matchup-panel-top"><span class="matchup-live-label"><span aria-hidden="true" class="matchup-live-dot"></span>Verified data</span><span class="matchup-panel-marker">NBA</span></div>
        <h2>Explorer ready</h2>
-       <p>Exact athlete IDs, buyer-safe catalog fields, and no checkout or inventory writes.</p>
+       <p>Every result needs a verified player ID. Similar names alone are never enough for a match.</p>
        <div class="matchup-pills"><span>Exact athlete IDs</span><span>Read-only</span></div>
       </aside>
      </div>
@@ -92,7 +93,7 @@
      <div class="matchup-main">
       <section aria-labelledby="searchHeading" class="matchup-search-card">
        <div class="matchup-search-heading">
-        <div><span class="kicker">Verified lookup</span><h2 id="searchHeading">Find an athlete</h2><p>Catalog text narrows the request; only the exact public mapping response can produce a result.</p></div>
+        <div><span class="kicker">Your next collector find</span><h2 id="searchHeading">Find a player’s cards</h2><p>Enter a name. We’ll show only cards with a confirmed connection to that player.</p></div>
        </div>
        <form class="matchup-search-form" id="playerSearchForm">
         <label for="playerSearch">Player name</label>
@@ -123,7 +124,7 @@
      <aside class="matchup-sidebar">
       <section aria-labelledby="methodologyHeading" class="matchup-methodology">
        <span class="kicker">Methodology</span>
-       <h2 id="methodologyHeading">Trust the boundary</h2>
+       <h2 id="methodologyHeading">How matches are verified</h2>
        <ol>
         <li><strong>Exact athlete IDs</strong><span>Results come from validated professional identifiers returned by the public RPC.</span></li>
         <li><strong>Ambiguous exclusions</strong><span>Similarity, title-only matches, and unresolved aliases never become cards.</span></li>
@@ -154,10 +155,11 @@
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics &bull; Independent collector storefront</span><span>Actual-item photography &bull; Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../../core.js?v=20260907b"></script>
-  <script defer src="../../nav.js?v=20260907b"></script>
-  <script defer src="../../backend-config.js?v=20260907b"></script>
-  <script defer src="../../supabase-client.js?v=20260907b"></script>
-  <script type="module" src="./player-card-matchups.js?v=20260907b"></script>
+  <script defer src="../../core.js?v=20260907c"></script>
+  <script defer src="../../nav.js?v=20260907c"></script>
+  <script defer src="../../backend-config.js?v=20260907c"></script>
+  <script defer src="../../supabase-client.js?v=20260907c"></script>
+  <script type="module" src="./player-card-matchups.js?v=20260907c"></script>
+  <script type="module" src="../basketball-theme.js?v=20260907c"></script>
  </body>
 </html>

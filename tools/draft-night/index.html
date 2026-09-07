@@ -12,19 +12,21 @@
   <meta content="Five picks. One lineup identity. Draft a full five from a source-labeled daily Scout board." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/draft-night/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260907b" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260907b" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260907b" rel="stylesheet">
-  <link href="../fix-the-five/fix-the-five.css?v=20260907b" rel="stylesheet">
-  <link href="./draft-night.css?v=20260907b" rel="stylesheet">
+  <link href="../../styles.css?v=20260907c" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260907c" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260907c" rel="stylesheet">
+  <link href="../fix-the-five/fix-the-five.css?v=20260907c" rel="stylesheet">
+  <link href="./draft-night.css?v=20260907c" rel="stylesheet">
+  <link href="../basketball-branding.css?v=20260907c" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/draft-night/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260907b" rel="manifest">
-  <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
+  <link href="../../site.webmanifest?v=20260907c" rel="manifest">
+  <link href="../../assets/games/draft-night-icon-20260907.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"Game","@id":"https://www.djshouseofcards-comics.com/tools/draft-night/#game","url":"https://www.djshouseofcards-comics.com/tools/draft-night/","name":"Draft Night","description":"A five-pick, source-labeled daily lineup game ranked by a validated Scout model on one fixed board.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US","gamePlatform":"Web browser","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":1}}</script>
+  <link rel="stylesheet" href="../basketball-theme.css?v=20260907c">
  </head>
-<body class="fan-tools-page fix-five-page draft-night-page dark-mode" data-page="fan-tools">
-<script src="../../theme-init.js?v=20260907b"></script>
+<body class="fan-tools-page fix-five-page draft-night-page dark-mode basketball-game court-themed" data-page="fan-tools">
+<script src="../../theme-init.js?v=20260907c"></script>
   <a class="skip-link" href="#mainContent">Skip to Draft Night</a>
   <header class="site-header">
    <div class="container header-inner">
@@ -54,11 +56,23 @@
     <div class="container page-hero-card fix-five-hero-card">
      <nav aria-label="Breadcrumb" class="breadcrumb-nav"><ol class="breadcrumb-list"><li class="breadcrumb-list__item"><a href="../../index.html">Home</a></li><li class="breadcrumb-list__item"><a href="../index.html">Fan Tools</a></li><li class="breadcrumb-list__item"><span aria-current="page" class="breadcrumb-current">Draft Night</span></li></ol></nav>
      <div class="fix-five-hero-layout">
-      <div class="fix-five-hero-copy"><span class="kicker">You’re on the clock. No timer.</span><h1 class="page-title">Draft Night.</h1><p>Build your five, one role at a time. Then see how your lineup ranks on today’s board—not a prediction of wins.</p><div class="game-entry"><a href="#gameBoard" class="game-entry-link">Go to the draft <span aria-hidden="true">↓</span></a><span>5 picks · Choose, reveal, compare</span></div></div>
+      <div class="fix-five-hero-copy">
+       <div class="game-brand-lockup">
+        <button class="game-badge" type="button" data-badge-replay="Animate the Draft Night badge" data-badge-name="Draft Night badge" aria-label="Draft Night badge" disabled><img src="../../assets/games/draft-night-emblem-20260907.webp" width="256" height="256" alt="" decoding="async"><span class="game-badge-hint" aria-hidden="true">Tap for a bounce</span></button>
+        <div><span class="kicker">You’re on the clock. No timer.</span><h1 class="page-title">Draft Night.</h1></div>
+       </div>
+       <p>Build your five, one role at a time. Then see how your lineup ranks on today’s board—not a prediction of wins.</p><div class="game-entry"><a href="#gameBoard" class="game-entry-link">Go to the draft <span aria-hidden="true">↓</span></a><span>5 picks · Choose, reveal, compare</span></div>
+      </div>
       <aside aria-label="Game rules" class="fix-five-rule-card draft-night-rule-card"><span class="fix-five-rule-marker" aria-hidden="true">5×</span><div><strong>Every pick matters</strong><p>Draft one player per role. Your five is compared with legal combinations on this one validated board—not predicted wins.</p></div></aside>
      </div>
     </div>
    </section>
+   <div class="container game-navigation">
+    <nav class="game-page-indicators" aria-label="Basketball games">
+     <a href="../fix-the-five/"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Fix the Five</span></a>
+     <a href="../draft-night/" aria-current="page"><img src="../../assets/games/draft-night-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Draft Night</span></a>
+    </nav>
+   </div>
    <section class="container fix-five-workspace" id="gameBoard" tabindex="-1" aria-label="Draft Night game">
     <div class="fix-five-status-row">
      <div><span class="kicker">Tonight’s board</span><h2 id="runTitle">Loading today’s Scout board…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div>
@@ -86,9 +100,11 @@
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics • Independent collector storefront</span><span>Actual-item photography • Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">↑</button>
-  <script defer src="../../core.js?v=20260907b"></script>
-  <script defer src="../../nav.js?v=20260907b"></script>
-  <script defer src="../../supabase-client.js?v=20260907b"></script>
-  <script type="module" src="./scout-draft-night.js?v=20260907b"></script>
+  <script defer src="../../core.js?v=20260907c"></script>
+  <script defer src="../../nav.js?v=20260907c"></script>
+  <script defer src="../../supabase-client.js?v=20260907c"></script>
+  <script type="module" src="./scout-draft-night.js?v=20260907c"></script>
+  <script type="module" src="../basketball-branding.js?v=20260907c"></script>
+  <script type="module" src="../basketball-theme.js?v=20260907c"></script>
  </body>
 </html>

@@ -22,7 +22,7 @@ const scope = { id: 'ui-test-only', status: 'ready', players,
   model: { publicLabel: 'Synthetic UI test model', seasonEndYears: [2025], calibration: { status: 'validated', allComponentsImproved: true } } };
 const games = Object.fromEntries(['fix-the-five', 'draft-night'].map(gameKind => [gameKind,
   buildScoutDailyGame({ gameKind, dailySeed: seed, scopes: [scope] })]));
-const types = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.png':'image/png', '.webp':'image/webp', '.jpg':'image/jpeg', '.woff2':'font/woff2', '.svg':'image/svg+xml' };
+const types = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.png':'image/png', '.webp':'image/webp', '.jpg':'image/jpeg', '.woff2':'font/woff2', '.ttf':'font/ttf', '.svg':'image/svg+xml' };
 const shared = new Set(['core.js', 'nav.js', 'theme-init.js', 'styles.css', 'styles-mobile-overrides.css']);
 const server = createServer(async (request, response) => {
   try {

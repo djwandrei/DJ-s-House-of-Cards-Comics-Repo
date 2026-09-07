@@ -12,13 +12,16 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // logic or interface copy from a browser cache.
 // A follow-up model fix must also invalidate already loaded Lab modules.
 // Lineup Lab has its own revision; storefront cache values remain untouched.
-const RELEASE_ASSET_VERSION = "20260907b";
+const RELEASE_ASSET_VERSION = "20260907c";
 const releaseFiles = [
   "index.html",
   "app.js",
   "workflow-state.js",
   "workflow-view.js",
   "workflow.css",
+  "lab-experience.js",
+  "lab-experience.css",
+  "lab-theme.css",
   "optimizer-config.js",
   "projection-parameters.js",
   "workload-calibration.js",
@@ -59,7 +62,8 @@ function transform(relativePath, source) {
     throw new Error(`Hard-coded Lineup Lab asset revision in source file: ${relativePath}`);
   }
   let output = sourceText
-    .replaceAll(SOURCE_ASSET_VERSION_TOKEN, RELEASE_ASSET_VERSION);
+    .replaceAll(SOURCE_ASSET_VERSION_TOKEN, RELEASE_ASSET_VERSION)
+    .replaceAll("../../tools/", "../tools/");
   if (relativePath === "index.html" || relativePath === "styles.css") {
     // The source prototype is nested two directories deep; the deployable page
     // is nested once. Keep all storefront references local to the public page.
@@ -68,6 +72,7 @@ function transform(relativePath, source) {
   if (relativePath === "index.html") {
     output = output
       .replaceAll("../../backend-config.js", "../backend-config.js")
+      .replaceAll("../../theme-init.js", "../theme-init.js")
       .replaceAll("../../supabase-client.js", "../supabase-client.js")
       .replaceAll("../../index.html", "../index.html")
       // Header navigation is written relative to the nested prototype. Keep

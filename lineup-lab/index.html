@@ -9,14 +9,16 @@
   <link rel="canonical" href="https://www.djshouseofcards-comics.com/lineup-lab/">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#15206b">
-  <link rel="icon" href="../assets/icons/favicon-32.png" sizes="32x32" type="image/png">
-  <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260907b">
-  <link rel="stylesheet" href="workflow.css?v=20260907b">
+  <link rel="icon" href="../assets/games/lineup-lab-icon-20260907.png" sizes="32x32" type="image/png">
+  <link rel="preload" href="../assets/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=20260907c">
+  <link rel="stylesheet" href="workflow.css?v=20260907c">
+  <link rel="stylesheet" href="lab-experience.css?v=20260907c">
+  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260907c">
+  <link rel="stylesheet" href="lab-theme.css?v=20260907c">
 </head>
-<body class="lab-guided" data-experience-mode="simple">
+<body class="lab-guided court-themed dark-mode" data-experience-mode="simple">
+  <script src="../theme-init.js?v=20260907c"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
   <header class="lab-header">
@@ -52,8 +54,10 @@
     <section class="hero">
       <div class="shell hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow">Historical NBA lineup optimizer</p>
-          <h1><span class="hero__title-primary">Your team. Your calls.</span><span>Find your best five.</span></h1>
+          <div class="lab-brand-lockup">
+            <button class="lab-emblem" type="button" data-badge-replay="Animate the Lineup Lab badge" data-badge-name="Lineup Lab badge" aria-label="Lineup Lab badge" disabled><img src="../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="256" height="256" decoding="async"><span aria-hidden="true">Tap for a bounce</span></button>
+            <div><p class="eyebrow">Lineup Lab · Historical NBA</p><h1><span class="hero__title-primary">Your team. Your calls.</span><span>Find your best five.</span></h1></div>
+          </div>
           <p class="hero__lede">A starting five or a full rotation. Make the coaching decisions; the Lab checks the possibilities.</p>
           <div class="hero__actions">
             <a class="button" href="#workspace">Open the builder</a>
@@ -166,6 +170,19 @@
                     </div>
                   </div>
 
+                  <details class="lab-coaching-brief" id="coachingBrief" hidden>
+                    <summary><span>Coach’s prompt cards <small>Need a starting point?</small></span><span aria-hidden="true">+</span></summary>
+                    <div class="lab-coaching-brief__body">
+                      <div class="lab-coaching-brief__copy" aria-live="polite" aria-atomic="true">
+                        <span class="eyebrow" id="coachingBriefNumber">Practice prompt 1 of 3</span>
+                        <h3 id="coachingBriefTitle">Build a balanced five</h3>
+                        <p id="coachingBriefQuestion">Which players stay in the lineup when you ask it to do a little of everything?</p>
+                      </div>
+                      <div class="lab-coaching-brief__actions"><button class="button" type="button" id="applyCoachingBrief">Use Balanced focus</button><button class="button button--quiet" type="button" id="nextCoachingBrief">Next prompt →</button></div>
+                      <p class="lab-coaching-brief__note">Practice ideas, not predictions. Applying a prompt replaces focus weights only; your roster and rules stay unchanged. You still review and run the build.</p>
+                      <p class="sr-only" role="status" id="coachingBriefStatus"></p>
+                    </div>
+                  </details>
                   <div class="preset-grid" id="presetGrid">
                     <button class="preset-card is-active" type="button" data-preset="balanced" aria-pressed="true"><strong>Balanced</strong><span>Blend offense, defense, creation, and rebounding</span></button>
                     <button class="preset-card" type="button" data-preset="offense" aria-pressed="false"><strong>Offense</strong><span>Prioritize scoring, spacing, and dependable shot creation</span></button>
@@ -634,6 +651,10 @@
   </main>
 
   <footer class="lab-footer">
+    <picture class="lab-footer-art" aria-hidden="true">
+      <source srcset="../assets/basketball-footer.webp" type="image/webp">
+      <img src="../assets/basketball-footer.jpg" alt="" width="1400" height="593" loading="lazy" decoding="async">
+    </picture>
     <div class="shell">
       <p><strong>DJ's Lineup Lab</strong> - historical NBA tools from DJ's House of Cards &amp; Comics.</p>
       <a href="../index.html">Return to the storefront</a>
@@ -642,8 +663,10 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260907b"></script>
-  <script defer src="../supabase-client.js?v=20260907b"></script>
-  <script type="module" src="app.js?v=20260907b"></script>
+  <script defer src="../backend-config.js?v=20260907c"></script>
+  <script defer src="../supabase-client.js?v=20260907c"></script>
+  <script type="module" src="app.js?v=20260907c"></script>
+  <script type="module" src="lab-experience.js?v=20260907c"></script>
+  <script type="module" src="../tools/basketball-branding.js?v=20260907c"></script>
 </body>
 </html>

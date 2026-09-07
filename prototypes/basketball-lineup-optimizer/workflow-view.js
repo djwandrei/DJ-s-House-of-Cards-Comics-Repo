@@ -120,6 +120,31 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
   let saving = false;
   let suppressDraft = false;
   let queued = false;
+  const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+  let stepAnimation = null;
+  function stopStepMotion() {
+    stepAnimation?.cancel();
+    stepAnimation = null;
+  }
+  motionPreference.addEventListener("change", stopStepMotion);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopStepMotion(); });
+  function animateStep(direction) {
+    stopStepMotion();
+    if (motionPreference.matches || document.hidden) return;
+    const target = stages[workflow.current] || results;
+    if (typeof target.animate !== "function") return;
+    // State, validation, URL, and focus settle synchronously. The visual cue
+    // cannot delay input, advance a step, or leave controls hidden on cancel.
+    stepAnimation = target.animate([
+      { opacity: 0, transform: `translateX(${direction * 20}px)` },
+      { opacity: 1, transform: "translateX(0)" },
+    ], { duration: 240, easing: "cubic-bezier(.2,.75,.25,1)" });
+    const currentAnimation = stepAnimation;
+    currentAnimation.finished.catch(() => {}).finally(() => {
+      currentAnimation.cancel();
+      if (stepAnimation === currentAnimation) stepAnimation = null;
+    });
+  }
   function save() {
     if (!workflow.ready || saving || suppressDraft) return;
     workflow.form = capture();
@@ -232,7 +257,10 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
       control.querySelector(".journey-step__number").textContent = complete && !active ? "✓" : String(i + 1);
       control.querySelector(".journey-step__status").textContent = active ? "Current" : complete ? "Completed · edit" : "Up next";
     });
-    Object.entries(stages).forEach(([id, node]) => { node.hidden = id !== workflow.current; });
+    Object.entries(stages).forEach(([id, node]) => {
+      node.hidden = id !== workflow.current;
+      node.inert = node.hidden;
+    });
     const onResults = workflow.current === "results";
     results.hidden = !onResults;
     form.hidden = onResults;
@@ -249,7 +277,7 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
     const rotationGroup = q('[data-rotation-group]');
     if (rotationGroup) rotationGroup.hidden = q("#modeInput").value !== "rotation";
     if (workflow.current === "review") renderReview();
-    if (focus) { heading.focus({ preventScroll: true }); headingWrap.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" }); }
+    if (focus) { heading.focus({ preventScroll: true }); headingWrap.scrollIntoView({ behavior: "instant", block: "start" }); }
   }
   function go(requested, { force = false, replace = false, focus = true } = {}) {
     if (workflow.current === "running" && !force) return;
@@ -260,9 +288,12 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
       const conflicts = validate().filter(error => WORKFLOW_STEPS.findIndex(step => step.id === error.step) < toIndex);
       if (conflicts.length) { showErrors(conflicts); if (replace) writeUrl(true); return; }
     }
+    const changedStep = workflow.current !== target;
+    stopStepMotion();
     workflow.current = target;
     clearErrors(); errorsVisible = false;
     render({ focus }); writeUrl(replace); save();
+    if (changedStep) animateStep(toIndex >= fromIndex ? 1 : -1);
     if (target === "review") showErrors(validate(), false);
   }
   function refresh() {

@@ -6,42 +6,42 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260907b";
+} from "./optimizer-config.js?v=20260907c";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260907b";
+} from "./player-data.js?v=20260907c";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260907b";
+} from "./supabase-nba-data.js?v=20260907c";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   explainLineupRoleChange,
-} from "./fan-analytics.js?v=20260907b";
+} from "./fan-analytics.js?v=20260907c";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260907b";
+} from "./opponent-gameplan.js?v=20260907c";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260907b";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260907b";
-import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260907b";
-import { createWorkflowView } from "./workflow-view.js?v=20260907b";
+} from "./scenario-url.js?v=20260907c";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260907c";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260907c";
+import { createWorkflowView } from "./workflow-view.js?v=20260907c";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260907b";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260907b", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260907c";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260907c", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -81,6 +81,8 @@ const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
 const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v6";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NBA_CACHE_MAX_ENTRIES = 24;
+import { setCourtTeam } from "../tools/basketball-theme.js?v=20260907c";
+
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
 // Lineup Lab deliberately does not use team-stint workload as a rotation
@@ -1365,6 +1367,7 @@ async function populateLiveTeamOptions({ preferredTeam = DEFAULT_TEAM_CODE, forc
   const preferredCode = [selectedCode, preferredTeam]
     .find((code) => teams.some((team) => team.team_code === code));
   elements.liveTeam.value = preferredCode || teams[0].team_code;
+  setCourtTeam(elements.liveTeam.value);
   populateOpponentTeamOptions();
 }
 
@@ -3069,6 +3072,8 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   state.dataset = dataset;
   state.datasetKind = liveSelection ? "live" : datasetKind;
   state.loadedLiveSelection = liveSelection;
+  // Only a real source code drives the palette. CSV/demo rosters use DJHC.
+  setCourtTeam(liveSelection?.team || "");
   state.playerMediaStatus.clear();
   state.teamLogoStatus = "unavailable";
   clearOpponentScout(liveSelection
@@ -6084,6 +6089,7 @@ function bindRemainingEvents() {
   elements.liveSeason.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveSeasonPhase.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveTeam.addEventListener("change", () => {
+    setCourtTeam(elements.liveTeam.value);
     updateLiveSelectionState();
     clearOpponentScout("Apply this team as the player pool before building an opponent game plan.");
     populateOpponentTeamOptions();

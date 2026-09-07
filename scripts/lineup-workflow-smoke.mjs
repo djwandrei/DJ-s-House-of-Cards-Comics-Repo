@@ -11,7 +11,7 @@ const root = process.cwd();
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const output = path.join(root, "outputs", "lineup-workflow");
 fs.mkdirSync(output, { recursive: true });
-const allowed = new Map([[".html", "text/html"], [".js", "text/javascript"], [".css", "text/css"], [".json", "application/json"], [".png", "image/png"], [".webp", "image/webp"], [".jpg", "image/jpeg"], [".woff2", "font/woff2"], [".svg", "image/svg+xml"]]);
+const allowed = new Map([[".html", "text/html"], [".js", "text/javascript"], [".css", "text/css"], [".json", "application/json"], [".png", "image/png"], [".webp", "image/webp"], [".jpg", "image/jpeg"], [".woff2", "font/woff2"], [".ttf", "font/ttf"], [".svg", "image/svg+xml"]]);
 const server = createServer((request, response) => {
   let relative = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
   if (relative.endsWith("/")) relative += "index.html";

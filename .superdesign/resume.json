@@ -8,7 +8,64 @@
       "activeDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
       "designSystemPath": ".superdesign/lineup-lab-design-system.md",
       "referenceIds": [
-        "assets-dj-logo.png"
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        },
+        "emblem": {
+          "assetKey": "assets-games-lineup-lab-emblem",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-games-lineup-lab-emblem/lineup-lab-emblem-20260907.webp",
+          "sourcePath": "assets/games/lineup-lab-emblem-20260907.webp"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/lineup-lab-design-system.md",
+        "prototypes/basketball-lineup-optimizer/index.html:1:252",
+        "prototypes/basketball-lineup-optimizer/styles.css:1:125",
+        "prototypes/basketball-lineup-optimizer/workflow.css",
+        "prototypes/basketball-lineup-optimizer/lab-experience.css",
+        ".superdesign/basketball-color-direction.md",
+        ".superdesign/basketball-palettes.mjs",
+        ".superdesign/lineup-lab-step-transitions.md"
+      ],
+      "fingerprints": {
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        "prototypes/basketball-lineup-optimizer/index.html": "7D9781B4AAC47A70914AAF8AD25C6B5A9D4F6678CE9ADD382D48EE0AC5F2554A",
+        "prototypes/basketball-lineup-optimizer/styles.css": "02CBA2E3D17253C3DF6AE6939C6EC0809C381CB2233B6C423887EFAD6734E050",
+        "prototypes/basketball-lineup-optimizer/workflow.css": "C3DE2619BAC19E15AA439286FD766021BC6CA80F4393516983FB35524DB36931",
+        "prototypes/basketball-lineup-optimizer/lab-experience.css": "80EAD75F2CA0EEDFFEFF43B527B9C6FD1635F226806BAFDF518ED7EC6FA6AA8D",
+        ".superdesign/basketball-color-direction.md": "B784F161D9A792D4E7000FFCDDC029C466159EBF4342C91F8572C98A46B78604",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        ".superdesign/lineup-lab-step-transitions.md": "04DFE7E6FCA48CCE4CC1B831DEA01F4631C512B1955E52EC7BFFBB7E055A9B72"
+      },
+      "components": [],
+      "drafts": {
+        "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484": {
+          "title": "DJ's Lineup Lab — Coaching Journey Theme Explorer",
+          "visualDirection": "Approved athletic typography and five-step coaching journey. Team selection automatically drives 30 team-inspired palettes; dark/light persists. Original DJHC/Lab logos. Preview validated at mobile and desktop; production implementation uses shared court tokens and retains real optimizer behavior.",
+          "parentDraftId": null,
+          "currentVersion": 12
+        }
+      },
+      "updatedAt": "2026-09-07T07:44:38.8668325Z"
+    },
+    "/tools/": {
+      "targetKind": "existing-ui",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "d1036681-0cd7-47ba-a781-de825f03920a",
+      "activeDraftId": "d1036681-0cd7-47ba-a781-de825f03920a",
+      "designSystemPath": ".superdesign/fan-suite-direction.md",
+      "referenceIds": [
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem",
+        "assets-games-fix-the-five-emblem",
+        "assets-games-draft-night-emblem",
+        "1678a8dd-23a4-4634-b7d0-855f5f7d3427"
       ],
       "brandAssets": {
         "logo": {
@@ -18,82 +75,39 @@
         }
       },
       "contextFiles": [
-        ".superdesign/lineup-lab-design-system.md",
-        "prototypes/basketball-lineup-optimizer/index.html",
-        "prototypes/basketball-lineup-optimizer/styles.css:1:175",
-        "prototypes/basketball-lineup-optimizer/styles.css:4664:4830",
-        "prototypes/basketball-lineup-optimizer/styles.css:5126:5290"
-      ],
-      "fingerprints": {
-        ".superdesign/lineup-lab-design-system.md": "32B04B9628BB968A14C9FCF87E757462E89FF84BB20C5045A634ADD342B2DD47",
-        "prototypes/basketball-lineup-optimizer/index.html": "4D6802DB43E588202FF004B1BF8E85E420A62B474A7D09641BA48BCBA2B47884",
-        "prototypes/basketball-lineup-optimizer/styles.css": "8C90488D22115DA2CDA71E668CB871A03D38CDF6E347581AAFC76ABBFD4F1631"
-      },
-      "components": [],
-      "drafts": {
-        "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484": {
-          "title": "DJ's Lineup Lab — Coaching Journey Builder",
-          "visualDirection": "Five-step coaching journey with a navy progress rail, editable game-plan ticket, progressive advanced controls, truthful exact-search feedback, and the existing DJHC brand and results.",
-          "parentDraftId": null,
-          "currentVersion": 4
-        }
-      },
-      "updatedAt": "2026-09-05T23:12:17Z"
-    },
-    "/tools/": {
-      "targetKind": "existing-ui",
-      "projectId": "8ca1ba0a-48a6-41e3-898a-5eaf86732679",
-      "baselineDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
-      "activeDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
-      "designSystemPath": ".superdesign/design-system.md",
-      "referenceIds": [
-        "assets-dj-logo.png"
-      ],
-      "brandAssets": {
-        "logo": {
-          "assetKey": "assets-dj-logo.png",
-          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8ca1ba0a-48a6-41e3-898a-5eaf86732679/brand-assets/assets-dj-logo.png/dj-logo.png",
-          "sourcePath": "assets/dj-logo.png"
-        }
-      },
-      "contextFiles": [
         ".superdesign/design-system.md",
+        ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/fan-suite-direction.md",
+        ".superdesign/basketball-palettes.mjs",
         "tools/index.html",
-        "tools/registry.js",
-        "tools/fan-tools.js",
-        "tools/fan-tools.css",
-        "nav.js",
-        "core.js:1:180",
-        "core.js:776:910",
-        "core.js:1190:1420",
-        "styles.css:1:344",
-        "styles.css:3113:3224",
-        "styles.css:3394:3626",
-        "styles.css:5710:6380",
-        "styles-mobile-overrides.css:1:700",
-        "styles-mobile-overrides.css:1340:1530"
+        "tools/fix-the-five/index.html",
+        "tools/draft-night/index.html",
+        "tools/player-card-matchups/index.html",
+        "tools/workshop/index.html",
+        "tools/fan-tools.css"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
-        "tools/index.html": "a5802a0835223e5ab29f7a3c07f6f7cb7d395a2ec811d7d159c4b353720ec14d",
-        "tools/registry.js": "c0248920d740babe52dd2ceb9f4b457458deccc205fa1ac40924ae0664a5afcb",
-        "tools/fan-tools.js": "d7670f68b3db5ab100e6c13e7478979e5d99c6a85415a71f4e2b54d3b71375cf",
-        "tools/fan-tools.css": "bf5f3b4be8f8b3dfd75237c67667c6073453ec77aaea8b40a99d39e807aab57f",
-        "nav.js": "69101b4b5217783222a24cd29f677973a883406a2aafa7895b48bfad51c78645",
-        "core.js": "f5ae87152e66345c73592c3761ff2873865fc837e0155b1612dfbb026531ea67",
-        "styles.css": "9028c22311b853fd5b558a8eaf9439ea33f3f93210acf87fb743aefe5d1622ca",
-        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        ".superdesign/fan-suite-direction.md": "679FDFDD0B5B314B17B1CC28C4A4AAA0D4CCE52D9459FC4439D9A83611AAEAB2",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        "tools/index.html": "52AD391E74C0A611E07D3AF27F9F45C2A549588EE584F9387F58E0E7D7A005D4",
+        "tools/fix-the-five/index.html": "1A433F0B2652A03E4BFC7FEB07140AD0C0A3F6C0471A577188B0FACDAB6C6C40",
+        "tools/draft-night/index.html": "B4C59BE93FA116CA6EBD8A9532D71E35937902F761724E141B7AB482FD7984DD",
+        "tools/player-card-matchups/index.html": "6DC83B2FF978715EC3F94E03DC55CF98D4A33388C97A9B016EB52E9EE5DD8477",
+        "tools/workshop/index.html": "19E8ADA4444629C8BF43D9195A4835BF06A1697831B2C25D8C48BA06FA599027",
+        "tools/fan-tools.css": "9344CBB2C39A550544974400C06EE5149B3A909E172E0EEA228E55CDCFB3A268"
       },
       "components": [],
       "drafts": {
-        "a29a08bd-68dd-4759-af0d-3c8ef7af9c96": {
-          "title": "Current DJHC Fan Tools",
-          "visualDirection": "approved live-first roadmap baseline with status summary, featured live tool, compact planned cards, research gate, exact DJHC shell, and exact brand logo",
-          "parentDraftId": null,
+        "d1036681-0cd7-47ba-a781-de825f03920a": {
+          "title": "Fan Tools Hub",
+          "visualDirection": "Approved sibling extension of Lineup Lab: Manrope, Barlow Condensed, DJHC dark/light tokens, basketball identity, truthful source and planned-tool boundaries.",
+          "parentDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
           "currentVersion": 1
         }
       },
-      "updatedAt": "2026-08-31T12:30:32.6950572Z"
+      "updatedAt": "2026-09-07T07:35:46.002Z"
     },
     "daily-scout-games": {
       "targetKind": "new-ui",
@@ -142,37 +156,58 @@
     },
     "/tools/player-card-matchups/": {
       "targetKind": "existing-ui",
-      "projectId": "4ae16f51-2795-44a6-acf1-79b9c890a735",
-      "baselineDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
-      "activeDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
-      "designSystemPath": ".superdesign/design-system.md",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "27c80609-582a-4074-b51e-08cb3a68e6dd",
+      "activeDraftId": "27c80609-582a-4074-b51e-08cb3a68e6dd",
+      "designSystemPath": ".superdesign/fan-suite-direction.md",
+      "referenceIds": [
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem",
+        "assets-games-fix-the-five-emblem",
+        "assets-games-draft-night-emblem",
+        "1678a8dd-23a4-4634-b7d0-855f5f7d3427"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
       "contextFiles": [
         ".superdesign/design-system.md",
+        ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/fan-suite-direction.md",
+        ".superdesign/basketball-palettes.mjs",
+        "tools/index.html",
+        "tools/fix-the-five/index.html",
+        "tools/draft-night/index.html",
         "tools/player-card-matchups/index.html",
-        "tools/player-card-matchups/player-card-matchups.css",
-        "tools/fan-tools.css",
-        "styles.css:1:344",
-        "styles.css:7190:7222",
-        "styles-mobile-overrides.css:540:555",
-        "styles-mobile-overrides.css:2617:2630"
+        "tools/workshop/index.html",
+        "tools/fan-tools.css"
       ],
       "fingerprints": {
-        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
-        "tools/player-card-matchups/index.html": "acc94af136baa83990d182370029d78836d47419e5876a44efdbd3f6ded206aa",
-        "tools/player-card-matchups/player-card-matchups.css": "1f77d6f57b8cefe03dd618a976ed3ed6799cd519b6dbf2fb5488de08e2275f68",
-        "tools/fan-tools.css": "2b11ef0d2dc70d07f7e72faecc7584415f84a5df70e5981efb3f935f19e18952",
-        "styles.css": "72e89439d6f53fbe5039ba36c9ac6e64358ea5dd9dcb1563205330875843a4d0",
-        "styles-mobile-overrides.css": "60d7862cc1101d6e94c7e15fe0061602248b3db8ec9373331a3abef16d171701"
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        ".superdesign/fan-suite-direction.md": "679FDFDD0B5B314B17B1CC28C4A4AAA0D4CCE52D9459FC4439D9A83611AAEAB2",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        "tools/index.html": "52AD391E74C0A611E07D3AF27F9F45C2A549588EE584F9387F58E0E7D7A005D4",
+        "tools/fix-the-five/index.html": "1A433F0B2652A03E4BFC7FEB07140AD0C0A3F6C0471A577188B0FACDAB6C6C40",
+        "tools/draft-night/index.html": "B4C59BE93FA116CA6EBD8A9532D71E35937902F761724E141B7AB482FD7984DD",
+        "tools/player-card-matchups/index.html": "6DC83B2FF978715EC3F94E03DC55CF98D4A33388C97A9B016EB52E9EE5DD8477",
+        "tools/workshop/index.html": "19E8ADA4444629C8BF43D9195A4835BF06A1697831B2C25D8C48BA06FA599027",
+        "tools/fan-tools.css": "9344CBB2C39A550544974400C06EE5149B3A909E172E0EEA228E55CDCFB3A268"
       },
       "components": [],
       "drafts": {
-        "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1": {
-          "title": "Current Player & Card Matchups",
-          "visualDirection": "collector-native verified NBA lookup with a high-contrast status panel, readable methodology rail, and clear catalog actions",
-          "currentVersion": 3
+        "27c80609-582a-4074-b51e-08cb3a68e6dd": {
+          "title": "Player & Card Matchups — Collector Court",
+          "visualDirection": "Approved sibling extension of Lineup Lab: Manrope, Barlow Condensed, DJHC dark/light tokens, basketball identity, truthful source and planned-tool boundaries.",
+          "parentDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
+          "currentVersion": 1
         }
       },
-      "updatedAt": "2026-09-02T13:09:09.7030900Z"
+      "updatedAt": "2026-09-07T07:35:46.008Z"
     },
     "/": {
       "targetKind": "existing-ui",
@@ -326,6 +361,260 @@
         }
       },
       "updatedAt": "2026-08-31T17:05:30.1557528Z"
+    },
+    "/tools/#previous-design-baseline": {
+      "targetKind": "existing-ui",
+      "projectId": "8ca1ba0a-48a6-41e3-898a-5eaf86732679",
+      "baselineDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "activeDraftId": "a29a08bd-68dd-4759-af0d-3c8ef7af9c96",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "assets-dj-logo.png"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/8ca1ba0a-48a6-41e3-898a-5eaf86732679/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "tools/index.html",
+        "tools/registry.js",
+        "tools/fan-tools.js",
+        "tools/fan-tools.css",
+        "nav.js",
+        "core.js:1:180",
+        "core.js:776:910",
+        "core.js:1190:1420",
+        "styles.css:1:344",
+        "styles.css:3113:3224",
+        "styles.css:3394:3626",
+        "styles.css:5710:6380",
+        "styles-mobile-overrides.css:1:700",
+        "styles-mobile-overrides.css:1340:1530"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
+        "tools/index.html": "a5802a0835223e5ab29f7a3c07f6f7cb7d395a2ec811d7d159c4b353720ec14d",
+        "tools/registry.js": "c0248920d740babe52dd2ceb9f4b457458deccc205fa1ac40924ae0664a5afcb",
+        "tools/fan-tools.js": "d7670f68b3db5ab100e6c13e7478979e5d99c6a85415a71f4e2b54d3b71375cf",
+        "tools/fan-tools.css": "bf5f3b4be8f8b3dfd75237c67667c6073453ec77aaea8b40a99d39e807aab57f",
+        "nav.js": "69101b4b5217783222a24cd29f677973a883406a2aafa7895b48bfad51c78645",
+        "core.js": "f5ae87152e66345c73592c3761ff2873865fc837e0155b1612dfbb026531ea67",
+        "styles.css": "9028c22311b853fd5b558a8eaf9439ea33f3f93210acf87fb743aefe5d1622ca",
+        "styles-mobile-overrides.css": "8f37c5e392832e4a0864e6d3f5a69bb328ca229f0f05a857cb0a73461ed8711a"
+      },
+      "components": [],
+      "drafts": {
+        "a29a08bd-68dd-4759-af0d-3c8ef7af9c96": {
+          "title": "Current DJHC Fan Tools",
+          "visualDirection": "approved live-first roadmap baseline with status summary, featured live tool, compact planned cards, research gate, exact DJHC shell, and exact brand logo",
+          "parentDraftId": null,
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-08-31T12:30:32.6950572Z"
+    },
+    "/tools/fix-the-five/": {
+      "targetKind": "existing-ui",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "9de8bf8d-f802-4fa4-8578-5c30232a15fc",
+      "activeDraftId": "9de8bf8d-f802-4fa4-8578-5c30232a15fc",
+      "designSystemPath": ".superdesign/fan-suite-direction.md",
+      "referenceIds": [
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem",
+        "assets-games-fix-the-five-emblem",
+        "assets-games-draft-night-emblem",
+        "1678a8dd-23a4-4634-b7d0-855f5f7d3427"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/fan-suite-direction.md",
+        ".superdesign/basketball-palettes.mjs",
+        "tools/index.html",
+        "tools/fix-the-five/index.html",
+        "tools/draft-night/index.html",
+        "tools/player-card-matchups/index.html",
+        "tools/workshop/index.html",
+        "tools/fan-tools.css"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        ".superdesign/fan-suite-direction.md": "679FDFDD0B5B314B17B1CC28C4A4AAA0D4CCE52D9459FC4439D9A83611AAEAB2",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        "tools/index.html": "52AD391E74C0A611E07D3AF27F9F45C2A549588EE584F9387F58E0E7D7A005D4",
+        "tools/fix-the-five/index.html": "1A433F0B2652A03E4BFC7FEB07140AD0C0A3F6C0471A577188B0FACDAB6C6C40",
+        "tools/draft-night/index.html": "B4C59BE93FA116CA6EBD8A9532D71E35937902F761724E141B7AB482FD7984DD",
+        "tools/player-card-matchups/index.html": "6DC83B2FF978715EC3F94E03DC55CF98D4A33388C97A9B016EB52E9EE5DD8477",
+        "tools/workshop/index.html": "19E8ADA4444629C8BF43D9195A4835BF06A1697831B2C25D8C48BA06FA599027",
+        "tools/fan-tools.css": "9344CBB2C39A550544974400C06EE5149B3A909E172E0EEA228E55CDCFB3A268"
+      },
+      "components": [],
+      "drafts": {
+        "9de8bf8d-f802-4fa4-8578-5c30232a15fc": {
+          "title": "Fix the Five - Coaching Court",
+          "visualDirection": "Approved sibling extension of Lineup Lab: Manrope, Barlow Condensed, DJHC dark/light tokens, basketball identity, truthful source and planned-tool boundaries.",
+          "parentDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-09-07T07:35:46.008Z"
+    },
+    "/tools/draft-night/": {
+      "targetKind": "existing-ui",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "c72d874c-1a42-4da2-9d1b-41d35dcfbd27",
+      "activeDraftId": "c72d874c-1a42-4da2-9d1b-41d35dcfbd27",
+      "designSystemPath": ".superdesign/fan-suite-direction.md",
+      "referenceIds": [
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem",
+        "assets-games-fix-the-five-emblem",
+        "assets-games-draft-night-emblem",
+        "1678a8dd-23a4-4634-b7d0-855f5f7d3427"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/fan-suite-direction.md",
+        ".superdesign/basketball-palettes.mjs",
+        "tools/index.html",
+        "tools/fix-the-five/index.html",
+        "tools/draft-night/index.html",
+        "tools/player-card-matchups/index.html",
+        "tools/workshop/index.html",
+        "tools/fan-tools.css"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        ".superdesign/fan-suite-direction.md": "679FDFDD0B5B314B17B1CC28C4A4AAA0D4CCE52D9459FC4439D9A83611AAEAB2",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        "tools/index.html": "52AD391E74C0A611E07D3AF27F9F45C2A549588EE584F9387F58E0E7D7A005D4",
+        "tools/fix-the-five/index.html": "1A433F0B2652A03E4BFC7FEB07140AD0C0A3F6C0471A577188B0FACDAB6C6C40",
+        "tools/draft-night/index.html": "B4C59BE93FA116CA6EBD8A9532D71E35937902F761724E141B7AB482FD7984DD",
+        "tools/player-card-matchups/index.html": "6DC83B2FF978715EC3F94E03DC55CF98D4A33388C97A9B016EB52E9EE5DD8477",
+        "tools/workshop/index.html": "19E8ADA4444629C8BF43D9195A4835BF06A1697831B2C25D8C48BA06FA599027",
+        "tools/fan-tools.css": "9344CBB2C39A550544974400C06EE5149B3A909E172E0EEA228E55CDCFB3A268"
+      },
+      "components": [],
+      "drafts": {
+        "c72d874c-1a42-4da2-9d1b-41d35dcfbd27": {
+          "title": "Draft Night - DJ's House of Cards",
+          "visualDirection": "Approved sibling extension of Lineup Lab: Manrope, Barlow Condensed, DJHC dark/light tokens, basketball identity, truthful source and planned-tool boundaries.",
+          "parentDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-09-07T07:35:46.008Z"
+    },
+    "/tools/player-card-matchups/#previous-design-baseline": {
+      "targetKind": "existing-ui",
+      "projectId": "4ae16f51-2795-44a6-acf1-79b9c890a735",
+      "baselineDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
+      "activeDraftId": "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1",
+      "designSystemPath": ".superdesign/design-system.md",
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        "tools/player-card-matchups/index.html",
+        "tools/player-card-matchups/player-card-matchups.css",
+        "tools/fan-tools.css",
+        "styles.css:1:344",
+        "styles.css:7190:7222",
+        "styles-mobile-overrides.css:540:555",
+        "styles-mobile-overrides.css:2617:2630"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938ea51d961d3ebd537d514b9c51ed2c776572764952519156927d4252e5de8",
+        "tools/player-card-matchups/index.html": "acc94af136baa83990d182370029d78836d47419e5876a44efdbd3f6ded206aa",
+        "tools/player-card-matchups/player-card-matchups.css": "1f77d6f57b8cefe03dd618a976ed3ed6799cd519b6dbf2fb5488de08e2275f68",
+        "tools/fan-tools.css": "2b11ef0d2dc70d07f7e72faecc7584415f84a5df70e5981efb3f935f19e18952",
+        "styles.css": "72e89439d6f53fbe5039ba36c9ac6e64358ea5dd9dcb1563205330875843a4d0",
+        "styles-mobile-overrides.css": "60d7862cc1101d6e94c7e15fe0061602248b3db8ec9373331a3abef16d171701"
+      },
+      "components": [],
+      "drafts": {
+        "f9e47a4d-d2df-47b4-9694-6ce66eeefaf1": {
+          "title": "Current Player & Card Matchups",
+          "visualDirection": "collector-native verified NBA lookup with a high-contrast status panel, readable methodology rail, and clear catalog actions",
+          "currentVersion": 3
+        }
+      },
+      "updatedAt": "2026-09-02T13:09:09.70309Z"
+    },
+    "/tools/workshop/": {
+      "targetKind": "existing-ui",
+      "projectId": "44964533-087f-4f20-88d3-0e2895ff8d6e",
+      "baselineDraftId": "846bb20b-99fe-467c-be0c-a8ac81366906",
+      "activeDraftId": "846bb20b-99fe-467c-be0c-a8ac81366906",
+      "designSystemPath": ".superdesign/fan-suite-direction.md",
+      "referenceIds": [
+        "assets-dj-logo.png",
+        "assets-games-lineup-lab-emblem",
+        "assets-games-fix-the-five-emblem",
+        "assets-games-draft-night-emblem",
+        "1678a8dd-23a4-4634-b7d0-855f5f7d3427"
+      ],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "assets-dj-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/44964533-087f-4f20-88d3-0e2895ff8d6e/brand-assets/assets-dj-logo.png/dj-logo.png",
+          "sourcePath": "assets/dj-logo.png"
+        }
+      },
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/lineup-lab-design-system.md",
+        ".superdesign/fan-suite-direction.md",
+        ".superdesign/basketball-palettes.mjs",
+        "tools/index.html",
+        "tools/fix-the-five/index.html",
+        "tools/draft-night/index.html",
+        "tools/player-card-matchups/index.html",
+        "tools/workshop/index.html",
+        "tools/fan-tools.css"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "3938EA51D961D3EBD537D514B9C51ED2C776572764952519156927D4252E5DE8",
+        ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
+        ".superdesign/fan-suite-direction.md": "679FDFDD0B5B314B17B1CC28C4A4AAA0D4CCE52D9459FC4439D9A83611AAEAB2",
+        ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
+        "tools/index.html": "52AD391E74C0A611E07D3AF27F9F45C2A549588EE584F9387F58E0E7D7A005D4",
+        "tools/fix-the-five/index.html": "1A433F0B2652A03E4BFC7FEB07140AD0C0A3F6C0471A577188B0FACDAB6C6C40",
+        "tools/draft-night/index.html": "B4C59BE93FA116CA6EBD8A9532D71E35937902F761724E141B7AB482FD7984DD",
+        "tools/player-card-matchups/index.html": "6DC83B2FF978715EC3F94E03DC55CF98D4A33388C97A9B016EB52E9EE5DD8477",
+        "tools/workshop/index.html": "19E8ADA4444629C8BF43D9195A4835BF06A1697831B2C25D8C48BA06FA599027",
+        "tools/fan-tools.css": "9344CBB2C39A550544974400C06EE5149B3A909E172E0EEA228E55CDCFB3A268"
+      },
+      "components": [],
+      "drafts": {
+        "846bb20b-99fe-467c-be0c-a8ac81366906": {
+          "title": "Workshop — Drawing Board",
+          "visualDirection": "Approved sibling extension of Lineup Lab: Manrope, Barlow Condensed, DJHC dark/light tokens, basketball identity, truthful source and planned-tool boundaries.",
+          "parentDraftId": "f3c9e5e0-7347-4cdb-ad87-0a47c28d3484",
+          "currentVersion": 1
+        }
+      },
+      "updatedAt": "2026-09-07T07:35:46.008Z"
     }
   }
 }

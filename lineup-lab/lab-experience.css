@@ -1,0 +1,55 @@
+/* Lineup Lab's basketball presentation; optimizer state stays in app.js. */
+.lab-brand-lockup { display:flex; align-items:center; gap:clamp(.85rem,2.2vw,1.6rem); }
+.lab-brand-lockup > div { min-width:0; }
+.lab-brand-lockup .eyebrow { margin:0 0 .45rem; }
+.lab-brand-lockup h1 { margin:0; }
+.lab-emblem { flex:0 0 auto; display:grid; gap:.25rem; place-items:center; width:clamp(86px,9vw,126px); padding:0; background:none; border:0; border-radius:16px; color:#f8d689; }
+.lab-emblem img { display:block; width:100%; height:auto; aspect-ratio:1; border-radius:16px; object-fit:contain; }
+.lab-emblem span { font-size:.6rem; line-height:1.3; }
+.lab-emblem:not(:disabled) { cursor:pointer; }
+.lab-emblem:disabled span { visibility:hidden; }
+.lab-emblem:focus-visible { outline:3px solid #fff; outline-offset:4px; }
+.lab-coaching-brief { border:1px solid var(--line); border-left:3px solid #c99228; border-radius:14px; background:var(--surface); margin-bottom:1.2rem; }
+.lab-coaching-brief > summary { display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.85rem 1rem; list-style:none; cursor:pointer; min-height:52px; font-size:.9rem; font-weight:700; }
+.lab-coaching-brief > summary::-webkit-details-marker { display:none; }
+.lab-coaching-brief > summary small { display:block; color:var(--muted); font-size:.76rem; font-weight:400; margin-top:.18rem; }
+.lab-coaching-brief > summary > span:last-child { display:grid; place-items:center; flex:0 0 28px; height:28px; border-radius:50%; background:#f8d689; color:#18274b; font-size:1.15rem; }
+.lab-coaching-brief[open] > summary > span:last-child { transform:rotate(45deg); }
+.lab-coaching-brief > summary:focus-visible { outline:3px solid #234b9a; outline-offset:4px; border-radius:10px; }
+.lab-coaching-brief__body { padding:0 1rem 1rem; }
+.lab-coaching-brief__copy { min-height:8rem; border-top:1px solid var(--line); padding-top:1rem; }
+.lab-coaching-brief h3 { margin:.2rem 0 .5rem; font-size:1.15rem; }
+.lab-coaching-brief p { margin:.3rem 0 .8rem; font-size:.88rem; line-height:1.55; }
+.lab-coaching-brief__actions { display:flex; flex-wrap:wrap; gap:.6rem; }
+.lab-coaching-brief p.lab-coaching-brief__note { color:var(--muted); font-size:.74rem; margin:.8rem 0 0; }
+.journey-step.is-current .journey-step__number { outline:2px solid #f0bc52; outline-offset:3px; }
+.journey-ball { background:linear-gradient(90deg,transparent 44%,#452a10 46% 54%,transparent 56%),linear-gradient(0deg,transparent 44%,#452a10 46% 54%,transparent 56%),#e99630; }
+@media (prefers-reduced-motion:no-preference) {
+  .lab-brand-lockup { animation:lab-arrive 420ms ease-out backwards; }
+  .lab-coaching-brief[open] .lab-coaching-brief__body { animation:lab-arrive 200ms ease-out; }
+  .lab-coaching-brief > summary > span:last-child { transition:transform 180ms ease; }
+  .journey-step.is-current .journey-step__number { animation:lab-check-in 300ms ease-out; }
+  .lineup-grid > .lineup-player { animation:lab-arrive 260ms ease-out backwards; }
+  .lineup-grid > .lineup-player:nth-child(2) { animation-delay:40ms; }
+  .lineup-grid > .lineup-player:nth-child(3) { animation-delay:80ms; }
+  .lineup-grid > .lineup-player:nth-child(4) { animation-delay:120ms; }
+  .lineup-grid > .lineup-player:nth-child(5) { animation-delay:160ms; }
+  @media (hover:hover) {
+    .lab-emblem img { transition:transform 180ms ease; }
+    .lab-emblem:not(:disabled):hover img { transform:rotate(-5deg); }
+    .guided-workflow .preset-card:hover { transform:translateY(-2px); }
+  }
+}
+@keyframes lab-arrive { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+@keyframes lab-check-in { 0% { transform:scale(.9); } 65% { transform:scale(1.1); } 100% { transform:scale(1); } }
+@media (max-width:760px) {
+  .lab-guided .lab-brand-lockup h1 { font-size:clamp(1.45rem,5.8vw,2.3rem); }
+  .lab-brand-lockup .eyebrow { font-size:.65rem; }
+  .lab-coaching-brief__actions .button { flex:1 1 150px; }
+  .lab-guided .journey-stage--plan .field-row--three { grid-template-columns:minmax(0,1fr); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lab-brand-lockup,.lab-emblem img,.lab-coaching-brief__body,.lineup-grid > .lineup-player,.journey-step__number { animation:none; transition:none; transform:none; }
+  .lab-coaching-brief > summary > span:last-child { transition:none; }
+}
+@media print { .lab-emblem,.lab-coaching-brief { display:none !important; } }

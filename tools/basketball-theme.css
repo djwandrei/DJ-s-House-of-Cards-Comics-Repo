@@ -1,0 +1,116 @@
+/* The single fan-suite presentation layer. Load after each page's layout CSS.
+   Keep brand/commerce styling outside .court-themed completely untouched. */
+@font-face { font-family:Manrope; src:url('../assets/fonts/manrope-400.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:Manrope; src:url('../assets/fonts/manrope-700.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'Barlow Condensed'; src:url('../assets/fonts/barlow-condensed-700.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+body.court-themed {
+  --hero-image:var(--image-basketball-main);
+  --court-canvas:#F1F3F9; --court-surface:#FFF; --court-raised:#E8ECF4;
+  --court-text:#172238; --court-muted:#536177; --court-border:#7C889C;
+  --court-accent:#3D63D4; --court-on-accent:#FFF; --court-focus:#2449A4;
+  --court-trim:#D63A4B; --court-positive:#176444; --court-warning:#80520D; --court-error:#AA263F;
+  --font-body:Manrope,system-ui,sans-serif; --font-display:'Barlow Condensed',Impact,sans-serif;
+  --text:var(--court-text); --ink:var(--court-text); --muted:var(--court-muted);
+  --heading-ink:var(--court-text);
+  --bg:var(--court-canvas); --page:var(--court-canvas); --surface:var(--court-surface);
+  --surface-strong:var(--court-surface); --surface-soft:var(--court-raised); --surface-muted:var(--court-raised);
+  --border:var(--court-border); --line:var(--court-border); --blue:var(--court-accent); --blue-2:var(--court-accent);
+  --success:var(--court-positive); --warning:var(--court-warning); --danger:var(--court-error);
+  --radius:16px; --game-accent:var(--court-accent);
+  font-family:var(--font-body); color:var(--court-text); background:var(--court-canvas);
+  font-variant-numeric:tabular-nums; color-scheme:light;
+}
+body.court-themed.dark-mode {
+  --court-canvas:#0C1326; --court-surface:#19233B; --court-raised:#23304C;
+  --court-text:#F4F6FA; --court-muted:#B1BED2; --court-border:#6C7A8E;
+  --court-accent:#E9B949; --court-on-accent:#111827; --court-focus:#F4D37C;
+  --court-positive:#80DBB0; --court-warning:#F4D37C; --court-error:#FFA9B4;
+  color-scheme:dark;
+}
+body.court-themed main { background:transparent; }
+body.court-themed :is(button,input,select,textarea) { font-family:var(--font-body); }
+body.court-themed :is(h1,h2,h3,.page-title,.section-title,.stat-value,.fix-five-score-value) { font-family:var(--font-display); font-weight:700; letter-spacing:.01em; }
+body.court-themed :is(h1,.page-title) { line-height:1.03; }
+body.court-themed :is(.primary-nav__link,.button,.button-secondary,.kicker,.eyebrow) { font-family:var(--font-body); }
+body.court-themed .brand-script { font-family:'Lobster Two',cursive; }
+body.court-themed :focus-visible { outline:3px solid var(--court-focus); outline-offset:4px; box-shadow:0 0 0 2px var(--court-surface); }
+body.court-themed :is(.site-header,.site-footer) :focus-visible { outline-color:#F4D37C; box-shadow:0 0 0 2px #101B46; }
+body.court-themed main :is(.button,.game-entry-link) { color:var(--court-on-accent); background:var(--court-accent); border:1px solid var(--court-accent); border-radius:12px; box-shadow:none; text-shadow:none; }
+body.court-themed main :is(.button-secondary,.button--quiet,.text-button) { color:var(--court-text); background:var(--court-surface); border:1px solid var(--court-border); border-radius:12px; box-shadow:none; }
+body.court-themed main :is(.button,.button-secondary):hover { filter:brightness(1.06); }
+body.court-themed main select {
+  color:var(--court-text); background-color:var(--court-raised); border:1px solid var(--court-border);
+  border-radius:12px; min-height:48px; padding:.7rem 2.7rem .7rem .85rem;
+  font-size:1rem; max-width:100%; width:100%; appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--court-muted) 50%),linear-gradient(135deg,var(--court-muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%; background-size:6px 6px; background-repeat:no-repeat;
+  box-shadow:none; transition:border-color 160ms ease,background-color 160ms ease;
+}
+body.court-themed main select:hover:not(:disabled) { border-color:var(--court-accent); }
+body.court-themed main :is(input:not([type=checkbox]):not([type=range]):not([type=radio]),textarea) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); border-radius:12px; }
+body.court-themed main :is(input,textarea)::placeholder { color:var(--court-muted); opacity:1; }
+body.court-themed :is(input,progress) { accent-color:var(--court-accent); }
+body.court-themed main :is(input,select)[aria-invalid=true] { border-color:var(--court-error); }
+
+/* Current-page indicators stay readable and scroll within their own region. */
+.court-toolbar { width:min(1240px,calc(100% - 2rem)); margin:1rem auto .2rem; display:flex; align-items:start; gap:.75rem; position:relative; z-index:5; }
+.court-navigation { min-width:0; flex:1; }
+body.court-themed .court-destinations { display:flex; flex-wrap:nowrap; gap:.4rem; overflow-x:auto; scrollbar-width:thin; padding:4px 4px 10px; margin:0; }
+body.court-themed .court-destinations a { display:flex; flex:0 0 auto; align-items:center; gap:.4rem; min-height:46px; padding:.45rem .75rem; border:1px solid transparent; border-radius:10px; color:var(--court-muted); background:transparent; text-decoration:none; font-size:.8rem; font-weight:700; white-space:nowrap; }
+body.court-themed .court-destinations a[aria-current=page] { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); box-shadow:inset 0 -3px var(--court-accent); }
+body.court-themed .court-destinations a:hover { color:var(--court-text); background:var(--court-raised); }
+.court-destinations img { width:28px; height:28px; border-radius:6px; object-fit:contain; }
+.court-style { flex:0 0 auto; position:relative; margin-top:4px; }
+.court-style > summary { min-height:46px; padding:.7rem .75rem; border:1px solid var(--court-border); border-radius:10px; color:var(--court-text); background:var(--court-surface); font-size:.8rem; font-weight:700; cursor:pointer; }
+.court-style__panel { position:absolute; right:0; top:calc(100% + 8px); z-index:20; width:min(290px,calc(100vw - 2rem)); padding:1rem; border:1px solid var(--court-border); border-radius:14px; color:var(--court-text); background:var(--court-surface); box-shadow:0 16px 40px #0003; }
+.court-style__panel p { color:var(--court-muted); font-size:.82rem; line-height:1.55; margin:.5rem 0 1rem; }
+.court-mode-buttons { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+.court-mode-buttons button { min-height:44px; border:1px solid var(--court-border); border-radius:8px; background:var(--court-raised); color:var(--court-text); font-size:.9rem; font-weight:700; cursor:pointer; }
+.court-mode-buttons button[aria-pressed=true] { color:var(--court-on-accent); background:var(--court-accent); border-color:var(--court-accent); }
+
+/* Shared surfaces replace the old competing light/dark page overrides. */
+body.court-themed :is(.tools-live-panel,.tools-featured-card,.tools-status-strip,.tools-roadmap-disclosure,.tools-signal-guide,.tools-signal-guide__terms>div,.tool-roadmap-card,.tool-research-card,.workshop-card,.workshop-hero-panel,.matchup-hero-panel,.matchup-search-card,.matchup-player-card,.matchup-empty-state,.matchup-methodology,.matchup-handoff,.fix-five-scoreboard,.fix-five-workspace,.fix-five-complete,.fix-five-sidebar-card,.fix-five-rule-card,.fix-five-candidate,.game-decision-brief,.game-decision-preview,.game-decision-debrief) {
+  color:var(--court-text); background:var(--court-surface); border-color:var(--court-border); border-radius:16px; box-shadow:none;
+}
+body.court-themed :is(.tools-live-panel,.tools-featured-card,.workshop-hero-panel,.matchup-hero-panel) :is(h2,h3) { color:var(--court-text) !important; text-shadow:none; }
+body.court-themed :is(.tools-live-panel,.tools-featured-card,.workshop-hero-panel,.matchup-hero-panel) p { color:var(--court-muted) !important; text-shadow:none; }
+body.court-themed :is(.tools-play-eyebrow,.tools-signal-guide__terms dt,.tools-live-label,.matchup-live-label) { color:var(--court-accent); }
+body.court-themed :is(.tools-live-capabilities span,.tools-live-marker,.tools-featured-card__marker,.tool-roadmap-card__marker,.tool-research-card__marker,.matchup-pills span,.workshop-pills span) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); }
+body.court-themed :is(.tools-play-filters button,.tools-roadmap-disclosure>summary::after) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); box-shadow:none; }
+body.court-themed .tools-play-filters button[aria-pressed=true] { background:var(--court-accent); color:var(--court-on-accent); border-color:var(--court-accent); }
+body.court-themed .tools-play-filters button::before { color:inherit; }
+body.court-themed .tools-featured-card { border-top-color:var(--court-accent); }
+body.court-themed .tools-featured-card p.tools-play-path { border-color:var(--court-border); }
+body.court-themed .tools-status-item strong { color:var(--court-accent); }
+body.court-themed .tools-status-item--live strong { color:var(--court-positive); }
+body.court-themed .tools-status-item--research strong { color:var(--court-warning); }
+body.court-themed .tools-play-suggestion .button-secondary span { color:var(--court-accent); }
+body.court-themed :is(.workshop-check-list li>span,.workshop-detail-icon) { color:var(--court-positive); }
+body.court-themed .matchup-handoff h2 { color:var(--court-text); }
+body.court-themed .matchup-handoff p { color:var(--court-muted); }
+body.court-themed main .kicker { display:inline-block; color:var(--court-accent); background:none; border:0; box-shadow:none; padding:0; font-size:.74rem; font-weight:700; letter-spacing:.1em; }
+body.court-themed .page-hero-card .kicker { color:#F4D37C; }
+body.court-themed :is(.workshop-hero-card,.matchup-hero-card) { background:linear-gradient(110deg,#0C1326EE,#19233BE8),url('../assets/basketball-main.webp') center/cover !important; color:#F4F6FA; }
+body.court-themed .workshop-hero-copy :is(.kicker,.page-title,p) { color:#F4F6FA; }
+body.court-themed :is(.matchup-hero-copy,.tools-hero-copy) .page-title { letter-spacing:.01em; }
+body.court-themed .tools-hero-copy .page-title { font-size:clamp(2.5rem,5.3vw,4.7rem); }
+body.court-themed .site-footer { --footer-image:var(--image-basketball-footer); }
+
+@media (max-width:700px) {
+  .court-toolbar { gap:.3rem; width:calc(100% - 1.4rem); margin-top:.55rem; }
+  body.court-themed .court-destinations a { padding-inline:.6rem; }
+  .court-style > summary { padding-inline:.5rem; font-size:.74rem; }
+  body.court-themed main :is(input,select) { font-size:1rem; }
+}
+@media (prefers-reduced-motion:no-preference) {
+  body.court-themed :is(.matchup-player-card:not([hidden]),.matchup-results-section:not([hidden]),.workshop-fields,.workshop-status[data-tone=success]) { animation:court-reveal 200ms ease-out; }
+  .court-destinations a { transition:color 180ms ease,background-color 180ms ease; }
+  .court-style[open] .court-style__panel { animation:court-reveal 180ms ease-out; }
+  body.court-themed .tools-featured-card { transition:transform 180ms ease,border-color 180ms ease; }
+  body.court-themed .tools-featured-card:hover { transform:translateY(-3px); }
+}
+@keyframes court-reveal { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) {
+  body.court-themed *,body.court-themed *::before,body.court-themed *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+@media print { .court-toolbar { display:none; } }

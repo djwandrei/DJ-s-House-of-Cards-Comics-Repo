@@ -15,11 +15,29 @@ The interface should make that contract obvious before a result is shown.
 - Keep the cool blue-gray page canvas and white cards, but reduce the number of
   competing borders, shadows, pills, and gradient treatments. One visual
   emphasis should be obvious at each step.
-- Use Inter for all readable UI copy. Use Bebas Neue only for short display
-  labels, step numerals, or score accents—not for instructions or definitions.
+- Preview direction requested September 7: use Manrope for readable UI copy,
+  controls, and navigation; Barlow Condensed 700 for athletic display headings
+  and scoreboard numerals. Keep DJ's existing script wordmark unchanged. These
+  font changes were approved for Lineup Lab and the fan suite on September 7.
 - Minimum interactive target is 44px. Body copy should remain at least 15px
   on desktop and 16px on narrow screens; labels and help text should be short
   enough to scan without creating a wall of microcopy.
+- Evolve toward a premium professional-basketball product: compact broadcast
+  hierarchy, tabular numbers, crisp 12–16px cards, thin separators, strong
+  selected-menu states, and restrained gold/royal-blue accents. No NBA logo,
+  league mark, sponsor mark, or claim of official affiliation.
+- Motion: finite 160–280ms control and panel transitions, subtle badge bounce
+  on intentional input, and brief step/result entrances. No flashing or
+  ambient loops; respect reduced motion. Keep source warnings visible.
+- Reuse the original Lineup Lab basketball emblem beside the hero title; the
+  DJ company logo remains the header identity. The optional Coach's prompt
+  cards in the Game plan step browse Balanced/Defense/Offense ideas without
+  changing settings until explicitly applied. They never trigger a solve.
+- Team colors follow the selected team automatically. Dark/light remains a
+  separate user preference and survives team changes. If no supported team is
+  selected, use the DJHC fallback. Appearance never writes back to team, roster, or rules.
+  This one-way behavior is approved for the real team selector. Unselected and
+  unsupported historical codes retain DJHC; appearance never chooses a team.
 
 ## Information hierarchy
 

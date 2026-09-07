@@ -1,0 +1,111 @@
+/* Presentation only. Keep basketball identity and motion out of game scoring. */
+.basketball-game {
+  --game-accent: #f3c869;
+  --game-motion: 220ms;
+}
+.basketball-game .fix-five-hero-card {
+  --hero-image: linear-gradient(120deg, #142b50, #253e66);
+}
+.basketball-game.draft-night-page .fix-five-hero-card {
+  --hero-image: linear-gradient(120deg, #231b47, #503c70);
+}
+.game-brand-lockup { display:flex; align-items:center; gap:clamp(.8rem,2vw,1.25rem); margin-bottom:.85rem; }
+.game-brand-lockup > div { min-width:0; }
+.game-brand-lockup .page-title { margin:.25rem 0 0; font-size:clamp(2rem,4.3vw,3.6rem); line-height:1.05; }
+.game-brand-lockup .kicker { font-size:clamp(.67rem,1.1vw,.85rem); }
+.game-badge {
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  width:clamp(82px,9vw,124px);
+  padding:0;
+  border:0;
+  border-radius:18px;
+  background:transparent;
+  color:#f9db94;
+  font:inherit;
+}
+.game-badge:not(:disabled) { cursor:pointer; }
+.game-badge img { display:block; width:100%; height:auto; aspect-ratio:1; object-fit:contain; border-radius:16px; transform-origin:50% 80%; }
+.game-badge-hint { font-size:.62rem; letter-spacing:.04em; line-height:1.3; margin-top:.18rem; }
+.game-badge:disabled .game-badge-hint { visibility:hidden; }
+.game-badge:focus-visible { outline:3px solid #fff; outline-offset:5px; }
+
+/* A compact switcher makes the current game identifiable even on a phone. */
+.game-navigation { margin-bottom:1.2rem; }
+.game-page-indicators { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.25rem; }
+.game-page-indicators a {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  min-height:48px;
+  padding:.4rem .85rem;
+  border:1px solid #7486a6;
+  border-radius:12px;
+  color:#edf2ff;
+  background:#16253f;
+  font-size:.82rem;
+  font-weight:750;
+  text-decoration:none;
+  transition:background-color var(--game-motion) ease, border-color var(--game-motion) ease;
+}
+.game-page-indicators img { width:30px; height:30px; object-fit:contain; border-radius:5px; }
+.game-page-indicators a[aria-current="page"] { color:#ffe6ad; background:#182c49; border-color:var(--game-accent); box-shadow:inset 0 -3px var(--game-accent); }
+.game-page-indicators a:hover { background:#304269; border-color:#f9db94; }
+.game-page-indicators a:focus-visible { outline:3px solid #243e8a; outline-offset:4px; }
+.dark-mode .game-page-indicators a:focus-visible { outline-color:#f9db94; }
+
+/* Decorative half-court lines are quiet, noninteractive, and never cover copy. */
+.basketball-game .fix-five-rule-card { position:relative; overflow:hidden; isolation:isolate; }
+.basketball-game .fix-five-rule-card > * { position:relative; z-index:1; }
+.basketball-game .fix-five-rule-card::after {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  width:240px;
+  height:240px;
+  right:-100px;
+  bottom:-110px;
+  border:2px solid rgba(255,222,155,.18);
+  border-radius:50%;
+  background:radial-gradient(circle,transparent 28%,rgba(255,222,155,.18) 28.5% 29%,transparent 29.5%),linear-gradient(90deg,transparent 49.5%,rgba(255,222,155,.18) 49.5% 50.5%,transparent 50.5%);
+  pointer-events:none;
+}
+.basketball-game .fix-five-progress-step[aria-current="step"]::before { outline:2px solid var(--game-accent); outline-offset:2px; }
+.basketball-game .fix-five-candidate[aria-pressed="true"] { outline:3px solid var(--fix-blue); outline-offset:2px; }
+.basketball-game.dark-mode .fix-five-candidate[aria-pressed="true"] { outline-color:var(--game-accent); }
+
+/* Short, finite cues: no looping lights, flashing, parallax, or delayed input. */
+@media (prefers-reduced-motion:no-preference) {
+  .game-brand-lockup { animation:game-enter 480ms ease-out both; }
+  .game-page-indicators img { transition:transform var(--game-motion) ease; }
+  .game-page-indicators a:is(:hover,:focus-visible) img { transform:rotate(-9deg) translateY(-2px); }
+  .basketball-game .game-entry-link { transition:transform 160ms ease, background-color 160ms ease; }
+  .basketball-game .game-entry-link:active { transform:translateY(2px); }
+  .basketball-game .fix-five-candidate { animation:game-deal 240ms ease-out backwards; transition:transform 160ms ease, box-shadow 160ms ease; }
+  .basketball-game .fix-five-candidate:nth-child(2) { animation-delay:45ms; }
+  .basketball-game .fix-five-candidate:nth-child(3) { animation-delay:90ms; }
+  .basketball-game .fix-five-candidate:not(:disabled):active { transform:translateY(1px) scale(.99); }
+  .basketball-game :is(.game-decision-preview,.fix-five-result,.fix-five-complete:not([hidden])) { animation:game-enter 280ms ease-out backwards; }
+  .basketball-game .fix-five-progress-step[aria-current="step"]::before { animation:game-check-in 320ms ease-out; }
+  @media (hover:hover) {
+    .game-badge:not(:disabled):hover img { transform:rotate(-5deg); }
+    .game-badge img { transition:transform var(--game-motion) ease; }
+    .basketball-game .fix-five-candidate:not(:disabled):hover { transform:translateY(-3px); }
+  }
+}
+@keyframes game-enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes game-deal { from { opacity:0; transform:translateY(10px) rotate(-1deg); } to { opacity:1; transform:translateY(0) rotate(0); } }
+@keyframes game-check-in { 0% { transform:scale(.88); } 65% { transform:scale(1.1); } 100% { transform:scale(1); } }
+@media (max-width:700px) {
+  .game-brand-lockup { gap:.8rem; }
+  .game-brand-lockup .page-title { font-size:clamp(1.8rem,7vw,2.7rem); }
+  .game-page-indicators { display:grid; grid-template-columns:1fr 1fr; }
+  .game-page-indicators a { padding:.4rem .45rem; gap:.35rem; font-size:.76rem; }
+  .game-page-indicators img { width:26px; height:26px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .basketball-game :is(.game-brand-lockup,.game-badge img,.game-page-indicators a,.game-page-indicators img,.game-entry-link,.fix-five-candidate,.game-decision-preview,.fix-five-result,.fix-five-complete),
+  .basketball-game .fix-five-progress-step::before { animation:none; transition:none; transform:none; }
+}

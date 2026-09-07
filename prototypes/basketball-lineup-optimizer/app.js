@@ -81,6 +81,8 @@ const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
 const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v6";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NBA_CACHE_MAX_ENTRIES = 24;
+import { setCourtTeam } from "../../tools/basketball-theme.js?v=__LINEUP_LAB_ASSET_VERSION__";
+
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
 // Lineup Lab deliberately does not use team-stint workload as a rotation
@@ -1365,6 +1367,7 @@ async function populateLiveTeamOptions({ preferredTeam = DEFAULT_TEAM_CODE, forc
   const preferredCode = [selectedCode, preferredTeam]
     .find((code) => teams.some((team) => team.team_code === code));
   elements.liveTeam.value = preferredCode || teams[0].team_code;
+  setCourtTeam(elements.liveTeam.value);
   populateOpponentTeamOptions();
 }
 
@@ -3069,6 +3072,8 @@ function setDataset(dataset, { clearScenario = true, liveSelection = null, notic
   state.dataset = dataset;
   state.datasetKind = liveSelection ? "live" : datasetKind;
   state.loadedLiveSelection = liveSelection;
+  // Only a real source code drives the palette. CSV/demo rosters use DJHC.
+  setCourtTeam(liveSelection?.team || "");
   state.playerMediaStatus.clear();
   state.teamLogoStatus = "unavailable";
   clearOpponentScout(liveSelection
@@ -6084,6 +6089,7 @@ function bindRemainingEvents() {
   elements.liveSeason.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveSeasonPhase.addEventListener("change", handleSeasonOrPhaseChange);
   elements.liveTeam.addEventListener("change", () => {
+    setCourtTeam(elements.liveTeam.value);
     updateLiveSelectionState();
     clearOpponentScout("Apply this team as the player pool before building an opponent game plan.");
     populateOpponentTeamOptions();

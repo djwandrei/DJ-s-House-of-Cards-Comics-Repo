@@ -1,4 +1,4 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260907a';
+import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260907c';
 
 const STATUS_LABELS = Object.freeze({
   [TOOL_STATUSES.LIVE]: 'Live',
@@ -31,8 +31,19 @@ function appendText(parent, tagName, className, text) {
 }
 
 function appendMarker(parent, tool, className = 'tool-marker') {
-  const marker = appendText(parent, 'span', className, tool.marker);
+  const marker = appendText(parent, 'span', className, tool.emblem ? '' : tool.marker);
   marker.setAttribute('aria-hidden', 'true');
+  if (tool.emblem) {
+    const image = document.createElement('img');
+    image.src = new URL(tool.emblem, import.meta.url).href;
+    image.alt = '';
+    image.width = 96;
+    image.height = 96;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    marker.classList.add('has-game-emblem');
+    marker.append(image);
+  }
   return marker;
 }
 

@@ -1,0 +1,61 @@
+/* Lineup Lab adapters for the shared court tokens; no optimizer logic here. */
+body.lab-guided.court-themed .brand strong,
+body.lab-guided.court-themed :is(.lab-header__link,.lab-header__account) { font-family:var(--font-body); }
+body.lab-guided.court-themed .hero { background:linear-gradient(110deg,#0C1326,#19233B); }
+body.lab-guided.court-themed .hero__grid { padding-block:1.4rem 2.3rem; }
+body.lab-guided.court-themed .hero h1 { font-size:clamp(2.3rem,4.3vw,3.6rem); letter-spacing:.01em; }
+body.lab-guided.court-themed .hero h1 span { color:#F4F6FA; }
+body.lab-guided.court-themed .hero__lede { color:#BFCDE2; }
+body.lab-guided.court-themed :is(.panel,.step-panel,.journey-review-card,.journey-errors,.journey-busy,.live-data-panel,.dataset-strip,.run-card,.lineup-player,.result-evidence>div,.result-ranking-context>div,.full-analysis,.simple-result-overview,.simple-benchmark__help,.benchmark-explainer,.unit-proof-frame,.fan-report,.compare-card,.watch-card,.metric-field-guide,.analytics-panel,.rotation-evidence-preview,.player-pool-details,.opponent-scout) {
+  background:var(--court-surface); color:var(--court-text); border-color:var(--court-border); box-shadow:none;
+}
+body.lab-guided.court-themed :is(.experience-switcher__buttons,.weight-share-summary,.simple-model-summary,.rotation-model-intro,.rotation-static-policy,.active-selection-tray,.selection-chip,.optimization-progress,.position-pill,.benchmark-explainer__reading,.simple-result-next,.compare-pool-note,.opponent-scout__counter,.counter-weight-preview,.role-tag,.role-coverage-row,.role-coverage-status,.report-provenance,.lineup-dna__counts>div,.lineup-dna__swap,.simple-result-insight,.simple-result-insight--strength,.simple-result-insight--alternative,.simple-result-model-note) {
+  background:var(--court-raised); color:var(--court-text); border-color:var(--court-border);
+}
+body.lab-guided.court-themed :is(.journey-rail,.journey-ticket) { background:var(--court-surface); color:var(--court-text); border-color:var(--court-border); }
+body.lab-guided.court-themed .journey-rail { border:1px solid var(--court-border); }
+body.lab-guided.court-themed :is(.journey-step,.journey-restart,.experience-switcher__button,.tool-nav__button) { color:var(--court-text); }
+body.lab-guided.court-themed :is(.journey-step__status,.journey-draft-status,.preset-card span,.simple-model-summary p,.simple-model-summary li,.simple-model-summary small,.rotation-model-intro p,.rotation-model-intro li,.rotation-model-intro small) { color:var(--court-muted); }
+body.lab-guided.court-themed :is(.journey-rail__eyebrow,.eyebrow,.step-number,.journey-review-emphasis,.text-button,.lineup-dna__source) { color:var(--court-accent); }
+body.lab-guided.court-themed :is(.journey-step.is-current,.experience-switcher__button.is-active,.tool-nav__button.is-active,.preset-card.is-active) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-accent); box-shadow:inset 0 -3px var(--court-accent); }
+body.lab-guided.court-themed .journey-step.is-current .journey-step__status { color:var(--court-accent); }
+body.lab-guided.court-themed :is(.journey-step.is-current,.journey-step.is-complete) .journey-step__number { background:var(--court-accent); color:var(--court-on-accent); border-color:var(--court-accent); }
+body.lab-guided.court-themed :is(.simple-model-summary h3,.rotation-model-intro h3,.weight-share-summary strong,.simple-model-summary strong,.preset-card.is-active span,.preset-card.is-active strong,.experience-switcher__copy strong) { color:var(--court-text); }
+body.lab-guided.court-themed .live-data-status[data-tone=warning] { color:var(--court-warning); }
+body.lab-guided.court-themed .live-data-status[data-tone=success] { color:var(--court-positive); }
+body.lab-guided.court-themed .live-data-status[data-tone=error] { color:var(--court-error); }
+body.lab-guided.court-themed .search-scope { background:var(--court-surface); }
+body.lab-guided.court-themed .search-scope[data-tone=success] { border-color:var(--court-positive); }
+body.lab-guided.court-themed .search-scope[data-tone=warning] { border-color:var(--court-warning); }
+body.lab-guided.court-themed .search-scope[data-tone=error] { border-color:var(--court-error); }
+body.lab-guided.court-themed .watch-toggle { color:var(--court-muted); }
+body.lab-guided.court-themed .lineup-player__minutes { background:var(--court-accent); color:var(--court-on-accent); }
+body.lab-guided.court-themed :is(.score-card strong,.lineup-player__rank) { font-family:var(--font-display); font-weight:700; }
+body.lab-guided.court-themed .score-card--primary { background:var(--court-accent); color:var(--court-on-accent); }
+body.lab-guided.court-themed .score-card--primary :is(strong,span) { color:var(--court-on-accent); }
+body.lab-guided.court-themed :is(.player-table,.alternatives-table,.compare-table,.counter-weight-table,.historical-benchmark) :is(th,caption) { background:var(--court-raised); color:var(--court-muted); }
+body.lab-guided.court-themed :is(.player-table tbody tr,.lineup-player,.opponent-player,.benchmark-explainer,.simple-result-model-note) { background:var(--court-surface); color:var(--court-text); }
+body.lab-guided.court-themed .player-table tbody tr:is(:hover,.is-locked,.is-ineligible) { background:var(--court-raised); }
+body.lab-guided.court-themed :is(.player-avatar,.lineup-player__portrait,.watch-card__avatar,.compare-legend__avatar,.opponent-player__avatar,.opponent-scout__logo) { background:var(--court-raised); }
+body.lab-guided.court-themed :is(.tool-nav__button span,.model-status-chip,.selection-chip,.watch-toggle.is-active) { background:var(--court-raised); color:var(--court-accent); }
+body.lab-guided.court-themed :is(.weight-validation,.error-card,.noscript,.result-freshness,.simple-result-concern,.workload-stretch-note,.watchlist-migration-note,.simple-result-insight--concern,.lineup-dna__swap-note) { background:var(--court-surface); color:var(--court-warning); border-color:var(--court-warning); }
+body.lab-guided.court-themed :is(.weight-validation,.error-card,.noscript,.journey-field-error,.journey-errors .text-button) { color:var(--court-error); border-color:var(--court-error); }
+body.lab-guided.court-themed .role-coverage-row[data-status=covered] .role-coverage-status,
+body.lab-guided.court-themed .unit-proof-checks li { color:var(--court-positive); background:var(--court-surface); }
+body.lab-guided.court-themed .role-coverage-row[data-status=thin] .role-coverage-status { color:var(--court-warning); background:var(--court-surface); }
+body.lab-guided.court-themed :is(.field__help,.helper,.model-help,.simple-result-insight p,.simple-result-model-note p,.lineup-dna__counts p) { color:var(--court-muted); }
+body.lab-guided.court-themed :is(.metric-bar__track,.analytics-chart__track,.compare-player-track) { background:var(--court-raised); }
+body.lab-guided.court-themed .journey-stage { animation:none; }
+body.lab-guided.court-themed .journey-canvas { overflow:clip; overflow-clip-margin:8px; }
+body.lab-guided.court-themed .journey-heading { scroll-margin-top:1.25rem; }
+body.lab-guided.court-themed .lab-footer { background:#0C1326; color:#F4F6FA; }
+body.lab-guided.court-themed .lab-footer a { color:#F4D37C; }
+@media (max-width:700px) {
+  body.lab-guided.court-themed .hero h1 { font-size:clamp(2rem,7.8vw,2.6rem); }
+  body.lab-guided.court-themed .journey-heading h2 { font-size:2rem; }
+  body.lab-guided.court-themed .field-row--three { grid-template-columns:1fr; }
+}
+@media print {
+  /* Inline team tokens must yield to a legible, ink-friendly printed report. */
+  body.lab-guided.court-themed { --court-canvas:#fff !important; --court-surface:#fff !important; --court-raised:#f4f4f4 !important; --court-text:#111 !important; --court-muted:#333 !important; --court-border:#888 !important; --court-accent:#172238 !important; --court-on-accent:#fff !important; --court-warning:#80520D !important; --court-error:#AA263F !important; --court-positive:#176444 !important; }
+}
