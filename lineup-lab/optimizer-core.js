@@ -10,34 +10,34 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260906a";
+} from "./optimizer-config.js?v=20260907a";
 import {
   DEFAULT_PROJECTION_RISK,
   HISTORICAL_PROJECTION_MODEL_VERSION,
   PROJECTION_RISK_KEYS,
   projectionParametersFor,
-} from "./projection-parameters.js?v=20260906a";
+} from "./projection-parameters.js?v=20260907a";
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
   readPlayerUsage,
-} from "./player-projection.js?v=20260906a";
-import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260906a";
+} from "./player-projection.js?v=20260907a";
+import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260907a";
 import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
-  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260906a";
+  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260907a";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
   ROLE_BALANCE_KEYS,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260906a";
+} from "./lineup-role-model.js?v=20260907a";
 import {
   buildScoutImpactModel,
   buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
-} from "./scout-impact.js?v=20260906a";
-import { planRotationUnits } from "./rotation-unit-planner.js?v=20260906a";
+} from "./scout-impact.js?v=20260907a";
+import { planRotationUnits } from "./rotation-unit-planner.js?v=20260907a";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,

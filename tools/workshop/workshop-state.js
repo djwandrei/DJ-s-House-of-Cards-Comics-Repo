@@ -1,4 +1,4 @@
-import { WORKSHOP_SCHEMA_VERSION } from './definitions.js?v=20260906a';
+import { WORKSHOP_SCHEMA_VERSION } from './definitions.js?v=20260907a';
 
 const EXPERIENCE_ID_PATTERN = /^[a-z0-9-]+$/;
 const STORAGE_PREFIX = 'djhc:fan-tool:';

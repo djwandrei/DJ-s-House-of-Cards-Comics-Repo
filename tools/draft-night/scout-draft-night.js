@@ -161,6 +161,7 @@ function createPlayerChip(player, index) {
 function renderSource() {
   const source = deck()?.source;
   if (!source) return;
+  document.getElementById('sourceHeading').textContent = source.label;
   elements.sourceCopy.textContent = `${sourceFamilyLabel(source.family)} · ${source.label}. ${source.description} ${source.model.label} ranks the sealed result; visible stats are context only.`;
 }
 
@@ -195,14 +196,21 @@ function renderScoreboard() {
 
 function renderSelectedPlayers(parent) {
   const section = createElement('section', 'draft-night-selection-section');
-  section.append(createElement('h3', 'fix-five-section-title', 'Your draft card'));
-  if (!state.selections.length) {
-    section.append(createElement('p', 'draft-night-empty-selection', 'No picks locked yet. Build from lead guard through centerpiece big.'));
-  } else {
-    const list = createElement('ol', 'fix-five-lineup-list draft-night-picked-list');
-    state.selections.forEach((id, index) => list.append(createPlayerChip(playerFor(id), index)));
-    section.append(list);
-  }
+  section.append(createElement('h3', 'fix-five-section-title', `Your five · ${state.selections.length} of ${PICK_COUNT} picked`));
+  const list = createElement('ol', 'fix-five-lineup-list draft-night-picked-list');
+  deck().rounds.forEach((round, index) => {
+    if (state.selections[index]) {
+      list.append(createPlayerChip(playerFor(state.selections[index]), index));
+      return;
+    }
+    const slot = createElement('li', 'fix-five-player-chip draft-night-player-chip draft-night-open-slot');
+    if (index === currentIndex()) slot.setAttribute('aria-current', 'step');
+    slot.append(createElement('span', 'draft-night-player-number', String(index + 1)),
+      createElement('strong', '', round.title),
+      createElement('small', '', index === currentIndex() ? 'On the clock' : 'Up next'));
+    list.append(slot);
+  });
+  section.append(list);
   parent.append(section);
 }
 
@@ -218,6 +226,7 @@ function createCandidateButton(round, candidate) {
     createElement('strong', '', candidate.name),
     createElement('small', '', playerContext(candidate)),
     createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
+    createElement('span', 'game-choice-action', state.pending ? 'Checking…' : 'Draft this player →'),
   );
   return button;
 }
@@ -347,6 +356,8 @@ function renderCompletion() {
 }
 
 function render() {
+  elements.workspace.setAttribute('aria-busy', String(state.pending));
+  elements.completionPanel.setAttribute('aria-busy', String(state.pending));
   renderProgress();
   renderScoreboard();
   if (isComplete()) renderCompletion();
@@ -468,6 +479,9 @@ function bindEvents() {
 }
 
 async function loadGame() {
+  document.getElementById('gameRecovery').hidden = true;
+  elements.runTitle.textContent = 'Getting today’s board ready…';
+  setStatus('Loading the daily board.');
   try {
     state.board = await loadScoutDailyBoard({ gameKind: GAME_KIND, dailySeed: state.seed, family: state.family });
     restoreSelections();
@@ -479,9 +493,13 @@ async function loadGame() {
   } catch {
     elements.workspace.hidden = true;
     elements.completionPanel.hidden = true;
+    elements.runTitle.textContent = 'Today’s board is taking a timeout.';
+    elements.runDescription.textContent = 'Try again in a moment, or explore another fan tool.';
+    document.getElementById('gameRecovery').hidden = false;
     setStatus(scoutDailyGameUnavailableMessage(), 'error');
   }
 }
 
 bindEvents();
+document.getElementById('retryBoard').addEventListener('click', loadGame);
 loadGame();

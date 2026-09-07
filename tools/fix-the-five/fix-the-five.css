@@ -10,12 +10,14 @@
   --fix-shadow: 0 18px 44px rgba(18, 36, 82, .13);
 }
 
-.fix-five-hero {
-  padding-bottom: 1.6rem;
+.fan-tools-page .fix-five-hero {
+  padding-block: 1.2rem .8rem;
 }
 
-.fix-five-hero-card {
+.fan-tools-page .fix-five-hero-card {
+  --hero-image: linear-gradient(120deg, #284574, #52405b);
   overflow: hidden;
+  padding: 1.4rem;
 }
 
 .fix-five-hero-layout {
@@ -36,6 +38,40 @@
 .fix-five-hero-copy p {
   max-width: 66ch;
 }
+
+.game-entry {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem 1rem;
+  margin-top: 1rem;
+}
+
+.game-entry > span {
+  font-size: .8rem;
+  color: #f4f6fc;
+}
+
+.game-entry-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid #f8d77c;
+  border-radius: 12px;
+  background: #f0c45c;
+  color: #152342;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.game-entry-link:hover { background: #ffda80; color: #152342; }
+.game-entry-link:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+#gameBoard { scroll-margin-top: 7.5rem; }
+#gameBoard:focus-visible { outline: 3px solid var(--fix-blue); outline-offset: 4px; }
+body.dark-mode #gameBoard:focus-visible { outline-color: #e8b84c; }
 
 .fix-five-hero-pills,
 .fix-five-result-pills,
@@ -346,8 +382,9 @@
 }
 
 .fix-five-candidate {
-  background: #fff;
+  background: linear-gradient(155deg, #edf3ff, #fff 42%);
   border: 2px solid var(--fix-border);
+  border-top: 4px solid var(--fix-gold);
   border-radius: 13px;
   color: var(--fix-ink);
   cursor: pointer;
@@ -355,7 +392,39 @@
   padding: 1rem;
   text-align: left;
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
 }
+
+.game-choice-action { display:block; width:100%; margin-top:auto; padding-top:1rem; color:var(--fix-blue); font-size:.8rem; font-weight:800; }
+.fix-five-candidate-statline { padding-bottom:.7rem; }
+.fix-five-candidate:disabled { cursor:wait; opacity:.65; transform:none; }
+.game-field-notes { border:1px solid var(--fix-border); border-radius:16px; background:var(--fix-paper); overflow:hidden; }
+.game-field-notes > summary { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:52px; padding:.8rem 1rem; color:var(--fix-ink); font-weight:800; cursor:pointer; list-style:none; }
+.game-field-notes > summary::-webkit-details-marker { display:none; }
+.game-field-notes > summary::after { content:'+'; color:var(--fix-blue); font-size:1.3rem; }
+.game-field-notes[open] > summary::after { content:'−'; }
+.game-field-notes > summary:focus-visible { outline:3px solid var(--fix-blue); outline-offset:-4px; }
+.game-field-notes .fix-five-method-card,.game-field-notes .fix-five-source-card { border:0; border-radius:0; box-shadow:none; }
+.game-field-notes .fix-five-method-card li > span { grid-column:2; }
+
+/* Scoreboard and cards share the storefront's night palette. */
+body.dark-mode:is(.fix-five-page,.draft-night-page) { --fix-ink:#edf2ff; --fix-muted:#bdc9df; --fix-paper:#17233d; --fix-border:rgba(174,194,239,.25); --fix-blue:#a9c4ff; --fix-red:#ffa5b1; --fix-gold:#e8b84c; }
+body.dark-mode .fix-five-main-card,body.dark-mode .fix-five-method-card,body.dark-mode .fix-five-source-card,body.dark-mode .fix-five-scoreboard > div { background:#111c32; }
+body.dark-mode .fix-five-scoreboard strong { color:#f5cf7c; }
+body.dark-mode .fix-five-candidate { background:linear-gradient(155deg,#26385a,#18243c 55%); }
+body.dark-mode .fix-five-candidate-position,body.dark-mode .fix-five-round-label { color:#f5cf7c; }
+body.dark-mode .fix-five-focus { background:#1a2b47; color:#d8e5ff; border-left-color:#8ea9ee; }
+body.dark-mode .fix-five-player-chip.is-removed { background:#462335; color:#ffc0c8; }
+body.dark-mode .fix-five-term-list > div { background:rgba(255,255,255,.04); }
+body.dark-mode .fix-five-live-status.is-error { color:#ffadb8; }
+body.dark-mode .fix-five-method-card li::before { background:#2b416a; color:#e4ecff; }
+body.dark-mode .fix-five-contract-details summary::before { background:#243858; }
+body.dark-mode .fix-five-contract-details[open] summary::before { color:#111c32; background:#a9c4ff; }
+body.dark-mode.fix-five-page .fix-five-candidate:focus-visible { outline-color:#e8b84c; box-shadow:0 0 0 2px #111c32; }
+.game-recovery { display:flex; flex-wrap:wrap; gap:.7rem; padding:1rem 0 2rem; }
+.game-recovery[hidden] { display:none; }
 
 .fix-five-candidate:hover,
 .fix-five-candidate:focus-visible {
@@ -786,13 +855,77 @@
 }
 
 .fix-five-contract-details summary {
+  align-items: center;
   color: var(--fix-blue);
   cursor: pointer;
+  display: flex;
+  gap: .55rem;
   font-weight: 800;
+  list-style: none;
+}
+
+.fix-five-contract-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.fix-five-contract-details summary::before {
+  align-items: center;
+  background: #edf2ff;
+  border: 1px solid #c9d5f0;
+  border-radius: 50%;
+  color: var(--fix-blue);
+  content: "+";
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  font-weight: 500;
+  height: 1.45rem;
+  justify-content: center;
+  line-height: 1;
+  transition: transform 160ms ease, background-color 160ms ease;
+  width: 1.45rem;
+}
+
+.fix-five-contract-details[open] summary::before {
+  background: var(--fix-blue);
+  color: #fff;
+  transform: rotate(45deg);
+}
+
+.fix-five-contract-details summary:focus-visible {
+  outline: 3px solid rgba(31, 93, 184, .42);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .fix-five-contract-details p {
   margin: .55rem 0 0;
+}
+
+.fix-five-term-list {
+  display: grid;
+  gap: .48rem;
+  margin: .72rem 0 0;
+}
+
+.fix-five-term-list > div {
+  padding: .58rem .65rem;
+  border: 1px solid var(--fix-border);
+  border-radius: 9px;
+  background: rgba(238, 243, 255, .62);
+}
+
+.fix-five-term-list dt {
+  color: var(--fix-ink);
+  font-size: .78rem;
+  font-weight: 900;
+}
+
+.fix-five-term-list dd {
+  margin: .18rem 0 0;
+  color: var(--fix-muted);
+  font-size: .77rem;
+  line-height: 1.4;
 }
 
 .fix-five-method-card strong {
@@ -884,6 +1017,31 @@
   display: inline-flex;
 }
 
+.fix-five-completion-list {
+  display:grid;
+  gap:.65rem;
+  list-style:none;
+  padding:0;
+  margin:1.2rem auto;
+  max-width:680px;
+  text-align:left;
+}
+.fix-five-completion-list li {
+  display:grid;
+  gap:.3rem;
+  padding:.85rem 1rem;
+  border:1px solid #cbd7ed;
+  border-radius:12px;
+  background:#f2f6ff;
+  color:#14284e;
+}
+.fix-five-completion-list li span { color:#485d80; font-size:.85rem; line-height:1.45; }
+body.dark-mode .fix-five-complete .fix-five-completion-list li { background:#17243c; border-color:#46597b; color:#edf2ff; }
+body.dark-mode .fix-five-complete .fix-five-completion-list li span { color:#c2cfe5; }
+body.dark-mode.fix-five-page .fix-five-complete { background:#111c32; }
+body.dark-mode.fix-five-page .fix-five-complete h2 { color:#edf2ff; }
+body.dark-mode.fix-five-page .fix-five-complete > p { color:#c2cfe5; }
+
 @media (max-width: 920px) {
   .fix-five-hero-layout,
   .fix-five-layout {
@@ -901,13 +1059,18 @@
 }
 
 @media (max-width: 700px) {
+  body.fan-tools-page .fix-five-hero-card {
+    padding: 1rem;
+  }
+
   .fix-five-hero-layout,
   .fix-five-status-row {
     display: block;
   }
 
   .fix-five-rule-card {
-    margin-top: 1rem;
+    /* The same scoring boundary remains in the intro and expandable board guide. */
+    display: none;
   }
 
   .fix-five-scoreboard {
@@ -973,7 +1136,9 @@
 @media (prefers-reduced-motion: reduce) {
   .fix-five-candidate {
     transition: none;
+    transform: none;
   }
+  .fix-five-contract-details summary::before { transition:none; }
 }
 
 .fan-next-play { margin-top:1.5rem; padding:1.25rem; border:1px solid var(--border); border-top:3px solid #e8b84c; border-radius:16px; background:var(--surface-strong); color:var(--text); }

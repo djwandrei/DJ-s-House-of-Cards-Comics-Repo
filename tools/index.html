@@ -12,17 +12,17 @@
   <meta content="Explore DJHC sports-fan tools, collector games, the NBA Lineup Lab, and the roadmap for future interactive experiences." property="og:description"/>
   <meta content="https://www.djshouseofcards-comics.com/tools/" property="og:url"/>
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image"/>
-  <link href="../styles.css?v=20260906a" rel="stylesheet"/>
-  <link href="../styles-mobile-overrides.css?v=20260906a" rel="stylesheet"/>
-  <link href="./fan-tools.css?v=20260906a" rel="stylesheet"/>
+  <link href="../styles.css?v=20260907a" rel="stylesheet"/>
+  <link href="../styles-mobile-overrides.css?v=20260907a" rel="stylesheet"/>
+  <link href="./fan-tools.css?v=20260907a" rel="stylesheet"/>
   <link href="https://www.djshouseofcards-comics.com/tools/" rel="canonical"/>
-  <link href="../site.webmanifest?v=20260906a" rel="manifest"/>
+  <link href="../site.webmanifest?v=20260907a" rel="manifest"/>
   <link href="../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
   <link href="../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","@id":"https://www.djshouseofcards-comics.com/tools/#webpage","url":"https://www.djshouseofcards-comics.com/tools/","name":"Fan Tools & Games | DJ's House of Cards & Comics","description":"Explore DJHC sports-fan tools, collector games, the NBA Lineup Lab, and the roadmap for future interactive experiences.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
  </head>
 <body class="fan-tools-page dark-mode" data-page="fan-tools">
-<script src="../theme-init.js?v=20260906a"></script>
+<script src="../theme-init.js?v=20260907a"></script>
   <a class="skip-link" href="#mainContent">Skip to fan tools</a>
   <header class="site-header">
    <div class="container header-inner">
@@ -90,7 +90,7 @@
        <div aria-label="Live tool capabilities" class="tools-live-capabilities" data-live-capabilities>
         <span>Lineup builder</span>
         <span>Local state</span>
-        <span>No checkout impact</span>
+        <span>No shop changes</span>
        </div>
       </aside>
      </div>
@@ -103,14 +103,20 @@
       <p class="tools-intro">A quick challenge or a deeper experiment? Start anywhere. Daily games open when a verified board is available.</p>
      </div>
      <div class="tools-play-controls">
-      <div class="tools-play-filters" role="group" aria-label="Choose a type of fan experience">
-       <button type="button" data-play-filter="all" aria-pressed="true">All experiences</button>
-       <button type="button" data-play-filter="games" aria-pressed="false">Play a game</button>
-       <button type="button" data-play-filter="tools" aria-pressed="false">Build &amp; explore</button>
+      <div class="tools-play-filter-wrap">
+       <span class="tools-play-filter-label">Choose your lane</span>
+       <div class="tools-play-filters" role="group" aria-label="Choose a type of fan experience">
+        <button type="button" data-play-filter="all" aria-pressed="true">All experiences</button>
+        <button type="button" data-play-filter="games" aria-pressed="false">Play a game</button>
+        <button type="button" data-play-filter="tools" aria-pressed="false">Build &amp; explore</button>
+       </div>
       </div>
-      <button class="button-secondary" id="suggestPlay" type="button">Pick one for me ↗</button>
+      <div class="tools-play-suggestion">
+       <span>Want a quick spark?</span>
+       <button class="button-secondary" id="suggestPlay" type="button"><span aria-hidden="true">✦</span> Deal me a challenge</button>
+      </div>
      </div>
-     <p id="playStatus" class="tools-play-status" role="status" aria-live="polite">Choose an experience below.</p>
+     <p id="playStatus" class="tools-play-status" role="status" aria-live="polite">Start with any live experience—your shop, account, and cart stay untouched.</p>
      <div class="tools-featured" id="toolsFeatured"></div>
     </div>
    </section>
@@ -128,6 +134,18 @@
      <span><b>Research gated</b><small>Waiting on verified data</small></span>
     </div>
    </section>
+   <section class="container tools-signal-guide" aria-labelledby="signalGuideHeading">
+    <div class="tools-signal-guide__intro">
+     <span class="kicker">Know the signal</span>
+     <h2 id="signalGuideHeading">Every label should tell you what happens next.</h2>
+     <p>Fan Tools use clear availability and evidence labels so a playful challenge never blurs into a hidden score, shop action, or made-up result.</p>
+    </div>
+    <dl class="tools-signal-guide__terms">
+     <div><dt>Live</dt><dd>Ready to open now with its published rules and current safeguards.</dd></div>
+     <div><dt>Board ready</dt><dd>A daily game appears only when its validated source board is available.</dd></div>
+     <div><dt>Research gated</dt><dd>A future idea stays a preview until its data and validation are ready.</dd></div>
+    </dl>
+   </section>
    <section class="section section-top tools-roadmap" id="toolsRoadmap">
     <div class="container">
      <div class="section-heading">
@@ -139,7 +157,7 @@
      </div>
      <p aria-live="polite" class="sr-only" id="toolsStatus">15 fan experiences: 5 live, 6 planned, and 4 research gated.</p>
      <details class="tools-roadmap-disclosure">
-      <summary>Open the roadmap · planned tools &amp; research</summary>
+      <summary><span><strong>Open the roadmap</strong><small>Planned tools and research checkpoints</small></span></summary>
       <div aria-label="Planned fan tools" class="tools-grid" id="toolsGrid"></div>
       <div aria-label="Research-gated fan tools" class="tools-research" id="toolsResearch"></div>
      </details>
@@ -216,8 +234,8 @@
   </div>
 </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../core.js?v=20260906a"></script>
-  <script defer src="../nav.js?v=20260906a"></script>
-  <script type="module" src="./fan-tools.js?v=20260906a"></script>
+  <script defer src="../core.js?v=20260907a"></script>
+  <script defer src="../nav.js?v=20260907a"></script>
+  <script type="module" src="./fan-tools.js?v=20260907a"></script>
  </body>
 </html>

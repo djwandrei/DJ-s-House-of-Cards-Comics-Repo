@@ -13,8 +13,8 @@
   <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/bebas-neue-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=20260906a">
-  <link rel="stylesheet" href="workflow.css?v=20260906a">
+  <link rel="stylesheet" href="styles.css?v=20260907a">
+  <link rel="stylesheet" href="workflow.css?v=20260907a">
 </head>
 <body class="lab-guided" data-experience-mode="simple">
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
@@ -217,9 +217,9 @@
 
                   <div class="model-choice" aria-label="Optimization model">
                     <div class="field-row">
-                      <label class="field"><span>Evidence used to optimize</span>
+                      <label class="field"><span>Primary evidence layer</span>
                         <select id="modelModeInput" aria-describedby="modelModeHelp">
-                          <option value="historical">Historical — Basketball Reference</option>
+                          <option value="historical">Historical box-score profile — Basketball Reference</option>
                           <option value="scout">Scout — advanced O/D impact (private preview)</option>
                         </select>
                       </label>
@@ -231,13 +231,13 @@
                         </select>
                       </label>
                     </div>
-                    <p class="field__help" id="modelModeHelp">Historical uses your skill priorities and Basketball Reference stats. Scout uses validated possession-based impact as its primary objective; a site administrator sign-in is required.</p>
+                    <p class="field__help" id="modelModeHelp">Historical combines your visible priorities with player-level box-score evidence. The administrator-only Scout preview uses validated possession-based impact as its ranking objective; a site administrator sign-in is required.</p>
                     <p class="field__help" id="scoutEvidenceStatus" role="status" hidden></p>
                   </div>
 
                   <details class="analytics-panel detailed-only" id="analyticsPanel">
-                    <summary>Choose a stat display <span>(advanced)</span></summary>
-                    <p class="helper"><strong>These options explain the result; they do not weaken the exact constraints.</strong> Per 36 puts counting stats on an equal playing-time scale. The per-100 view is labelled an estimate because historical team possessions are reconstructed from available team totals.</p>
+                    <summary>Read the result metrics <span>(advanced)</span></summary>
+                    <p class="helper"><strong>These views change how you read a result; they never weaken the exact rules.</strong> Per 36 puts counting stats on an equal playing-time scale. Per 100 is explicitly an estimate because historical team possessions are reconstructed from available team totals.</p>
                     <div class="field-row analytics-panel__fields">
                       <label class="field">
                         <span>Stat display</span>
@@ -245,11 +245,25 @@
                           <option value="perGame" selected>Per game</option>
                           <option value="per36">Per 36 minutes</option>
                           <option value="per100Estimated">Per 100 estimated possessions</option>
-                          <option value="eraRelative">Era-relative per-36 index</option>
+                          <option value="eraRelative">Same-season comparison index (per 36)</option>
                         </select>
                       </label>
                     </div>
-                    <p class="field__help" id="analyticsViewHelp">Every view uses only the player's games for the selected team. Era-relative index compares his per-36 rate with the same NBA season and phase; 100 is the minute-weighted league baseline.</p>
+                    <p class="field__help" id="analyticsViewHelp">Every view uses only the player’s games for the selected team. The same-season comparison index compares a per-36 rate with the selected NBA season and phase; 100 is the minute-weighted league reference.</p>
+                  </details>
+
+                  <details class="metric-field-guide detailed-only" id="metricFieldGuide">
+                    <summary><span><strong>Advanced field guide</strong><small>Plain language for the controls, comparisons, and caveats</small></span></summary>
+                    <div class="metric-field-guide__grid">
+                      <article><h3>Evidence-adjusted rate</h3><p>An observed per-36 rate tempered toward a same-season reference when matching evidence is limited. It makes small samples more conservative; it is not a future-stat forecast.</p></article>
+                      <article><h3>Per 36</h3><p>A shared playing-time scale for counting stats. It does not mean a player is expected to play 36 minutes.</p></article>
+                      <article><h3>Per 100 estimated possessions</h3><p>A pace-neutral reading built from reconstructed team possessions. Treat it as an estimate, not an exact play-by-play count.</p></article>
+                      <article><h3>Same-season comparison index</h3><p>A 100-based context check. 100 matches the selected NBA season and phase reference; 103 is three index points above it, not 3% better.</p></article>
+                      <article><h3>Hard rules</h3><p>Eligibility, position assignments, production floors, turnover ceilings, and minute limits. Every result must pass them before it can rank.</p></article>
+                      <article><h3>Game-plan fit index</h3><p>A readable comparison for the group you built. It is separate from the exact solver score and is never a wins, chemistry, or betting measure.</p></article>
+                      <article><h3>Usage scenario</h3><p>A player’s share of on-court possessions finished by a shot, free-throw trip, or turnover—not minutes, touches, assists, or time holding the ball.</p></article>
+                      <article><h3>Planning reserve</h3><p>A disclosed caution setting around the same estimated rates. It tests sensitivity to less-supported workload expansion; it is not a calibrated injury or fatigue forecast.</p></article>
+                    </div>
                   </details>
 
                   <details class="opponent-scout" id="opponentScout">
@@ -375,10 +389,10 @@
                           </select>
                         </label>
                         <label class="field" id="rotationRateStabilityField">
-                          <span>Protect against inflated small-role stats</span>
+                          <span>Rate confidence</span>
                           <select id="rotationRateStabilityInput" aria-describedby="rotationRateStabilityHelp">
-                            <option value="sampleAdjusted" selected>Evidence-adjusted rates — recommended</option>
-                            <option value="raw">Use raw rates — advanced</option>
+                            <option value="sampleAdjusted" selected>Evidence-adjusted rate — recommended</option>
+                            <option value="raw">Observed rate only — advanced</option>
                           </select>
                         </label>
                         <label class="field">
@@ -391,7 +405,7 @@
                           </select>
                         </label>
                         <label class="field">
-                          <span>Projection risk</span>
+                          <span>Planning reserve</span>
                           <select id="projectionRiskInput" aria-describedby="projectionRiskHelp">
                             <option value="reliable">Reliable evidence — more cautious</option>
                             <option value="balanced" selected>Balanced projection — recommended</option>
@@ -399,7 +413,7 @@
                           </select>
                         </label>
                         <label class="field">
-                          <span>Role balance</span>
+                          <span>Role coverage preference</span>
                           <select id="roleBalanceInput" aria-describedby="roleBalanceHelp">
                             <option value="off">Explanation only — no ranking effect</option>
                             <option value="recommended" selected>Recommended — small complementarity bonus</option>
@@ -410,10 +424,10 @@
                       <p class="helper" id="rotationMinutePlanHelp"><strong>Game-plan optimization:</strong> the model allocates minutes inside your hard limits using evidence-adjusted rates. Sample size affects confidence, not a preferred minute range.</p>
                       <p class="field__help" id="rotationAllocationStyleHelp">Matching observed counts inform the rate estimate and its confidence. Games with the selected team never prescribe a minute cap or target.</p>
                       <p class="field__help" id="rotationScoringBasisHelp">Per 36 compares counting stats at equal playing time. The solver then assigns the best-fitting group all 240 minutes.</p>
-                      <p class="field__help" id="rotationRateStabilityHelp">Recommended combines observed counts with a same-season prior and accounts for uncertain workload expansion. Extra minutes do not automatically mean star-level usage. Sample size affects confidence; only your minute limits are hard restrictions.</p>
+                      <p class="field__help" id="rotationRateStabilityHelp">Recommended combines observed counts with a same-season reference when evidence is thinner. Extra minutes do not automatically mean star-level usage. Sample size affects confidence; only your minute limits are hard restrictions.</p>
                       <p class="field__help" id="usageScenarioHelp">Usage scenario is a player's share of on-court possessions finished by a shot, free-throw trip, or turnover—not minutes or assists. In the Detailed player list, leave it blank to retain observed usage. An increased share widens the Historical uncertainty reserve and informs unit staggering; it does not apply an unvalidated efficiency decline or change Scout O/D. Exact usage-dependent production is awaiting reconciled box-score validation.</p>
-                      <p class="field__help" id="projectionRiskHelp">All risk settings share the same estimated rates. Reliable applies a larger downside reserve, Balanced a smaller one, and Upside none. Neither eligibility nor hard minute limits change.</p>
-                      <p class="field__help" id="roleBalanceHelp">Rotation role coverage is descriptive only. A player earns no bonus just for being on the roster; court-time combinations are not yet jointly optimized for role coverage.</p>
+                      <p class="field__help" id="projectionRiskHelp">Every planning reserve uses the same estimated rates. Reliable applies a larger downside reserve, Balanced a smaller one, and Upside none. Neither eligibility nor hard minute limits change.</p>
+                      <p class="field__help" id="roleBalanceHelp">Rotation and Scout role coverage are descriptive only. In historical starting-five mode, the optional preference is a small transparent skill-fit adjustment—not a chemistry score or hard requirement.</p>
                       <p class="field__help" id="rotationPositionProfileHelp">The recommended setting estimates one guard/forward/center minute mix from season-listed positions and minutes per appearance. Games played and source totals are excluded. Verified career positions still improve eligibility.</p>
                       <p class="rotation-evidence-preview" id="rotationEvidencePreview">Checking rate and impact evidence for this roster…</p>
                       <div class="rotation-hard-limits">
@@ -628,8 +642,8 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260906a"></script>
-  <script defer src="../supabase-client.js?v=20260906a"></script>
-  <script type="module" src="app.js?v=20260906a"></script>
+  <script defer src="../backend-config.js?v=20260907a"></script>
+  <script defer src="../supabase-client.js?v=20260907a"></script>
+  <script type="module" src="app.js?v=20260907a"></script>
 </body>
 </html>

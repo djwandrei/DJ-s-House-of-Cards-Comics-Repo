@@ -142,23 +142,44 @@
 
 .workshop-picker-card select,
 .workshop-field select {
+  appearance:none;
   width:100%;
   min-height:46px;
   border:1px solid var(--border);
   border-radius:12px;
-  background:var(--surface);
+  background-color:var(--surface);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='m2 2 6 6 6-6' fill='none' stroke='%231f2fa3' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2'/%3E%3C/svg%3E");
+  background-position:right .8rem center;
+  background-repeat:no-repeat;
+  background-size:.76rem auto;
+  box-shadow:0 2px 0 rgba(31,47,163,.04);
   color:var(--text);
-  padding:.65rem .75rem;
+  padding:.65rem 2.45rem .65rem .75rem;
   font:inherit;
+  transition:border-color 160ms ease,box-shadow 160ms ease,background-color 160ms ease;
+}
+
+.workshop-picker-card select:hover:not(:disabled),
+.workshop-field select:hover:not(:disabled) {
+  border-color:#92a2ce;
+  box-shadow:0 7px 15px rgba(31,47,163,.1);
 }
 
 .workshop-picker-card select:focus-visible,
 .workshop-field select:focus-visible,
 .workshop-actions button:focus-visible,
 .workshop-hub-link:focus-visible {
-  outline:3px solid rgba(31,47,163,.36);
+  outline:3px solid #1f2fa3;
   outline-offset:3px;
 }
+
+.workshop-picker-card select:focus-visible,
+.workshop-field select:focus-visible {
+  border-color:#1f2fa3;
+  box-shadow:0 0 0 2px var(--surface);
+}
+
+body.dark-mode.tool-workshop-page :focus-visible { outline-color:#f5cb70; }
 
 .workshop-check-list,
 .workshop-detail-list {
@@ -403,7 +424,8 @@ body.dark-mode .workshop-tags span {
 body.dark-mode .workshop-picker-card select,
 body.dark-mode .workshop-field select {
   border-color:rgba(255,255,255,.18);
-  background:#121d37;
+  background-color:#121d37;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3Cpath d='m2 2 6 6 6-6' fill='none' stroke='%23f5cb70' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2'/%3E%3C/svg%3E");
   color:#f7fbff;
 }
 

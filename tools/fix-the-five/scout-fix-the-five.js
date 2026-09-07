@@ -170,6 +170,7 @@ function createPlayerChip(player, removed = false) {
 function renderSource(challenge) {
   if (!challenge) return;
   const source = challenge.source;
+  document.getElementById('sourceHeading').textContent = source.label;
   elements.sourceCopy.textContent = `${sourceFamilyLabel(source.family)} · ${source.label}. ${source.description} ${source.model.label} ranks the sealed result; visible stats are context only.`;
 }
 
@@ -185,6 +186,7 @@ function createCandidateButton(challenge, candidate) {
     createElement('strong', '', candidate.name),
     createElement('small', '', playerContext(candidate)),
     createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
+    createElement('span', 'game-choice-action', state.pending ? 'Checking…' : 'Lock this swap →'),
   );
   return button;
 }
@@ -272,6 +274,7 @@ function renderProgress() {
     step.type = 'button';
     step.dataset.action = 'review';
     step.dataset.index = String(index);
+    step.dataset.round = String(index + 1);
     const complete = Boolean(state.selections[challenge.id]);
     step.disabled = state.pending || (!complete && index !== firstIncomplete);
     step.setAttribute('aria-label', complete ? `Completed: review challenge ${index + 1}` : `Open challenge ${index + 1}`);
@@ -370,6 +373,7 @@ function renderCompletion() {
 }
 
 function render() {
+  elements.workspace.setAttribute('aria-busy', String(state.pending));
   renderProgress();
   renderScoreboard();
   if (isComplete() && state.activeIndex >= RUN_LENGTH) renderCompletion();
@@ -513,6 +517,9 @@ function bindEvents() {
 }
 
 async function loadGame() {
+  document.getElementById('gameRecovery').hidden = true;
+  elements.runTitle.textContent = 'Getting today’s board ready…';
+  setStatus('Loading the daily board.');
   try {
     state.board = await loadScoutDailyBoard({ gameKind: GAME_KIND, dailySeed: state.seed, family: state.family });
     await restoreSavedSelections();
@@ -521,9 +528,13 @@ async function loadGame() {
   } catch {
     elements.workspace.hidden = true;
     elements.completionPanel.hidden = true;
+    elements.runTitle.textContent = 'Today’s board is taking a timeout.';
+    elements.runDescription.textContent = 'Try again in a moment, or explore another fan tool.';
+    document.getElementById('gameRecovery').hidden = false;
     setStatus(scoutDailyGameUnavailableMessage(), 'error');
   }
 }
 
 bindEvents();
+document.getElementById('retryBoard').addEventListener('click', loadGame);
 loadGame();
