@@ -1,9 +1,11 @@
 # Fan UI release 20260907a. Exact static scope; no deletes or private data.
 # Deploy the committed snapshot: assets first, then HTML, then sw.js.
-# Scout Studio index.html contains shared cache-reference changes ONLY.
+# Scout Studio is not deployed: its production route and assets are absent.
 core.js
 tools/fan-tools.css
 tools/fan-tools.js
+tools/fan-journey.js
+tools/scout-daily-game-client.js
 tools/workshop/tool-workshop.css
 tools/workshop/tool-workshop.js
 tools/workshop/workshop-state.js
@@ -50,7 +52,6 @@ tools/draft-night/index.html
 tools/fix-the-five/index.html
 tools/index.html
 tools/player-card-matchups/index.html
-tools/scout-studio/index.html
 tools/workshop/index.html
 lineup-lab/index.html
 sw.js
