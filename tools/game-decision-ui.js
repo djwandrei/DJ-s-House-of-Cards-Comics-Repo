@@ -63,3 +63,19 @@ export function decisionDebrief(title, lines) {
   const list = node('ul'); lines.forEach(text => list.append(node('li', text))); section.append(list);
   return section;
 }
+
+export function decisionHistoryPanel(report) {
+  const details = node('details', undefined, 'game-decision-details'); details.dataset.decisionHistory = '';
+  details.append(node('summary', `Decision history · ${report.count} checked ${report.count === 1 ? 'choice' : 'choices'}`));
+  details.append(node('p', report.note));
+  if (!report.first) return details;
+  details.append(node('p', `First checked: rank ${report.first.rank}, ${report.first.score}/100. Current: rank ${report.current.rank}, ${report.current.score}/100. Best checked: rank ${report.best.rank}.`));
+  const delta = report.rankChange;
+  details.append(node('p', delta > 0 ? `Your current choice moved ${delta} place(s) up this same board.`
+    : delta < 0 ? `Your current choice moved ${Math.abs(delta)} place(s) down this same board.`
+      : 'Your current choice has the same rank as your first checked choice. A tied rank does not establish equal basketball ability.'));
+  const list = node('ol');
+  for (const entry of report.recent) list.append(node('li', `Choice ${entry.number}: ${entry.names.join(' + ')} · rank ${entry.rank} · ${entry.score}/100`));
+  details.append(list, node('small', 'Up to eight recent distinct choices are shown. This is feedback about the fixed board, not why the private model preferred a player.'));
+  return details;
+}

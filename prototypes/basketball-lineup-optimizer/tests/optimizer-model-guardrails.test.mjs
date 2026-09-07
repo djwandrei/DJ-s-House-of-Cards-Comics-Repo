@@ -508,7 +508,7 @@ test("season-wide rates replace a traded player's team-stint spike without using
   assert.ok(fallbackOnly.best.playerIds.includes("proven-season-rate"), "actual short-team evidence must not behave like an invented 50-game sample");
   assert.equal(
     seasonAware.diagnostics.rotationRateStabilityEvidence.modelVersion,
-    "historical-rates-v7-consistent-shooting-evidence",
+    "historical-rates-v8-paired-scout-workload",
   );
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideRatePlayers, 1);
@@ -607,7 +607,7 @@ test("season-wide minutes cannot grant confidence to a team-stint impact estimat
   assert.equal(result.ok, true);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
   assert.equal(result.diagnostics.rotationRateStabilityEvidence.perAppearanceEvidencePlayers, 7);
-  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v7-consistent-shooting-evidence");
+  assert.equal(result.diagnostics.modelIdentity.evidenceLayer, "historical-rates-v8-paired-scout-workload");
   assert.equal(result.diagnostics.modelIdentity.scoutImpactLayer, "separate-not-active");
 });
 
@@ -1569,7 +1569,7 @@ test("role-expansion projection also tempers tiny-sample shooting efficiency", (
   assert.equal(adjusted.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
 });
 
-test("missing rate metadata cannot create a ranking advantage over an identical short sample", () => {
+test("missing rate metadata fails closed instead of creating a ranking advantage", () => {
   const steadyPlayers = Array.from({ length: 7 }, (_, index) => player(`steady-${index + 1}`, {
     points: 15 + index * 0.01,
     analytics: {
@@ -1605,11 +1605,11 @@ test("missing rate metadata cannot create a ranking advantage over an identical 
     },
   });
 
-  assert.equal(result.ok, true);
-  assert.ok(result.best.playerIds.includes("a-backed"));
-  assert.ok(result.best.playerIds.includes("z-missing"));
-  assert.equal(result.diagnostics.rotationRateStabilityEvidence.applied, false);
-  assert.ok(result.diagnostics.rotationRateStabilityEvidence.rawMetricsDueToIncompleteEvidence.includes("points"));
+  assert.equal(result.ok, false);
+  assert.equal(result.diagnostics.category, "data");
+  assert.equal(result.diagnostics.subcategory, "objective-evidence");
+  assert.deepEqual(result.diagnostics.objectiveMetricEvidence.disabledRequestedMetrics, ["points"]);
+  assert.match(result.reasons.join(" "), /points.*matching evidence for the full pool/i);
 });
 
 test("rotation ranking uses game-plan fit only while explicit historical capacity bounds minutes", async () => {

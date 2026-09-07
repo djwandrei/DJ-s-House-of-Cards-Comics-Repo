@@ -780,7 +780,7 @@ async function testSavedProductIdLookup() {
   assert(fallbackResult.isUsable && fallbackFetches === 1, 'Static fallback should be attempted once after a direct-ID remote failure.');
 }
 
-function evaluateDeferredAnalytics(origin) {
+function evaluateDeferredAnalytics(origin, queuedFanEvents = []) {
   const requests = [];
   const document = {
     readyState: 'complete',
@@ -789,7 +789,7 @@ function evaluateDeferredAnalytics(origin) {
     }
   };
   const window = {
-    DJ: {},
+    DJ: { __fanTelemetryQueue: queuedFanEvents },
     DJ_BACKEND_CONFIG: {
       measurementEnabled: true,
       supabaseUrl: 'https://example.supabase.co',
@@ -798,11 +798,13 @@ function evaluateDeferredAnalytics(origin) {
       measurementAllowedOrigins: ['https://www.djshouseofcards-comics.com']
     },
     location: { origin, pathname: '/shop.html' },
-    addEventListener() {}
+    addEventListener() {},
+    dispatchEvent() {}
   };
   vm.runInNewContext(readFileSync(path.join(root, 'analytics.js'), 'utf8'), {
     window,
     document,
+    CustomEvent: class CustomEvent { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
     fetch: (url, options) => {
       requests.push({ url, options });
       return Promise.resolve({ ok: true });
@@ -817,6 +819,18 @@ function testDeferredAnalyticsPageView() {
   assert(productionRequests.length === 1, 'Deferred analytics loading must record exactly one page view after DOMContentLoaded.');
   const payload = JSON.parse(productionRequests[0].options.body);
   assert(payload.event === 'page_view' && payload.page === '/shop.html', 'Deferred analytics must preserve the page-view payload.');
+  const queuedRequests = evaluateDeferredAnalytics('https://www.djshouseofcards-comics.com', [
+    { event: 'web_vitals', data: { kind: 'fan-fix-the-five', milestone: 'game_start', duration: 12.5 } }
+  ]);
+  assert(queuedRequests.length === 2, 'Deferred analytics must flush one queued Fan Tools milestone before the page view.');
+  const queuedPayload = JSON.parse(queuedRequests[0].options.body);
+  assert(
+    queuedPayload.event === 'web_vitals'
+      && queuedPayload.data.kind === 'fan-fix-the-five'
+      && queuedPayload.data.milestone === 'game_start'
+      && queuedPayload.data.duration === 12.5,
+    'Deferred analytics must retain only the aggregate Fan Tools milestone payload.'
+  );
   assert(evaluateDeferredAnalytics('http://127.0.0.1:4173').length === 0, 'Local previews must not send production analytics or create CORS noise.');
 }
 

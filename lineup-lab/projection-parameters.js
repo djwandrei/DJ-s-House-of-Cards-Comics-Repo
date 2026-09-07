@@ -8,10 +8,10 @@
  * can replace a preset without changing the exact constraint/search layer.
  */
 
-import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260907c";
+import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260907f";
 
 export const HISTORICAL_PROJECTION_MODEL_VERSION =
-  "historical-rates-v7-consistent-shooting-evidence";
+  "historical-rates-v8-paired-scout-workload";
 
 export const DEFAULT_PROJECTION_RISK = "balanced";
 

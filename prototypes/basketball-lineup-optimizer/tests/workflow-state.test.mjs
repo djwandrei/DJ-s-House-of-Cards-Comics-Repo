@@ -34,9 +34,22 @@ test("minute bounds and available distinct role slots are checked before submiss
   assert.ok(validate({ players: sharedRolePool }).some(error => error.message.includes("distinct")));
 });
 
-test("obvious production impossibility is caught without approximating the rotation model", () => {
-  assert.ok(validate({ detailed: true, config: { ...config, statMinimums: { points: 60 } } }).some(error => error.field === "minPointsInput"));
+test("production feasibility is deferred to the evidence-aware solver rather than legacy display columns", () => {
+  assert.ok(!validate({ detailed: true, config: { ...config, statMinimums: { points: 60 } } }).some(error => error.field === "minPointsInput"));
   assert.ok(!validate({ detailed: true, config: { ...config, mode: "rotation", size: 9, rotationOptions: { minMinutes: 8, maxMinutes: 40 }, statMinimums: { points: 60 } } }).some(error => error.field === "minPointsInput"));
+  const unknownDisplay = players.map(player => ({ ...player, points: null }));
+  assert.ok(!validate({ players: unknownDisplay, detailed: true, config: { ...config, statMinimums: { points: 1 } } }).some(error => error.field === "minPointsInput"));
+});
+
+test("Scout priorities validate independently of dormant Historical priorities", () => {
+  const request = { ...config, modelMode: "scout", weights: {}, scoutObjective: "custom" };
+  assert.deepEqual(validate({ config: { ...request, scoutObjectiveWeights: { offense: .3, defense: .1 } } }), []);
+  for (const weights of [undefined, { offense: 0, defense: 0 }, { offense: NaN, defense: 1 }]) {
+    assert.ok(validate({ config: { ...request, scoutObjectiveWeights: weights } }).some(error => error.field === "scoutOffenseWeightInput"));
+  }
+  const saved = sanitizeDraftForm({ ...form, fields: { modelModeInput: "scout", scoutObjectiveInput: "custom", scoutOffenseWeightInput: "0.3", scoutDefenseWeightInput: "0" } });
+  assert.equal(saved.fields.scoutOffenseWeightInput, "0.3");
+  assert.equal(saved.fields.scoutDefenseWeightInput, "0");
 });
 
 test("draft persistence whitelists preferences and never stores Scout, auth, or player evidence", () => {

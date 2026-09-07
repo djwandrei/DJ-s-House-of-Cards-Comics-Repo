@@ -10,34 +10,36 @@ import {
   DEFAULT_MAX_EXACT_COMBINATIONS,
   DEFAULT_MAX_ROTATION_EXACT_COMBINATIONS,
   DEFAULT_PRESETS,
-} from "./optimizer-config.js?v=20260907c";
+} from "./optimizer-config.js?v=20260907f";
 import {
   DEFAULT_PROJECTION_RISK,
   HISTORICAL_PROJECTION_MODEL_VERSION,
   PROJECTION_RISK_KEYS,
   projectionParametersFor,
-} from "./projection-parameters.js?v=20260907c";
+} from "./projection-parameters.js?v=20260907f";
 import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
   readPlayerUsage,
-} from "./player-projection.js?v=20260907c";
-import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260907c";
-import { pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
-  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260907c";
+  readSeasonRoleMinutes,
+} from "./player-projection.js?v=20260907f";
+import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260907f";
+import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
+  decisionRateAtWorkload, concaveDecisionCurve } from "./projection-evidence.js?v=20260907f";
 import {
   buildLineupRoleModel,
   DEFAULT_ROLE_BALANCE,
   ROLE_BALANCE_KEYS,
   scoreLineupRoleFit,
-} from "./lineup-role-model.js?v=20260907c";
+} from "./lineup-role-model.js?v=20260907f";
 import {
   buildScoutImpactModel,
   buildScoutMinuteObjective,
   SCOUT_MODEL_MODES,
   scoreScoutCandidate,
-} from "./scout-impact.js?v=20260907c";
-import { planRotationUnits } from "./rotation-unit-planner.js?v=20260907c";
+  resolveScoutObjectiveWeights,
+} from "./scout-impact.js?v=20260907f";
+import { planRotationUnits } from "./rotation-unit-planner.js?v=20260907f";
 
 export {
   DEFAULT_MAX_EXACT_COMBINATIONS,
@@ -584,6 +586,11 @@ function normalizeConfig(config = {}) {
   const minMinutes = normalizeNonNegativeNumber(config.minMinutes, 0, "minMinutes", reasons);
   const lockedIds = normalizeIdList(config.lockedIds, "lockedIds", reasons);
   const excludedIds = normalizeIdList(config.excludedIds, "excludedIds", reasons);
+  // Counterfactual swaps restrict selection without redefining the population
+  // used to estimate rates, metric availability, ranks, or Scout score units.
+  // Ordinary exclusions retain their existing meaning; only the replacement
+  // workflow supplies this separate, nonpersistent selection restriction.
+  const selectionOnlyExcludedIds = normalizeIdList(config.selectionOnlyExcludedIds, "selectionOnlyExcludedIds", reasons);
 
   const positionMinimums = { G: 0, F: 0, C: 0 };
   if (config.positionMinimums !== undefined) {
@@ -702,7 +709,16 @@ function normalizeConfig(config = {}) {
     reasons,
   );
   const projectionRisk = rotationOptions.projectionRisk ?? config.projectionRisk ?? DEFAULT_PROJECTION_RISK;
-  const offensiveResponsibilities = rotationOptions.offensiveResponsibilities ?? {};
+  const offensiveResponsibilities = rotationOptions.offensiveResponsibilities ?? config.offensiveResponsibilities ?? {};
+  // Support the same scenario field for five-player and rotation callers. An
+  // explicitly supplied top-level usage map must not be silently ignored.
+  if (rotationOptions.offensiveResponsibilities != null && config.offensiveResponsibilities != null
+    && isPlainObject(rotationOptions.offensiveResponsibilities) && isPlainObject(config.offensiveResponsibilities)) {
+    const allIds = new Set([...Object.keys(rotationOptions.offensiveResponsibilities), ...Object.keys(config.offensiveResponsibilities)]);
+    if ([...allIds].some(id => rotationOptions.offensiveResponsibilities[id] !== config.offensiveResponsibilities[id])) {
+      reasons.push("Top-level and rotation offensiveResponsibilities disagree. Supply one map or identical maps.");
+    }
+  }
   if (!isPlainObject(offensiveResponsibilities)) reasons.push("offensiveResponsibilities must map player ids to an on-court possession share from 0 to 1.");
   else for (const [id, share] of Object.entries(offensiveResponsibilities)) {
     if (!id || typeof share !== "number" || !Number.isFinite(share) || share < 0 || share > 1) {
@@ -722,7 +738,9 @@ function normalizeConfig(config = {}) {
   }
   const scoutEvidence = rotationOptions.scoutEvidence ?? config.scoutEvidence ?? null;
   const scoutObjective = config.scoutObjective ?? "balanced";
-  if (!["balanced", "offense", "defense"].includes(scoutObjective)) reasons.push("Choose Balanced, Offense, or Defense for the Scout objective.");
+  let scoutObjectiveWeights;
+  try { scoutObjectiveWeights = resolveScoutObjectiveWeights(config.scoutObjectiveWeights, scoutObjective); }
+  catch (error) { reasons.push(error.message); }
   const sourceScope = isPlainObject(config.sourceScope) ? config.sourceScope : null;
   if (scoutEvidence !== null && !isPlainObject(scoutEvidence)) {
     reasons.push("scoutEvidence must be an object when provided.");
@@ -753,6 +771,7 @@ function normalizeConfig(config = {}) {
       minMinutes,
       lockedIds,
       excludedIds,
+      selectionOnlyExcludedIds,
       positionMinimums,
       statMinimums,
       maxTurnovers,
@@ -774,6 +793,7 @@ function normalizeConfig(config = {}) {
       modelMode: SCOUT_MODEL_MODES.includes(modelMode) ? modelMode : "historical",
       scoutEvidence,
       scoutObjective,
+      scoutObjectiveWeights,
       sourceScope,
       rotationMinuteFlexibility,
       rotationPositionMinuteRequirements,
@@ -841,6 +861,15 @@ function objectiveMetricValue(player, metric, scoringBasis) {
     const seasonValue = seasonWideAdvancedImpactMetricValue(player, metric);
     if (scoringBasis === ROTATION_SCORING_BASES.PER_36 && Number.isFinite(seasonValue)) return seasonValue;
     return advancedImpactMetricValue(player, metric);
+  }
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) {
+    const paired = pairedMetricEvidence(player, metric);
+    // New Scout observations must not borrow a displayed legacy box-score
+    // rate when their component is unavailable. Sample-adjusted scoring can
+    // use a disclosed prior-only estimate; raw mode retains missingness.
+    if (!paired) return Number.NaN;
+    return scoringBasis === ROTATION_SCORING_BASES.PER_36 || !RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)
+      ? paired.value : paired.numerator / paired.verifiedGames;
   }
   const sourceField = metric === "ballSecurity" ? "turnovers" : metric;
   const sourceValue = Number(player[sourceField]);
@@ -919,7 +948,8 @@ function seasonWideObjectiveMetricValue(player, metric) {
  * that rate to a different responsibility. Team-stint games and total minutes
  * never enter this calculation.
  */
-function seasonWideRoleMinutesPerGame(player) {
+function seasonWideRoleMinutesPerGame(player, metric = null) {
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return readSeasonRoleMinutes(player, metric);
   const totals = seasonWideTotalsForPlayer(player);
   const games = finiteNonNegative(totals?.games);
   const minutes = finiteNonNegative(totals?.minutes);
@@ -979,6 +1009,13 @@ function standardizedOpportunitySample(
   field,
   { allowSeasonWide = true } = {},
 ) {
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) {
+    const scout = player.analytics.scoutPlayerGameEvidence;
+    const sample = field === "minutes" && scout?.version === SCOUT_GAME_EVIDENCE_VERSION
+      && scout.scope?.playerId === player.id && scout.workload?.verifiedGames > 0
+      ? finiteNonNegative(scout.workload.minutes) : null;
+    return sample === null ? null : { sample, sampleScope: "scout-verified-player-game-subset" };
+  }
   const seasonTotals = isPlainObject(player?.analytics?.seasonTotals)
     ? player.analytics.seasonTotals
     : null;
@@ -1119,7 +1156,7 @@ function stabilizedObjectiveMetricValue(
     // Establish the posterior at the observed role once. The minute allocator
     // applies expansion to the actual assigned role; projecting to 240/N here
     // and decaying again later would count the same uncertainty twice.
-    targetMinutes: seasonWideRoleMinutesPerGame(player),
+    targetMinutes: seasonWideRoleMinutesPerGame(player, metric),
     parameters: projectionParameters,
   });
   const roleAdjustedMean = responsibilityProjection.value;
@@ -1161,6 +1198,7 @@ function stabilizedObjectiveMetricValue(
     reliability: sampleReliability,
     roleReliability,
     responsibilitySource: responsibilityProjection.source,
+    sourceMinutes: responsibilityProjection.sourceMinutes,
     sourceUsage: responsibilityProjection.sourceUsage,
     targetUsage: responsibilityProjection.targetUsage,
     usageRatio: responsibilityProjection.usageRatio,
@@ -1168,6 +1206,8 @@ function stabilizedObjectiveMetricValue(
     denominator: evidence.denominator,
     posteriorMean: roleAdjustedMean,
     standardError: posterior.standardError,
+    uncertaintySource: posterior.uncertaintySource,
+    clusterEvidenceGames: posterior.clusterEvidenceGames ?? 0,
     baseline: evidence.baseline,
     participationPer36: opportunity?.decisionPer36 ?? evidence.participationPer36,
     shootingOpportunity: opportunity,
@@ -1211,15 +1251,23 @@ function buildNormalizedMetrics(
   const roleAdjustedPlayerIds = new Set();
   const seasonWideEvidencePlayerIds = new Set();
   const perAppearanceEvidencePlayerIds = new Set();
+  const baselineOnlyPlayerIds = new Set();
   const seasonWideRatePlayerIds = new Set();
   let adjustedPlayerMetricCount = 0;
   let uncertaintyAdjustedPlayerMetricCount = 0;
   let roleAdjustedPlayerMetricCount = 0;
   let seasonWideEvidencePlayerMetricCount = 0;
   let perAppearanceEvidencePlayerMetricCount = 0;
+  let baselineOnlyPlayerMetricCount = 0;
   let seasonWideRatePlayerMetricCount = 0;
   const stabilizedMetrics = [];
+  // A metric can have a finite legacy value for every row while its paired
+  // numerator/denominator evidence is present for only part of the pool.
+  // Keep this state separate from fully stabilized metrics so the report can
+  // say exactly when unsupported rows received a disclosed baseline prior.
+  const partiallyStabilizedMetrics = [];
   const rawMetricsDueToIncompleteEvidence = [];
+  const incompleteBaselineMetrics = [];
   const availableMetrics = [];
   const unavailableMetrics = [];
   const evidenceByMetric = {};
@@ -1230,48 +1278,84 @@ function buildNormalizedMetrics(
     // eligible row. The solver later removes an unavailable metric's requested
     // weight and renormalizes the remaining priorities, rather than assigning
     // a made-up zero to only the players whose data is missing.
-    const metricAvailable = rawValues.every(Number.isFinite);
-    if (metricAvailable) availableMetrics.push(metric);
-    else unavailableMetrics.push(metric);
     const evidenceByPlayer = players.map((player) =>
       rateStabilityEvidence(player, metric, projectionParameters));
+    const hasUsableEvidence = (evidence) => Boolean(
+      evidence
+      && Number.isFinite(evidence.sample) && evidence.sample >= 0
+      && typeof evidence.sampleScope === "string"
+      && evidence.sampleScope !== "unavailable"
+      && Number.isFinite(evidence.prior) && evidence.prior >= 0
+      && Number.isFinite(evidence.baseline),
+    );
+    const hasBaselineEvidence = (evidence) => Boolean(
+      evidence
+      && Number.isFinite(evidence.prior) && evidence.prior > 0
+      && Number.isFinite(evidence.baseline),
+    );
+    const evidenceBackedCount = evidenceByPlayer.filter(hasUsableEvidence).length;
+    const requiresRateEvidence = scoringBasis === ROTATION_SCORING_BASES.PER_36
+      && rateStability === ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED;
+    // Each unsupported row must have its OWN season-bound baseline. Borrowing
+    // another player's reference can silently mix eras and carry over that
+    // player's sample moments. Construct a fresh prior-only record instead.
+    const scoringEvidenceByPlayer = evidenceByPlayer.map(evidence => hasUsableEvidence(evidence)
+      ? evidence : hasBaselineEvidence(evidence) ? {
+        metric, baseline: evidence.baseline, prior: evidence.prior,
+        signed: evidence.signed === true, sample: 0, numerator: 0,
+        sampleScope: "baseline-only-prior", denominator: "no paired observed sample",
+      } : null);
+    // Partial evidence must not disable shrinkage for everyone and thereby
+    // restore a noisy raw-rate advantage. Exclude the unsupported metric from
+    // this objective; keep wholly legacy/no-metadata demos in explicit raw mode.
+    const missingOwnBaseline = requiresRateEvidence && evidenceByPlayer.some(Boolean)
+      && scoringEvidenceByPlayer.some(evidence => !evidence);
+    const metricAvailable = rawValues.every(Number.isFinite) && !missingOwnBaseline;
+    if (metricAvailable) availableMetrics.push(metric);
+    else unavailableMetrics.push(metric);
+    if (missingOwnBaseline) incompleteBaselineMetrics.push(metric);
+    const partiallyStabilizeMetric = requiresRateEvidence
+      && metricAvailable
+      && evidenceBackedCount < players.length
+      && scoringEvidenceByPlayer.every(Boolean);
+    const canStabilizeMetric = requiresRateEvidence
+      && metricAvailable
+      && evidenceByPlayer.every(hasUsableEvidence);
+    const canUseBaselineOnlyRows = canStabilizeMetric || partiallyStabilizeMetric;
+    if (partiallyStabilizeMetric) partiallyStabilizedMetrics.push(metric);
     // Expose the evidence actually supporting each metric, not a single
     // misleading "season data available" badge for a partly populated row.
     // These are coverage counts, NOT confidence probabilities or intervals.
     evidenceByMetric[metric] = {
       eligiblePlayers: players.length,
+      evidenceBackedPlayers: evidenceBackedCount,
+      evidenceComplete: evidenceBackedCount === players.length,
+      baselineOnlyRowsUsed: partiallyStabilizeMetric ? players.length - evidenceBackedCount : 0,
       matchingSeasonSamples: evidenceByPlayer.filter(evidence => evidence?.sampleScope === "season-wide").length,
       observedTeamSamples: evidenceByPlayer.filter(evidence => evidence?.sampleScope === "selected-team-observed").length,
+      verifiedScoutSamples: evidenceByPlayer.filter(evidence => evidence?.sampleScope === "scout-verified-player-game-subset").length,
       approximateSamples: 0,
-      missingSamples: evidenceByPlayer.filter(evidence => !evidence || evidence.sampleScope === "unavailable").length,
+      missingSamples: evidenceByPlayer.filter(evidence => !hasUsableEvidence(evidence)).length,
       metricAvailable,
     };
-    // Applying a shrinkage correction to only the rows whose metadata happened
-    // to arrive would make missing data an accidental advantage. Stabilize a
-    // metric for everyone in the eligible pool, or use the same raw comparison
-    // for everyone and surface that evidence gap in the result diagnostics.
-    const canStabilizeMetric =
-      scoringBasis === ROTATION_SCORING_BASES.PER_36 &&
-      rateStability === ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED &&
-      metricAvailable &&
-      evidenceByPlayer.every((evidence) => evidence && evidence.prior >= 0);
+    // Stabilize actual samples and disclose baseline-only rows. An incomplete
+    // mixed-source metric is unavailable, not a reason to remove safeguards.
     if (canStabilizeMetric) stabilizedMetrics.push(metric);
-    else if (
-      scoringBasis === ROTATION_SCORING_BASES.PER_36 &&
-      rateStability === ROTATION_RATE_STABILITY_MODES.SAMPLE_ADJUSTED &&
-      metricAvailable &&
-      evidenceByPlayer.some(Boolean)
-    ) {
+    else if (partiallyStabilizeMetric) {
+      // Keep this out of the raw-incomplete list: unsupported rows are being
+      // handled consistently, but the result still reports them as prior-only.
+    } else if (requiresRateEvidence && metricAvailable && evidenceByPlayer.some(Boolean)) {
       rawMetricsDueToIncompleteEvidence.push(metric);
     }
     const measured = players.map((player, index) => {
       if (!metricAvailable) return { id: player.id, value: 0 };
+      const evidence = scoringEvidenceByPlayer[index];
       const value = stabilizedObjectiveMetricValue(
         player,
         metric,
         scoringBasis,
         rateStability,
-        canStabilizeMetric ? evidenceByPlayer[index] : null,
+        canUseBaselineOnlyRows ? evidence : null,
         roleMinutesTarget,
         true,
         projectionParameters,
@@ -1289,15 +1373,22 @@ function buildNormalizedMetrics(
         roleAdjustedPlayerIds.add(player.id);
         roleAdjustedPlayerMetricCount += 1;
       }
-      if (value.sampleAdjusted && value.sampleScope === "season-wide") {
+      if (value.sampleAdjusted && value.sampleScope === "baseline-only-prior") {
+        baselineOnlyPlayerIds.add(player.id);
+        baselineOnlyPlayerMetricCount += 1;
+      } else if (value.sampleAdjusted && value.sampleScope === "season-wide") {
         seasonWideEvidencePlayerIds.add(player.id);
         seasonWideEvidencePlayerMetricCount += 1;
       } else if (value.sampleAdjusted) {
         perAppearanceEvidencePlayerIds.add(player.id);
         perAppearanceEvidencePlayerMetricCount += 1;
       }
+      const metricEvidence = hasUsableEvidence(evidenceByPlayer[index])
+        ? evidenceByPlayer[index]
+        : null;
       if (
         scoringBasis === ROTATION_SCORING_BASES.PER_36
+        && metricEvidence?.sampleScope === "season-wide"
         && (
           seasonWideObjectiveMetricValue(player, metric) !== null
           || Number.isFinite(seasonWideAdvancedImpactMetricValue(player, metric))
@@ -1309,7 +1400,9 @@ function buildNormalizedMetrics(
       if (RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)) {
         const field = metric === "ballSecurity" ? "turnovers" : metric;
         const sourceMinutes = Number(player.minutes);
-        const rawPerMinute = sourceMinutes > 0 ? Number(player[field]) / sourceMinutes : 0;
+        const rawPerMinute = Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")
+          ? objectiveMetricValue(player, metric, ROTATION_SCORING_BASES.PER_36) / 36
+          : sourceMinutes > 0 ? Number(player[field]) / sourceMinutes : 0;
         // Stabilization is defined in a per-36 unit, so translate it back to
         // per minute for all 240-minute feasibility and reporting math. The
         // legacy per-game comparison intentionally retains raw source rates.
@@ -1317,23 +1410,27 @@ function buildNormalizedMetrics(
           scoringBasis === ROTATION_SCORING_BASES.PER_36
             ? value.value / 36
             : rawPerMinute;
-        if (canStabilizeMetric) {
+        if (canUseBaselineOnlyRows && evidence) {
           // `evidence.baseline` is in the same per-36 unit as `value`. Preserve
           // the baseline per-minute rate separately; it is used only for an
           // assigned minute above the player's established role, never as a
           // fabricated source stat or a restriction on playing time.
           baselineProjectedRatesByPlayerId.get(player.id)[field] =
-            evidenceByPlayer[index].baseline / 36;
+            evidence.baseline / 36;
         }
       }
-      return { id: player.id, value: canStabilizeMetric
+      return { id: player.id, value: canUseBaselineOnlyRows
         ? demonstratedShootingValue(value.value, value.participationPer36, metric, value.baseline,
           value.shootingOpportunity?.observedPer36) : value.value };
     });
     players.forEach((player, index) => {
       if (!metricAvailable) return;
       const evidence = evidenceByPlayer[index];
-      if (!evidence || !(evidence.prior >= 0)) return;
+      // A prior-only estimate is a decision assumption, not evidence that a
+      // player is NBA-average. Preserve unavailable benchmark cells for it.
+      // Real paired evidence can still support this descriptive benchmark when
+      // the user intentionally chose the raw/per-game objective mode.
+      if (!hasUsableEvidence(evidence)) return;
       // Both builds use the same per-36 comparison unit, not an assumed role
       // of 240 / roster size. Rotation curves evaluate actual assigned minutes.
       //
@@ -1381,23 +1478,49 @@ function buildNormalizedMetrics(
     // Compatibility/raw mode retains pool ranks. Recommended evidence mode
     // uses fixed cardinal gaps, so a noisy .2 BPM gap cannot turn into a
     // 40-percentile advantage merely because a roster has many near ties.
-    const percentiles = canStabilizeMetric
-      ? new Map(measured.map((entry, index) => [entry.id,
-        cardinalMetricScore(entry.value, evidenceByPlayer[index].baseline, metric)]))
+    const percentiles = canUseBaselineOnlyRows
+      ? new Map(measured.map((entry, index) => {
+        const evidence = scoringEvidenceByPlayer[index];
+        return [entry.id, evidence
+          ? cardinalMetricScore(entry.value, evidence.baseline, metric)
+          : 0];
+      }))
       : percentileNormalize(measured, { lowerIsBetter: metric === "ballSecurity" });
-    if (canStabilizeMetric) {
+    if (canUseBaselineOnlyRows) {
       // Keep the baseline on the SAME cardinal scale. eFG objective utility
       // is surplus shooting value, so league-average efficiency is zero before
       // normalization, not a raw .54/.55 percentage on the surplus-points axis.
       players.forEach((player, index) => {
+        const evidence = scoringEvidenceByPlayer[index];
+        if (!evidence) return;
         baselinePercentilesByPlayerId.get(player.id)[metric] = cardinalMetricScore(
-          metric === "efgPct" ? 0 : evidenceByPlayer[index].baseline, evidenceByPlayer[index].baseline, metric);
+          metric === "efgPct" ? 0 : evidence.baseline, evidence.baseline, metric);
       });
     }
     for (const player of players) {
       byPlayerId.get(player.id)[metric] = percentiles.get(player.id);
     }
   }
+  const partialStabilizationReason = partiallyStabilizedMetrics.length
+    ? `For ${partiallyStabilizedMetrics.join(", ")}, rows without paired counts use the published same-season baseline as a prior only; they receive no invented volume or observed sample.`
+    : "";
+  const incompleteEvidenceReason = rawMetricsDueToIncompleteEvidence.length
+    ? `${rawMetricsDueToIncompleteEvidence.join(", ")} remained raw because no common baseline/evidence policy was available.`
+    : "";
+  const incompleteBaselineReason = incompleteBaselineMetrics.length
+    ? `${incompleteBaselineMetrics.join(", ")} were removed from the objective because some rows lack their own matching baseline; no other player's reference was borrowed.`
+    : "";
+  const roleExpansionReason = roleAdjustedPlayerMetricCount > 0
+    ? `Role expansion is evaluated at ${round(Number(roleMinutesTarget))} minutes where a target was supplied.`
+    : "";
+  const stabilizationReason = [
+    "Applied equal-treatment rate stabilization and a separate evidence-confidence reserve.",
+    roleExpansionReason,
+    partialStabilizationReason,
+    incompleteEvidenceReason,
+    incompleteBaselineReason,
+    "Team-stint length did not affect the projection.",
+  ].filter(Boolean).join(" ");
   return {
     metrics: byPlayerId,
     projectionInputsById,
@@ -1434,11 +1557,15 @@ function buildNormalizedMetrics(
       seasonWideEvidencePlayerMetricCount,
       perAppearanceEvidencePlayers: perAppearanceEvidencePlayerIds.size,
       perAppearanceEvidencePlayerMetricCount,
+      baselineOnlyPlayers: baselineOnlyPlayerIds.size,
+      baselineOnlyPlayerMetricCount,
       seasonWideRatePlayers: seasonWideRatePlayerIds.size,
       seasonWideRatePlayerMetricCount,
       eligiblePlayers: players.length,
       stabilizedMetrics,
+      partiallyStabilizedMetrics,
       rawMetricsDueToIncompleteEvidence,
+      incompleteBaselineMetrics,
       benchmarkMetrics: [...benchmarkMetrics],
       availableMetrics,
       unavailableMetrics,
@@ -1458,7 +1585,7 @@ function buildNormalizedMetrics(
         calibratedPlayerIntervalsAvailable: false,
         decisionWeight: projectionParameters.decisionUncertaintyWeight,
         interpretation: "The decision reserve uses model-based sampling uncertainty and widens outside observed workload support. It is a sensitivity assumption, not a calibrated player interval or causal fatigue forecast. The posterior mean and decision reserve are separate.",
-        approximateSampleCaveat: "No synthetic sample sizes are used. Missing paired evidence remains prior-only or explicitly raw when the baseline is also unavailable.",
+        approximateSampleCaveat: "No synthetic sample sizes are used. Missing paired evidence uses only the row's own baseline prior. Mixed-source metrics without matching baselines are unavailable; wholly legacy sources retain an explicit raw comparison.",
       },
       // Per-game is intentionally a compatibility mode. Presenting raw values
       // as sample-adjusted in that branch would mix unlike units.
@@ -1468,12 +1595,9 @@ function buildNormalizedMetrics(
           : rateStability === ROTATION_RATE_STABILITY_MODES.RAW
             ? "Rate stabilization was disabled for this result, so the model used raw per-36 rates."
             : adjustedPlayerMetricCount > 0
-              ? rawMetricsDueToIncompleteEvidence.length > 0
-                ? `Applied equal-treatment rate projection and an evidence-confidence reserve to ${stabilizedMetrics.length} metric${stabilizedMetrics.length === 1 ? "" : "s"}${roleAdjustedPlayerMetricCount > 0 ? `, including role-expansion adjustment at ${round(Number(roleMinutesTarget))} minutes` : ""}; ${rawMetricsDueToIncompleteEvidence.length} incomplete metric${rawMetricsDueToIncompleteEvidence.length === 1 ? " was" : "s were"} kept raw for every eligible player.`
-                : roleAdjustedPlayerMetricCount > 0
-                  ? `Applied equal-treatment opportunity-volume stabilization, a modest evidence-confidence reserve, and role-expansion adjustment at ${round(Number(roleMinutesTarget))} minutes; team-stint length did not affect the projection.`
-                  : null
-              : "The current player source does not include complete same-season rate evidence for any metric, so every eligible player was compared on the same raw per-36 basis.",
+              ? stabilizationReason
+              : incompleteBaselineMetrics.length ? incompleteBaselineReason
+                : "No rate stabilization was applied. Consult per-metric evidence coverage; a legacy source with no paired metadata uses raw per-36 comparisons.",
     },
   };
 }
@@ -1530,8 +1654,9 @@ function scoutFamilyWeightsFrom(normalizedWeights) {
  * Build the minute-aware companion to the ordinary per-36 score. The static
  * score starts from the sample-adjusted observed profile. The matching-season
  * path uses fitted conditional rates and an explicitly disclosed concavity
- * guard; other seasons use disclosed priors without a fitted mean response.
- * Neither path applies an artificial curve at 240 / roster size. A
+ * guard. Other seasons retain the conditional mean and separate decision
+ * reserve rather than inventing a cross-season response coefficient. Neither
+ * path applies an artificial curve at 240 / roster size. A
  * low-minute player can still earn a large role, and a dominant player can
  * still reach the user's maximum.
  *
@@ -1551,10 +1676,16 @@ function buildRoleConditionedProjectionPlan(
   const stabilizedMetrics = Array.isArray(metricResult?.rateStability?.stabilizedMetrics)
     ? metricResult.rateStability.stabilizedMetrics
     : [];
+  const partiallyStabilizedMetrics = Array.isArray(metricResult?.rateStability?.partiallyStabilizedMetrics)
+    ? metricResult.rateStability.partiallyStabilizedMetrics
+    : [];
   const objectiveMetrics = OBJECTIVE_METRICS.filter(
     (metric) => Number(normalizedWeights?.[metric]) > 1e-12,
   );
-  const activeMetrics = stabilizedMetrics.filter(
+  // Partial coverage still has one common baseline-only policy, so it belongs
+  // in the same minute-aware plan. Prior-only rates remain explicitly labelled;
+  // a missing own-season baseline does not authorize another player's prior.
+  const activeMetrics = [...new Set([...stabilizedMetrics, ...partiallyStabilizedMetrics])].filter(
     (metric) => Number(normalizedWeights?.[metric]) > 1e-12,
   );
   // Raw-rate mode leaves activeMetrics empty, so no evidence response changes
@@ -1652,7 +1783,8 @@ function buildRoleConditionedProjectionPlan(
     for (const metric of OBJECTIVE_METRICS) {
       const establishedIndex = Number(establishedBenchmarkIndexes[metric]);
       if (!Number.isFinite(establishedIndex)) continue;
-      expandedBenchmarkIndexes[metric] = activeMetrics.includes(metric) && projectionParameters.expansionStrengthByMetric?.[metric] !== 0
+      expandedBenchmarkIndexes[metric] = activeMetrics.includes(metric)
+        && projectionParameters.expansionStrengthByMetric?.[metric] !== 0
         ? Math.min(establishedIndex, 100)
         : establishedIndex;
     }
@@ -1686,18 +1818,21 @@ function buildRoleConditionedProjectionPlan(
         for (let minute = 1; minute <= 48; minute++) {
           if (!input) {
             predictions.push(minute * (Number(metrics[metric]) || 0));
-            quantities.push(minute * (Number(establishedRates[field]) || 0));
+            // Missing context is not zero production. Retain an actually
+            // supported linear rate when available, and omit an unsupported
+            // quantity curve below so the reader preserves its missing value.
+            quantities.push(minute * playerPerMinuteRate(player, field, metricResult.projectedRatesByPlayerId));
             continue;
           }
           // One conditional-rate function supplies both the objective and
           // production constraints. The mean's fitted minute response is kept
           // separate from the explicitly chosen downside sensitivity reserve.
           const mean = workloadRate({ value: input.posteriorMean, baseline: input.baseline,
-            sample: 1, prior: 0, sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
+            sample: 1, prior: 0, sourceMinutes: input.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
             strength: projectionParameters.expansionStrengthByMetric?.[metric] ?? 0,
             lowerIsBetter: metric === "ballSecurity" });
           const projected = decisionRateAtWorkload({ mean, standardError: input.standardError,
-            sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
+          sourceMinutes: input.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
             sourceUsage: input.sourceUsage,
             // Extra offensive responsibility is not extra defensive workload.
             targetUsage: SCOUT_OFFENSE_OBJECTIVE_METRICS.includes(metric) ? input.targetUsage : input.sourceUsage,
@@ -1712,7 +1847,7 @@ function buildRoleConditionedProjectionPlan(
         curves[metric] = curve.totals;
         concavityGuardedPlayerMinutes += curve.guardedMinutes;
         for (let minute = 0; minute <= 48; minute++) total[minute] += curve.totals[minute] * (Number(normalizedWeights[metric]) || 0);
-        if (RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)) production[field] = quantities;
+        if (RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric) && quantities.every(Number.isFinite)) production[field] = quantities;
       }
       if (scoutMinuteObjective?.applied) {
         for (let minute = 0; minute <= 48; minute++) total[minute] = total[minute] * (1 - scoutBlend) + minute * scoutBlend * scoutPercentile;
@@ -1730,7 +1865,7 @@ function buildRoleConditionedProjectionPlan(
         if (!Number.isFinite(value)) continue;
         benchmarks[metric] = Array.from({ length: 49 }, (_, minute) => minute * workloadRate({
           value, baseline: Math.min(value, 100), sample: 1, prior: 0,
-          sourceMinutes: establishedRoleMinutes, targetMinutes: minute,
+          sourceMinutes: metricResult.projectionInputsById.get(id)?.[metric]?.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
           strength: projectionParameters.expansionStrengthByMetric?.[metric] ?? 0,
         }));
       }
@@ -1846,16 +1981,22 @@ function calculateLineupTotals(players) {
     blocks: 0,
     turnovers: 0,
   };
-  for (const player of players) {
-    totals.points += player.points;
-    totals.rebounds += player.rebounds;
-    totals.assists += player.assists;
-    totals.steals += player.steals;
-    totals.blocks += player.blocks;
-    totals.turnovers += player.turnovers;
+  for (const field of Object.keys(totals)) {
+    const values = players.map(player => observedLineupStat(player, field));
+    // Keep calculation precision through feasibility and replacement checks.
+    // Rounding a total to six decimals can create or erase a tight hard-rule
+    // violation. The UI already rounds for display; missing totals stay null.
+    totals[field] = values.every(Number.isFinite) ? values.reduce((sum, value) => sum + value, 0) : null;
   }
-  for (const field of Object.keys(totals)) totals[field] = round(totals[field]);
   return totals;
+}
+
+/** One evidence scope for lineup bounds, feasibility, and displayed totals. */
+function observedLineupStat(player, field) {
+  if (!Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return Number(player[field]);
+  const metric = field === "turnovers" ? "ballSecurity" : field;
+  const paired = pairedMetricEvidence(player, metric);
+  return paired ? paired.numerator / paired.verifiedGames : Number.NaN;
 }
 
 /**
@@ -2131,7 +2272,7 @@ function calculateRotationTotals(
       );
     }
   }
-  for (const field of Object.keys(totals)) totals[field] = round(totals[field]);
+  for (const field of Object.keys(totals)) if (!Number.isFinite(totals[field])) totals[field] = null;
   return totals;
 }
 
@@ -2471,10 +2612,14 @@ function buildConstraintAudit(
 ) {
   const ids = players.map((player) => player.id);
   const idSet = new Set(ids);
+  // Use the same finite-value and numerical-tolerance contract as the exact
+  // allocator and final candidate gate. null <= a turnover ceiling is true in
+  // JavaScript; it is NOT evidence that an unknown total passed the user's rule.
+  const productionStatus = projectedConstraintStatus(totals, config);
   const statChecks = Object.fromEntries(
     Object.entries(config.statMinimums).map(([stat, required]) => [
       stat,
-      { required, actual: totals[stat], passed: totals[stat] >= required },
+      { required, actual: totals[stat], passed: !productionStatus.failedStatMinimums.includes(stat) },
     ]),
   );
   const statMinimumsPassed = Object.values(statChecks).every((check) => check.passed);
@@ -2487,9 +2632,9 @@ function buildConstraintAudit(
       passed: config.lockedIds.every((id) => idSet.has(id)),
     },
     excludedPlayers: {
-      excludedIds: config.excludedIds.slice(),
-      includedIds: config.excludedIds.filter((id) => idSet.has(id)),
-      passed: config.excludedIds.every((id) => !idSet.has(id)),
+      excludedIds: [...new Set([...config.excludedIds, ...(config.selectionOnlyExcludedIds || [])])],
+      includedIds: [...config.excludedIds, ...(config.selectionOnlyExcludedIds || [])].filter((id) => idSet.has(id)),
+      passed: [...config.excludedIds, ...(config.selectionOnlyExcludedIds || [])].every((id) => !idSet.has(id)),
     },
     positionMinimums: {
       required: { ...config.positionMinimums },
@@ -2500,7 +2645,7 @@ function buildConstraintAudit(
     maxTurnovers: {
       maximum: Number.isFinite(config.maxTurnovers) ? config.maxTurnovers : null,
       actual: totals.turnovers,
-      passed: totals.turnovers <= config.maxTurnovers,
+      passed: !productionStatus.failedMaxTurnovers,
     },
     ...(rotationAllocation
       ? {
@@ -4029,6 +4174,9 @@ function playerPerMinuteRate(player, field, projectedRates = null) {
   const adjusted = finiteNonNegative(supplied);
   if (adjusted !== null) return adjusted;
   const sourceMinutes = Number(player.minutes);
+  const paired = pairedMetricEvidence(player, field === "turnovers" ? "ballSecurity" : field);
+  if (paired) return paired.value / 36;
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return Number.NaN;
   return sourceMinutes > 0 ? Number(player[field]) / sourceMinutes : 0;
 }
 
@@ -4059,14 +4207,16 @@ function projectedConstraintStatus(totals, constraints) {
   const failedStatMinimums = [];
   let normalizedViolation = 0;
   for (const [stat, required] of Object.entries(constraints.statMinimums)) {
-    const deficit = required - totals[stat];
+    // NaN comparisons are false in JavaScript. Without an explicit finite
+    // check, absent production would accidentally pass a requested minimum.
+    const deficit = Number.isFinite(totals[stat]) ? required - totals[stat] : Infinity;
     if (deficit > ROTATION_CONSTRAINT_TOLERANCE) {
       failedStatMinimums.push(stat);
       normalizedViolation += deficit / Math.max(1, Math.abs(required));
     }
   }
   const turnoverExcess = Number.isFinite(constraints.maxTurnovers)
-    ? totals.turnovers - constraints.maxTurnovers
+    ? Number.isFinite(totals.turnovers) ? totals.turnovers - constraints.maxTurnovers : Infinity
     : 0;
   const failedMaxTurnovers = turnoverExcess > ROTATION_CONSTRAINT_TOLERANCE;
   if (failedMaxTurnovers) {
@@ -6026,11 +6176,11 @@ function chooseCount(total, selected) {
 }
 
 function bestPossibleTotal(lockedPlayers, availablePlayers, slots, field, descending) {
-  const lockedTotal = lockedPlayers.reduce((total, player) => total + player[field], 0);
+  const lockedTotal = lockedPlayers.reduce((total, player) => total + observedLineupStat(player, field), 0);
   const values = availablePlayers
-    .map((player) => player[field])
+    .map((player) => observedLineupStat(player, field))
     .sort((left, right) => (descending ? right - left : left - right));
-  return round(lockedTotal + values.slice(0, slots).reduce((total, value) => total + value, 0));
+  return lockedTotal + values.slice(0, slots).reduce((total, value) => total + value, 0);
 }
 
 const OBJECTIVE_SCORE_TOLERANCE = 1e-12;
@@ -6145,11 +6295,19 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   const playerById = new Map(normalizedPlayers.map((player) => [player.id, player]));
   const lockedSet = new Set(normalizedConfig.lockedIds);
   const excludedSet = new Set(normalizedConfig.excludedIds);
+  const selectionOnlyExcludedSet = new Set(normalizedConfig.selectionOnlyExcludedIds);
   const setupReasons = [];
 
   for (const id of normalizedConfig.lockedIds) {
     if (!playerById.has(id)) setupReasons.push(`Locked player \"${id}\" is not in the player pool.`);
     if (excludedSet.has(id)) setupReasons.push(`Player \"${id}\" cannot be both locked and excluded.`);
+    if (selectionOnlyExcludedSet.has(id)) setupReasons.push(`Player "${id}" cannot be locked and removed by a replacement request.`);
+  }
+  for (const id of selectionOnlyExcludedSet) {
+    if (!playerById.has(id)) setupReasons.push(`Replacement exclusion names unknown player "${id}".`);
+  }
+  for (const id of Object.keys(normalizedConfig.offensiveResponsibilities)) {
+    if (!playerById.has(id)) setupReasons.push(`Offensive responsibility names unknown player "${id}". Load that player or remove this scenario input.`);
   }
   if (normalizedConfig.lockedIds.length > normalizedConfig.size) {
     setupReasons.push(
@@ -6158,7 +6316,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   }
 
   const eligibilityRejected = [];
-  const eligiblePlayers = normalizedPlayers.filter((player) => {
+  let eligiblePlayers = normalizedPlayers.filter((player) => {
     const rejectionReasons = [];
     if (excludedSet.has(player.id)) rejectionReasons.push("excluded");
     if (player.games < normalizedConfig.minGames) rejectionReasons.push("below minGames");
@@ -6169,10 +6327,67 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     }
     return true;
   });
+  // Data eligibility is established BEFORE ranking, position feasibility, and
+  // combination counting. An unsupported optional player must not veto an
+  // otherwise valid search or change its metric normalization. This is a
+  // per-run filter, not a persisted user exclusion or an invented neutral RAPM.
+  // A failed package/scope/calibration gate is fundamentally different from a
+  // missing player row: removing players cannot repair an unvalidated model.
+  const impactEligibility = buildScoutImpactModel(eligiblePlayers, normalizedConfig.scoutEvidence,
+    { mode: normalizedConfig.modelMode, expectedScope: normalizedConfig.sourceScope });
+  if (normalizedConfig.modelMode !== "historical" && !impactEligibility.calibrationAvailable) {
+    return failureResult(mode, size, [...setupReasons, impactEligibility.reason], {
+      category: "data", subcategory: "scout-evidence", inputPlayers: normalizedPlayers.length,
+      eligiblePlayers: eligiblePlayers.length, eligibilityRejected,
+    });
+  }
+  const missingImpactIds = new Set(impactEligibility.missingPlayerIds);
+  const dataEligibility = { candidateCount: eligiblePlayers.length, eligibleCount: 0,
+    excludedPlayers: [], lockedPlayerIds: [], policy: "exclude-unsupported-preserve-hard-rules" };
+  eligiblePlayers = eligiblePlayers.filter(player => {
+    const reasons = [];
+    if (missingImpactIds.has(player.id)) reasons.push("Required advanced offense/defense impact data is unavailable or does not meet the package's evidence checks.");
+    if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) {
+      const evidence = player.analytics.scoutPlayerGameEvidence;
+      if (evidence?.version !== SCOUT_GAME_EVIDENCE_VERSION || evidence.scope?.playerId !== player.id
+        || (normalizedConfig.sourceScope?.seasonEndYear != null
+          && evidence.scope?.seasonStartYear + 1 !== normalizedConfig.sourceScope.seasonEndYear)
+        || ((normalizedConfig.sourceScope?.seasonPhase ?? normalizedConfig.sourceScope?.phase) != null
+          && evidence.scope?.phase !== (normalizedConfig.sourceScope.seasonPhase ?? normalizedConfig.sourceScope.phase))) {
+        reasons.push("Scout player-game evidence does not match the requested player, season, or phase.");
+      } else {
+        // Do not accept a hard floor/ceiling through NaN comparisons or stale
+        // display rates. Only players with evidence for THAT requested rule
+        // are candidates. An optional missing context field is not a rejection.
+        const requiredFields = [...Object.keys(normalizedConfig.statMinimums),
+          ...(Number.isFinite(normalizedConfig.maxTurnovers) ? ["turnovers"] : [])];
+        for (const field of requiredFields) if (!pairedMetricEvidence(player, field === "turnovers" ? "ballSecurity" : field)) {
+          reasons.push(`verified Scout ${field} evidence is unavailable for the requested production constraint.`);
+        }
+      }
+    }
+    if (!reasons.length) return true;
+    dataEligibility.excludedPlayers.push({ id: player.id, name: player.name, reasons });
+    eligibilityRejected.push({ id: player.id, name: player.name, reasons, category: "data" });
+    if (lockedSet.has(player.id)) {
+      // An explicit lock is a hard user requirement. Never quietly unlock a
+      // player to make a successful result; explain the conflicting request.
+      dataEligibility.lockedPlayerIds.push(player.id);
+      setupReasons.push(`Locked player "${player.name}" lacks required data. Unlock this player or use a model/rules with available evidence. ${reasons.join(" ")}`);
+    }
+    return false;
+  });
+  dataEligibility.eligibleCount = eligiblePlayers.length;
+  // Snapshot the evidence universe BEFORE the one-change selection filter.
+  // The replacement must solve a subset of the original feasible choices,
+  // using the original objective, including its missing-metric policy.
+  const objectivePlayers = eligiblePlayers.slice();
+  eligiblePlayers = eligiblePlayers.filter(player => !selectionOnlyExcludedSet.has(player.id));
   const eligibleById = new Map(eligiblePlayers.map((player) => [player.id, player]));
 
   for (const id of normalizedConfig.lockedIds) {
-    if (playerById.has(id) && !eligibleById.has(id) && !excludedSet.has(id)) {
+    if (playerById.has(id) && !eligibleById.has(id) && !excludedSet.has(id)
+      && !dataEligibility.lockedPlayerIds.includes(id)) {
       const player = playerById.get(id);
       const details = [];
       if (player.games < normalizedConfig.minGames) details.push(`games ${player.games} < ${normalizedConfig.minGames}`);
@@ -6185,7 +6400,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
 
   if (eligiblePlayers.length < normalizedConfig.size) {
     setupReasons.push(
-      `Only ${eligiblePlayers.length} eligible players remain for ${normalizedConfig.size} roster spots.`,
+      `Only ${eligiblePlayers.length} eligible players remain for ${normalizedConfig.size} roster spots.${dataEligibility.excludedPlayers.length ? ` ${dataEligibility.excludedPlayers.length} player(s) were automatically left out because required data was unavailable. Reduce the roster size or change the model/rules; no roster or position requirement was relaxed.` : ""}`,
     );
   }
 
@@ -6210,6 +6425,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       inputPlayers: normalizedPlayers.length,
       eligiblePlayers: eligiblePlayers.length,
       eligibilityRejected,
+      dataEligibility,
     });
   }
 
@@ -6236,7 +6452,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
         stat,
         true,
       );
-      if (maximum < required) {
+      if (maximum + ROTATION_CONSTRAINT_TOLERANCE < required) {
         preflightReasons.push(
           `The highest possible ${stat} total is ${maximum}, below the required ${required}.`,
         );
@@ -6250,7 +6466,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
         "turnovers",
         false,
       );
-      if (minimum > normalizedConfig.maxTurnovers) {
+      if (minimum - ROTATION_CONSTRAINT_TOLERANCE > normalizedConfig.maxTurnovers) {
         preflightReasons.push(
           `The lowest possible turnover total is ${minimum}, above the maximum ${normalizedConfig.maxTurnovers}.`,
         );
@@ -6259,8 +6475,13 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   }
 
   const estimatedCombinations = chooseCount(availablePlayers.length, slotsToChoose);
+  const hasScoutGameEvidence = objectivePlayers.some(player => Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence"));
   const projectionParameters = Object.freeze({
-    ...projectionParametersFor(normalizedConfig.projectionRisk, normalizedConfig.sourceScope),
+    // Matching the calendar year alone does not validate an older fitted
+    // workload response for newly reconciled, potentially partial Scout game
+    // subsets. Until a source-bound refit exists, retain disclosed priors and
+    // decision sensitivity, without advertising the old holdout as new proof.
+    ...projectionParametersFor(normalizedConfig.projectionRisk, hasScoutGameEvidence ? null : normalizedConfig.sourceScope),
     offensiveResponsibilities: normalizedConfig.offensiveResponsibilities,
   });
   const baseDiagnostics = {
@@ -6278,6 +6499,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
         "Scout RAPM is a separately versioned, reliability-shrunk input to player-minute selection. Fit vs. NBA Baseline remains a box-score comparison index and is never relabeled as Scout impact.",
     },
     inputPlayers: normalizedPlayers.length,
+    workloadCalibrationReason: hasScoutGameEvidence
+      ? "New Scout player-game subsets use disclosed working priors and uncertainty. An older same-year workload fit is not validated for this evidence revision."
+      : null,
     workloadCalibration: projectionParameters.calibration ? {
       version: projectionParameters.calibration.version,
       scope: "2025–26 regular season only",
@@ -6288,6 +6512,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     lockedPlayers: lockedPlayers.length,
     availablePlayers: availablePlayers.length,
     eligibilityRejected,
+    dataEligibility,
+    selectionOnlyExcludedIds: [...selectionOnlyExcludedSet],
+    objectiveReferencePlayerCount: objectivePlayers.length,
     estimatedCombinations,
     maxCombinations: normalizedConfig.maxCombinations,
     candidateCombinationLimitApplied: normalizedConfig.mode !== "rotation",
@@ -6331,7 +6558,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   // profiles. Starting five gives each player equal objective exposure; it
   // does not silently revert to raw percentages. An explicitly requested raw
   // or perGame basis remains available for compatibility experiments.
-  const normalizedMetricResult = buildNormalizedMetrics(eligiblePlayers, {
+  const normalizedMetricResult = buildNormalizedMetrics(objectivePlayers, {
     scoringBasis: normalizedConfig.rotationScoringBasis,
     rateStability: normalizedConfig.rotationRateStability,
     // Per-36 is a comparison unit, not a prescribed role. Stabilize at observed
@@ -6363,8 +6590,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   // Historical priority availability must not veto an independently complete
   // Scout objective. Missing box-score context stays unavailable, not guessed.
   if (!(effectiveObjective.total > 0) && normalizedConfig.modelMode !== "scout") {
+    const incompletePriorities = effectiveObjective.disabledRequestedMetrics.join(", ");
     return failureResult(mode, size, [
-      "The selected priorities depend only on advanced metrics that are incomplete for this eligible player pool. Choose a standard skill priority or load a source with complete OBPM/DBPM evidence.",
+      `The selected priorities lack complete same-scope evidence for every eligible player (${incompletePriorities}). Choose another available priority or load a source with matching evidence for the full pool.`,
     ], {
       ...baseDiagnostics,
       category: "data",
@@ -6386,7 +6614,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   // Keep the historical game-plan score separate so the Scout layer can report
   // its exact minute-level delta instead of hiding it inside a composite value.
   const basePlayerStrategyScores = new Map(
-    eligiblePlayers.map((player) => [
+    objectivePlayers.map((player) => [
       player.id,
       OBJECTIVE_METRICS.reduce(
         (total, metric) =>
@@ -6395,9 +6623,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ),
     ]),
   );
-  const lineupRoleModel = buildLineupRoleModel(eligiblePlayers, { normalizedMetrics });
+  const lineupRoleModel = buildLineupRoleModel(objectivePlayers, { normalizedMetrics });
   const scoutImpactModel = buildScoutImpactModel(
-    eligiblePlayers,
+    objectivePlayers,
     normalizedConfig.scoutEvidence,
     { mode: normalizedConfig.modelMode, expectedScope: normalizedConfig.sourceScope },
   );
@@ -6405,17 +6633,20 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     effectiveObjective.normalizedWeights,
   );
   const scoutMinuteObjective = buildScoutMinuteObjective(
-    eligiblePlayers,
+    objectivePlayers,
     scoutImpactModel,
     basePlayerStrategyScores,
     {
-      offenseWeight: normalizedConfig.modelMode === "scout" ? (normalizedConfig.scoutObjective === "defense" ? 0 : 1) : scoutFamilyWeights.offense,
-      defenseWeight: normalizedConfig.modelMode === "scout" ? (normalizedConfig.scoutObjective === "offense" ? 0 : 1) : scoutFamilyWeights.defense,
+      offenseWeight: normalizedConfig.modelMode === "scout" ? normalizedConfig.scoutObjectiveWeights.offense : scoutFamilyWeights.offense,
+      defenseWeight: normalizedConfig.modelMode === "scout" ? normalizedConfig.scoutObjectiveWeights.defense : scoutFamilyWeights.defense,
     },
   );
   // This is the actual player-minute objective passed to the exact allocator.
   // In historical mode it is an unchanged copy of the user-game-plan score.
   const playerStrategyScores = scoutMinuteObjective.scoresById;
+  // The report uses the exact same weights as allocation. Raw net impact stays
+  // available as context, but must not masquerade as a custom weighted goal.
+  scoutImpactModel.objectiveWeights = { offense: scoutMinuteObjective.offenseWeight, defense: scoutMinuteObjective.defenseWeight };
   baseDiagnostics.compositionModel = {
     version: lineupRoleModel.version,
     requestedBalance: normalizedConfig.roleBalance,
@@ -6441,14 +6672,15 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     reason: scoutImpactModel.reason,
     calibration: scoutImpactModel.calibration,
     scope: scoutImpactModel.scope,
-    objective: normalizedConfig.scoutObjective,
+    objective: normalizedConfig.scoutObjectiveWeights.custom ? "custom" : normalizedConfig.scoutObjective,
+    objectiveWeights: { ...scoutImpactModel.objectiveWeights },
   };
   if (normalizedConfig.modelMode !== "historical" && !scoutImpactModel.available) {
     const missingNames = eligiblePlayers
       .filter((player) => scoutImpactModel.missingPlayerIds.includes(player.id))
       .map((player) => player.name);
     return failureResult(mode, size, [
-      `Scout needs usable, matched impact evidence for every eligible player.${missingNames.length ? ` Missing: ${missingNames.slice(0, 8).join(", ")}${missingNames.length > 8 ? ` and ${missingNames.length - 8} more` : ""}. Exclude these players explicitly or choose Historical.` : " Check the package season, phase, and validation status, or choose Historical."} Missing evidence is never treated as average.`,
+      `Scout could not validate the remaining player pool.${missingNames.length ? ` Missing: ${missingNames.join(", ")}.` : " Check the package season, phase, and validation status."} Missing evidence is never treated as average.`,
     ], {
       ...baseDiagnostics,
       category: "data",
@@ -6509,7 +6741,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   const roleConditionedProjectionPlan =
     normalizedConfig.mode === "rotation" && normalizedConfig.modelMode !== "scout" && !callerRotationScores
       ? buildRoleConditionedProjectionPlan(
-        eligiblePlayers,
+        objectivePlayers,
         normalizedMetrics,
         effectiveObjective.normalizedWeights,
         normalizedMetricResult,
@@ -6522,10 +6754,45 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   // optimistic raw-rate feasibility and pessimistic worst-allowed-rate rejects.
   const constraintProjectionPlan = roleConditionedProjectionPlan ?? (
     hasRotationProjectedConstraints && normalizedConfig.modelMode === "scout"
-      ? buildRoleConditionedProjectionPlan(eligiblePlayers, normalizedMetrics,
+      ? buildRoleConditionedProjectionPlan(objectivePlayers, normalizedMetrics,
         effectiveObjective.normalizedWeights, normalizedMetricResult, projectionParameters)
       : null
   );
+  // Keep the objective reference in the result for replacement comparisons.
+  // Selection-only exclusions preserve this reference across both solves.
+  // The UI checks equality before reporting a total objective difference. The
+  // optional minute curves are cumulative utility units (0..48), not predicted
+  // points; they are included only when the exact role-conditioned plan built
+  // them. No raw private Scout row is copied into this diagnostic contract.
+  const objectiveReference = {
+    version: "counterfactual-objective-v2",
+    mode: normalizedConfig.modelMode,
+    modelVersion: HISTORICAL_RATE_MODEL_VERSION,
+    scoutModelVersion: scoutImpactModel.version,
+    sourceScope: normalizedConfig.sourceScope,
+    projectionRisk: normalizedConfig.projectionRisk,
+    scoringBasis: normalizedConfig.rotationScoringBasis,
+    roleBalance: normalizedConfig.roleBalance,
+    scoutWeights: { ...scoutImpactModel.objectiveWeights },
+    basis: normalizedConfig.modelMode === "scout"
+      ? "scout-objective-fixed-original-pool"
+      : "game-plan-objective-fixed-original-pool",
+    poolSize: objectivePlayers.length,
+    lineupSize: normalizedConfig.size,
+    totalRotationMinutes: normalizedConfig.mode === "rotation" ? 240 : null,
+    effectiveWeights: { ...effectiveObjective.normalizedWeights },
+    scoresById: Object.fromEntries(objectivePlayers.slice().sort(comparePlayersById).map((player) => [
+      player.id,
+      playerStrategyScores.get(player.id),
+    ])),
+    roleConditionedCurvesById: roleConditionedProjectionPlan?.calibratedUtilityCurvesById
+      ? Object.fromEntries([...roleConditionedProjectionPlan.calibratedUtilityCurvesById.entries()].sort(([a], [b]) => compareIds(a, b)).map(([id, curve]) => [
+        id,
+        curve.slice(),
+      ]))
+      : null,
+  };
+  baseDiagnostics.objectiveReference = objectiveReference;
   if (constraintProjectionPlan && hasRotationProjectedConstraints) {
     const boundReasons = [];
     const allowedBounds = new Map(eligiblePlayers.map(player => [player.id,
@@ -6557,7 +6824,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       ? "The loaded evidence did not support a minute-aware same-season baseline for an active game-plan priority."
       : hasRotationProjectedConstraints
         ? "The exact objective and hard production rules use the same assigned-workload projection. A concave objective minorant keeps the allocation proof valid; stat totals are evaluated directly, without that numerical approximation."
-        : "The exact minute allocation accounts for uncertain role expansion. No penalty begins at 240 divided by roster size, and observed minutes are not an availability cap.";
+      : "The exact minute allocation accounts for uncertain role expansion. A chronological fit is used where available; otherwise the selected risk setting supplies a disclosed prior sensitivity. No penalty begins at 240 divided by roster size, and observed minutes are not an availability cap.";
   if (normalizedConfig.mode === "rotation") {
     baseDiagnostics.rotationRateStabilityEvidence = {
       ...normalizedMetricResult.rateStability,
@@ -7079,13 +7346,12 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       )
       : calculateLineupTotals(selectedPlayers);
 
-    for (const [stat, required] of Object.entries(normalizedConfig.statMinimums)) {
-      if (totals[stat] < required) {
-        rejectedByConstraint.statMinimums[stat] += 1;
-        passed = false;
-      }
+    const productionStatus = projectedConstraintStatus(totals, normalizedConfig);
+    for (const stat of productionStatus.failedStatMinimums) {
+      rejectedByConstraint.statMinimums[stat] += 1;
+      passed = false;
     }
-    if (totals.turnovers > normalizedConfig.maxTurnovers) {
+    if (productionStatus.failedMaxTurnovers) {
       rejectedByConstraint.maxTurnovers += 1;
       passed = false;
     }
@@ -7367,6 +7633,10 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       playerIds: alternative.players.map((player) => player.id),
       players: alternative.players,
       score: objective.score,
+      // Preserve the enumerator's unrounded objective for consistency checks.
+      // Public presentation still uses `score`; rounding cannot hide an
+      // improving feasible replacement or turn a small difference into a tie.
+      objectiveValue: alternative._rawScore,
       // Keep the exact score decomposition on every ranked alternative. This
       // lets a Detailed report explain the player-minute Scout effect without
       // pretending a group-only exact-five residual belongs to one player.

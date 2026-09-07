@@ -12,13 +12,14 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // logic or interface copy from a browser cache.
 // A follow-up model fix must also invalidate already loaded Lab modules.
 // Lineup Lab has its own revision; storefront cache values remain untouched.
-const RELEASE_ASSET_VERSION = "20260907c";
+const RELEASE_ASSET_VERSION = "20260907f";
 const releaseFiles = [
   "index.html",
   "app.js",
   "workflow-state.js",
   "workflow-view.js",
   "workflow.css",
+  "lab-telemetry.js",
   "lab-experience.js",
   "lab-experience.css",
   "lab-theme.css",
@@ -47,6 +48,16 @@ const releaseFiles = [
   "fixtures/timberwolves-2021-22.json",
 ];
 const checkOnly = process.argv.includes("--check");
+// Shared worktrees can contain generated-only page edits owned by another
+// task. A scoped model build must not overwrite those changes. The default
+// remains a FULL release/parity check; --only is an explicit local subset,
+// never sufficient evidence that the entire deployable page is synchronized.
+const onlyIndex = process.argv.indexOf("--only");
+const requestedFiles = onlyIndex < 0 ? releaseFiles : (process.argv[onlyIndex + 1] || "").split(",");
+if (!requestedFiles.length || requestedFiles.some(file => !releaseFiles.includes(file))
+  || new Set(requestedFiles).size !== requestedFiles.length) {
+  throw new Error("--only requires unique, comma-separated files from the Lineup release allowlist.");
+}
 
 function readSource(relativePath) {
   const sourcePath = path.join(sourceRoot, relativePath);
@@ -99,7 +110,7 @@ function transform(relativePath, source) {
 }
 
 const results = [];
-for (const relativePath of releaseFiles) {
+for (const relativePath of requestedFiles) {
   const expected = transform(relativePath, readSource(relativePath));
   const outputPath = path.join(outputRoot, relativePath);
   const current = fs.existsSync(outputPath) ? fs.readFileSync(outputPath) : null;
@@ -119,7 +130,8 @@ if (checkOnly && stale.length) {
 
 console.log(JSON.stringify({
   mode: checkOnly ? "check" : "build",
-  files: releaseFiles.length,
+  files: requestedFiles.length,
+  scope: onlyIndex < 0 ? "full-release" : "explicit-subset-not-full-release-parity",
   updated: checkOnly ? 0 : stale.length,
   assetVersion: RELEASE_ASSET_VERSION,
   status: "ok",

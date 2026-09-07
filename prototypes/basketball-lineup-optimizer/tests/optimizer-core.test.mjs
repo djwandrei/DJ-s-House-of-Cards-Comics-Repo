@@ -771,9 +771,9 @@ test("projects rotation totals from assigned minutes and applies thresholds to t
   });
 
   assert.equal(feasible.ok, true);
-  assert.equal(feasible.best.totals.points, 127.6);
-  assert.equal(feasible.best.rotation.projectedTotals.points, 127.6);
-  assert.equal(feasible.best.constraintAudit.statMinimums.checks.points.actual, 127.6);
+  assert.ok(Math.abs(feasible.best.totals.points - 127.6) < 1e-12);
+  assert.ok(Math.abs(feasible.best.rotation.projectedTotals.points - 127.6) < 1e-12);
+  assert.ok(Math.abs(feasible.best.constraintAudit.statMinimums.checks.points.actual - 127.6) < 1e-12);
   assert.equal(infeasible.ok, false);
   assert.equal(infeasible.diagnostics.rejectedByConstraint.statMinimums.points, 1);
   assert.equal(infeasible.diagnostics.rejectedByConstraint.rotationMinutes, 0);

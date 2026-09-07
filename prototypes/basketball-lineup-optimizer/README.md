@@ -154,7 +154,7 @@ production so their units do not get mixed:
   default. Shooting percentages remain rates. `perGame` is an explicit legacy
   comparison mode.
 - When same-season evidence exists, `sampleAdjusted` first blends each observed
-  rate toward the imported league baseline before percentile ranking:
+  rate toward the imported league baseline before cardinal scoring:
   `baseline + n / (n + k) * (observed - baseline)`. The sample `n` uses
   actual matched opportunity from the same numerator/denominator scope. Complete
   season-wide totals take precedence; otherwise a complete selected-team pair
@@ -166,39 +166,63 @@ production so their units do not get mixed:
   attempts for 3P%, and 1,200 minutes for OBPM/DBPM. Those posterior-mean priors
   are identical across Reliable, Balanced, and Upside. Risk mode changes the
   separately reported downside reserve and responsibility-expansion sensitivity,
-  not the expected-rate evidence. Shooting accuracy and demonstrated attempt
+  not the expected-rate evidence. A matching calibrated source scope can supply
+  fitted priors instead of these defaults. Shooting accuracy and demonstrated attempt
   frequency retain separate support calculations. These are transparent
   projection settings, not fitted player-impact coefficients.
-- The responsibility layer reads reported usage when comparable data exists. It
-  estimates only the extra on-ball burden needed when a low-usage player expands
-  beyond his established role, with metric-specific elasticity. It removes only
-  unsupported upside and never improves a below-baseline player. If usage is
-  missing, the model uses a stricter disclosed role-volume fallback instead of
-  interpreting the missing value as zero. Neither path reads games or total
-  minutes from the selected team stint.
+- The responsibility layer reads reported usage when comparable data exists.
+  A requested usage scenario is separate from minutes. Expanded responsibility
+  can widen the decision reserve, but no fitted causal usage elasticity is
+  claimed. Missing usage remains unavailable rather than becoming zero or
+  being manufactured from minutes. New Scout subset evidence does not borrow
+  older Basketball Reference usage without matching possession exposure.
 - After that expected larger-role estimate is calculated, the exact decision
-  holds back a modest evidence-confidence reserve. At zero supporting
-  opportunity, ordinary box-score rates move another 8% of the same-season
-  baseline in the conservative direction; that reserve fades linearly with the
-  metric-specific reliability above. Applying it last prevents role expansion
-  from accidentally blending the caution away. The reserve uses per-appearance
-  opportunity (or true season-wide totals when the adapter supplies them), never
-  selected-team games or total stint minutes. It changes the projected rate
-  rather than restricting the player to a past role. Signed BPM inputs retain
-  their separate 1,200-minute shrinkage prior but no invented variance reserve.
+  holds back a separately reported evidence-confidence reserve. It uses working
+  event/prior sampling uncertainty, supplemented by a larger game-cluster
+  estimate when verified matching games support one. Reliable, Balanced and
+  Upside apply decision weights 1, 0.5 and 0 respectively; unsupported workload
+  expansion can widen the reserve. Applying it after the mean response avoids
+  erasing caution during baseline shrinkage. No imaginary appearance sample
+  or fixed 8%-of-baseline deduction is used. Signed BPM inputs retain their
+  separate 1,200-minute shrinkage prior but no invented variance reserve.
   The reserve affects exact ranking and conservative production totals; Fit vs.
   NBA Baseline keeps the expected posterior-mean projection so 100 retains its
   same-season benchmark meaning.
-- A shared workload-saturation curve begins after
-  `240 / selected roster size` minutes:
-  extra minutes still add positive value, but their marginal fit moves smoothly
-  toward 35% over an eight-minute transition. This prevents an otherwise linear
-  objective from placing most players at their minimum or maximum. It is not a
-  historical-minute target, availability rule, or hard cap; a sufficiently
-  better player can still reach the visitor's maximum.
-- Metric weights are normalized into relative shares. Each candidate's fit is
-  the weighted, eligible-pool percentile profile, and rotation fit is then
-  weighted by the exact minutes assigned to each selected player.
+- When a per-36 rotation has matching workload evidence, extra minutes beyond a
+  player's observed all-team role use a concave, evidence-adjusted curve when a
+  chronological workload fit exists for the selected source scope. Without a
+  matching fit, the continuous expected-rate curve remains unchanged while the
+  separate conservative boundary and decision reserve avoid presenting
+  unsupported extra-role upside as proven. No preferred 18–32-minute range,
+  historical team-minute cap, or hidden roster-size target is imposed; a
+  sufficiently better player can still reach the visitor's maximum.
+- Metric weights are normalized into relative shares. Evidence-adjusted skill
+  scores use a fixed league-anchored cardinal scale; wholly legacy/raw sources
+  retain the explicitly labelled pool-percentile comparison. Rotation scores
+  account for actual assigned minutes. Primary Scout instead optimizes the
+  user's weighted O/D impact coefficients, not box-score percentiles.
+
+### Replacement consistency and evidence boundaries
+
+- Exact replacements keep the original objective/reference pool. Only choice
+  eligibility changes; the outgoing player no longer qualifies for selection.
+  Every other selected player remains selected, but minutes may be reallocated.
+- The report compares complete unrounded objective values and shows O/D impact
+  and all minute changes. A higher feasible replacement objective is a solver
+  consistency warning, not an explained-away production tradeoff. A tie stays
+  a tie; unrequested box-score totals do not become a hidden tie-breaker.
+- A prior-only row uses only its own season baseline, never another player's
+  baseline or sample moments. Incomplete mixed-source baseline coverage removes
+  that metric from the objective. Prior-only estimates are not reported as
+  evidence that the player is NBA-average.
+- Unknown production stays unavailable, not zero. Requested constraints reject
+  nonfinite totals. Compact Scout rates must match their counts, exposure, and
+  revision. Missing required advanced rows are excluded automatically, while
+  explicit user locks remain hard requirements.
+- Risk preference changes the decision reserve, not the common posterior mean.
+  Game-cluster variation is not a validated causal usage-response model.
+  Primary Scout still uses additive
+  impact rather than an independently validated lineup-interaction model.
 - The optional role-balance layer scores the two strongest signals for each job
   with diminishing returns. Its maximum ranking adjustment is bounded and
   disclosed (zero for Off, five points for Recommended, eight for Emphasized),
@@ -321,8 +345,10 @@ record, Lineup Lab uses that record's numerator and denominator together for
 rate stabilization and role-size evidence. It never combines season minutes
 with a selected-team numerator, and it never lets games or total minutes from a
 team stint set a player's proposed minutes. If season evidence is missing or
-ambiguous, the adapter fails closed to the standardized per-appearance fallback
-and reports that limitation in the interface.
+ambiguous, a matching observed selected-team count/exposure pair can be used
+with its narrower scope disclosed. Otherwise prior-only or unavailable status
+is preserved under the model's explicit evidence policy; no standardized
+appearance count is invented.
 
 The checked-in fixture remains the 15-player 2021-22 Timberwolves snapshot from
 the original course workbook. It is the stable test/demo fallback if the

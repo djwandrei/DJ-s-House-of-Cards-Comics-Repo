@@ -100,6 +100,13 @@ try {
       await page.goto(base+'/'+route);
       await page.waitForFunction(()=>document.body.dataset.courtPalette);
       await page.evaluate(()=>document.fonts.ready);
+      const themeIdentity = page.locator('.court-team-identity');
+      assert.equal(await themeIdentity.count(),1,'Every fan page exposes its current team palette');
+      assert.ok(await themeIdentity.isVisible(),'Team palette identity is visible');
+      assert.equal(await themeIdentity.getAttribute('role'),'status');
+      assert.equal(await themeIdentity.getAttribute('aria-atomic'),'true');
+      assert.equal(await themeIdentity.locator('.court-team-identity__name').textContent(),'Collector Court');
+      assert.equal(await themeIdentity.locator('.court-team-identity__team').textContent(),'DJHC Original');
       await checkHeader(page,width);
       assert.ok(await page.evaluate(()=>document.fonts.check('16px Manrope') && document.fonts.check('700 24px "Barlow Condensed"')),'Both local fonts loaded');
       assert.equal(await page.locator('.court-destinations a[aria-current=page]').count(),1);
@@ -153,6 +160,22 @@ try {
   assert.deepEqual(await page.locator('#modeInput,#sizeInput,#minGuardsInput,#minForwardsInput,#minCentersInput').evaluateAll(inputs=>inputs.map(i=>i.value)),original);
   assert.equal(await page.locator('#datasetCount').textContent(),'15');
   report.checks.push('62 live-selector palette/mode mappings; roster and rules unchanged');
+  await page.locator('#nbaTeamInput').selectOption('MIN');
+  await page.waitForFunction(()=>document.body.dataset.courtPalette==='min');
+  assert.equal(await page.locator('.court-team-identity__name').textContent(),'North Star');
+  assert.equal(await page.locator('.court-team-identity__team').textContent(),'Minnesota Timberwolves');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('djhc-court-team-v1')),'min');
+  await page.goto(base+'/tools/');
+  await page.waitForFunction(()=>document.body.dataset.courtPalette==='min');
+  assert.equal(await page.locator('.court-team-identity__name').textContent(),'North Star');
+  assert.equal(await page.locator('.court-team-identity__team').textContent(),'Minnesota Timberwolves');
+  await page.goto(base+'/tools/workshop/');
+  await page.waitForFunction(()=>document.body.dataset.courtPalette==='min');
+  assert.equal(await page.locator('.court-team-identity__name').textContent(),'North Star');
+  await page.goto(base+'/lineup-lab/');
+  await page.waitForFunction(()=>document.querySelector('#datasetCount')?.textContent==='15');
+  assert.equal(await page.locator('.court-team-identity__name').textContent(),'North Star');
+  report.checks.push('Selected team palette persists and remains visible across hub, Workshop, and Lineup Lab');
   // Reload the unmodified demo controls to exercise the real guided workflow.
   await page.reload(); await page.waitForFunction(()=>document.querySelector('#datasetCount')?.textContent==='15');
   await page.locator('#workflowNext').click();

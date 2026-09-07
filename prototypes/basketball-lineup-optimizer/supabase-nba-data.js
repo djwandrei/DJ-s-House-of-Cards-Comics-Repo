@@ -623,7 +623,7 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
       seasonEvidencePlayers: seasonEvidence.size,
       seasonEvidenceStatus: options.seasonEvidenceStatus
         || (seasonEvidence.size > 0 ? "available" : "not-supplied"),
-      seasonEvidenceMethod: "Matching player-season counts across imported real-team rows; complete source coverage is not independently verified. Missing metrics use the approximate fallback. Games with a particular team never become a minute target or cap.",
+      seasonEvidenceMethod: "Matching player-season counts across imported real-team rows; complete source coverage is not independently verified. Missing observations use only a disclosed own-season baseline prior when available; missing mixed-source baselines cannot be borrowed. No synthetic sample is inserted. Games with a particular team never become a minute target or cap.",
     },
     note: "Visible per-game stats describe this team only. When available, the rotation model uses matching counts across the player's imported teams for the same season and phase; these do not set minute limits.",
   };

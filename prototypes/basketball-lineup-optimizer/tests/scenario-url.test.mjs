@@ -1,6 +1,61 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { decodeScenarioQuery, encodeScenarioQuery, SCENARIO_URL_VERSION } from "../scenario-url.js";
+import { weightsFromSkillFamilies } from "../optimizer-config.js";
+
+test("v2 links preserve fractional and combined family priorities without changing the objective", () => {
+  const weights = weightsFromSkillFamilies({ scoring: .1, rebounding: 100, interiorDefense: 100 });
+  assert.equal(weights.rebounds, 130);
+  const query = encodeScenarioQuery({ weights });
+  const { scenario, warnings } = decodeScenarioQuery(query);
+  for (const [metric, value] of Object.entries(weights)) assert.equal(scenario.weights[metric] ?? 0, value, metric);
+  assert.equal(scenario.weights.offensiveImpact, .015);
+  assert.deepEqual(warnings, []);
+  const legacy = decodeScenarioQuery("v=1&w=p:3,r:25");
+  assert.deepEqual(legacy.scenario.weights, { points: 3, rebounds: 25 });
+  assert.deepEqual(legacy.warnings, []);
+});
+
+test("invalid custom weights are rejected instead of creating a lossy share link", () => {
+  for (const value of [NaN, Infinity, -1, true, null, "1", 10001]) {
+    assert.throws(() => encodeScenarioQuery({ weights: { points: value } }), /Strategy weights/);
+  }
+  for (const entry of ["p:", "p:1:3", "p:1,p:2"]) {
+    assert.ok(decodeScenarioQuery(`v=2&w=${entry}`).warnings.length > 0);
+  }
+});
+
+test("v3 links preserve custom O/D inputs and their zero/fractional endpoints", () => {
+  for (const weights of [{ offense: .3, defense: .1 }, { offense: 0, defense: 7 }, { offense: 10000, defense: 0 }]) {
+    const query = encodeScenarioQuery({ modelMode: "scout", scoutObjective: "custom", scoutObjectiveWeights: weights });
+    const { scenario, warnings } = decodeScenarioQuery(query);
+    assert.equal(scenario.version, "3");
+    assert.equal(scenario.scoutObjective, "custom");
+    assert.deepEqual(scenario.scoutObjectiveWeights, weights);
+    assert.deepEqual(warnings, []);
+  }
+  for (const version of [1, 2]) {
+    const restored = decodeScenarioQuery(`v=${version}&modelMode=scout&scoutObjective=defense`);
+    assert.equal(restored.scenario.scoutObjective, "defense");
+    assert.equal(restored.scenario.scoutObjectiveWeights, undefined);
+    assert.deepEqual(restored.warnings, []);
+  }
+});
+
+test("malformed custom O/D links cannot silently become a balanced solve", () => {
+  for (const weights of [undefined, null, {}, { offense: 0, defense: 0 }, { offense: 1, defense: NaN },
+    { offense: 1, defense: -1 }, { offense: "1", defense: 1 }]) {
+    assert.throws(() => encodeScenarioQuery({ scoutObjective: "custom", scoutObjectiveWeights: weights }));
+  }
+  for (const suffix of ["", "&scoutMix=0:0", "&scoutMix=:1", "&scoutMix=1:NaN", "&scoutMix=1:2:3",
+    "&scoutMix=1:2&scoutMix=3:4", "&scoutMix=1:2&scoutObjective=balanced"]) {
+    const decoded = decodeScenarioQuery(`v=3&scoutObjective=custom${suffix}`);
+    assert.equal(decoded.scenario, null);
+    assert.ok(decoded.warnings.some(warning => warning.includes("not restored")));
+  }
+  assert.equal(decodeScenarioQuery("v=2&scoutObjective=custom&scoutMix=1:2").scenario, null);
+  assert.equal(decodeScenarioQuery("v=3&scoutObjective=balanced&scoutMix=1:2").scenario, null);
+});
 
 test("usage scenarios round-trip exact shares including zero without changing minute bounds", () => {
   const query = encodeScenarioQuery({ experience: "detailed", mode: "rotation", rotationMax: 40,

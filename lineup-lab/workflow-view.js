@@ -1,4 +1,4 @@
-import { WORKFLOW_STEPS, resolveWorkflowStep, saveWorkflowDraft, DRAFT_KEY } from "./workflow-state.js?v=20260907c";
+import { WORKFLOW_STEPS, resolveWorkflowStep, saveWorkflowDraft, DRAFT_KEY } from "./workflow-state.js?v=20260907f";
 
 const make = (tag, className = "", text = "") => {
   const node = document.createElement(tag);

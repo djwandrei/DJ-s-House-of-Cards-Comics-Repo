@@ -54,6 +54,8 @@ window.DJ = window.DJ || {};
     const load = number(source.load, 120_000);
     const category = text(source.category, 80);
     const kind = text(source.kind, 40);
+    const milestone = text(source.milestone, 40);
+    const duration = number(source.duration, 3_600_000);
     return {
       ...(productId !== undefined ? { productId } : {}),
       ...(resultCount !== undefined ? { resultCount } : {}),
@@ -66,7 +68,9 @@ window.DJ = window.DJ || {};
       ...(domContentLoaded !== undefined ? { domContentLoaded } : {}),
       ...(load !== undefined ? { load } : {}),
       ...(category ? { category } : {}),
-      ...(kind ? { kind } : {})
+      ...(kind ? { kind } : {}),
+      ...(milestone ? { milestone } : {}),
+      ...(duration !== undefined ? { duration } : {})
     };
   }
 
@@ -133,6 +137,14 @@ window.DJ = window.DJ || {};
   }
 
   DJ.trackEvent = trackEvent;
+  // Fan games can start before this idle-loaded client exists. Flush only the
+  // aggregate events queued by tools/fan-telemetry.js, then let future events
+  // use the normal first-party client directly.
+  const fanQueue = Array.isArray(DJ.__fanTelemetryQueue) ? DJ.__fanTelemetryQueue.splice(0) : [];
+  for (const item of fanQueue) {
+    try { trackEvent(item.event, item.data); } catch { /* measurement stays non-blocking */ }
+  }
+  window.dispatchEvent(new CustomEvent('dj-analytics-ready'));
   observeVitals();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => trackEvent('page_view'), { once: true });

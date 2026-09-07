@@ -6,7 +6,14 @@
  * keeps a shared scenario honest when the underlying source snapshot updates.
  */
 
-export const SCENARIO_URL_VERSION = "1";
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=__LINEUP_LAB_ASSET_VERSION__";
+
+// v3 adds explicit custom O/D preferences. v2 preserves fractional/combined
+// Historical weights; v1 retains its integer-only contract. Old pages reject
+// a v3 link rather than silently replacing its custom objective with Balanced.
+export const SCENARIO_URL_VERSION = "3";
+const SUPPORTED_SCENARIO_VERSIONS = new Set(["1", "2", SCENARIO_URL_VERSION]);
+const MAX_SHARED_WEIGHT = 10000;
 
 const MODE_VALUES = new Set(["lineup", "rotation"]);
 const EXPERIENCE_VALUES = new Set(["simple", "detailed"]);
@@ -92,20 +99,24 @@ function addFiniteParameter(params, key, value, options) {
 function encodeWeights(weights = {}) {
   return Object.entries(WEIGHT_CODES)
     .map(([field, code]) => {
-      const value = finiteNumber(weights[field], { minimum: 0, maximum: 100, integer: true });
+      if (weights[field] === undefined) return "";
+      const raw = weights[field];
+      const value = typeof raw === "number" ? finiteNumber(raw, { minimum: 0, maximum: MAX_SHARED_WEIGHT }) : undefined;
+      if (value === undefined) throw new Error("Strategy weights must be finite numbers from 0 through 10000 to share without changing the objective.");
       return value && value > 0 ? `${code}:${value}` : "";
     })
     .filter(Boolean)
     .join(",");
 }
 
-function decodeWeights(value, warnings) {
+function decodeWeights(value, warnings, version) {
   const weights = {};
   for (const entry of String(value || "").split(",")) {
-    const [code, rawValue] = entry.split(":");
+    const [code, rawValue, extra] = entry.split(":");
     const field = WEIGHT_FIELDS[code];
-    const number = finiteNumber(rawValue, { minimum: 0, maximum: 100, integer: true });
-    if (!field || number === undefined) {
+    const number = rawValue?.trim() ? finiteNumber(rawValue, { minimum: 0,
+      maximum: version === "1" ? 100 : MAX_SHARED_WEIGHT, integer: version === "1" }) : undefined;
+    if (!field || number === undefined || extra !== undefined || Object.hasOwn(weights, field)) {
       if (entry) warnings.push("Ignored an invalid strategy weight from the shared link.");
       continue;
     }
@@ -150,7 +161,13 @@ export function encodeScenarioQuery(input = {}) {
   if (EXPERIENCE_VALUES.has(input.experience)) params.set("experience", input.experience);
   if (MODE_VALUES.has(input.mode)) params.set("mode", input.mode);
   if (["historical", "scout"].includes(input.modelMode)) params.set("modelMode", input.modelMode);
-  if (["balanced", "offense", "defense"].includes(input.scoutObjective)) params.set("scoutObjective", input.scoutObjective);
+  if (input.scoutObjectiveWeights !== undefined || input.scoutObjective === "custom") {
+    // Validate with the Worker's exact contract, but preserve raw inputs, not
+    // rounded display shares. Scaling 0.3/0.1 to 3/1 is optional, not transport.
+    resolveScoutObjectiveWeights(input.scoutObjectiveWeights, input.scoutObjective);
+    params.set("scoutObjective", "custom");
+    params.set("scoutMix", `${input.scoutObjectiveWeights.offense}:${input.scoutObjectiveWeights.defense}`);
+  } else if (["balanced", "offense", "defense"].includes(input.scoutObjective)) params.set("scoutObjective", input.scoutObjective);
   addFiniteParameter(params, "size", input.size, { minimum: 5, maximum: 12, integer: true });
   addFiniteParameter(params, "alts", input.alternatives, { minimum: 1, maximum: 50, integer: true });
   if (PRESET_VALUES.has(input.preset)) params.set("preset", input.preset);
@@ -268,10 +285,10 @@ export function decodeScenarioQuery(search = "") {
   const params = new URLSearchParams(raw);
   const warnings = [];
   if (!params.has("v")) return { scenario: null, warnings };
-  if (params.get("v") !== SCENARIO_URL_VERSION) {
+  if (!SUPPORTED_SCENARIO_VERSIONS.has(params.get("v"))) {
     return { scenario: null, warnings: ["This shared scenario uses an unsupported link version."] };
   }
-  const scenario = { version: SCENARIO_URL_VERSION };
+  const scenario = { version: params.get("v") };
   const team = String(params.get("team") || "").trim().toUpperCase();
   if (team) {
     if (/^[A-Z0-9]{2,8}$/.test(team)) scenario.team = team;
@@ -285,12 +302,28 @@ export function decodeScenarioQuery(search = "") {
     ["preset", PRESET_VALUES],
     ["experience", EXPERIENCE_VALUES],
     ["modelMode", new Set(["historical", "scout"])],
-    ["scoutObjective", new Set(["balanced", "offense", "defense"])],
+    ["scoutObjective", new Set(["balanced", "offense", "defense", ...(scenario.version === "3" ? ["custom"] : [])])],
   ]) {
     const value = params.get(key);
     if (!value) continue;
     if (allowed.has(value)) scenario[key] = value;
     else warnings.push(`Ignored an invalid ${key} from the shared link.`);
+  }
+  if (params.has("scoutMix") || params.get("scoutObjective") === "custom") {
+    // A malformed objective is not a partly restorable link. Discard the
+    // scenario and ask the visitor to choose priorities explicitly, instead
+    // of silently running a different optimization with default O/D weights.
+    try {
+      const parts = (params.get("scoutMix") ?? "").split(":");
+      if (scenario.version !== "3" || scenario.scoutObjective !== "custom"
+        || params.getAll("scoutMix").length !== 1 || params.getAll("scoutObjective").length !== 1
+        || parts.length !== 2 || parts.some(value => !value.trim())) throw new Error();
+      const weights = { offense: Number(parts[0]), defense: Number(parts[1]) };
+      resolveScoutObjectiveWeights(weights, "custom");
+      scenario.scoutObjectiveWeights = weights;
+    } catch {
+      return { scenario: null, warnings: [...warnings, "This link has invalid custom Scout priorities and was not restored. Choose offense/defense priorities again or request a new link."] };
+    }
   }
   for (const [parameter, property, options] of [
     ["size", "size", { minimum: 5, maximum: 12, integer: true }],
@@ -307,7 +340,7 @@ export function decodeScenarioQuery(search = "") {
     if (value === undefined) warnings.push(`Ignored an invalid ${property} from the shared link.`);
     else scenario[property] = value;
   }
-  scenario.weights = decodeWeights(params.get("w"), warnings);
+  scenario.weights = decodeWeights(params.get("w"), warnings, scenario.version);
   scenario.statMinimums = decodeStatMinimums(params.get("min"), warnings);
   const positionMinimums = {};
   for (const entry of String(params.get("pos") || "").split(",")) {

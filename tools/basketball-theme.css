@@ -9,6 +9,7 @@ body.court-themed {
   --court-text:#172238; --court-muted:#536177; --court-border:#7C889C;
   --court-accent:#3D63D4; --court-on-accent:#FFF; --court-focus:#2449A4;
   --court-trim:#D63A4B; --court-positive:#176444; --court-warning:#80520D; --court-error:#AA263F;
+  --court-team-primary:#4169E1; --court-team-highlight:#E9B949; --court-team-trim:#D63A4B;
   --font-body:Manrope,system-ui,sans-serif; --font-display:'Barlow Condensed',Impact,sans-serif;
   --text:var(--court-text); --ink:var(--court-text); --muted:var(--court-muted);
   --heading-ink:var(--court-text);
@@ -25,6 +26,7 @@ body.court-themed.dark-mode {
   --court-text:#F4F6FA; --court-muted:#B1BED2; --court-border:#6C7A8E;
   --court-accent:#E9B949; --court-on-accent:#111827; --court-focus:#F4D37C;
   --court-positive:#80DBB0; --court-warning:#F4D37C; --court-error:#FFA9B4;
+  --court-team-primary:#4169E1; --court-team-highlight:#E9B949; --court-team-trim:#D63A4B;
   color-scheme:dark;
 }
 body.court-themed main { background:transparent; }
@@ -54,7 +56,14 @@ body.court-themed :is(.game-badge,.lab-emblem):disabled { opacity:1; filter:none
 body.court-themed main :is(input,select)[aria-invalid=true] { border-color:var(--court-error); }
 
 /* Current-page indicators stay readable and scroll within their own region. */
-.court-toolbar { width:min(1240px,calc(100% - 2rem)); margin:1rem auto .2rem; display:flex; align-items:start; gap:.75rem; position:relative; z-index:5; }
+.court-toolbar { width:min(1240px,calc(100% - 2rem)); margin:1rem auto .2rem; padding-top:.45rem; display:flex; align-items:start; gap:.75rem; position:relative; z-index:5; }
+.court-toolbar::before { content:""; position:absolute; inset:0 0 auto; height:4px; border-radius:999px; background:linear-gradient(90deg,var(--court-team-primary),var(--court-team-highlight),var(--court-team-trim)); }
+.court-team-identity { flex:0 1 12.5rem; min-width:8.5rem; display:flex; align-items:center; gap:.55rem; min-height:46px; padding:.4rem .65rem; border:1px solid var(--court-border); border-left:4px solid var(--court-team-highlight); border-radius:10px; color:var(--court-text); background:var(--court-surface); }
+.court-team-identity__swatch { flex:0 0 1.45rem; width:1.45rem; height:1.45rem; border:2px solid var(--court-team-trim); border-radius:50%; background:linear-gradient(135deg,var(--court-team-primary) 0 50%,var(--court-team-highlight) 50%); box-shadow:0 0 0 2px var(--court-surface); }
+.court-team-identity__copy { min-width:0; display:grid; gap:.08rem; line-height:1.05; }
+.court-team-identity__eyebrow { color:var(--court-muted); font-size:.62rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.court-team-identity__name { overflow:hidden; color:var(--court-text); font-size:.83rem; text-overflow:ellipsis; white-space:nowrap; }
+.court-team-identity__team { overflow:hidden; color:var(--court-muted); font-size:.65rem; text-overflow:ellipsis; white-space:nowrap; }
 .court-navigation { min-width:0; flex:1; }
 body.court-themed .court-destinations { display:flex; flex-wrap:nowrap; gap:.4rem; overflow-x:auto; scrollbar-width:thin; padding:4px 4px 10px; margin:0; }
 body.court-themed .court-destinations a { display:flex; flex:0 0 auto; align-items:center; gap:.4rem; min-height:46px; padding:.45rem .75rem; border:1px solid transparent; border-radius:10px; color:var(--court-muted); background:transparent; text-decoration:none; font-size:.8rem; font-weight:700; white-space:nowrap; }
@@ -64,6 +73,7 @@ body.court-themed .court-destinations a:hover { color:var(--court-text); backgro
 .court-style { flex:0 0 auto; position:relative; margin-top:4px; }
 .court-style > summary { min-height:46px; padding:.7rem .75rem; border:1px solid var(--court-border); border-radius:10px; color:var(--court-text); background:var(--court-surface); font-size:.8rem; font-weight:700; cursor:pointer; }
 .court-style__panel { position:absolute; right:0; top:calc(100% + 8px); z-index:20; width:min(290px,calc(100vw - 2rem)); padding:1rem; border:1px solid var(--court-border); border-radius:14px; color:var(--court-text); background:var(--court-surface); box-shadow:0 16px 40px #0003; }
+.court-style__team { display:block; margin-top:.2rem; color:var(--court-muted); font-size:.78rem; }
 .court-style__panel p { color:var(--court-muted); font-size:.82rem; line-height:1.55; margin:.5rem 0 1rem; }
 .court-mode-buttons { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
 .court-mode-buttons button { min-height:44px; border:1px solid var(--court-border); border-radius:8px; background:var(--court-raised); color:var(--court-text); font-size:.9rem; font-weight:700; cursor:pointer; }
@@ -96,9 +106,15 @@ body.court-themed .workshop-hero-copy :is(.kicker,.page-title,p) { color:#F4F6FA
 body.court-themed :is(.matchup-hero-copy,.tools-hero-copy) .page-title { letter-spacing:.01em; }
 body.court-themed .tools-hero-copy .page-title { font-size:clamp(2.5rem,5.3vw,4.7rem); }
 body.court-themed .site-footer { --footer-image:var(--image-basketball-footer); }
+body.court-themed :is(.page-hero-card,.hero) { box-shadow:inset 0 4px 0 var(--court-team-highlight); }
+body.court-themed :is(.fix-five-scoreboard,.tools-status-strip,.dataset-strip,.workflow-shell) { border-top-color:var(--court-team-highlight); }
 
 @media (max-width:700px) {
   .court-toolbar { gap:.3rem; width:calc(100% - 1.4rem); margin-top:.55rem; }
+  .court-team-identity { flex-basis:10.75rem; min-width:8.5rem; padding-inline:.45rem; }
+  .court-team-identity__eyebrow { display:none; }
+  .court-team-identity__name { max-width:9rem; font-size:.78rem; }
+  .court-team-identity__team { max-width:9rem; font-size:.58rem; }
   body.court-themed .court-destinations a { padding-inline:.6rem; }
   .court-style > summary { padding-inline:.5rem; font-size:.74rem; }
   body.court-themed main :is(input,select) { font-size:1rem; }
@@ -106,6 +122,7 @@ body.court-themed .site-footer { --footer-image:var(--image-basketball-footer); 
 @media (prefers-reduced-motion:no-preference) {
   body.court-themed :is(.matchup-player-card:not([hidden]),.matchup-results-section:not([hidden]),.workshop-fields,.workshop-status[data-tone=success]) { animation:court-reveal 200ms ease-out; }
   .court-destinations a { transition:color 180ms ease,background-color 180ms ease; }
+  .court-team-identity,.court-team-identity__swatch { transition:border-color 180ms ease,background 180ms ease,color 180ms ease; }
   .court-style[open] .court-style__panel { animation:court-reveal 180ms ease-out; }
   body.court-themed .tools-featured-card { transition:transform 180ms ease,border-color 180ms ease; }
   body.court-themed .tools-featured-card:hover { transform:translateY(-3px); }

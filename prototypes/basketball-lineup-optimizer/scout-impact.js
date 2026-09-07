@@ -189,6 +189,28 @@ function normalizedWeights(offenseWeight, defenseWeight) {
     : { offense: 0.5, defense: 0.5 };
 }
 
+/**
+ * Continuous user preference, kept separate from fitted O/D coefficients.
+ * The three familiar presets are shorthand, not the only valid objectives.
+ * For example 70/30 and 7/3 must request exactly the same basketball tradeoff.
+ * A missing/invalid setting must never quietly become a balanced request.
+ */
+export function resolveScoutObjectiveWeights(input, preset = "balanced") {
+  if (input === undefined) {
+    if (!["balanced", "offense", "defense"].includes(preset)) throw new Error("Choose Balanced, Offense, Defense, or provide custom Scout weights.");
+    return { offense: preset === "defense" ? 0 : preset === "offense" ? 1 : .5,
+      defense: preset === "offense" ? 0 : preset === "defense" ? 1 : .5, custom: false };
+  }
+  if (!input || typeof input !== "object" || Array.isArray(input)
+    || Object.keys(input).some(key => key !== "offense" && key !== "defense")
+    || ![input.offense, input.defense].every(n => typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= 10000)
+    || !(input.offense + input.defense > 0)) {
+    throw new Error("Custom Scout weights need both offense and defense as numbers from 0 to 10000, with at least one above zero.");
+  }
+  const total = input.offense + input.defense;
+  return { offense: input.offense / total, defense: input.defense / total, custom: true };
+}
+
 function percentileRanks(values) {
   const rows = values
     .map(({ id, value }) => ({ id, value: finite(value) }))
@@ -359,10 +381,12 @@ export function buildScoutImpactModel(players, evidence, { mode = "historical", 
 /**
  * Build the bounded player-minute objective that the exact allocator uses.
  *
- * `baseScoresById` is the normal 0–1 user-game-plan score. Scout does not add
- * arbitrary RAPM units to it. Instead, it blends a reliability-shrunk Scout
- * percentile toward that score, preserving a transparent 0–1 minute utility
- * for both the linear and diminishing-return allocation paths.
+ * Primary Scout combines fitted O/D coefficients using the user's continuous
+ * preference weights, then applies ONE common affine transform. Rescaling O
+ * and D independently or converting each to a percentile would distort their
+ * relative points-per-100 units and could reverse a requested 70/30 tradeoff.
+ * `baseScoresById` is context only in primary Scout. Legacy hybrid experiments
+ * retain their explicitly separate percentile blend for reproducibility.
  */
 export function buildScoutMinuteObjective(
   players,
@@ -493,6 +517,7 @@ export function scoreScoutCandidate(
   }
   const adjustmentPoints = minuteAdjustmentPoints + exactLineupAdjustmentPoints;
   const additiveImpact = side => players.reduce((sum, player) => sum + model.impactsById.get(player.id)[side] * normalizedMinutes.get(player.id) / 48, 0);
+  const objectiveWeights = model.objectiveWeights || { offense: .5, defense: .5 };
   return {
     applied: true,
     adjustmentPoints,
@@ -504,11 +529,29 @@ export function scoreScoutCandidate(
     impact: minuteAdjustmentPoints,
     exactLineupResidual,
     exactLineupSource,
+    // Selection explanations need the objective actually used, not unrelated
+    // high box-score percentiles. Keep coefficients separate from exposure-
+    // weighted contributions; their sums reconcile to the full O/D readout.
+    // Minutes/48 approximates possession share, not a causal usage response.
+    playerImpactContributionsById: Object.fromEntries(players.map(player => {
+      const row = model.impactsById.get(player.id);
+      const minutes = normalizedMinutes.get(player.id);
+      const offense = row.offense * minutes / 48;
+      const defense = row.defense * minutes / 48;
+      return [player.id, {
+        offenseCoefficient: row.offense, defenseCoefficient: row.defense,
+        minutes, offense, defense,
+        preferenceWeighted: offense * objectiveWeights.offense + defense * objectiveWeights.defense,
+      }];
+    })),
     // These are sums of player coefficients at approximate possession shares,
     // not validated forecasts for an unseen rotation or an opponent matchup.
     additiveImpactPer100: {
       offense: additiveImpact("offense"), defense: additiveImpact("defense"),
       net: additiveImpact("offense") + additiveImpact("defense"),
+      preferenceWeighted: additiveImpact("offense") * objectiveWeights.offense + additiveImpact("defense") * objectiveWeights.defense,
+      objectiveWeights: { offense: objectiveWeights.offense, defense: objectiveWeights.defense },
+      preferenceLabel: "User-weighted additive O/D impact; preference utility, not predicted net rating",
       label: "Additive player-impact estimate; not a game forecast",
       validatedLineupForecast: false,
     },

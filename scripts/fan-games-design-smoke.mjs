@@ -29,7 +29,13 @@ const server = createServer(async (request, response) => {
     let relative = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname).replace(/^\/+/, '');
     if (relative.endsWith('/')) relative += 'index.html';
     const target = path.resolve(root, relative);
-    if (['backend-config.js', 'analytics.js', 'supabase-client.js'].includes(relative)) {
+    if (relative === 'analytics.js') {
+      response.writeHead(200, { 'Content-Type':'text/javascript' });
+      response.end(`window.DJ ||= {}; window.DJ.__testTelemetry = window.DJ.__testTelemetry || [];
+        window.DJ.trackEvent = (event, data) => window.DJ.__testTelemetry.push({ event, data });
+        window.dispatchEvent(new CustomEvent('dj-analytics-ready'));`); return;
+    }
+    if (['backend-config.js', 'supabase-client.js'].includes(relative)) {
       response.writeHead(200, { 'Content-Type':'text/javascript' });
       response.end('window.DJ ||= {}; window.DJ.remoteCatalog = { invokeFunction: (_, body) => window.uiTestInvoke(body), getSession: async () => null };'); return;
     }
@@ -44,6 +50,26 @@ const server = createServer(async (request, response) => {
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
 const executablePath = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Google/Chrome/Application/chrome.exe'].find(existsSync);
+async function assertHistoryContrast(history) {
+  const result = await history.locator('p').first().evaluate(element => {
+    const rgb = text => { const values = text.match(/[\d.]+/g)?.map(Number); return values?.length >= 3 ? [...values.slice(0, 3), values[3] ?? 1] : null; };
+    const foreground = rgb(getComputedStyle(element).color);
+    let backgrounds = [];
+    for (let ancestor = element; ancestor && !backgrounds.length; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor);
+      backgrounds = (style.backgroundImage.match(/rgba?\([^)]+\)/g) || []).map(rgb).filter(color => color && color[3] === 1);
+      const solid = rgb(style.backgroundColor); if (!backgrounds.length && solid?.[3] === 1) backgrounds.push(solid);
+    }
+    const luminance = color => color.slice(0, 3).map(value => value / 255).map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+      .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+    const ratios = backgrounds.map(background => {
+      const text = foreground.map((value, index) => index < 3 ? value * foreground[3] + background[index] * (1 - foreground[3]) : 1);
+      const a = luminance(text), b = luminance(background); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+    });
+    return { ratios, foreground, backgrounds };
+  });
+  assert.ok(result.ratios.length && result.ratios.every(ratio => ratio >= 4.5), `History text must clear 4.5:1 across its panel colors: ${JSON.stringify(result)}`);
+}
 let browser;
 try {
   browser = await chromium.launch({ executablePath, headless:true });
@@ -109,24 +135,48 @@ try {
     for (let pick = 0; pick < 5; pick++) {
       await choices.first().focus(); await page.keyboard.press('Enter');
       await confirm.focus(); await page.keyboard.press('Enter');
+      await page.locator('#gameStatus[role="status"]').waitFor();
+      assert.equal(await page.locator('#gameStatus').getAttribute('aria-live'), 'polite');
+      assert.equal(await page.locator('#gameStatus').getAttribute('aria-atomic'), 'true');
+      assert.match(await page.locator('#gameStatus').textContent(), /revealed|ready/i, 'Reveal status is announced with readable copy');
       if (gameKind === 'fix-the-five') {
         await page.locator('button[data-action="next"]').waitFor();
+        assert.equal(await page.evaluate(() => document.activeElement?.id), 'challengeTitle', 'Reveal restores focus to the challenge heading');
         if (pick === 0) {
           await page.locator('button[data-action="change"]').click();
           await choices.nth(1).click();
           await confirm.click();
           await page.locator('button[data-action="next"]').waitFor();
+          const history = page.locator('[data-decision-history]');
+          assert.match(await history.locator('summary').innerText(), /2 checked choices/);
+          await history.locator('summary').click();
+          assert.match(await history.innerText(), /First checked:/);
+          await assertHistoryContrast(history);
+          await history.screenshot({ path:path.join(output, `${gameKind}-${width}-${theme}-history.png`) });
         }
         await page.locator('button[data-action="next"]').click();
       } else if (pick === 0) {
         assert.equal(await page.locator('.draft-night-open-slot').count(), 4);
+        assert.equal(await page.evaluate(() => document.activeElement?.id), 'draftTitle', 'Draft reveal restores focus to the current pick heading');
         await page.locator('#undoPick').click();
         assert.equal(await page.locator('.draft-night-open-slot').count(), 5);
         await choices.nth(1).click();
         await confirm.click();
+      } else if (pick < 4) {
+        assert.equal(await page.evaluate(() => document.activeElement?.id), 'draftTitle', 'Draft progress restores focus to the current pick heading');
+      } else {
+        await page.locator('#completionPanel').waitFor();
+        assert.equal(await page.evaluate(() => document.activeElement?.id), 'completionTitle', 'Final reveal restores focus to the completion heading');
       }
     }
     await page.locator('#completionPanel .fix-five-total-score').waitFor();
+    await page.waitForFunction((kind) => window.DJ?.__testTelemetry?.some(entry => entry.data?.kind === `fan-${kind}` && entry.data?.milestone === 'completion'), gameKind);
+    const milestoneEvents = await page.evaluate((kind) => window.DJ.__testTelemetry.filter(entry => entry.data?.kind === `fan-${kind}`).map(entry => entry.data), gameKind);
+    for (const milestone of ['game_start', 'first_interaction', 'reveal', 'completion']) {
+      const event = milestoneEvents.find(entry => entry.milestone === milestone);
+      assert.ok(event, `Telemetry records ${milestone}`);
+      assert.ok(Number.isFinite(event.duration) && event.duration >= 0, `${milestone} duration is bounded`);
+    }
     if (gameKind === 'draft-night') {
       await page.locator('.game-decision-debrief').waitFor();
       const tryAlternative = page.locator('button[data-action="try-alternative"]').first();
@@ -137,6 +187,12 @@ try {
         await page.locator('#completionPanel .fix-five-total-score').waitFor();
         const revised = await page.locator('.draft-night-result-lineup strong').allTextContents();
         assert.equal(original.filter((name, index) => name !== revised[index]).length, 1, 'One-pick exploration keeps four players fixed');
+        const history = page.locator('[data-decision-history]');
+        assert.match(await history.locator('summary').innerText(), /2 checked choices/);
+        await history.locator('summary').click();
+        assert.match(await history.innerText(), /Best checked:/);
+        await assertHistoryContrast(history);
+        await history.screenshot({ path:path.join(output, `${gameKind}-${width}-${theme}-history.png`) });
       }
     }
     await page.screenshot({ path:path.join(output, `${gameKind}-${width}-${theme}-result.png`) });
@@ -151,6 +207,7 @@ try {
     if (gameKind === 'draft-night') await page.locator('button[data-action="retry"]').click();
     else await confirm.click();
     await page.locator(gameKind === 'draft-night' ? '#completionPanel .fix-five-total-score' : '.fix-five-round-score').waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement?.id), gameKind === 'draft-night' ? 'completionTitle' : 'challengeTitle', 'Reveal recovery restores focus to the result heading');
     unavailable = true; await page.reload();
     await page.locator('#gameStatus.is-error').waitFor();
     assert.equal(await choices.count(), 0);

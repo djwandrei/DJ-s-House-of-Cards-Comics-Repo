@@ -246,16 +246,22 @@ const OBJECTIVE_METRIC_KEYS = Object.freeze([
 export function weightsFromSkillFamilies(familyWeights = {}) {
   const metricWeights = Object.fromEntries(OBJECTIVE_METRIC_KEYS.map((metric) => [metric, 0]));
   for (const [family, definition] of Object.entries(OBJECTIVE_FAMILY_DEFINITIONS)) {
-    const familyWeight = Math.max(0, Number(familyWeights?.[family]) || 0);
+    const raw = familyWeights?.[family];
+    const familyWeight = raw === undefined ? 0 : Number(raw);
+    if (raw === null || typeof raw === "boolean" || raw === "" || !Number.isFinite(familyWeight) || familyWeight < 0) {
+      throw new Error(`The ${definition.label} priority must be a finite, nonnegative number.`);
+    }
     for (const [metric, coefficient] of Object.entries(definition.metrics)) {
       metricWeights[metric] += familyWeight * coefficient;
     }
   }
-  // Shared scenarios historically store integer metric weights. Rounding here
-  // keeps those URLs compact and deterministic while preserving the intended
-  // family proportions closely enough for a 0–100 slider.
+  // Do not round to whole numbers. For example, Scoring=1 should still carry
+  // its 0.15 impact share; rounding erased it and changed the answer merely
+  // when a user rescaled the same priorities. Remove only floating-point noise
+  // (100 * .55), retaining 15 significant digits even for tiny preferences.
+  // Scenario link v2 transports these values without integer-only truncation.
   return Object.fromEntries(
-    Object.entries(metricWeights).map(([metric, value]) => [metric, Math.round(value)]),
+    Object.entries(metricWeights).map(([metric, value]) => [metric, Number(value.toPrecision(15))]),
   );
 }
 

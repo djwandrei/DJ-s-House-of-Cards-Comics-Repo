@@ -1,7 +1,7 @@
 import {
   DEFAULT_FAMILY_PRESETS,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260907c";
+} from "./optimizer-config.js?v=20260907f";
 
 /**
  * Version the historical opponent model separately from the exact optimizer.

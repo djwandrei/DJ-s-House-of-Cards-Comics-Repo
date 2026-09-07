@@ -46,9 +46,18 @@ export async function loadOptimizerCore() {
     }
   }
 
-  const playerProjectionUrl = javascriptDataUrl(sources.playerProjection.replaceAll(
-    "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__", javascriptDataUrl(sources.workloadModel),
-  ));
+  const projectionEvidenceUrl = javascriptDataUrl(sources.projectionEvidence);
+  const playerProjectionUrl = javascriptDataUrl(
+    sources.playerProjection
+      .replaceAll(
+        MODULE_SPECIFIERS.workloadModel,
+        javascriptDataUrl(sources.workloadModel),
+      )
+      .replaceAll(
+        MODULE_SPECIFIERS.projectionEvidence,
+        projectionEvidenceUrl,
+      ),
+  );
   const lineupRoleUrl = javascriptDataUrl(
     sources.lineupRoleModel.replaceAll(
       MODULE_SPECIFIERS.playerProjection,
@@ -62,7 +71,7 @@ export async function loadOptimizerCore() {
     )),
     playerProjection: playerProjectionUrl,
     workloadModel: javascriptDataUrl(sources.workloadModel),
-    projectionEvidence: javascriptDataUrl(sources.projectionEvidence),
+    projectionEvidence: projectionEvidenceUrl,
     lineupRoleModel: lineupRoleUrl,
     scoutImpact: javascriptDataUrl(sources.scoutImpact),
     rotationUnitPlanner: javascriptDataUrl(sources.rotationUnitPlanner),

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadOptimizerCore } from './load-optimizer-core.mjs';
-import { buildScoutImpactModel, buildScoutMinuteObjective } from '../scout-impact.js';
+import { buildScoutImpactModel, buildScoutMinuteObjective, resolveScoutObjectiveWeights } from '../scout-impact.js';
 import { workloadRate, workloadUtilityCurve } from '../workload-model.js';
 import { projectionParametersFor } from '../projection-parameters.js';
 import { encodeScenarioQuery, decodeScenarioQuery } from '../scenario-url.js';
@@ -35,6 +35,48 @@ function bruteForce(side) {
   }
   return best;
 }
+
+test('custom offense/defense priorities equal an independent exhaustive roster/minute oracle', () => {
+  for (const weights of [{ offense: 3, defense: 1 }, { offense: 1, defense: 4 }, { offense: 0, defense: 1 }, { offense: 1, defense: 0 }]) {
+    const total = weights.offense + weights.defense;
+    let oracle = -Infinity;
+    // Enumerate choices directly; do not use production scores, solver bounds,
+    // affine scaling, or a solver-produced rotation as the expected answer.
+    for (let omit = 0; omit < players.length; omit++) {
+      const ids = players.map((_, index) => index).filter(index => index !== omit);
+      function visit(k, used, utility) {
+        if (k === ids.length) { if (used === 240) oracle = Math.max(oracle, utility); return; }
+        const id = ids[k], impact = (weights.offense * offense[id] + weights.defense * defense[id]) / total;
+        for (let minutes = 29; minutes <= 31; minutes++) visit(k + 1, used + minutes, utility + minutes * impact / 48);
+      }
+      visit(0, 0, 0);
+    }
+    const result = optimizeLineups(players, { ...config, scoutObjective: 'custom', scoutObjectiveWeights: weights });
+    assert.equal(result.ok, true, JSON.stringify(result.reasons));
+    assert.ok(Math.abs(result.best.modelAdjustments.scoutImpact.additiveImpactPer100.preferenceWeighted - oracle) < 1e-8);
+    const scaled = optimizeLineups(players, { ...config, scoutObjective: 'custom', scoutObjectiveWeights: { offense: weights.offense / 10, defense: weights.defense / 10 } });
+    assert.equal(scaled.ok, true);
+    assert.deepEqual(scaled.best.playerIds, result.best.playerIds);
+    assert.deepEqual(scaled.best.rotation.byId, result.best.rotation.byId);
+  }
+});
+
+test('invalid/empty Scout preferences fail instead of becoming a hidden balanced request', () => {
+  for (const weights of [null, {}, { offense: 0, defense: 0 }, { offense: -1, defense: 2 }, { offense: true, defense: 1 }]) {
+    assert.throws(() => resolveScoutObjectiveWeights(weights, 'custom'));
+    assert.equal(optimizeLineups(players, { ...config, scoutObjective: 'custom', scoutObjectiveWeights: weights }).ok, false);
+  }
+});
+
+test('a custom-objective replacement preserves references and cannot improve a proved optimum', () => {
+  const request = { ...config, scoutObjective: 'custom', scoutObjectiveWeights: { offense: 3, defense: 1 } };
+  const original = optimizeLineups(players, request);
+  assert.equal(original.ok, true);
+  const replacement = optimizeLineups(players, { ...request, selectionOnlyExcludedIds: [original.best.playerIds[0]] });
+  assert.equal(replacement.ok, true);
+  assert.deepEqual(replacement.diagnostics.objectiveReference, original.diagnostics.objectiveReference);
+  assert.ok(replacement.best.objectiveValue <= original.best.objectiveValue + 1e-9);
+});
 
 for (const side of ['offense', 'defense', 'balanced']) test(`Scout ${side}: exact roster AND minute optimum equals exhaustive enumeration`, () => {
   const result = optimizeLineups(players, { ...config, scoutObjective: side });

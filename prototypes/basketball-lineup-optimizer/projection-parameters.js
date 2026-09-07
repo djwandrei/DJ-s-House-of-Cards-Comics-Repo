@@ -11,7 +11,7 @@
 import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=__LINEUP_LAB_ASSET_VERSION__";
 
 export const HISTORICAL_PROJECTION_MODEL_VERSION =
-  "historical-rates-v7-consistent-shooting-evidence";
+  "historical-rates-v8-paired-scout-workload";
 
 export const DEFAULT_PROJECTION_RISK = "balanced";
 

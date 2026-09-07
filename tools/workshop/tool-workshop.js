@@ -1,11 +1,11 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260907c';
-import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260907c';
+import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260907f';
+import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260907f';
 import {
   clearWorkshopDraft,
   defaultWorkshopValues,
   loadWorkshopDraft,
   saveWorkshopDraft
-} from './workshop-state.js?v=20260907c';
+} from './workshop-state.js?v=20260907f';
 
 const FALLBACK_EXPERIENCE_ID = WORKSHOP_DEFINITIONS[0]?.id || '';
 

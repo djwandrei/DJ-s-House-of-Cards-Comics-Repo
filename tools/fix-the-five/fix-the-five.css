@@ -73,7 +73,6 @@
 #gameBoard:focus-visible { outline: 3px solid var(--fix-blue); outline-offset: 4px; }
 body.dark-mode #gameBoard:focus-visible { outline-color: #e8b84c; }
 
-.fix-five-hero-pills,
 .fix-five-result-pills,
 .fix-five-dna-list,
 .fix-five-lineup-list,
@@ -83,11 +82,6 @@ body.dark-mode #gameBoard:focus-visible { outline-color: #e8b84c; }
   gap: .5rem;
 }
 
-.fix-five-hero-pills {
-  margin-top: 1rem;
-}
-
-.fix-five-hero-pills span,
 .fix-five-result-pills span {
   border: 1px solid rgba(255, 255, 255, .35);
   border-radius: 999px;
@@ -1152,6 +1146,7 @@ body.dark-mode.fix-five-page .fix-five-complete > p { color:#c2cfe5; }
 .game-decision-brief,.game-draft-needs,.game-decision-preview,.game-decision-debrief { margin-block:1rem; padding:.85rem 1rem; border-left:3px solid var(--brand,#1f2fa3); background:var(--surface-strong); color:var(--text); border-radius:0 10px 10px 0; }
 .game-decision-brief p,.game-draft-needs p { margin:.45rem 0; }
 .game-decision-brief small,.game-draft-needs small,.game-decision-details p,.game-decision-details small { color:var(--muted); }
+[data-decision-history] p,[data-decision-history] small { color:inherit; }
 .game-decision-preview { border-color:#e8b84c; }
 .fix-five-page .game-decision-preview .button { background:var(--brand-blue); color:var(--brand-white); }
 .fix-five-page .game-decision-preview .button-secondary,.fix-five-page .draft-night-learning .button-secondary { background:var(--surface-strong); color:var(--text); border:1px solid var(--border); }

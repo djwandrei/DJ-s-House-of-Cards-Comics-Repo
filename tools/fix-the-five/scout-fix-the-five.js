@@ -9,12 +9,16 @@ import {
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260907b';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260907f';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260907f';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260907f';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260907f';
 
 const GAME_KIND = 'fix-the-five';
 const RUN_LENGTH = 5;
 const STORAGE_KEY = 'djhc.fix-the-five.scout.v1';
 const STORAGE_VERSION = 1;
+const milestones = createFanMilestones(GAME_KIND);
 
 const elements = {
   runTitle: document.getElementById('runTitle'),
@@ -35,6 +39,7 @@ const state = {
   seed: readSeedFromUrl(),
   family: readFamilyFromUrl(),
   board: null,
+  history: null,
   selections: {},
   outcomes: new Map(),
   activeIndex: 0,
@@ -211,6 +216,7 @@ function createResult(challenge, candidate, outcome) {
     createElement('span', '', sourceFamilyLabel(challenge.source.family)),
   );
   result.append(pills);
+  result.append(decisionHistoryPanel(state.history.summary(challenge.id)));
   const removed = challenge.lineup.find(player => player.id === challenge.removeId);
   result.append(decisionDebrief('Your decision, explained', [
     `${removed?.name || 'The marked player'} out; ${candidate.name} in. The other four players stayed fixed.`,
@@ -380,6 +386,7 @@ function renderCompletion() {
   actions.append(share, replay, tools);
   elements.completionPanel.append(actions);
   elements.completionPanel.append(createNextPlay(GAME_KIND));
+  milestones.mark('completion');
 }
 
 function render() {
@@ -405,8 +412,10 @@ async function chooseCandidate(candidateId) {
       challengeId: challenge.id,
       candidateId,
     });
+    state.history.record(challenge.id, [candidateId], outcome);
     state.selections[challenge.id] = candidateId;
     state.outcomes.set(challenge.id, outcome);
+    milestones.mark('reveal');
     state.previewId = '';
     persistSelections();
     setStatus(`${challenge.candidates.find((candidate) => candidate.id === candidateId)?.name || 'Your swap'} is locked. Scout rank revealed on this fixed board.`);
@@ -496,6 +505,7 @@ async function restoreSavedSelections() {
         challengeId: challenge.id,
         candidateId,
       });
+      state.history.record(challenge.id, [candidateId], outcome);
       state.selections[challenge.id] = candidateId;
       state.outcomes.set(challenge.id, outcome);
     } catch {
@@ -514,6 +524,7 @@ function bindEvents() {
     if (button.dataset.action === 'choose') {
       const challenge = challengeAt(state.activeIndex);
       if (!challenge?.candidates.some(player => player.id === button.dataset.candidateId)) return;
+      milestones.mark('first_interaction');
       state.previewId = button.dataset.candidateId;
       render(); focusGameStage(document.getElementById('decisionPreviewTitle'));
     }
@@ -549,6 +560,9 @@ async function loadGame() {
   setStatus('Loading the daily board.');
   try {
     state.board = await loadScoutDailyBoard({ gameKind: GAME_KIND, dailySeed: state.seed, family: state.family });
+    state.history = createDecisionHistory(state.board);
+    state.selections = {}; state.outcomes.clear(); state.activeIndex = 0; state.previewId = '';
+    milestones.mark('game_start');
     await restoreSavedSelections();
     setStatus('Today’s validated Scout board is ready. Pick a legal replacement to reveal its fixed-board rank.');
     render();

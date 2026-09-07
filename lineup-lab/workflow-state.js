@@ -8,8 +8,10 @@ export const WORKFLOW_STEPS = Object.freeze([
   { id: "review", label: "Review & build", title: "Ready to draw it up?", description: "Check your game-plan ticket. You can edit any section before the exact search starts." },
 ]);
 
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260907f";
+
 export const WORKFLOW_FIELDS = Object.freeze({
-  plan: ["modeInput", "sizeInput", "modelModeInput", "scoutObjectiveInput"],
+  plan: ["modeInput", "sizeInput", "modelModeInput", "scoutObjectiveInput", "scoutOffenseWeightInput", "scoutDefenseWeightInput"],
   rules: ["minGuardsInput", "minForwardsInput", "minCentersInput", "positionFlexibilityInput", "minGamesInput", "minMinutesInput", "minPointsInput", "minReboundsInput", "minAssistsInput", "minStealsInput", "minBlocksInput", "maxTurnoversInput", "rotationMinInput", "rotationMaxInput", "rotationMinutePlanInput", "rotationFlexibilityInput", "rotationAllocationStyleInput", "rotationScoringBasisInput", "rotationRateStabilityInput", "rotationPositionProfileInput", "projectionRiskInput", "roleBalanceInput", "alternativesInput", "analyticsViewInput"],
 });
 export const DRAFT_KEY = "djhc-lineup-lab-workflow-v1";
@@ -32,7 +34,10 @@ export function sanitizeDraftForm(form) {
     fields: safeFields(settings?.fields),
     activePreset: ["balanced", "offense", "defense", "shooting", "playmaking", "rebounding", "custom"].includes(settings?.activePreset) ? settings.activePreset : "balanced",
     familyWeights: safeNumbers(settings?.familyWeights, FAMILIES),
-    weights: safeNumbers(settings?.weights, WEIGHTS),
+    // Family contributions can combine above 100; keep the fractional/raw
+    // preference map exactly as the URL/solver sees it rather than dropping
+    // large components during local draft restoration.
+    weights: safeNumbers(settings?.weights, WEIGHTS, 10000),
     analyticsView: ["perGame", "per36", "per100Estimated", "eraRelative"].includes(settings?.analyticsView) ? settings.analyticsView : "perGame",
   });
   const settings = sanitizeSettings(form);
@@ -89,6 +94,10 @@ export function validateWorkflow({ datasetReady, datasetMatches, loading, config
     add("plan", "sizeInput", "Choose 5 players for a starting five, or 8–12 for a full rotation.");
   }
   if (config.modelMode !== "scout" && !Object.values(weights).some(value => value > 0)) add("plan", "weightGrid", "Give at least one game-plan priority a value above zero.");
+  if (config.modelMode === "scout") {
+    try { resolveScoutObjectiveWeights(config.scoutObjectiveWeights, config.scoutObjective ?? "balanced"); }
+    catch (error) { add("plan", config.scoutObjective === "custom" ? "scoutOffenseWeightInput" : "scoutObjectiveInput", error.message); }
+  }
   const roleCount = Object.values(positionMinimums).reduce((sum, n) => sum + n, 0);
   if (roleCount > size) add("rules", "minGuardsInput", `${roleCount} required court-role slots cannot fit into ${size} players. Lower the role minimums or increase the rotation size in Game plan.`);
   if (mode === "rotation") {
@@ -115,13 +124,11 @@ export function validateWorkflow({ datasetReady, datasetMatches, loading, config
       break;
     }
   }
-  // An inexpensive upper bound can reject impossible starting-five production
-  // before submission. Rotation production remains with the exact workload model.
-  if (detailed && mode === "lineup" && available.length >= size) {
-    for (const [stat, floor] of Object.entries(config.statMinimums || {})) {
-      const upper = available.map(p => Number(p[stat]) || 0).sort((a, b) => b - a).slice(0, size).reduce((sum, n) => sum + n, 0);
-      if (floor > upper + 1e-7) add("rules", `min${stat[0].toUpperCase()}${stat.slice(1)}Input`, `The ${stat} floor exceeds even the pool's top ${size} combined ${stat} total (${upper.toFixed(1)}). Lower that floor.`);
-    }
-  }
+  // Production feasibility belongs to the Worker's evidence-aware bounds and
+  // exact constraint layer, even for a starting five. The visible per-game
+  // column can be team-only legacy context while the solver uses independently
+  // reconciled, metric-specific all-team games. A raw UI sum is not an upper
+  // bound on that quantity. Do not reject a feasible request before it is solved
+  // or turn an unknown stat into a zero just to construct a cheap pre-check.
   return errors;
 }

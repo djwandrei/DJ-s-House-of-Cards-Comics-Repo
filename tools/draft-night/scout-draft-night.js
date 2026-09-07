@@ -9,12 +9,16 @@ import {
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine, validOnePickAlternatives } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260907b';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260907f';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260907f';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260907f';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260907f';
 
 const GAME_KIND = 'draft-night';
 const PICK_COUNT = 5;
 const STORAGE_KEY = 'djhc.draft-night.scout.v1';
 const STORAGE_VERSION = 1;
+const milestones = createFanMilestones(GAME_KIND);
 
 const elements = {
   runTitle: document.getElementById('runTitle'),
@@ -36,6 +40,7 @@ const state = {
   seed: readSeedFromUrl(),
   family: readFamilyFromUrl(),
   board: null,
+  history: null,
   selections: [],
   outcome: null,
   pending: false,
@@ -332,12 +337,14 @@ function renderCompletion() {
       createElement('span', '', sourceFamilyLabel(deck().source.family)),
     );
     elements.completionPanel.append(resultPills, createOnePickLearning(outcome));
+    elements.completionPanel.append(decisionHistoryPanel(state.history.summary(deck().id)));
     elements.completionPanel.append(decisionDebrief('Your draft, explained', [
       `You filled ${deck().rounds.map(round => round.title).join(', ')} from the same fixed board.`,
       `${deck().objective.label} decided the sealed rank. The role checklist described legal slots, not an extra chemistry bonus.`,
       'Use a supplied one-pick change to keep four choices fixed and compare again. Undo or restart affects only this browser; it does not alter the daily board.',
     ]));
     elements.completionPanel.append(createElement('p', 'fix-five-result-caveat', `${outcome.scoring?.description || state.board.scoring} Visible source stats are context only; raw Scout inputs remain private.`));
+    milestones.mark('completion');
   }
 
   const actions = createElement('div', 'fix-five-complete-actions');
@@ -382,12 +389,15 @@ async function resolveOutcome(announce = true) {
   if (announce) setStatus('Comparing your five against the validated Scout board…');
   render();
   try {
-    state.outcome = await revealScoutDailyGame({
+    const outcome = await revealScoutDailyGame({
       gameKind: GAME_KIND,
       dailySeed: state.seed,
       family: state.family,
       selectionIds: state.selections,
     });
+    state.history.record(deck().id, state.selections, outcome);
+    state.outcome = outcome;
+    milestones.mark('reveal');
     recordCompletion();
     setStatus('Your fixed-board Scout result is ready.');
     return true;
@@ -482,6 +492,7 @@ function bindEvents() {
     if (!button || state.pending) return;
     if (button.dataset.action === 'choose') {
       if (!deck()?.rounds[currentIndex()]?.candidates.some(player => player.id === button.dataset.candidateId)) return;
+      milestones.mark('first_interaction');
       state.previewId = button.dataset.candidateId; render();
       focusGameStage(document.getElementById('decisionPreviewTitle'));
     }
@@ -494,7 +505,9 @@ function bindEvents() {
   elements.completionPanel.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-action]');
     if (!button) return;
-    if (button.dataset.action === 'retry') resolveOutcome();
+    if (button.dataset.action === 'retry') {
+      resolveOutcome().then(() => focusGameStage(document.getElementById('completionTitle')));
+    }
     if (button.dataset.action === 'undo') undoPick();
     if (button.dataset.action === 'restart') restartDraft();
     if (button.dataset.action === 'share') shareDraft();
@@ -515,6 +528,9 @@ async function loadGame() {
   setStatus('Loading the daily board.');
   try {
     state.board = await loadScoutDailyBoard({ gameKind: GAME_KIND, dailySeed: state.seed, family: state.family });
+    state.history = createDecisionHistory(state.board);
+    state.selections = []; state.outcome = null; state.previewId = '';
+    milestones.mark('game_start');
     restoreSelections();
     if (isComplete()) await resolveOutcome(false);
     else {

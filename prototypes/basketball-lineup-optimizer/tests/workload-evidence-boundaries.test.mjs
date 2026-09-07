@@ -79,7 +79,16 @@ for (const metric of ['points', 'efgPct', 'threePct']) {
     assert.equal(result.ok, true, JSON.stringify(result.reasons));
     assert.equal(result.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 0);
     assert.deepEqual(result.diagnostics.rotationRateStabilityEvidence.evidenceByMetric[metric], {
-      eligiblePlayers: 8, matchingSeasonSamples: 0, observedTeamSamples: 8, approximateSamples: 0, missingSamples: 0, metricAvailable: true,
+      eligiblePlayers: 8,
+      evidenceBackedPlayers: 8,
+      evidenceComplete: true,
+      baselineOnlyRowsUsed: 0,
+      matchingSeasonSamples: 0,
+      observedTeamSamples: 8,
+      verifiedScoutSamples: 0,
+      approximateSamples: 0,
+      missingSamples: 0,
+      metricAvailable: true,
     });
     assert.equal(result.best.score, fallback.best.score);
     assert.deepEqual(result.best.rotation.byId, fallback.best.rotation.byId);

@@ -19,7 +19,30 @@ const server = createServer((request, response) => {
   if (!target.startsWith(root + path.sep) || !allowed.has(path.extname(target)) || !fs.existsSync(target)) { response.writeHead(404); response.end(); return; }
   response.setHeader("Content-Type", allowed.get(path.extname(target)));
   response.setHeader("Cache-Control", "no-store");
+  if (path.basename(target) === "analytics.js") {
+    response.end(`window.DJ ||= {}; window.DJ.__testTelemetry = window.DJ.__testTelemetry || [];
+      window.DJ.trackEvent = (event, data) => window.DJ.__testTelemetry.push({ event, data });
+      window.dispatchEvent(new CustomEvent('dj-analytics-ready'));`);
+    return;
+  }
   if (["backend-config.js", "supabase-client.js"].includes(path.basename(target))) { response.end("window.DJ ||= {}; window.DJ.remoteCatalog = { getSession: async () => null };"); return; }
+  if (process.argv.includes("--coverage-qa") && path.basename(target) === "app.js") {
+    // Local smoke-only bridge, appended IN MEMORY to the served test module.
+    // Never added to deployable app.js. It exercises the real worker + result
+    // renderer with synthetic evidence without accessing private Auth/data.
+    response.end(fs.readFileSync(target, "utf8") + `\nwindow.__coverageQA = {
+      async run(players, config) {
+        const result = await runOptimization(players, config, state.optimizationRunId);
+        state.lastResult = result; elements.resultFreshness.hidden = true;
+        elements.resultsHeading.textContent = result.ok ? "Your recommended rotation" : "No feasible rotation";
+        if (result.ok) renderSuccess(result); else renderFailure(result);
+        elements.emptyResult.hidden = true; elements.results.hidden = false;
+        workflowView?.finish();
+        return { ok: result.ok, coverage: result.diagnostics.dataEligibility, copied: resultSummaryText() };
+      }
+    };`);
+    return;
+  }
   fs.createReadStream(target).pipe(response);
 });
 await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -62,6 +85,7 @@ async function reloadReady(label) {
 async function screenshot(name) { await wait(300); const shot = await send("Page.captureScreenshot", { format: "png" }); fs.writeFileSync(path.join(output, name + ".png"), Buffer.from(shot.data, "base64")); }
 async function assertStage(expected) { await retry(async () => (await current()) === expected, expected); assert.equal(await evaluate("document.activeElement.id"), "workflowHeading"); }
 const sourcePath = process.argv.includes("--release") ? "/lineup-lab/index.html" : "/prototypes/basketball-lineup-optimizer/index.html";
+const releaseMode = process.argv.includes("--release");
 try {
   const tabs = await retry(async () => { const r = await fetch(`http://127.0.0.1:${port}/json/list`); return r.ok ? r.json() : null; }, "browser launch");
   websocket = new WebSocket(tabs.find(t => t.type === "page").webSocketDebuggerUrl);
@@ -76,11 +100,14 @@ try {
   const base = `http://127.0.0.1:${server.address().port}`;
   await send("Page.navigate", { url: base + sourcePath });
   await retry(() => evaluate("document.querySelector('#datasetCount')?.textContent === '15' && document.querySelector('.journey-draft-status')?.textContent.includes('saved')"), "fixture + workflow", 20000);
+  if (releaseMode) await retry(() => evaluate("window.DJ?.__testTelemetry?.some(entry => entry.data?.kind === 'fan-lineup-lab' && entry.data?.milestone === 'game_start')"), "Lineup Lab game-start milestone");
   assert.equal(await current(), "team");
   assert.equal(await evaluate("document.querySelector('#loadLiveDataButton').textContent"), "Retry historical data");
   await screenshot("desktop-team");
   assert.equal(await evaluate("document.querySelector('[data-workflow-target=review]').disabled"), true);
-  await click("#workflowNext"); await assertStage("plan");
+  await click("#workflowNext");
+  await assertStage("plan");
+  if (releaseMode) await retry(() => evaluate("window.DJ.__testTelemetry.some(entry => entry.data?.kind === 'fan-lineup-lab' && entry.data?.milestone === 'first_interaction')"), "Lineup Lab first-interaction milestone");
   await click('[data-preset="offense"]');
   await screenshot("desktop-plan");
   await click("#workflowNext"); await assertStage("players");
@@ -95,9 +122,9 @@ try {
   assert.equal(await evaluate("document.querySelector('#workflowErrors').hidden"), false);
   assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /required court-role slots/);
   await setValue("#minGuardsInput", 2);
-  await setValue("#minPointsInput", 9999);
+  await setValue("#minPointsInput", -0.1);
   await click("#workflowNext");
-  assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /floor exceeds/);
+  assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /enter a valid number from 0/);
   await setValue("#minPointsInput", "");
   await click("#workflowNext"); await assertStage("review");
   assert.match(await evaluate("document.querySelector('#workflowReview').textContent"), /Must include:/);
@@ -108,6 +135,19 @@ try {
   await click("#optimizeButton");
   await retry(async () => (await current()) === "results", "exact result", 55000);
   assert.match(await evaluate("document.querySelector('#resultsHeading').textContent"), /recommended lineup/);
+  assert.equal(await evaluate("document.activeElement.id"), "resultsHeading");
+  assert.equal(await evaluate("document.querySelector('#solverStatus').getAttribute('role')"), "status");
+  assert.equal(await evaluate("document.querySelector('#solverStatus').getAttribute('aria-live')"), "polite");
+  assert.equal(await evaluate("document.querySelector('#solverStatus').getAttribute('aria-atomic')"), "true");
+  if (releaseMode) {
+    await retry(() => evaluate("window.DJ.__testTelemetry.some(entry => entry.data?.kind === 'fan-lineup-lab' && entry.data?.milestone === 'completion')"), "Lineup Lab completion milestone");
+    const telemetry = await evaluate("window.DJ.__testTelemetry.filter(entry => entry.data?.kind === 'fan-lineup-lab').map(entry => entry.data)");
+    for (const milestone of ["game_start", "first_interaction", "reveal", "completion"]) {
+      const event = telemetry.find(entry => entry.milestone === milestone);
+      assert.ok(event, `Lineup Lab records ${milestone}`);
+      assert.ok(Number.isFinite(event.duration) && event.duration >= 0, `${milestone} has an elapsed duration`);
+    }
+  }
   await screenshot("desktop-results");
   assert.match(await evaluate("document.querySelector('.lineup-dna__swap').textContent"), /Decision brief:/);
   await click('[data-action="lineup-dna-replacement"]');
@@ -170,6 +210,39 @@ try {
   await wait(150);
   assert.equal(await evaluate("localStorage.getItem('djhc-lineup-lab-workflow-v1')"), null);
   assert.equal(await evaluate("document.querySelectorAll('[data-action=lock]:checked').length"), 0);
+  if (process.argv.includes("--coverage-qa")) {
+    // Keep fixtures fake: this demonstrates missing coverage, not a real
+    // player's ability or current availability. The low score is not a filter.
+    await evaluate(`window.__coveragePool = Array.from({length:9},(_,i)=>({
+      id:'qa'+i,name:i===8?'Coverage Test Player':'Test Player '+i,team:'TST',positions:['G','F','C'],
+      games:60,starts:30,minutes:25,points:14,rebounds:5,assists:3,steals:1,blocks:.5,
+      turnovers:2,fgPct:.5,threePct:.35,efgPct:.55,ftPct:.8
+    })); window.__coverageConfig = {mode:'rotation',size:8,alternatives:1,modelMode:'scout',
+      scoutEvidence:{model:{calibration:{status:'validated',allComponentsImproved:true}},
+        players:Object.fromEntries(window.__coveragePool.slice(0,8).map((p,i)=>[p.id,{offense:i,defense:1,reliability:1}]))},
+      rotationOptions:{minMinutes:30,maxMinutes:30,minutePlan:'openWhatIf'}};`);
+    const result = await evaluate("window.__coverageQA.run(window.__coveragePool,window.__coverageConfig)");
+    assert.equal(result.ok, true);
+    assert.equal(result.coverage.eligibleCount, 8);
+    assert.match(result.copied, /Automatically left out.*Coverage Test Player/);
+    for (const width of [1440, 390, 320]) {
+      await send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: width < 761 });
+      await evaluate("document.querySelector('.data-eligibility-notice').scrollIntoView({block:'start'})");
+      assert.match(await evaluate("document.querySelector('.data-eligibility-notice').textContent"), /1 player automatically left out/);
+      assert.equal(await evaluate("document.querySelector('.data-eligibility-notice').checkVisibility()"), true);
+      assert.ok(await evaluate("document.documentElement.scrollWidth <= innerWidth + 1"), `${width}px coverage overflow`);
+      await screenshot(`coverage-${width}`);
+    }
+    await click("#detailedModeButton");
+    // Switching reading mode may mark a prior result stale, but the disclosure
+    // remains visible and does not change the user's saved exclusion checkboxes.
+    assert.equal(await evaluate("document.querySelector('.data-eligibility-notice').checkVisibility()"), true);
+    const conflict = await evaluate("window.__coverageQA.run(window.__coveragePool,{...window.__coverageConfig,lockedIds:['qa8']})");
+    assert.equal(conflict.ok, false);
+    assert.match(await evaluate("document.querySelector('.error-card').textContent"), /Locked player/);
+    assert.equal(await evaluate("document.querySelector('.data-eligibility-notice').checkVisibility()"), true);
+    await screenshot("coverage-locked-conflict");
+  }
   await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await send("Page.navigate", { url: base + "/tools/index.html" });
   await retry(() => evaluate("document.querySelector('#toolsFeatured')?.children.length > 0"), "fan hub");

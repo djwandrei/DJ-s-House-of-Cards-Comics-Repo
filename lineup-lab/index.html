@@ -11,15 +11,15 @@
   <meta name="theme-color" content="#15206b">
   <link rel="icon" href="../assets/games/lineup-lab-icon-20260907.png" sizes="32x32" type="image/png">
   <link rel="preload" href="../assets/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="storefront-shell.css?v=20260907c">
-  <link rel="stylesheet" href="styles.css?v=20260907c">
-  <link rel="stylesheet" href="workflow.css?v=20260907c">
-  <link rel="stylesheet" href="lab-experience.css?v=20260907c">
-  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260907c">
-  <link rel="stylesheet" href="lab-theme.css?v=20260907c">
+  <link rel="stylesheet" href="storefront-shell.css?v=20260907f">
+  <link rel="stylesheet" href="styles.css?v=20260907f">
+  <link rel="stylesheet" href="workflow.css?v=20260907f">
+  <link rel="stylesheet" href="lab-experience.css?v=20260907f">
+  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260907f">
+  <link rel="stylesheet" href="lab-theme.css?v=20260907f">
 </head>
 <body class="lab-guided court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
-  <script src="../theme-init.js?v=20260907c"></script>
+  <script src="../theme-init.js?v=20260907f"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
   <header class="site-header">
@@ -227,13 +227,13 @@
                     </label>
                   </div>
 
-                  <details class="weights-panel detailed-only" id="weightsPanel">
-                    <summary>Fine-tune the game plan <span>(optional)</span></summary>
+                  <details class="weights-panel" id="weightsPanel">
+                    <summary>Fine-tune the game plan <span id="priorityMixLabel">(optional)</span></summary>
                     <p class="helper" id="weightsHelp"><strong>The app automatically converts these sliders into a 100% focus mix.</strong> Raising one priority makes it more important relative to the others. Each family uses familiar box-score evidence plus a small OBPM/DBPM cross-check only when every eligible player has it; incomplete impact data is omitted for everyone, never guessed.</p>
                     <p class="weight-validation" id="weightValidation" role="status" hidden>Choose at least one skill priority above zero before optimizing.</p>
                     <div class="weight-grid" id="weightGrid" role="group" aria-label="Game-plan skill priorities" aria-describedby="weightsHelp weightValidation">
                       <label class="range-field"><span><strong>Scoring</strong><small>Points, efficient finishing, and a small impact check</small></span><input type="range" min="0" max="100" step="1" data-family="scoring"><output>0</output></label>
-                      <label class="range-field"><span><strong>Spacing</strong><small>Three-point accuracy, shot efficiency, and offensive impact</small></span><input type="range" min="0" max="100" step="1" data-family="spacing"><output>0</output></label>
+                      <label class="range-field"><span><strong>Spacing</strong><small>Three-point accuracy and evidence-supported attempt frequency</small></span><input type="range" min="0" max="100" step="1" data-family="spacing"><output>0</output></label>
                       <label class="range-field"><span><strong>Creation</strong><small>Assists, turnover control, and offensive impact</small></span><input type="range" min="0" max="100" step="1" data-family="creation"><output>0</output></label>
                       <label class="range-field"><span><strong>Rebounding</strong><small>End possessions and create extra chances</small></span><input type="range" min="0" max="100" step="1" data-family="rebounding"><output>0</output></label>
                       <label class="range-field"><span><strong>Perimeter Defense</strong><small>Disruption without treating steals as complete defense</small></span><input type="range" min="0" max="100" step="1" data-family="perimeterDefense"><output>0</output></label>
@@ -250,14 +250,25 @@
                           <option value="scout">Scout — advanced O/D impact (private preview)</option>
                         </select>
                       </label>
-                      <label class="field" id="scoutObjectiveField" hidden><span>Scout objective</span>
-                        <select id="scoutObjectiveInput" aria-describedby="modelModeHelp">
-                          <option value="balanced">Balanced — offense + defense</option>
-                          <option value="offense">Offense — create more points</option>
-                          <option value="defense">Defense — prevent more points</option>
+                      <label class="field" id="scoutObjectiveField" hidden><span>Offense / defense priority</span>
+                        <select id="scoutObjectiveInput" aria-describedby="scoutPrioritySummary">
+                          <option value="balanced">Balanced — equal priority</option>
+                          <option value="offense">Offense only — scoring impact</option>
+                          <option value="defense">Defense only — points prevented</option>
+                          <option value="custom">Custom — choose the balance</option>
                         </select>
                       </label>
                     </div>
+                    <!-- Preference weights do not refit RAPM or set minutes.
+                         These remain visible in Simple as well as Detailed. -->
+                    <div id="scoutCustomWeights" hidden>
+                      <div class="field-row">
+                        <label class="field"><span>Offense weight</span><input id="scoutOffenseWeightInput" type="number" min="0" max="10000" step="any" value="1" disabled aria-describedby="scoutCustomWeightsHelp scoutPrioritySummary"></label>
+                        <label class="field"><span>Defense weight</span><input id="scoutDefenseWeightInput" type="number" min="0" max="10000" step="any" value="1" disabled aria-describedby="scoutCustomWeightsHelp scoutPrioritySummary"></label>
+                      </div>
+                      <p class="field__help" id="scoutCustomWeightsHelp">Use any weights from 0 to 10,000; they do not need to add to 100. For example, 3 offense and 1 defense means a 75% / 25% preference mix. At least one must be above zero. This changes the tradeoff between estimated offensive impact and points prevented—not the underlying player estimates.</p>
+                    </div>
+                    <p class="field__help" id="scoutPrioritySummary" role="status" aria-live="polite" aria-atomic="true" hidden></p>
                     <p class="field__help" id="modelModeHelp">Historical combines your visible priorities with player-level box-score evidence. The administrator-only Scout preview uses validated possession-based impact as its ranking objective; a site administrator sign-in is required.</p>
                     <p class="field__help" id="scoutEvidenceStatus" role="status" hidden></p>
                   </div>
@@ -536,7 +547,7 @@
                   <div class="step-heading run-card__heading">
                     <span class="step-number" id="runStepNumber" aria-label="Step 4">4</span>
                     <div>
-                      <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite">Ready to build</p>
+                      <p class="eyebrow solver-status" id="solverStatus" role="status" aria-live="polite" aria-atomic="true">Ready to build</p>
                       <h2>Find the best eligible group.</h2>
                       <p class="run-card__intro">Every possible group is checked against the rules you can see.</p>
                     </div>
@@ -673,12 +684,13 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260907c"></script>
-  <script defer src="../core.js?v=20260907c"></script>
-  <script defer src="../nav.js?v=20260907c"></script>
-  <script defer src="../supabase-client.js?v=20260907c"></script>
-  <script type="module" src="app.js?v=20260907c"></script>
-  <script type="module" src="lab-experience.js?v=20260907c"></script>
-  <script type="module" src="../tools/basketball-branding.js?v=20260907c"></script>
+  <script defer src="../backend-config.js?v=20260907f"></script>
+  <script defer src="../core.js?v=20260907f"></script>
+  <script defer src="../nav.js?v=20260907f"></script>
+  <script defer src="../supabase-client.js?v=20260907f"></script>
+  <script type="module" src="app.js?v=20260907f"></script>
+  <script type="module" src="lab-telemetry.js?v=20260907f"></script>
+  <script type="module" src="lab-experience.js?v=20260907f"></script>
+  <script type="module" src="../tools/basketball-branding.js?v=20260907f"></script>
 </body>
 </html>

@@ -86,6 +86,8 @@ function compactPayload(value: unknown) {
   const load = safeNumber(source.load, 120_000);
   const category = safeText(source.category, 80);
   const kind = safeText(source.kind, 40);
+  const milestone = safeText(source.milestone, 40);
+  const duration = safeNumber(source.duration, 3_600_000);
   return {
     ...(productId !== undefined ? { productId } : {}),
     ...(resultCount !== undefined ? { resultCount } : {}),
@@ -98,7 +100,9 @@ function compactPayload(value: unknown) {
     ...(domContentLoaded !== undefined ? { domContentLoaded } : {}),
     ...(load !== undefined ? { load } : {}),
     ...(category ? { category } : {}),
-    ...(kind ? { kind } : {})
+    ...(kind ? { kind } : {}),
+    ...(milestone ? { milestone } : {}),
+    ...(duration !== undefined ? { duration } : {})
   };
 }
 

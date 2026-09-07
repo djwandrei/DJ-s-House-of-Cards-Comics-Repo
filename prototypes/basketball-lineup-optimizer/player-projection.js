@@ -10,6 +10,7 @@
  */
 
 import { workloadRetention } from "./workload-model.js?v=__LINEUP_LAB_ASSET_VERSION__";
+import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence } from "./projection-evidence.js?v=__LINEUP_LAB_ASSET_VERSION__";
 
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",
@@ -34,6 +35,11 @@ function advancedSources(player) {
 
 /** Return usage as a 0–1 share, preserving a real zero and rejecting nonsense. */
 export function readPlayerUsage(player) {
+  // The interrupted Scout rows do not yet certify full on-court possession
+  // exposure for usage. Do not pull an older dataset's USG into the new model
+  // merely because it shares this browser row. Explicit what-if responsibility
+  // still works, but stays an assumption rather than measured Scout usage.
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return null;
   for (const source of advancedSources(player)) {
     for (const alias of USAGE_ALIASES) {
       if (source[alias] == null || source[alias] === "" || typeof source[alias] === "boolean") continue;
@@ -51,7 +57,17 @@ export function readPlayerUsage(player) {
  * selected-team stint length is deliberately excluded, so trades do not lower
  * confidence merely because a player appeared for fewer games with that club.
  */
-export function readSeasonRoleMinutes(player) {
+export function readSeasonRoleMinutes(player, metric = null) {
+  if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) {
+    const scout = player.analytics.scoutPlayerGameEvidence;
+    if (scout?.version !== SCOUT_GAME_EVIDENCE_VERSION || scout.scope?.playerId !== player.id) return null;
+    // A component observed in 6-minute games must not borrow a 36-minute role
+    // from games in which that component was missing. The reference exposure
+    // changes extrapolation uncertainty, never a hard minute floor or ceiling.
+    const paired = metric ? pairedMetricEvidence(player, metric) : scout.workload;
+    const games = finiteNonNegative(paired?.verifiedGames), minutes = finiteNonNegative(paired?.minutes);
+    return games > 0 && minutes !== null ? Math.min(48, minutes / games) : null;
+  }
   const totals = player?.analytics?.seasonTotals;
   const games = finiteNonNegative(totals?.games);
   const minutes = finiteNonNegative(totals?.minutes);
@@ -61,8 +77,8 @@ export function readSeasonRoleMinutes(player) {
 
 /**
  * Read the independently requested usage share. Raising minutes alone leaves
- * that share unchanged. Only previously fitted conditional minute-response
- * coefficients may affect the mean here; no causal usage elasticity is assumed.
+ * that share unchanged. Only a matching conditional minute-response fit may
+ * temper above-baseline rates; it is not treated as a causal usage elasticity.
  */
 export function projectPlayerResponsibility(
   player,
@@ -70,7 +86,7 @@ export function projectPlayerResponsibility(
   targetMinutes,
   parameters,
 ) {
-  const sourceMinutes = readSeasonRoleMinutes(player);
+  const sourceMinutes = readSeasonRoleMinutes(player, metric);
   const requestedMinutes = Math.max(0, Number(targetMinutes) || 0);
   const sourceUsage = readPlayerUsage(player);
   // Usage is a separate scenario input, not a function of assigned minutes.
@@ -78,17 +94,18 @@ export function projectPlayerResponsibility(
   // Requesting star-like responsibility must be explicit (or unit-dependent).
   const requestedUsage = finiteNonNegative(parameters?.offensiveResponsibilities?.[player.id]);
   const targetUsage = requestedUsage !== null && requestedUsage <= 1 ? requestedUsage : sourceUsage;
-  const expansionShare = requestedMinutes > 0
+  const expansionShare = requestedMinutes > 0 && sourceMinutes !== null
     ? Math.max(0, requestedMinutes - sourceMinutes) / requestedMinutes
     : 0;
 
-  if (parameters?.expansionStrengthByMetric && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
-    const calibratedStrength = parameters.expansionStrengthByMetric[metric];
+  if (sourceMinutes !== null && parameters?.expansionStrengthByMetric
+      && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
+    const configuredStrength = parameters.expansionStrengthByMetric[metric];
     return {
       available: true, source: "chronological-workload-fit", sourceMinutes,
       targetMinutes: requestedMinutes, sourceUsage, targetUsage,
       usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null, expansionShare,
-      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, calibratedStrength),
+      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, configuredStrength),
       evidenceGrade: "conditional-prediction",
       reason: "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate.",
     };

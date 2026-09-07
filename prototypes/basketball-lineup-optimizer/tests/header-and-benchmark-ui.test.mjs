@@ -13,17 +13,33 @@ async function sourceFile(name) {
 
 test("header keeps direct Shop, Fan Tools, and Account destinations with accessible labels", async () => {
   const html = await sourceFile("index.html");
-  const css = await sourceFile("styles.css");
+  const css = await sourceFile("storefront-shell.css");
 
   // These are intentionally source-relative paths. The release builder changes
   // them by one directory for the deployed /lineup-lab/ page and verifies that
   // generated output separately.
-  assert.match(html, /class="lab-header__link" href="\.\.\/\.\.\/index\.html"[\s\S]*?<span>Shop<\/span>/);
-  assert.match(html, /class="lab-header__link lab-header__link--tools" href="\.\.\/\.\.\/tools\/"[\s\S]*?<span>Fan Tools<\/span>/);
-  assert.match(html, /class="lab-header__account" href="\.\.\/\.\.\/account\.html" aria-label="Open your account"/);
-  assert.match(css, /\.lab-header__account\s*\{[\s\S]*?width:\s*42px/);
-  assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.lab-header__account\s*\{[\s\S]*?width:\s*44px/);
-  assert.match(css, /font-family:\s*"Inter", Arial, sans-serif;/);
+  // The shared storefront shell replaced the former standalone Lab header.
+  // Check actual destinations, accessible names, focus and touch contracts;
+  // requiring retired class names would fail without identifying a user bug.
+  assert.match(html, /<nav aria-label="Primary navigation"/);
+  assert.match(html, /href="\.\.\/\.\.\/shop\.html">Shop<\/a>/);
+  assert.match(html, /data-fan-tools-link="true" href="\/tools\/">Fan Tools<\/a>/);
+  assert.match(html, /href="\.\.\/\.\.\/account\.html">Account<\/a>/);
+  assert.match(html, /aria-controls="siteNav" aria-expanded="false"[^>]*id="navToggle"/);
+  assert.match(css, /\.site-header :focus-visible\s*\{[^}]*outline:3px/);
+  assert.match(css, /@media \(max-width:900px\)[\s\S]*?\.primary-nav__link\s*\{[^}]*min-height:46px/);
+});
+
+test("automatic data exclusions remain visible, retryable, and included in copied results", async () => {
+  const app = await sourceFile("app.js");
+  assert.match(app, /function renderDataEligibilityNotice\(result\)/);
+  assert.match(app, /notice\.className = "result-card data-eligibility-notice"/);
+  assert.match(app, /item\.textContent = `\$\{player.name\}/);
+  assert.match(app, /if \(dataNotice\) fragment\.append\(dataNotice\)/);
+  assert.match(app, /replaceChildren\(\.\.\.\(dataNotice \? \[dataNotice, card\] : \[card\]\)\)/);
+  assert.match(app, /These exclusions apply only to this run/);
+  assert.match(app, /if \(dataExcluded.length\) lines.push\(/);
+  assert.doesNotMatch(app, /Every eligible player must have a matched, usable impact row before Scout can run/);
 });
 
 test("benchmark result copy defines the 100-point index and its limits", async () => {

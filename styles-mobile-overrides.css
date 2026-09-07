@@ -477,40 +477,6 @@
     gap:1.15rem;
   }
 
-  .footer-actions {
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:.55rem;
-    margin-top:.1rem;
-  }
-
-  .footer-action-link,
-  .footer-actions .theme-toggle--footer {
-    min-height:46px;
-    width:100%;
-    justify-content:center;
-    text-align:center;
-    font-size:.9rem;
-  }
-
-  .footer-actions .theme-toggle--footer {
-    display:inline-flex !important;
-    grid-column:1 / -1;
-    max-width:100%;
-    padding:0 1rem;
-    margin:0;
-    background:rgba(255,255,255,.12);
-    border:1px solid rgba(255,255,255,.16);
-    color:#fff;
-    box-shadow:0 12px 24px rgba(4,10,24,.18);
-  }
-
-  body.dark-mode .footer-actions .theme-toggle--footer {
-    background:rgba(255,255,255,.08);
-    border-color:rgba(255,255,255,.18);
-    color:#fff;
-  }
-
   .footer-bottom {
     padding-top:1rem;
     gap:.75rem;
@@ -607,18 +573,12 @@
     gap:.34rem;
   }
 
-  .product-card .product-grade-meta,
-  .product-card .product-meta-pill,
-  .product-card .product-attribute-pill,
-  .product-card .product-meta-inline {
+  .product-card .product-attribute-pill {
     width:100%;
     justify-content:center;
     text-align:center;
   }
 
-  .product-card .product-meta-pill--context {
-    grid-column:1 / -1;
-  }
 }
 
 @media (max-width:640px) {
@@ -798,10 +758,6 @@
       contain-intrinsic-size:auto 1125px;
     }
 
-    .trust-band {
-      content-visibility:auto;
-      contain-intrinsic-size:auto 465px;
-    }
   }
 }
 
@@ -867,25 +823,9 @@ body.dark-mode .product-card .product-media {
     radial-gradient(circle at 50% 28%, rgba(255,255,255,.16), rgba(255,255,255,.055) 48%, rgba(4,8,20,.22) 100%);
 }
 
-.product-card .product-meta-pill,
-.product-card .product-meta-inline,
-.product-card .product-attribute-pill,
-.product-card .product-grade-meta {
+.product-card .product-attribute-pill {
   max-width:100%;
   overflow-wrap:anywhere;
-}
-
-.product-card .product-meta-pill--context,
-.product-card .product-meta-inline--league {
-  text-transform:none;
-}
-
-/* Long team/player chips should wrap inside the card instead of pushing the
-   product grid wider on tablet-width layouts. */
-.product-card .product-meta-pill--context {
-  flex:1 1 min(100%, 11rem);
-  min-width:0;
-  white-space:normal;
 }
 
 .wishlist-button[aria-pressed="true"] {
@@ -968,8 +908,7 @@ body.dark-mode .modal-image-stage {
 
 .product-card:active,
 .category-card:active,
-.mini-link-button:active,
-.footer-action-link:active {
+.mini-link-button:active {
   transform:translateY(0) scale(.99);
 }
 
@@ -1002,8 +941,7 @@ body.dark-mode .modal-image-stage {
   .category-card:hover,
   .mini-link-button:hover,
   .button:hover,
-  .button-secondary:hover,
-  .footer-action-link:hover {
+  .button-secondary:hover {
     transform:none;
   }
 }
@@ -1151,10 +1089,6 @@ input.sr-only[type="file"] {
     line-height:1.45;
   }
 
-  .footer-actions {
-    gap:.45rem;
-  }
-
   .footer-link-groups {
     gap:.65rem;
   }
@@ -1225,17 +1159,6 @@ input.sr-only[type="file"] {
   .footer-brand p {
     font-size:.92rem;
     line-height:1.38;
-  }
-
-  .footer-actions {
-    gap:.42rem;
-  }
-
-  .footer-action-link,
-  .footer-actions .theme-toggle--footer {
-    border-radius:14px;
-    font-size:.86rem;
-    min-height:44px;
   }
 
   .footer-link-groups {
@@ -1432,17 +1355,11 @@ body.dark-mode {
   letter-spacing:0;
 }
 
-.product-card .product-meta-pill,
-.product-card .product-meta-inline,
-.product-card .product-attribute-pill,
-.product-card .product-grade-meta {
+.product-card .product-attribute-pill {
   box-shadow:inset 0 1px 0 rgba(255,255,255,.56);
 }
 
-body.dark-mode .product-card .product-meta-pill,
-body.dark-mode .product-card .product-meta-inline,
-body.dark-mode .product-card .product-attribute-pill,
-body.dark-mode .product-card .product-grade-meta {
+body.dark-mode .product-card .product-attribute-pill {
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
 
@@ -2060,10 +1977,6 @@ body.dark-mode .modal-listing-nav__button {
     column-gap:.58rem;
     row-gap:.3rem;
     padding-block:.28rem .34rem;
-  }
-
-  body[data-page="home"] .header-actions {
-    display:contents;
   }
 
   body[data-page="home"] .home-header-utility {

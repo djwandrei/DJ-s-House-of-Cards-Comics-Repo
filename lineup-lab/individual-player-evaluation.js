@@ -1,4 +1,4 @@
-import { derivePlayerRateViews } from "./fan-analytics.js?v=20260907c";
+import { derivePlayerRateViews } from "./fan-analytics.js?v=20260907f";
 
 /**
  * Individual advanced-stat evaluation for player-season products.
