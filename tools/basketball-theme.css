@@ -50,6 +50,7 @@ body.court-themed main select:hover:not(:disabled) { border-color:var(--court-ac
 body.court-themed main :is(input:not([type=checkbox]):not([type=range]):not([type=radio]),textarea) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); border-radius:12px; }
 body.court-themed main :is(input,textarea)::placeholder { color:var(--court-muted); opacity:1; }
 body.court-themed :is(input,progress) { accent-color:var(--court-accent); }
+body.court-themed :is(.game-badge,.lab-emblem):disabled { opacity:1; filter:none; }
 body.court-themed main :is(input,select)[aria-invalid=true] { border-color:var(--court-error); }
 
 /* Current-page indicators stay readable and scroll within their own region. */

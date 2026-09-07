@@ -162,7 +162,7 @@ select:focus-visible,
   gap: 1rem;
 }
 
-.brand {
+.lab-header .brand {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
@@ -170,23 +170,23 @@ select:focus-visible,
   text-decoration: none;
 }
 
-.brand img {
+.lab-header .brand img {
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.28));
 }
 
-.brand span {
+.lab-header .brand span {
   display: grid;
   line-height: 1.15;
 }
 
-.brand strong {
+.lab-header .brand strong {
   font-family: "Inter", Arial, sans-serif;
   font-size: 1.13rem;
   font-weight: 700;
   letter-spacing: -0.025em;
 }
 
-.brand small {
+.lab-header .brand small {
   margin-top: 0.2rem;
   color: #c6d1ec;
   font-size: 0.75rem;
@@ -3306,7 +3306,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
   font-size: 0.88rem;
 }
 
-.brand small,
+.lab-header .brand small,
 .prototype-badge,
 .dataset-strip__label,
 .dataset-strip dt,
@@ -4144,7 +4144,7 @@ body[data-experience-mode="simple"] .simple-model-summary {
     padding-block: 0.65rem;
   }
 
-  .brand {
+  .lab-header .brand {
     grid-area: brand;
   }
 
@@ -4177,16 +4177,16 @@ body[data-experience-mode="simple"] .simple-model-summary {
     grid-area: beta;
   }
 
-  .brand img {
+  .lab-header .brand img {
     width: 46px;
     height: 46px;
   }
 
-  .brand strong {
+  .lab-header .brand strong {
     font-size: 1rem;
   }
 
-  .brand small {
+  .lab-header .brand small {
     display: none;
   }
 

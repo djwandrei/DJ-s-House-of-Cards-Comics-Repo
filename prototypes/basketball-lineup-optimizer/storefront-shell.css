@@ -1,0 +1,85 @@
+/* Storefront menu appearance for the standalone Lab. Use the shared header
+   markup, core.js and nav.js, without importing unrelated catalog/hero CSS.
+   Keep the same <=900 drawer / 901–1180 horizontal desktop contract. */
+@font-face { font-family:'Lobster Two'; src:url('../../assets/fonts/lobster-two-700.woff2') format('woff2'); font-weight:400 700; font-style:normal; font-display:swap; }
+body.lab-guided .site-header { position:sticky; top:0; z-index:50; color:#F4F6FA; background:linear-gradient(#080D1D,#0D142A); border-bottom:1px solid #ffffff20; }
+body.lab-guided .header-inner { width:calc(100% - 2rem); max-width:1600px; margin:auto; min-height:88px; display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
+body.lab-guided .site-header .brand { display:flex; align-items:center; gap:.8rem; text-decoration:none; flex-shrink:0; color:#F4F6FA; }
+body.lab-guided .brand-logo { width:60px; height:60px; object-fit:contain; }
+body.lab-guided .brand-copy { display:flex; flex-direction:column; min-width:0; }
+body.lab-guided .brand-script { font-family:'Lobster Two',cursive; font-size:1.8rem; line-height:1.15; white-space:nowrap; }
+body.lab-guided .brand-kicker { font-family:'Bebas Neue',sans-serif; font-size:.82rem; letter-spacing:.12em; line-height:1.45; white-space:nowrap; }
+body.lab-guided .primary-nav__list { display:flex; align-items:center; flex-wrap:nowrap; gap:.35rem; padding:0; margin:0; list-style:none; }
+body.lab-guided .primary-nav__item { position:relative; }
+body.lab-guided .primary-nav__item-group { display:flex; align-items:center; gap:.2rem; }
+body.lab-guided .primary-nav__link { display:flex; align-items:center; min-height:42px; padding:.45rem .65rem; border:1px solid transparent; border-radius:999px; color:#E4E9F5; background:#ffffff04; text-decoration:none; font-size:.82rem; font-weight:700; white-space:nowrap; }
+body.lab-guided .primary-nav__link:is(:hover,.active) { border-color:#ffffff40; background:#ffffff0b; color:#fff; }
+body.lab-guided .primary-nav__link.active { text-decoration:underline; text-decoration-color:#E9B949; text-underline-offset:5px; text-decoration-thickness:2px; }
+body.lab-guided .primary-nav__submenu { display:none; position:absolute; top:calc(100% + 5px); left:0; min-width:190px; padding:.5rem; margin:0; list-style:none; border:1px solid #65738D; border-radius:14px; background:#172239; box-shadow:0 15px 35px #0005; }
+body.lab-guided .primary-nav__item:is(.is-open,.is-hovered)>.primary-nav__submenu { display:grid; }
+body.lab-guided .primary-nav__submenu a { display:flex; align-items:center; min-height:44px; padding:.5rem .8rem; color:#F4F6FA; border-radius:8px; text-decoration:none; font-size:.86rem; }
+body.lab-guided .primary-nav__submenu a:hover { background:#2B3853; }
+body.lab-guided .site-header :is(.submenu-toggle,.theme-toggle,.nav-toggle) { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:42px; padding:.5rem .7rem; border:1px solid #ffffff30; border-radius:16px; background:#ffffff0b; color:#F4F6FA; font-size:.8rem; font-weight:700; cursor:pointer; }
+body.lab-guided .site-header .submenu-toggle { width:40px; padding:.4rem; border-radius:999px; }
+body.lab-guided .header-actions { display:flex; align-items:center; flex-shrink:0; }
+body.lab-guided .site-header .brand { order:1; }
+body.lab-guided .site-nav { order:2; }
+body.lab-guided .home-header-utility { order:3; }
+body.lab-guided .header-actions { order:4; }
+body.lab-guided .home-header-utility { display:flex; gap:.4rem; align-items:center; flex-shrink:0; }
+body.lab-guided .home-header-utility__icon { position:relative; display:grid; place-items:center; width:42px; height:42px; border:1px solid #ffffff30; border-radius:16px; color:#F4F6FA; background:#ffffff0b; text-decoration:none; }
+body.lab-guided .home-header-utility__icon svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+body.lab-guided .home-header-utility__count { position:absolute; right:-4px; top:-6px; min-width:18px; height:18px; padding:1px 3px; display:grid; place-items:center; border-radius:50%; background:#E9B949; color:#111827; font-size:.65rem; font-weight:700; }
+body.lab-guided .nav-toggle__icon { display:grid; gap:4px; }
+body.lab-guided .nav-toggle__icon span { display:block; width:20px; height:2px; background:currentColor; border-radius:2px; }
+body.lab-guided .theme-toggle__icon { width:20px; height:20px; border-radius:50%; background:#D7E1F7; box-shadow:inset 6px -4px #516080; }
+body.lab-guided :is(.site-nav__mobile-header,.site-nav-backdrop) { display:none; }
+body.lab-guided .site-header :focus-visible { outline:3px solid #F4D37C; outline-offset:3px; box-shadow:0 0 0 2px #0D142A; }
+@media (min-width:901px) {
+  body.lab-guided .site-header .nav-toggle,
+  body.lab-guided .primary-nav__item:has(>a:is([href$='account.html'],[href$='wishlist.html'],[href$='cart.html'])) { display:none; }
+}
+@media (min-width:901px) and (max-width:1180px) {
+  body.lab-guided .header-inner { display:grid; grid-template-columns:1fr auto auto; gap:.4rem .8rem; padding-block:.65rem; }
+  body.lab-guided .site-nav { grid-column:1/-1; grid-row:2; }
+  body.lab-guided .primary-nav__list { justify-content:center; }
+  body.lab-guided .home-header-utility { grid-column:2; grid-row:1; }
+  body.lab-guided .header-actions { grid-column:3; grid-row:1; }
+}
+@media (max-width:900px) {
+  body.lab-guided.menu-open { overflow:hidden; }
+  body.lab-guided .header-inner { min-height:76px; gap:.5rem; }
+  body.lab-guided .site-header .brand { margin-right:auto; gap:.6rem; min-width:0; flex-shrink:1; }
+  body.lab-guided .brand-script { font-size:clamp(1rem,2.8vw,1.6rem); }
+  body.lab-guided .brand-kicker { font-size:clamp(.43rem,1.15vw,.68rem); }
+  body.lab-guided .brand-logo { width:48px; height:48px; }
+  body.lab-guided .site-nav { position:fixed; right:12px; top:86px; bottom:12px; z-index:52; width:min(360px,calc(100% - 24px)); padding:1.1rem; overflow-y:auto; overscroll-behavior:contain; border:1px solid #65738D; border-radius:18px; background:#111C33; box-shadow:0 20px 60px #0007; }
+  body.lab-guided .primary-nav__list { display:grid; gap:.35rem; }
+  body.lab-guided .primary-nav__link { min-height:46px; border-radius:10px; font-size:.95rem; }
+  body.lab-guided .primary-nav__item-group .primary-nav__link { flex:1; }
+  body.lab-guided .primary-nav__submenu { position:static; margin-block:.3rem; box-shadow:none; }
+  body.lab-guided .site-nav__mobile-header { display:grid; gap:.35rem; padding-bottom:1rem; margin-bottom:.75rem; border-bottom:1px solid #65738D; }
+  body.lab-guided .site-nav__eyebrow { color:#F4D37C; font-size:.7rem; letter-spacing:.07em; text-transform:uppercase; }
+  body.lab-guided .site-nav__mobile-title { font-family:var(--font-display); font-size:1.8rem; }
+  body.lab-guided .site-nav__mobile-header p { margin:0; color:#BFCDE2; font-size:.85rem; }
+  body.lab-guided .site-nav .theme-toggle { margin-top:1rem; min-height:44px; width:100%; }
+  body.lab-guided .header-actions>.theme-toggle { display:none; }
+  body.lab-guided.menu-open>.site-nav-backdrop { display:block; position:fixed; inset:76px 0 0; z-index:40; border:0; background:#030712B8; }
+}
+@media (max-width:520px) {
+  body.lab-guided .header-inner { width:calc(100% - 1rem); gap:.35rem; }
+  body.lab-guided .brand-logo { width:46px; height:46px; }
+  body.lab-guided .site-header .brand { gap:.45rem; }
+  body.lab-guided .home-header-utility__icon[href$='wishlist.html'] { display:none; }
+  body.lab-guided .home-header-utility { gap:.35rem; }
+  body.lab-guided .home-header-utility__icon { width:38px; height:38px; border-radius:14px; }
+  body.lab-guided .site-header .nav-toggle { min-width:60px; padding:.5rem .35rem; font-size:.72rem; gap:.3rem; }
+  body.lab-guided .nav-toggle__icon span { width:18px; }
+}
+@media (max-width:360px) {
+  body.lab-guided .brand-logo { width:34px; height:40px; }
+  body.lab-guided .brand-script { font-size:.86rem; }
+  body.lab-guided .brand-kicker { font-size:.37rem; }
+  body.lab-guided .home-header-utility__icon { width:34px; }
+}
+@media print { body.lab-guided .site-header { display:none; } }

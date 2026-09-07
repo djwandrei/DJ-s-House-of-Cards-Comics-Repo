@@ -11,43 +11,53 @@
   <meta name="theme-color" content="#15206b">
   <link rel="icon" href="../assets/games/lineup-lab-icon-20260907.png" sizes="32x32" type="image/png">
   <link rel="preload" href="../assets/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="storefront-shell.css?v=20260907c">
   <link rel="stylesheet" href="styles.css?v=20260907c">
   <link rel="stylesheet" href="workflow.css?v=20260907c">
   <link rel="stylesheet" href="lab-experience.css?v=20260907c">
   <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260907c">
   <link rel="stylesheet" href="lab-theme.css?v=20260907c">
 </head>
-<body class="lab-guided court-themed dark-mode" data-experience-mode="simple">
+<body class="lab-guided court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
   <script src="../theme-init.js?v=20260907c"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
-  <header class="lab-header">
-    <div class="shell lab-header__inner">
-      <a class="brand" href="../index.html" aria-label="Return to DJ's House of Cards and Comics">
-        <img src="../assets/dj-logo.png" width="56" height="56" alt="" decoding="async">
-        <span>
-          <strong>DJ's Lineup Lab</strong>
-          <small>NBA lineup optimizer</small>
-        </span>
-      </a>
-      <div class="lab-header__actions">
-        <nav class="lab-header__links" aria-label="Lineup Lab navigation">
-          <a class="lab-header__link" href="../index.html">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"></path><path d="M9 20v-5h6v5"></path></svg>
-            <span>Shop</span>
-          </a>
-          <a class="lab-header__link lab-header__link--tools" href="../tools/">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5h7v6H4zM13 5.5h7v6h-7zM4 13.5h7v6H4zM13 13.5h7v6h-7z"></path></svg>
-            <span>Fan Tools</span>
-          </a>
-          <a class="lab-header__account" href="../account.html" aria-label="Open your account" title="Account">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
-            <span class="sr-only">Account</span>
-          </a>
-        </nav>
-        <span class="prototype-badge">Public beta</span>
-      </div>
-    </div>
+  <header class="site-header">
+   <div class="container header-inner">
+    <a aria-label="DJ's House of Cards &amp; Comics &bull; Trusted Hobby Finds home" class="brand" href="../index.html">
+     <img alt="DJ's House of Cards &amp; Comics logo" class="brand-logo" decoding="async" fetchpriority="high" height="84" src="../assets/dj-logo.png" width="84"/>
+     <span class="brand-copy">
+      <span class="brand-script">DJ's House of Cards</span>
+      <span class="brand-kicker">&amp; Comics &bull; Trusted Hobby Finds</span>
+     </span>
+    </a>
+    <nav aria-label="Primary navigation" class="site-nav" id="siteNav">
+     <ul class="primary-nav__list">
+      <li class="primary-nav__item"><a class="primary-nav__link" href="../shop.html">Shop</a></li>
+      <li class="primary-nav__item primary-nav__item--has-submenu">
+       <div class="primary-nav__item-group">
+        <a class="primary-nav__link" href="../sports-cards.html">Sports Cards</a>
+        <button aria-controls="sportsCardsSubmenu" aria-expanded="false" aria-label="Toggle Sports Cards submenu" class="submenu-toggle" type="button">&#9662;</button>
+       </div>
+       <ul class="primary-nav__submenu" id="sportsCardsSubmenu">
+        <li class="primary-nav__submenu-item"><a href="../sports-cards.html">Sports Hub</a></li>
+        <li class="primary-nav__submenu-item"><a href="../baseball-cards.html">Baseball</a></li>
+        <li class="primary-nav__submenu-item"><a href="../basketball-cards.html">Basketball</a></li>
+        <li class="primary-nav__submenu-item"><a href="../football-cards.html">Football</a></li>
+       </ul>
+      </li>
+      <li class="primary-nav__item"><a class="primary-nav__link" href="../comics.html">Comics</a></li>
+      <li class="primary-nav__item"><a class="primary-nav__link" href="../collectibles.html">Collectibles</a></li>
+      <li class="primary-nav__item"><a class="primary-nav__link" data-fan-tools-link="true" href="/tools/">Fan Tools</a></li>
+      <li class="primary-nav__item"><a class="primary-nav__link" href="../about.html">About</a></li>
+      <li class="primary-nav__item header-wishlist-item"><a class="header-wishlist-link primary-nav__link" href="../wishlist.html">Wishlist</a></li>
+      <li class="primary-nav__item header-cart-item"><a class="header-cart-link primary-nav__link" data-cart-link href="../cart.html">Cart <span data-cart-count="0">(0)</span></a></li>
+      <li class="primary-nav__item"><a class="primary-nav__link" href="../account.html">Account</a></li>
+     </ul>
+    </nav>
+    <button aria-controls="siteNav" aria-expanded="false" class="nav-toggle" id="navToggle" type="button">Menu</button>
+    <button aria-label="Toggle color theme" class="theme-toggle theme-toggle--compact" id="themeToggle" type="button">Dark Mode</button>
+   </div>
   </header>
 
   <main id="mainContent" tabindex="-1">
@@ -664,6 +674,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
   <script defer src="../backend-config.js?v=20260907c"></script>
+  <script defer src="../core.js?v=20260907c"></script>
+  <script defer src="../nav.js?v=20260907c"></script>
   <script defer src="../supabase-client.js?v=20260907c"></script>
   <script type="module" src="app.js?v=20260907c"></script>
   <script type="module" src="lab-experience.js?v=20260907c"></script>

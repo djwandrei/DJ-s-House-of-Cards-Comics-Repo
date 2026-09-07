@@ -22,6 +22,7 @@ const releaseFiles = [
   "lab-experience.js",
   "lab-experience.css",
   "lab-theme.css",
+  "storefront-shell.css",
   "optimizer-config.js",
   "projection-parameters.js",
   "workload-calibration.js",
@@ -73,6 +74,18 @@ function transform(relativePath, source) {
     output = output
       .replaceAll("../../backend-config.js", "../backend-config.js")
       .replaceAll("../../theme-init.js", "../theme-init.js")
+      .replaceAll("../../core.js", "../core.js")
+      .replaceAll("../../nav.js", "../nav.js")
+      .replaceAll("../../shop.html", "../shop.html")
+      .replaceAll("../../sports-cards.html", "../sports-cards.html")
+      .replaceAll("../../baseball-cards.html", "../baseball-cards.html")
+      .replaceAll("../../basketball-cards.html", "../basketball-cards.html")
+      .replaceAll("../../football-cards.html", "../football-cards.html")
+      .replaceAll("../../comics.html", "../comics.html")
+      .replaceAll("../../collectibles.html", "../collectibles.html")
+      .replaceAll("../../about.html", "../about.html")
+      .replaceAll("../../wishlist.html", "../wishlist.html")
+      .replaceAll("../../cart.html", "../cart.html")
       .replaceAll("../../supabase-client.js", "../supabase-client.js")
       .replaceAll("../../index.html", "../index.html")
       // Header navigation is written relative to the nested prototype. Keep
@@ -81,6 +94,7 @@ function transform(relativePath, source) {
       .replaceAll("../../tools/", "../tools/")
       .replaceAll("../../account.html", "../account.html");
   }
+  if (relativePath === "storefront-shell.css") output = output.replaceAll("../../", "../");
   return Buffer.from(output, "utf8");
 }
 

@@ -9,7 +9,7 @@ recorded under `outputs/fan-suite/` and reported with the actual Git commit.
 The release-specific read-only fallback auditor is
 `scripts/audit-fan-suite-release.mjs` (the generic auditor named in the deploy
 guide is absent). Its `--committed` mode checks every release file against HEAD;
-`--live` compares all 81 public file hashes. The FTPS helper sorts its inputs,
+`--live` compares all 82 public file hashes. The FTPS helper sorts its inputs,
 so deploy the reviewed list in three no-delete path-list phases: non-HTML assets,
 then HTML pages, then `sw.js`. No source-only Scout preview is uploaded.
 
@@ -34,6 +34,11 @@ then HTML pages, then `sw.js`. No source-only Scout preview is uploaded.
   interactions extend to the public fan-tool family.
 - Existing game/source gates, scoring, exact solver, prices and catalog data
   remain unchanged. Workshop pages remain explicitly unfinished frameworks.
+- Following the user's header request, the Lab uses the storefront's shared
+  menu markup and `core.js` / `nav.js` for Account/Cart counts, theme, keyboard
+  submenu behavior and the mobile drawer. `storefront-shell.css` matches the
+  storefront treatment without importing its unrelated catalog/hero cascade.
+  The company name stays visible on phones; 901–1180px keeps horizontal links.
 
 The five sibling Superdesign drafts used 210 credits. Their source canvas is
 [DJHC Lineup Lab Model and UX Upgrade](https://superdesign.dev/teams/1d9cd047-15e5-468a-b2b3-5be0e0fce5c9/projects/44964533-087f-4f20-88d3-0e2895ff8d6e).

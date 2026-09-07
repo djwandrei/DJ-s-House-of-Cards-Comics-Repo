@@ -35,6 +35,7 @@ lineup-lab/rotation-unit-planner.js
 lineup-lab/scenario-url.js
 lineup-lab/scout-impact.js
 lineup-lab/styles.css
+lineup-lab/storefront-shell.css
 lineup-lab/supabase-nba-data.js
 lineup-lab/workflow-state.js
 lineup-lab/workflow-view.js

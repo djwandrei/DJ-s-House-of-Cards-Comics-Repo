@@ -17,6 +17,7 @@ body.lab-guided.court-themed .journey-rail { border:1px solid var(--court-border
 body.lab-guided.court-themed :is(.journey-step,.journey-restart,.experience-switcher__button,.tool-nav__button) { color:var(--court-text); }
 body.lab-guided.court-themed :is(.journey-step__status,.journey-draft-status,.preset-card span,.simple-model-summary p,.simple-model-summary li,.simple-model-summary small,.rotation-model-intro p,.rotation-model-intro li,.rotation-model-intro small) { color:var(--court-muted); }
 body.lab-guided.court-themed :is(.journey-rail__eyebrow,.eyebrow,.step-number,.journey-review-emphasis,.text-button,.lineup-dna__source) { color:var(--court-accent); }
+body.lab-guided.court-themed .hero .eyebrow { color:#F4D37C; }
 body.lab-guided.court-themed :is(.journey-step.is-current,.experience-switcher__button.is-active,.tool-nav__button.is-active,.preset-card.is-active) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-accent); box-shadow:inset 0 -3px var(--court-accent); }
 body.lab-guided.court-themed .journey-step.is-current .journey-step__status { color:var(--court-accent); }
 body.lab-guided.court-themed :is(.journey-step.is-current,.journey-step.is-complete) .journey-step__number { background:var(--court-accent); color:var(--court-on-accent); border-color:var(--court-accent); }

@@ -31,17 +31,19 @@
         "prototypes/basketball-lineup-optimizer/lab-experience.css",
         ".superdesign/basketball-color-direction.md",
         ".superdesign/basketball-palettes.mjs",
-        ".superdesign/lineup-lab-step-transitions.md"
+        ".superdesign/lineup-lab-step-transitions.md",
+        "prototypes/basketball-lineup-optimizer/storefront-shell.css"
       ],
       "fingerprints": {
         ".superdesign/lineup-lab-design-system.md": "D7476035A8AB902894579A436C1824D0B82097621B5DAA148CE37900A2153824",
-        "prototypes/basketball-lineup-optimizer/index.html": "7D9781B4AAC47A70914AAF8AD25C6B5A9D4F6678CE9ADD382D48EE0AC5F2554A",
-        "prototypes/basketball-lineup-optimizer/styles.css": "02CBA2E3D17253C3DF6AE6939C6EC0809C381CB2233B6C423887EFAD6734E050",
+        "prototypes/basketball-lineup-optimizer/index.html": "5FE83CA65C4F47DBD8D591EC231FA21150E918D0D293F3AF71BD8354DA09C2AD",
+        "prototypes/basketball-lineup-optimizer/styles.css": "F55DE31DF28AD2AFBD439823ADEDD934825861B88C2C9FD167261EB35332AF0B",
         "prototypes/basketball-lineup-optimizer/workflow.css": "C3DE2619BAC19E15AA439286FD766021BC6CA80F4393516983FB35524DB36931",
         "prototypes/basketball-lineup-optimizer/lab-experience.css": "80EAD75F2CA0EEDFFEFF43B527B9C6FD1635F226806BAFDF518ED7EC6FA6AA8D",
         ".superdesign/basketball-color-direction.md": "B784F161D9A792D4E7000FFCDDC029C466159EBF4342C91F8572C98A46B78604",
         ".superdesign/basketball-palettes.mjs": "0CDB1250E3401B22CA633CA6398C758E3F8FC2598069EBDA351C753C66EB0F12",
-        ".superdesign/lineup-lab-step-transitions.md": "04DFE7E6FCA48CCE4CC1B831DEA01F4631C512B1955E52EC7BFFBB7E055A9B72"
+        ".superdesign/lineup-lab-step-transitions.md": "04DFE7E6FCA48CCE4CC1B831DEA01F4631C512B1955E52EC7BFFBB7E055A9B72",
+        "prototypes/basketball-lineup-optimizer/storefront-shell.css": "2587D70E69753E4546AF3F46455B8A4A15097535A33C4A9FF6666F271A5700A8"
       },
       "components": [],
       "drafts": {
@@ -52,7 +54,7 @@
           "currentVersion": 12
         }
       },
-      "updatedAt": "2026-09-07T07:44:38.8668325Z"
+      "updatedAt": "2026-09-07T08:02:54.2335078Z"
     },
     "/tools/": {
       "targetKind": "existing-ui",

@@ -27,6 +27,31 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true });
 const report = { checks:[], errors:[], missing:[], contrastReview:[] };
 const routes = ['tools/','tools/fix-the-five/','tools/draft-night/','tools/player-card-matchups/','tools/workshop/','lineup-lab/'];
+async function checkHeader(page,width) {
+  await page.waitForFunction(()=>document.body.dataset.primaryNavBound==='true');
+  for(const selector of ['.brand-copy','.home-header-utility a[title=Account]','.home-header-utility a[title=Cart]']) {
+    const control=page.locator('.site-header '+selector);
+    assert.ok(await control.isVisible(),selector+' visible');
+    const box=await control.boundingBox(); assert.ok(box.x>=0&&box.x+box.width<=width+1,selector+' stays on screen');
+  }
+  const nav=page.locator('#siteNav'), toggle=page.locator('#navToggle');
+  if(width<=900) {
+    assert.ok(await nav.isHidden());
+    await toggle.focus(); await page.keyboard.press('Enter');
+    await page.waitForFunction(()=>document.querySelector('#siteNav').contains(document.activeElement));
+    assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+  } else { assert.ok(await toggle.isHidden()); assert.ok(await nav.isVisible()); }
+  await page.locator('.submenu-toggle').focus(); await page.keyboard.press('Enter');
+  assert.equal(await page.locator('.submenu-toggle').getAttribute('aria-expanded'),'true');
+  assert.ok(await page.locator('#sportsCardsSubmenu').isVisible());
+  assert.ok(await nav.locator('[data-fan-tools-link=true]').isVisible());
+  await page.keyboard.press('Escape');
+  if(width<=900) {
+    assert.ok(await nav.isHidden());
+    assert.ok(await nav.evaluate(node=>node.inert));
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'navToggle');
+  }
+}
 async function changeMode(page, mode) {
   if (!(await page.locator('.court-style').getAttribute('open'))) {
     if (!await page.locator('.court-style').evaluate(node=>node.open)) await page.locator('.court-style>summary').click();
@@ -75,11 +100,14 @@ try {
       await page.goto(base+'/'+route);
       await page.waitForFunction(()=>document.body.dataset.courtPalette);
       await page.evaluate(()=>document.fonts.ready);
+      await checkHeader(page,width);
       assert.ok(await page.evaluate(()=>document.fonts.check('16px Manrope') && document.fonts.check('700 24px "Barlow Condensed"')),'Both local fonts loaded');
       assert.equal(await page.locator('.court-destinations a[aria-current=page]').count(),1);
       await overflow(page);
       await changeMode(page,mode==='dark'?'light':'dark'); await changeMode(page,mode);
       assert.equal(await page.evaluate(()=>localStorage.getItem('theme')),mode);
+      if(route==='lineup-lab/') assert.equal(await page.locator('.hero .eyebrow').evaluate(el=>getComputedStyle(el).color),'rgb(244, 211, 124)');
+      for(const badge of await page.locator('.game-badge:disabled,.lab-emblem:disabled').all()) assert.equal(await badge.evaluate(el=>getComputedStyle(el).opacity),'1');
       if(route==='tools/workshop/') {
         await page.locator('#experiencePicker').selectOption('scouts-call');
         await page.locator('#experiencePicker').focus(); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
@@ -88,7 +116,10 @@ try {
       }
       await reviewContrast(page,`${route} ${width} ${mode}`);
       await page.evaluate(()=>scrollTo(0,0));
-      if([390,1440].includes(width)) await page.screenshot({path:path.join(output,`${route.replaceAll('/','-')}${width}-${mode}.png`)});
+      if([390,1440].includes(width)) {
+        if(route==='lineup-lab/') await page.waitForFunction(()=>!document.querySelector('#toast').classList.contains('is-visible'));
+        await page.screenshot({path:path.join(output,`${route.replaceAll('/','-')}${width}-${mode}.png`)});
+      }
       await overflow(page); report.checks.push(`${route} ${width} ${mode}`);
     }
     await context.close();
@@ -96,6 +127,12 @@ try {
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
   await context.route('**/*',r=>new URL(r.request().url()).origin===base?r.continue():r.abort());
   const page=await context.newPage(); page.on('pageerror',e=>report.errors.push(e.message));
+  for(const route of ['tools/','lineup-lab/']) for(const width of [901,1024,1180,1181]) {
+    await page.setViewportSize({width,height:1000}); await page.goto(base+'/'+route);
+    await checkHeader(page,width); await overflow(page);
+    report.checks.push(route+' '+width+' horizontal storefront menu');
+  }
+  await page.setViewportSize({width:1440,height:1000});
   await page.goto(base+'/lineup-lab/');
   await page.waitForFunction(()=>document.querySelector('#datasetCount')?.textContent==='15'&&document.querySelector('.journey-draft-status')?.textContent.includes('saved'));
   assert.equal(await page.locator('body').getAttribute('data-court-mode'),'dark','New visits default to dark');
