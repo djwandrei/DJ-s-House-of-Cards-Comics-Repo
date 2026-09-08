@@ -30,8 +30,10 @@ const builder = fs.readFileSync(path.join(root, "scripts/build-lineup-lab-releas
 const releaseFiles = [...builder.match(/const releaseFiles = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map(m => "lineup-lab/" + m[1]);
 const allowed = new Set([...rootPages, ...toolFiles, ...releaseFiles,
   "analytics.js", "core.js", "styles.css", "styles-mobile-overrides.css", "sw.js",
+  "nav.js",
   ...["fix-the-five", "draft-night", "lineup-lab"].flatMap(n => [
     `assets/games/${n}-emblem-20260907.webp`, `assets/games/${n}-icon-20260907.png`]),
+  ...["fan-tools", "lineup-dna", "card-matchups", "workshop"].map(n => `assets/games/${n}-emblem.svg`),
   ...["manrope-400.ttf", "manrope-700.ttf", "barlow-condensed-700.ttf", "Manrope-OFL.txt", "BarlowCondensed-OFL.txt"].map(n => "assets/fonts/" + n),
 ]);
 assert.equal(new Set(paths).size, paths.length, "Duplicate release path");

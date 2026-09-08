@@ -60,29 +60,22 @@
         <button class="game-badge" type="button" data-badge-replay="Animate the Fix the Five badge" data-badge-name="Fix the Five badge" aria-label="Fix the Five badge" disabled><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="256" height="256" alt="" decoding="async"><span class="game-badge-hint" aria-hidden="true">Tap for a bounce</span></button>
         <div><span class="kicker">One swap. Your call.</span><h1 class="page-title">Fix the Five.</h1></div>
        </div>
-       <p>Find the missing piece in five daily lineups. Choose a replacement, reveal its board rank, and explore the tradeoff—not predicted wins.</p><div class="game-entry"><a href="#gameBoard" class="game-entry-link">Go to the lineup <span aria-hidden="true">↓</span></a><span>5 rounds · Choose, reveal, compare</span></div>
+       <p>Find the missing piece in five daily lineups. Choose one legal replacement and lock it. Your board rank is your place among the legal choices on that day’s board—not a win prediction or player rating.</p><div class="game-entry"><a href="#gameBoard" class="game-entry-link">Go to the lineup <span aria-hidden="true">↓</span></a><span>Five rounds · choose a swap · lock · read your place</span></div>
+       </div>
       </div>
-      <aside aria-label="Game rules" class="fix-five-rule-card"><span class="fix-five-rule-marker" aria-hidden="true">5×</span><div><strong>Make one move</strong><p>Every result is a board-only comparison within one validated source window—not a win prediction or player rating.</p></div></aside>
-     </div>
     </div>
    </section>
-   <div class="container game-navigation">
-     <nav class="game-page-indicators" aria-label="Basketball games">
-      <a href="../fix-the-five/" aria-current="page"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Fix the Five</span></a>
-      <a href="../draft-night/"><img src="../../assets/games/draft-night-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Draft Night</span></a>
-     </nav>
-   </div>
    <section class="container fix-five-workspace" id="gameBoard" tabindex="-1" aria-label="Fix the Five game">
     <div class="fix-five-status-row">
      <div><span class="kicker">Today’s run</span><h2 id="runTitle">Loading today’s Scout five…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div>
-     <div class="fix-five-scoreboard" aria-label="Local game progress"><div><span>Round</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Daily streak</span><strong id="streakCount">—</strong></div></div>
+     <div class="fix-five-scoreboard" aria-label="Local game progress" role="group"><div><span>Round</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Daily streak</span><strong id="streakCount">—</strong></div></div>
     </div>
-    <div class="fix-five-progress" aria-label="Run progress" id="runProgress"></div>
+    <div class="fix-five-progress" aria-label="Run progress" id="runProgress" role="group"></div>
     <p aria-atomic="true" aria-live="polite" class="fix-five-live-status" id="gameStatus" role="status">Loading the validated Scout board.</p>
     <div id="gameRecovery" class="game-recovery" hidden><button class="button" id="retryBoard" type="button">Try loading the board again</button><a class="button-secondary" href="../index.html">Explore fan tools</a></div>
     <div class="fix-five-layout" id="gameWorkspace" hidden>
      <section class="fix-five-main-card" aria-labelledby="challengeTitle" id="challengePanel"></section>
-     <aside class="fix-five-sidebar">
+     <aside aria-label="Game guidance and controls" class="fix-five-sidebar">
       <details class="game-field-notes"><summary>Rules &amp; board guide</summary>
       <section class="fix-five-method-card"><span class="kicker">How your board result works</span><h2>Make the move. Read the tradeoff.</h2><ol><li><strong>Choose a legal swap</strong><span>Pick one replacement that fits the disclosed role rules for this daily board.</span></li><li><strong>Lock the move</strong><span>Your result stays hidden until you commit, so each choice has a real reveal.</span></li><li><strong>Read the board result</strong><span>See a 0–100 board score and rank against the legal replacements on this one board.</span></li></ol><p class="fix-five-contract-copy">The validated Scout model determines the board-only comparison. Public historical stats identify the player and source; private values, coefficients, and archive details are never sent to the browser.</p><details class="fix-five-contract-details"><summary>Board terms and scoring boundary</summary><dl class="fix-five-term-list"><div><dt>Source-labeled board</dt><dd>A fixed player pool from one disclosed source window. It is not a current depth chart.</dd></div><div><dt>Legal swap</dt><dd>A replacement that meets the round’s stated role and board rules.</dd></div><div><dt>Sealed board rank</dt><dd>Your place among only the legal choices on this board after you lock a move—not a career rating or forecast.</dd></div><div><dt>Local best</dt><dd>Your strongest completed run saved only in this browser. It never changes your account or the shop.</dd></div></dl><p>Today’s rotation can use a single team-season, a franchise across validated seasons, or a randomized multi-season player pool. If a validated source is unavailable, the game does not substitute an old board or a non-Scout score.</p></details></section>
       <section class="fix-five-source-card" aria-labelledby="sourceHeading"><span class="kicker">Daily source</span><h2 id="sourceHeading">Scout board loading</h2><p id="sourceCopy">This game appears only when a validated Scout source is ready.</p></section>

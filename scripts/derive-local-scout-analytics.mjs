@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { once } from 'node:events';
 import { pipeline } from 'node:stream/promises';
-import { createGzip, gunzipSync } from 'node:zlib';
+import { createGzip, gunzipSync, gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import {
   evaluateOffenseDefenseRapmCalibration,
@@ -100,6 +100,13 @@ export function optionsFromArgs(argv) {
     includedPhases: [...DEFAULT_INCLUDED_PHASES],
     replayReconstruction: true,
     synergyPriorPossessions: 400,
+    // The original all-in-memory mode is kept for small, single-season
+    // derivations.  The replay-cache mode is deliberately opt-in because it
+    // trades temporary private disk space for a bounded heap while preserving
+    // the exact same possession-level aggregation semantics.
+    teamShardMode: 'in_memory',
+    replayCacheDir: null,
+    reuseReplayCache: false,
   };
   let sawSeason = false;
   let sawSeasons = false;
@@ -113,6 +120,11 @@ export function optionsFromArgs(argv) {
     if (name === '--calibration-only') {
       if (inline !== undefined) throw new Error('--calibration-only does not accept a value.');
       options.calibrationOnly = true;
+      continue;
+    }
+    if (name === '--reuse-replay-cache') {
+      if (inline !== undefined) throw new Error('--reuse-replay-cache does not accept a value.');
+      options.reuseReplayCache = true;
       continue;
     }
     const value = inline ?? argv[++index];
@@ -150,6 +162,12 @@ export function optionsFromArgs(argv) {
       }
     } else if (name === '--lambda-folds') options.lambdaFoldCount = Number.parseInt(value, 10);
     else if (name === '--synergy-prior-possessions') options.synergyPriorPossessions = Number(value);
+    else if (name === '--team-shard-mode') {
+      if (!['in_memory', 'replay_cache'].includes(value)) {
+        throw new Error('--team-shard-mode must be "in_memory" or "replay_cache".');
+      }
+      options.teamShardMode = value;
+    } else if (name === '--replay-cache-dir') options.replayCacheDir = path.resolve(value);
     else if (name === '--phases') {
       const phases = value.split(',').map((item) => item.trim().toLowerCase()).filter(Boolean);
       if (!phases.length || phases.some((phase) => !VALID_PHASES.has(phase))) {
@@ -188,6 +206,22 @@ export function optionsFromArgs(argv) {
     throw new Error('Chronological tuning and test fractions must total less than one.');
   }
   if (!options.outputDir) options.outputDir = path.join(options.archiveDir, '..', 'scout-analytics', seasonLabel(options.seasonStartYears));
+  if (options.teamShardMode === 'replay_cache') {
+    if (options.calibrationOnly) {
+      throw new Error('--team-shard-mode replay_cache cannot be combined with --calibration-only.');
+    }
+    if (!options.replayCacheDir) {
+      options.replayCacheDir = path.join(
+        options.archiveDir,
+        '..',
+        'work',
+        `${path.basename(options.outputDir)}-replay-cache`,
+      );
+    }
+  }
+  if (options.reuseReplayCache && options.teamShardMode !== 'replay_cache') {
+    throw new Error('--reuse-replay-cache requires --team-shard-mode replay_cache.');
+  }
   if (options.calibrationOnly && !options.calibrationReport) {
     options.calibrationReport = path.join(
       options.archiveDir,
@@ -1213,6 +1247,142 @@ function compactRecord(record, filename) {
   };
 }
 
+const REPLAY_CACHE_SCHEMA_VERSION = 1;
+
+/**
+ * Create a small, private on-disk replay cache for a large package build.
+ *
+ * A six-season package cannot safely hold every team-level combination and
+ * WOWY aggregate in one V8 heap.  This cache sits strictly between the
+ * validated raw archive and the final private Scout package: it contains the
+ * transient reconstruction result for each eligible game, is hash-bound to
+ * its own manifest, and is never a public/cPanel/Supabase artifact.  A later
+ * shard pass can therefore read only the games for one franchise at a time.
+ */
+async function createReplayCacheWriter({ cacheDir, validationReportSha256, manifestSetSha256 }) {
+  const stagingDirectory = await makeAtomicOutputDirectory(cacheDir);
+  await fs.mkdir(path.join(stagingDirectory, 'records'), { recursive: true });
+  const descriptors = [];
+
+  return {
+    async write(compact) {
+      const gameId = String(compact.game?.providerGameId || compact.filename);
+      const seasonStartYear = Number(compact.game?.seasonStartYear);
+      const teamIds = [
+        String(compact.game?.homeProviderTeamId ?? ''),
+        String(compact.game?.awayProviderTeamId ?? ''),
+      ];
+      if (!Number.isInteger(seasonStartYear) || teamIds.some((teamId) => !teamId) || teamIds[0] === teamIds[1]) {
+        throw new Error(`Cannot cache replay for invalid eligible game ${gameId}.`);
+      }
+      // The canonical source filename may contain characters unsuitable for a
+      // portable path.  The descriptor retains that filename; the cache path
+      // is an opaque, deterministic digest instead.
+      const stem = sha256(`${compact.filename}~${gameId}`).slice(0, 24);
+      const relativePath = `records/${seasonStartYear}-${stem}.json.gz`;
+      const cachePath = path.join(stagingDirectory, ...relativePath.split('/'));
+      const payload = Buffer.from(JSON.stringify({
+        schemaVersion: REPLAY_CACHE_SCHEMA_VERSION,
+        filename: compact.filename,
+        record: compact.record,
+      }), 'utf8');
+      const compressed = gzipSync(payload, { level: 9 });
+      await fs.writeFile(cachePath, compressed);
+      const descriptor = {
+        relativePath,
+        filename: compact.filename,
+        gameId,
+        seasonStartYear,
+        scheduledAt: compact.game?.scheduledAt ?? null,
+        teamIds,
+        gzipBytes: compressed.length,
+        gzipSha256: sha256(compressed),
+      };
+      descriptors.push(descriptor);
+      return descriptor;
+    },
+    async complete() {
+      descriptors.sort((left, right) => (
+        String(left.scheduledAt ?? '').localeCompare(String(right.scheduledAt ?? ''))
+        || left.gameId.localeCompare(right.gameId)
+      ));
+      const manifest = {
+        schemaVersion: REPLAY_CACHE_SCHEMA_VERSION,
+        purpose: 'private_transient_replay_cache_for_bounded_memory_scout_shards',
+        validationReportSha256,
+        manifestSetSha256,
+        replayReconstruction: OPTIONS.replayReconstruction,
+        seasonStartYears: [...OPTIONS.seasonStartYears],
+        records: descriptors,
+      };
+      await fs.writeFile(
+        path.join(stagingDirectory, 'cache-manifest.json'),
+        `${JSON.stringify(manifest)}\n`,
+        'utf8',
+      );
+      await fs.rename(stagingDirectory, cacheDir);
+      return manifest;
+    },
+  };
+}
+
+/**
+ * A completed cache may be reused only when it binds exactly the same
+ * validated archive scope and replay setting.  We do not treat a directory's
+ * mere existence as proof of provenance, and every individual record is
+ * re-hashed again when a team shard consumes it.
+ */
+async function readReusableReplayCacheManifest({ cacheDir, validationReportSha256, manifestSetSha256 }) {
+  const raw = await fs.readFile(path.join(cacheDir, 'cache-manifest.json'), 'utf8');
+  const manifest = JSON.parse(raw);
+  const expectedSeasons = JSON.stringify(OPTIONS.seasonStartYears);
+  if (manifest?.schemaVersion !== REPLAY_CACHE_SCHEMA_VERSION
+    || manifest?.purpose !== 'private_transient_replay_cache_for_bounded_memory_scout_shards'
+    || manifest?.validationReportSha256 !== validationReportSha256
+    || manifest?.manifestSetSha256 !== manifestSetSha256
+    || manifest?.replayReconstruction !== OPTIONS.replayReconstruction
+    || JSON.stringify(manifest?.seasonStartYears) !== expectedSeasons
+    || !Array.isArray(manifest?.records)
+    || !manifest.records.length) {
+    throw new Error('Replay cache does not match the current validated archive scope and cannot be reused.');
+  }
+  const seenPaths = new Set();
+  for (const entry of manifest.records) {
+    if (!entry?.relativePath || seenPaths.has(entry.relativePath)
+      || !entry?.gameId || !Number.isInteger(Number(entry.seasonStartYear))
+      || !Array.isArray(entry?.teamIds) || entry.teamIds.length !== 2
+      || !Number.isFinite(Number(entry.gzipBytes)) || !/^[a-f0-9]{64}$/i.test(String(entry.gzipSha256 ?? ''))) {
+      throw new Error('Replay cache manifest contains an invalid record descriptor.');
+    }
+    seenPaths.add(entry.relativePath);
+  }
+  return manifest;
+}
+
+/**
+ * Read and verify one replay-cache record immediately before a team shard
+ * consumes it.  Hashing at this boundary ensures a partial/tampered cache is
+ * never silently treated as equivalent to a verified reconstruction pass.
+ */
+async function readReplayCacheRecord(cacheDir, descriptor) {
+  const cachePath = path.join(cacheDir, ...String(descriptor.relativePath).split('/'));
+  const compressed = await fs.readFile(cachePath);
+  if (compressed.length !== Number(descriptor.gzipBytes) || sha256(compressed) !== descriptor.gzipSha256) {
+    throw new Error(`Replay-cache integrity check failed for ${descriptor.relativePath}.`);
+  }
+  const payload = JSON.parse(gunzipSync(compressed).toString('utf8'));
+  if (payload?.schemaVersion !== REPLAY_CACHE_SCHEMA_VERSION || payload?.filename !== descriptor.filename) {
+    throw new Error(`Replay-cache descriptor mismatch for ${descriptor.relativePath}.`);
+  }
+  const compact = compactRecord(payload.record, payload.filename);
+  const gameId = String(compact.game?.providerGameId || compact.filename);
+  if (gameId !== descriptor.gameId
+    || Number(compact.game?.seasonStartYear) !== Number(descriptor.seasonStartYear)) {
+    throw new Error(`Replay-cache game identity mismatch for ${descriptor.relativePath}.`);
+  }
+  return compact;
+}
+
 async function loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason) {
   const records = [];
   const seenGameIds = new Set();
@@ -1293,6 +1463,95 @@ async function loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeas
   return records;
 }
 
+/**
+ * Verify and visit raw archive files without retaining their decoded payloads.
+ *
+ * The historical in-memory reader remains useful for the small calibration
+ * path. Large replay-cache packages use this visitor instead: every source
+ * file still receives the same manifest, compressed-byte, uncompressed-byte,
+ * normalized-record, season, access-level, and duplicate-game checks, but
+ * its decoded JSON is released immediately after the callback finishes.
+ */
+async function streamVerifiedRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason, onRecord) {
+  const seenGameIds = new Set();
+  const discoveredBySeason = Object.fromEntries(OPTIONS.seasonStartYears.map((year) => [year, 0]));
+  let discovered = 0;
+  for (const seasonPath of SEASON_PATHS) {
+    const expectedIntegrity = sourceFileIntegrityBySeason?.[seasonPath.seasonStartYear];
+    const expectedAccessLevel = sourceAccessLevelsBySeason?.[seasonPath.seasonStartYear];
+    if (!expectedIntegrity?.expectedFiles) {
+      throw new Error(`No validated source game-file inventory is available for season ${seasonPath.seasonStartYear}.`);
+    }
+    if (expectedAccessLevel !== 'trial') {
+      throw new Error(`No valid trial source access level is available for season ${seasonPath.seasonStartYear}.`);
+    }
+    const entries = (await fs.readdir(seasonPath.gamesDirectory, { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.json.gz'))
+      .sort((left, right) => left.name.localeCompare(right.name));
+    if (entries.length !== expectedIntegrity.expectedFileCount) {
+      throw new Error(`Source game-file count does not match the validated checkpoint for season ${seasonPath.seasonStartYear}.`);
+    }
+    const verifiedDescriptors = [];
+    for (const entry of entries) {
+      const filePath = path.join(seasonPath.gamesDirectory, entry.name);
+      const expected = expectedIntegrity.expectedFiles.get(entry.name);
+      if (!expected) {
+        throw new Error(`Source archive contains an unvalidated game file for season ${seasonPath.seasonStartYear}: games/${entry.name}.`);
+      }
+      const compressed = await fs.readFile(filePath);
+      const uncompressed = gunzipSync(compressed);
+      const record = JSON.parse(uncompressed.toString('utf8'));
+      if (record?.source?.accessLevel !== expectedAccessLevel) {
+        throw new Error(`Source game-file access level does not match the validated manifest for season ${seasonPath.seasonStartYear}: ${expected.relativePath}.`);
+      }
+      const recordSeasonStartYear = Number(record.game?.seasonStartYear ?? seasonPath.seasonStartYear);
+      if (recordSeasonStartYear !== seasonPath.seasonStartYear) {
+        throw new Error(`Archive ${seasonPath.seasonStartYear}/${entry.name} declares season ${recordSeasonStartYear}.`);
+      }
+      const gameId = String(record.game?.providerGameId ?? '').trim();
+      if (gameId !== expected.gameId) {
+        throw new Error(`Source game file identifier does not match the validated checkpoint for season ${seasonPath.seasonStartYear}: ${expected.relativePath}.`);
+      }
+      if (gameId && seenGameIds.has(gameId)) {
+        throw new Error(`Duplicate provider game ${gameId} appears across selected season archives.`);
+      }
+      if (gameId) seenGameIds.add(gameId);
+      try {
+        verifiedDescriptors.push(verifiedSourceFileDescriptor({
+          expected,
+          filename: entry.name,
+          compressed,
+          uncompressed,
+          gameId,
+        }));
+      } catch (error) {
+        throw new Error(`Source game file does not match the validated checkpoint for season ${seasonPath.seasonStartYear}: ${String(error?.message ?? error)}`);
+      }
+      await onRecord(compactRecord({
+        ...record,
+        game: {
+          ...record.game,
+          seasonStartYear: recordSeasonStartYear,
+          seasonEndYear: Number(record.game?.seasonEndYear ?? recordSeasonStartYear + 1),
+        },
+      }, `${seasonPath.seasonStartYear}/${entry.name}`));
+      discovered += 1;
+      discoveredBySeason[seasonPath.seasonStartYear] += 1;
+      if (discovered % 50 === 0) requestGarbageCollection();
+    }
+    for (const filename of expectedIntegrity.expectedFiles.keys()) {
+      if (!entries.some((entry) => entry.name === filename)) {
+        throw new Error(`Source archive is missing a validated game file for season ${seasonPath.seasonStartYear}: games/${filename}.`);
+      }
+    }
+    verifiedDescriptors.sort((left, right) => left.relativePath.localeCompare(right.relativePath));
+    if (sha256(JSON.stringify(verifiedDescriptors)) !== expectedIntegrity.fileIntegritySha256) {
+      throw new Error(`Source game-file inventory does not match the validated checkpoint for season ${seasonPath.seasonStartYear}.`);
+    }
+  }
+  return { discovered, discoveredBySeason };
+}
+
 function transientReplay(compact) {
   if (!OPTIONS.replayReconstruction) return compact;
   const { record, game, maps, filename } = compact;
@@ -1343,6 +1602,23 @@ function rollingGameMemberships(records) {
   }]));
 }
 
+function rollingGameMembershipsFromCacheEntries(entries) {
+  const chronological = [...entries]
+    .sort((left, right) => (
+      String(left.scheduledAt ?? '').localeCompare(String(right.scheduledAt ?? ''))
+      || String(left.gameId).localeCompare(String(right.gameId))
+    ))
+    .map((entry) => ({
+      filename: entry.filename,
+      game: {
+        providerGameId: entry.gameId,
+        homeProviderTeamId: entry.teamIds?.[0],
+        awayProviderTeamId: entry.teamIds?.[1],
+      },
+    }));
+  return rollingGameMemberships(chronological);
+}
+
 function membershipsFor(teamId, gameId, rollingByTeam) {
   const windows = rollingByTeam.get(teamId);
   return {
@@ -1362,6 +1638,290 @@ function aggregateInto(contextMap, contexts, row) {
     }
     addScoutAggregate(contextMap.get(context), row);
   }
+}
+
+/**
+ * Keep every mutable, team-shard-specific aggregate together. The established
+ * in-memory derivation remains untouched as a regression baseline; the new
+ * bounded-memory path creates and releases one state per franchise. Its
+ * aggregation function mirrors the established possession rules rather than
+ * introducing a reduced metric set for large packages.
+ */
+function createAggregateState() {
+  return {
+    comboMap: new Map(),
+    comboMinutes: new Map(),
+    playerOnOffMap: new Map(),
+    playerOnMinutes: new Map(),
+    playerScopeMinutes: new Map(),
+    teamScopeMinutes: new Map(),
+    wowyMap: new Map(),
+    teamMap: new Map(),
+    playerEventMap: new Map(),
+    playerOfficialSummaryMap: new Map(),
+    lineupStartCounts: new Map(),
+    lineupCloseCounts: new Map(),
+    playerStartCounts: new Map(),
+    playerCloseCounts: new Map(),
+  };
+}
+
+function rememberAggregateNames(record, names) {
+  for (const team of record.teams ?? []) names.teamNames.set(team.id, teamName(team) || team.id);
+  const players = new Map((record.players ?? []).map((player) => [player.id, player]));
+  for (const player of record.players ?? []) names.playerNames.set(player.id, playerName(player.id, players));
+}
+
+function incrementAggregateCount(map, key) {
+  map.set(key, (map.get(key) ?? 0) + 1);
+}
+
+function ensureAggregateCombo(state, names, teamId, ids) {
+  const key = comboKey(teamId, ids);
+  if (!state.comboMap.has(key)) {
+    state.comboMap.set(key, createComboEntry(teamId, names.teamNames.get(teamId) || teamId, ids));
+  }
+  return state.comboMap.get(key);
+}
+
+function aggregatePlayerEventLine(state, teamId, playerId) {
+  const key = `${teamId}~${playerId}`;
+  if (!state.playerEventMap.has(key)) state.playerEventMap.set(key, createDirectPlayerEventLine());
+  return state.playerEventMap.get(key);
+}
+
+function aggregatePlayerOfficialSummaryState(state, teamId, playerId) {
+  const key = `${teamId}~${playerId}`;
+  if (!state.playerOfficialSummaryMap.has(key)) {
+    state.playerOfficialSummaryMap.set(key, createOfficialSummaryReconciliationState());
+  }
+  return state.playerOfficialSummaryMap.get(key);
+}
+
+function accumulateDirectPlayerEventsIntoState(record, validTeamIds, state) {
+  const seenEventIds = new Set();
+  const gameLines = new Map();
+  for (const [index, event] of (record.events ?? []).entries()) {
+    if (event?.isRescinded === true) continue;
+    const eventId = String(event?.id ?? '').trim() || `index:${index}`;
+    if (seenEventIds.has(eventId)) continue;
+    seenEventIds.add(eventId);
+    const eventType = normalizedEventToken(event?.eventType ?? event?.event_type ?? event?.type);
+    for (const statistic of event?.statistics ?? []) {
+      const teamId = eventStatisticTeamId(statistic);
+      const playerId = eventStatisticPlayerId(statistic);
+      if (!validTeamIds.has(teamId) || !playerId) continue;
+      const key = `${teamId}~${playerId}`;
+      if (!gameLines.has(key)) gameLines.set(key, createDirectPlayerEventLine());
+      addDirectPlayerStatistic(gameLines.get(key), statistic, eventType);
+      addDirectPlayerStatistic(aggregatePlayerEventLine(state, teamId, playerId), statistic, eventType);
+    }
+  }
+  return gameLines;
+}
+
+/**
+ * Aggregate one already-eligible replayed game into a state.  `targetTeamId`
+ * narrows only the destination shard; it deliberately still requires both
+ * verified five-player lineups on a possession, exactly as the original
+ * all-team derivation does.  This guards against a one-team build quietly
+ * gaining evidence that an all-team build would exclude.
+ */
+function aggregateEligibleRecordIntoState({ compact, state, names, rollingByTeam, targetTeamId = null }) {
+  const { record, game, maps, filename } = compact;
+  const gameId = String(game.providerGameId || filename);
+  const recordSeasonStartYear = Number(game.seasonStartYear);
+  const homeTeamId = String(game.homeProviderTeamId ?? '');
+  const awayTeamId = String(game.awayProviderTeamId ?? '');
+  const allTeamIds = [homeTeamId, awayTeamId];
+  if (!homeTeamId || !awayTeamId || homeTeamId === awayTeamId) return false;
+  if (targetTeamId !== null && !allTeamIds.includes(targetTeamId)) return false;
+  const selectedTeamIds = targetTeamId === null ? allTeamIds : [targetTeamId];
+  const validTeamIds = new Set(selectedTeamIds);
+
+  const directPlayerEventsForGame = accumulateDirectPlayerEventsIntoState(record, validTeamIds, state);
+  const appearedPlayersByTeam = new Map(selectedTeamIds.map((teamId) => [teamId, new Set()]));
+  for (const lineup of record.lineups ?? []) {
+    const ids = exactLineup(lineup.id, maps.lineups);
+    if (!ids || !appearedPlayersByTeam.has(lineup.providerTeamId)) continue;
+    ids.forEach((id) => appearedPlayersByTeam.get(lineup.providerTeamId).add(id));
+  }
+  const summaryPlayersByKey = new Map((record.players ?? []).map((player) => [
+    `${player.providerTeamId}~${player.id}`,
+    player,
+  ]));
+  for (const [teamId, appeared] of appearedPlayersByTeam.entries()) {
+    for (const playerId of appeared) {
+      const reconciliation = aggregatePlayerOfficialSummaryState(state, teamId, playerId);
+      reconciliation.gamesExpected += 1;
+      const summaryPlayer = summaryPlayersByKey.get(`${teamId}~${playerId}`);
+      if (summaryPlayer?.officialBoxScore?.availableFields?.length > 0) {
+        reconciliation.gamesWithAnySummaryTotals += 1;
+      }
+      const officialTotals = officialSummaryBoxScoreForComparison(summaryPlayer);
+      if (!officialTotals) continue;
+      reconciliation.gamesWithCompleteSummaryTotals += 1;
+      const directTotals = directBoxScoreForOfficialComparison(
+        directPlayerEventsForGame.get(`${teamId}~${playerId}`) ?? createDirectPlayerEventLine(),
+      );
+      if (!sameOfficialPlayerBoxScore(directTotals, officialTotals)) continue;
+      reconciliation.gamesReconciledWithStructuredPbp += 1;
+      addOfficialPlayerBoxScore(reconciliation.reconciledTotals, officialTotals);
+    }
+  }
+
+  const teamStintMinutes = new Map(selectedTeamIds.map((teamId) => [teamId, 0]));
+  for (const stint of record.stints ?? []) {
+    const durationMinutes = Math.max(0, finite(stint.durationMs)) / 60_000;
+    const homeIds = exactLineup(stint.homeLineupId, maps.lineups);
+    const awayIds = exactLineup(stint.awayLineupId, maps.lineups);
+    if (!homeIds || !awayIds || durationMinutes <= 0) continue;
+    const lineupsByTeam = new Map([[homeTeamId, homeIds], [awayTeamId, awayIds]]);
+    for (const teamId of selectedTeamIds) {
+      const ids = lineupsByTeam.get(teamId);
+      teamStintMinutes.set(teamId, teamStintMinutes.get(teamId) + durationMinutes);
+      for (const combination of combosForLineup(ids)) {
+        const key = comboKey(teamId, combination);
+        state.comboMinutes.set(key, (state.comboMinutes.get(key) ?? 0) + durationMinutes);
+      }
+      for (const playerId of ids) {
+        const key = `${teamId}~${playerId}`;
+        state.playerOnMinutes.set(key, (state.playerOnMinutes.get(key) ?? 0) + durationMinutes);
+      }
+    }
+  }
+  for (const [teamId, minutes] of teamStintMinutes.entries()) {
+    state.teamScopeMinutes.set(teamId, (state.teamScopeMinutes.get(teamId) ?? 0) + minutes);
+  }
+  const exactStints = (record.stints ?? [])
+    .map((stint, index) => ({
+      index,
+      ordinal: finite(stint?.stintOrdinal, index),
+      homeIds: exactLineup(stint?.homeLineupId, maps.lineups),
+      awayIds: exactLineup(stint?.awayLineupId, maps.lineups),
+    }))
+    .filter((stint) => stint.homeIds && stint.awayIds)
+    .sort((left, right) => left.ordinal - right.ordinal || left.index - right.index);
+  for (const [teamId, appeared] of appearedPlayersByTeam.entries()) {
+    for (const playerId of appeared) {
+      const key = `${teamId}~${playerId}`;
+      state.playerScopeMinutes.set(key, (state.playerScopeMinutes.get(key) ?? 0) + (teamStintMinutes.get(teamId) ?? 0));
+    }
+  }
+
+  const possessionObservedLineupKeysByTeam = new Map(selectedTeamIds.map((teamId) => [teamId, new Set()]));
+  const primaryPhase = String(game.primaryPhase ?? '').trim().toLowerCase();
+  for (const possession of record.possessions ?? []) {
+    const homePlayerIds = exactLineup(possession.homeLineupId, maps.lineups);
+    const awayPlayerIds = exactLineup(possession.awayLineupId, maps.lineups);
+    if (!homePlayerIds || !awayPlayerIds) continue;
+    const offenseTeamId = String(possession.offenseProviderTeamId ?? '');
+    const defenseTeamId = String(possession.defenseProviderTeamId ?? '');
+    if (!allTeamIds.includes(offenseTeamId) || !allTeamIds.includes(defenseTeamId) || offenseTeamId === defenseTeamId) continue;
+    const offensePoints = finite(possession.offensePoints);
+    const defensePoints = finite(possession.defensePoints);
+    const eventStats = eventStatsForPossession(record, possession);
+    const possessionTacticalExtras = {
+      secondChancePossessions: eventStats.tactics?.hasStructuredOffensiveRebound ? 1 : 0,
+      secondChancePoints: eventStats.tactics?.hasStructuredOffensiveRebound ? offensePoints : 0,
+      pointsOffTurnoverPossessions: eventStats.tactics?.startsAfterStructuredOpponentTurnover ? 1 : 0,
+      pointsOffTurnovers: eventStats.tactics?.startsAfterStructuredOpponentTurnover ? offensePoints : 0,
+    };
+    const sides = [
+      { teamId: homeTeamId, side: 'home', ids: homePlayerIds, opponentIds: awayPlayerIds },
+      { teamId: awayTeamId, side: 'away', ids: awayPlayerIds, opponentIds: homePlayerIds },
+    ];
+    for (const side of sides) {
+      if (!validTeamIds.has(side.teamId)) continue;
+      possessionObservedLineupKeysByTeam.get(side.teamId).add(comboKey(side.teamId, side.ids));
+      const isOffense = side.teamId === offenseTeamId;
+      const row = {
+        gameId,
+        gameResult: gameResultForSide(game, side.side),
+        isOffense,
+        pointsFor: isOffense ? offensePoints : defensePoints,
+        pointsAgainst: isOffense ? defensePoints : offensePoints,
+        fourFactorCounts: isOffense ? eventStats.counts : null,
+        fourFactorCoverage: isOffense ? eventStats.coverage : null,
+        offensiveEventExtras: isOffense ? { ...eventStats.offensiveEventExtras, ...possessionTacticalExtras } : null,
+        opponentFourFactorCounts: isOffense ? null : eventStats.counts,
+        opponentFourFactorCoverage: isOffense ? null : eventStats.coverage,
+        defensiveEventExtras: isOffense ? null : { ...eventStats.defensiveEventExtras, ...possessionTacticalExtras },
+      };
+      const contexts = [...possessionContexts(possession, side.side, {
+        phase: primaryPhase,
+        rollingWindowMemberships: membershipsFor(side.teamId, gameId, rollingByTeam),
+      }), `season:${recordSeasonStartYear}`];
+      if (!state.teamMap.has(side.teamId)) {
+        state.teamMap.set(side.teamId, {
+          teamId: side.teamId,
+          team: names.teamNames.get(side.teamId) || side.teamId,
+          contexts: new Map(),
+        });
+      }
+      aggregateInto(state.teamMap.get(side.teamId).contexts, contexts, row);
+      for (const ids of combosForLineup(side.ids)) {
+        const entry = ensureAggregateCombo(state, names, side.teamId, ids);
+        aggregateInto(entry.contexts, contexts, row);
+        if (ids.length === 5) addOpponentExposure(entry, side.opponentIds, side.side);
+      }
+      const appeared = [...(appearedPlayersByTeam.get(side.teamId) ?? [])].sort((left, right) => left.localeCompare(right));
+      for (const playerId of appeared) {
+        const key = `${side.teamId}~${playerId}`;
+        if (!state.playerOnOffMap.has(key)) {
+          state.playerOnOffMap.set(key, {
+            teamId: side.teamId,
+            team: names.teamNames.get(side.teamId) || side.teamId,
+            playerId,
+            contexts: { on: new Map(), off: new Map() },
+          });
+        }
+        aggregateInto(state.playerOnOffMap.get(key).contexts[side.ids.includes(playerId) ? 'on' : 'off'], contexts, row);
+      }
+      for (let left = 0; left < appeared.length; left += 1) {
+        for (let right = left + 1; right < appeared.length; right += 1) {
+          const playerA = appeared[left];
+          const playerB = appeared[right];
+          const key = wowyKey(side.teamId, playerA, playerB);
+          if (!state.wowyMap.has(key)) {
+            state.wowyMap.set(key, {
+              teamId: side.teamId,
+              team: names.teamNames.get(side.teamId) || side.teamId,
+              playerA,
+              playerB,
+              cells: new Map(),
+            });
+          }
+          const entry = state.wowyMap.get(key);
+          const cell = wowyCell(side.ids, playerA, playerB);
+          if (!entry.cells.has(cell)) entry.cells.set(cell, new Map());
+          aggregateInto(entry.cells.get(cell), contexts, row);
+        }
+      }
+    }
+  }
+  if (exactStints.length) {
+    const lineupsByTeam = new Map([
+      [homeTeamId, exactStints.map((stint) => stint.homeIds)],
+      [awayTeamId, exactStints.map((stint) => stint.awayIds)],
+    ]);
+    for (const teamId of selectedTeamIds) {
+      const { starterIds, closerIds } = selectPossessionObservedBoundaryLineups({
+        teamId,
+        exactLineups: lineupsByTeam.get(teamId),
+        observedLineupKeys: possessionObservedLineupKeysByTeam.get(teamId),
+      });
+      if (starterIds) {
+        incrementAggregateCount(state.lineupStartCounts, comboKey(teamId, starterIds));
+        for (const playerId of starterIds) incrementAggregateCount(state.playerStartCounts, `${teamId}~${playerId}`);
+      }
+      if (closerIds) {
+        incrementAggregateCount(state.lineupCloseCounts, comboKey(teamId, closerIds));
+        for (const playerId of closerIds) incrementAggregateCount(state.playerCloseCounts, `${teamId}~${playerId}`);
+      }
+    }
+  }
+  return true;
 }
 
 function compactFourFactorCoverage(coverage) {
@@ -1414,6 +1974,258 @@ function addOpponentExposure(entry, opponentPlayerIds, side) {
   }
   entry.projectionPossessions += 1;
   entry.homeCourtExposureBalance += side === 'home' ? 1 : -1;
+}
+
+/**
+ * Build state-aware row serializers once the global RAPM fit is available.
+ * They receive the aggregate state explicitly so an identical serializer can
+ * write either the legacy all-team state or one bounded-memory team state.
+ */
+function createScoutRowBuilders({ netByPlayer, netRapm, playerNames }) {
+  function comboRow(entry, state) {
+    const contexts = outputContexts(entry.contexts);
+    const key = comboKey(entry.teamId, entry.playerIds);
+    const minutes = state.comboMinutes.get(key) ?? 0;
+    const teamAggregate = state.teamMap.get(entry.teamId)?.contexts?.get('all');
+    const teamTotalPossessions = finite(teamAggregate?.offensivePossessions) + finite(teamAggregate?.defensivePossessions);
+    const teamMinutes = state.teamScopeMinutes.get(entry.teamId) ?? 0;
+    let projection = null;
+    if (entry.size === 5) {
+      const totalProjectionPossessions = entry.projectionPossessions;
+      const averageOpponentLineupRapmPer100 = totalProjectionPossessions > 0
+        ? [...entry.opponentPlayerExposure.entries()].reduce((total, [playerId, exposure]) => (
+          total + exposure * finite(netByPlayer.get(playerId)?.rapmPer100)
+        ), 0) / totalProjectionPossessions
+        : null;
+      const homeCourtExposureAdjustment = homeCourtExposureAdjustmentPer100({
+        homeCourtNetRatingEffectPer100: netRapm.homeCourtNetRatingEffectPer100,
+        homeCourtExposureBalance: entry.homeCourtExposureBalance,
+        totalProjectionPossessions,
+      });
+      if (homeCourtExposureAdjustment === null) {
+        throw new Error(`Exact lineup ${key} has no valid home-court projection adjustment.`);
+      }
+      projection = {
+        ...lineupProjection({
+          players: entry.playerIds.map((playerId) => netByPlayer.get(playerId)),
+          observedNetRating: contexts.all?.netRating,
+          observedPossessions: (contexts.all?.totalPossessions ?? 0) / 2,
+          averageOpponentLineupRapmPer100,
+          homeCourtExposureAdjustmentPer100: homeCourtExposureAdjustment,
+          synergyPriorPossessions: OPTIONS.synergyPriorPossessions,
+        }),
+        homeCourtAdjustmentSource: {
+          modelVersion: netRapm.modelVersion,
+          signConvention: netRapm.homeCourtSignConvention,
+          homeCourtNetRatingEffectPer100: round(netRapm.homeCourtNetRatingEffectPer100),
+          signedExposureBalance: totalProjectionPossessions > 0
+            ? round(entry.homeCourtExposureBalance / totalProjectionPossessions, 6)
+            : null,
+        },
+      };
+    }
+    return {
+      teamId: entry.teamId,
+      team: entry.team,
+      size: entry.size,
+      semantics: entry.size === 5 ? 'exact_five_player_possession_start_lineup' : 'shared_floor_co_presence_combination',
+      playerIds: entry.playerIds,
+      players: entry.playerIds.map((id) => playerNames.get(id) || id),
+      minutes: round(minutes),
+      exposure: exposureSummary(
+        contexts,
+        minutes,
+        entry.size === 5 ? 'exact_five_player_possession_start_lineup' : 'shared_floor_co_presence_combination',
+      ),
+      continuity: {
+        gamesUsed: finite(contexts.all?.games),
+        teamPossessionShare: ratioOrNull(finite(contexts.all?.totalPossessions), teamTotalPossessions, 4),
+        teamMinuteShare: ratioOrNull(minutes, teamMinutes, 4),
+        exactLineupStartingGames: entry.size === 5 ? (state.lineupStartCounts.get(key) ?? 0) : null,
+        exactLineupClosingGames: entry.size === 5 ? (state.lineupCloseCounts.get(key) ?? 0) : null,
+        exactLineupStartRate: entry.size === 5 ? ratioOrNull(state.lineupStartCounts.get(key) ?? 0, finite(contexts.all?.games), 4) : null,
+        exactLineupCloseRate: entry.size === 5 ? ratioOrNull(state.lineupCloseCounts.get(key) ?? 0, finite(contexts.all?.games), 4) : null,
+        caveat: entry.size === 5
+          ? 'Starting and closing counts use the first and final verified exact-lineup stint observed at a possession start in each eligible game; zero-possession dead-ball lineups are excluded.'
+          : 'Starting and closing counts are meaningful only for exact five-player lineups; this row is a co-presence combination.',
+      },
+      contexts,
+      ...(projection ? { projection } : {}),
+    };
+  }
+
+  function playerOnOffRow(entry, state) {
+    const on = outputContexts(entry.contexts.on);
+    const off = outputContexts(entry.contexts.off);
+    const key = `${entry.teamId}~${entry.playerId}`;
+    const onMinutes = state.playerOnMinutes.get(key) ?? 0;
+    const offMinutes = Math.max(0, (state.playerScopeMinutes.get(key) ?? 0) - onMinutes);
+    const onOff = calculateOnOff(on.all, off.all);
+    return {
+      teamId: entry.teamId,
+      team: entry.team,
+      playerId: entry.playerId,
+      player: playerNames.get(entry.playerId) || entry.playerId,
+      scope: 'same-game-player-appearance',
+      onMinutes: round(onMinutes),
+      offMinutes: round(offMinutes),
+      exposure: {
+        on: exposureSummary(on, onMinutes, 'player on-court sample'),
+        off: exposureSummary(off, offMinutes, 'same-game player-appearance off-court sample'),
+      },
+      on,
+      off,
+      differences: onOff,
+      onOffNetRating: onOff.onOffNetRating,
+    };
+  }
+
+  function wowyRow(entry) {
+    return {
+      teamId: entry.teamId,
+      team: entry.team,
+      playerAId: entry.playerA,
+      playerA: playerNames.get(entry.playerA) || entry.playerA,
+      playerBId: entry.playerB,
+      playerB: playerNames.get(entry.playerB) || entry.playerB,
+      semantics: 'descriptive_same_game_shared_floor_wowy',
+      cells: Object.fromEntries([...entry.cells.entries()].map(([cell, contexts]) => [cell, outputContexts(contexts)])),
+    };
+  }
+
+  return { comboRow, playerOnOffRow, wowyRow };
+}
+
+function teamRowFromAggregateState(teamId, state) {
+  const entry = state.teamMap.get(teamId);
+  if (!entry) return null;
+  const contexts = outputContexts(entry.contexts);
+  const minutes = state.teamScopeMinutes.get(entry.teamId) ?? 0;
+  return {
+    teamId: entry.teamId,
+    team: entry.team,
+    minutes: round(minutes),
+    exposure: exposureSummary(contexts, minutes, 'verified exact-lineup stint minutes and possession contexts'),
+    contexts,
+  };
+}
+
+function sortedAggregateKeysForTeam(map, teamId, compareEntries) {
+  const keys = [];
+  for (const [key, entry] of map.entries()) {
+    if (entry.teamId === teamId) keys.push(key);
+  }
+  keys.sort((left, right) => compareEntries(map.get(left), map.get(right)));
+  return keys;
+}
+
+async function appendArrayItem(writer, state, row) {
+  if (state.count > 0) await writer.write(',');
+  await writer.write(JSON.stringify(row));
+  state.count += 1;
+}
+
+/**
+ * Stream one fully aggregated team state to its inspectable JSON shard and
+ * transport gzip.  Deleting entries only after they are serialized keeps the
+ * write bounded even for franchises with unusually many historic rotations.
+ */
+async function writeTeamShardFromState({ team, stagingDirectory, state, playerNames, rowBuilders }) {
+  const teamSlug = String(team.teamId).replace(/[^a-zA-Z0-9_-]+/g, '_');
+  const shardPath = path.join(stagingDirectory, 'teams', `${teamSlug}.json`);
+  const shardGzipPath = `${shardPath}.gz`;
+  const writer = createDigestingJsonWriter(shardPath);
+  const combinationState = { count: 0 };
+  const onOffState = { count: 0 };
+  const profileState = { count: 0 };
+  const wowyState = { count: 0 };
+  const comparePlayer = (left, right) => (
+    String(playerNames.get(left) || left).localeCompare(String(playerNames.get(right) || right))
+    || String(left).localeCompare(String(right))
+  );
+
+  await writer.write(`{"schemaVersion":${OUTPUT_SCHEMA_VERSION},"metricsVersion":${JSON.stringify(SCOUT_METRICS_VERSION)},"seasonStartYear":${OPTIONS.seasonStartYear},"seasonEndYear":${OPTIONS.latestSeasonStartYear + 1},"seasonStartYears":${JSON.stringify(OPTIONS.seasonStartYears)},"latestSeasonStartYear":${OPTIONS.latestSeasonStartYear},"team":${JSON.stringify(team)},"lineupsAndCombinations":[`);
+  const combinationKeys = sortedAggregateKeysForTeam(state.comboMap, team.teamId, (left, right) => (
+    left.size - right.size || left.playerIds.join('|').localeCompare(right.playerIds.join('|'))
+  ));
+  for (const key of combinationKeys) {
+    const entry = state.comboMap.get(key);
+    await appendArrayItem(writer, combinationState, rowBuilders.comboRow(entry, state));
+    state.comboMap.delete(key);
+    state.comboMinutes.delete(key);
+    state.lineupStartCounts.delete(key);
+    state.lineupCloseCounts.delete(key);
+  }
+
+  await writer.write('],"playerOnOff":[');
+  const onOffRowsForTeam = [];
+  const onOffKeys = sortedAggregateKeysForTeam(state.playerOnOffMap, team.teamId, (left, right) => comparePlayer(left.playerId, right.playerId));
+  for (const key of onOffKeys) {
+    const entry = state.playerOnOffMap.get(key);
+    const row = rowBuilders.playerOnOffRow(entry, state);
+    onOffRowsForTeam.push({ key, row });
+    await appendArrayItem(writer, onOffState, row);
+    state.playerOnOffMap.delete(key);
+    state.playerOnMinutes.delete(key);
+    state.playerScopeMinutes.delete(key);
+  }
+
+  await writer.write('],"playerProfiles":[');
+  for (const { key, row } of onOffRowsForTeam) {
+    const profile = playerProfileFromEvents({
+      teamId: row.teamId,
+      team: row.team,
+      playerId: row.playerId,
+      player: row.player,
+      events: state.playerEventMap.get(key) ?? createDirectPlayerEventLine(),
+      onOff: row,
+      starterGames: state.playerStartCounts.get(key) ?? 0,
+      closerGames: state.playerCloseCounts.get(key) ?? 0,
+      officialSummaryReconciliationState: state.playerOfficialSummaryMap.get(key),
+    });
+    await appendArrayItem(writer, profileState, profile);
+    state.playerEventMap.delete(key);
+    state.playerStartCounts.delete(key);
+    state.playerCloseCounts.delete(key);
+    state.playerOfficialSummaryMap.delete(key);
+  }
+  for (const key of [...state.playerEventMap.keys()]) {
+    if (key.startsWith(`${team.teamId}~`)) state.playerEventMap.delete(key);
+  }
+  for (const key of [...state.playerOfficialSummaryMap.keys()]) {
+    if (key.startsWith(`${team.teamId}~`)) state.playerOfficialSummaryMap.delete(key);
+  }
+
+  await writer.write('],"wowy":[');
+  const wowyKeys = sortedAggregateKeysForTeam(state.wowyMap, team.teamId, (left, right) => (
+    comparePlayer(left.playerA, right.playerA) || comparePlayer(left.playerB, right.playerB)
+  ));
+  for (const key of wowyKeys) {
+    const entry = state.wowyMap.get(key);
+    await appendArrayItem(writer, wowyState, rowBuilders.wowyRow(entry));
+    state.wowyMap.delete(key);
+  }
+  await writer.write(']}\n');
+  const json = await writer.close();
+  const gzip = await gzipFile(shardPath, shardGzipPath);
+
+  state.teamMap.delete(team.teamId);
+  state.teamScopeMinutes.delete(team.teamId);
+  return {
+    teamId: team.teamId,
+    team: team.team,
+    jsonPath: `teams/${teamSlug}.json`,
+    gzipPath: `teams/${teamSlug}.json.gz`,
+    ...json,
+    ...gzip,
+    rows: {
+      team: 1,
+      lineupsAndCombinations: combinationState.count,
+      playerOnOff: onOffState.count,
+      playerProfiles: profileState.count,
+      wowy: wowyState.count,
+    },
+  };
 }
 
 function rapmModelOutput(model, players) {
@@ -1660,9 +2472,15 @@ async function derive() {
     seasonStartYear,
     validation.seasons?.find((season) => season.seasonStartYear === seasonStartYear) ?? null,
   ]));
-  // Provenance and access policy have now passed.  Only at this point is it
-  // safe to load the multi-gigabyte game corpus.
-  const loadedRecords = await loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason);
+  const partitionedTeamShards = OPTIONS.teamShardMode === 'replay_cache';
+  // The legacy/calibration paths intentionally preserve their existing
+  // in-memory reader. The replay-cache path below streams the same verified
+  // source records instead, so a large archive never needs raw and replayed
+  // versions of every game resident at once.
+  let loadedRecords = null;
+  if (OPTIONS.calibrationOnly || !partitionedTeamShards) {
+    loadedRecords = await loadRecords(sourceFileIntegrityBySeason, sourceAccessLevelsBySeason);
+  }
   if (OPTIONS.calibrationOnly) {
     await deriveOffenseDefenseCalibrationOnly({
       manifestRaw: manifestEntries[0].raw,
@@ -1673,18 +2491,26 @@ async function derive() {
     });
     return;
   }
-  const sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
-  const phaseRecords = loadedRecords.filter(({ game }) => OPTIONS.includedPhases.includes(String(game.primaryPhase ?? '').trim().toLowerCase()));
-  const officialRecords = phaseRecords.filter(isOfficialFranchiseGame);
-  const replayedRecords = officialRecords.map(transientReplay);
-  const eligibleRecords = replayedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true);
-  const rollingByTeam = rollingGameMemberships(eligibleRecords);
+  let sourceEligibleCount = 0;
+  let phaseRecords = null;
+  let officialRecords = null;
+  let replayedRecords = null;
+  let eligibleRecords = null;
+  let rollingByTeam = new Map();
   const countRecordsBySeason = (records) => Object.fromEntries(OPTIONS.seasonStartYears.map(
     (seasonStartYear) => [
       seasonStartYear,
       records.filter(({ game }) => Number(game.seasonStartYear) === seasonStartYear).length,
     ],
   ));
+  if (!partitionedTeamShards) {
+    sourceEligibleCount = loadedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true).length;
+    phaseRecords = loadedRecords.filter(({ game }) => OPTIONS.includedPhases.includes(String(game.primaryPhase ?? '').trim().toLowerCase()));
+    officialRecords = phaseRecords.filter(isOfficialFranchiseGame);
+    replayedRecords = officialRecords.map(transientReplay);
+    eligibleRecords = replayedRecords.filter(({ record }) => record.analytics?.eligibleForPublication === true);
+    rollingByTeam = rollingGameMemberships(eligibleRecords);
+  }
 
   const comboMap = new Map();
   const comboMinutes = new Map();
@@ -1704,20 +2530,27 @@ async function derive() {
   const playerCloseCounts = new Map();
   const rapmGroups = new Map();
   const counters = {
-    archivesDiscovered: loadedRecords.length,
-    archivesDiscoveredBySeason: countRecordsBySeason(loadedRecords),
+    archivesDiscovered: loadedRecords?.length ?? 0,
+    archivesDiscoveredBySeason: loadedRecords ? countRecordsBySeason(loadedRecords) : Object.fromEntries(
+      OPTIONS.seasonStartYears.map((year) => [year, 0]),
+    ),
     archivesSourceEligibleV2: sourceEligibleCount,
-    archivesPhaseCandidates: phaseRecords.length,
-    archivesOfficialCandidates: officialRecords.length,
-    archivesEligible: eligibleRecords.length,
-    archivesEligibleBySeason: countRecordsBySeason(eligibleRecords),
-    archivesExcludedByPhase: loadedRecords.length - phaseRecords.length,
-    archivesExcludedNonFranchise: phaseRecords.length - officialRecords.length,
-    archivesReplayPartial: replayedRecords.filter(({ record }) => record.analytics?.coverageStatus === 'partial').length,
-    archivesReplayIneligible: replayedRecords.filter(({ record }) => record.analytics?.coverageStatus === 'ineligible').length,
+    archivesPhaseCandidates: phaseRecords?.length ?? 0,
+    archivesOfficialCandidates: officialRecords?.length ?? 0,
+    archivesEligible: eligibleRecords?.length ?? 0,
+    archivesEligibleBySeason: eligibleRecords ? countRecordsBySeason(eligibleRecords) : Object.fromEntries(
+      OPTIONS.seasonStartYears.map((year) => [year, 0]),
+    ),
+    archivesExcludedByPhase: loadedRecords ? loadedRecords.length - phaseRecords.length : 0,
+    archivesExcludedNonFranchise: loadedRecords ? phaseRecords.length - officialRecords.length : 0,
+    archivesReplayPartial: replayedRecords?.filter(({ record }) => record.analytics?.coverageStatus === 'partial').length ?? 0,
+    archivesReplayIneligible: replayedRecords?.filter(({ record }) => record.analytics?.coverageStatus === 'ineligible').length ?? 0,
     includedPhases: [...OPTIONS.includedPhases],
     eligibleArchivesByPhase: Object.fromEntries(OPTIONS.includedPhases.map((phase) => [phase, 0])),
-    pseudoPlayerRowsExcludedAllArchives: loadedRecords.reduce((total, { record }) => total + finite(record.source?.skippedSummaryPlayerRows), 0),
+    pseudoPlayerRowsExcludedAllArchives: loadedRecords?.reduce(
+      (total, { record }) => total + finite(record.source?.skippedSummaryPlayerRows),
+      0,
+    ) ?? 0,
     pseudoPlayerRowsExcluded: 0,
     eventsInEligibleArchives: 0,
     stintsInEligibleArchives: 0,
@@ -1758,15 +2591,36 @@ async function derive() {
     nominalDefensePoints: 0,
   };
 
-  // Everything above has consumed the full raw/replayed archive needed for
-  // provenance and eligibility counters. Retain only eligible replay records
-  // for the aggregation pass so non-eligible game payloads do not remain live
-  // while the large context maps grow.
-  loadedRecords.length = 0;
-  phaseRecords.length = 0;
-  officialRecords.length = 0;
-  replayedRecords.length = 0;
-  requestGarbageCollection();
+  // The cache is created only after raw source provenance passed and before
+  // any shard aggregation begins.  Its directory is atomically promoted only
+  // after every eligible replay has been serialized and indexed. A prior,
+  // hash-bound completed cache can be reused after a failed final packaging
+  // attempt; the raw archive is still replayed here for the global model fit.
+  let replayCacheManifest = partitionedTeamShards && OPTIONS.reuseReplayCache
+    ? await readReusableReplayCacheManifest({
+      cacheDir: OPTIONS.replayCacheDir,
+      validationReportSha256: sha256(validationRaw),
+      manifestSetSha256,
+    })
+    : null;
+  const replayCacheWriter = partitionedTeamShards && !replayCacheManifest
+    ? await createReplayCacheWriter({
+      cacheDir: OPTIONS.replayCacheDir,
+      validationReportSha256: sha256(validationRaw),
+      manifestSetSha256,
+    })
+    : null;
+
+  // The legacy path has already selected its eligible replay records. Release
+  // the raw/non-eligible arrays before its large aggregate maps grow. The
+  // streaming cache path never allocated these arrays in the first place.
+  if (!partitionedTeamShards) {
+    loadedRecords.length = 0;
+    phaseRecords.length = 0;
+    officialRecords.length = 0;
+    replayedRecords.length = 0;
+    requestGarbageCollection();
+  }
 
   function rememberNames(record) {
     for (const team of record.teams ?? []) teamNames.set(team.id, teamName(team) || team.id);
@@ -1820,7 +2674,151 @@ async function derive() {
     return gameLines;
   }
 
-  for (let eligibleIndex = 0; eligibleIndex < eligibleRecords.length; eligibleIndex += 1) {
+  /**
+   * The replay-cache first pass needs global coverage and RAPM inputs but must
+   * not retain any team-level aggregate maps.  Keep that accounting isolated
+   * from team serialization so its semantics remain byte-for-byte aligned
+   * with the all-in-memory possession loop below.
+   */
+  function accumulateModelCoverageFromReplay({ record, game, maps, gameId, recordSeasonStartYear, primaryPhase, homeTeamId, awayTeamId }) {
+    for (const possession of record.possessions ?? []) {
+      const homePlayerIds = exactLineup(possession.homeLineupId, maps.lineups);
+      const awayPlayerIds = exactLineup(possession.awayLineupId, maps.lineups);
+      if (!homePlayerIds || !awayPlayerIds) {
+        counters.excludedPossessions += 1;
+        counters.excludedPossessionsMissingLineup += 1;
+        continue;
+      }
+      const offenseTeamId = String(possession.offenseProviderTeamId ?? '');
+      const defenseTeamId = String(possession.defenseProviderTeamId ?? '');
+      if (![homeTeamId, awayTeamId].includes(offenseTeamId)
+        || ![homeTeamId, awayTeamId].includes(defenseTeamId)
+        || offenseTeamId === defenseTeamId) {
+        counters.excludedPossessions += 1;
+        counters.excludedPossessionsInvalidTeam += 1;
+        continue;
+      }
+      counters.exactLineupPossessions += 1;
+      counters.exactLineupPossessionsBySeason[recordSeasonStartYear] += 1;
+      if (possession.hasLineupChangeMidPossession === true) counters.possessionStartLineupAttributedMidChange += 1;
+      const offensePoints = finite(possession.offensePoints);
+      const defensePoints = finite(possession.defensePoints);
+      counters.nominalDefensePoints += defensePoints;
+      const eventStats = eventStatsForPossession(record, possession);
+      const coverageStatus = eventStats.coverage?.status ?? 'unavailable';
+      counters.fourFactorCoverage[coverageStatus] = (counters.fourFactorCoverage[coverageStatus] ?? 0) + 1;
+      const homeContext = classifyScoutPossessionContext({ possession, side: 'home', phase: primaryPhase });
+      counters.contextPossessions.all += 1;
+      if (homeContext.clutch === true) counters.contextPossessions.clutch_v1 += 1;
+      else if (homeContext.clutch === false) counters.contextPossessions.non_clutch_v1 += 1;
+      else counters.contextPossessions.clutchUnclassified += 1;
+      if (homeContext.transition === 'provider_fastbreak_v1') counters.contextPossessions.provider_fastbreak_v1 += 1;
+      else if (homeContext.transition === 'non_provider_fastbreak') counters.contextPossessions.non_provider_fastbreak += 1;
+      else counters.contextPossessions.transitionUnclassified += 1;
+      if (homeContext.scoreState === 'unclassified') counters.contextPossessions.scoreStateUnclassified += 1;
+      if (homeContext.competitive.isGarbageTimeProxy) counters.contextPossessions.garbageTimeProxy += 1;
+      else if (homeContext.competitive.isGarbageTimeProxy === false) counters.contextPossessions.competitiveProxy += 1;
+      else counters.contextPossessions.competitionUnclassified += 1;
+      const leverageKey = `leverage${homeContext.leverage.bucket[0].toUpperCase()}${homeContext.leverage.bucket.slice(1)}`;
+      if (Object.hasOwn(counters.contextPossessions, leverageKey)) counters.contextPossessions[leverageKey] += 1;
+
+      const rapmKey = `${gameId}~${homePlayerIds.join('|')}~${awayPlayerIds.join('|')}`;
+      if (!rapmGroups.has(rapmKey)) {
+        rapmGroups.set(rapmKey, {
+          gameId,
+          stintOrdinal: rapmGroups.size + 1,
+          seasonStartYear: recordSeasonStartYear,
+          scheduledAt: game.scheduledAt,
+          sampleWeight: 1,
+          homePlayerIds,
+          awayPlayerIds,
+          homePoints: 0,
+          awayPoints: 0,
+          homeOffensePoints: 0,
+          awayOffensePoints: 0,
+          homeOffensivePossessions: 0,
+          awayOffensivePossessions: 0,
+          eligible: true,
+        });
+      }
+      const rapmGroup = rapmGroups.get(rapmKey);
+      if (offenseTeamId === homeTeamId) {
+        rapmGroup.homePoints += offensePoints;
+        rapmGroup.awayPoints += defensePoints;
+        rapmGroup.homeOffensePoints += offensePoints;
+        rapmGroup.homeOffensivePossessions += 1;
+      } else {
+        rapmGroup.awayPoints += offensePoints;
+        rapmGroup.homePoints += defensePoints;
+        rapmGroup.awayOffensePoints += offensePoints;
+        rapmGroup.awayOffensivePossessions += 1;
+      }
+    }
+  }
+
+  if (partitionedTeamShards) {
+    // This is the critical memory boundary for six-season packages: source
+    // integrity is still checked for every file, but each raw record is
+    // replayed, modeled, optionally cached, and released before the next file
+    // is opened. Only compact RAPM rows plus cache descriptors survive.
+    const streamed = await streamVerifiedRecords(
+      sourceFileIntegrityBySeason,
+      sourceAccessLevelsBySeason,
+      async (compact) => {
+        const rawEligible = compact.record?.analytics?.eligibleForPublication === true;
+        if (rawEligible) counters.archivesSourceEligibleV2 += 1;
+        counters.pseudoPlayerRowsExcludedAllArchives += finite(compact.record?.source?.skippedSummaryPlayerRows);
+        const primaryPhase = String(compact.game?.primaryPhase ?? '').trim().toLowerCase();
+        if (!OPTIONS.includedPhases.includes(primaryPhase)) return;
+        counters.archivesPhaseCandidates += 1;
+        if (!isOfficialFranchiseGame(compact)) return;
+        counters.archivesOfficialCandidates += 1;
+        const replayed = transientReplay(compact);
+        if (replayed.record?.analytics?.coverageStatus === 'partial') counters.archivesReplayPartial += 1;
+        if (replayed.record?.analytics?.coverageStatus === 'ineligible') counters.archivesReplayIneligible += 1;
+        if (replayed.record?.analytics?.eligibleForPublication !== true) return;
+
+        const { record, game, maps, filename } = replayed;
+        const gameId = String(game.providerGameId || filename);
+        const recordSeasonStartYear = Number(game.seasonStartYear);
+        if (!OPTIONS.seasonStartYears.includes(recordSeasonStartYear)) {
+          throw new Error(`Eligible game ${gameId} is outside the requested season scope.`);
+        }
+        counters.archivesEligible += 1;
+        counters.archivesEligibleBySeason[recordSeasonStartYear] += 1;
+        counters.eligibleArchivesByPhase[primaryPhase] = (counters.eligibleArchivesByPhase[primaryPhase] ?? 0) + 1;
+        counters.eventsInEligibleArchives += record.events?.length ?? 0;
+        counters.stintsInEligibleArchives += record.stints?.length ?? 0;
+        counters.possessionsInEligibleArchives += record.possessions?.length ?? 0;
+        counters.pseudoPlayerRowsExcluded += finite(record.source?.skippedSummaryPlayerRows);
+        rememberNames(record);
+        accumulateModelCoverageFromReplay({
+          record,
+          game,
+          maps,
+          gameId,
+          recordSeasonStartYear,
+          primaryPhase,
+          homeTeamId: String(game.homeProviderTeamId ?? ''),
+          awayTeamId: String(game.awayProviderTeamId ?? ''),
+        });
+        if (replayCacheWriter) await replayCacheWriter.write(replayed);
+      },
+    );
+    counters.archivesDiscovered = streamed.discovered;
+    counters.archivesDiscoveredBySeason = streamed.discoveredBySeason;
+    counters.archivesExcludedByPhase = counters.archivesDiscovered - counters.archivesPhaseCandidates;
+    counters.archivesExcludedNonFranchise = counters.archivesPhaseCandidates - counters.archivesOfficialCandidates;
+    sourceEligibleCount = counters.archivesSourceEligibleV2;
+    if (replayCacheWriter) replayCacheManifest = await replayCacheWriter.complete();
+    if (!replayCacheManifest || replayCacheManifest.records.length !== counters.archivesEligible) {
+      throw new Error(`Replay cache recorded ${replayCacheManifest?.records?.length ?? 0} eligible games, expected ${counters.archivesEligible}.`);
+    }
+    rollingByTeam = rollingGameMembershipsFromCacheEntries(replayCacheManifest.records);
+    requestGarbageCollection();
+  }
+
+  if (!partitionedTeamShards) for (let eligibleIndex = 0; eligibleIndex < eligibleRecords.length; eligibleIndex += 1) {
     const { record, game, maps, filename } = eligibleRecords[eligibleIndex];
     rememberNames(record);
     const primaryPhase = String(game.primaryPhase ?? '').trim().toLowerCase();
@@ -1837,6 +2835,24 @@ async function derive() {
     }
     const homeTeamId = String(game.homeProviderTeamId ?? '');
     const awayTeamId = String(game.awayProviderTeamId ?? '');
+    if (partitionedTeamShards) {
+      accumulateModelCoverageFromReplay({
+        record,
+        game,
+        maps,
+        gameId,
+        recordSeasonStartYear,
+        primaryPhase,
+        homeTeamId,
+        awayTeamId,
+      });
+      if (replayCacheWriter) await replayCacheWriter.write(eligibleRecords[eligibleIndex]);
+      // The replay cache is now the only retained copy needed for team-level
+      // aggregation.  Free this decoded game before the next reconstruction.
+      eligibleRecords[eligibleIndex] = null;
+      if ((eligibleIndex + 1) % 50 === 0) requestGarbageCollection();
+      continue;
+    }
     const validTeamIds = new Set([homeTeamId, awayTeamId]);
     const directPlayerEventsForGame = accumulateDirectPlayerEvents(record, validTeamIds);
     const appearedPlayersByTeam = new Map([[homeTeamId, new Set()], [awayTeamId, new Set()]]);
@@ -2091,8 +3107,10 @@ async function derive() {
 
   // The raw checkpoint remains preserved on disk. Eligible payloads were
   // released progressively above; drop the now-empty index before serializing.
-  eligibleRecords.length = 0;
-  requestGarbageCollection();
+  if (!partitionedTeamShards) {
+    eligibleRecords.length = 0;
+    requestGarbageCollection();
+  }
 
   let rapmInput = [...rapmGroups.values()];
   counters.rapmGroupedObservations = rapmInput.length;
@@ -2330,25 +3348,29 @@ async function derive() {
     };
   }
 
-  const teamRows = [...teamMap.values()].map((entry) => {
-    const contexts = outputContexts(entry.contexts);
-    const minutes = teamScopeMinutes.get(entry.teamId) ?? 0;
-    return {
-      teamId: entry.teamId,
-      team: entry.team,
-      minutes: round(minutes),
-      exposure: exposureSummary(contexts, minutes, 'verified exact-lineup stint minutes and possession contexts'),
-      contexts,
-    };
-  }).sort(sortBy((row) => row.team));
+  let teamRows = [];
+  let rowCounts = null;
+  if (!partitionedTeamShards) {
+    teamRows = [...teamMap.values()].map((entry) => {
+      const contexts = outputContexts(entry.contexts);
+      const minutes = teamScopeMinutes.get(entry.teamId) ?? 0;
+      return {
+        teamId: entry.teamId,
+        team: entry.team,
+        minutes: round(minutes),
+        exposure: exposureSummary(contexts, minutes, 'verified exact-lineup stint minutes and possession contexts'),
+        contexts,
+      };
+    }).sort(sortBy((row) => row.team));
 
-  const rowCounts = {
-    teams: teamRows.length,
-    lineupsAndCombinations: comboMap.size,
-    playerOnOff: playerOnOffMap.size,
-    playerProfiles: playerOnOffMap.size,
-    wowy: wowyMap.size,
-  };
+    rowCounts = {
+      teams: teamRows.length,
+      lineupsAndCombinations: comboMap.size,
+      playerOnOff: playerOnOffMap.size,
+      playerProfiles: playerOnOffMap.size,
+      wowy: wowyMap.size,
+    };
+  }
   const sourceReconstructionMethodVersionsBySeason = Object.fromEntries(
     OPTIONS.seasonStartYears.map((seasonStartYear) => [
       seasonStartYear,
@@ -2395,6 +3417,126 @@ async function derive() {
     ),
     caveat: 'A verified possession-start lineup remains the attribution rule when a later lineup change occurs. This is a sensitivity diagnostic, not a reassignment of scoring to an unobserved split lineup.',
   };
+
+  // Build the final package only after the global model is frozen.  Each
+  // cache-backed iteration holds one franchise's combinations, on/off rows,
+  // direct-profile evidence, and WOWY pairs in memory, streams that shard,
+  // then releases it before opening the next franchise.  There is no cap on
+  // candidate rotations or on the source rows represented in a team shard.
+  let partitionedOutputState = null;
+  if (partitionedTeamShards) {
+    if (!replayCacheManifest || replayCacheManifest.records.length !== counters.archivesEligible) {
+      throw new Error('A complete replay-cache manifest is required before partitioned team output can begin.');
+    }
+    const entriesByTeam = new Map();
+    for (const entry of replayCacheManifest.records) {
+      for (const teamId of entry.teamIds ?? []) {
+        if (!entriesByTeam.has(teamId)) entriesByTeam.set(teamId, []);
+        entriesByTeam.get(teamId).push(entry);
+      }
+    }
+    for (const entries of entriesByTeam.values()) {
+      entries.sort((left, right) => (
+        String(left.scheduledAt ?? '').localeCompare(String(right.scheduledAt ?? ''))
+        || left.gameId.localeCompare(right.gameId)
+      ));
+    }
+    const orderedTeamIds = [...entriesByTeam.keys()].sort((left, right) => (
+      String(teamNames.get(left) || left).localeCompare(String(teamNames.get(right) || right))
+      || String(left).localeCompare(String(right))
+    ));
+    const stagingOutputDirectory = await makeAtomicOutputDirectory(OPTIONS.outputDir);
+    await fs.mkdir(path.join(stagingOutputDirectory, 'teams'), { recursive: true });
+    const shardDescriptors = [];
+    const writtenRows = {
+      teams: 0,
+      lineupsAndCombinations: 0,
+      playerOnOff: 0,
+      playerProfiles: 0,
+      wowy: 0,
+    };
+    let shardJsonBytes = 0;
+    let shardGzipBytes = 0;
+    let noPossessionOnlyAggregateEntries = 0;
+    const rowBuilders = createScoutRowBuilders({ netByPlayer, netRapm, playerNames });
+    const names = { playerNames, teamNames };
+    for (const teamId of orderedTeamIds) {
+      const state = createAggregateState();
+      for (const cacheEntry of entriesByTeam.get(teamId)) {
+        const compact = await readReplayCacheRecord(OPTIONS.replayCacheDir, cacheEntry);
+        if (compact.record?.analytics?.eligibleForPublication !== true) {
+          throw new Error(`Replay cache contains a non-eligible game: ${cacheEntry.gameId}.`);
+        }
+        rememberAggregateNames(compact.record, names);
+        aggregateEligibleRecordIntoState({
+          compact,
+          state,
+          names,
+          rollingByTeam,
+          targetTeamId: teamId,
+        });
+      }
+      const team = teamRowFromAggregateState(teamId, state);
+      if (!team) {
+        const retainedRows = state.comboMap.size + state.playerOnOffMap.size + state.wowyMap.size
+          + state.playerEventMap.size + state.playerOfficialSummaryMap.size;
+        if (retainedRows) {
+          throw new Error(`Team ${teamId} retained aggregates without a verified possession-context row.`);
+        }
+        continue;
+      }
+      const descriptor = await writeTeamShardFromState({
+        team,
+        stagingDirectory: stagingOutputDirectory,
+        state,
+        playerNames,
+        rowBuilders,
+      });
+      // The stream writer must consume every actual output row.  Some players
+      // and lineups can appear only in a zero-possession dead-ball stint; the
+      // legacy all-team writer intentionally does not emit them because they
+      // have no valid possession context. Retain that policy explicitly, then
+      // release the auxiliary minute/count maps just as the legacy finalizer
+      // does after all teams are written.
+      const unstreamedPrimaryEntries = state.comboMap.size + state.playerOnOffMap.size
+        + state.wowyMap.size + state.teamMap.size + state.playerEventMap.size
+        + state.playerOfficialSummaryMap.size;
+      if (unstreamedPrimaryEntries) {
+        throw new Error(`Team ${teamId} retained ${unstreamedPrimaryEntries} output-bearing aggregates after streaming its Scout shard.`);
+      }
+      noPossessionOnlyAggregateEntries += state.comboMinutes.size + state.playerOnMinutes.size
+        + state.playerScopeMinutes.size + state.teamScopeMinutes.size
+        + state.lineupStartCounts.size + state.lineupCloseCounts.size
+        + state.playerStartCounts.size + state.playerCloseCounts.size;
+      state.comboMinutes.clear();
+      state.playerOnMinutes.clear();
+      state.playerScopeMinutes.clear();
+      state.teamScopeMinutes.clear();
+      state.lineupStartCounts.clear();
+      state.lineupCloseCounts.clear();
+      state.playerStartCounts.clear();
+      state.playerCloseCounts.clear();
+      teamRows.push(team);
+      shardDescriptors.push(descriptor);
+      writtenRows.teams += descriptor.rows.team;
+      writtenRows.lineupsAndCombinations += descriptor.rows.lineupsAndCombinations;
+      writtenRows.playerOnOff += descriptor.rows.playerOnOff;
+      writtenRows.playerProfiles += descriptor.rows.playerProfiles;
+      writtenRows.wowy += descriptor.rows.wowy;
+      shardJsonBytes += descriptor.jsonBytes;
+      shardGzipBytes += descriptor.gzipBytes;
+      requestGarbageCollection();
+    }
+    rowCounts = { ...writtenRows };
+    partitionedOutputState = {
+      stagingOutputDirectory,
+      shardDescriptors,
+      shardJsonBytes,
+      shardGzipBytes,
+      replayCacheManifestSha256: sha256(JSON.stringify(replayCacheManifest)),
+      noPossessionOnlyAggregateEntries,
+    };
+  }
 
   const output = {
     schemaVersion: OUTPUT_SCHEMA_VERSION,
@@ -2552,6 +3694,84 @@ async function derive() {
     },
     dataShards: [],
   };
+
+  if (partitionedOutputState) {
+    output.dataShards = partitionedOutputState.shardDescriptors;
+    output.storage = {
+      // Keep the established schema-v4 contract.  The extra cache fields make
+      // the bounded-memory implementation inspectable without exposing the
+      // private cache itself to a browser or deployment target.
+      format: 'schema_v4_streamed_team_shards_with_manifest',
+      writeMode: 'bounded_memory_atomic_team_stream_v1',
+      shardCount: partitionedOutputState.shardDescriptors.length,
+      shardJsonBytes: partitionedOutputState.shardJsonBytes,
+      shardGzipBytes: partitionedOutputState.shardGzipBytes,
+      replayCache: {
+        status: 'private_completed',
+        schemaVersion: REPLAY_CACHE_SCHEMA_VERSION,
+        manifestSha256: partitionedOutputState.replayCacheManifestSha256,
+        records: replayCacheManifest.records.length,
+        semantics: 'eligible transient replay records read and hash-verified one team shard at a time',
+      },
+      noPossessionOnlyAggregateEntries: partitionedOutputState.noPossessionOnlyAggregateEntries,
+      caveat: 'Uncompressed shards are retained for inspection; gzip shards are the preferred transport/archive representation. Team shards are streamed into a staging directory and the completed directory is renamed into place only after the manifest is complete.',
+    };
+    const filename = `nba-scout-analytics-${seasonLabel(OPTIONS.seasonStartYears)}.json`;
+    const stagedOutputPath = path.join(partitionedOutputState.stagingOutputDirectory, filename);
+    const stagedGzipPath = `${stagedOutputPath}.gz`;
+    const stagedSummaryPath = path.join(partitionedOutputState.stagingOutputDirectory, 'README.md');
+    const outputRaw = `${JSON.stringify(output)}\n`;
+    await fs.writeFile(stagedOutputPath, outputRaw, 'utf8');
+    const outputHash = sha256(outputRaw);
+    const outputBytes = Buffer.byteLength(outputRaw);
+    const gzip = await gzipFile(stagedOutputPath, stagedGzipPath);
+    const summary = `# NBA Scout analytics — ${seasonLabel(OPTIONS.seasonStartYears)}\n\n`
+      + `Generated offline from the preserved local Sportradar archive with transient ${NBA_LINEUP_RECONSTRUCTION_METHOD_VERSION} replay. No API request and no Supabase write was made.\n\n`
+      + `- Source archives: ${counters.archivesDiscovered}; selected official candidates: ${counters.archivesOfficialCandidates}; Scout-eligible after replay: ${counters.archivesEligible}.\n`
+      + `- Included phases: ${OPTIONS.includedPhases.join(', ')}; excluded by phase: ${counters.archivesExcludedByPhase}; non-franchise exclusions: ${counters.archivesExcludedNonFranchise}.\n`
+      + `- Eligible events/stints/possessions: ${counters.eventsInEligibleArchives}/${counters.stintsInEligibleArchives}/${counters.possessionsInEligibleArchives}.\n`
+      + `- Possessions with valid start lineups used: ${counters.exactLineupPossessions}; start-lineup-attributed mid-change possessions: ${counters.possessionStartLineupAttributedMidChange}; excluded: ${counters.excludedPossessions}.\n`
+      + `- Rows: ${rowCounts.lineupsAndCombinations} combinations; ${rowCounts.playerOnOff} player on/off; ${rowCounts.playerProfiles} direct player profiles; ${rowCounts.wowy} WOWY pairs; ${rapmPlayers.length} net RAPM players.\n`
+      + `- Net RAPM lambda: ${netRapm.lambda}; prior-season weight: ${netRapm.priorSeasonWeight}; offense/defense RAPM lambda: ${offenseDefenseRapm.lambda}; prior-season weight: ${offenseDefenseRapm.priorSeasonWeight}.\n`
+      + (multiseason
+        ? `- Chronological tuning/test: net ${netChronologicalCalibration ? 'completed' : 'fixed settings'}; offense/defense ${offenseDefenseChronologicalCalibration ? 'completed' : 'fixed settings'}. Latest season is ${OPTIONS.latestSeasonStartYear}-${String(OPTIONS.latestSeasonStartYear + 1).slice(-2)}.\n`
+        : '')
+      + `- Offense/defense held-out calibration: ${offenseDefenseRapm.calibration.status}; full-model MSE improvement vs venue baseline: ${round((offenseDefenseRapm.calibration.fullModelMseImprovementVsVenueBaseline ?? 0) * 100, 3)}%.\n`
+      + `- Private replay cache: ${replayCacheManifest.records.length} eligible games, hash-bound to the source validation report, consumed one franchise at a time.\n`
+      + `- Manifest JSON: ${outputBytes} bytes, SHA-256 ${outputHash}.\n`
+      + `- Manifest gzip: ${gzip.gzipBytes} bytes, SHA-256 ${gzip.gzipSha256}.\n`
+      + `- Team shards: ${partitionedOutputState.shardDescriptors.length}; JSON bytes: ${partitionedOutputState.shardJsonBytes}; gzip bytes: ${partitionedOutputState.shardGzipBytes}.\n`
+      + `- Packaging: bounded-memory streamed shards written to a staging directory and atomically renamed only after completion.\n`;
+    await fs.writeFile(stagedSummaryPath, summary, 'utf8');
+    await fs.rename(partitionedOutputState.stagingOutputDirectory, OPTIONS.outputDir);
+    const outputPath = path.join(OPTIONS.outputDir, filename);
+    const gzipPath = `${outputPath}.gz`;
+    const summaryPath = path.join(OPTIONS.outputDir, 'README.md');
+    process.stdout.write(`${JSON.stringify({
+      outputPath,
+      gzipPath,
+      summaryPath,
+      outputHash,
+      gzipHash: gzip.gzipSha256,
+      storage: output.storage,
+      coverage: counters,
+      rapm: {
+        netLambda: netRapm.lambda,
+        offenseDefenseLambda: offenseDefenseRapm.lambda,
+        observationCount: netRapm.observationCount,
+        gameCount: netRapm.gameCount,
+        playerRows: rapmPlayers.length,
+      },
+      rows: {
+        teams: rowCounts.teams,
+        combinations: rowCounts.lineupsAndCombinations,
+        onOff: rowCounts.playerOnOff,
+        playerProfiles: rowCounts.playerProfiles,
+        wowy: rowCounts.wowy,
+      },
+    }, null, 2)}\n`);
+    return;
+  }
 
   function sortedKeysForTeam(map, teamId, compareEntries) {
     const keys = [];

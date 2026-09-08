@@ -89,6 +89,11 @@ window.DJ = window.DJ || {};
    * provides a stable entry point from the shared storefront header.
    */
   function ensureFanToolsLink() {
+    // Fan-suite pages replace the storefront list with their dedicated six
+    // destinations in basketball-theme.js. Do not append the generic link
+    // while that replacement is being mounted (or when script order changes).
+    if (document.body.dataset.page === 'fan-tools') return;
+
     const navList = document.querySelector('.site-nav .primary-nav__list');
     if (!navList || navList.querySelector('[data-fan-tools-link="true"]')) return;
 
@@ -134,10 +139,9 @@ window.DJ = window.DJ || {};
     const existingUtility = headerInner.querySelector('.home-header-utility');
     if (existingUtility) return existingUtility;
 
-    const utility = document.createElement('div');
+    const utility = document.createElement('nav');
     utility.className = 'home-header-utility';
     utility.setAttribute('aria-label', 'Account and shopping tools');
-    utility.setAttribute('role', 'navigation');
     const getSharedHeaderHref = (filename) => (
       headerInner.querySelector(`.site-nav a[href$="${filename}"]`)?.getAttribute('href')
       || filename
@@ -466,7 +470,7 @@ window.DJ = window.DJ || {};
     // reliable MediaQueryList change event. Accessibility state is inexpensive
     // to synchronize, so update it directly instead of risking a throttled frame
     // leaving desktop navigation hidden after a rotate or window resize.
-    DJ.bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange);
+    window.DJ.bindMediaQueryChange(COMPACT_NAV_QUERY, handleViewportChange);
     window.addEventListener('resize', handleViewportChange, { passive: true });
 
     document.addEventListener('keydown', (event) => {
@@ -706,7 +710,7 @@ window.DJ = window.DJ || {};
       }
     });
 
-    DJ.addSharedResizeListener(() => {
+    window.DJ.addSharedResizeListener(() => {
       if (!isCompactNavViewport()) {
         closeAllSubmenus();
       }

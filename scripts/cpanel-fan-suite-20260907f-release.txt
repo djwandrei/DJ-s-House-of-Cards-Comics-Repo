@@ -11,7 +11,12 @@ assets/games/fix-the-five-emblem-20260907.webp
 assets/games/fix-the-five-icon-20260907.png
 assets/games/lineup-lab-emblem-20260907.webp
 assets/games/lineup-lab-icon-20260907.png
+assets/games/fan-tools-emblem.svg
+assets/games/lineup-dna-emblem.svg
+assets/games/card-matchups-emblem.svg
+assets/games/workshop-emblem.svg
 analytics.js
+nav.js
 core.js
 styles.css
 styles-mobile-overrides.css

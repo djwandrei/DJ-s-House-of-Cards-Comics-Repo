@@ -856,6 +856,11 @@ window.DJ = window.DJ || {};
   }
 
   function enhanceCartNavigation() {
+    // Fan-suite pages use the shared utility icon rail for shopping actions
+    // and replace the primary list with the six fan-tool destinations. Avoid
+    // re-inserting the storefront text Cart item into that dedicated list.
+    if (document.body.dataset.page === 'fan-tools') return;
+
     const navList = document.querySelector('.site-nav .primary-nav__list');
     if (!navList || navList.querySelector('[data-cart-link]')) return;
 

@@ -40,11 +40,11 @@ async function checkHeader(page,width) {
     await toggle.focus(); await page.keyboard.press('Enter');
     await page.waitForFunction(()=>document.querySelector('#siteNav').contains(document.activeElement));
     assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+    assert.ok(await nav.locator('.fan-suite-nav__link').first().isVisible());
   } else { assert.ok(await toggle.isHidden()); assert.ok(await nav.isVisible()); }
-  await page.locator('.submenu-toggle').focus(); await page.keyboard.press('Enter');
-  assert.equal(await page.locator('.submenu-toggle').getAttribute('aria-expanded'),'true');
-  assert.ok(await page.locator('#sportsCardsSubmenu').isVisible());
-  assert.ok(await nav.locator('[data-fan-tools-link=true]').isVisible());
+  const destinations=nav.locator('.fan-suite-nav__link');
+  assert.equal(await destinations.count(),6,'Fan-suite header exposes six destinations');
+  assert.equal(await nav.locator('[data-fan-tools-link=true]').count(),1);
   await page.keyboard.press('Escape');
   if(width<=900) {
     assert.ok(await nav.isHidden());
@@ -53,12 +53,16 @@ async function checkHeader(page,width) {
   }
 }
 async function changeMode(page, mode) {
-  if (!(await page.locator('.court-style').getAttribute('open'))) {
-    if (!await page.locator('.court-style').evaluate(node=>node.open)) await page.locator('.court-style>summary').click();
+  const themeToggle=page.locator('#themeToggle');
+  const nav=page.locator('#siteNav');
+  if (!(await themeToggle.isVisible())) {
+    const navToggle=page.locator('#navToggle');
+    if (await nav.isHidden()) { await navToggle.click(); await page.waitForFunction(()=>!document.querySelector('#siteNav').hidden); }
   }
-  await page.locator(`[data-court-mode=${mode}]`).click();
+  const current=await page.locator('body').getAttribute('data-court-mode');
+  if (current !== mode) await themeToggle.click();
   await page.waitForFunction(mode=>document.body.dataset.courtMode===mode,mode);
-  await page.keyboard.press('Escape');
+  if (await nav.locator('.fan-suite-nav__link').first().isVisible() && await page.locator('#navToggle').isVisible()) await page.keyboard.press('Escape');
 }
 async function overflow(page) {
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page-level horizontal overflow');
@@ -71,7 +75,7 @@ async function reviewContrast(page,label) {
     const lum=a=>{const c=a.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
     const found=[];
     for(const el of document.querySelectorAll('main *')) {
-      if(![...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()) || !el.checkVisibility({checkVisibilityCSS:true}) || el.closest('[hidden],.hero,.page-hero-card,.court-style:not([open])'))continue;
+      if(![...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()) || !el.checkVisibility({checkVisibilityCSS:true}) || el.closest('[hidden],.hero,.page-hero-card,.court-team-picker:not([open])'))continue;
       const style=getComputedStyle(el); if(Number(style.opacity)<1 || el.closest(':disabled'))continue;
       let bg=null, mixed=false;
       for(let node=el;node;node=node.parentElement) {
@@ -109,7 +113,7 @@ try {
       assert.equal(await themeIdentity.locator('.court-team-identity__team').textContent(),'DJHC Original');
       await checkHeader(page,width);
       assert.ok(await page.evaluate(()=>document.fonts.check('16px Manrope') && document.fonts.check('700 24px "Barlow Condensed"')),'Both local fonts loaded');
-      assert.equal(await page.locator('.court-destinations a[aria-current=page]').count(),1);
+      assert.equal(await page.locator('.fan-suite-nav__link[aria-current=page]').count(),1);
       await overflow(page);
       await changeMode(page,mode==='dark'?'light':'dark'); await changeMode(page,mode);
       assert.equal(await page.evaluate(()=>localStorage.getItem('theme')),mode);

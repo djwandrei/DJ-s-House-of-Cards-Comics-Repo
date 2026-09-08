@@ -190,10 +190,14 @@ production so their units do not get mixed:
   same-season benchmark meaning.
 - When a per-36 rotation has matching workload evidence, extra minutes beyond a
   player's observed all-team role use a concave, evidence-adjusted curve when a
-  chronological workload fit exists for the selected source scope. Without a
-  matching fit, the continuous expected-rate curve remains unchanged while the
-  separate conservative boundary and decision reserve avoid presenting
-  unsupported extra-role upside as proven. No preferred 18–32-minute range,
+  chronological workload fit exists for the selected source scope. When no fit
+  has passed a chronological holdout, a narrower evidence-gated responsibility
+  prior can be used for offensive metrics only: it requires a complete
+  season-wide FGA + 0.44 × FTA + TOV count and scales its strength by the
+  player's observed minutes. That prior tempers an unsupported larger-role
+  advantage; it is not a learned usage elasticity, touch estimate, or blanket
+  bench-player penalty. Selected-team MPG never becomes the role origin when
+  all-team/verified Scout exposure is absent. No preferred 18–32-minute range,
   historical team-minute cap, or hidden roster-size target is imposed; a
   sufficiently better player can still reach the visitor's maximum.
 - Metric weights are normalized into relative shares. Evidence-adjusted skill

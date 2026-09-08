@@ -4,14 +4,27 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { request as httpRequest } from 'node:http';
-import { describeScoutPlayer, describeScoutSample, describeScoutCombination, describeScoutWowy } from '../lib/scout-studio.mjs';
+import { gzipSync } from 'node:zlib';
+import { describeScoutPlayer, describeScoutSeasonProfile, describeScoutSample, describeScoutCombination, describeScoutWowy } from '../lib/scout-studio.mjs';
 import { createScoutStudioSource } from '../lib/scout-studio-source.mjs';
 import { createScoutStudioServer, parseStudioArgs } from '../preview-scout-studio.mjs';
 import { compareBlueprints, formatStudioValue, toggleStudioPlayer, validRoster } from '../../tools/scout-studio/studio-model.js';
-import { rawPlayer, rawSample, fixtureSource, readinessFixture, digest, snapshot } from './fixtures/scout-studio-fixture.mjs';
+import { rawPlayer, rawSample, rawOnOffRow, rawTeamRow, rawSeasonProfile, fixtureSource, readinessFixture, digest, snapshot } from './fixtures/scout-studio-fixture.mjs';
 import { createDirectPlayerEventLine, playerProfileFromEvents } from '../derive-local-scout-analytics.mjs';
 
 const metric = (player, key) => player.metrics.find(item => item.key === key);
+test('season profile projection keeps observed fields and withholds unsupported values', () => {
+  const row = describeScoutSeasonProfile({ seasonStartYear: 2024, phase: 'regular', team: 'Minnesota Timberwolves', games: 10,
+    officialMinutes: 300, perGame: { points: 12.5, assists: 3, rebounds: 4, fieldGoalAttempts: 9 },
+    officialRates: { fieldGoalPercentage: 0.5, threePointPercentage: 0.4, freeThrowPercentage: 0.8, threePointAttemptShare: 0.3, offensiveInvolvementPer36: 18 },
+    fieldEvidence: { points: { effectiveKnownGames: 10 }, fieldGoalAttempts: { effectiveKnownGames: 10 }, fieldGoalsMade: { effectiveKnownGames: 10 },
+      threePointersMade: { effectiveKnownGames: 10 }, freeThrowsMade: { effectiveKnownGames: 10 }, assists: { effectiveKnownGames: 10 }, rebounds: { effectiveKnownGames: 0 } } });
+  assert.equal(row.season, '2024–25');
+  assert.equal(row.perGame.points, 12.5);
+  assert.equal(row.shooting.threePointPercentage, 0.4);
+  assert.equal(row.perGame.rebounds, null);
+  assert.match(row.note, /not a forecast/);
+});
 test('Player Blueprint uses current package totals and shows its pooled grain', () => {
   const row = describeScoutPlayer(rawPlayer(), 'p0');
   assert.equal(metric(row, 'threePointAccuracy').value, 0.4);
@@ -141,6 +154,7 @@ test('local server permits only bounded read-only routes, not archives or cross-
   const base = `http://127.0.0.1:${server.address().port}`;
   assert.equal((await fetch(`${base}/api/scout-studio/status`)).status, 200);
   assert.equal((await fetch(`${base}/tools/scout-studio/`)).status, 200);
+  assert.equal((await fetch(`${base}/tools/scout-studio/context-contract.js`)).status, 200);
   const navigation = await fetch(`${base}/tools/index.html`, { redirect: 'manual' });
   assert.equal(navigation.status, 302);
   assert.equal(navigation.headers.get('location'), 'https://www.djshouseofcards-comics.com/tools/index.html');
@@ -156,6 +170,21 @@ test('local server permits only bounded read-only routes, not archives or cross-
   assert.equal((await fetch(`${base}/api/scout-studio/status`, { method: 'POST' })).status, 405);
   assert.equal((await fetch(`${base}/api/scout-studio/chemistry?team=t0&snapshot=${snapshot}&players=p0,p0`)).status, 400);
   assert.equal((await fetch(`${base}/api/scout-studio/roster?team=t0&snapshot=${snapshot}`)).status, 200);
+  const playerContexts = await fetch(`${base}/api/scout-studio/player-contexts?team=t0&snapshot=${snapshot}&player=p0`);
+  assert.equal(playerContexts.status, 200);
+  assert.ok((await playerContexts.json()).on.length > 0);
+  const playerSeasons = await fetch(`${base}/api/scout-studio/player-seasons?team=t0&snapshot=${snapshot}&player=p0`);
+  assert.equal(playerSeasons.status, 200);
+  assert.ok((await playerSeasons.json()).profiles.length > 0);
+  const seasonDonors = await fetch(`${base}/api/scout-studio/season-donors?team=t0&snapshot=${snapshot}`);
+  assert.equal(seasonDonors.status, 200);
+  const donorPayload = await seasonDonors.json();
+  assert.ok(donorPayload.profiles.length > 0);
+  assert.doesNotMatch(JSON.stringify(donorPayload), /private-player|private-team|DO-NOT-EXPOSE|archivePath|rapm|coefficient/);
+  const teamContexts = await fetch(`${base}/api/scout-studio/team-contexts?team=t0&snapshot=${snapshot}`);
+  assert.equal(teamContexts.status, 200);
+  assert.ok((await teamContexts.json()).contexts[0].outcomes.offense.points > 0);
+  assert.equal((await fetch(`${base}/api/scout-studio/player-contexts?team=t0&snapshot=${snapshot}&player=p99999`)).status, 400);
   source.roster = async () => { throw new Error('DO-NOT-EXPOSE /private/path'); };
   const failure = await fetch(`${base}/api/scout-studio/roster?team=t0&snapshot=${snapshot}`);
   assert.equal(failure.status, 503); assert.doesNotMatch(await failure.text(), /DO-NOT-EXPOSE|private\/path/);
@@ -164,6 +193,7 @@ test('local server permits only bounded read-only routes, not archives or cross-
 test('preview CLI is exact-scope and never accepts an older season window', () => {
   const args = ['--manifest', 'a.json', '--package-validation', 'b.json', '--source-validation', 'c.json', '--seasons', '2022,2023,2024,2025'];
   assert.equal(parseStudioArgs(args).port, 4187);
+  assert.deepEqual(parseStudioArgs([...args.slice(0, -1), '2020,2021,2022,2023,2024,2025']).seasons, [2020, 2021, 2022, 2023, 2024, 2025]);
   assert.throws(() => parseStudioArgs([...args, '--port', '0']), /Port/);
   assert.throws(() => parseStudioArgs([...args.slice(0, -1), '2024,2025']), /incoming/);
 });
@@ -183,34 +213,69 @@ test('streamed source binds the exact package, strips IDs, reconciles rows and r
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'scout-studio-source-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const fixture = readinessFixture();
-  const rows = [rawPlayer('private-player-a'), rawPlayer('private-player-b', 1)];
+  const rows = [rawPlayer('private-player-a'), rawPlayer('private-player-b', 1), rawPlayer('private-player-c', 2)];
   const shard = { schemaVersion: 4, metricsVersion: 'nba-scout-metrics-v4', seasonStartYear: 2022, seasonEndYear: 2026,
     seasonStartYears: [2022, 2023, 2024, 2025], latestSeasonStartYear: 2025,
-    team: { teamId: 'private-team-a', team: 'Test Franchise 00' },
-    lineupsAndCombinations: [{ teamId: 'private-team-a', size: 2, playerIds: rows.map(row => row.playerId), minutes: 200, contexts: { all: rawSample() } }],
-    playerOnOff: [], playerProfiles: rows, wowy: [{ teamId: 'private-team-a', playerAId: rows[1].playerId,
+    team: rawTeamRow(),
+    lineupsAndCombinations: [{ teamId: 'private-team-a', size: 2, playerIds: rows.slice(0, 2).map(row => row.playerId), minutes: 200, contexts: { all: rawSample() } }],
+    playerOnOff: rows.map((row, index) => rawOnOffRow(row.playerId, index)), playerProfiles: rows, wowy: [{ teamId: 'private-team-a', playerAId: rows[1].playerId,
       playerBId: rows[0].playerId, cells: { a_on_b_off: { all: rawSample() } } }] };
   const raw = JSON.stringify(shard);
   fixture.manifest.dataShards = Array.from({ length: 30 }, (_, i) => ({ teamId: `private-team-${i}`, team: `Test Franchise ${String(i).padStart(2, '0')}`,
     jsonPath: `team-${i}.json`, jsonBytes: Buffer.byteLength(raw), jsonSha256: digest(raw),
-    rows: { team: 1, lineupsAndCombinations: 1, playerProfiles: 2, playerOnOff: 0, wowy: 1 } }));
+    rows: { team: 1, lineupsAndCombinations: 1, playerProfiles: 3, playerOnOff: 3, wowy: 1 } }));
   fixture.manifest.dataShards[0].teamId = 'private-team-a';
+  const seasonEvidence = Buffer.from([
+    JSON.stringify({ ...rawSeasonProfile('Test Player 1', 2022, 'Test Franchise 00', 'team'), playerId: 'private-player-a', teamId: 'private-team-a' }),
+    JSON.stringify({ ...rawSeasonProfile('Test Player 1', 2023, 'All teams', 'all-teams', 1), playerId: 'private-player-a', teamId: 'ALL_TEAMS' }),
+    '',
+  ].join('\n'));
+  const seasonEvidenceGzip = gzipSync(seasonEvidence);
+  fixture.manifest.modelEvidence = { files: { playerSeasonSkillProfiles: {
+    path: 'model-evidence/playerSeasonSkillProfiles.jsonl.gz', rows: 2,
+    gzipBytes: seasonEvidenceGzip.length, gzipSha256: digest(seasonEvidenceGzip),
+  } } };
   const manifestRaw = JSON.stringify(fixture.manifest);
   const options = { manifest: path.join(root, 'manifest.json'), packageValidation: path.join(root, 'validation.json'),
     sourceValidation: path.join(root, 'source.json'), seasons: [2022, 2023, 2024, 2025] };
   await fs.writeFile(options.manifest, manifestRaw);
   await fs.writeFile(options.sourceValidation, JSON.stringify(fixture.source));
   await fs.writeFile(options.packageValidation, JSON.stringify({ schemaVersion: 3, passed: true, errors: [], warnings: [],
-    inputSha256: digest(manifestRaw), checks: { teams: 30, playerProfiles: 2 } }));
+    inputSha256: digest(manifestRaw), checks: { teams: 30, playerProfiles: 3 } }));
   await fs.writeFile(path.join(root, 'team-0.json'), raw);
+  await fs.mkdir(path.join(root, 'model-evidence'), { recursive: true });
+  await fs.writeFile(path.join(root, 'model-evidence', 'playerSeasonSkillProfiles.jsonl.gz'), seasonEvidenceGzip);
   const source = createScoutStudioSource(options);
   const status = await source.status(); assert.equal(status.phase, 'ready', JSON.stringify(status.issues));
   const roster = await source.roster('t0', status.snapshot);
-  assert.equal(roster.players.length, 2);
+  assert.equal(roster.players.length, 3);
   assert.doesNotMatch(JSON.stringify(roster), /private-player|private-team|DO-NOT-EXPOSE/);
+  const contexts = await source.playerContexts('t0', status.snapshot, 'p0');
+  assert.equal(contexts.snapshot, status.snapshot);
+  assert.equal(contexts.team, 't0');
+  assert.equal(contexts.player, 'p0');
+  assert.equal((await source.teamContexts('t0', status.snapshot)).contexts[0].outcomes.offense.points, 1163);
+  assert.ok(contexts.on.some(row => row.key === 'all'));
+  assert.ok(contexts.off.some(row => row.key === 'season:2022'));
+  assert.doesNotMatch(JSON.stringify(contexts), /private-player|private-team|DO-NOT-EXPOSE|archivePath|rapm|coefficient/);
+  const seasons = await source.playerSeasons('t0', status.snapshot, 'p0');
+  assert.equal(seasons.profiles.length, 2);
+  assert.ok(seasons.profiles.some(row => row.scope === 'all-teams'));
+  assert.doesNotMatch(JSON.stringify(seasons), /private-player|private-team|DO-NOT-EXPOSE|archivePath|rapm|coefficient/);
+  const donors = await source.seasonDonors('t0', status.snapshot);
+  assert.equal(donors.profiles.length, 2);
+  assert.ok(donors.profiles.every(row => /^p\d+$/.test(row.playerId)));
+  assert.doesNotMatch(JSON.stringify(donors), /private-player|private-team|DO-NOT-EXPOSE|archivePath|rapm|coefficient/);
   const chemistry = await source.chemistry('t0', status.snapshot, ['p0', 'p1']);
   assert.equal(chemistry.combination.sample.netRating, 6);
   assert.equal(chemistry.wowy[1].label, 'Test Player 2 only');
+  assert.equal(chemistry.team, roster.team);
+  const trio = await source.chemistry('t0', status.snapshot, ['p0', 'p1', 'p2']);
+  assert.equal(trio.combination, null, 'An observed pair must not become an observed trio');
+  assert.equal(trio.pairs.length, 3);
+  assert.equal(trio.pairs.filter(pair => pair.combination).length, 1);
+  assert.equal(trio.pairs[0].combination.sample.netRating, 6);
+  assert.doesNotMatch(JSON.stringify(trio), /private-player|private-team|DO-NOT-EXPOSE/);
   await assert.rejects(source.chemistry('t0', status.snapshot, ['p0', 'p9']), /this team/);
   await assert.rejects(source.roster('t0', 'stale'), /Refresh/);
   await fs.writeFile(path.join(root, 'team-0.json'), raw.replace('Test Player 1', 'Test Player X'));

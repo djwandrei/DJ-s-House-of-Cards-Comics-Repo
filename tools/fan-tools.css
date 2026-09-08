@@ -788,3 +788,112 @@ body.dark-mode .tool-research-card__status {
     grid-column:auto;
   }
 }
+
+/* The hub is a chooser, not a release dashboard. Keep the registry and its
+   evidence states available to code, while giving visitors one calm path into
+   the five published experiences. */
+.fan-tools-page .tools-live-panel__top {
+  align-items:center;
+  justify-content:flex-start;
+  margin-bottom:1.1rem;
+}
+.tools-live-panel__label {
+  color:#167044;
+  font-size:.75rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.tools-live-marker.has-game-emblem {
+  width:58px;
+  height:58px;
+  border:0;
+  background:transparent;
+}
+.tools-live-marker.has-game-emblem img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:14px;
+}
+.tools-live-link {
+  display:inline-flex;
+  margin-top:1.05rem;
+  border-color:rgba(31,47,163,.22);
+  background:#eef2ff;
+  color:#1d347c;
+}
+.tools-live-link:hover,
+.tools-live-link:focus-visible {
+  border-color:#1f2fa3;
+  background:#e2e8ff;
+  color:#152767;
+}
+.tools-featured-card__bullets {
+  display:grid;
+  gap:.28rem;
+  margin:.9rem 0 0;
+  padding:0 0 0 1.1rem;
+  color:rgba(255,255,255,.78);
+  font-size:.82rem;
+  line-height:1.45;
+}
+.tools-featured-card__bullets li::marker {
+  color:#77d43a;
+}
+.tools-featured-card p.tools-play-path {
+  margin-top:.8rem;
+  padding-top:.8rem;
+  border-top:1px solid rgba(207,220,255,.28);
+  color:#f1f4ff;
+  font-size:.82rem;
+}
+.tools-featured-card p.tools-play-path::first-line {
+  font-weight:800;
+}
+.fan-tools-page .tools-featured-card > .button {
+  align-self:end;
+}
+.fan-tools-page .footer-logo {
+  width:clamp(84px,8vw,104px);
+  height:auto;
+}
+.fan-tools-page .tools-status-strip,
+.fan-tools-page .tools-signal-guide,
+.fan-tools-page .tools-roadmap,
+.fan-tools-page .tools-guardrails {
+  display:none;
+}
+.fan-tools-page .tools-hero-copy .page-title {
+  max-width:15ch;
+  text-wrap:balance;
+}
+@media (max-width:960px) {
+  .fan-tools-page .tools-hero-copy .page-title {
+    max-width:13ch;
+  }
+}
+@media (max-width:700px) {
+  .fan-tools-page .tools-hero-copy .page-title {
+    max-width:12ch;
+    font-size:clamp(2.45rem,12vw,3.35rem);
+    line-height:.98;
+  }
+  .fan-tools-page .section-heading {
+    display:block;
+  }
+  .fan-tools-page .section-heading .tools-intro {
+    margin-top:.8rem;
+  }
+  .fan-tools-page .tools-featured-card__content {
+    display:flex;
+    align-items:flex-start;
+  }
+  .fan-tools-page .tools-featured-card__bullets {
+    font-size:.9rem;
+  }
+  .fan-tools-page .footer-logo {
+    width:88px;
+  }
+}

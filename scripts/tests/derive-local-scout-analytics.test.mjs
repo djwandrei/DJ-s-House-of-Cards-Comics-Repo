@@ -85,6 +85,36 @@ test('multiseason options preserve single-season defaults and reject ambiguous s
   );
 });
 
+test('replay-cache shard mode is explicit and fail-closed', () => {
+  const options = optionsFromArgs([
+    '--archive-dir', 'outputs/fixture-source',
+    '--season', '2025',
+    '--output-dir', 'outputs/fixture-package',
+    '--team-shard-mode', 'replay_cache',
+    '--replay-cache-dir', 'outputs/fixture-cache',
+    '--reuse-replay-cache',
+  ]);
+  assert.equal(options.teamShardMode, 'replay_cache');
+  assert.equal(options.reuseReplayCache, true);
+  assert.match(options.replayCacheDir, /fixture-cache$/);
+  assert.throws(
+    () => optionsFromArgs(['--archive-dir', 'outputs/fixture-source', '--team-shard-mode', 'disk_magic']),
+    /in_memory.*replay_cache/,
+  );
+  assert.throws(
+    () => optionsFromArgs(['--archive-dir', 'outputs/fixture-source', '--reuse-replay-cache']),
+    /requires --team-shard-mode replay_cache/,
+  );
+  assert.throws(
+    () => optionsFromArgs([
+      '--archive-dir', 'outputs/fixture-source',
+      '--calibration-only',
+      '--team-shard-mode', 'replay_cache',
+    ]),
+    /cannot be combined with --calibration-only/,
+  );
+});
+
 test('multiseason checkpoint provenance fails closed unless every selected season is present', () => {
   const report = {
     passed: true,

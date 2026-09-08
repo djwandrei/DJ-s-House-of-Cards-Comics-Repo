@@ -132,3 +132,198 @@ body.court-themed :is(.fix-five-scoreboard,.tools-status-strip,.dataset-strip,.w
   body.court-themed *,body.court-themed *::before,body.court-themed *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
 }
 @media print { .court-toolbar { display:none; } }
+
+/* Fan-suite pages use their own compact destination rail in the site header.
+   The storefront menu stays intact everywhere else. */
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link {
+  gap:.38rem;
+  min-height:42px;
+  padding-inline:.52rem;
+  color:var(--text);
+  font-size:.76rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+/* Legacy interior-header rules hide the last storefront item at compact
+   widths. Every fan-suite destination is intentional, including Workshop. */
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__item {
+  display:list-item !important;
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link img {
+  width:24px;
+  height:24px;
+  object-fit:contain;
+  border-radius:6px;
+  flex:0 0 auto;
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link:hover,
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link:focus-visible,
+body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link[aria-current="page"] {
+  color:var(--court-text);
+  background:var(--court-raised);
+  box-shadow:inset 0 -3px var(--court-accent);
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header .primary-nav__list {
+  gap:.18rem;
+  flex-wrap:nowrap;
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header .court-toolbar .court-navigation {
+  display:none;
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header + main .court-toolbar {
+  justify-content:flex-end;
+}
+body[data-page="fan-tools"] .site-header.fan-suite-header + main .court-team-identity {
+  margin-right:auto;
+}
+
+.court-team-picker { flex:0 0 auto; position:relative; margin-top:4px; }
+.court-team-picker > summary {
+  min-height:46px;
+  padding:.7rem .75rem;
+  border:1px solid var(--court-border);
+  border-radius:10px;
+  color:var(--court-text);
+  background:var(--court-surface);
+  font-size:.8rem;
+  font-weight:700;
+  cursor:pointer;
+  list-style:none;
+}
+.court-team-picker > summary::-webkit-details-marker { display:none; }
+.court-team-picker__panel {
+  position:absolute;
+  right:0;
+  top:calc(100% + 8px);
+  z-index:20;
+  width:min(330px,calc(100vw - 2rem));
+  padding:1rem;
+  border:1px solid var(--court-border);
+  border-radius:14px;
+  color:var(--court-text);
+  background:var(--court-surface);
+  box-shadow:0 16px 40px #0003;
+}
+.court-team-picker__team { display:block; margin-top:.2rem; color:var(--court-muted); font-size:.78rem; }
+.court-team-picker__panel p { margin:.55rem 0 1rem; color:var(--court-muted); font-size:.82rem; line-height:1.55; }
+.court-team-picker__label { display:grid; gap:.35rem; color:var(--court-muted); font-size:.74rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+.court-team-picker__label select { width:100%; min-height:44px; margin-top:.1rem; }
+
+@media (min-width:901px) and (max-width:1180px) {
+  body[data-page="fan-tools"] .site-header.fan-suite-header .header-inner {
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:52px 32px !important;
+    grid-template-areas:"brand utility actions" "nav nav nav" !important;
+    align-items:center;
+    gap:.55rem;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .brand { grid-area:brand; }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .home-header-utility {
+    grid-area:utility;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .header-actions {
+    grid-area:actions;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .site-nav {
+    grid-area:nav;
+    position:static !important;
+    max-height:none;
+    overflow:hidden;
+    transform:none;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .site-nav .primary-nav__list {
+    justify-content:flex-start;
+    overflow-x:auto;
+    scrollbar-width:thin;
+    padding:.2rem 0 .35rem;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .nav-toggle { display:none !important; }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .theme-toggle,
+  body[data-page="fan-tools"] .site-header.fan-suite-header .theme-toggle--compact { display:inline-flex !important; }
+}
+
+@media (max-width:900px) {
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link {
+    justify-content:flex-start;
+    min-height:50px;
+    padding-inline:1rem !important;
+    font-size:.94rem;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link img { width:28px; height:28px; }
+  .court-team-picker > summary { padding-inline:.55rem; font-size:.74rem; }
+}
+
+/* Give the full fan-suite wordmark and shopper shortcuts their own row while
+   a large desktop header is still too narrow for all six destinations beside
+   them. The destination rail remains horizontal and scrolls within its row. */
+@media (min-width:1181px) and (max-width:1360px) {
+  body[data-page="fan-tools"] .site-header.fan-suite-header .header-inner {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:52px 42px !important;
+    grid-template-areas:"brand utility actions" "nav nav nav" !important;
+    align-items:center !important;
+    gap:.35rem .65rem !important;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .brand { grid-area:brand !important; min-width:0; }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .home-header-utility {
+    grid-area:utility !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .header-actions {
+    grid-area:actions !important;
+    display:flex !important;
+    align-items:center;
+    justify-content:flex-end;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .site-nav {
+    grid-area:nav !important;
+    position:static !important;
+    width:100% !important;
+    max-width:none !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:hidden !important;
+    padding:0 !important;
+    border:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    transform:none !important;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .site-nav .primary-nav__list {
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:.15rem 0 .35rem !important;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .nav-toggle { display:none !important; }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .theme-toggle,
+  body[data-page="fan-tools"] .site-header.fan-suite-header .theme-toggle--compact {
+    display:inline-flex !important;
+  }
+}
+
+@media (prefers-reduced-motion:no-preference) {
+  .court-team-picker[open] .court-team-picker__panel { animation:court-reveal 180ms ease-out; }
+}

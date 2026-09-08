@@ -11,6 +11,8 @@ import { pipeline } from 'node:stream/promises';
 import { createInterface } from 'node:readline';
 import { parseReadinessArgs, readReadinessMetadata, runReadinessAudit } from './audit-lineup-scout-readiness.mjs';
 import { MODEL_EVIDENCE_VERSION, BOX_FIELDS, buildGameModelEvidence, aggregatePlayerSeasons, BLUEPRINT_CAPABILITIES } from './lib/nba-scout-model-evidence.mjs';
+import { validateSourceCorrections, correctionsForGame } from './lib/nba-scout-source-corrections.mjs';
+import { APPLICATION_CAPABILITIES, buildPlayerSeasonSkillProfiles, buildPlayerIdentities, buildTeamSeasonSimulationProfiles } from './lib/nba-scout-application-evidence.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -42,7 +44,8 @@ async function writeRows(directory, name, rows) {
   await fs.mkdir(path.dirname(target), { recursive: true });
   // JSONL streams avoid the V8 single-string ceiling encountered by the older
   // package writer. Keep only one serializable row in the compression buffer.
-  await pipeline(Readable.from((function* () { for (const row of rows) yield json(row); })()), createGzip(), createWriteStream(target));
+  let writtenRows = 0;
+  await pipeline(Readable.from((async function* () { for await (const row of rows) { writtenRows++; yield json(row); } })()), createGzip(), createWriteStream(target));
   let decodedRows = 0;
   const reader = createReadStream(target), unzip = createGunzip();
   const pumping = pipeline(reader, unzip);
@@ -51,16 +54,26 @@ async function writeRows(directory, name, rows) {
     JSON.parse(line); decodedRows++;
   }
   await pumping;
-  assert.equal(decodedRows, rows.length, `${name} row count must round-trip.`);
+  assert.equal(decodedRows, writtenRows, `${name} row count must round-trip.`);
   const file = await hashFile(target);
-  return { path: `model-evidence/${name}.jsonl.gz`, rows: rows.length, gzipBytes: file.bytes, gzipSha256: file.sha256 };
+  return { path: `model-evidence/${name}.jsonl.gz`, rows: writtenRows, gzipBytes: file.bytes, gzipSha256: file.sha256 };
+}
+
+// Large event/possession tables stay in resumable per-game checkpoints until
+// export. Never retain six seasons of shot objects beside the player aggregates.
+async function* checkpointRows(paths, field) {
+  for (const target of paths) {
+    const game = JSON.parse(gunzipSync(await fs.readFile(target)));
+    assert.ok(Array.isArray(game[field]), `Checkpoint lacks planned table ${field}.`);
+    for (const row of game[field]) yield row;
+  }
 }
 
 export function rebuildOptions(argv) {
   const core = [], own = {};
   for (let index = 0; index < argv.length; index += 2) {
     const name = argv[index], value = argv[index + 1];
-    if (['--archive-dir', '--output-dir', '--summary-overlay'].includes(name)) {
+    if (['--archive-dir', '--output-dir', '--summary-overlay', '--corrections'].includes(name)) {
       if (!value || value.startsWith('--') || own[name]) throw new Error(`Invalid ${name}.`);
       own[name] = path.resolve(value);
     } else core.push(name, value);
@@ -71,7 +84,8 @@ export function rebuildOptions(argv) {
   const privateRoot = path.join(ROOT, 'outputs');
   inside(privateRoot, path.relative(privateRoot, output));
   if (output === path.dirname(readiness.manifest) || output === own['--archive-dir']) throw new Error('Replacement must use a new output directory.');
-  return { core, readiness, archive: own['--archive-dir'], output, overlay: own['--summary-overlay'] ?? null };
+  if (own['--corrections']) inside(privateRoot, path.relative(privateRoot, own['--corrections']));
+  return { core, readiness, archive: own['--archive-dir'], output, overlay: own['--summary-overlay'] ?? null, corrections: own['--corrections'] ?? null };
 }
 
 /**
@@ -88,6 +102,8 @@ export async function rebuildScoutModelEvidence(argv) {
   const base = baseFile.data;
   const sourceFile = await readReadinessMetadata(options.readiness.sourceValidation);
   const baseDir = path.dirname(options.readiness.manifest);
+  const correctionFile = options.corrections ? await readReadinessMetadata(options.corrections) : null;
+  const corrections = correctionFile ? validateSourceCorrections(correctionFile.data) : [];
   if (await exists(options.output)) throw new Error('Completed output already exists; choose a new version instead of overwriting it.');
   const stage = `${options.output}.building`;
   await fs.mkdir(stage, { recursive: true });
@@ -98,10 +114,13 @@ export async function rebuildScoutModelEvidence(argv) {
   let finished = false;
   try {
     const codePaths = [SCRIPT_PATH, path.join(ROOT, 'scripts/lib/nba-scout-model-evidence.mjs'),
+      path.join(ROOT, 'scripts/lib/nba-summary-completeness.mjs'),
+      path.join(ROOT, 'scripts/lib/nba-scout-source-corrections.mjs'), path.join(ROOT, 'scripts/lib/nba-scout-application-evidence.mjs'),
       path.join(ROOT, 'scripts/derive-local-scout-analytics.mjs'), path.join(ROOT, 'scripts/lib/nba-lineup-reconstruction.mjs')];
     const codeHashes = Object.fromEntries(await Promise.all(codePaths.map(async target => [path.relative(ROOT, target), (await hashFile(target)).sha256])));
     const binding = { version: MODEL_EVIDENCE_VERSION, baseManifestSha256: baseFile.sha256,
-      sourceValidationSha256: sourceFile.sha256, archive: options.archive, overlay: options.overlay, codeHashes };
+      sourceValidationSha256: sourceFile.sha256, archive: options.archive, overlay: options.overlay,
+      correctionLedgerSha256: correctionFile?.sha256 ?? null, codeHashes };
     const bindingPath = path.join(stage, 'rebuild-binding.json');
     if (await exists(bindingPath)) assert.deepEqual(JSON.parse(await fs.readFile(bindingPath, 'utf8')), binding, 'Checkpoint belongs to different inputs/code.');
     else await atomicJson(bindingPath, binding);
@@ -111,7 +130,8 @@ export async function rebuildScoutModelEvidence(argv) {
       process.stdout.write(`${JSON.stringify(update)}\n`);
     };
     const officialPhases = new Set(base.scope.includedPhases);
-    const allPlayers = [], games = [], connections = [], refresh = [], sourceRows = [];
+    const allPlayers = [], games = [], connections = [], refresh = [], sourceRows = [], checkpoints = [], teamGames = [];
+    await progress({ phase: 'game_evidence', completedGames: 0, userCorrections: corrections.length });
     let completed = 0, reused = 0;
     for (const year of options.readiness.seasons) {
       const season = sourceFile.data.seasons.find(row => row.seasonStartYear === year);
@@ -144,19 +164,22 @@ export async function rebuildScoutModelEvidence(argv) {
           assert.equal(enriched.summaryOverlaySha256, overlaySha256, 'Summary overlay changed since checkpoint.');
           reused++;
         } else {
-          enriched = { ...buildGameModelEvidence(record, { summaryOverlay }), sourceGzipSha256: descriptor.gzipSha256, summaryOverlaySha256: overlaySha256 };
+          const gameCorrections = correctionsForGame(corrections, game, descriptor.gzipSha256, overlaySha256);
+          enriched = { ...buildGameModelEvidence(record, { summaryOverlay, corrections: gameCorrections }), sourceGzipSha256: descriptor.gzipSha256, summaryOverlaySha256: overlaySha256 };
           await fs.mkdir(path.dirname(checkpoint), { recursive: true });
           const temporary = `${checkpoint}.tmp`;
           await fs.writeFile(temporary, gzipSync(Buffer.from(json(enriched))));
           await fs.rename(temporary, checkpoint);
         }
         allPlayers.push(...enriched.players);
+        checkpoints.push(checkpoint);
+        teamGames.push(...enriched.teamGames);
         games.push(enriched.game);
         connections.push(...enriched.assistedBasketConnections.map(row => ({ ...row, gameId: game.providerGameId, seasonStartYear: year, phase: game.primaryPhase })));
         sourceRows.push({ gameId: game.providerGameId, seasonStartYear: year, sourceGzipSha256: descriptor.gzipSha256, summaryOverlaySha256: overlaySha256 });
         if (enriched.summaryRefreshNeeded) refresh.push({ gameId: game.providerGameId, seasonStartYear: year,
           homeTeamId: game.homeProviderTeamId, awayTeamId: game.awayProviderTeamId,
-          playersWithMissingOfficialFields: enriched.players.filter(row => row.missingOfficialFields.length).map(row => ({ playerId: row.playerId, teamId: row.teamId, fields: row.missingOfficialFields })) });
+          playersWithMissingOfficialFields: enriched.players.filter(row => row.missingEffectiveFields.length).map(row => ({ playerId: row.playerId, teamId: row.teamId, fields: row.missingEffectiveFields })) });
         completed++;
         if (completed % 100 === 0) await progress({ phase: 'game_evidence', completedGames: completed, reusedGames: reused, missingSummaryGames: refresh.length });
       }
@@ -181,7 +204,10 @@ export async function rebuildScoutModelEvidence(argv) {
     // structurally valid old package may promote an incomplete new import.
     // Keep checkpoints for inspection, but do not emit replacement tables,
     // link base shards, or label a new package complete while fields are absent.
-    assert.equal(refresh.length, 0, `Official Summary data is still missing for ${refresh.length} games. Finish the import before rebuilding.`);
+    assert.equal(refresh.length, 0, `Required Summary data lacks observations or an authorized correction for ${refresh.length} games.`);
+    const appliedCorrections = allPlayers.flatMap(row => row.sourceCorrections);
+    assert.deepEqual(appliedCorrections.map(row => row.id).sort(), corrections.map(row => row.id).sort(), 'Every authorized correction must bind to exactly one player-game.');
+    for (const target of codePaths) assert.equal((await hashFile(target)).sha256, codeHashes[path.relative(ROOT, target)], 'Build code changed during reconstruction; keep checkpoints for review.');
     const seasons = aggregatePlayerSeasons(allPlayers);
     const descriptors = {};
     // Discrete game/season samples support future fits without forcing the
@@ -189,20 +215,41 @@ export async function rebuildScoutModelEvidence(argv) {
     for (const [name, rows] of Object.entries({ playerGames: allPlayers, playerSeasons: seasons,
       gameContext: gameContexts, assistedBasketConnections: connections, sourceGames: sourceRows,
       summaryRefreshQueue: refresh })) descriptors[name] = await writeRows(stage, name, rows);
+    // Add application-oriented tables without removing any of the original
+    // planned six tables or changing the base shards. The three large ordered
+    // tables stream from disk; per-game samples remain available for future fits.
+    await progress({ phase: 'application_exports', completedGames: completed });
+    for (const name of ['simulationPossessions', 'rotationStints', 'shotEvents']) {
+      descriptors[name] = await writeRows(stage, name, checkpointRows(checkpoints, name));
+      await progress({ phase: 'application_exports', table: name, rows: descriptors[name].rows });
+    }
+    for (const [name, rows] of Object.entries({ teamGames,
+      playerSeasonSkillProfiles: buildPlayerSeasonSkillProfiles(allPlayers, seasons),
+      playerIdentities: buildPlayerIdentities(allPlayers),
+      teamSeasonSimulationProfiles: buildTeamSeasonSimulationProfiles(teamGames),
+      sourceCorrections: appliedCorrections })) descriptors[name] = await writeRows(stage, name, rows);
     const coverage = {
       games: games.length, eligibleLineupGames: games.filter(game => game.reconstructionEligible).length,
       playerGames: allPlayers.length, uniquePlayers: new Set(allPlayers.map(row => row.playerId)).size,
       fullyReconciledPlayerGames: allPlayers.filter(row => row.boxScoreReconciled).length,
       workloadTrainingEligiblePlayerGames: allPlayers.filter(row => row.trainingEligible).length,
       gamesNeedingOfficialSummary: refresh.length,
+      userCorrectedPlayerGames: allPlayers.filter(row => row.sourceCorrections.length > 0).length,
+      originalOfficialIncompletePlayerGames: allPlayers.filter(row => row.missingOfficialFields.length > 0).length,
       perField: Object.fromEntries(BOX_FIELDS.map(field => [field, {
         expectedPlayerGames: allPlayers.length,
         officialKnown: allPlayers.filter(row => row.officialTotals[field] !== null).length,
         matched: allPlayers.filter(row => row.fieldReconciliation[field] === 'matched').length,
         mismatched: allPlayers.filter(row => row.fieldReconciliation[field] === 'mismatch').length,
+        userCorrected: allPlayers.filter(row => row.sourceCorrections.some(correction => correction.field === field)).length,
       }])),
     };
     assert.equal(coverage.eligibleLineupGames, base.coverage.archivesEligible, 'Extension replay eligibility must match validated base.');
+    // Release large aggregation references before the separate validator starts.
+    // With --expose-gc this prevents two large Node heaps overlapping on a 16GB
+    // workstation; without it normal GC still sees the arrays as reclaimable.
+    allPlayers.length = 0; connections.length = 0; seasons.length = 0; teamGames.length = 0;
+    unique.clear(); gamesById.clear(); global.gc?.();
     await progress({ phase: 'preserve_and_verify_base', completedGames: completed, coverage });
     let linkedFiles = 0;
     for (const shard of base.dataShards) {
@@ -219,8 +266,9 @@ export async function rebuildScoutModelEvidence(argv) {
     }
     const additions = { version: MODEL_EVIDENCE_VERSION, generatedAt: new Date().toISOString(),
       ...binding, coverage, files: descriptors, capabilities: BLUEPRINT_CAPABILITIES,
+      applicationCapabilities: APPLICATION_CAPABILITIES,
       baseAnalyticsPreserved: true, coefficientsRefitted: false, workloadResponseFitted: false,
-      sourceRefreshStatus: refresh.length ? 'official_summary_backfill_required' : 'retained_summary_complete',
+      sourceRefreshStatus: appliedCorrections.length ? 'effective_complete_with_explicit_user_corrections' : 'retained_summary_complete',
       caveat: 'Additive evidence package, not newly calibrated prediction models. Existing fitted coefficients and descriptive analytics are unchanged.' };
     const outputManifest = { ...base, modelEvidence: additions };
     for (const name of Object.keys(base)) assert.deepEqual(outputManifest[name], base[name], `Existing ${name} must remain unchanged.`);
@@ -232,10 +280,13 @@ export async function rebuildScoutModelEvidence(argv) {
     await fs.writeFile(path.join(stage, `${manifestName}.gz`), gzipSync(Buffer.from(json(outputManifest))));
     await atomicJson(path.join(stage, 'model-evidence-validation.json'), { passed: true, generatedAt: new Date().toISOString(),
       version: MODEL_EVIDENCE_VERSION, sourceGameHashesVerified: completed, baseFilesVerified: linkedFiles,
-      officialSummaryComplete: refresh.length === 0,
+      officialSummaryComplete: coverage.originalOfficialIncompletePlayerGames === 0,
+      effectiveSummaryComplete: refresh.length === 0, appliedUserCorrections: appliedCorrections,
       coverage, checks: ['round-trip row counts', 'unique player/game identities', 'fieldwise missingness propagation', 'replayed eligible-game parity', 'exact preservation of base manifest fields and shard hashes'],
       workloadResponseFitted: false });
     await atomicJson(path.join(stage, 'model-evidence-capabilities.json'), BLUEPRINT_CAPABILITIES);
+    await atomicJson(path.join(stage, 'application-capabilities.json'), APPLICATION_CAPABILITIES);
+    if (correctionFile) await atomicJson(path.join(stage, 'source-correction-ledger.json'), correctionFile.data);
     await fs.copyFile(options.readiness.packageValidation, path.join(stage, 'base-package-validation.json'));
     await progress({ phase: 'full_package_validation', completedGames: completed });
     const validationName = `nba-scout-analytics-validation-${base.scope.seasonLabel}.json`;
@@ -247,6 +298,7 @@ export async function rebuildScoutModelEvidence(argv) {
       child.on('error', reject); child.on('exit', resolve);
     });
     assert.equal(exitCode, 0, 'Replacement full-package validation failed; validated base was not changed.');
+    for (const target of codePaths) assert.equal((await hashFile(target)).sha256, codeHashes[path.relative(ROOT, target)], 'Build code changed during validation; do not promote mixed-version evidence.');
     await progress({ phase: 'complete', completedGames: completed, coverage });
     await lock.close();
     await fs.unlink(path.join(stage, 'writer.lock')); // Only this run's coordination marker, not source data.

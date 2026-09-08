@@ -1,4 +1,4 @@
-import { paletteForTeam, themeFor } from './basketball-palettes.js?v=20260907f';
+import { palettes, paletteForTeam, themeFor } from './basketball-palettes.js?v=20260907f';
 
 // Appearance is a one-way consumer. It never changes rosters, rules, or scores.
 const root = document.body;
@@ -7,12 +7,12 @@ let team = '';
 let previous = '';
 const suiteRoot = new URL('./', import.meta.url);
 const destinations = [
-  ['Fan Tools', './', ''],
-  ['Lineup Lab', '../lineup-lab/', 'lineup-lab'],
-  ['Fix the Five', './fix-the-five/', 'fix-the-five'],
-  ['Draft Night', './draft-night/', 'draft-night'],
-  ['Player & Cards', './player-card-matchups/', ''],
-  ['Workshop', './workshop/', ''],
+  ['Fan Tools', './', '../assets/games/fan-tools-emblem.svg'],
+  ['Lineup Lab', '../lineup-lab/', '../assets/games/lineup-lab-emblem-20260907.webp'],
+  ['Fix the Five', './fix-the-five/', '../assets/games/fix-the-five-emblem-20260907.webp'],
+  ['Draft Night', './draft-night/', '../assets/games/draft-night-emblem-20260907.webp'],
+  ['Player & Cards', './player-card-matchups/', '../assets/games/card-matchups-emblem.svg'],
+  ['Workshop', './workshop/', '../assets/games/workshop-emblem.svg'],
 ];
 
 function readStoredTeam() {
@@ -75,23 +75,49 @@ function applyAppearance() {
   });
   document.querySelectorAll('[data-court-palette-name]').forEach(node => { node.textContent = palette.name; });
   document.querySelectorAll('[data-court-team-name]').forEach(node => { node.textContent = palette.team; });
-  document.querySelectorAll('button[data-court-mode]').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.courtMode === mode));
+  document.querySelectorAll('[data-court-team-select]').forEach(select => {
+    select.value = palette.id;
+    select.setAttribute('aria-label', `Choose team colors; current palette is ${palette.team}`);
   });
 }
 
-function changeMode(mode) {
-  const isDark = mode !== 'light';
-  if (isDark === root.classList.contains('dark-mode')) return;
-  // Storefront owns its theme. The standalone Lab shares the same preference
-  // key without loading catalog, checkout, or site-header initialization.
-  const existingToggle = document.getElementById('themeToggle');
-  if (existingToggle) existingToggle.click();
-  else {
-    root.classList.toggle('dark-mode', isDark);
-    try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch { /* session still works */ }
+function isCurrentDestination(url, label) {
+  const currentPath = location.pathname.replace(/index\.html$/, '').replace(/\/$/, '');
+  const destinationPath = url.pathname.replace(/index\.html$/, '').replace(/\/$/, '');
+  return currentPath === destinationPath || (label === 'Lineup Lab' && root.classList.contains('lab-guided'));
+}
+
+function mountFanSuiteHeader() {
+  const list = document.querySelector('.site-nav .primary-nav__list');
+  if (!list || list.dataset.fanSuiteMounted === 'true') return;
+  list.dataset.fanSuiteMounted = 'true';
+  list.replaceChildren();
+  for (const [label, relative, emblem] of destinations) {
+    const item = document.createElement('li');
+    item.className = 'primary-nav__item fan-suite-nav__item';
+    const link = document.createElement('a');
+    link.className = 'primary-nav__link fan-suite-nav__link';
+    const url = new URL(relative, suiteRoot);
+    link.href = url.href;
+    link.dataset.fanSuiteDestination = label;
+    if (label === 'Fan Tools') link.dataset.fanToolsLink = 'true';
+    if (isCurrentDestination(url, label)) link.setAttribute('aria-current', 'page');
+    if (emblem) {
+      const image = document.createElement('img');
+      image.src = new URL(emblem, suiteRoot).href;
+      image.alt = '';
+      image.width = 24;
+      image.height = 24;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      link.append(image);
+    }
+    link.append(document.createTextNode(label));
+    item.append(link);
+    list.append(item);
   }
-  applyAppearance();
+  document.querySelector('.site-header')?.classList.add('fan-suite-header');
+  document.querySelector('.site-nav')?.classList.add('fan-suite-nav');
 }
 
 function mountCourtToolbar() {
@@ -99,51 +125,34 @@ function mountCourtToolbar() {
   if (!main || document.querySelector('.court-toolbar')) return;
   const toolbar = document.createElement('div');
   toolbar.className = 'court-toolbar';
-  const nav = document.createElement('nav');
-  nav.className = 'court-navigation';
-  nav.setAttribute('aria-label', 'Basketball fan tools');
-  const links = document.querySelector('.game-page-indicators') || document.createElement('div');
-  links.className = 'game-page-indicators court-destinations';
-  const oldNav = links.closest('.game-navigation');
-  links.replaceChildren();
-  for (const [label, relative, emblem] of destinations) {
-    const link = document.createElement('a');
-    const url = new URL(relative, suiteRoot);
-    link.href = url.href;
-    const currentPath = location.pathname.replace(/index\.html$/, '');
-    if (currentPath === url.pathname || (emblem === 'lineup-lab' && root.classList.contains('lab-guided'))) link.setAttribute('aria-current', 'page');
-    if (emblem) {
-      const image = document.createElement('img');
-      image.src = new URL(`../assets/games/${emblem}-emblem-20260907.webp`, suiteRoot).href;
-      image.alt = ''; image.width = 28; image.height = 28;
-      link.append(image);
-    }
-    link.append(document.createTextNode(label));
-    links.append(link);
-  }
-  nav.append(links);
-  // Retain game entry links and instructions; remove only the empty old nav.
-  if (oldNav && !oldNav.children.length) oldNav.remove();
+  // The fan-suite destinations now live in the site header. Remove the old
+  // page-local game navigation so the same choices are not presented twice.
+  document.querySelectorAll('.game-navigation').forEach(node => node.remove());
   const style = document.createElement('details');
-  style.className = 'court-style';
+  style.className = 'court-team-picker';
   const summary = document.createElement('summary');
-  summary.textContent = 'Court style';
+  summary.textContent = 'Team colors';
   const panel = document.createElement('div');
-  panel.className = 'court-style__panel';
+  panel.className = 'court-team-picker__panel';
   const name = document.createElement('strong'); name.dataset.courtPaletteName = '';
-  const teamName = document.createElement('span'); teamName.className = 'court-style__team'; teamName.dataset.courtTeamName = '';
+  const teamName = document.createElement('span'); teamName.className = 'court-team-picker__team'; teamName.dataset.courtTeamName = '';
   const note = document.createElement('p');
-  note.textContent = 'Team-inspired colors follow the selected team where available. Otherwise, DJHC colors stay in play.';
-  const modes = document.createElement('div'); modes.className = 'court-mode-buttons';
-  modes.setAttribute('role', 'group'); modes.setAttribute('aria-label', 'Page color mode');
-  for (const mode of ['dark', 'light']) {
-    const button = document.createElement('button');
-    button.type = 'button'; button.dataset.courtMode = mode;
-    button.textContent = mode === 'dark' ? 'Dark' : 'Light';
-    button.addEventListener('click', () => changeMode(mode));
-    modes.append(button);
-  }
-  panel.append(name, teamName, note, modes); style.append(summary, panel);
+  note.textContent = 'Choose the team-inspired colors used across the fan tools. This never changes the roster or score.';
+  const label = document.createElement('label');
+  label.className = 'court-team-picker__label';
+  label.textContent = 'Palette';
+  const select = document.createElement('select');
+  select.dataset.courtTeamSelect = '';
+  select.setAttribute('aria-label', 'Choose team colors');
+  palettes.forEach(palette => {
+    const option = document.createElement('option');
+    option.value = palette.id;
+    option.textContent = `${palette.team} · ${palette.name}`;
+    select.append(option);
+  });
+  select.addEventListener('change', () => setCourtTeam(select.value));
+  label.append(select);
+  panel.append(name, teamName, note, label); style.append(summary, panel);
   style.addEventListener('keydown', event => {
     if (event.key === 'Escape') { style.open = false; summary.focus(); }
   });
@@ -170,13 +179,12 @@ function mountCourtToolbar() {
   selectedTeam.dataset.courtTeamName = '';
   copy.append(eyebrow, paletteName, selectedTeam);
   identity.append(swatch, copy);
-  toolbar.append(identity, nav, style); main.prepend(toolbar);
-  const current = links.querySelector('[aria-current="page"]');
-  if (current) links.scrollLeft = Math.max(0, current.offsetLeft - links.offsetLeft - 20);
+  toolbar.append(identity, style); main.prepend(toolbar);
 }
 
 if (root?.classList.contains('court-themed')) {
   team = readStoredTeam();
+  mountFanSuiteHeader();
   mountCourtToolbar();
   applyAppearance();
   new MutationObserver(applyAppearance).observe(root, { attributes: true, attributeFilter: ['class'] });

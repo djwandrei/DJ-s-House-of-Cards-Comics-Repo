@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Scout Studio Preview | DJ's House of Cards &amp; Comics</title>
-  <meta name="description" content="Local preview of Scout player skill profiles, shot tendencies and observed lineup chemistry from the incoming four-season package.">
+  <meta name="description" content="Scout player profiles, observed lineup chemistry, composite recipes and repeatable game experiments from a validated analytics package.">
   <meta name="robots" content="noindex,follow,max-image-preview:large">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#1f2fa3">
   <link rel="canonical" href="https://www.djshouseofcards-comics.com/tools/scout-studio/">
   <link rel="icon" href="../../assets/dj-logo.png" type="image/png">
-  <link rel="stylesheet" href="../../styles.css?v=20260907c">
-  <link rel="stylesheet" href="../../styles-mobile-overrides.css?v=20260907c">
-  <link rel="stylesheet" href="./studio.css?v=20260907c">
+  <link rel="stylesheet" href="../../styles.css?v=20260907f">
+  <link rel="stylesheet" href="../../styles-mobile-overrides.css?v=20260907f">
+  <link rel="stylesheet" href="./studio.css?v=20260907f">
  </head>
  <body class="scout-studio-page dark-mode" data-page="scout-studio">
-  <script src="../../theme-init.js?v=20260907c"></script>
+  <script src="../../theme-init.js?v=20260907f"></script>
   <a class="skip-link" href="#mainContent">Skip to Scout Studio</a>
   <header class="studio-header container">
    <a class="studio-brand" href="../../index.html"><img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics" width="58" height="58"><span>DJ's House of Cards<small>Sports fans. Collector minds.</small></span></a>
@@ -24,24 +24,36 @@
   <main id="mainContent" class="container" tabindex="-1">
    <section class="studio-hero" aria-labelledby="studioTitle">
     <div><span class="studio-eyebrow">Scout Studio / local development preview</span><h1 id="studioTitle">Know the player.<br>Understand the five.</h1><p>Build a basketball argument from what actually happened: skill profiles, shot tendencies and shared-floor evidence.</p></div>
-    <aside class="studio-scope"><strong>2022–23 → 2025–26</strong><p>The incoming four-season package. No older-package fallback.</p><span>Observation ≠ projection</span></aside>
+    <aside class="studio-scope"><strong id="studioSeasonScope">Selected Scout window</strong><p>Player evidence uses the selected package. Game and Season Lab draw from 2023–24 through 2025–26.</p><span>Observation ≠ projection</span></aside>
    </section>
    <section class="studio-source" aria-labelledby="sourceTitle">
-    <div><span class="studio-eyebrow">Evidence checkpoint</span><h2 id="sourceTitle">Checking the incoming package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after source and derived-package validation pass.</p><p id="sourceScope" class="studio-muted">These are pooled team totals across the package window, not single-season or full-career statistics.</p></div>
+     <div><span class="studio-eyebrow">Evidence checkpoint</span><h2 id="sourceTitle">Checking the incoming package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after source and derived-package validation pass.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the grain the package provides.</p></div>
     <button type="button" class="button-secondary" id="refreshSource">Refresh checkpoint</button>
    </section>
    <section id="pendingPanel" class="studio-panel" aria-labelledby="pendingTitle">
-    <span class="studio-eyebrow">Built around the new package</span><h2 id="pendingTitle">The workbench is ready for its evidence.</h2><p>Player Blueprint and Chemistry Lab are implemented for local integration testing. NBA results remain unavailable until the exact incoming package is complete and validated. No example players or synthetic rankings are substituted here.</p>
-    <div class="studio-roadmap"><article><h3>01 / Player Blueprint</h3><p>Compare shooting, production and disruption. Inspect shot zones, optional shot labels and missing coverage.</p></article><article><h3>02 / Chemistry Lab</h3><p>Inspect observed pairs, trios and fives. Separate together/apart performance from claims about fit.</p></article><article><h3>03 / Next foundations</h3><p>Composite players and scenario simulations will use explicit assumptions and separate validation.</p></article></div>
+     <span class="studio-eyebrow">Built around the new package</span><h2 id="pendingTitle">The workbench is ready for its evidence.</h2><p>Player Blueprint, Chemistry Lab, Composite Forge, Game Lab, Season Lab, and Career Lab are available for local integration testing. NBA evidence loads after the selected package and matching reports pass validation.</p>
+     <div class="studio-roadmap"><article><h3>Player Blueprint</h3><p>Compare production and inspect shot tendencies and context splits.</p></article><article><h3>Chemistry &amp; composites</h3><p>Pin a shared-floor group or donor recipe, then inspect what changed.</p></article><article><h3>Game, Season &amp; Career</h3><p>Explore a matchup, custom league, or observed season history with repeatable assumptions.</p></article></div>
    </section>
    <section id="workspace" hidden aria-label="Scout analysis workspace">
+    <div class="studio-mode-controls" role="group" aria-label="Choose a workbench"><button type="button" data-mode="blueprint" aria-pressed="true">Player Blueprint</button><button type="button" data-mode="chemistry" aria-pressed="false">Chemistry Lab</button><button type="button" data-mode="forge" aria-pressed="false">Composite Forge</button><button type="button" data-mode="game" aria-pressed="false">Game Lab</button><button type="button" data-mode="league" aria-pressed="false">Season Lab</button><button type="button" data-mode="career" aria-pressed="false">Career Lab</button></div>
+    <section id="gamePanel" hidden aria-labelledby="gameLabTitle"></section>
+    <section id="leaguePanel" hidden aria-labelledby="leagueLabTitle"></section>
+    <section id="careerPanel" hidden aria-labelledby="careerLabTitle"></section>
     <form id="teamForm" class="studio-team-form"><label for="teamSelect">Choose a franchise sample<select id="teamSelect" required></select></label><button type="submit" class="button" id="loadTeam">Load team evidence</button><span class="studio-muted">One team read at a time. Nothing is uploaded.</span></form>
     <p role="status" aria-live="polite" id="workStatus"></p>
     <div id="analysis" hidden>
-     <div class="studio-mode-controls" role="group" aria-label="Choose a workbench"><button type="button" data-mode="blueprint" aria-pressed="true">Player Blueprint</button><button type="button" data-mode="chemistry" aria-pressed="false">Chemistry Lab</button></div>
      <section id="blueprintPanel" aria-labelledby="blueprintTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Skills / tendencies / comparison</span><h2 id="blueprintTitle">Player Blueprint</h2></div><label for="playerSelect">Inspect player<select id="playerSelect"></select></label><label for="compareSelect">Compare with<select id="compareSelect"><option value="">No comparison</option></select></label></div>
+      <label class="studio-question" for="blueprintQuestion">Choose an analysis question<select id="blueprintQuestion"><option value="all">Full observable profile</option><option value="shooting">Shooting choices and outcomes</option><option value="creation">Creation and ball security</option><option value="rebounding">Rebounding production</option><option value="disruption">Recorded defensive disruption</option></select></label>
       <div id="blueprintContent"></div>
+     </section>
+     <section id="forgePanel" hidden aria-labelledby="forgeTitle">
+      <div class="studio-section-heading"><div><span class="studio-eyebrow">Hypothetical / donor components</span><h2 id="forgeTitle">Composite Forge</h2></div><label for="forgeBaseline">Compare against<select id="forgeBaseline"></select></label><button type="button" id="forgeUseBaseline" class="button-secondary">Use baseline for all blocks</button></div>
+      <p>Choose a donor for each block from the loaded team. Related metrics travel together. The pooled recipe remains separate from the observed season-keyed donor view below.</p>
+      <div id="forgeDonors" class="studio-roadmap"></div>
+      <div class="studio-team-form"><button type="button" id="forgeUndo" class="button-secondary" disabled>Undo last donor change</button><button type="button" id="forgeSave" class="button">Save recipe locally</button><button type="button" id="forgeReset" class="button-secondary">Clear recipe and saved draft</button></div>
+      <p id="forgeStatus" role="status" aria-live="polite"></p><div id="forgeChange" aria-live="polite"></div><div id="forgeContent"></div>
+      <section id="seasonForgePanel" class="studio-panel" aria-labelledby="seasonForgeTitle"><span class="studio-eyebrow">New v2 evidence / observed season rows</span><h3 id="seasonForgeTitle">Season-keyed donor view</h3><p>Inspect components from a specific observed season, phase, and team row. This lets you test a recipe at the grain the package provides; it never predicts how a new player would perform.</p><button type="button" id="loadSeasonDonors" class="button-secondary">Load observed season donors</button><div id="seasonForgeContent" aria-live="polite"><p class="studio-muted">Load a team first, then read the bounded season table.</p></div></section>
      </section>
      <section id="chemistryPanel" hidden aria-labelledby="chemistryTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Observed shared-floor evidence</span><h2 id="chemistryTitle">Chemistry Lab</h2></div><p>Choose 2–5 players from this team sample.</p></div>
@@ -49,10 +61,10 @@
      </section>
     </div>
    </section>
-   <section class="studio-method studio-panel"><h2>Know what the evidence means.</h2><div class="studio-roadmap"><article><h3>Observed</h3><p>Structured event statistics and reconstructed shared-floor possessions. Always check attempts, minutes and coverage.</p></article><article><h3>Not measured here</h3><p>Gravity, decision speed, screen navigation and defender assignments cannot be read from steals, blocks or shot percentages.</p></article><article><h3>Not a forecast</h3><p>These views do not predict wins, health, a player's career or how an untested lineup would perform. Adjusted model coefficients stay private.</p></article></div></section>
+   <section class="studio-method studio-panel"><span class="studio-eyebrow">Evidence field guide</span><h2>Know what each result can—and cannot—say.</h2><p class="studio-muted">The workbench is designed to make an argument from observed evidence without turning a sample, rate, or range into a prediction.</p><details class="studio-field-guide"><summary><span><strong>Read the terms before the numbers</strong><small>Clear labels for player cards, tables, and shared-floor views</small></span></summary><dl><div><dt>Observed</dt><dd>Recorded events or reconstructed shared-floor possessions in the stated package window. Always read the sample size and coverage beside the value.</dd></div><div><dt>Rate per 100 possessions</dt><dd>A pace-neutral description of the recorded sample. It is useful for comparison, not a promise about a future game.</dd></div><div><dt>Coverage</dt><dd>Which source fields were present and usable. Missing fields stay missing; the workbench does not fill them with an estimate.</dd></div><div><dt>Shared floor</dt><dd>Players who appeared together in recorded possessions. An unseen combination remains unknown rather than being labeled good or bad chemistry.</dd></div><div><dt>Together / apart</dt><dd>A descriptive same-game split. Different teammates, opponents, and situations can explain a difference.</dd></div><div><dt>Descriptive 95% range</dt><dd>A rough uncertainty band around the observed sample, not a forecast interval or proof of a player’s true talent.</dd></div></dl></details><div class="studio-roadmap"><article><h3>Observed evidence</h3><p>Structured event statistics and reconstructed shared-floor possessions. Check attempts, minutes, and coverage before drawing a conclusion.</p></article><article><h3>Outside this view</h3><p>Gravity, decision speed, screen navigation, and defender assignments cannot be read directly from steals, blocks, or shot percentages.</p></article><article><h3>Not a forecast</h3><p>These views do not predict wins, health, a player’s career, or an untested lineup. Adjusted model coefficients stay private.</p></article></div></section>
   </main>
   <footer class="container studio-footer"><p>DJ's House of Cards &amp; Comics · Scout Studio development preview</p><p>Local, read-only evidence review. No catalog, checkout, account or database changes.</p></footer>
-  <script defer src="../../core.js?v=20260907c"></script>
-  <script type="module" src="./studio.js?v=20260907c"></script>
+  <script defer src="../../core.js?v=20260907f"></script>
+  <script type="module" src="./studio.js?v=20260907f"></script>
  </body>
 </html>

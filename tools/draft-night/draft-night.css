@@ -62,16 +62,6 @@
   padding-bottom: 1rem;
 }
 
-.draft-night-empty-selection {
-  background: var(--fix-paper);
-  border: 1px dashed rgba(105, 65, 178, .36);
-  border-radius: 11px;
-  color: var(--fix-muted);
-  font-size: .9rem;
-  margin: 0;
-  padding: .75rem .85rem;
-}
-
 .draft-night-picked-list,
 .draft-night-result-lineup {
   gap: .55rem;
@@ -125,10 +115,6 @@ body.dark-mode.draft-night-page .fix-five-focus { background:#27233d; color:#e1d
 
 .draft-night-page .fix-five-candidate-position {
   color: #bb3f65;
-}
-
-.draft-night-page .fix-five-text-link {
-  color: #6941b2;
 }
 
 .draft-night-board-card .field {
@@ -185,55 +171,6 @@ body.dark-mode.draft-night-page .fix-five-focus { background:#27233d; color:#e1d
 .draft-night-result-lineup {
   justify-content: center;
   margin: 1rem auto;
-}
-
-.draft-night-role-grid {
-  margin-bottom: .85rem;
-  text-align: left;
-}
-
-.draft-night-role-grid .fix-five-dna-panel {
-  background: linear-gradient(145deg, #2a1550, #583196);
-  text-align: left;
-}
-
-.draft-night-role-note {
-  color: rgba(255, 255, 255, .78);
-  font-size: .78rem;
-  line-height: 1.4;
-  margin: .35rem 0 .65rem;
-}
-
-.draft-night-result-caveat {
-  color: var(--fix-muted);
-  font-size: .84rem;
-  line-height: 1.45;
-  margin: .5rem auto 1.1rem;
-  max-width: 70ch;
-}
-
-.draft-night-complete .fix-five-score-breakdown {
-  background: #faf7ff;
-  border-color: rgba(105, 65, 178, .2);
-  margin: 1rem auto;
-  max-width: 680px;
-  text-align: left;
-}
-
-.draft-night-complete .fix-five-score-breakdown h3,
-.draft-night-complete .fix-five-score-breakdown h4,
-.draft-night-complete .fix-five-score-breakdown__list strong {
-  color: #392960;
-}
-
-.draft-night-complete .fix-five-score-breakdown > p,
-.draft-night-complete .fix-five-score-breakdown__list dt,
-.draft-night-complete .fix-five-score-breakdown__list span {
-  color: #655b78;
-}
-
-.draft-night-complete .fix-five-score-breakdown__list > div {
-  background: #fff;
 }
 
 .draft-night-learning {

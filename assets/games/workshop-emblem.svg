@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Fan tool workshop</title>
+  <desc id="desc">A clipboard with a basketball and spark.</desc>
+  <rect x="3" y="3" width="90" height="90" rx="22" fill="#182442" stroke="#8fa9e9" stroke-width="3"/>
+  <rect x="25" y="22" width="46" height="56" rx="6" fill="#f3f6ff"/>
+  <rect x="37" y="16" width="22" height="11" rx="5" fill="#e8b84c"/>
+  <path d="M34 41h28M34 52h21M34 63h15" stroke="#213b8e" stroke-linecap="round" stroke-width="4"/>
+  <path d="m72 25 2 6 6 2-6 2-2 6-2-6-6-2 6-2 2-6Z" fill="#77d43a"/>
+  <text x="48" y="88" fill="#fff" font-family="Arial,sans-serif" font-size="8" font-weight="800" letter-spacing="1" text-anchor="middle">WORKSHOP</text>
+</svg>

@@ -22,6 +22,7 @@ import {
   projectRotationUsageDemand,
   readPlayerUsage,
   readSeasonRoleMinutes,
+  responsibilityExpansionFor,
 } from "./player-projection.js?v=20260907f";
 import { workloadUtilityCurve, workloadRate } from "./workload-model.js?v=20260907f";
 import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence, posteriorRate, cardinalMetricScore, demonstratedShootingValue, shootingOpportunity,
@@ -1704,6 +1705,17 @@ function buildRoleConditionedProjectionPlan(
   const calibratedMetricCurvesById = new Map();
   const calibratedProductionCurvesById = new Map();
   const calibratedBenchmarkCurvesById = new Map();
+  // Keep the responsibility decision beside the curves. Two players can
+  // share a per-36 line while having very different amounts of verified
+  // offensive work behind it. The exact allocator uses these player-specific
+  // profiles; the returned map lets the explanation layer show which prior was
+  // applied. None of this changes eligibility or user minute bounds.
+  const responsibilityExpansionById = new Map();
+  const responsibilityExpansionSourceCounts = new Map();
+  const responsibilityPriorPlayerIds = new Set();
+  const calibratedResponsibilityPlayerIds = new Set();
+  let responsibilityPriorPlayerMetricCount = 0;
+  let calibratedResponsibilityPlayerMetricCount = 0;
   let concavityGuardedPlayerMinutes = 0;
   let changesAnyScore = false;
 
@@ -1729,6 +1741,31 @@ function buildRoleConditionedProjectionPlan(
     const evidenceReliability = evidenceMinutes / (evidenceMinutes + 700);
     transitionMinutesById.set(id, 4 + (12 * evidenceReliability));
 
+    // Resolve expansion once per player/metric so the static score, projected
+    // production, and the exact minute curve cannot disagree about whether a
+    // rate has a validated workload fit or only the evidence-gated
+    // responsibility prior. The prior is intentionally player-specific and
+    // only applies to offensive responsibility-sensitive metrics.
+    const responsibilityProfiles = {};
+    for (const metric of OBJECTIVE_METRICS) {
+      const profile = responsibilityExpansionFor(player, metric, projectionParameters);
+      responsibilityProfiles[metric] = profile;
+      if (profile.strength > 0 && activeMetrics.includes(metric)) {
+        responsibilityExpansionSourceCounts.set(
+          profile.source,
+          (responsibilityExpansionSourceCounts.get(profile.source) || 0) + 1,
+        );
+        if (profile.source === "responsibility-evidence-prior") {
+          responsibilityPriorPlayerIds.add(id);
+          responsibilityPriorPlayerMetricCount += 1;
+        } else if (profile.source === "chronological-workload-fit") {
+          calibratedResponsibilityPlayerIds.add(id);
+          calibratedResponsibilityPlayerMetricCount += 1;
+        }
+      }
+    }
+    responsibilityExpansionById.set(id, responsibilityProfiles);
+
     const expandedMetrics = {};
     let establishedScore = 0;
     let expandedScore = 0;
@@ -1742,8 +1779,9 @@ function buildRoleConditionedProjectionPlan(
       // manufacture one. This clamp fixes the former edge case where a player
       // below league baseline improved merely because the old model replaced
       // his extra minutes with the (better) baseline.
-      const fittedExpansion = projectionParameters.expansionStrengthByMetric?.[metric];
-      const expandedPercentile = baselinePercentile === null || fittedExpansion === 0
+      const expansionProfile = responsibilityProfiles[metric];
+      const fittedExpansion = expansionProfile?.strength ?? 0;
+      const expandedPercentile = baselinePercentile === null || fittedExpansion <= 0
         ? establishedPercentile
         : Math.min(establishedPercentile, baselinePercentile);
       expandedMetrics[metric] = expandedPercentile;
@@ -1783,8 +1821,9 @@ function buildRoleConditionedProjectionPlan(
     for (const metric of OBJECTIVE_METRICS) {
       const establishedIndex = Number(establishedBenchmarkIndexes[metric]);
       if (!Number.isFinite(establishedIndex)) continue;
+      const expansionProfile = responsibilityProfiles[metric];
       expandedBenchmarkIndexes[metric] = activeMetrics.includes(metric)
-        && projectionParameters.expansionStrengthByMetric?.[metric] !== 0
+        && (expansionProfile?.strength ?? 0) > 0
         ? Math.min(establishedIndex, 100)
         : establishedIndex;
     }
@@ -1800,8 +1839,9 @@ function buildRoleConditionedProjectionPlan(
       if (establishedRate === null || baselineRate === null) continue;
       // Lower turnover rates are better; every other projected total is a
       // higher-is-better quantity. Apply the conservative direction explicitly.
-      const fittedExpansion = projectionParameters.expansionStrengthByMetric?.[field === "turnovers" ? "ballSecurity" : field];
-      expandedRates[field] = fittedExpansion === 0 ? establishedRate : field === "turnovers"
+      const expansionProfile = responsibilityProfiles[field === "turnovers" ? "ballSecurity" : field];
+      const fittedExpansion = expansionProfile?.strength ?? 0;
+      expandedRates[field] = fittedExpansion <= 0 ? establishedRate : field === "turnovers"
         ? Math.max(establishedRate, baselineRate)
         : Math.min(establishedRate, baselineRate);
     }
@@ -1827,9 +1867,10 @@ function buildRoleConditionedProjectionPlan(
           // One conditional-rate function supplies both the objective and
           // production constraints. The mean's fitted minute response is kept
           // separate from the explicitly chosen downside sensitivity reserve.
+          const expansionProfile = responsibilityProfiles[metric];
           const mean = workloadRate({ value: input.posteriorMean, baseline: input.baseline,
             sample: 1, prior: 0, sourceMinutes: input.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
-            strength: projectionParameters.expansionStrengthByMetric?.[metric] ?? 0,
+            strength: expansionProfile?.strength ?? 0,
             lowerIsBetter: metric === "ballSecurity" });
           const projected = decisionRateAtWorkload({ mean, standardError: input.standardError,
           sourceMinutes: input.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
@@ -1863,10 +1904,11 @@ function buildRoleConditionedProjectionPlan(
       const benchmarks = {};
       for (const [metric, value] of Object.entries(establishedBenchmarkIndexes)) {
         if (!Number.isFinite(value)) continue;
+        const expansionProfile = responsibilityProfiles[metric];
         benchmarks[metric] = Array.from({ length: 49 }, (_, minute) => minute * workloadRate({
           value, baseline: Math.min(value, 100), sample: 1, prior: 0,
           sourceMinutes: metricResult.projectionInputsById.get(id)?.[metric]?.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
-          strength: projectionParameters.expansionStrengthByMetric?.[metric] ?? 0,
+          strength: expansionProfile?.strength ?? 0,
         }));
       }
       calibratedBenchmarkCurvesById.set(id, benchmarks);
@@ -1890,6 +1932,14 @@ function buildRoleConditionedProjectionPlan(
     calibratedMetricCurvesById,
     calibratedProductionCurvesById,
     calibratedBenchmarkCurvesById,
+    responsibilityExpansionById,
+    responsibilityExpansionSources: Object.fromEntries(
+      [...responsibilityExpansionSourceCounts.entries()].sort(([left], [right]) => left.localeCompare(right)),
+    ),
+    responsibilityPriorPlayers: responsibilityPriorPlayerIds.size,
+    responsibilityPriorPlayerMetricCount,
+    calibratedResponsibilityPlayers: calibratedResponsibilityPlayerIds.size,
+    calibratedResponsibilityPlayerMetricCount,
     concavityGuardedPlayerMinutes,
     // Disable the legacy roster-average saturation. Only the evidence-based
     // response above changes utility; min/max outcomes can be genuine optima.
@@ -6018,6 +6068,11 @@ export function allocateRotationMinutes(players, options = {}) {
     objectiveMetrics: roleConditionedScorePlan?.objectiveMetrics ?? [],
     activeMetrics: roleConditionedScorePlan?.activeMetrics ?? [],
     roleExpansionApplied: Boolean(roleConditionedScorePlan?.roleExpansionChangesAnyScore),
+    responsibilityPriorPlayers: roleConditionedScorePlan?.responsibilityPriorPlayers ?? 0,
+    responsibilityPriorPlayerMetricCount: roleConditionedScorePlan?.responsibilityPriorPlayerMetricCount ?? 0,
+    calibratedResponsibilityPlayers: roleConditionedScorePlan?.calibratedResponsibilityPlayers ?? 0,
+    calibratedResponsibilityPlayerMetricCount: roleConditionedScorePlan?.calibratedResponsibilityPlayerMetricCount ?? 0,
+    responsibilityExpansionSources: roleConditionedScorePlan?.responsibilityExpansionSources ?? {},
     concavityGuardedPlayerMinutes: roleConditionedScorePlan?.concavityGuardedPlayerMinutes ?? 0,
     workloadSaturation: roleConditionedScorePlan
       ? {

@@ -22,7 +22,7 @@
 
 .fix-five-hero-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(230px, 310px);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.4rem;
   align-items: stretch;
 }
@@ -52,6 +52,13 @@
   color: #f4f6fc;
 }
 
+.fix-five-hero-copy .game-entry {
+  color: #f4f6fc;
+  font-size: .86rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
 .game-entry-link {
   display: inline-flex;
   align-items: center;
@@ -74,7 +81,6 @@
 body.dark-mode #gameBoard:focus-visible { outline-color: #e8b84c; }
 
 .fix-five-result-pills,
-.fix-five-dna-list,
 .fix-five-lineup-list,
 .fix-five-progress {
   display: flex;
@@ -513,244 +519,6 @@ body.dark-mode.fix-five-page .fix-five-candidate:focus-visible { outline-color:#
   border-color: rgba(255,255,255,.24);
 }
 
-.fix-five-dna-grid {
-  display: grid;
-  gap: .75rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 1rem 0;
-}
-
-.fix-five-dna-panel {
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 12px;
-  padding: .8rem;
-}
-
-.fix-five-dna-panel h4 {
-  color: #fff;
-  font-size: .83rem;
-  letter-spacing: .06em;
-  margin: 0 0 .55rem;
-  text-transform: uppercase;
-}
-
-.fix-five-dna-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.fix-five-dna-list li {
-  align-items: center;
-  background: rgba(255,255,255,.08);
-  border-radius: 8px;
-  display: flex;
-  font-size: .78rem;
-  gap: .4rem;
-  justify-content: space-between;
-  padding: .42rem .5rem;
-}
-
-.fix-five-dna-list strong {
-  color: #fff;
-}
-
-.fix-five-dna-list span {
-  color: #d8f6e4;
-  font-weight: 800;
-}
-
-.fix-five-dna-list li.is-loss span {
-  color: #ffd3d8;
-}
-
-.fix-five-dna-list li.is-neutral {
-  color: rgba(255, 255, 255, .82);
-  justify-content: flex-start;
-  line-height: 1.4;
-}
-
-.fix-five-score-breakdown {
-  background: rgba(255, 255, 255, .10);
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 12px;
-  margin: 1rem 0;
-  padding: .85rem;
-}
-
-.fix-five-score-breakdown h3,
-.fix-five-score-breakdown h4 {
-  color: #fff;
-  font-size: .9rem;
-  margin: 0;
-}
-
-.fix-five-score-breakdown > p {
-  color: rgba(255,255,255,.82);
-  font-size: .8rem;
-  line-height: 1.45;
-  margin: .35rem 0 .7rem;
-}
-
-.fix-five-score-breakdown__list {
-  display: grid;
-  gap: .45rem;
-  margin: 0;
-}
-
-.fix-five-score-breakdown__list > div {
-  align-items: center;
-  background: rgba(255,255,255,.08);
-  border-radius: 8px;
-  display: flex;
-  gap: .75rem;
-  justify-content: space-between;
-  padding: .5rem .6rem;
-}
-
-.fix-five-score-breakdown__list dt {
-  color: rgba(255,255,255,.88);
-  font-size: .78rem;
-  font-weight: 700;
-}
-
-.fix-five-score-breakdown__list dd {
-  align-items: flex-end;
-  display: flex;
-  flex-direction: column;
-  gap: .08rem;
-  margin: 0;
-}
-
-.fix-five-score-breakdown__list strong {
-  color: #fff;
-  font-size: .88rem;
-}
-
-.fix-five-score-breakdown__list span {
-  color: rgba(255,255,255,.72);
-  font-size: .7rem;
-  text-align: right;
-}
-
-.fix-five-candidate-board {
-  border-top: 1px solid rgba(255,255,255,.22);
-  color: rgba(255,255,255,.86);
-  font-size: .82rem;
-  margin-top: 1rem;
-  padding-top: .75rem;
-}
-
-.fix-five-candidate-board summary {
-  color: #fff;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-.fix-five-candidate-board > p {
-  line-height: 1.45;
-  margin: .55rem 0;
-}
-
-.fix-five-candidate-board ol {
-  display: grid;
-  gap: .45rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.fix-five-candidate-board li {
-  align-items: center;
-  background: rgba(255,255,255,.08);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  display: flex;
-  gap: .65rem;
-  justify-content: space-between;
-  padding: .5rem .6rem;
-}
-
-.fix-five-candidate-board li.is-selected {
-  border-color: rgba(255,255,255,.7);
-}
-
-.fix-five-candidate-board li.is-best {
-  background: rgba(109, 212, 155, .16);
-}
-
-.fix-five-candidate-board li > div,
-.fix-five-candidate-board small {
-  display: grid;
-  gap: .08rem;
-}
-
-.fix-five-candidate-board strong {
-  color: #fff;
-}
-
-.fix-five-candidate-board span,
-.fix-five-candidate-board small {
-  color: rgba(255,255,255,.74);
-  font-size: .72rem;
-}
-
-.fix-five-run-review {
-  margin: 1rem auto 0;
-  max-width: 680px;
-  text-align: left;
-}
-
-.fix-five-run-review h3 {
-  color: var(--fix-ink);
-  font-size: 1rem;
-  margin: 0;
-}
-
-.fix-five-run-review > p {
-  color: var(--fix-muted);
-  font-size: .82rem;
-  line-height: 1.45;
-  margin: .35rem 0 .65rem;
-}
-
-.fix-five-run-review ol {
-  display: grid;
-  gap: .45rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.fix-five-run-review button {
-  align-items: center;
-  background: #f7f9ff;
-  border: 1px solid var(--fix-border);
-  border-radius: 10px;
-  color: var(--fix-ink);
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  gap: .65rem;
-  justify-content: space-between;
-  padding: .65rem .75rem;
-  text-align: left;
-  width: 100%;
-}
-
-.fix-five-run-review button:hover,
-.fix-five-run-review button:focus-visible {
-  border-color: var(--fix-blue);
-  box-shadow: 0 5px 14px rgba(20, 43, 96, .12);
-}
-
-.fix-five-run-review button span {
-  color: var(--fix-muted);
-  font-size: .76rem;
-  text-align: right;
-}
-
 .fix-five-result-actions {
   align-items: center;
   display: flex;
@@ -936,14 +704,6 @@ body.dark-mode.fix-five-page .fix-five-candidate:focus-visible { outline-color:#
   margin: 0;
 }
 
-.fix-five-text-link {
-  color: var(--fix-blue);
-  display: inline-block;
-  font-size: .82rem;
-  font-weight: 800;
-  margin-top: 1rem;
-}
-
 .fix-five-run-actions {
   display: grid;
   gap: .55rem;
@@ -1073,7 +833,6 @@ body.dark-mode.fix-five-page .fix-five-complete > p { color:#c2cfe5; }
   }
 
   .fix-five-candidate-grid,
-  .fix-five-dna-grid,
   .fix-five-sidebar,
   .fix-five-run-actions {
     grid-template-columns: 1fr;
@@ -1113,18 +872,6 @@ body.dark-mode.fix-five-page .fix-five-complete > p { color:#c2cfe5; }
     justify-content: center;
   }
 
-  .fix-five-score-breakdown__list > div,
-  .fix-five-candidate-board li,
-  .fix-five-run-review button {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .fix-five-score-breakdown__list dd,
-  .fix-five-run-review button span {
-    align-items: flex-start;
-    text-align: left;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

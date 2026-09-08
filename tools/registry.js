@@ -31,16 +31,16 @@ export const TOOL_REGISTRY = Object.freeze([
     eyebrow: 'Live fan tool',
     status: TOOL_STATUSES.LIVE,
     href: '../lineup-lab/',
-    summary: 'Build a five-player lineup or full rotation from a historical team-season, game plan, and your own constraints.',
+    summary: 'Choose a team and season, set your priorities, and build a starting five or full rotation you can inspect.',
     capabilities: [
-      'Best-five and full-rotation builds',
-      'Game-plan presets and custom priorities',
-      'Locks, exclusions, role coverage, alternatives, and shareable scenarios'
+      'Build a starting five or full rotation',
+      'Start with a game-plan preset or your own priorities',
+      'Lock must-have players and filter the roster'
     ],
     highlights: [
       'Lineup builder',
-      'Local game state',
-      'No checkout impact'
+      'Historical team-seasons',
+      'Read-only fan tool'
     ],
     dependencies: [
       'Verified NBA player and team-season data',
@@ -52,15 +52,16 @@ export const TOOL_REGISTRY = Object.freeze([
     id: 'lineup-dna',
     kind: 'tool',
     marker: 'DNA',
+    emblem: '../assets/games/lineup-dna-emblem.svg',
     title: 'Lineup DNA',
     eyebrow: 'Live Lineup Lab explanation',
     status: TOOL_STATUSES.LIVE,
     href: '../lineup-lab/',
-    summary: 'Read why a chosen five works, which roles are covered or thin, and how one source-bounded substitution changes the lineup profile.',
+    summary: 'See what each player adds, where the five is thin, and how one replacement changes the lineup profile.',
     capabilities: [
-      'Role-coverage explanation cards',
-      'Single-substitution before-and-after views',
-      'Source and proxy labels beside every claim'
+      'See the roles your five covers',
+      'Spot a thin or missing role',
+      'Test one replacement before you rebuild'
     ],
     dependencies: [
       'Current role definitions and fan analytics helpers',
@@ -77,11 +78,11 @@ export const TOOL_REGISTRY = Object.freeze([
     eyebrow: 'Live daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './fix-the-five/',
-    summary: 'Make one legal swap on five daily, source-labeled Scout boards and reveal each sealed fixed-board rank.',
+    summary: 'Choose one legal replacement, lock your move, and reveal your place on that day’s fixed board.',
     capabilities: [
-      'Five-round daily Scout challenge',
-      'Team-season, franchise-window, or multi-season source board',
-      'Local streaks, replay, and shareable seeded runs'
+      'One clear swap in each round',
+      'A source-labeled board for every challenge',
+      'A board result, not a win prediction'
     ],
     highlights: [
       'Five daily Scout swaps',
@@ -145,11 +146,11 @@ export const TOOL_REGISTRY = Object.freeze([
     eyebrow: 'Live daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './draft-night/',
-    summary: 'Draft five players from one daily, source-labeled Scout board, then reveal your sealed rank across its 243 legal combinations.',
+    summary: 'Pick five players by role, lock your lineup, and see where it lands on the day’s fixed board.',
     capabilities: [
-      'Seeded five-pick Scout boards',
-      'Creator, scorer, wing, frontcourt, and big selections',
-      'Full-board feasibility and sealed Scout reveal'
+      'Five simple role-based picks',
+      'A source-labeled daily board',
+      'A reveal after you lock the lineup'
     ],
     highlights: [
       '243 Scout-ranked paths per board',
@@ -191,11 +192,12 @@ export const TOOL_REGISTRY = Object.freeze([
     eyebrow: 'Live collector tool',
     status: TOOL_STATUSES.LIVE,
     href: './player-card-matchups/',
-    summary: 'Connect a player or Lineup Lab scenario to verified cards in the DJHC catalog and show useful season context.',
+    summary: 'Search a player, see verified cards in the DJHC catalog, and keep the season context beside the match.',
+    emblem: '../assets/games/card-matchups-emblem.svg',
     capabilities: [
       'Exact player-to-card matches',
-      'Player-season context beside eligible listings',
-      'Watchlists tied to saved scenarios'
+      'Season context beside eligible listings',
+      'A clean path back to your lineup'
     ],
     dependencies: [
       'Active athlete identities and verified product mappings',

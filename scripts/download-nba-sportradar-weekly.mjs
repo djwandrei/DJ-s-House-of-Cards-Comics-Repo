@@ -13,7 +13,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gzipSync } from 'node:zlib';
+import { gzipSync, gunzipSync } from 'node:zlib';
 import {
   SPORTRADAR_NBA_API_VERSION,
   SPORTRADAR_NBA_PHASE_CODES,
@@ -27,6 +27,14 @@ import {
   normalizeSportradarSummary,
 } from './lib/nba-sportradar-pbp.mjs';
 import { reconstructNbaGameLineups } from './lib/nba-lineup-reconstruction.mjs';
+import { inspectSummaryCompleteness } from './lib/nba-summary-completeness.mjs';
+
+// A checkpoint label or an existing file is not evidence of Summary coverage.
+// Legacy archives without official fields must re-enter the download queue.
+export function weeklyArchiveIsComplete(record, gameId, accessLevel) {
+  return record?.game?.providerGameId === gameId && record?.source?.accessLevel === accessLevel
+    && inspectSummaryCompleteness(record).complete;
+}
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const ROOT = path.resolve(path.dirname(SCRIPT_PATH), '..');
@@ -360,7 +368,10 @@ async function runWeeklySportradar(argv = process.argv.slice(2), env = process.e
       const gameFile = path.join(options.outputDir, String(options.seasonStartYear), 'games', `${game.id}.json.gz`);
       const prior = manifest.games[game.id];
       if (options.resume && prior?.status === 'completed') {
-        try { await fs.access(gameFile); continue; } catch { /* stale checkpoint: refetch */ }
+        try {
+          const record = JSON.parse(gunzipSync(await fs.readFile(gameFile)));
+          if (weeklyArchiveIsComplete(record, game.id, options.accessLevel)) continue;
+        } catch { /* Missing/corrupt/legacy checkpoints must be fetched again. */ }
       }
       if (attempted >= options.maxGames) { report.stoppedEarly = 'max_games_reached'; break; }
       attempted += 1;
@@ -384,17 +395,20 @@ async function runWeeklySportradar(argv = process.argv.slice(2), env = process.e
           events: playByPlay.events,
         });
         const record = recordForArchive({ scheduleGame: game, summary, playByPlay, reconstruction, responses: { summary: summaryResponse, playByPlay: pbpResponse }, config, skippedSummaryPlayerRows: sanitizedSummary.skippedPlayerRows });
+        record.summaryCompleteness = inspectSummaryCompleteness(record);
         await writeGzipAtomic(gameFile, record);
+        const status = record.summaryCompleteness.complete ? 'completed' : 'incomplete_summary';
         manifest.games[game.id] = {
-          status: 'completed',
+          status,
           phase: game.phase,
           gameFile: path.relative(path.dirname(manifestPath), gameFile).replaceAll('\\', '/'),
           fetchedAt: record.source.fetchedAt,
           counts: record.analytics.counts,
           coverageStatus: record.analytics.coverageStatus,
           eligibleForPublication: record.analytics.eligibleForPublication,
+          summaryCompleteness: record.summaryCompleteness,
         };
-        report.games.push({ gameId: game.id, status: 'completed', coverageStatus: record.analytics.coverageStatus, eligibleForPublication: record.analytics.eligibleForPublication, events: record.analytics.counts.eventCount ?? 0, stints: record.analytics.counts.stintCount ?? 0, possessions: record.analytics.counts.possessionCount ?? 0 });
+        report.games.push({ gameId: game.id, status, coverageStatus: record.analytics.coverageStatus, eligibleForPublication: record.analytics.eligibleForPublication, events: record.analytics.counts.eventCount ?? 0, stints: record.analytics.counts.stintCount ?? 0, possessions: record.analytics.counts.possessionCount ?? 0 });
       } catch (error) {
         const failure = { gameId: game.id, status: isQuotaOrThrottle(error) ? 'paused_provider_limit' : isProviderAuthorization(error) ? 'paused_authorization' : 'failed', error: String(error?.message ?? error).slice(0, 800), providerStatus: error?.status ?? null, providerLimit: error?.providerLimit ?? null, retryAfterMs: error?.retryAfterMs ?? null };
         manifest.games[game.id] = { ...failure, failedAt: new Date().toISOString() };
@@ -409,7 +423,7 @@ async function runWeeklySportradar(argv = process.argv.slice(2), env = process.e
     const statuses = Object.values(manifest.games);
     report.completedGames = statuses.filter((entry) => entry.status === 'completed').length;
     report.failedGames = statuses.filter((entry) => entry.status !== 'completed').length;
-    report.status = report.stoppedEarly?.startsWith('provider_') ? 'paused' : 'completed';
+    report.status = report.stoppedEarly?.startsWith('provider_') ? 'paused' : report.failedGames > 0 ? 'completed_with_gaps' : 'completed';
     report.finishedAt = new Date().toISOString();
     await writeAtomic(manifestPath, `${stableJson(manifest)}\n`);
     await writeAtomic(options.reportFile, `${stableJson(report)}\n`);

@@ -1,6 +1,6 @@
 # Scout Studio: current-package audit and product plan
 
-Updated September 6, 2026. This plan interprets the ten concepts in the user's
+Updated September 7, 2026. This plan interprets the ten concepts in the user's
 attached text (items 3–12). It replaces the next-tools direction, not the
 existing Lineup Lab, Lineup DNA, Fix the Five or Draft Night implementations.
 
@@ -13,17 +13,70 @@ drafts are left untouched; no user data or historical source documents are delet
 
 ## Outcome
 
-Use the **new four-season Scout package**, not the old single-season v10 package,
-as the private evidence foundation. Begin with **Player Blueprint** and
-**Chemistry Lab**, then add a constrained composite-player workbench and a
-calibrated scenario simulator. Build the reusable evidence contract first so
-each subsequent tool inherits source scope, null handling and uncertainty.
+Use the **explicitly validated current Scout package**, not the old single-season
+v10 package, as the private evidence foundation. The latest local integration
+uses the six-season package below. Keep observed evidence, hypothetical donor
+recipes and uncalibrated game experiments visibly distinct.
 
-The first two workbenches are implemented locally in `tools/scout-studio/`.
+Six workbenches are implemented locally in `tools/scout-studio/`: Player
+Blueprint, Chemistry Lab, the hypothetical Composite Forge, Game Lab, Season
+Lab, and the observed-history Career Lab. The
+[framework and research review](scout-studio-framework.md) records the latest
+logic, limits, and ideas from the user-provided web-games research document.
 They are not deployed or promoted to live tools. This task did not send work
 to other tasks or modify the running Scout derivation / existing optimizer.
 
-## Which package was inspected
+The [feature design specification](scout-feature-design-spec.md) now covers the
+decision loops, data dependencies and acceptance criteria for all ten requested
+concepts plus the daily games. It separates implemented behavior from future
+models. The latest local expansion adds a four-team Season Lab, pinned league
+experiments, Blueprint question lenses, pinned Chemistry/Forge comparisons and
+session-only checked-choice histories in Fix the Five and Draft Night.
+
+## Current package integration — September 7
+
+The six-season base package is complete and passed an exact-scope readiness
+check with zero errors/warnings. This does not establish completion of a
+separate optimizer refit or any production import.
+
+- Directory under the same `nba-last-five-seasons` root:
+  `scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/`.
+- Manifest: `nba-scout-analytics-2020-26.json`.
+- Manifest SHA-256:
+  `4bff0625e5845fbc85629d6ff46f70d48b868a8c380dced186032c13836ac41d`.
+- Package report: `nba-scout-analytics-validation-2020-26.json`, passed, zero
+  errors/warnings; SHA-256
+  `460ead40a936def3c9ba05570174fcbd78af28394ffa2c25964d0ecc32800ce1`.
+- Additive model-evidence report: `model-evidence-validation.json`, passed;
+  SHA-256
+  `d9be50efcdc8593c1f0d3463dcf829958ce3b1de8ffc016587788b59a5f1778d`.
+- Source report:
+  `validation/2020-2025-trial-composed-20260906-v1-six-season-source-attested/checkpoint-validation-report.json`.
+- Source report SHA-256:
+  `8651429bdeee293a2af21db398e8328bdea692ae6c3ffa372563e21d3ed2e39d`.
+- Start years 2020–2025; 30 teams, 328,240 combinations, 2,252 team/player
+  profiles and on/off rows, 26,382 WOWY pairs, 1,083 players per RAPM model,
+  4,517 eligible source archives and 897,735 attributed possessions.
+- Roughly 49.1 GB of uncompressed team shards. Reading remains streamed and
+  hash-checked, with one compact team cache, not a whole-package browser load.
+- The additive evidence includes 11,193 player-season/phase rows and 330
+  team-season simulation profiles. It is read-only local evidence; private
+  identifiers, correction details, and fitted coefficients stay behind the
+  projection boundary.
+
+The base direct player profiles still pool the full team/window. The additive
+player-season table now supplies explicit season/phase rows and all-team
+aggregates for the local Career Lab and season-keyed Composite Forge; missing
+seasons remain gaps. Team, player on/off, and group context rows have genuine
+season partitions. Game Lab uses only 2023–24 through 2025–26 team-season
+possessions, preserving the user's daily challenge window rather than exposing
+the entire training window as game years.
+
+The older four-season package below is historical evidence. Its exact source
+report was not present at the September 7 check, so selecting those old paths
+now stays pending. It is not silently replaced by another validation report.
+
+## Historical package audit — September 6
 
 The actual build was identified from the running process and the latest state
 of **Sports Analytics Work — Primary**, then verified against its completed
@@ -71,11 +124,12 @@ Never load it wholesale into a browser or `JSON.parse` every team at once.
 
 ## Important grain and integration findings
 
-1. **Player profiles pool the full window within each team.** A season context
-   exists for team and player on/off rows, but the detailed direct-event player
-   profile is emitted once per team/player. A UI cannot relabel that profile
-   "2025–26" or infer season-by-season skill change from it. Season-keyed direct
-   profiles are a follow-up pipeline requirement, not a filter we can invent.
+1. **Base and additive player grains are different.** The detailed base
+   direct-event profile is emitted once per team/player and cannot be relabeled
+   "2025–26". The v2 additive `playerSeasonSkillProfiles` table is explicitly
+   season/phase keyed, carries all-team trade aggregates, and exposes only the
+   observed production fields needed by the local Career and season-donor
+   views. A missing row is a gap, not a zero or an imputed skill change.
 2. **The Supabase compact importer omits detailed shot-zone and shot-label
    profiles.** `compactProfile` retains scalar shooting and rates; the completed
    private JSON contains `shooting.shotZones`, `providerShotTypeProfile`, and
@@ -104,11 +158,11 @@ Never load it wholesale into a browser or `JSON.parse` every team at once.
 | Concept from attachment | Current Scout support | Build direction and unmet evidence |
 | --- | --- | --- |
 | 3. Optimal lineup construction | Calibrated net and O/D effects, exact-five observations, shrinkage, exposure, context splits; existing Lineup Lab optimizer | Extend the existing optimizer after its integration gate. Offense/defense/two-way objectives have evidence. Shooting/rebounding can use explicit observed production constraints. Usage response, switching, size, salary, age and injury constraints need appropriate inputs; do not invent nonlinear fit bonuses. Bench/stagger/rotation decisions remain in Lineup Lab. |
-| 4. Game, series, season simulation | Possession outcomes, team rates/four factors, venue and context, lineup estimates | Start with a transparent one-game **scenario** engine, fixed seed and editable assumptions; train and test a possession-to-score model before claiming predictive odds. Game-grouped chronological validation, score/margin interval coverage, Brier/log loss and calibration curves precede series/season Monte Carlo. Fatigue, injuries, travel, coaching and foul substitution responses are explicit missing inputs, not hidden adjustments. |
+| 4. Game, series, season simulation | Possession outcomes, team rates/four factors, venue and context, lineup estimates | **Game Lab implements local games/series; Season Lab adds a custom four-team league**, round-robin schedules, standings, seeded playoffs, repeated seasons and controlled pinned comparisons. These are uncalibrated conditional scenarios, not predictive odds or the official NBA schedule. Game-grouped chronological validation, score/margin interval coverage, Brier/log loss and calibration curves precede predictive release. Fatigue, injuries, travel, coaching and foul substitution responses remain unmodeled. |
 | 5. Composite player builder | Observable shot accuracy/frequency, production, disruption, profiles and sample sizes | Build a donor-component recipe (shooting, creation production, rebounding, disruption) with exact donor scope, physical feasibility warnings and reversible local state. A composite is an experimental profile, not the sum of donors' RAPM. Usage, efficiency, role and impact distributions need separately fitted joint-response models. Cognitive/physical sliders cannot be inferred from current events. |
 | 6. Duo/trio/lineup chemistry | Co-presence groups, exact fives, WOWY, O/D context, observed exact-five residual | **First implementation: Chemistry Lab.** Select 2–5 players, inspect observed ratings, possession samples and intervals; show four WOWY cells for pairs. Next: calibrated context-adjusted interactions with held-out group tests. No arbitrary 0–100 Synergy Score now. |
-| 7. Player tendency analysis | Structured shot distances, optional shot labels, direct counts, role/exposure and team/player on/off context | **First implementation: Player Blueprint.** Shot zone shares/accuracy, missing distance/labels, and explicit per-100 denominators. Next: season-keyed and context-conditioned direct profiles. No claims about ball movement choices, screens, defensive assignments or true half-court play types from absent qualifiers. |
-| 8. Career-arc prediction | A recent four-season window, historical on/off context and public identity joins elsewhere | First show observed role/production history once season-level direct profiles are available. Prediction needs substantially longer age-linked career cohorts, out-of-time tests and survivorship/injury handling. Skill-specific aging, breakout/decline probabilities and 10/25/50/75/90th-percentile trajectories remain research, not fabricated outputs. Salary/awards/Hall-of-Fame forecasts need separate data. |
+| 7. Player tendency analysis | Structured shot distances, optional shot labels, direct counts, role/exposure and team/player on/off context | **First implementation: Player Blueprint.** Shot zone shares/accuracy, missing distance/labels, and explicit per-100 denominators. The v2 season table also supports observed season/phase donor rows. No claims about ball movement choices, screens, defensive assignments or true half-court play types from absent qualifiers. |
+| 8. Career-arc prediction | A six-season base window plus v2 season/phase/all-team production rows | **Observed-history first implementation: Career Lab.** It shows season rows, explicit gaps, team/role changes and a bounded resampling replay of supplied observations. It does not forecast a future career. Prediction needs longer age-linked career cohorts, out-of-time tests and survivorship/injury handling. Skill-specific aging, breakout/decline probabilities and 10/25/50/75/90th-percentile trajectories remain research, not fabricated outputs. Salary/awards/Hall-of-Fame forecasts need separate data. |
 | 9. Player impact/value | Net and separate O/D RAPM, context, exposure and calibration | Keep production, adjusted impact and lineup fit separate. Build an authenticated impact explanation layer with approved public-safe summaries. Wins added, replacement value, playoff translation and floor/ceiling labels need explicit baselines and out-of-sample validation. Do not equate raw plus-minus with impact or simple RAPM sums with wins. |
 | 10. Skill decomposition | Scoring/shooting, recorded assists/turnovers/rebounds/steals/blocks, foul pressure and role exposure | **First foundation: the Blueprint metric contract.** Every component retains value/null, unit, numerator, denominator, scope and method. These are observed components, not latent scouting grades. Off-ball gravity, decision speed, screen navigation, physical tools and assignment defense remain unmeasured. |
 | 11. Archetype detection | Observable style components; no fitted probabilistic archetype classifier | Fit a multi-label or mixture model on complete, season-keyed, exposure-gated cohorts. Report membership uncertainty and stability across holdout seasons. Start with interpretable style components, not handpicked labels disguised as probabilities. Season and lineup-context changes need the corresponding feature grain. |
@@ -122,6 +176,26 @@ Never load it wholesale into a browser or `JSON.parse` every team at once.
   same-team side-by-side comparisons, shot zones and shot descriptions.
 - Chemistry Lab: 2–5 distinct players, exact-five/co-presence semantics, observed
   ratings, sample gate, intervals, four WOWY cells and honest unseen-group state.
+- Shared framework: independently checked component ratios, sample-gated player
+  differences, leave-one-out same-team medians, WOWY contrasts, and bounded
+  internal-pair inspection without inferred unseen-group results.
+- Composite Forge: five coherent donor blocks, baseline comparison, per-change
+  explanation and undo, and snapshot/team-scoped local recipe persistence.
+- Season-keyed Composite Forge: bounded season/phase/team and all-team donor
+  rows from the additive evidence table, with component-level denominators and
+  missingness preserved. The recipe remains hypothetical and local.
+- Career Lab: observed season timeline, explicit missing-year gaps, role/team
+  history, summary totals, and deterministic descriptive replay. No aging,
+  availability, or future-performance model is fitted.
+- Question lenses focus Blueprint's supported components; pinned group and
+  recipe comparisons show exact selection changes, matched contexts and
+  qualified deltas without claiming a controlled substitution or feasible player.
+- Season Lab: bounded round-robin schedules, standings, seeded series, repeatable
+  outcome distributions and pinned experiments. Changed schedule lengths withhold
+  raw-win deltas; changed seeds and repetition counts are explicitly disclosed.
+- Context lens: lazy player on/off and observed-group context partitions with a
+  shared allowlist, exact scope checks, sample-gated differences and no causal
+  or forecast interpretation.
 - Small read-only server, exact package arguments, metadata/hash/season checks,
   streamed single-team parsing, one-team compact cache and row reconciliation.
 - No credentials, Supabase calls, raw-archive routes, exports or uploads. Server
@@ -145,22 +219,28 @@ behavior. A full 30-team browser audit and production service remain separate.
 4. Add a commerce Edge Function boundary through `supabase-client.js`, input
    limits, origin/auth policy, rate/cost controls and privacy tests. Never expose
    private analytics tables directly to the browser.
-5. Add season-keyed direct profiles in a future derivation, with count and
-   official-box-score reconciliation. Do not mutate the completed package.
+5. Extend the private production bridge for the v2 season-keyed profiles, with
+   count and official-box-score reconciliation. The completed local package is
+   immutable; a hosted bridge still needs its own review and deployment gate.
 6. Add broader cohorts and context filters only at their true aggregation grain.
 7. Deploy approved backend first, then exact static asset/page release. Recheck
    live outputs and parity before marking the tools live.
 
-### Tranche 3 — Composite Forge and simulation
+### Tranche 3 — Composite Forge expansion and simulation
 
-Build the donor-component composition UI against the Blueprint contract. Store
-only the recipe locally, label it hypothetical, and show missing feasibility
-inputs. In parallel *as a product sequence, not a dispatched task*, define and
-validate a one-game possession model. Move to playoff series and season brackets
-only after the one-game predictive checks pass. Avoid publishing impressive but
-uncalibrated probabilities.
+The initial donor-component UI and local recipe storage are implemented against
+the Blueprint contract. The v2 package now supplies season-keyed, reconciled
+donor rows for a bounded local expansion; cross-franchise production access and
+physical feasibility remain unmodeled.
+Game Lab now provides a local, explicitly uncalibrated possession experiment
+and best-of-seven repetition of that same setup. Its model contract, limitations
+and tests are in `scout-game-lab.md`. Season Lab now adds custom schedules,
+standings and playoff brackets using the same possession engine. Fit and hold
+out a one-game predictive model before promoting simulated frequencies as
+real-game odds. An authentic NBA calendar, availability and rotation model
+remain future work, not properties of the custom mini league.
 
-### Tranche 4 — Learned chemistry, archetypes, career and matchups
+### Tranche 4 — Learned chemistry, archetypes, predictive career and matchups
 
 Use season-keyed, complete comparison cohorts for archetypes and skill changes.
 Evaluate learned interaction terms versus additive baselines on held-out games
@@ -175,10 +255,10 @@ or older-package fallback.
 
 ```powershell
 $scoutRoot = '.\outputs\01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e\nba-last-five-seasons'
-$scoutPackage = "$scoutRoot\scout-analytics\2022-26-final-20260905-v1-recency-calibrated"
-$scoutSourceReport = "$scoutRoot\validation\2022-2025-trial-composed-20260905-v1-source-attested\checkpoint-validation-report.json"
+$scoutPackage = "$scoutRoot\scout-analytics\2020-26-final-20260907-v2-comprehensive-model-evidence"
+$scoutSourceReport = "$scoutRoot\validation\2020-2025-trial-composed-20260906-v1-six-season-source-attested\checkpoint-validation-report.json"
 
-node .\scripts\preview-scout-studio.mjs --manifest "$scoutPackage\nba-scout-analytics-2022-26.json" --package-validation "$scoutPackage\nba-scout-analytics-validation-2022-26.json" --source-validation $scoutSourceReport --seasons 2022,2023,2024,2025
+node .\scripts\preview-scout-studio.mjs --manifest "$scoutPackage\nba-scout-analytics-2020-26.json" --package-validation "$scoutPackage\nba-scout-analytics-validation-2020-26.json" --source-validation $scoutSourceReport --seasons 2020,2021,2022,2023,2024,2025
 ```
 
 Open `http://127.0.0.1:4187/tools/scout-studio/`. A plain static server shows
@@ -189,14 +269,14 @@ The preview reuses `scripts/audit-lineup-scout-readiness.mjs` and
 Those files were untracked at the start of this task and were not modified here.
 They are now present in the concurrent project commit; keep these shared checks
 versioned alongside the preview. It also reuses the current validator's streamed
-parser. A retained background preview launch was blocked by the environment;
-the integration browser checks use a temporary local server and shut it down.
+parser. Run the preview command above for an interactive local session. Automated
+browser checks start temporary local servers and shut them down after testing.
 
 Checks:
 
 ```powershell
-node --test --test-concurrency=1 .\scripts\tests\scout-studio.test.mjs
-node .\scripts\check-scout-studio-package.mjs --manifest "$scoutPackage\nba-scout-analytics-2022-26.json" --package-validation "$scoutPackage\nba-scout-analytics-validation-2022-26.json" --source-validation $scoutSourceReport --seasons 2022,2023,2024,2025
+node .\scripts\check-scout-games-workbenches.mjs
+node .\scripts\check-scout-studio-package.mjs --manifest "$scoutPackage\nba-scout-analytics-2020-26.json" --package-validation "$scoutPackage\nba-scout-analytics-validation-2020-26.json" --source-validation $scoutSourceReport --seasons 2020,2021,2022,2023,2024,2025
 $env:NODE_PATH = 'C:\Users\djwan\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\node_modules'
 node .\scripts\scout-studio-smoke.mjs
 node .\scripts\site-integrity-check.mjs
@@ -205,10 +285,12 @@ node .\scripts\site-integrity-check.mjs
 Add `--browser` to `check-scout-studio-package.mjs` (with `NODE_PATH` above) to
 run desktop/mobile browser checks against the real selected package. Screenshots
 are saved under the ignored `outputs/scout-studio-smoke/` directory; real records
-and screenshots are not release assets. Both the synthetic-flow browser suite
-and the real Denver browser check passed at 1440px and 390px.
+and screenshots are not release assets. The checker now covers one real roster
+and a two-team Game Lab matchup. Add `--league` for four real team samples,
+standings/brackets and a pinned pace-only scenario comparison. September 7 results are recorded in
+`scout-game-lab.md`; the Denver results below are historical September 6 checks.
 
-## Validation assessment
+## Historical validation assessment — September 6
 
 **Share with caveats as a local development preview; not a public production
 release.** Source and derived metadata are current and hash-bound. Unit tests

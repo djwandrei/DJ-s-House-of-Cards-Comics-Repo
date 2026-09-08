@@ -67,23 +67,17 @@
      </div>
     </div>
    </section>
-   <div class="container game-navigation">
-    <nav class="game-page-indicators" aria-label="Basketball games">
-     <a href="../fix-the-five/"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Fix the Five</span></a>
-     <a href="../draft-night/" aria-current="page"><img src="../../assets/games/draft-night-emblem-20260907.webp" width="30" height="30" alt="" decoding="async"><span>Draft Night</span></a>
-    </nav>
-   </div>
    <section class="container fix-five-workspace" id="gameBoard" tabindex="-1" aria-label="Draft Night game">
     <div class="fix-five-status-row">
      <div><span class="kicker">Tonight’s board</span><h2 id="runTitle">Loading today’s Scout board…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div>
-     <div class="fix-five-scoreboard" aria-label="Local draft progress"><div><span>Pick</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Legal paths</span><strong id="pathCount">—</strong></div></div>
+     <div class="fix-five-scoreboard" aria-label="Local draft progress" role="group"><div><span>Pick</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Legal paths</span><strong id="pathCount">—</strong></div></div>
     </div>
-    <div class="fix-five-progress" aria-label="Draft progress" id="draftProgress"></div>
+    <div class="fix-five-progress" aria-label="Draft progress" id="draftProgress" role="group"></div>
     <p aria-atomic="true" aria-live="polite" class="fix-five-live-status" id="gameStatus" role="status">Loading the validated Scout board.</p>
     <div id="gameRecovery" class="game-recovery" hidden><button class="button" id="retryBoard" type="button">Try loading the board again</button><a class="button-secondary" href="../index.html">Explore fan tools</a></div>
     <div class="fix-five-layout" id="draftWorkspace" hidden>
      <section class="fix-five-main-card" aria-labelledby="draftTitle" id="draftPanel"></section>
-     <aside class="fix-five-sidebar">
+     <aside aria-label="Game guidance and controls" class="fix-five-sidebar">
       <details class="game-field-notes"><summary>Rules &amp; board guide</summary>
       <section class="fix-five-method-card"><span class="kicker">How your board result works</span><h2>Draft, lock, then reveal.</h2><ol><li><strong>Draft a legal five</strong><span>Choose one player from each disclosed source-listed role group.</span></li><li><strong>Lock the board</strong><span>Your exact five stays unrevealed until all five picks are in.</span></li><li><strong>Read the board result</strong><span>See a 0–100 board score and rank across legal combinations on this board only.</span></li></ol><p class="fix-five-contract-copy">The validated Scout model determines the board-only comparison. Public historical stats identify the player and source; private values, coefficients, and archive details are never sent to the browser.</p><details class="fix-five-contract-details"><summary>Board terms and scoring boundary</summary><dl class="fix-five-term-list"><div><dt>Source-labeled board</dt><dd>A fixed player pool from one disclosed source window. It is not a current depth chart.</dd></div><div><dt>Legal path</dt><dd>One five-player combination that satisfies every role rule on this board.</dd></div><div><dt>Sealed board rank</dt><dd>Your place among the legal paths after you lock all five picks—not a team rating, player rating, or forecast.</dd></div><div><dt>Local best</dt><dd>Your strongest completed draft saved only in this browser. It never changes your account or the shop.</dd></div></dl><p>Today’s board can use a single team-season, a franchise across validated seasons, or a randomized multi-season player pool. If a validated source is unavailable, the game does not substitute an old board or a non-Scout score.</p></details></section>
       <section class="fix-five-source-card draft-night-board-card" aria-labelledby="boardPickerHeading"><span class="kicker">Daily challenge</span><h2 id="boardPickerHeading">One board, 243 legal paths</h2><p>The seed selects one source-labeled Scout board. Draft any legal five and compare it only with the legal combinations on that same board.</p></section>

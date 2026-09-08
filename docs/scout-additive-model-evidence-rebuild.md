@@ -183,3 +183,75 @@ test checks exact optimization against exhaustive enumeration, not whether that
 offensive estimate proves Beringer is a better real-world offensive player.
 That small-sample/scenario limitation is a reason to validate workload and
 uncertainty models—not to hard-code a star's identity into the solver.
+
+## September 7 comprehensive additive build
+
+The user authorized this expanded build, with all existing/planned metrics
+retained. The base is the validated six-season `2020-26-final-20260907-v1-six-season`
+package, not the older interrupted four-season stage above. The output target
+under the same private working prefix is:
+
+`scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/`
+
+Until final validation and promotion finish, outputs and `progress.json` remain
+in the sibling directory ending `.building`. A completed base package or an
+intermediate model-evidence report is not proof of final additive validation.
+
+### Additive application tables
+
+The original six model-evidence tables remain: `playerGames`, `playerSeasons`,
+`gameContext`, `assistedBasketConnections`, `sourceGames`, `summaryRefreshQueue`.
+Eight tables are added, without removing original manifest fields or metrics:
+
+| Table | Intended use and evidence boundary |
+| --- | --- |
+| `simulationPossessions` | Ordered game possessions, both on-court groups, actual scoring outcomes, and eligibility/exclusion flags. Rejected reconstructions remain visible. |
+| `rotationStints` | Observed game rotation intervals and lineup identities, with source validity flags; not new optimized rotations. |
+| `shotEvents` | Recorded FG/FT outcomes, available shot labels/distance/location, explicit assists and court context. No guessed shot clock, defender assignment, or coordinate units. |
+| `teamGames` | Game results, official/effective player-summed box totals, filtered possession cohort sizes, exact scoring histograms and paired offense/defense outcomes. |
+| `playerSeasonSkillProfiles` | Team-specific and all-team season/phase donor profiles, measured ratios, field coverage, shooting counts, and unavailable-trait declarations. |
+| `playerIdentities` | Provider/NBA identity crosswalk, observed membership/position ranges and conflict flags. Existing authorized media can join through reference IDs; no invented headshot URL. |
+| `teamSeasonSimulationProfiles` | Season/phase team scoring distributions, exact tails rather than one 4+ bucket, empirical moments, and contributing game IDs. Not calibrated forecasts. |
+| `sourceCorrections` | Explicit user-authorized corrections, immutable original values, reason, scope, and original source/overlay hashes. |
+
+Simulation exports stream from per-game checkpoints to limit memory use. Every
+gzip is decoded and its row count checked. Existing base JSON/gzip team shards
+are preserved through hard links and verified by hashes; the builder never
+rewrites a linked shard. Existing manifest keys must compare exactly equal.
+Source-code hashes are checked before export and after full package validation
+to reject a build whose implementation changed midway through execution.
+
+### Sabonis correction and independent evidence
+
+For game `019f60d6-36a1-46cb-98ae-395c11d4a851`, the provider's Sabonis steals
+count was -1. The user explicitly directed an effective value of 0. The private
+ledger `work/scout-user-corrections-20260907-v1.json` binds that one field to its
+player/team/game and original raw/overlay hashes. The original rejected value
+is retained; effective totals/rates and correction identifiers are additive.
+
+This satisfies the effective-data completeness gate without pretending the
+provider supplied a valid zero. Original official completeness remains false
+for that field, and a user correction does not become independent PBP/box-score
+reconciliation or workload-training eligibility. The optimizer's compact
+evidence compiler still requires actual matched official/PBP observations.
+
+### Observed build checkpoint and remaining modeling work
+
+At the September 7 base-preservation phase, 7,776 in-scope games had produced
+166,104 player-games across 1,096 players. Of these, 166,081 were fully
+field-reconciled, 96,808 passed the existing workload-training eligibility
+gate, and one had the explicit user correction. These are build-stage counts,
+not final validation or predictive-performance claims. All 14 gzip tables had
+been written; the original package preservation/full validation was pending.
+
+The independent acquisition/application contract tests passed (28 existing
+cases and 5 new application/correction cases). The optimizer suite was not
+rerun in this pass. No live data promotion or older-package deletion occurred.
+
+The package preserves the planned tool surface, but data availability is not
+application validation. Fitted possession models, shared-court interactions,
+synthetic-player feasibility/coherence constraints, aging models, and
+out-of-sample uncertainty calibration remain implementation/evaluation work.
+The user's excluded traits (defender assignments, screen coverage, wingspan,
+injuries, contracts, cognitive traits) are not fabricated. Other planned traits
+remain declared even when missing from this provider archive.

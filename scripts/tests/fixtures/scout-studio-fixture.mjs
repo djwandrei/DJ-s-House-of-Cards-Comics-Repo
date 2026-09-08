@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { describeScoutPlayer, describeScoutSample } from '../../lib/scout-studio.mjs';
+import { describeScoutPlayer, describeScoutSeasonProfile, describeScoutSample, describeScoutContexts, describeScoutOnOff, describeScoutTeamContexts } from '../../lib/scout-studio.mjs';
 
 // Synthetic contract fixtures only. Never served by the real preview runner.
 export const snapshot = `s${'a'.repeat(24)}`;
@@ -33,21 +33,73 @@ export function rawSample(net = 6, publishable = true) {
     rapm: 'DO-NOT-EXPOSE', archivePath: 'DO-NOT-EXPOSE' };
 }
 
+export function rawContextMap(offset = 0) {
+  return {
+    all: rawSample(6 + offset),
+    'season:2022': rawSample(5 + offset), 'season:2023': rawSample(6 + offset),
+    'season:2024': rawSample(7 + offset), 'season:2025': rawSample(8 + offset),
+    'phase:regular': rawSample(6 + offset), 'phase:playoffs': rawSample(8 + offset),
+    'venue:home': rawSample(7 + offset), 'venue:away': rawSample(5 + offset),
+    'window:last_5': rawSample(9 + offset), 'clutch_v1': rawSample(4 + offset),
+  };
+}
+
+export function rawOnOffRow(id = 'private-player-a', offset = 0) {
+  return { teamId: 'private-team-a', team: 'Test Franchise 00', playerId: id, player: `Test Player ${offset + 1}`,
+    onMinutes: 900, offMinutes: 500, on: rawContextMap(offset), off: rawContextMap(offset - 1) };
+}
+
+export function rawGameSample(offset = 0) {
+  const offense = { empty: 450 + offset * 20, one: 100, two: 300 - offset * 20, three: 140, fourPlus: 10 };
+  const defense = { empty: 480 - offset * 20, one: 100, two: 270 + offset * 20, three: 140, fourPlus: 10 };
+  const points = counts => counts.one + 2 * counts.two + 3 * counts.three + 43;
+  const offensiveRating = points(offense) / 10, defensiveRating = points(defense) / 10;
+  return { ...rawSample(offensiveRating - defensiveRating), games: 30, offensivePossessions: 1000, defensivePossessions: 1000,
+    offensivePointsFor: points(offense), defensivePointsAllowed: points(defense), offensiveRating, defensiveRating,
+    possessionOutcomes: { offense: { ...offense, totalPossessions: 1000 }, defense: { ...defense, totalPossessions: 1000 } } };
+}
+
+export function rawTeamRow(offset = 0) {
+  return { teamId: `private-team-${offset ? 'b' : 'a'}`, team: `Test Franchise 0${offset}`,
+    contexts: Object.fromEntries(['all', 'season:2023', 'season:2024', 'season:2025'].map(key => [key, rawGameSample(offset)])) };
+}
+
+export function rawSeasonProfile(player = 'Test Player 1', year = 2022, team = 'Test Franchise 00', scope = 'team', offset = 0) {
+  const fields = ['points', 'fieldGoalAttempts', 'fieldGoalsMade', 'assists', 'rebounds', 'turnovers', 'steals', 'blocks'];
+  const fieldEvidence = Object.fromEntries(fields.map(key => [key, { effectiveKnownGames: 20, matchedGames: 20, effectiveTotal: key === 'points' ? 240 + offset : 20 + offset }]));
+  const row = describeScoutSeasonProfile({ seasonStartYear: year, phase: 'regular', team, teamId: scope === 'all-teams' ? 'ALL_TEAMS' : 'private-team-a', listedPositions: ['G'], games: 20, officialMinutes: 400,
+    perGame: { points: 12 + offset, assists: 3, rebounds: 5, fieldGoalAttempts: 10, turnovers: 1, steals: 1, blocks: 1 },
+    officialRates: { fieldGoalPercentage: .5, threePointPercentage: .4, freeThrowPercentage: .8, threePointAttemptShare: .4, offensiveInvolvementPer36: 16 },
+    ratios: { fieldGoalAccuracy: { numerator: 100, denominator: 200 }, threePointAccuracy: { numerator: 40, denominator: 100 }, threePointAttemptShare: { numerator: 80, denominator: 200 }, freeThrowAccuracy: { numerator: 80, denominator: 100 } }, fieldEvidence });
+  return { ...row, player, key: `${player}|${year}|regular|${team}|${scope}` };
+}
+
 export function readyStatus() {
   return { phase: 'ready', snapshot, warnings: [], issues: [], missing: [],
-    source: { aggregation: 'Team-specific pooled totals across 2022–23 through 2025–26.', phases: ['REG', 'PST'] },
+    source: { aggregation: 'Team-specific pooled totals across 2022–23 through 2025–26.', phases: ['REG', 'PST'],
+      seasonStartYears: [2022, 2023, 2024, 2025], seasons: ['2022–23', '2023–24', '2024–25', '2025–26'] },
     teams: [{ id: 't0', name: 'Test Franchise 00' }, { id: 't1', name: 'Test Franchise 01' }] };
 }
 
 export function fixtureSource() {
+  const seasonProfiles = player => [rawSeasonProfile(player, 2022, 'Test Franchise 00', 'team'), rawSeasonProfile(player, 2023, 'All teams', 'all-teams', 1), rawSeasonProfile(player, 2024, 'Test Franchise 00', 'team', 2)];
   return {
     status: async () => readyStatus(),
+    teamContexts: async (team, token) => ({ snapshot: token, team, contexts: describeScoutTeamContexts(rawTeamRow(Number(team.slice(1)))) }),
     roster: async team => ({ snapshot, team, players: Array.from({ length: 6 }, (_, i) => describeScoutPlayer(rawPlayer(`private-${i}`, i), `p${i}`)) }),
-    chemistry: async (team, token, selection) => ({ snapshot: token, selection,
+    playerContexts: async (team, token, id) => ({ snapshot: token, team, player: id, ...describeScoutOnOff(rawOnOffRow(`private-${id.slice(1) || 0}`, Number(id.slice(1) || 0))) }),
+    playerSeasons: async (team, token, id) => ({ snapshot: token, team, player: id, profiles: seasonProfiles(`Test Player ${Number(id.slice(1) || 0) + 1}`), note: 'Synthetic season profiles for browser tests.' }),
+    seasonDonors: async (team, token) => ({ snapshot: token, team, profiles: Array.from({ length: 6 }, (_, index) => seasonProfiles(`Test Player ${index + 1}`)).flat(), note: 'Synthetic season donors for browser tests.' }),
+    chemistry: async (team, token, selection) => ({ snapshot: token, team, selection,
       combination: selection.length === 5 ? null : { minutes: 200, kind: 'shared_floor',
         sample: describeScoutSample(rawSample()),
+        contexts: describeScoutContexts(rawContextMap()),
         note: 'Shared floor, not an isolated unit.' },
-      wowy: [], note: 'Synthetic browser test only. Not a fitted NBA result.' }),
+      wowy: selection.length === 2 ? ['a_on_b_on', 'a_on_b_off', 'a_off_b_on', 'a_off_b_off'].map((key, index) => ({ key,
+        label: ['Together', 'Test Player 1 only', 'Test Player 2 only', 'Neither player'][index], ...describeScoutSample(rawSample(6 - index)) })) : [],
+      pairs: selection.length > 2 ? selection.flatMap((id, a) => selection.slice(a + 1).map(other => ({ selection: [id, other],
+        combination: { kind: 'shared_floor', sample: describeScoutSample(rawSample()) } }))) : [],
+      note: 'Synthetic browser test only. Not a fitted NBA result.' }),
   };
 }
 

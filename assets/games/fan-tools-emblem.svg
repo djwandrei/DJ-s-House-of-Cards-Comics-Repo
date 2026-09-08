@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Fan tools</title>
+  <desc id="desc">A basketball over a simple court.</desc>
+  <rect x="3" y="3" width="90" height="90" rx="22" fill="#17264a" stroke="#77d43a" stroke-width="3"/>
+  <path d="M18 68h60M24 68V45h48v23M36 68V54h24v14M48 45v23M24 54h48" fill="none" stroke="#93b2ef" stroke-opacity=".75" stroke-width="2.5"/>
+  <circle cx="48" cy="31" r="17" fill="#e76b26" stroke="#fff" stroke-width="2"/>
+  <path d="M31 31h34M48 14c-6 9-6 25 0 34M39 17c8 6 15 15 18 28" fill="none" stroke="#182442" stroke-width="2"/>
+  <text x="48" y="84" fill="#fff" font-family="Arial,sans-serif" font-size="8" font-weight="800" letter-spacing="1.2" text-anchor="middle">FAN TOOLS</text>
+</svg>

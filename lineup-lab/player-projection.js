@@ -12,6 +12,30 @@
 import { workloadRetention } from "./workload-model.js?v=20260907f";
 import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence } from "./projection-evidence.js?v=20260907f";
 
+// This contract is deliberately narrower than a universal "usage" rating.
+// It records the amount of possession-ending work that was actually observed
+// alongside a player's minutes.  It can therefore be used to identify a
+// low-role per-36 spike without claiming that box scores measured touches,
+// playmaking share, or a causal response to a new coach/teammate mix.
+export const RESPONSIBILITY_EVIDENCE_VERSION = "scout-responsibility-evidence-v1";
+export const DEFAULT_RESPONSIBILITY_PRIOR_MINUTES = 720;
+
+// A possession-ending workload proxy can speak to offensive role expansion,
+// but it is not evidence that a player will collect more rebounds, steals, or
+// blocks at a new assignment.  Those defensive/board rates retain their own
+// metric-specific evidence and the calibrated workload fit.  Keeping this
+// allowlist explicit also prevents a future caller from accidentally applying
+// an offensive responsibility prior to every stat in the objective.
+export const RESPONSIBILITY_SENSITIVE_METRICS = Object.freeze([
+  "points",
+  "efgPct",
+  "threePct",
+  "assists",
+  "ballSecurity",
+  "offensiveImpact",
+]);
+const RESPONSIBILITY_SENSITIVE_METRIC_SET = new Set(RESPONSIBILITY_SENSITIVE_METRICS);
+
 const USAGE_ALIASES = Object.freeze([
   "usage_percentage",
   "usagePercentage",
@@ -31,6 +55,126 @@ function finiteNonNegative(value) {
 function advancedSources(player) {
   return [player?.analytics?.seasonAdvanced, player?.analytics?.advanced]
     .filter((source) => source && typeof source === "object" && !Array.isArray(source));
+}
+
+function finiteNonNegativeInteger(value) {
+  const number = finiteNonNegative(value);
+  return number !== null && Number.isSafeInteger(number) ? number : null;
+}
+
+/**
+ * Validate the optional responsibility evidence attached by a data adapter.
+ *
+ * The optimizer never reconstructs this object from a player's selected-team
+ * stint.  The adapter must explicitly label a season-wide, all-team sample (or
+ * a future Scout game subset) before it can influence the larger-role prior.
+ * Keeping this boundary strict prevents a four-game trade stint from being
+ * mistaken for the player's established offensive responsibility.
+ */
+export function readResponsibilityEvidence(player) {
+  const analytics = player?.analytics;
+  if (!analytics || typeof analytics !== "object" || Array.isArray(analytics)) return null;
+  const candidates = [
+    analytics.responsibilityEvidence,
+    analytics.seasonEvidence?.responsibilityEvidence,
+  ];
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) continue;
+    if (candidate.version !== RESPONSIBILITY_EVIDENCE_VERSION) continue;
+    if (!['season-wide', 'scout-player-game-subset'].includes(candidate.scope)) continue;
+    const games = finiteNonNegativeInteger(candidate.games ?? candidate.verifiedGames);
+    const minutes = finiteNonNegative(candidate.minutes ?? candidate.officialMinutes);
+    const involvementPer36 = finiteNonNegative(candidate.offensiveInvolvementPer36);
+    if (!(games > 0) || !(minutes > 0) || involvementPer36 === null) continue;
+    const expectedInvolvement = involvementPer36 * minutes / 36;
+    const involvement = finiteNonNegative(candidate.offensiveInvolvement);
+    if (involvement !== null
+      && Math.abs(involvement - expectedInvolvement) > 1e-8 * Math.max(1, expectedInvolvement)) continue;
+    const componentRates = [
+      finiteNonNegative(candidate.fieldGoalAttemptsPer36),
+      finiteNonNegative(candidate.freeThrowAttemptsPer36),
+      finiteNonNegative(candidate.turnoversPer36),
+    ];
+    if (componentRates.every(value => value !== null)) {
+      const componentInvolvement = componentRates[0] + (0.44 * componentRates[1]) + componentRates[2];
+      if (Math.abs(componentInvolvement - involvementPer36)
+        > 1e-8 * Math.max(1, involvementPer36)) continue;
+    }
+    return {
+      version: RESPONSIBILITY_EVIDENCE_VERSION,
+      scope: candidate.scope,
+      games,
+      minutes,
+      minutesPerGame: minutes / games,
+      offensiveInvolvement: involvement ?? expectedInvolvement,
+      offensiveInvolvementPer36: involvementPer36,
+      fieldGoalAttemptsPer36: finiteNonNegative(candidate.fieldGoalAttemptsPer36),
+      freeThrowAttemptsPer36: finiteNonNegative(candidate.freeThrowAttemptsPer36),
+      assistsPer36: finiteNonNegative(candidate.assistsPer36),
+      turnoversPer36: finiteNonNegative(candidate.turnoversPer36),
+      sourceRevision: typeof candidate.sourceRevision === "string" ? candidate.sourceRevision : null,
+      completeness: typeof candidate.completeness === "string" ? candidate.completeness : "unspecified",
+    };
+  }
+  return null;
+}
+
+/**
+ * Resolve the response strength for one player/metric.
+ *
+ * A validated chronological fit wins when one exists. Otherwise a small,
+ * explicit responsibility prior is available only for rows carrying the
+ * evidence contract above. Its strength increases modestly when the observed
+ * workload is thin, so a reserve's one-game per-36 spike cannot receive the
+ * same larger-role credit as a player who sustained the rate over a season.
+ * This is a sensitivity prior, not a learned fatigue or usage-elasticity fit.
+ */
+export function responsibilityExpansionFor(player, metric, parameters = {}) {
+  const calibrated = finiteNonNegative(parameters?.expansionStrengthByMetric?.[metric]);
+  if (calibrated !== null && calibrated > 0) {
+    return {
+      strength: calibrated,
+      source: "chronological-workload-fit",
+      evidence: readResponsibilityEvidence(player),
+      reliability: null,
+      priorMinutes: null,
+    };
+  }
+  const evidence = readResponsibilityEvidence(player);
+  const baseStrength = finiteNonNegative(parameters?.responsibilityExpansionStrength);
+  if (!evidence || !(baseStrength > 0)) {
+    return {
+      strength: 0,
+      source: evidence ? "responsibility-prior-disabled" : "responsibility-evidence-unavailable",
+      evidence,
+      reliability: null,
+      priorMinutes: null,
+    };
+  }
+  const priorMinutes = finiteNonNegative(parameters?.responsibilityPriorMinutes)
+    ?? DEFAULT_RESPONSIBILITY_PRIOR_MINUTES;
+  const reliability = evidence.minutes / (evidence.minutes + priorMinutes);
+  if (!RESPONSIBILITY_SENSITIVE_METRIC_SET.has(metric)) {
+    return {
+      strength: 0,
+      source: "responsibility-prior-not-applicable",
+      evidence,
+      reliability,
+      priorMinutes,
+    };
+  }
+  // Thin evidence gets at most a 50% increase in the prior strength.  The cap
+  // keeps the curve from turning every short but legitimate role into a hard
+  // exclusion, while still making the Beringer-style low-exposure spike pay a
+  // larger uncertainty/role cost than a sustained starter rate.
+  const strength = Math.min(1.5, baseStrength * (1 + (0.5 * (1 - reliability))));
+  return {
+    strength,
+    source: "responsibility-evidence-prior",
+    evidence,
+    reliability,
+    priorMinutes,
+  };
 }
 
 /** Return usage as a 0–1 share, preserving a real zero and rejecting nonsense. */
@@ -72,6 +216,14 @@ export function readSeasonRoleMinutes(player, metric = null) {
   const games = finiteNonNegative(totals?.games);
   const minutes = finiteNonNegative(totals?.minutes);
   if (games > 0 && minutes !== null) return Math.min(48, minutes / games);
+  // A future Scout adapter may provide the strict responsibility contract
+  // without copying a second seasonTotals object into the browser row. Use it
+  // only when it is explicitly season-wide; selected-team evidence remains a
+  // descriptive context field and never becomes a rotation target.
+  const responsibility = readResponsibilityEvidence(player);
+  if (responsibility?.scope === "season-wide" && responsibility.games > 0) {
+    return Math.min(48, responsibility.minutes / responsibility.games);
+  }
   return Math.min(48, finiteNonNegative(player?.minutes) ?? 0);
 }
 
@@ -98,16 +250,22 @@ export function projectPlayerResponsibility(
     ? Math.max(0, requestedMinutes - sourceMinutes) / requestedMinutes
     : 0;
 
-  if (sourceMinutes !== null && parameters?.expansionStrengthByMetric
-      && Object.hasOwn(parameters.expansionStrengthByMetric, metric)) {
-    const configuredStrength = parameters.expansionStrengthByMetric[metric];
+  const expansion = responsibilityExpansionFor(player, metric, parameters);
+  if (sourceMinutes !== null && expansion.strength > 0) {
     return {
-      available: true, source: "chronological-workload-fit", sourceMinutes,
+      available: true, source: expansion.source, sourceMinutes,
       targetMinutes: requestedMinutes, sourceUsage, targetUsage,
       usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null, expansionShare,
-      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, configuredStrength),
-      evidenceGrade: "conditional-prediction",
-      reason: "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate.",
+      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, expansion.strength),
+      expansionStrength: expansion.strength,
+      responsibilityEvidence: expansion.evidence,
+      responsibilityReliability: expansion.reliability,
+      responsibilityPriorMinutes: expansion.priorMinutes,
+      evidenceGrade: expansion.source === "chronological-workload-fit"
+        ? "conditional-prediction" : "responsibility-prior",
+      reason: expansion.source === "chronological-workload-fit"
+        ? "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate."
+        : "A disclosed responsibility prior tempers an above-baseline rate outside the player's observed role. It is evidence-gated sensitivity, not a causal usage or fatigue estimate.",
     };
   }
 
@@ -125,8 +283,14 @@ export function projectPlayerResponsibility(
     usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null,
     expansionShare,
     rateRetention: 1,
+    expansionStrength: 0,
+    responsibilityEvidence: expansion.evidence,
+    responsibilityReliability: expansion.reliability,
+    responsibilityPriorMinutes: expansion.priorMinutes,
     evidenceGrade: "usage-response-unvalidated",
-    reason: "Minutes do not set usage. No unvalidated usage elasticity changes expected rates; expanded responsibility is a separate uncertainty scenario.",
+    reason: expansion.evidence
+      ? "Minutes do not set usage. The responsibility prior is disabled for this metric or policy; expanded responsibility remains a separate uncertainty scenario."
+      : "Minutes do not set usage. No evidence-gated responsibility prior or validated usage elasticity is available; expanded responsibility is a separate uncertainty scenario.",
   };
 }
 

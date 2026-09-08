@@ -1,26 +1,18 @@
 import { createDirectPlayerEventLine, addDirectPlayerStatistic } from '../derive-local-scout-analytics.mjs';
 import { reconstructNbaGameLineups, sortPbpEvents } from './nba-lineup-reconstruction.mjs';
+import { BOX_FIELDS, readOfficialBox } from './nba-summary-completeness.mjs';
+import { correctedBox } from './nba-scout-source-corrections.mjs';
+import { buildApplicationGameEvidence } from './nba-scout-application-evidence.mjs';
+export { BOX_FIELDS, readOfficialBox } from './nba-summary-completeness.mjs';
 
 /** Additive modeling data; none of these helpers changes the existing RAPM fit. */
 export const MODEL_EVIDENCE_VERSION = 'nba_scout_model_evidence_v1';
-export const BOX_FIELDS = Object.freeze([
-  'points', 'fieldGoalAttempts', 'fieldGoalsMade', 'twoPointAttempts', 'twoPointMakes',
-  'threePointAttempts', 'threePointersMade', 'freeThrowAttempts', 'freeThrowsMade',
-  'offensiveRebounds', 'defensiveRebounds', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers', 'personalFouls',
-]);
 const token = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const key = (teamId, playerId) => `${teamId}~${playerId}`;
 const number = value => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
 const ratio = (a, b) => a !== null && b > 0 ? a / b : null;
 const sumIfComplete = values => values.every(value => value !== null) ? values.reduce((a, b) => a + b, 0) : null;
-
-export function readOfficialBox(player) {
-  const source = player?.officialBoxScore;
-  return Object.fromEntries(BOX_FIELDS.map(field => [field,
-    source?.source === 'summary_endpoint' && source.availableFields?.includes(field) ? count(source.fields?.[field]) : null,
-  ]));
-}
 
 function pbpBox(line) {
   const fields = Object.fromEntries(BOX_FIELDS.map(field => [field,
@@ -62,6 +54,9 @@ export function boxRates(box, minutes, offensivePossessions = null) {
     per100OnCourtOffensivePossessions: Object.fromEntries(BOX_FIELDS.map(field => [field, ratio(box[field] === null ? null : 100 * box[field], offensivePossessions)])),
     effectiveFieldGoalPercentage: ratio(box.fieldGoalsMade === null || box.threePointersMade === null ? null : box.fieldGoalsMade + .5 * box.threePointersMade, box.fieldGoalAttempts),
     threePointPercentage: ratio(box.threePointersMade, box.threePointAttempts),
+    fieldGoalPercentage: ratio(box.fieldGoalsMade, box.fieldGoalAttempts),
+    twoPointPercentage: ratio(box.twoPointMakes, box.twoPointAttempts),
+    freeThrowPercentage: ratio(box.freeThrowsMade, box.freeThrowAttempts),
     threePointAttemptShare: ratio(box.threePointAttempts, box.fieldGoalAttempts),
     freeThrowAttemptRate: ratio(box.freeThrowAttempts, box.fieldGoalAttempts),
     trueShootingPercentage: ratio(box.points, box.fieldGoalAttempts === null || box.freeThrowAttempts === null ? null : 2 * (box.fieldGoalAttempts + .44 * box.freeThrowAttempts)),
@@ -77,7 +72,7 @@ export function boxRates(box, minutes, offensivePossessions = null) {
  * Summary rows may be provided as a separate, provenance-bound overlay. We
  * never rewrite the archive/PBP to force agreement with the official result.
  */
-export function buildGameModelEvidence(record, { summaryOverlay = null, replay = true } = {}) {
+export function buildGameModelEvidence(record, { summaryOverlay = null, replay = true, corrections = [] } = {}) {
   const game = record.game;
   const teamIds = [game.homeProviderTeamId, game.awayProviderTeamId];
   if (new Set(teamIds).size !== 2 || teamIds.some(id => !id)) throw new Error('Game needs two distinct team IDs.');
@@ -153,6 +148,7 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
   const players = [];
   for (const [id, observed] of exposure) {
     const summary = summaries.get(id), line = direct.get(id), pbp = pbpBox(line), official = readOfficialBox(summary);
+    const corrected = correctedBox(official, summary, corrections, observed);
     const officialIssues = boxIdentityIssues(official), pbpIssues = boxIdentityIssues(pbp);
     const missingOfficialFields = BOX_FIELDS.filter(field => official[field] === null);
     const mismatchedFields = BOX_FIELDS.filter(field => official[field] !== null && pbp[field] !== null && official[field] !== pbp[field]);
@@ -177,8 +173,17 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
       gameId: game.providerGameId, seasonStartYear: game.seasonStartYear, seasonEndYear: game.seasonEndYear,
       phase: game.primaryPhase, scheduledAt: game.scheduledAt, ...observed,
       playerName: summary?.fullName ?? null, listedPosition: summary?.position ?? null,
+      nbaReferenceId: /^\d+$/.test(summary?.reference ?? '') ? String(summary.reference) : null,
+      providerPlayerSrId: summary?.srId ?? null,
       opponentTeamId: teamIds.find(teamId => teamId !== observed.teamId), isHome: observed.teamId === teamIds[0],
       officialMinutes, pbpTotals: pbp, officialTotals: official,
+      // Keep official totals/reconciliation unchanged. Effective values are a
+      // separately labelled descriptive layer; user corrections are NOT newly
+      // independent observations and do not qualify a row for model training.
+      effectiveTotals: corrected.effective,
+      sourceCorrections: corrected.applied,
+      missingEffectiveFields: BOX_FIELDS.filter(field => corrected.effective[field] === null),
+      effectiveRates: boxRates(corrected.effective, officialMinutes),
       fieldReconciliation, boxScoreReconciled, minutesReconciled,
       invalidOfficialFields: BOX_FIELDS.filter(field => summary?.officialBoxScore?.invalidFields?.includes(field)),
       missingOfficialFields, mismatchedFields, unverifiedFields, officialIdentityIssues: officialIssues, pbpIdentityIssues: pbpIssues,
@@ -193,6 +198,9 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
       // exposure: leave that rate unknown until numerators share its scope.
       possessionRateUnavailableReason: 'Full-game box numerator and verified-lineup-only possession denominator have different inclusion scopes.',
       shooting: {
+        distanceZones: Object.fromEntries(['atRim', 'shortMidRange', 'longMidRange'].map(zone => [zone, {
+          attempts: line[`${zone}Attempts`], makes: line[`${zone}Makes`], unknownMadeStatus: line[`${zone}UnknownMadeStatus`],
+        }])),
         providerShotTypes: line.providerShotTypes, providerShotDescriptions: line.providerShotDescriptions,
         missingProviderShotType: line.missingProviderShotType, missingProviderShotDescription: line.missingProviderShotDescription,
         distance: { observedAttempts: line.fieldGoalDistanceObserved, totalFeet: line.fieldGoalDistanceTotal,
@@ -205,7 +213,9 @@ export function buildGameModelEvidence(record, { summaryOverlay = null, replay =
     game: { ...game, reconstructionEligible: reconstruction.isEligible === true, reconstructionMethodVersion: reconstruction.methodVersion },
     players,
     assistedBasketConnections: [...edges.values()],
-    summaryRefreshNeeded: players.some(row => row.missingOfficialFields.length > 0),
+    ...buildApplicationGameEvidence(record, reconstruction, players, events),
+    summaryRefreshNeeded: players.some(row => row.missingEffectiveFields.length > 0),
+    originalSummaryIncomplete: players.some(row => row.missingOfficialFields.length > 0),
     mismatchReviewNeeded: players.some(row => row.mismatchedFields.length > 0),
   };
 }
@@ -226,9 +236,14 @@ export function aggregatePlayerSeasons(gameRows) {
     const fieldEvidence = Object.fromEntries(BOX_FIELDS.map(field => {
       const observed = rows.filter(row => row.pbpTotals[field] !== null);
       const official = rows.filter(row => row.officialTotals[field] !== null);
+      const effective = rows.filter(row => (row.effectiveTotals ?? row.officialTotals)[field] !== null);
       return [field, { expectedGames: rows.length, pbpKnownGames: observed.length, officialKnownGames: official.length,
         invalidOfficialGames: rows.filter(row => row.invalidOfficialFields?.includes(field)).length,
         matchedGames: rows.filter(row => row.fieldReconciliation[field] === 'matched').length,
+        userCorrectedGames: rows.filter(row => row.sourceCorrections?.some(correction => correction.field === field)).length,
+        effectiveKnownGames: effective.length,
+        effectivePartialTotal: effective.reduce((sum, row) => sum + (row.effectiveTotals ?? row.officialTotals)[field], 0),
+        effectiveTotal: effective.length === rows.length ? effective.reduce((sum, row) => sum + (row.effectiveTotals ?? row.officialTotals)[field], 0) : null,
         pbpPartialTotal: observed.reduce((sum, row) => sum + row.pbpTotals[field], 0),
         officialPartialTotal: official.reduce((sum, row) => sum + row.officialTotals[field], 0),
         pbpTotal: observed.length === rows.length ? observed.reduce((sum, row) => sum + row.pbpTotals[field], 0) : null,
@@ -249,6 +264,8 @@ export function aggregatePlayerSeasons(gameRows) {
       trainingEligibleGames: rows.filter(row => row.trainingEligible).length,
       fieldEvidence, rates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].pbpTotal])), pbpRateMinutes),
       officialRates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].officialTotal])), officialMinutes),
+      effectiveRates: boxRates(Object.fromEntries(BOX_FIELDS.map(field => [field, fieldEvidence[field].effectiveTotal])), officialMinutes),
+      userCorrectionIds: [...new Set(rows.flatMap(row => (row.sourceCorrections ?? []).map(correction => correction.id)))],
       rateExposure: { pbpPer36Minutes: pbpRateMinutes, officialPer36Minutes: officialMinutes },
       aggregation: 'season_and_phase_separate; ALL_TEAMS counts each player-game once; no four-season totals labeled as one season',
     };

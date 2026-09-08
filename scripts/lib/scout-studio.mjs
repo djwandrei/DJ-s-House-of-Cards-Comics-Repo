@@ -1,5 +1,7 @@
 // Private package -> bounded presentation contract. Never spread archive rows
-// into responses: identities, fitted effects, coefficients and contexts stay here.
+// into responses: identities, fitted effects and coefficients stay here.
+import { scoutContextDescriptor } from '../../tools/scout-studio/context-contract.js';
+export { SCOUT_CONTEXT_GROUPS, scoutContextDescriptor } from '../../tools/scout-studio/context-contract.js';
 export const SCOUT_STUDIO_CONTRACT_VERSION = 1;
 const number = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
 const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -8,6 +10,48 @@ const text = value => typeof value === 'string' && value.trim() && value.length 
   && !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value) ? value.trim() : 'Unnamed source record';
 const ratio = (a, b) => number(a) !== null && number(b) !== null && b > 0 ? round(a / b) : null;
 const fraction = (a, b) => count(a) !== null && count(b) !== null && a <= b ? ratio(a, b) : null;
+
+const safeReliabilityGrade = value => ['no_sample', 'insufficient', 'low', 'medium', 'high'].includes(value) ? value : null;
+export function describeScoutContexts(contexts, { maxRows = 64 } = {}) {
+  if (contexts === null || contexts === undefined) return [];
+  if (typeof contexts !== 'object' || Array.isArray(contexts)) throw new Error('Scout context map is invalid.');
+  const entries = Object.entries(contexts).map(([key, metric]) => {
+    const descriptor = scoutContextDescriptor(key);
+    return descriptor ? { descriptor, metric } : null;
+  }).filter(Boolean);
+  if (entries.length > maxRows) throw new Error('Scout context map exceeds the bounded presentation contract.');
+  entries.sort((left, right) => left.descriptor.order - right.descriptor.order
+    || left.descriptor.key.localeCompare(right.descriptor.key));
+  return entries.map(({ descriptor, metric }) => {
+    const sample = describeScoutSample(metric);
+    const reliabilityScore = number(metric?.reliability?.reliabilityScore);
+    return { ...descriptor, ...sample,
+      reliabilityGrade: safeReliabilityGrade(metric?.reliability?.grade),
+      reliabilityScore: reliabilityScore !== null && reliabilityScore >= 0 && reliabilityScore <= 1 ? round(reliabilityScore) : null };
+  });
+}
+
+export function describeScoutOnOff(row) {
+  const onMinutes = number(row?.onMinutes);
+  const offMinutes = number(row?.offMinutes);
+  return { onMinutes: onMinutes !== null && onMinutes >= 0 ? round(onMinutes) : null,
+    offMinutes: offMinutes !== null && offMinutes >= 0 ? round(offMinutes) : null,
+    on: describeScoutContexts(row?.on), off: describeScoutContexts(row?.off),
+    note: 'On/off context rows are descriptive same-game partitions. Different teammates, opponents, roles and situations can contribute; no causal player effect is inferred.' };
+}
+
+export function describeScoutTeamContexts(row) {
+  return describeScoutContexts(row?.contexts).map(context => {
+    const metric = row.contexts[context.key];
+    const outcomes = Object.fromEntries(['offense', 'defense'].map(side => {
+      const raw = metric?.possessionOutcomes?.[side];
+      return [side, { possessions: count(raw?.totalPossessions),
+        points: count(metric?.[side === 'offense' ? 'offensivePointsFor' : 'defensivePointsAllowed']),
+        counts: Object.fromEntries(['empty', 'one', 'two', 'three', 'fourPlus'].map(key => [key, count(raw?.[key])])) }];
+    }));
+    return { ...context, outcomes };
+  });
+}
 
 export function describeScoutPlayer(row, id) {
   const coverage = row.coverage || {};
@@ -94,6 +138,77 @@ export function describeScoutPlayer(row, id) {
   };
 }
 
+// Compact, public-safe season profile used by the bounded Career view. The
+// underlying evidence rows contain event-level fields and correction details;
+// only observed production and explicit completeness signals cross this
+// boundary.
+export function describeScoutSeasonProfile(row) {
+  const perGame = row?.perGame || {};
+  const rates = row?.officialRates || {};
+  const fieldEvidence = row?.fieldEvidence || {};
+  const known = key => {
+    const evidence = fieldEvidence[key];
+    return evidence && Number.isFinite(evidence.effectiveKnownGames)
+      ? evidence.effectiveKnownGames : null;
+  };
+  const metric = (value, evidenceKey) => Number.isFinite(value) && (evidenceKey ? known(evidenceKey) > 0 : true) ? round(value) : null;
+  const evidence = key => {
+    const item = fieldEvidence[key];
+    if (!item || !Number.isFinite(item.effectiveKnownGames)) return null;
+    return { knownGames: item.effectiveKnownGames,
+      matchedGames: Number.isFinite(item.matchedGames) ? item.matchedGames : null,
+      total: Number.isFinite(item.effectiveTotal) ? round(item.effectiveTotal) : null };
+  };
+  const ratio = (name, value, evidenceKey) => {
+    const source = row?.ratios?.[name] || {};
+    const numerator = Number.isSafeInteger(source.numerator) && source.numerator >= 0 ? source.numerator : null;
+    const denominator = Number.isSafeInteger(source.denominator) && source.denominator >= 0 ? source.denominator : null;
+    return { value: metric(value, evidenceKey), numerator, denominator,
+      knownGames: known(evidenceKey), status: metric(value, evidenceKey) === null ? 'unavailable' : 'observed' };
+  };
+  const positions = Array.isArray(row?.listedPositions)
+    ? row.listedPositions.filter(value => typeof value === 'string' && value.trim() && value.length <= 20).slice(0, 8)
+    : [];
+  const scope = row?.teamId === 'ALL_TEAMS' ? 'all-teams' : 'team';
+  return {
+    seasonStartYear: Number.isInteger(row?.seasonStartYear) ? row.seasonStartYear : null,
+    season: Number.isInteger(row?.seasonStartYear) ? `${row.seasonStartYear}–${String(row.seasonStartYear + 1).slice(-2)}` : 'Unknown season',
+    phase: text(row?.phase), scope, team: text(row?.team || row?.teamName) || (scope === 'all-teams' ? 'All teams' : null),
+    positions,
+    firstGameAt: text(row?.firstGameAt), lastGameAt: text(row?.lastGameAt),
+    games: count(row?.games), minutes: number(row?.officialMinutes),
+    perGame: {
+      points: metric(perGame.points, 'points'), assists: metric(perGame.assists, 'assists'),
+      rebounds: metric(perGame.rebounds, 'rebounds'), fieldGoalAttempts: metric(perGame.fieldGoalAttempts, 'fieldGoalAttempts'),
+      turnovers: metric(perGame.turnovers, 'turnovers'), steals: metric(perGame.steals, 'steals'),
+      blocks: metric(perGame.blocks, 'blocks'), personalFouls: metric(perGame.personalFouls, 'personalFouls'),
+    },
+    shooting: {
+      fieldGoalPercentage: metric(rates.fieldGoalPercentage, 'fieldGoalsMade'),
+      threePointPercentage: metric(rates.threePointPercentage, 'threePointersMade'),
+      freeThrowPercentage: metric(rates.freeThrowPercentage, 'freeThrowsMade'),
+      threePointAttemptShare: metric(rates.threePointAttemptShare, 'threePointAttempts'),
+    },
+    involvement: metric(rates.offensiveInvolvementPer36, 'fieldGoalAttempts'),
+    components: {
+      fieldGoalAccuracy: ratio('fieldGoalAccuracy', rates.fieldGoalPercentage, 'fieldGoalsMade'),
+      threePointAccuracy: ratio('threePointAccuracy', rates.threePointPercentage, 'threePointersMade'),
+      threePointFrequency: ratio('threePointAttemptShare', rates.threePointAttemptShare, 'threePointAttempts'),
+      freeThrowAccuracy: ratio('freeThrowAccuracy', rates.freeThrowPercentage, 'freeThrowsMade'),
+      points: { value: metric(perGame.points, 'points'), unit: 'perGame', ...evidence('points') },
+      assists: { value: metric(perGame.assists, 'assists'), unit: 'perGame', ...evidence('assists') },
+      turnovers: { value: metric(perGame.turnovers, 'turnovers'), unit: 'perGame', ...evidence('turnovers') },
+      rebounds: { value: metric(perGame.rebounds, 'rebounds'), unit: 'perGame', ...evidence('rebounds') },
+      steals: { value: metric(perGame.steals, 'steals'), unit: 'perGame', ...evidence('steals') },
+      blocks: { value: metric(perGame.blocks, 'blocks'), unit: 'perGame', ...evidence('blocks') },
+    },
+    completeness: ['points', 'fieldGoalAttempts', 'fieldGoalsMade', 'assists', 'rebounds']
+      .map(key => ({ field: key, knownGames: known(key) }))
+      .filter(item => item.knownGames !== null),
+    note: 'Observed season and phase production from reconciled source rows. This is descriptive history, not a forecast, career projection, or fitted usage response.',
+  };
+}
+
 export function describeScoutSample(metrics) {
   const offensePossessions = count(metrics?.offensivePossessions);
   const defensePossessions = count(metrics?.defensivePossessions);
@@ -117,6 +232,7 @@ export function describeScoutSample(metrics) {
 export function describeScoutCombination(row) {
   return { kind: row?.size === 5 ? 'exact_five' : 'shared_floor',
     minutes: number(row?.minutes), sample: describeScoutSample(row?.contexts?.all),
+    contexts: describeScoutContexts(row?.contexts),
     note: row?.size === 5
       ? 'The verified five at possession start. Descriptive results, not a forecast for a new lineup.'
       : 'Two to four players sharing the floor with other teammates. This is not an isolated unit or a causal chemistry effect.' };

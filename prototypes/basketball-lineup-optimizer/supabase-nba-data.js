@@ -3,6 +3,12 @@
 import { normalizeDataset } from "./player-data.js?v=__LINEUP_LAB_ASSET_VERSION__";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
+// This version is shared with player-projection.js by contract.  Keep the
+// adapter-side literal local so the browser data module remains independent of
+// the optimizer and can be reused by diagnostics without importing solver
+// code.  A version mismatch is rejected by the optimizer rather than silently
+// treating an old payload as responsibility evidence.
+const RESPONSIBILITY_EVIDENCE_VERSION = "scout-responsibility-evidence-v1";
 const TRUSTED_MEDIA_HOSTS = new Set([
   "www.basketball-reference.com",
   "cdn.ssref.net",
@@ -153,7 +159,100 @@ function seasonEvidenceForRow(row) {
       ...(row.evidence_contract === "imported-team-totals-v1"
         ? { missingFieldPolicy: "unavailable-if-any-contributor-missing" }
         : {}),
+      ...(typeof row.evidence_completeness === "string" && row.evidence_completeness.trim()
+        ? { completeness: row.evidence_completeness.trim() }
+        : {}),
+      ...(typeof row.evidence_source_revision === "string" && row.evidence_source_revision.trim()
+        ? { sourceRevision: row.evidence_source_revision.trim() }
+        : {}),
+      ...(typeof row.evidence_contract === "string" && row.evidence_contract.trim()
+        && row.evidence_contract !== "imported-team-totals-v1"
+        ? { evidenceContract: row.evidence_contract.trim() }
+        : {}),
     },
+  };
+}
+
+function integerCount(value) {
+  if (value === null || value === undefined || value === "" || typeof value === "boolean") return null;
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 0 ? number : null;
+}
+
+/**
+ * Build the narrow responsibility contract consumed by the optimizer.
+ *
+ * Possession-ending involvement is intentionally derived only when the
+ * season-wide row contains a complete, matching FGA + FTA + turnover count.
+ * A season total can hide a missing trade-team stat because SQL SUM skips
+ * nulls; `seasonEvidenceForRow()` preserves those nulls, and this helper
+ * refuses to turn the partial numerator into a confident role prior.  The
+ * result is descriptive evidence—not a usage percentage, touch count, or
+ * causal prediction of what happens when a coach changes a player's role.
+ */
+export function responsibilityEvidenceForSeason(seasonEvidence) {
+  if (!isPlainObject(seasonEvidence) || !isPlainObject(seasonEvidence.totals)) return null;
+  const totals = seasonEvidence.totals;
+  const readTotal = (...keys) => {
+    const key = keys.find(candidate => Object.hasOwn(totals, candidate));
+    return key === undefined ? null : integerCount(totals[key]);
+  };
+  const games = readTotal("games", "gamesPlayed", "games_played");
+  const minutes = readTotal("minutes", "minutesPlayed", "minutes_played");
+  if (!(games > 0) || !(minutes > 0)) return null;
+
+  const fieldGoalAttempts = readTotal("fieldGoalsAttempted", "field_goal_attempts", "field_goals_attempted");
+  const freeThrowAttempts = readTotal("freeThrowsAttempted", "free_throw_attempts", "free_throws_attempted");
+  const turnovers = readTotal("turnovers", "turnoverCount", "turnover_count");
+  const per36 = value => Number.isFinite(value) ? (value * 36) / minutes : null;
+  const source = seasonEvidence.source || {};
+  // Do not fill a missing component with zero. Zero is accepted only when the
+  // source explicitly supplied an actual zero count. A separately certified
+  // Scout advanced value is the sole fallback for a row whose raw component
+  // counts are incomplete; the ordinary imported-rows-only view cannot use
+  // this branch because its SQL aggregation may hide a trade-team gap.
+  let offensiveInvolvement;
+  let derivation = "season-wide complete box counts: FGA + 0.44 × FTA + TOV";
+  if (fieldGoalAttempts !== null && freeThrowAttempts !== null && turnovers !== null) {
+    offensiveInvolvement = fieldGoalAttempts + (0.44 * freeThrowAttempts) + turnovers;
+  } else {
+    const advanced = seasonEvidence.advanced || {};
+    const advancedValue = [
+      advanced.offensiveInvolvementPer36,
+      advanced.offensive_involvement_per_36,
+      advanced.possessionEndingInvolvementPer36,
+      advanced.possession_ending_involvement_per_36,
+    ].map(value => optionalNonNegativeNumber(value, null)).find(value => value !== null);
+    const certifiedAdvanced = /^scout[-_]/i.test(String(source.completeness || ""))
+      || String(source.evidenceContract || "").toLowerCase().includes("scout")
+      || Boolean(source.sourceRevision);
+    if (!certifiedAdvanced || advancedValue === undefined) return null;
+    offensiveInvolvement = advancedValue * minutes / 36;
+    derivation = "independently certified Scout offensive-involvement rate";
+  }
+  return {
+    version: RESPONSIBILITY_EVIDENCE_VERSION,
+    scope: "season-wide",
+    games,
+    verifiedGames: games,
+    minutes,
+    officialMinutes: minutes,
+    minutesPerGame: minutes / games,
+    offensiveInvolvement,
+    offensiveInvolvementPer36: per36(offensiveInvolvement),
+    fieldGoalAttempts,
+    fieldGoalAttemptsPer36: per36(fieldGoalAttempts),
+    freeThrowAttempts,
+    freeThrowAttemptsPer36: per36(freeThrowAttempts),
+    turnovers,
+    turnoversPer36: per36(turnovers),
+    assists: readTotal("assists", "assistCount", "assist_count"),
+    assistsPer36: per36(readTotal("assists", "assistCount", "assist_count")),
+    sourceRevision: typeof source.sourceRevision === "string" ? source.sourceRevision : null,
+    completeness: typeof source.completeness === "string"
+      ? source.completeness
+      : "counts-complete-within-imported-rows",
+    method: derivation,
   };
 }
 
@@ -400,6 +499,12 @@ function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl, seasonE
   };
 
   const teamStintAdvanced = safeMetricObject(row.advanced_metrics);
+  // Keep this contract separate from `seasonEvidence`: the latter is a
+  // provenance envelope whose shape is consumed by older page/report code.
+  // Adding a sibling field lets the optimizer opt into the stricter complete
+  // count check without changing the meaning of the visible team stint or
+  // breaking consumers that display the original envelope verbatim.
+  const responsibilityEvidence = responsibilityEvidenceForSeason(seasonEvidence);
   return {
     totals,
     // When present, season-wide advanced values override the selected-team
@@ -422,6 +527,7 @@ function fanAnalyticsForRow(row, { team, season, seasonPhase, sourceUrl, seasonE
           || seasonEvidence.playerPossessionsPerGame !== null,
       },
     } : {}),
+    ...(responsibilityEvidence ? { responsibilityEvidence } : {}),
     teamTotalMinutes: optionalNonNegativeNumber(row.team_total_minutes, null),
     estimatedTeamPossessions: optionalNonNegativeNumber(row.estimated_team_possessions, null),
     leaguePer36,
@@ -624,6 +730,9 @@ export function createSupabaseNbaTeamDataset(rows, options = {}) {
       seasonEvidenceStatus: options.seasonEvidenceStatus
         || (seasonEvidence.size > 0 ? "available" : "not-supplied"),
       seasonEvidenceMethod: "Matching player-season counts across imported real-team rows; complete source coverage is not independently verified. Missing observations use only a disclosed own-season baseline prior when available; missing mixed-source baselines cannot be borrowed. No synthetic sample is inserted. Games with a particular team never become a minute target or cap.",
+      responsibilityEvidencePlayers: [...seasonEvidence.values()]
+        .filter(evidence => responsibilityEvidenceForSeason(evidence) !== null).length,
+      responsibilityEvidenceMethod: "A role prior is available only when the all-team season row has complete FGA, FTA, turnover, games, and minutes counts. Partial trade-team rows remain unavailable rather than being treated as zero.",
     },
     note: "Visible per-game stats describe this team only. When available, the rotation model uses matching counts across the player's imported teams for the same season and phase; these do not set minute limits.",
   };

@@ -15,6 +15,15 @@ export const HISTORICAL_PROJECTION_MODEL_VERSION =
 
 export const DEFAULT_PROJECTION_RISK = "balanced";
 
+// The responsibility prior is expressed in real observed minutes, not games
+// multiplied by an invented minutes-per-game value.  A 720-minute prior is a
+// deliberately gentle empirical-Bayes anchor: a short bench sample is not
+// allowed to receive the same larger-role credit as a full-season rotation,
+// while a player with a sustained workload is still allowed to keep most of
+// the observed rate.  This is a prior for rate extrapolation only; it never
+// becomes a minimum, maximum, or recommended minute target.
+export const DEFAULT_RESPONSIBILITY_PRIOR_MINUTES = 720;
+
 const BASE_PRIOR_MINUTES = Object.freeze({
   points: 750,
   rebounds: 500,
@@ -98,6 +107,7 @@ export function projectionParametersFor(risk = DEFAULT_PROJECTION_RISK, scope = 
     priorFieldGoalAttempts: fitted ? fitted.efgPct.prior : 500,
     priorThreePointAttempts: fitted ? fitted.threePct.prior : 180,
     priorImpactMinutes: 1200,
+    responsibilityPriorMinutes: DEFAULT_RESPONSIBILITY_PRIOR_MINUTES,
     leagueAverageUsage: 0.2,
     maximumProjectedUsage: 0.38,
   });

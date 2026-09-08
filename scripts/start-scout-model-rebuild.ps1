@@ -5,6 +5,7 @@ param(
   [Parameter(Mandatory = $true)][string]$ArchiveDirectory,
   [Parameter(Mandatory = $true)][string]$OutputDirectory,
   [Parameter(Mandatory = $true)][string]$SummaryOverlay,
+  [string]$Corrections,
   [string]$Seasons = '2022,2023,2024,2025',
   [switch]$Offline,
   [ValidateRange(1, 2147483647)][int]$RequestBudget
@@ -12,6 +13,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 if ($Offline -and $PSBoundParameters.ContainsKey('RequestBudget')) { throw 'Offline builds make no requests; omit RequestBudget.' }
+if ($Corrections -and -not $Offline) { throw 'A correction ledger applies only to an explicit offline package build, never the raw downloader.' }
 $taskRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $taskPrivateRoot = [IO.Path]::GetFullPath((Join-Path $taskRoot 'outputs')).TrimEnd('\')
 $taskOutput = [IO.Path]::GetFullPath($OutputDirectory)
@@ -36,7 +38,7 @@ $taskStderr = Join-Path $taskLogs "$taskRun.stderr.log"
 # manifest. It cannot retry a rate-limited provider or claim the refresh ended.
 $taskEntry = if ($Offline) { 'rebuild-scout-model-evidence.mjs' } else { 'refresh-scout-model-summaries.mjs' }
 $taskArguments = @(
-  '--max-old-space-size=8192', (Join-Path $PSScriptRoot $taskEntry),
+  '--max-old-space-size=3072', '--expose-gc', (Join-Path $PSScriptRoot $taskEntry),
   '--manifest', (Resolve-Path -LiteralPath $Manifest).Path,
   '--package-validation', (Resolve-Path -LiteralPath $PackageValidation).Path,
   '--source-validation', (Resolve-Path -LiteralPath $SourceValidation).Path,
@@ -46,6 +48,7 @@ $taskArguments = @(
   '--seasons', $Seasons
 )
 if ($PSBoundParameters.ContainsKey('RequestBudget')) { $taskArguments += @('--request-budget', [string]$RequestBudget) }
+if ($Corrections) { $taskArguments += @('--corrections', (Resolve-Path -LiteralPath $Corrections).Path) }
 # Credentials are inherited in the process environment, never command-line
 # arguments, printed output, files, or source. Closing the assistant turn does
 # not terminate this hidden worker; downloads/checkpoints support resumption.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Player and card matchups</title>
+  <desc id="desc">A trading card and basketball mark.</desc>
+  <rect x="3" y="3" width="90" height="90" rx="22" fill="#182442" stroke="#efb94d" stroke-width="3"/>
+  <rect x="21" y="19" width="42" height="57" rx="5" fill="#f4f6fb" transform="rotate(-9 42 47)"/>
+  <rect x="36" y="18" width="42" height="57" rx="5" fill="#e8b84c" transform="rotate(9 57 46)"/>
+  <circle cx="57" cy="42" r="14" fill="#e51e2b" stroke="#142446" stroke-width="2"/>
+  <path d="M47 42h20M57 28c-4 7-4 21 0 28M50 31c7 6 10 16 14 24" fill="none" stroke="#142446" stroke-width="2"/>
+  <text x="48" y="84" fill="#fff" font-family="Arial,sans-serif" font-size="8" font-weight="800" letter-spacing="1" text-anchor="middle">CARDS</text>
+</svg>

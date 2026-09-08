@@ -11,11 +11,19 @@ const KIND_LABELS = Object.freeze({
   game: 'Fan game'
 });
 const PLAY_LABELS = Object.freeze({
-  'lineup-lab': ['Make the coaching calls', 'Choose a team → set your plan → meet your lineup', 'Build my lineup'],
-  'lineup-dna': ['Discover what makes a five tick', 'Build a group → read its strengths → test one swap', 'Explore Lineup DNA'],
-  'fix-the-five': ['One swap can change everything', 'Read the board → lock a swap → reveal the tradeoff', 'Fix the Five'],
-  'draft-night': ['You’re on the clock. No rush.', 'Five picks → one lineup → reveal your board rank', 'Start drafting'],
-  'card-matchup-explorer': ['Put your collector instincts to work', 'Choose players → compare the context → explore cards', 'Compare players & cards'],
+  'lineup-lab': ['Choose a team and season → set your priorities → meet your five', 'Open Lineup Lab'],
+  'lineup-dna': ['See the roles it covers → spot a gap → test one replacement', 'Explore Lineup DNA'],
+  'fix-the-five': ['Read the board → choose one legal swap → reveal your place', 'Play Fix the Five'],
+  'draft-night': ['Pick five players by role → lock your lineup → see the board result', 'Play Draft Night'],
+  'card-matchup-explorer': ['Search a player → review verified matches → explore the collection', 'Compare players & cards'],
+});
+
+const CARD_BULLETS = Object.freeze({
+  'lineup-lab': ['Build a starting five or full rotation', 'Try a historical team-season', 'Lock or exclude players'],
+  'lineup-dna': ['See the roles your five covers', 'Find a thin or missing role', 'Test one replacement'],
+  'fix-the-five': ['Choose one legal replacement', 'Lock your move', 'Reveal a board result'],
+  'draft-night': ['Pick five players by role', 'Build your lineup', 'Reveal your place on the board'],
+  'card-matchup-explorer': ['Search a player', 'See verified card matches', 'Jump back to the Lab'],
 });
 
 export function filterPlayableTools(filter = 'all') {
@@ -47,14 +55,6 @@ function appendMarker(parent, tool, className = 'tool-marker') {
   return marker;
 }
 
-function appendPills(parent, items, className) {
-  const list = document.createElement('div');
-  list.className = className;
-  items.filter(Boolean).forEach((item) => appendText(list, 'span', '', item));
-  parent.append(list);
-  return list;
-}
-
 function createFeaturedTool(tool) {
   const card = document.createElement('article');
   const titleId = `tool-title-${tool.id}`;
@@ -69,18 +69,23 @@ function createFeaturedTool(tool) {
 
   const copy = document.createElement('div');
   const play = PLAY_LABELS[tool.id];
-  if (play) appendText(copy, 'span', 'tools-play-eyebrow', play[0]);
   appendText(copy, 'h3', '', tool.title).id = titleId;
   appendText(copy, 'p', '', tool.summary);
-  if (play) appendText(copy, 'p', 'tools-play-path', play[1]);
-  appendPills(copy, [STATUS_LABELS[tool.status], KIND_LABELS[tool.kind], tool.highlights[0] || tool.capabilities[0]], 'tools-featured-card__meta');
+  if (play) {
+    const path = appendText(copy, 'p', 'tools-play-path', 'How it works: ' + play[0]);
+    path.setAttribute('aria-label', 'How it works');
+  }
+  const bullets = document.createElement('ul');
+  bullets.className = 'tools-featured-card__bullets';
+  (CARD_BULLETS[tool.id] || tool.capabilities.slice(0, 3)).forEach(item => appendText(bullets, 'li', '', item));
+  copy.append(bullets);
   content.append(copy);
   card.append(content);
 
   const link = document.createElement('a');
   link.className = 'button';
   link.href = tool.href;
-  link.textContent = play?.[2] || 'Launch tool';
+  link.textContent = play?.[1] || 'Open tool';
   card.append(link);
   return card;
 }
@@ -162,15 +167,23 @@ function enhanceLiveSpotlight(tool) {
   const marker = panel.querySelector('[data-live-marker]');
   const title = panel.querySelector('[data-live-title]');
   const summary = panel.querySelector('[data-live-summary]');
-  const capabilities = panel.querySelector('[data-live-capabilities]');
-  if (marker) marker.textContent = tool.marker;
+  if (marker) {
+    marker.replaceChildren();
+    marker.classList.toggle('has-game-emblem', Boolean(tool.emblem));
+    if (tool.emblem) {
+      const image = document.createElement('img');
+      image.src = new URL(tool.emblem, import.meta.url).href;
+      image.alt = '';
+      image.width = 64;
+      image.height = 64;
+      image.decoding = 'async';
+      marker.append(image);
+    } else marker.textContent = tool.marker;
+  }
   if (title) title.textContent = tool.title;
   if (summary) summary.textContent = tool.summary;
-  if (capabilities) {
-    capabilities.replaceChildren();
-    const highlights = tool.highlights.length ? tool.highlights : tool.capabilities;
-    highlights.slice(0, 3).forEach((capability) => appendText(capabilities, 'span', '', capability));
-  }
+  const link = panel.querySelector('[data-live-link]');
+  if (link) { link.href = tool.href; link.textContent = 'Open ' + tool.title; }
 }
 
 function updateStatusSummary(counts) {
@@ -191,15 +204,15 @@ function renderTools() {
   const featured = document.getElementById('toolsFeatured');
   const roadmap = document.getElementById('toolsGrid');
   const research = document.getElementById('toolsResearch');
-  if (!featured || !roadmap || !research) return;
+  if (!featured) return;
 
   const liveTools = filterRegistry(TOOL_STATUSES.LIVE);
   const plannedTools = filterRegistry(TOOL_STATUSES.PLANNED);
   const researchTools = filterRegistry(TOOL_STATUSES.RESEARCH);
 
   featured.replaceChildren(...liveTools.map(createFeaturedTool));
-  roadmap.replaceChildren(...plannedTools.map(createRoadmapCard));
-  research.replaceChildren(...researchTools.map(createResearchTool));
+  roadmap?.replaceChildren(...plannedTools.map(createRoadmapCard));
+  research?.replaceChildren(...researchTools.map(createResearchTool));
   enhanceLiveSpotlight(liveTools[0]);
   updateStatusSummary(countRegistryByStatus());
   bindPlayPicker();
@@ -209,6 +222,7 @@ function bindPlayPicker() {
   const filters = [...document.querySelectorAll('[data-play-filter]')];
   const cards = [...document.querySelectorAll('#toolsFeatured .tools-featured-card')];
   const status = document.getElementById('playStatus');
+  if (!filters.length && !document.getElementById('suggestPlay')) return;
   let selection = 'all';
   let suggestedId = '';
   const apply = filter => {

@@ -8,6 +8,7 @@ import {
   listSupabaseNbaTeams,
   mapSupabaseNbaPlayer,
   nbaSeasonLabel,
+  responsibilityEvidenceForSeason,
   summarizeSupabaseNbaTeamRows,
 } from "../supabase-nba-data.js";
 
@@ -429,7 +430,18 @@ test("attaches audited season-wide evidence without replacing team membership co
   });
   assert.equal(player.analytics.advanced.usage_percentage, 0.29);
   assert.equal(player.analytics.advanced.offensive_box_plus_minus, 4.2);
+  assert.equal(player.analytics.responsibilityEvidence.version, "scout-responsibility-evidence-v1");
+  assert.equal(player.analytics.responsibilityEvidence.scope, "season-wide");
+  assert.equal(player.analytics.responsibilityEvidence.games, 82);
+  assert.equal(player.analytics.responsibilityEvidence.minutes, 2460);
+  assert.equal(player.analytics.responsibilityEvidence.offensiveInvolvement, 1684);
+  assert.equal(
+    player.analytics.responsibilityEvidence.offensiveInvolvementPer36,
+    (1684 * 36) / 2460,
+  );
+  assert.equal(player.analytics.responsibilityEvidence.fieldGoalAttempts, 1320);
   assert.equal(dataset.source.analytics.seasonEvidencePlayers, 1);
+  assert.equal(dataset.source.analytics.responsibilityEvidencePlayers, 1);
   assert.equal(dataset.source.analytics.seasonEvidenceStatus, "available");
 });
 

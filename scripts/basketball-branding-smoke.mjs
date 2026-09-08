@@ -35,13 +35,20 @@ const errors = [], missing = [], checks = [];
 let browser;
 async function loadedImages(page, selector) {
   assert.ok(await page.locator(selector).count(), `Expected images: ${selector}`);
+  let openedMenu = false;
   for (const image of await page.locator(selector).all()) {
+    if (!(await image.isVisible()) && await page.locator('#navToggle').isVisible()) {
+      await page.locator('#navToggle').click();
+      await page.waitForFunction(() => !document.querySelector('#siteNav')?.hidden);
+      openedMenu = true;
+    }
     if (await image.getAttribute('loading') === 'lazy') {
       await image.scrollIntoViewIfNeeded();
       await image.evaluate(el => el.decode());
     }
   }
   await page.waitForFunction(selector => [...document.querySelectorAll(selector)].every(img => img.complete && img.naturalWidth > 0), selector);
+  if (openedMenu) await page.keyboard.press('Escape');
 }
 async function noOverflow(page) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'No page-level horizontal overflow');
@@ -77,9 +84,9 @@ try {
     for (const game of ['fix-the-five','draft-night']) {
       await page.goto(`${base}/tools/${game}/`);
       await badgeInteraction(page, width === 900);
-      assert.equal(await page.locator('.game-page-indicators [aria-current="page"]').count(), 1);
-      assert.ok((await page.locator('.game-page-indicators [aria-current="page"]').getAttribute('href')).includes(game));
-      await loadedImages(page, '.game-page-indicators img');
+      assert.equal(await page.locator('.fan-suite-nav__link[aria-current="page"]').count(), 1);
+      assert.ok((await page.locator('.fan-suite-nav__link[aria-current="page"]').getAttribute('href')).includes(game));
+      await loadedImages(page, '.fan-suite-nav__link img');
       assert.match(await page.locator('link[rel="icon"]').getAttribute('href'), new RegExp(`${game}-icon`));
       assert.match(await page.locator('footer').evaluate(el => getComputedStyle(el, '::before').backgroundImage), /basketball-footer/);
       await noOverflow(page);
