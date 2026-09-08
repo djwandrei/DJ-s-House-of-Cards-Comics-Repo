@@ -92,6 +92,8 @@ body.court-themed .tools-play-filters button[aria-pressed=true] { background:var
 body.court-themed .tools-play-filters button::before { color:inherit; }
 body.court-themed .tools-featured-card { border-top-color:var(--court-accent); }
 body.court-themed .tools-featured-card p.tools-play-path { border-color:var(--court-border); }
+body.court-themed .tools-featured-card__bullets { color:var(--court-text); }
+body.court-themed .tools-featured-card p.tools-play-path { color:var(--court-text) !important; }
 body.court-themed .tools-status-item strong { color:var(--court-accent); }
 body.court-themed .tools-status-item--live strong { color:var(--court-positive); }
 body.court-themed .tools-status-item--research strong { color:var(--court-warning); }

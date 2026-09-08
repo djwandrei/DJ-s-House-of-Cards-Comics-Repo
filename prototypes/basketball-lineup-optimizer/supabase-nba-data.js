@@ -224,8 +224,7 @@ export function responsibilityEvidenceForSeason(seasonEvidence) {
       advanced.possession_ending_involvement_per_36,
     ].map(value => optionalNonNegativeNumber(value, null)).find(value => value !== null);
     const certifiedAdvanced = /^scout[-_]/i.test(String(source.completeness || ""))
-      || String(source.evidenceContract || "").toLowerCase().includes("scout")
-      || Boolean(source.sourceRevision);
+      || String(source.evidenceContract || "").toLowerCase().includes("scout");
     if (!certifiedAdvanced || advancedValue === undefined) return null;
     offensiveInvolvement = advancedValue * minutes / 36;
     derivation = "independently certified Scout offensive-involvement rate";

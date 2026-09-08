@@ -835,7 +835,7 @@ body.dark-mode .tool-research-card__status {
   gap:.28rem;
   margin:.9rem 0 0;
   padding:0 0 0 1.1rem;
-  color:rgba(255,255,255,.78);
+  color:var(--text);
   font-size:.82rem;
   line-height:1.45;
 }
@@ -846,7 +846,7 @@ body.dark-mode .tool-research-card__status {
   margin-top:.8rem;
   padding-top:.8rem;
   border-top:1px solid rgba(207,220,255,.28);
-  color:#f1f4ff;
+  color:var(--text);
   font-size:.82rem;
 }
 .tools-featured-card p.tools-play-path::first-line {

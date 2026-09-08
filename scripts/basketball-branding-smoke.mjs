@@ -99,7 +99,7 @@ try {
     }
     await page.goto(`${base}/tools/`);
     await loadedImages(page, '.tools-featured-card__marker.has-game-emblem img');
-    assert.equal(await page.locator('.tools-featured-card__marker.has-game-emblem img').count(), 3);
+    assert.equal(await page.locator('.tools-featured-card__marker.has-game-emblem img').count(), 5);
     await noOverflow(page);
     if ([390,1440].includes(width) && theme === 'dark') {
       await page.locator('[data-tool-id="fix-the-five"]', { has:page.locator('.has-game-emblem') }).scrollIntoViewIfNeeded();

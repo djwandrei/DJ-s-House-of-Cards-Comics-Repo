@@ -445,6 +445,71 @@ test("attaches audited season-wide evidence without replacing team membership co
   assert.equal(dataset.source.analytics.seasonEvidenceStatus, "available");
 });
 
+test("does not build a responsibility contract from a partial imported season row", () => {
+  const dataset = createSupabaseNbaTeamDataset([savedRow({ games_played: 4, games_started: 4, minutes_played: 120 })], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+    seasonEvidenceRows: [{
+      player_id: "edwaran01",
+      season_end_year: 2025,
+      season_phase: "regular",
+      games_played: 82,
+      minutes_played: 2460,
+      field_goals_attempted: 1320,
+      free_throws_attempted: null,
+      turnovers: 210,
+      points: 1690,
+    }],
+  });
+  assert.equal(dataset.players[0].analytics.responsibilityEvidence, undefined);
+  assert.equal(dataset.source.analytics.responsibilityEvidencePlayers, 0);
+});
+
+test("accepts an independently certified Scout involvement rate when raw components are unavailable", () => {
+  const row = {
+    player_id: "edwaran01",
+    season_end_year: 2025,
+    season_phase: "regular",
+    games_played: 82,
+    minutes_played: 2460,
+    field_goals_attempted: 1320,
+    free_throws_attempted: null,
+    turnovers: 210,
+    season_advanced_metrics: { offensiveInvolvementPer36: 18 },
+    evidence_completeness: "scout-player-games-complete",
+    evidence_source_revision: "scout-v2",
+    evidence_contract: "scout-responsibility-v1",
+  };
+  const certified = responsibilityEvidenceForSeason({
+    totals: { games: 82, minutes: 2460, fieldGoalsAttempted: 1320, freeThrowsAttempted: null, turnovers: 210 },
+    advanced: { offensiveInvolvementPer36: 18 },
+    source: { completeness: "scout-player-games-complete", sourceRevision: "scout-v2", evidenceContract: "scout-responsibility-v1" },
+  });
+  assert.equal(certified.scope, "season-wide");
+  assert.equal(certified.offensiveInvolvementPer36, 18);
+  assert.equal(certified.method, "independently certified Scout offensive-involvement rate");
+
+  const dataset = createSupabaseNbaTeamDataset([savedRow({ games_played: 4, games_started: 4, minutes_played: 120 })], {
+    team: "MIN",
+    season: 2025,
+    seasonPhase: "regular",
+    seasonEvidenceRows: [row],
+  });
+  assert.equal(dataset.players[0].analytics.responsibilityEvidence.offensiveInvolvementPer36, 18);
+  assert.equal(dataset.players[0].analytics.responsibilityEvidence.sourceRevision, "scout-v2");
+  assert.equal(dataset.source.analytics.responsibilityEvidencePlayers, 1);
+});
+
+test("does not treat an unlabelled advanced involvement rate as certified evidence", () => {
+  const evidence = responsibilityEvidenceForSeason({
+    totals: { games: 82, minutes: 2460, fieldGoalsAttempted: 1320, freeThrowsAttempted: null, turnovers: 210 },
+    advanced: { offensiveInvolvementPer36: 18 },
+    source: { completeness: "imported-rows-only", sourceRevision: "ordinary-import-v1" },
+  });
+  assert.equal(evidence, null);
+});
+
 test("rejects duplicate or cross-season evidence instead of attaching an ambiguous sample", () => {
   const validEvidence = {
     player_id: "edwaran01",
