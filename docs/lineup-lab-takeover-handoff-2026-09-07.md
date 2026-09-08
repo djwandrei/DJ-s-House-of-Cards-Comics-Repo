@@ -20,9 +20,10 @@ The original task reached a substantial implementation checkpoint and then
 stalled because its selected model repeatedly hit capacity/usage errors. The
 latest completed checkpoint is commit `aa6372c6` (“Synchronize Lineup Lab
 responsibility evidence release”), which is present at `HEAD` and `origin/main`
-at the time of this handoff. No unfinished tool call from the original task
-needs to be replayed; the continuation should work from the files and evidence
-described here.
+at the time of the original handoff. The continuation added the responsibility
+guardrail test and released the reviewed static fan-tool path list. No
+unfinished tool call from the original task needs to be replayed; future work
+should use the files and evidence described here.
 
 The original checkpoint included the following work:
 
@@ -190,11 +191,11 @@ Previously completed release checks at the same source checkpoint also passed:
 - JavaScript syntax checks and focused model/adapter tests;
 - `git diff --check`.
 
-The test and handoff edits are now recorded in local commit `8264c060`
-(`Llineup Lab Hadoff + Optimizer test`), which is one commit ahead of
-`origin/main`. The source and generated Lineup Lab modules remain unchanged
-relative to `aa6372c6`; no Supabase write, cPanel upload, or production smoke
-claim has been made yet.
+The test and handoff edits are recorded in commits `8264c060` and `70851bd3`.
+GitHub `origin/main` is synchronized at `70851bd3`, and the reviewed 105-file
+fan-suite path list was uploaded to cPanel over verified FTPS. HTTP byte parity
+after upload was 105/105 with zero differences and zero fetch errors. No
+Supabase write or production browser smoke claim has been made.
 
 ## Safe continuation order
 
@@ -215,5 +216,6 @@ For the next implementation task:
 The most valuable next model work is the documented holdout/ablation program,
 especially the minutes-versus-responsibility tests and six-season chronological
 validation. The most valuable next release work is a scoped rendered desktop
-and mobile smoke check followed by a reviewed path-list release, if and when
-the user explicitly authorizes deployment.
+and mobile smoke check for the deployed fan tools. Future releases should
+repeat the reviewed path-list process after the relevant source and generated
+checks.
