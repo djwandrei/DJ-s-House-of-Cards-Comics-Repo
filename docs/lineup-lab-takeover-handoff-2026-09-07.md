@@ -190,11 +190,11 @@ Previously completed release checks at the same source checkpoint also passed:
 - JavaScript syntax checks and focused model/adapter tests;
 - `git diff --check`.
 
-The current working tree has one intentional, uncommitted test edit in
-`prototypes/basketball-lineup-optimizer/tests/optimizer-model-guardrails.test.mjs`
-and this handoff document. The source and generated Lineup Lab modules remain
-unchanged relative to `aa6372c6`; no commit, push, Supabase write, cPanel
-upload, or production smoke claim is made here.
+The test and handoff edits are now recorded in local commit `8264c060`
+(`Llineup Lab Hadoff + Optimizer test`), which is one commit ahead of
+`origin/main`. The source and generated Lineup Lab modules remain unchanged
+relative to `aa6372c6`; no Supabase write, cPanel upload, or production smoke
+claim has been made yet.
 
 ## Safe continuation order
 
