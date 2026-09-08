@@ -190,6 +190,32 @@ export function createScoutStudioSource(options) {
 
   return {
     status: inspect,
+    // A release-only projection used by the static hosting builder.  It is
+    // intentionally assembled from the same bounded maps as the local
+    // preview, then rewrites every provider-keyed map to the opaque public
+    // player ids before it leaves this module.  Raw shard rows and provider
+    // identifiers never cross this boundary.
+    async bundle(teamId, token) {
+      const team = await loadTeam(teamId, token);
+      const publicByProvider = new Map([...team.players].map(([providerId, player]) => [providerId, player.id]));
+      const onOff = Object.fromEntries([...team.onOff.entries()].flatMap(([providerId, value]) => {
+        const id = publicByProvider.get(providerId); return id ? [[id, value]] : [];
+      }));
+      const combinations = Object.fromEntries([...team.combinations.entries()].flatMap(([providerKey, value]) => {
+        const ids = providerKey.split('|').map(providerId => publicByProvider.get(providerId));
+        return ids.every(Boolean) ? [[keyFor(ids), value]] : [];
+      }));
+      const wowy = Object.fromEntries([...team.wowy.entries()].flatMap(([providerKey, value]) => {
+        const ids = [publicByProvider.get(value.first), publicByProvider.get(value.second)];
+        return ids.every(Boolean) ? [[keyFor(ids), { first: ids[0], second: ids[1], cells: value.cells }]] : [];
+      }));
+      const seasonProfiles = Object.fromEntries([...team.seasonProfiles.entries()].flatMap(([providerId, value]) => {
+        const id = publicByProvider.get(providerId); return id ? [[id, value]] : [];
+      }));
+      return { snapshot: token, team: teamId,
+        players: [...team.players.values()].sort((a, b) => a.name.localeCompare(b.name)),
+        teamContexts: team.teamContexts, onOff, combinations, wowy, seasonProfiles };
+    },
     async teamContexts(teamId, token) {
       const team = await loadTeam(teamId, token);
       return { snapshot: token, team: teamId, contexts: team.teamContexts };

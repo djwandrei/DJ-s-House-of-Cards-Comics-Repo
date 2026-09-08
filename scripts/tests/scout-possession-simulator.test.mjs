@@ -42,7 +42,7 @@ test('missing, mismatched, negative, excessive-tail and low-count evidence stays
 
 test('team evidence is season-specific and rejects contradictory ratings and duplicate partitions', () => {
   assert.equal(teamGameEvidence(a, 2024).status, 'ready');
-  assert.throws(() => teamGameEvidence(a, 2022), /supported/);
+  assert.throws(() => teamGameEvidence(a, 2019), /supported/);
   const sparse = structuredClone(a); sparse.contexts = []; assert.equal(teamGameEvidence(sparse, 2024).status, 'unavailable');
   const wrong = structuredClone(a); wrong.contexts.find(row => row.key === 'season:2024').outcomes.offense.points++;
   assert.equal(teamGameEvidence(wrong, 2024).status, 'unavailable');
@@ -112,7 +112,7 @@ test('daily setups are reproducible across roster ordering, diverse, and confine
   assert.equal(challenge.modelVersion, 'scout-possession-scenario-v1');
   assert.deepEqual(challenge, dailyMatchup([...teams].reverse(), snapshot, '2026-09-07'));
   const days = Array.from({ length: 28 }, (_, index) => dailyMatchup(teams, snapshot, `2026-09-${String(index + 1).padStart(2, '0')}`));
-  assert.ok(days.every(day => day.a !== day.b && [2023, 2024, 2025].includes(day.season)));
+  assert.ok(days.every(day => day.a !== day.b && [2020, 2021, 2022, 2023, 2024, 2025].includes(day.season)));
   assert.ok(new Set(days.flatMap(day => [day.a, day.b])).size > 15);
   assert.throws(() => dailyMatchup(teams, snapshot, '2026-02-30'), /valid challenge date/);
 });

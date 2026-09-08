@@ -14,7 +14,7 @@ export const SCOUT_DAILY_GAME_FAMILIES = Object.freeze([
   'franchise-window',
   'multi-season-pool',
 ]);
-export const SCOUT_DAILY_GAME_SEASONS = Object.freeze([2024, 2025, 2026]);
+export const SCOUT_DAILY_GAME_SEASONS = Object.freeze([2021, 2022, 2023, 2024, 2025, 2026]);
 
 const GAME_SEASON_SET = new Set(SCOUT_DAILY_GAME_SEASONS);
 const SLOT_ORDER = Object.freeze(['G', 'G', 'F', 'F', 'C']);
@@ -168,7 +168,7 @@ function normalizeScope(raw) {
   const seasonEndYears = [...new Set((Array.isArray(model.seasonEndYears) ? model.seasonEndYears : []).map(Number))]
     .sort((left, right) => left - right);
   if (!seasonEndYears.length || seasonEndYears.some((year) => !GAME_SEASON_SET.has(year))) {
-    throw new Error(`${id} must cover only 2023\u201324 through 2025\u201326 Scout seasons.`);
+    throw new Error(`${id} must cover only 2020\u201321 through 2025\u201326 Scout seasons.`);
   }
   const scope = {
     id,

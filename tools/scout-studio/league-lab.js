@@ -31,7 +31,7 @@ export function createLeagueLab(root, request) {
   const entrants = Array.from({ length: 4 }, (_, index) => choice(`Franchise ${index + 1}`, `leagueTeam${index + 1}`, []));
   entrants.forEach(entrant => field.append(entrant.label));
   const setup = node('div', undefined, 'studio-roadmap');
-  const season = choice('Season sample', 'leagueSeason', [2023, 2024, 2025].map(year => [year, `${year}–${String(year + 1).slice(-2)}`]));
+  const season = choice('Season sample', 'leagueSeason', [2020, 2021, 2022, 2023, 2024, 2025].map(year => [year, `${year}–${String(year + 1).slice(-2)}`]));
   const cycles = choice('Meetings per pair', 'leagueCycles', [[2, 'Twice · six games per team'], [1, 'Once · three games per team'], [4, 'Four times · twelve games per team']]);
   const playoffs = choice('Postseason', 'leaguePlayoffs', [[2, 'Top two · final'], [4, 'Top four · semifinals and final'], [0, 'Standings only']]);
   setup.append(season.label, cycles.label, playoffs.label);

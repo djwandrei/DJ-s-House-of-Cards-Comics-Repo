@@ -1,7 +1,7 @@
 import { sampleEvidence, validStudioScope } from './studio-analysis.js?v=20260906a';
 import { scoutContextDescriptor } from './context-contract.js?v=20260907a';
 
-export const GAME_LAB_POLICY = Object.freeze({ version: 'scout-possession-scenario-v1', seasons: Object.freeze([2023, 2024, 2025]),
+export const GAME_LAB_POLICY = Object.freeze({ version: 'scout-possession-scenario-v1', seasons: Object.freeze([2020, 2021, 2022, 2023, 2024, 2025]),
   minSidePossessions: 200, minPossessions: 60, maxPossessions: 140, minTrials: 100, maxTrials: 5000, maxOvertimes: 6 });
 const count = value => Number.isSafeInteger(value) && value >= 0;
 const round = value => Math.round(value * 10000) / 10000;

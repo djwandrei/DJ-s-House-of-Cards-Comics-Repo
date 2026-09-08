@@ -11,7 +11,7 @@ const settingsLabels = Object.freeze({ cycles: 'Meetings per pair', playoffTeams
 export function captureLeagueSummary(report) {
   const settings = report?.settings;
   if (report?.status !== 'complete' || report.modelVersion !== LEAGUE_POLICY.version || report.gameModelVersion !== GAME_LAB_POLICY.version
-    || typeof report.snapshot !== 'string' || !/^s[a-f0-9]{24}$/.test(report.snapshot) || ![2023, 2024, 2025].includes(report.season) || !settings
+    || typeof report.snapshot !== 'string' || !/^s[a-f0-9]{24}$/.test(report.snapshot) || ![2020, 2021, 2022, 2023, 2024, 2025].includes(report.season) || !settings
     || !integer(settings.trials, LEAGUE_POLICY.minTrials, LEAGUE_POLICY.maxTrials)
     || ![0, 2, 4, 8, 16].includes(settings.playoffTeams) || ![1, 3, 5, 7].includes(settings.seriesLength)
     || !integer(settings.possessions, 60, 140) || !finite(settings.attackWeight, 0, 1)) throw new Error('A complete, compatible league result is required.');

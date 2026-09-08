@@ -8,7 +8,7 @@ const source = fs.readFileSync(
 );
 
 test('Scout daily game catalog is private, validation-gated, and optimized for eligible reads', () => {
-  assert.match(source, /source_season_end_years <@ array\[2024, 2025, 2026\]::smallint\[\]/);
+  assert.match(source, /source_season_end_years <@ array\[2021, 2022, 2023, 2024, 2025, 2026\]::smallint\[\]/);
   assert.match(source, /alter table public\.nba_scout_daily_game_scopes enable row level security/);
   assert.match(source, /alter table public\.nba_scout_daily_game_players enable row level security/);
   assert.match(source, /revoke all on table public\.nba_scout_daily_game_scopes from public, anon, authenticated, service_role/);
