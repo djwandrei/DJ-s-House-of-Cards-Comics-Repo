@@ -40,6 +40,30 @@ function player(id, overrides = {}) {
 
 const STANDARD_ROLE_MINUTES = Object.freeze({ G: 96, F: 96, C: 48 });
 
+function seasonWideResponsibilityEvidence({
+  playerId,
+  games,
+  minutes,
+  fieldGoalAttempts,
+  freeThrowAttempts,
+  turnovers,
+}) {
+  const offensiveInvolvement = fieldGoalAttempts + (0.44 * freeThrowAttempts) + turnovers;
+  const per36 = (value) => (value * 36) / minutes;
+  return {
+    version: "scout-responsibility-evidence-v1",
+    scope: "season-wide",
+    playerId,
+    games,
+    minutes,
+    offensiveInvolvement,
+    offensiveInvolvementPer36: per36(offensiveInvolvement),
+    fieldGoalAttemptsPer36: per36(fieldGoalAttempts),
+    freeThrowAttemptsPer36: per36(freeThrowAttempts),
+    turnoversPer36: per36(turnovers),
+  };
+}
+
 test("automatic position-minute balance derives one stable 240-minute team profile", () => {
   const players = [
     player("guard", { positions: ["G"] }),
@@ -515,7 +539,7 @@ test("season-wide rates replace a traded player's team-stint spike without using
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.teamStintLengthAffectsProjection, false);
 });
 
-test("season-wide MPG establishes role evidence without becoming a minute target", () => {
+test("season-wide MPG remains descriptive without verified responsibility evidence", () => {
   const basePlayers = Array.from({ length: 8 }, (_, index) => player(`season-role-${index + 1}`, {
     games: index === 0 ? 4 : 70,
     minutes: index === 0 ? 8 : 30,
@@ -560,12 +584,17 @@ test("season-wide MPG establishes role evidence without becoming a minute target
 
   assert.equal(seasonAware.ok, true);
   assert.equal(fallbackOnly.ok, true);
+  assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 1);
+  assert.equal(fallbackOnly.diagnostics.rotationRateStabilityEvidence.seasonWideEvidencePlayers, 0);
   assert.equal(seasonAware.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
   assert.equal(fallbackOnly.diagnostics.rotationRateStabilityEvidence.roleAdjustedPlayerMetricCount, 0);
-  assert.equal(fallbackOnly.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, true);
+  assert.equal(seasonAware.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, false);
+  assert.equal(fallbackOnly.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, false);
   assert.equal(seasonAware.best.rotation.totalMinutes, 240);
-  // The model is free to assign a different result from the 30-MPG evidence;
-  // the evidence only controls rate projection, never a target or hard limit.
+  // The model is free to assign a different result from the 30-MPG evidence.
+  // Season-wide minutes provide descriptive context, but this fixture has no
+  // certified responsibility contract and therefore cannot create a workload
+  // curve or a minute target.
   assert.notEqual(seasonAware.best.rotation.byId["season-role-1"], 30);
 });
 
@@ -1333,6 +1362,14 @@ test("assigned-role projection lowers extra-role totals without changing a requi
     analytics: {
       totals: { minutes: 560 },
       leaguePer36: { points: 15 },
+      responsibilityEvidence: seasonWideResponsibilityEvidence({
+        playerId: "low-role-scorer",
+        games: 70,
+        minutes: 560,
+        fieldGoalAttempts: 220,
+        freeThrowAttempts: 80,
+        turnovers: 60,
+      }),
     },
   });
   const standardPlayers = Array.from({ length: 7 }, (_, index) => player(`standard-${index + 1}`, {
@@ -1346,7 +1383,7 @@ test("assigned-role projection lowers extra-role totals without changing a requi
   const players = [lowRoleScorer, ...standardPlayers];
   // Fix the minute plan so the comparison isolates the projection itself. The
   // low-role scorer must still play 40 minutes in both runs; only his estimated
-  // production beyond the established 30-minute role is tempered.
+  // production beyond the established 8-minute role is tempered.
   const playerBounds = Object.fromEntries(players.map((item, index) => [
     item.id,
     index === 0
@@ -1388,6 +1425,8 @@ test("assigned-role projection lowers extra-role totals without changing a requi
   assert.equal(roleConditioned.best.rotation.byId["low-role-scorer"], 40);
   assert.equal(staticAdjusted.best.rotation.byId["low-role-scorer"], 40);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.applied, true);
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.responsibilityPriorPlayers, 1);
+  assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.responsibilityPriorPlayerMetricCount, 1);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.expandedMinutes, 32);
   assert.ok(roleConditioned.best.totals.points < staticAdjusted.best.totals.points);
   assert.equal(roleConditioned.best.rotation.diagnostics.roleConditionedScoring.roleExpansionApplied, true);
