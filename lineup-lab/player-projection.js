@@ -82,6 +82,12 @@ export function readResponsibilityEvidence(player) {
     if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) continue;
     if (candidate.version !== RESPONSIBILITY_EVIDENCE_VERSION) continue;
     if (!['season-wide', 'scout-player-game-subset'].includes(candidate.scope)) continue;
+    // A serialized browser row can outlive the query that produced it. If the
+    // producer included an identity, bind it before accepting any numbers;
+    // absence remains backward-compatible with the season-wide adapter.
+    if (candidate.playerId != null && String(candidate.playerId) !== String(player?.id ?? "")) continue;
+    if (candidate.scope === "scout-player-game-subset"
+      && (!candidate.sourceRevision || typeof candidate.sourceRevision !== "string")) continue;
     const games = finiteNonNegativeInteger(candidate.games ?? candidate.verifiedGames);
     const minutes = finiteNonNegative(candidate.minutes ?? candidate.officialMinutes);
     const involvementPer36 = finiteNonNegative(candidate.offensiveInvolvementPer36);
@@ -130,11 +136,33 @@ export function readResponsibilityEvidence(player) {
  * This is a sensitivity prior, not a learned fatigue or usage-elasticity fit.
  */
 export function responsibilityExpansionFor(player, metric, parameters = {}) {
-  const calibrated = finiteNonNegative(parameters?.expansionStrengthByMetric?.[metric]);
-  if (calibrated !== null && calibrated > 0) {
+  const calibratedByMetric = parameters?.expansionStrengthByMetric;
+  const hasCalibratedMetric = calibratedByMetric
+    && typeof calibratedByMetric === "object"
+    && !Array.isArray(calibratedByMetric)
+    && Object.hasOwn(calibratedByMetric, metric);
+  const calibrated = hasCalibratedMetric
+    ? finiteNonNegative(calibratedByMetric[metric])
+    : null;
+  // A fitted zero is a real chronological result. It must win over the
+  // fallback responsibility prior, otherwise a calibrated season would gain
+  // an unvalidated decline merely because its fitted response was zero.
+  if (hasCalibratedMetric && calibrated !== null) {
     return {
       strength: calibrated,
       source: "chronological-workload-fit",
+      evidence: readResponsibilityEvidence(player),
+      reliability: null,
+      priorMinutes: null,
+    };
+  }
+  // An explicitly supplied but malformed fit is not evidence for the prior.
+  // Keep the failure visible and fail closed instead of silently replacing a
+  // bad calibration with a different modeling assumption.
+  if (hasCalibratedMetric) {
+    return {
+      strength: 0,
+      source: "chronological-workload-fit-invalid",
       evidence: readResponsibilityEvidence(player),
       reliability: null,
       priorMinutes: null,
@@ -251,19 +279,22 @@ export function projectPlayerResponsibility(
     : 0;
 
   const expansion = responsibilityExpansionFor(player, metric, parameters);
-  if (sourceMinutes !== null && expansion.strength > 0) {
+  const hasChronologicalFit = expansion.source === "chronological-workload-fit";
+  if (sourceMinutes !== null && (expansion.strength > 0 || hasChronologicalFit)) {
     return {
       available: true, source: expansion.source, sourceMinutes,
       targetMinutes: requestedMinutes, sourceUsage, targetUsage,
       usageRatio: sourceUsage > 0 && targetUsage !== null ? targetUsage / sourceUsage : null, expansionShare,
-      rateRetention: workloadRetention(sourceMinutes, requestedMinutes, expansion.strength),
+      rateRetention: expansion.strength > 0
+        ? workloadRetention(sourceMinutes, requestedMinutes, expansion.strength)
+        : 1,
       expansionStrength: expansion.strength,
       responsibilityEvidence: expansion.evidence,
       responsibilityReliability: expansion.reliability,
       responsibilityPriorMinutes: expansion.priorMinutes,
-      evidenceGrade: expansion.source === "chronological-workload-fit"
+      evidenceGrade: hasChronologicalFit
         ? "conditional-prediction" : "responsibility-prior",
-      reason: expansion.source === "chronological-workload-fit"
+      reason: hasChronologicalFit
         ? "Workload response fitted on earlier games and evaluated on later games. Zero decline is allowed; this is not a causal fatigue estimate."
         : "A disclosed responsibility prior tempers an above-baseline rate outside the player's observed role. It is evidence-gated sensitivity, not a causal usage or fatigue estimate.",
     };

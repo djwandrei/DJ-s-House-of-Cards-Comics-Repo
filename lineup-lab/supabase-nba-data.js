@@ -193,13 +193,17 @@ function integerCount(value) {
 export function responsibilityEvidenceForSeason(seasonEvidence) {
   if (!isPlainObject(seasonEvidence) || !isPlainObject(seasonEvidence.totals)) return null;
   const totals = seasonEvidence.totals;
-  const games = integerCount(totals.games);
-  const minutes = integerCount(totals.minutes);
+  const readTotal = (...keys) => {
+    const key = keys.find(candidate => Object.hasOwn(totals, candidate));
+    return key === undefined ? null : integerCount(totals[key]);
+  };
+  const games = readTotal("games", "gamesPlayed", "games_played");
+  const minutes = readTotal("minutes", "minutesPlayed", "minutes_played");
   if (!(games > 0) || !(minutes > 0)) return null;
 
-  const fieldGoalAttempts = integerCount(totals.fieldGoalsAttempted);
-  const freeThrowAttempts = integerCount(totals.freeThrowsAttempted);
-  const turnovers = integerCount(totals.turnovers);
+  const fieldGoalAttempts = readTotal("fieldGoalsAttempted", "field_goal_attempts", "field_goals_attempted");
+  const freeThrowAttempts = readTotal("freeThrowsAttempted", "free_throw_attempts", "free_throws_attempted");
+  const turnovers = readTotal("turnovers", "turnoverCount", "turnover_count");
   const per36 = value => Number.isFinite(value) ? (value * 36) / minutes : null;
   const source = seasonEvidence.source || {};
   // Do not fill a missing component with zero. Zero is accepted only when the
@@ -220,8 +224,7 @@ export function responsibilityEvidenceForSeason(seasonEvidence) {
       advanced.possession_ending_involvement_per_36,
     ].map(value => optionalNonNegativeNumber(value, null)).find(value => value !== null);
     const certifiedAdvanced = /^scout[-_]/i.test(String(source.completeness || ""))
-      || String(source.evidenceContract || "").toLowerCase().includes("scout")
-      || Boolean(source.sourceRevision);
+      || String(source.evidenceContract || "").toLowerCase().includes("scout");
     if (!certifiedAdvanced || advancedValue === undefined) return null;
     offensiveInvolvement = advancedValue * minutes / 36;
     derivation = "independently certified Scout offensive-involvement rate";
@@ -242,8 +245,8 @@ export function responsibilityEvidenceForSeason(seasonEvidence) {
     freeThrowAttemptsPer36: per36(freeThrowAttempts),
     turnovers,
     turnoversPer36: per36(turnovers),
-    assists: integerCount(totals.assists),
-    assistsPer36: per36(integerCount(totals.assists)),
+    assists: readTotal("assists", "assistCount", "assist_count"),
+    assistsPer36: per36(readTotal("assists", "assistCount", "assist_count")),
     sourceRevision: typeof source.sourceRevision === "string" ? source.sourceRevision : null,
     completeness: typeof source.completeness === "string"
       ? source.completeness

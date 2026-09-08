@@ -132,6 +132,59 @@ test('raw comparison remains an explicit compatibility choice for starting five'
   assert.equal(result.diagnostics.objectiveScoringBasis, 'perGame');
 });
 
+test('rotation uses the evidence-gated responsibility prior, while a calibrated zero suppresses it', () => {
+  const players = Array.from({ length: 8 }, (_, index) => {
+    const row = player(`p${index}`);
+    const minutes = 1440;
+    const fieldGoalAttempts = 1000;
+    const freeThrowAttempts = 100;
+    const turnovers = 120;
+    const offensiveInvolvement = fieldGoalAttempts + (0.44 * freeThrowAttempts) + turnovers;
+    row.analytics.seasonTotals = { games: 60, minutes };
+    row.analytics.responsibilityEvidence = {
+      version: 'scout-responsibility-evidence-v1',
+      scope: 'season-wide',
+      games: 60,
+      minutes,
+      offensiveInvolvement,
+      offensiveInvolvementPer36: offensiveInvolvement * 36 / minutes,
+      fieldGoalAttemptsPer36: fieldGoalAttempts * 36 / minutes,
+      freeThrowAttemptsPer36: freeThrowAttempts * 36 / minutes,
+      turnoversPer36: turnovers * 36 / minutes,
+    };
+    return row;
+  });
+  const rotation = {
+    minMinutes: 20,
+    maxMinutes: 40,
+    rateStability: 'sampleAdjusted',
+    scoringBasis: 'per36',
+  };
+  const prior = run(players, {
+    mode: 'rotation',
+    size: 8,
+    weights: { points: 1, efgPct: 1, threePct: 1 },
+    rotationOptions: rotation,
+  });
+  const priorDiagnostics = prior.best.rotation.diagnostics.roleConditionedScoring;
+  assert.equal(priorDiagnostics.responsibilityPriorPlayers, 8);
+  assert.equal(priorDiagnostics.responsibilityPriorPlayerMetricCount, 24);
+  assert.deepEqual(priorDiagnostics.responsibilityExpansionSources, {
+    'responsibility-evidence-prior': 24,
+  });
+
+  const calibrated = run(players, {
+    mode: 'rotation',
+    size: 8,
+    weights: { points: 1, efgPct: 1, threePct: 1 },
+    sourceScope: { seasonEndYear: 2026, seasonPhase: 'regular' },
+    rotationOptions: rotation,
+  });
+  const calibratedDiagnostics = calibrated.best.rotation.diagnostics.roleConditionedScoring;
+  assert.equal(calibratedDiagnostics.responsibilityPriorPlayers, 0);
+  assert.deepEqual(calibratedDiagnostics.responsibilityExpansionSources, {});
+});
+
 for (const metric of ['points', 'threePct', 'efgPct']) {
   test(`exact starting-five ${metric} objective matches exhaustive locked-subset evaluation`, () => {
     const players = Array.from({ length: 7 }, (_, i) => {

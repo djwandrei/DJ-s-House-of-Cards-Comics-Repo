@@ -21,6 +21,7 @@ import {
   projectMetricForResponsibility,
   projectRotationUsageDemand,
   readPlayerUsage,
+  readResponsibilityEvidence,
   readSeasonRoleMinutes,
   responsibilityExpansionFor,
 } from "./player-projection.js?v=20260907f";
@@ -943,11 +944,14 @@ function seasonWideObjectiveMetricValue(player, metric) {
 }
 
 /**
- * Use all-team season MPG as role-size evidence when it is available. This is
- * not a historical minute target or limit: it only answers how large a role
- * has supported the observed season-wide rate before the optimizer projects
- * that rate to a different responsibility. Team-stint games and total minutes
- * never enter this calculation.
+ * Use all-team season MPG (or a verified Scout game subset) as role-size
+ * evidence when it is available. This is not a historical minute target or
+ * limit: it only answers how large a role has supported the observed rate
+ * before the optimizer projects it to a different responsibility. If that
+ * season-wide/verified evidence is absent, return `null` instead of falling
+ * back to the selected-team stint's MPG. A team stint can still provide a
+ * descriptive player row and a confidence sample, but it must not silently
+ * set the workload at which a rate is treated as established.
  */
 function seasonWideRoleMinutesPerGame(player, metric = null) {
   if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return readSeasonRoleMinutes(player, metric);
@@ -955,7 +959,14 @@ function seasonWideRoleMinutesPerGame(player, metric = null) {
   const games = finiteNonNegative(totals?.games);
   const minutes = finiteNonNegative(totals?.minutes);
   if (games > 0 && minutes !== null) return minutes / games;
-  return finiteNonNegative(player?.minutes);
+  // A strict adapter may carry the season-wide responsibility contract without
+  // duplicating the full seasonTotals envelope. Keep that evidence eligible as
+  // a role-size anchor while still refusing a selected-team fallback here.
+  const responsibility = readResponsibilityEvidence(player);
+  if (responsibility?.scope === "season-wide" && responsibility.games > 0) {
+    return Math.min(48, responsibility.minutes / responsibility.games);
+  }
+  return null;
 }
 
 /**
@@ -1727,6 +1738,15 @@ function buildRoleConditionedProjectionPlan(
     // Use all-team season MPG when available, never games with this team or
     // 240 / roster size. This is evidence for projection, not a minute cap.
     const establishedRoleMinutes = Math.max(0, Math.min(48, sourceRoleMinutes ?? referenceMinutes));
+    // `projectionInputsById` may use a selected-team sample as the denominator
+    // for confidence when no complete all-team pair exists. That sample is
+    // valid uncertainty evidence, but it must not become the role origin for
+    // the conditional mean. Keep the workload curve anchored to the
+    // season-wide/verified role above, or to the neutral reference only when
+    // no such role evidence exists.
+    const roleSourceMinutes = establishedRoleMinutes > 0
+      ? establishedRoleMinutes
+      : referenceMinutes;
     evidenceMinutesById.set(id, establishedRoleMinutes);
 
     // Retain transition metadata for legacy consumers. Actual exposure is
@@ -1869,7 +1889,7 @@ function buildRoleConditionedProjectionPlan(
           // separate from the explicitly chosen downside sensitivity reserve.
           const expansionProfile = responsibilityProfiles[metric];
           const mean = workloadRate({ value: input.posteriorMean, baseline: input.baseline,
-            sample: 1, prior: 0, sourceMinutes: input.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
+            sample: 1, prior: 0, sourceMinutes: roleSourceMinutes, targetMinutes: minute,
             strength: expansionProfile?.strength ?? 0,
             lowerIsBetter: metric === "ballSecurity" });
           const projected = decisionRateAtWorkload({ mean, standardError: input.standardError,
@@ -1907,7 +1927,7 @@ function buildRoleConditionedProjectionPlan(
         const expansionProfile = responsibilityProfiles[metric];
         benchmarks[metric] = Array.from({ length: 49 }, (_, minute) => minute * workloadRate({
           value, baseline: Math.min(value, 100), sample: 1, prior: 0,
-          sourceMinutes: metricResult.projectionInputsById.get(id)?.[metric]?.sourceMinutes ?? establishedRoleMinutes, targetMinutes: minute,
+          sourceMinutes: roleSourceMinutes, targetMinutes: minute,
           strength: expansionProfile?.strength ?? 0,
         }));
       }

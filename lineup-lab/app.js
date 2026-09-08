@@ -3561,9 +3561,17 @@ function renderExactObjectiveReasons(player, result, insight) {
       : rateStability?.applied
         ? `Smaller opportunity samples are stabilized toward the same-season NBA baseline.${confidenceReserveCopy} `
         : "";
+  // Keep the new responsibility prior visible at the decision point. This
+  // count is player-metric comparisons, not a hidden score or an additional
+  // minute rule: it tells a fan exactly when disclosed season-wide or
+  // independently certified Scout workload evidence tempered an advantage
+  // outside an observed offensive role.
+  const responsibilityPriorCopy = assignedRoleScoring?.responsibilityPriorPlayerMetricCount > 0
+    ? ` ${formatNumber(assignedRoleScoring.responsibilityPriorPlayerMetricCount, 0)} offensive player-metric comparison${assignedRoleScoring.responsibilityPriorPlayerMetricCount === 1 ? " uses" : "s use"} an evidence-gated larger-role prior from disclosed season-wide responsibility evidence. It does not set a minute target or claim a learned usage effect. `
+    : "";
   const basis = document.createElement("p");
   basis.textContent = rotationBasis === "per36"
-    ? `${roleProjectionCopy}Counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
+    ? `${roleProjectionCopy}${responsibilityPriorCopy}Counting stats are ranked per 36 minutes. ${minutePlanExplanation} The contribution below reflects the proposed minutes.`
     : rotationBasis === "perGame"
       ? "This rotation uses the raw per-game comparison; the contribution below also reflects the proposed minutes."
       : `This lineup compares equal player profiles on a per-36 basis. ${rateStability?.applied ? "Supported metrics use evidence-adjusted contributions, not pool percentiles. Shooting frequency is checked separately from accuracy." : "The source lacks supporting evidence, so the comparison uses raw rates."} Production totals below remain sums of the players' recorded per-game lines, not a team forecast.`;
@@ -4052,6 +4060,9 @@ function renderResultEvidence(result) {
     const assignedRoleDetail = assignedRoleScoring?.applied
       ? ` ${formatNumber(assignedRoleScoring.expandedMinutes, 0)} planned minute${Number(assignedRoleScoring.expandedMinutes) === 1 ? "" : "s"} extend beyond observed roles. Uncertain advantages receive a disclosed evidence adjustment. No roster-size-based penalty or automatic target minute range is applied.`
       : "";
+    const responsibilityPriorDetail = assignedRoleScoring?.responsibilityPriorPlayerMetricCount > 0
+      ? ` ${formatNumber(assignedRoleScoring.responsibilityPriorPlayerMetricCount, 0)} offensive player-metric comparison${assignedRoleScoring.responsibilityPriorPlayerMetricCount === 1 ? " used" : "s used"} the disclosed season-wide responsibility prior. The adjustment is a conservative sensitivity for an expanded role, not a restriction on assigned minutes.`
+      : "";
     const seasonEvidenceDetail = rateEvidence.seasonWideEvidencePlayers > 0
       ? ` ${rateEvidence.seasonWideEvidencePlayers} of ${rateEvidence.eligiblePlayers} eligible players used matching season counts across imported teams for at least one metric. Other metrics require matching team counts or use a baseline-only prior. No sample size is guessed from games or MPG. Complete source coverage is not independently verified.`
       : " Matching all-team season evidence was unavailable for this pool. Metrics require matching team counts or use a baseline-only prior; no sample size is guessed from games or MPG.";
@@ -4062,7 +4073,7 @@ function renderResultEvidence(result) {
         : rateEvidence.roleAdjustedPlayerMetricCount > 0
           ? "Evidence confidence + role adjusted"
           : "Evidence-confidence adjusted",
-      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? ` Standard rate parameters were tuned chronologically and checked on ${rateEvidence.workloadCalibration.testGames} held-out regular-season games using archived exposure. That test does not validate the new uncertainty reserve, the browser's NBA baseline, usage-dependent effects, or a lineup forecast.` : " An adjustable uncertainty reserve discounts less-supported rates."} These adjustments are not calibrated player confidence intervals. Team games do not set a minute target or cap.${roleProjectionDetail}${assignedRoleDetail}`,
+      `${rateEvidence.adjustedPlayers} of ${rateEvidence.eligiblePlayers} eligible players had at least one rate stabilized.${seasonEvidenceDetail}${rateEvidence.workloadCalibration ? ` Standard rate parameters were tuned chronologically and checked on ${rateEvidence.workloadCalibration.testGames} held-out regular-season games using archived exposure. That test does not validate the new uncertainty reserve, the browser's NBA baseline, usage-dependent effects, or a lineup forecast.` : " An adjustable uncertainty reserve discounts less-supported rates."} These adjustments are not calibrated player confidence intervals. Team games do not set a minute target or cap.${roleProjectionDetail}${assignedRoleDetail}${responsibilityPriorDetail}`,
     ));
   } else if (result.best?.rotation) {
     strip.append(resultEvidenceItem(
