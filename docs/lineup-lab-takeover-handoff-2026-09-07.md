@@ -197,6 +197,36 @@ fan-suite path list was uploaded to cPanel over verified FTPS. HTTP byte parity
 after upload was 105/105 with zero differences and zero fetch errors. No
 Supabase write or production browser smoke claim has been made.
 
+## Season stability probe (2026-09-08)
+
+The same `chronological-workload-v3` evaluator was run independently against
+the six available season directories (2020 through 2025). Each directory was
+split by whole UTC dates into development/tuning/test blocks, with parameters
+chosen on tuning data only. The table reports held-out MSE improvement versus
+the raw-rate baseline; positive values mean lower error. Each comparison used
+1,000 paired whole-game bootstrap replicates with seed `20260905`.
+
+| Season end | Games (train/tune/test) | Points | Assists | Rebounds | Steals | Blocks | Ball security | eFG | 3P |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2020 | 342 / 113 / 115 | 2.63% | 0.00% | 2.80% | 3.41% | 1.60% | 7.34% | 4.65% | 4.01% |
+| 2021 | 378 / 125 / 126 | 1.50% | 0.00% | -0.29% | 0.71% | 2.13% | 2.82% | 2.65% | 3.59% |
+| 2022 | 381 / 125 / 126 | 2.48% | 1.33% | 0.00% | 8.85% | 2.91% | 2.55% | 4.01% | 5.05% |
+| 2023 | 435 / 141 / 147 | 1.28% | 0.77% | -0.15% | 3.45% | 2.44% | 0.15% | 2.47% | 4.00% |
+| 2024 | 471 / 154 / 159 | 2.76% | 2.47% | 0.00% | 3.46% | 2.48% | 5.21% | 3.01% | 4.03% |
+| 2025 | 515 / 168 / 173 | 2.22% | 2.11% | 0.24% | 3.50% | 0.54% | 1.84% | 0.86% | 1.93% |
+
+Points and three-point rate improved in every season, with intervals above
+zero in this probe. Steals, blocks, ball security, and eFG improved in every
+season by point estimate, but one to two season intervals crossed zero. Assists
+were unchanged in the first two seasons and had intervals crossing zero in
+four of six seasons. Rebounds were inconclusive in all six seasons, including
+two slightly negative point estimates. These results support a conditional
+benchmark stability check; they do not validate a causal workload response,
+unknown future minutes, lineup interactions, or a promoted cross-season
+runtime calibration. The archives are eligible-game subsets rather than proof
+of complete NBA-season coverage, and the per-season parameters were selected
+within each season rather than frozen across seasons.
+
 ## Safe continuation order
 
 For the next implementation task:
