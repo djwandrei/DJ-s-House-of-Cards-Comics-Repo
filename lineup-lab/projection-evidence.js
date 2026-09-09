@@ -9,6 +9,7 @@ export const SCOUT_GAME_EVIDENCE_VERSION = "scout-paired-player-games-v1";
 const SCOUT_METRIC_FIELDS = Object.freeze({
   points: ["points"], rebounds: ["rebounds"], assists: ["assists"],
   steals: ["steals"], blocks: ["blocks"], ballSecurity: ["turnovers"],
+  freeThrowAttemptRate: ["fieldGoalAttempts", "freeThrowAttempts"],
   // Use the joint shooting subset, not independently summed FGA/3PA columns
   // with different missing games. The four counts also test two-point algebra.
   efgPct: ["fieldGoalAttempts", "fieldGoalsMade", "threePointAttempts", "threePointersMade"],
@@ -117,8 +118,8 @@ export function compileScoutPlayerGameEvidence(playerGames, scope) {
         && official[field] === pbp?.[field] && row.fieldReconciliation?.[field] === "matched");
       const identitiesChecked = [row.officialIdentityIssues, row.pbpIdentityIssues]
         .every(issues => Array.isArray(issues) && issues.length === 0);
-      const shooting = metric === "efgPct" || metric === "threePct";
-      const validShooting = !shooting || (validCounts
+      const shooting = metric === "efgPct" || metric === "threePct" || metric === "freeThrowAttemptRate";
+      const validShooting = metric === "freeThrowAttemptRate" || !shooting || (validCounts
         && official.fieldGoalsMade <= official.fieldGoalAttempts
         && official.threePointersMade <= official.threePointAttempts
         && official.threePointersMade <= official.fieldGoalsMade
@@ -129,7 +130,7 @@ export function compileScoutPlayerGameEvidence(playerGames, scope) {
       minutes += row.officialMinutes;
       for (const field of fields) totals[field] += official[field];
       const attempts = shooting ? official[metric === "threePct" ? "threePointAttempts" : "fieldGoalAttempts"] : row.officialMinutes;
-      const count = metric === "threePct" ? official.threePointersMade : metric === "efgPct"
+      const count = metric === "freeThrowAttemptRate" ? official.freeThrowAttempts : metric === "threePct" ? official.threePointersMade : metric === "efgPct"
         ? official.fieldGoalsMade + .5 * official.threePointersMade : official[fields[0]];
       addGameMoment(rateGameMoments, count, attempts);
       if (shooting) addGameMoment(opportunityGameMoments, attempts, row.officialMinutes);
@@ -138,13 +139,13 @@ export function compileScoutPlayerGameEvidence(playerGames, scope) {
       completeWithinSuppliedGames: rows.length > 0 && verifiedGames === rows.length,
       // Supplied rows from a partial package are not a whole-season census.
       wholeSeasonCertified: false };
-    if (!verifiedGames || !(minutes > 0)) { metrics[metric] = null; continue; }
-    const three = metric === "threePct", shooting = three || metric === "efgPct";
-    const sample = shooting ? totals[three ? "threePointAttempts" : "fieldGoalAttempts"] : minutes;
-    const numerator = shooting ? (three ? totals.threePointersMade : totals.fieldGoalsMade + .5 * totals.threePointersMade) : totals[fields[0]];
+    if (!verifiedGames || !(minutes > 0) || (metric === "freeThrowAttemptRate" && !(totals.fieldGoalAttempts > 0))) { metrics[metric] = null; continue; }
+    const three = metric === "threePct", freeThrowRate = metric === "freeThrowAttemptRate", shooting = three || metric === "efgPct" || freeThrowRate;
+    const sample = shooting ? totals[freeThrowRate ? "fieldGoalAttempts" : three ? "threePointAttempts" : "fieldGoalAttempts"] : minutes;
+    const numerator = shooting ? (freeThrowRate ? totals.freeThrowAttempts : three ? totals.threePointersMade : totals.fieldGoalsMade + .5 * totals.threePointersMade) : totals[fields[0]];
     metrics[metric] = Object.freeze({ sample, numerator, minutes,
       sampleScope: "scout-verified-player-game-subset", value: shooting ? (sample > 0 ? numerator / sample : 0) : numerator * 36 / minutes,
-      ...(shooting ? { secondMomentTotal: three ? totals.threePointersMade : totals.fieldGoalsMade + 1.25 * totals.threePointersMade,
+      ...(shooting ? { secondMomentTotal: freeThrowRate ? totals.freeThrowAttempts : three ? totals.threePointersMade : totals.fieldGoalsMade + 1.25 * totals.threePointersMade,
         participationPer36: sample * 36 / minutes } : {}),
       verifiedGames, suppliedGames: rows.length, sourceRevision: scope.sourceRevision,
       rateGameMoments: Object.freeze(rateGameMoments),
@@ -185,14 +186,16 @@ export function pairedMetricEvidence(player, metric) {
     // Recheck its scope and count/exposure algebra even if the producer was the
     // compiler above. This prevents a stale per-36 value from being combined
     // with a newer sample or a different package revision after serialization.
-    const shooting = metric === "threePct" || metric === "efgPct";
+    const shooting = metric === "threePct" || metric === "efgPct" || metric === "freeThrowAttemptRate";
     if (row.sampleScope !== "scout-verified-player-game-subset"
       || typeof scout.scope.sourceRevision !== "string" || !scout.scope.sourceRevision.trim()
       || row.sourceRevision !== scout.scope.sourceRevision
       || !Number.isSafeInteger(row.suppliedGames) || row.suppliedGames < row.verifiedGames
       || (shooting ? !Number.isSafeInteger(row.sample) : row.sample !== row.minutes)
       || (metric === "efgPct" ? !Number.isSafeInteger(row.numerator * 2) : !Number.isSafeInteger(row.numerator))
-      || (shooting && row.numerator > row.sample * (metric === "efgPct" ? 1.5 : 1))) return null;
+      || (metric === "freeThrowAttemptRate" && !(row.sample > 0))
+      || (shooting && !["freeThrowAttemptRate", "efgPct"].includes(metric) && row.numerator > row.sample)
+      || (metric === "efgPct" && row.numerator > row.sample * 1.5)) return null;
     const expectedValue = shooting ? (row.sample > 0 ? row.numerator / row.sample : 0) : row.numerator * 36 / row.minutes;
     if (Math.abs(row.value - expectedValue) > 1e-10 * Math.max(1, Math.abs(expectedValue))) return null;
     if (shooting && (!Number.isFinite(row.participationPer36)
@@ -229,6 +232,13 @@ export function pairedMetricEvidence(player, metric) {
         secondMomentTotal: three ? made : made + 1.25 * threes,
         participationPer36: attempts * 36 / minutes };
     }
+    if (metric === "freeThrowAttemptRate") {
+      const fga = nonnegativeEvidence(totals.fieldGoalsAttempted);
+      const fta = nonnegativeEvidence(totals.freeThrowsAttempted);
+      if (fga !== null && fta !== null && fga > 0) return { sample: fga, sampleScope: scope, numerator: fta, minutes, value: fta / fga,
+        secondMomentTotal: fta, participationPer36: fga * 36 / minutes };
+      continue;
+    }
     const field = metric === "ballSecurity" ? "turnovers" : metric === "rebounds" ? "totalRebounds" : metric;
     const numerator = nonnegativeEvidence(totals[field]);
     if (numerator !== null) return { sample: minutes, sampleScope: scope, numerator, minutes, value: numerator * 36 / minutes };
@@ -252,6 +262,7 @@ export function posteriorRate(raw, evidence) {
   const mean = denominator > 0 && sample > 0 ? baseline + sample / denominator * (raw - baseline) : baseline;
   if (evidence.signed || !(denominator > 0)) return { mean, standardError: null };
   const shooting = evidence.metric === "threePct" || evidence.metric === "efgPct";
+  const ratioMetric = evidence.metric === "freeThrowAttemptRate";
   let eventStandardError;
   if (shooting) {
     const ceiling = evidence.metric === "threePct" ? 1 : 1.5;
@@ -259,12 +270,17 @@ export function posteriorRate(raw, evidence) {
     const secondMoment = (Number(evidence.secondMomentTotal) + prior * priorSecondMoment) / denominator;
     const variance = Number.isFinite(secondMoment) ? Math.max(0, secondMoment - mean * mean) : ceiling * Math.max(0, mean) - mean * mean;
     eventStandardError = Math.sqrt(Math.max(0, variance) / (denominator + 1));
+  } else if (ratioMetric) {
+    // FTA/FGA is an unbounded rate: free throws can exceed field-goal
+    // attempts. Use a Poisson-style event reserve in ratio units instead of
+    // treating it like a per-36 counting stat.
+    eventStandardError = Math.sqrt(Math.max(0, mean) / denominator);
   } else eventStandardError = Math.sqrt(Math.max(0, mean) * 36 / denominator);
   const moments = evidence.rateGameMoments;
   // Moment totals must describe THIS numerator and denominator. Merging an
   // entire season's moments with a partial metric recreates the trade-gap bug.
   const matchedMoments = moments?.exposureTotal === sample && moments?.outcomeTotal === evidence.numerator;
-  const rawClusterError = matchedMoments ? gameClusterStandardError(moments, shooting ? 1 : 36) : null;
+  const rawClusterError = matchedMoments ? gameClusterStandardError(moments, shooting || ratioMetric ? 1 : 36) : null;
   // The posterior mean is baseline + w*(observed-baseline). Treating the
   // baseline as fixed, the empirical observed-rate variation scales by w.
   // Retain the event/prior working reserve as a floor, not a second penalty

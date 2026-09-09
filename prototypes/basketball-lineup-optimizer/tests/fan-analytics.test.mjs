@@ -389,3 +389,39 @@ test("paired-evidence rotation contributions are not mislabeled as cohort percen
   assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /60\/100 normalized contribution, not a percentile/);
   assert.doesNotMatch(explanation.caveats.join(" "), /Objective contribution is pool-relative|Optimizer percentiles include/);
 });
+
+test("Lineup DNA explains free-throw pressure and signed impact inputs used by the objective", () => {
+  const highPressure = player("high-pressure", {
+    analytics: {
+      seasonTotals: { fieldGoalsAttempted: 500, freeThrowsAttempted: 220 },
+      seasonAdvanced: { offensive_box_plus_minus: 3.5, defensive_box_plus_minus: 1.25 },
+    },
+  });
+  const lowerPressure = player("lower-pressure", {
+    analytics: {
+      seasonTotals: { fieldGoalsAttempted: 500, freeThrowsAttempted: 80 },
+      seasonAdvanced: { offensive_box_plus_minus: 0.5, defensive_box_plus_minus: -1.5 },
+    },
+  });
+  const best = {
+    players: [highPressure],
+    playerContributions: {
+      "high-pressure": {
+        metrics: {
+          freeThrowAttemptRate: { percentile: 1, scoreContribution: 50 },
+          offensiveImpact: { percentile: .9, scoreContribution: 25 },
+          defensiveImpact: { percentile: .8, scoreContribution: 25 },
+        },
+      },
+    },
+  };
+  const explanation = explainOptimizationSelection({ best, alternatives: [best] }, {
+    candidatePool: [highPressure, lowerPressure],
+    weights: { freeThrowAttemptRate: 2, offensiveImpact: 1, defensiveImpact: 1 },
+  });
+  const contributions = explanation.selectedPlayers[0].profile.contributions;
+  assert.equal(contributions.find(item => item.metric === "freeThrowAttemptRate").value, .44);
+  assert.equal(contributions.find(item => item.metric === "offensiveImpact").value, 3.5);
+  assert.equal(contributions.find(item => item.metric === "defensiveImpact").value, 1.25);
+  assert.match(explanation.selectedPlayers[0].whySelected.join(" "), /FTA per 100 FGA/);
+});

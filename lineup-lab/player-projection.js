@@ -9,8 +9,8 @@
  * requested minutes. Usage-dependent mean effects remain validation-gated.
  */
 
-import { workloadRetention } from "./workload-model.js?v=20260909a";
-import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence } from "./projection-evidence.js?v=20260909a";
+import { workloadRetention } from "./workload-model.js?v=20260909g";
+import { SCOUT_GAME_EVIDENCE_VERSION, pairedMetricEvidence } from "./projection-evidence.js?v=20260909g";
 
 // This contract is deliberately narrower than a universal "usage" rating.
 // It records the amount of possession-ending work that was actually observed

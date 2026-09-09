@@ -109,6 +109,7 @@ const PRESET_LABELS = Object.freeze({
 });
 const METRIC_LABELS = Object.freeze({
   points: "Scoring",
+  freeThrowAttemptRate: "Free-throw pressure (FTA/FGA)",
   efgPct: "Effective FG%",
   threePct: "Three-point %",
   rebounds: "Rebounding",
@@ -1428,7 +1429,10 @@ async function refreshLiveTeamOptions() {
     `Loading ${selectedLivePhaseLabel()} teams from ${nbaSeasonLabel(elements.liveSeason.value)}...`,
   );
   try {
-    await populateLiveTeamOptions();
+    // A visitor's explicit season/phase change is a new data request. Bypass
+    // the tab-level promise cache so a previously slow or stale team query
+    // cannot keep the selector in an old loading state.
+    await populateLiveTeamOptions({ force: true });
     updateLiveSelectionState();
   } catch (error) {
     const detail = error instanceof Error ? error.message : "Team data could not be loaded.";

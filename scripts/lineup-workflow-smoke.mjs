@@ -122,10 +122,12 @@ try {
   assert.equal(await evaluate("document.querySelector('#workflowErrors').hidden"), false);
   assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /required court-role slots/);
   await setValue("#minGuardsInput", 2);
-  await setValue("#minPointsInput", -0.1);
+  // Production floors were retired from the public workflow. Keep this check
+  // on a visible court-role rule that still participates in validation.
+  await setValue("#minCentersInput", -1);
   await click("#workflowNext");
-  assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /enter a valid number from 0/);
-  await setValue("#minPointsInput", "");
+  assert.match(await evaluate("document.querySelector('#workflowErrors').textContent"), /Centers: enter a valid whole number from 0/);
+  await setValue("#minCentersInput", 1);
   await click("#workflowNext"); await assertStage("review");
   assert.match(await evaluate("document.querySelector('#workflowReview').textContent"), /Must include:/);
   await screenshot("desktop-review");
@@ -247,6 +249,7 @@ try {
   await send("Page.navigate", { url: base + "/tools/index.html" });
   await retry(() => evaluate("document.querySelector('#toolsFeatured')?.children.length > 0"), "fan hub");
   if (await evaluate("!!document.querySelector('[data-play-filter=games]')")) {
+    const liveToolCount = await evaluate("document.querySelectorAll('#toolsFeatured article:not([hidden])').length");
     await click('[data-play-filter="games"]');
     assert.equal(await evaluate("document.querySelectorAll('#toolsFeatured article:not([hidden])').length"), 2);
     await evaluate("document.querySelector('#playNow').scrollIntoView()");
@@ -255,10 +258,10 @@ try {
     assert.equal(await evaluate("document.querySelectorAll('#toolsFeatured article.is-suggested:not([hidden])').length"), 1);
     assert.equal(await evaluate("document.activeElement.closest('article').classList.contains('is-suggested')"), true);
     await click('[data-play-filter="all"]');
-    assert.equal(await evaluate("document.querySelectorAll('#toolsFeatured article:not([hidden])').length"), 5);
+    assert.equal(await evaluate("document.querySelectorAll('#toolsFeatured article:not([hidden])').length"), liveToolCount);
   }
   assert.deepEqual(exceptions, []);
-  console.log(JSON.stringify({ ok: true, sourcePath, checks: ["single active step", "gated navigation", "focus", "locks", "role and production conflicts", "draft restore", "exact lineup", "DNA exact swap and role debrief", "collapsed interpretation", "minute conflicts", "cancel", "390px all stages", "back/forward", "reduced motion", "fan hub"], screenshots: output }, null, 2));
+  console.log(JSON.stringify({ ok: true, sourcePath, checks: ["single active step", "gated navigation", "focus", "locks", "role and numeric conflicts", "draft restore", "exact lineup", "DNA exact swap and role debrief", "collapsed interpretation", "minute conflicts", "cancel", "390px all stages", "back/forward", "reduced motion", "fan hub"], screenshots: output }, null, 2));
 } catch (error) {
   console.error(error);
   if (websocket?.readyState === 1) { console.error(await evaluate("({heading:document.querySelector('#workflowHeading')?.textContent,status:document.querySelector('#liveDataStatus')?.textContent,errors:document.querySelector('#workflowErrors')?.textContent})").catch(() => null)); await screenshot("failure").catch(() => {}); }

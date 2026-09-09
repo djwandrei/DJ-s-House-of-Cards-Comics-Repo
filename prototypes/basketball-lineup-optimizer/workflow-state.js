@@ -17,8 +17,8 @@ export const WORKFLOW_FIELDS = Object.freeze({
 });
 export const DRAFT_KEY = "djhc-lineup-lab-workflow-v1";
 const FIELD_IDS = new Set(Object.values(WORKFLOW_FIELDS).flat());
-const FAMILIES = ["scoring", "spacing", "creation", "rebounding", "perimeterDefense", "interiorDefense"];
-const WEIGHTS = ["points", "efgPct", "threePct", "rebounds", "assists", "steals", "blocks", "ballSecurity", "offensiveImpact", "defensiveImpact"];
+const FAMILIES = ["scoring", "freeThrowPressure", "spacing", "creation", "rebounding", "perimeterDefense", "interiorDefense"];
+const WEIGHTS = ["points", "freeThrowAttemptRate", "efgPct", "threePct", "rebounds", "assists", "steals", "blocks", "ballSecurity", "offensiveImpact", "defensiveImpact"];
 const safeNumbers = (value, keys, max = 100) => Object.fromEntries(keys.filter(key => Number.isFinite(value?.[key]) && value[key] >= 0 && value[key] <= max).map(key => [key, value[key]]));
 const safeIds = value => Array.isArray(value) ? [...new Set(value.filter(id => typeof id === "string" && id.length <= 120))].slice(0, 200) : [];
 const safeFields = value => Object.fromEntries(Object.entries(value || {}).filter(([key, entry]) => FIELD_IDS.has(key) && typeof entry === "string" && entry.length < 100));

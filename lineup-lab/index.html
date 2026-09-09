@@ -11,15 +11,15 @@
   <meta name="theme-color" content="#15206b">
   <link rel="icon" href="../assets/games/lineup-lab-icon-20260907.png" sizes="32x32" type="image/png">
   <link rel="preload" href="../assets/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="storefront-shell.css?v=20260909a">
-  <link rel="stylesheet" href="styles.css?v=20260909a">
-  <link rel="stylesheet" href="workflow.css?v=20260909a">
-  <link rel="stylesheet" href="lab-experience.css?v=20260909a">
-  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260909a">
-  <link rel="stylesheet" href="lab-theme.css?v=20260909a">
+  <link rel="stylesheet" href="storefront-shell.css?v=20260909g">
+  <link rel="stylesheet" href="styles.css?v=20260909g">
+  <link rel="stylesheet" href="workflow.css?v=20260909g">
+  <link rel="stylesheet" href="lab-experience.css?v=20260909g">
+  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260909g">
+  <link rel="stylesheet" href="lab-theme.css?v=20260909g">
 </head>
 <body class="lab-guided court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
-  <script src="../theme-init.js?v=20260909a"></script>
+  <script src="../theme-init.js?v=20260909g"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
   <header class="site-header">
@@ -59,6 +59,18 @@
     <button aria-label="Toggle color theme" class="theme-toggle theme-toggle--compact" id="themeToggle" type="button">Dark Mode</button>
    </div>
   </header>
+
+  <nav class="fan-suite-nav" aria-label="Fan tools navigation">
+   <div class="container fan-suite-nav__scroll">
+    <a class="fan-suite-nav__link" href="../tools/"><img src="../assets/games/fan-tools-emblem-20260909.jpg" alt="" width="30" height="30">Fan Tools</a>
+    <a class="fan-suite-nav__link" aria-current="page" href="./"><img src="../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="30" height="30">Lineup Lab</a>
+    <a class="fan-suite-nav__link" href="../tools/fix-the-five/"><img src="../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="30" height="30">Fix the Five</a>
+    <a class="fan-suite-nav__link" href="../tools/draft-night/"><img src="../assets/games/draft-night-emblem-20260907.webp" alt="" width="30" height="30">Draft Night</a>
+    <a class="fan-suite-nav__link" href="../tools/player-card-matchups/"><img src="../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="30" height="30">Player &amp; Cards</a>
+    <a class="fan-suite-nav__link" href="../tools/workshop/"><img src="../assets/games/workshop-emblem-20260909.jpg" alt="" width="30" height="30">Workshop</a>
+    <a class="fan-suite-nav__link" href="../tools/scout-studio/"><img src="../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="30" height="30">Scout Studio</a>
+   </div>
+  </nav>
 
   <main id="mainContent" tabindex="-1">
     <section class="hero">
@@ -233,6 +245,7 @@
                     <p class="weight-validation" id="weightValidation" role="status" hidden>Choose at least one skill priority above zero before optimizing.</p>
                     <div class="weight-grid" id="weightGrid" role="group" aria-label="Game-plan skill priorities" aria-describedby="weightsHelp weightValidation">
                       <label class="range-field"><span><strong>Scoring</strong><small>Points, efficient finishing, and a small impact check</small></span><input type="range" min="0" max="100" step="1" data-family="scoring"><output>0</output></label>
+                      <label class="range-field"><span><strong>Free-throw pressure</strong><small>FTA per FGA; a foul-drawing proxy, not measured rim attacks</small></span><input type="range" min="0" max="100" step="1" data-family="freeThrowPressure"><output>0</output></label>
                       <label class="range-field"><span><strong>Spacing</strong><small>Three-point accuracy and evidence-supported attempt frequency</small></span><input type="range" min="0" max="100" step="1" data-family="spacing"><output>0</output></label>
                       <label class="range-field"><span><strong>Creation</strong><small>Assists, turnover control, and offensive impact</small></span><input type="range" min="0" max="100" step="1" data-family="creation"><output>0</output></label>
                       <label class="range-field"><span><strong>Rebounding</strong><small>End possessions and create extra chances</small></span><input type="range" min="0" max="100" step="1" data-family="rebounding"><output>0</output></label>
@@ -684,13 +697,13 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260909a"></script>
-  <script defer src="../core.js?v=20260909a"></script>
-  <script defer src="../nav.js?v=20260909a"></script>
-  <script defer src="../supabase-client.js?v=20260909a"></script>
-  <script type="module" src="app.js?v=20260909a"></script>
-  <script type="module" src="lab-telemetry.js?v=20260909a"></script>
-  <script type="module" src="lab-experience.js?v=20260909a"></script>
-  <script type="module" src="../tools/basketball-branding.js?v=20260909a"></script>
+  <script defer src="../backend-config.js?v=20260909g"></script>
+  <script defer src="../core.js?v=20260909g"></script>
+  <script defer src="../nav.js?v=20260909g"></script>
+  <script defer src="../supabase-client.js?v=20260909g"></script>
+  <script type="module" src="app.js?v=20260909g"></script>
+  <script type="module" src="lab-telemetry.js?v=20260909g"></script>
+  <script type="module" src="lab-experience.js?v=20260909g"></script>
+  <script type="module" src="../tools/basketball-branding.js?v=20260909g"></script>
 </body>
 </html>

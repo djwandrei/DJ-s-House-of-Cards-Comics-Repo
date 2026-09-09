@@ -41,6 +41,7 @@ export const FAN_EFFICIENCY_METRICS = Object.freeze([
 /** The model-facing metrics that can explain the existing exact objective. */
 export const FAN_OBJECTIVE_METRICS = Object.freeze([
   "points",
+  "freeThrowAttemptRate",
   "efgPct",
   "threePct",
   "rebounds",
@@ -48,10 +49,13 @@ export const FAN_OBJECTIVE_METRICS = Object.freeze([
   "steals",
   "blocks",
   "ballSecurity",
+  "offensiveImpact",
+  "defensiveImpact",
 ]);
 
 export const FAN_METRIC_LABELS = Object.freeze({
   points: "Scoring",
+  freeThrowAttemptRate: "Free-throw pressure (FTA/FGA)",
   rebounds: "Rebounding",
   assists: "Playmaking",
   steals: "Steals",
@@ -70,6 +74,8 @@ export const FAN_METRIC_LABELS = Object.freeze({
   stealPct: "Steal %",
   blockPct: "Block %",
   defensiveBoxPlusMinus: "Defensive BPM",
+  offensiveImpact: "Offensive BPM",
+  defensiveImpact: "Defensive BPM",
 });
 
 const LOWER_IS_BETTER_METRICS = new Set(["turnovers", "ballSecurity"]);
@@ -1272,8 +1278,56 @@ function normalizedWeights(weights = {}) {
   return Object.fromEntries(valid.map(([metric]) => [metric, 1 / valid.length]));
 }
 
+function finiteOptional(value) {
+  if (value === null || value === undefined || value === "" || typeof value === "boolean") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function freeThrowAttemptRate(player) {
+  const analytics = player?.analytics;
+  if (Object.hasOwn(analytics ?? {}, "scoutPlayerGameEvidence")) {
+    const row = analytics?.scoutPlayerGameEvidence?.metrics?.freeThrowAttemptRate;
+    const value = finiteOptional(row?.value);
+    return value !== null && value >= 0 ? value : null;
+  }
+  for (const totals of [analytics?.seasonTotals, analytics?.totals]) {
+    const attempts = finiteOptional(totals?.fieldGoalsAttempted);
+    const freeThrows = finiteOptional(totals?.freeThrowsAttempted);
+    if (attempts !== null && freeThrows !== null && attempts > 0 && freeThrows >= 0) {
+      return freeThrows / attempts;
+    }
+  }
+  for (const advanced of [analytics?.seasonAdvanced, analytics?.advanced]) {
+    if (!advanced || typeof advanced !== "object" || Array.isArray(advanced)) continue;
+    for (const key of ["freeThrowAttemptRate", "free_throw_attempt_rate", "fta_per_fga_pct"]) {
+      const value = finiteOptional(advanced[key]);
+      if (value !== null && value >= 0) return value;
+    }
+  }
+  return null;
+}
+
+function impactValue(player, metric) {
+  const aliases = metric === "offensiveImpact"
+    ? ["offensive_box_plus_minus", "offensiveBoxPlusMinus", "obpm"]
+    : ["defensive_box_plus_minus", "defensiveBoxPlusMinus", "dbpm"];
+  for (const advanced of [player?.analytics?.seasonAdvanced, player?.analytics?.advanced]) {
+    if (!advanced || typeof advanced !== "object" || Array.isArray(advanced)) continue;
+    for (const key of aliases) {
+      const value = finiteOptional(advanced[key]);
+      if (value !== null) return value;
+    }
+  }
+  return null;
+}
+
 function objectiveValue(player, metric, scoringBasis = "perGame") {
-  const value = metric === "ballSecurity"
+  const value = metric === "freeThrowAttemptRate"
+    ? freeThrowAttemptRate(player)
+    : metric === "offensiveImpact" || metric === "defensiveImpact"
+      ? impactValue(player, metric)
+      : metric === "ballSecurity"
     ? nonNegativeNumber(player?.turnovers)
     : FAN_EFFICIENCY_METRICS.includes(metric)
       ? readFromCandidates([player?.[metric]], { percentage: true })
@@ -1354,9 +1408,9 @@ function formatObjectiveReason(item) {
   const percentile = item.scoreMeaning === "normalized-contribution"
     ? `${round(item.percentile * 100, 1)}/100 normalized contribution, not a percentile`
     : formatPercentile(item.percentile);
-  const value = item.value === null ? "unavailable" : item.metric.endsWith("Pct")
-    ? `${round(item.value * 100, 1)}%`
-    : round(item.value, 1);
+  const value = item.value === null ? "unavailable" : item.metric === "freeThrowAttemptRate"
+    ? `${round(item.value * 100, 1)} FTA per 100 FGA`
+    : item.metric.endsWith("Pct") ? `${round(item.value * 100, 1)}%` : round(item.value, 1);
   const unit = item.value !== null && item.valueBasis === "per36" ? " per 36" : "";
   return `${item.label}: ${value}${unit} (${percentile}; ${Math.round(item.weight * 100)}% of this objective).`;
 }

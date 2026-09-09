@@ -6,43 +6,43 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260909a";
+} from "./optimizer-config.js?v=20260909g";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260909a";
+} from "./player-data.js?v=20260909g";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260909a";
+} from "./supabase-nba-data.js?v=20260909g";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   explainLineupRoleChange,
-} from "./fan-analytics.js?v=20260909a";
+} from "./fan-analytics.js?v=20260909g";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260909a";
+} from "./opponent-gameplan.js?v=20260909g";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260909a";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260909a";
-import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260909a";
-import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909a";
-import { createWorkflowView } from "./workflow-view.js?v=20260909a";
+} from "./scenario-url.js?v=20260909g";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260909g";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260909g";
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909g";
+import { createWorkflowView } from "./workflow-view.js?v=20260909g";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260909a";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260909a", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260909g";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260909g", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -82,7 +82,7 @@ const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
 const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v6";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NBA_CACHE_MAX_ENTRIES = 24;
-import { setCourtTeam } from "../tools/basketball-theme.js?v=20260909a";
+import { setCourtTeam } from "../tools/basketball-theme.js?v=20260909g";
 
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
@@ -109,6 +109,7 @@ const PRESET_LABELS = Object.freeze({
 });
 const METRIC_LABELS = Object.freeze({
   points: "Scoring",
+  freeThrowAttemptRate: "Free-throw pressure (FTA/FGA)",
   efgPct: "Effective FG%",
   threePct: "Three-point %",
   rebounds: "Rebounding",
@@ -1428,7 +1429,10 @@ async function refreshLiveTeamOptions() {
     `Loading ${selectedLivePhaseLabel()} teams from ${nbaSeasonLabel(elements.liveSeason.value)}...`,
   );
   try {
-    await populateLiveTeamOptions();
+    // A visitor's explicit season/phase change is a new data request. Bypass
+    // the tab-level promise cache so a previously slow or stale team query
+    // cannot keep the selector in an old loading state.
+    await populateLiveTeamOptions({ force: true });
     updateLiveSelectionState();
   } catch (error) {
     const detail = error instanceof Error ? error.message : "Team data could not be loaded.";
@@ -5228,7 +5232,7 @@ function renderFailure(result) {
   // Groups-to-evaluate readout lets them confirm the effect before rerunning.
   if (category === "performance") {
     const recovery = document.createElement("li");
-    recovery.textContent = "Try raising Minimum games with this team or Minimum MPG, excluding nonessential players, or loosening the production threshold. Check Groups to evaluate, then run the exact search again.";
+    recovery.textContent = "Try raising Minimum games with this team or Minimum MPG, or excluding nonessential players. Check Groups to evaluate, then run the exact search again.";
     list.append(recovery);
   }
   card.append(heading, list);

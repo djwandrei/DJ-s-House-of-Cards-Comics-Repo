@@ -51,6 +51,7 @@ export {
 
 const OBJECTIVE_METRICS = Object.freeze([
   "points",
+  "freeThrowAttemptRate",
   "efgPct",
   "threePct",
   "rebounds",
@@ -76,6 +77,7 @@ const ADVANCED_IMPACT_OBJECTIVE_METRICS = new Set([
 // Scout adapter uses an even offense/defense read rather than guessing intent.
 const SCOUT_OFFENSE_OBJECTIVE_METRICS = Object.freeze([
   "points",
+  "freeThrowAttemptRate",
   "efgPct",
   "threePct",
   "assists",
@@ -857,6 +859,25 @@ export function percentileNormalize(entries, { lowerIsBetter = false } = {}) {
  * an infinite score or an artificial minute-allocation priority.
  */
 function objectiveMetricValue(player, metric, scoringBasis) {
+  if (metric === "freeThrowAttemptRate") {
+    const paired = pairedMetricEvidence(player, metric);
+    if (paired) return paired.value;
+    // Explicit Scout evidence owns this component too. A gap must not borrow
+    // an older team or season advanced rate.
+    if (Object.hasOwn(player?.analytics ?? {}, "scoutPlayerGameEvidence")) return Number.NaN;
+    const sources = [player?.analytics?.seasonAdvanced, player?.analytics?.advanced];
+    for (const source of sources) {
+      if (!source || typeof source !== "object" || Array.isArray(source)) continue;
+      for (const key of ["freeThrowAttemptRate", "free_throw_attempt_rate", "fta_per_fga_pct"]) {
+        const raw = source[key];
+        if (raw === null || raw === undefined || raw === "" || typeof raw === "boolean") continue;
+        const value = Number(raw);
+        // This is a ratio, not a bounded percentage: FTA can exceed FGA.
+        if (Number.isFinite(value) && value >= 0) return value;
+      }
+    }
+    return Number.NaN;
+  }
   if (ADVANCED_IMPACT_OBJECTIVE_METRICS.has(metric)) {
     // A matching all-team BPM value must accompany all-team minutes. Never
     // shrink the selected-team coefficient using another scope's exposure.
@@ -931,6 +952,11 @@ function seasonWideObjectiveMetricValue(player, metric) {
     const made = finiteNonNegative(totals.threePointFieldGoalsMade);
     const attempts = finiteNonNegative(totals.threePointFieldGoalsAttempted);
     return made !== null && attempts > 0 ? made / attempts : null;
+  }
+  if (metric === "freeThrowAttemptRate") {
+    const attempts = finiteNonNegative(totals.freeThrowsAttempted);
+    const fieldGoals = finiteNonNegative(totals.fieldGoalsAttempted);
+    return attempts !== null && fieldGoals !== null && fieldGoals > 0 ? attempts / fieldGoals : null;
   }
   if (!RATE_NORMALIZED_OBJECTIVE_METRICS.has(metric)) return null;
   const field = metric === "ballSecurity"
@@ -2356,6 +2382,7 @@ function objectiveShare(playerId, players, rotationAllocation) {
 
 const OFFENSE_BENCHMARK_METRICS = Object.freeze([
   "points",
+  "freeThrowAttemptRate",
   "efgPct",
   "threePct",
   "assists",

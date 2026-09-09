@@ -1,6 +1,6 @@
 // The app is deployed as static ES modules; retain the release revision here
 // as well so the data adapter and normalization rules update together.
-import { normalizeDataset } from "./player-data.js?v=20260909a";
+import { normalizeDataset } from "./player-data.js?v=20260909g";
 
 const MINIMUM_SUPPORTED_SEASON = 1980;
 // This version is shared with player-projection.js by contract.  Keep the

@@ -95,6 +95,33 @@ test("returns exact-size lineups and evaluates every combination", () => {
   assert.ok(result.alternatives.every((lineup) => lineup.constraintAudit.exactSize.passed));
 });
 
+test("free-throw pressure objective ranks reconciled FTA/FGA evidence", () => {
+  const pressurePlayer = (id, freeThrowsAttempted) => player(id, {
+    analytics: {
+      totals: {
+        minutes: 1680,
+        fieldGoalsAttempted: 500,
+        freeThrowsAttempted,
+      },
+    },
+  });
+  const result = optimizeLineups([
+    pressurePlayer("high-pressure", 220),
+    pressurePlayer("low-pressure", 80),
+  ], {
+    size: 1,
+    minGames: 0,
+    minMinutes: 0,
+    weights: { freeThrowAttemptRate: 1 },
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.best.playerIds, ["high-pressure"]);
+  assert.equal(result.effectiveWeights.freeThrowAttemptRate, 1);
+  assert.equal(result.best.contributionBreakdown.freeThrowAttemptRate.weight, 1);
+  assert.equal(result.best.contributionBreakdown.freeThrowAttemptRate.scoreContribution > 0, true);
+});
+
 test("visible role balance respects a points-only objective without adding hidden defense", () => {
   const fixed = [
     player("creator", { assists: 12, turnovers: 2.5, analytics: { advanced: { usage_percentage: 0.3 } } }),

@@ -36,6 +36,7 @@ const ROTATION_ROLE_PROFILE_VALUES = new Set([
 ]);
 const WEIGHT_CODES = Object.freeze({
   points: "p",
+  freeThrowAttemptRate: "q",
   efgPct: "e",
   threePct: "h",
   rebounds: "r",

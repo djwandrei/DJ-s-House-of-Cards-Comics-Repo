@@ -21,7 +21,7 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
   const shell = make("div", "guided-workflow");
   const rail = make("aside", "journey-rail");
   rail.setAttribute("aria-label", "Your coaching journey");
-  rail.append(make("p", "journey-rail__eyebrow", "Your coaching journey"));
+  rail.append(make("h2", "journey-rail__title", "Coaching Journey"));
   const nav = make("nav");
   nav.setAttribute("aria-label", "Build progress");
   const stepper = make("ol", "journey-steps");
@@ -29,7 +29,12 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
     const li = make("li");
     const control = button("", "journey-step");
     control.dataset.workflowTarget = step.id;
-    control.append(make("span", "journey-step__number", String(index + 1)), make("span", "journey-step__label", step.label), make("small", "journey-step__status"));
+    control.append(
+      make("span", "journey-step__number", String(index + 1)),
+      make("span", "journey-step__label", step.label),
+      make("small", "journey-step__status"),
+      make("small", "journey-step__description", step.description),
+    );
     li.append(control); stepper.append(li);
     control.addEventListener("click", () => go(step.id));
     return control;
@@ -44,10 +49,19 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
   const restart = button("Start over", "journey-restart"); rail.append(restart);
   const canvas = make("div", "journey-canvas");
   const headingWrap = make("header", "journey-heading");
+  const headingBrand = make("div", "journey-heading__brand");
+  const headingEmblem = document.createElement("img");
+  headingEmblem.src = "../../assets/games/lineup-lab-emblem-20260907.webp";
+  headingEmblem.alt = "";
+  headingEmblem.width = 64;
+  headingEmblem.height = 64;
+  headingEmblem.decoding = "async";
+  headingBrand.append(headingEmblem);
   const progress = make("p", "eyebrow"); progress.id = "workflowProgressLabel";
   const heading = make("h2"); heading.id = "workflowHeading"; heading.tabIndex = -1;
   const description = make("p", "journey-description");
-  headingWrap.append(progress, heading, description);
+  headingBrand.append(progress);
+  headingWrap.append(headingBrand, heading, description);
   const errors = make("section", "journey-errors"); errors.id = "workflowErrors"; errors.tabIndex = -1; errors.hidden = true;
   errors.setAttribute("aria-label", "Settings that need attention");
   const stages = Object.fromEntries(WORKFLOW_STEPS.map(step => {
@@ -109,9 +123,14 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
   const revise = button("← Revise game plan"); revise.id = "workflowRevise";
   const rerun = button("Review & run again", "button"); rerun.id = "workflowRerun";
   resultNavigation.append(revise, rerun);
+  const experienceSwitcher = q(".experience-switcher");
+  const toolNav = q(".tool-nav");
   root.prepend(shell);
   shell.append(rail, canvas);
-  canvas.append(headingWrap, errors, form, results, resultNavigation);
+  canvas.append(headingWrap, errors);
+  if (toolNav) canvas.append(toolNav);
+  canvas.append(form, results, resultNavigation);
+  if (experienceSwitcher) stages.plan.prepend(experienceSwitcher);
   q("#emptyResult").hidden = true;
   // Keep the legacy controls for module compatibility, but expose just one
   // solve action, on Review. Start over is an explicit, confirmed action.

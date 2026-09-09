@@ -12,7 +12,7 @@ const SOURCE_ASSET_VERSION_TOKEN = "__LINEUP_LAB_ASSET_VERSION__";
 // logic or interface copy from a browser cache.
 // A follow-up model fix must also invalidate already loaded Lab modules.
 // Lineup Lab has its own revision; storefront cache values remain untouched.
-const RELEASE_ASSET_VERSION = "20260909a";
+const RELEASE_ASSET_VERSION = "20260909g";
 const releaseFiles = [
   "index.html",
   "app.js",
@@ -76,7 +76,7 @@ function transform(relativePath, source) {
   let output = sourceText
     .replaceAll(SOURCE_ASSET_VERSION_TOKEN, RELEASE_ASSET_VERSION)
     .replaceAll("../../tools/", "../tools/");
-  if (relativePath === "index.html" || relativePath === "styles.css") {
+  if (["index.html", "styles.css", "workflow-view.js"].includes(relativePath)) {
     // The source prototype is nested two directories deep; the deployable page
     // is nested once. Keep all storefront references local to the public page.
     output = output.replaceAll("../../assets/", "../assets/");

@@ -12,6 +12,9 @@ the beta.
   roster sizes.
 - Balanced, defense, offense, shooting, and playmaking presets with custom
   metric weights.
+- An optional free-throw-pressure objective (FTA/FGA) when matched attempt
+  totals are available; it is a foul-drawing proxy, not a measurement of rim
+  attacks or whistle quality.
 - Locked and excluded players, sample-size filters, position assignments,
   optional production floors, and a turnover ceiling.
 - Top alternatives, score contributions, constraint checks, and an optional
@@ -153,6 +156,9 @@ production so their units do not get mixed:
 - Counting-stat profiles and turnovers are compared per 36 source minutes by
   default. Shooting percentages remain rates. `perGame` is an explicit legacy
   comparison mode.
+- Free-throw pressure stays in its native FTA/FGA ratio units. The solver only
+  uses it when field-goal and free-throw attempts share a validated season,
+  team-stint, or Scout player-game scope; missing denominators remain missing.
 - When same-season evidence exists, `sampleAdjusted` first blends each observed
   rate toward the imported league baseline before cardinal scoring:
   `baseline + n / (n + k) * (observed - baseline)`. The sample `n` uses

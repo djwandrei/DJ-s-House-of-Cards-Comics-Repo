@@ -6,7 +6,7 @@
  * keeps a shared scenario honest when the underlying source snapshot updates.
  */
 
-import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909a";
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909g";
 
 // v3 adds explicit custom O/D preferences. v2 preserves fractional/combined
 // Historical weights; v1 retains its integer-only contract. Old pages reject
@@ -36,6 +36,7 @@ const ROTATION_ROLE_PROFILE_VALUES = new Set([
 ]);
 const WEIGHT_CODES = Object.freeze({
   points: "p",
+  freeThrowAttemptRate: "q",
   efgPct: "e",
   threePct: "h",
   rebounds: "r",

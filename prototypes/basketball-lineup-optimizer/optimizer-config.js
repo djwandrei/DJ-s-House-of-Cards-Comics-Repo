@@ -135,6 +135,11 @@ export function deriveHistoricalPositionMinuteRequirements(
  * emphasis rather than changing the total scale.
  */
 export const OBJECTIVE_FAMILY_DEFINITIONS = Object.freeze({
+  freeThrowPressure: Object.freeze({
+    label: "Free-throw pressure",
+    description: "Free-throw attempts per field-goal attempt; a foul-drawing proxy, not measured rim attacks",
+    metrics: Object.freeze({ freeThrowAttemptRate: 1 }),
+  }),
   scoring: Object.freeze({
     label: "Scoring",
     description: "Points and efficient finishing, checked against overall offensive impact",
@@ -173,7 +178,7 @@ export const OBJECTIVE_FAMILY_DEFINITIONS = Object.freeze({
 });
 
 /**
- * Strategy presets are expressed in the six visible families. They do not
+ * Strategy presets are expressed in the seven visible families. They do not
  * need to add to 100; only their proportions matter. Balanced, Offense, and
  * Defense are the three primary choices in Simple view. The specialized
  * presets remain available in Detailed view.
@@ -231,6 +236,7 @@ export const DEFAULT_FAMILY_PRESETS = Object.freeze({
 
 const OBJECTIVE_METRIC_KEYS = Object.freeze([
   "points",
+  "freeThrowAttemptRate",
   "efgPct",
   "threePct",
   "rebounds",
@@ -242,7 +248,7 @@ const OBJECTIVE_METRIC_KEYS = Object.freeze([
   "defensiveImpact",
 ]);
 
-/** Convert six understandable priorities into exact-solver metric weights. */
+/** Convert understandable family priorities into exact-solver metric weights. */
 export function weightsFromSkillFamilies(familyWeights = {}) {
   const metricWeights = Object.fromEntries(OBJECTIVE_METRIC_KEYS.map((metric) => [metric, 0]));
   for (const [family, definition] of Object.entries(OBJECTIVE_FAMILY_DEFINITIONS)) {
@@ -274,6 +280,7 @@ export function skillFamiliesFromMetricWeights(metricWeights = {}) {
   const value = (metric) => Math.max(0, Number(metricWeights?.[metric]) || 0);
   return {
     scoring: Math.round((value("points") + value("efgPct") + value("offensiveImpact")) / 3),
+    freeThrowPressure: Math.round(value("freeThrowAttemptRate")),
     spacing: Math.round((value("threePct") + value("efgPct") + value("offensiveImpact")) / 3),
     creation: Math.round((value("assists") + value("ballSecurity") + value("offensiveImpact")) / 3),
     rebounding: Math.round(value("rebounds")),

@@ -22,6 +22,10 @@ body.lab-guided .primary-nav__submenu a:hover { background:#2B3853; }
 body.lab-guided .site-header :is(.submenu-toggle,.theme-toggle,.nav-toggle) { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:42px; padding:.5rem .7rem; border:1px solid #ffffff30; border-radius:16px; background:#ffffff0b; color:#F4F6FA; font-size:.8rem; font-weight:700; cursor:pointer; }
 body.lab-guided .site-header .submenu-toggle { width:40px; padding:.4rem; border-radius:999px; }
 body.lab-guided .header-actions { display:flex; align-items:center; flex-shrink:0; }
+/* Keep the fan-suite rail inside the viewport while its links remain
+   horizontally scrollable at compact widths. */
+body.lab-guided.court-themed .fan-suite-nav__scroll { width:100%; min-width:0 !important; max-width:100%; box-sizing:border-box; }
+body.lab-guided .fan-suite-nav__link { flex:0 0 auto; }
 body.lab-guided .site-header .brand { order:1; }
 body.lab-guided .site-nav { order:2; }
 body.lab-guided .home-header-utility { order:3; }

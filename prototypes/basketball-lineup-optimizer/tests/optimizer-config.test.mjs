@@ -17,6 +17,7 @@ test("skill families translate into the documented exact-solver metrics", () => 
     interiorDefense: 0,
   }), {
     points: 55,
+    freeThrowAttemptRate: 0,
     efgPct: 30,
     threePct: 0,
     rebounds: 0,
@@ -37,6 +38,7 @@ test("skill families translate into the documented exact-solver metrics", () => 
     interiorDefense: 100,
   }), {
     points: 0,
+    freeThrowAttemptRate: 0,
     efgPct: 0,
     threePct: 0,
     rebounds: 30,
@@ -46,6 +48,27 @@ test("skill families translate into the documented exact-solver metrics", () => 
     ballSecurity: 0,
     offensiveImpact: 0,
     defensiveImpact: 40,
+  });
+});
+
+test("free-throw pressure maps to its own metric without changing other families", () => {
+  const weights = weightsFromSkillFamilies({ freeThrowPressure: 12 });
+  assert.equal(weights.freeThrowAttemptRate, 12);
+  assert.equal(weights.points, 0);
+  assert.equal(weights.efgPct, 0);
+  assert.equal(weights.threePct, 0);
+  assert.deepEqual(weightsFromSkillFamilies({}), {
+    points: 0,
+    freeThrowAttemptRate: 0,
+    efgPct: 0,
+    threePct: 0,
+    rebounds: 0,
+    assists: 0,
+    steals: 0,
+    blocks: 0,
+    ballSecurity: 0,
+    offensiveImpact: 0,
+    defensiveImpact: 0,
   });
 });
 

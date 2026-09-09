@@ -1,4 +1,4 @@
-import { createFanMilestones } from '../tools/fan-telemetry.js?v=20260909a';
+import { createFanMilestones } from '../tools/fan-telemetry.js?v=20260909g';
 
 // Observe the public workflow rather than importing optimizer state. This
 // keeps measurement one-way: it can time the experience but cannot affect the

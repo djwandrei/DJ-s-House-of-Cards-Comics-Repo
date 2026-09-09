@@ -94,6 +94,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
     preset: "defense",
     weights: {
       points: 4,
+      freeThrowAttemptRate: 2.5,
       blocks: 18,
       ballSecurity: 7,
       offensiveImpact: 6,
@@ -124,6 +125,7 @@ test("scenario URL codec round-trips valid optimizer and analytics assumptions",
   assert.equal(scenario.season, 2026);
   assert.equal(scenario.experience, "detailed");
   assert.equal(scenario.weights.blocks, 18);
+  assert.equal(scenario.weights.freeThrowAttemptRate, 2.5);
   assert.equal(scenario.weights.offensiveImpact, 6);
   assert.equal(scenario.weights.defensiveImpact, 9);
   assert.equal(scenario.statMinimums.rebounds, 48);
