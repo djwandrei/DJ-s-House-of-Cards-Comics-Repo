@@ -7,13 +7,13 @@ let team = '';
 let previous = '';
 const suiteRoot = new URL('./', import.meta.url);
 const destinations = [
-  ['Fan Tools', './', '../assets/games/fan-tools-emblem.svg'],
+  ['Fan Tools', './', '../assets/games/fan-tools-emblem-20260909.jpg'],
   ['Lineup Lab', '../lineup-lab/', '../assets/games/lineup-lab-emblem-20260907.webp'],
   ['Fix the Five', './fix-the-five/', '../assets/games/fix-the-five-emblem-20260907.webp'],
   ['Draft Night', './draft-night/', '../assets/games/draft-night-emblem-20260907.webp'],
-  ['Scout Studio', './scout-studio/', '../assets/games/fan-tools-emblem.svg'],
-  ['Player & Cards', './player-card-matchups/', '../assets/games/card-matchups-emblem.svg'],
-  ['Workshop', './workshop/', '../assets/games/workshop-emblem.svg'],
+  ['Scout Studio', './scout-studio/', '../assets/games/scout-studio-emblem-20260909.jpg'],
+  ['Player & Cards', './player-card-matchups/', '../assets/games/card-matchups-emblem-20260909.jpg'],
+  ['Workshop', './workshop/', '../assets/games/workshop-emblem-20260909.jpg'],
 ];
 
 function readStoredTeam() {

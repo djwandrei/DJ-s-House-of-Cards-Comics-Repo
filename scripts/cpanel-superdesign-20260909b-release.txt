@@ -1,0 +1,21 @@
+# Completed Superdesign visual implementation: zero deletes.
+tools/basketball-theme.css
+tools/basketball-theme.js
+tools/fan-tools.css
+tools/fan-tools.js
+tools/index.html
+tools/registry.js
+tools/fix-the-five/index.html
+tools/draft-night/index.html
+tools/player-card-matchups/index.html
+tools/player-card-matchups/player-card-matchups.css
+tools/workshop/index.html
+tools/workshop/tool-workshop.css
+tools/workshop/tool-workshop.js
+tools/scout-studio/index.html
+tools/scout-studio/studio.css
+tools/scout-studio/studio.js
+assets/games/fan-tools-emblem-20260909.jpg
+assets/games/scout-studio-emblem-20260909.jpg
+assets/games/card-matchups-emblem-20260909.jpg
+assets/games/workshop-emblem-20260909.jpg

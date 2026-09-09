@@ -329,3 +329,37 @@ body[data-page="fan-tools"] .site-header.fan-suite-header + main .court-team-ide
 @media (prefers-reduced-motion:no-preference) {
   .court-team-picker[open] .court-team-picker__panel { animation:court-reveal 180ms ease-out; }
 }
+
+/* Final Superdesign polish: the shared header remains navy in both modes, so
+   its destination labels need a dedicated light text role instead of page text. */
+body.court-themed {
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+@media (min-width:901px) {
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link {
+    color:#dce6fa !important;
+    background:rgba(255,255,255,.035);
+    border:1px solid transparent;
+    text-shadow:none;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link:hover,
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link:focus-visible {
+    color:#fff !important;
+    background:rgba(255,255,255,.13);
+    border-color:rgba(255,255,255,.16);
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link[aria-current="page"] {
+    color:#15223f !important;
+    background:#f4f7fc;
+    border-color:#f4f7fc;
+    box-shadow:inset 0 -3px #d63a4b;
+  }
+  body[data-page="fan-tools"] .site-header.fan-suite-header .fan-suite-nav__link img {
+    width:30px;
+    height:30px;
+    border-radius:8px;
+    object-fit:cover;
+  }
+}

@@ -12,13 +12,13 @@
   <link rel="icon" href="../../assets/dj-logo.png" type="image/png">
   <link rel="stylesheet" href="../../styles.css?v=20260908a">
   <link rel="stylesheet" href="../../styles-mobile-overrides.css?v=20260908a">
-  <link rel="stylesheet" href="./studio.css?v=20260908a">
+  <link rel="stylesheet" href="./studio.css?v=20260909b">
  </head>
  <body class="scout-studio-page dark-mode" data-page="scout-studio">
   <script src="../../theme-init.js?v=20260908a"></script>
   <a class="skip-link" href="#mainContent">Skip to Scout Studio</a>
   <header class="studio-header container">
-   <a class="studio-brand" href="../../index.html"><img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics" width="58" height="58"><span>DJ's House of Cards<small>Sports fans. Collector minds.</small></span></a>
+   <a class="studio-brand" href="../../index.html"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="58" height="58"><span>Scout Studio<small>DJ's House of Cards &amp; Comics · NBA evidence workspace</small></span></a>
    <nav aria-label="Fan tools navigation">
     <a href="../index.html">Fan Tools</a>
     <a href="../../lineup-lab/index.html">Lineup Lab</a>
@@ -39,8 +39,8 @@
     <aside class="studio-scope"><strong id="studioSeasonScope">Selected Scout window</strong><p>Player, Game Lab, and Season Lab evidence can draw from the validated 2020–21 through 2025–26 Scout window.</p><span>Observation ≠ projection</span></aside>
    </section>
    <section class="studio-source" aria-labelledby="sourceTitle">
-     <div><span class="studio-eyebrow">Evidence checkpoint</span><h2 id="sourceTitle">Checking the published package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after the validated 2020–26 projection loads.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the grain the package provides.</p></div>
-    <button type="button" class="button-secondary" id="refreshSource">Refresh checkpoint</button>
+     <div><span class="studio-eyebrow">Data availability</span><h2 id="sourceTitle">Checking the published package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after the validated 2020–26 projection loads.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the level of detail the package provides.</p></div>
+    <button type="button" class="button-secondary" id="refreshSource">Check again</button>
    </section>
    <section id="pendingPanel" class="studio-panel" aria-labelledby="pendingTitle">
      <span class="studio-eyebrow">Built around the validated package</span><h2 id="pendingTitle">The workbench is loading its evidence.</h2><p>Player Blueprint, Chemistry Lab, Composite Forge, Game Lab, Season Lab, and Career Lab use the published 2020–26 Scout projection. Evidence remains labeled at its observed grain.</p>
@@ -65,7 +65,7 @@
       <div id="forgeDonors" class="studio-roadmap"></div>
       <div class="studio-team-form"><button type="button" id="forgeUndo" class="button-secondary" disabled>Undo last donor change</button><button type="button" id="forgeSave" class="button">Save recipe locally</button><button type="button" id="forgeReset" class="button-secondary">Clear recipe and saved draft</button></div>
       <p id="forgeStatus" role="status" aria-live="polite"></p><div id="forgeChange" aria-live="polite"></div><div id="forgeContent"></div>
-      <section id="seasonForgePanel" class="studio-panel" aria-labelledby="seasonForgeTitle"><span class="studio-eyebrow">New v2 evidence / observed season rows</span><h3 id="seasonForgeTitle">Season-keyed donor view</h3><p>Inspect components from a specific observed season, phase, and team row. This lets you test a recipe at the grain the package provides; it never predicts how a new player would perform.</p><button type="button" id="loadSeasonDonors" class="button-secondary">Load observed season donors</button><div id="seasonForgeContent" aria-live="polite"><p class="studio-muted">Load a team first, then read the bounded season table.</p></div></section>
+      <section id="seasonForgePanel" class="studio-panel" aria-labelledby="seasonForgeTitle"><span class="studio-eyebrow">Observed season rows</span><h3 id="seasonForgeTitle">Specific-season donor view</h3><p>Inspect components from one recorded season, phase, and team row. This tests a recipe at the same level of detail the package provides; it never predicts how a new player would perform.</p><button type="button" id="loadSeasonDonors" class="button-secondary">Load observed season donors</button><div id="seasonForgeContent" aria-live="polite"><p class="studio-muted">Load a team first, then read the bounded season table.</p></div></section>
      </section>
      <section id="chemistryPanel" hidden aria-labelledby="chemistryTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Observed shared-floor evidence</span><h2 id="chemistryTitle">Chemistry Lab</h2></div><p>Choose 2–5 players from this team sample.</p></div>
@@ -77,6 +77,6 @@
   </main>
   <footer class="container studio-footer"><a class="studio-footer-brand" href="../../index.html"><img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics logo" width="42" height="42" loading="lazy" decoding="async"><span>DJ's House of Cards<small>Scout Studio · read-only evidence</small></span></a><p>No catalog, checkout, account, or database changes.</p></footer>
   <script defer src="../../core.js?v=20260908a"></script>
-  <script type="module" src="./studio.js?v=20260908a"></script>
+  <script type="module" src="./studio.js?v=20260909b"></script>
  </body>
 </html>

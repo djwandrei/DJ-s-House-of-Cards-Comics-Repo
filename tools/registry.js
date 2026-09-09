@@ -193,7 +193,7 @@ export const TOOL_REGISTRY = Object.freeze([
     status: TOOL_STATUSES.LIVE,
     href: './player-card-matchups/',
     summary: 'Search a player, see verified cards in the DJHC catalog, and keep the season context beside the match.',
-    emblem: '../assets/games/card-matchups-emblem.svg',
+    emblem: '../assets/games/card-matchups-emblem-20260909.jpg',
     capabilities: [
       'Exact player-to-card matches',
       'Season context beside eligible listings',
@@ -269,7 +269,7 @@ export const TOOL_REGISTRY = Object.freeze([
     id: 'scout-studio',
     kind: 'tool',
     marker: 'Scout',
-    emblem: '../assets/games/fan-tools-emblem.svg',
+    emblem: '../assets/games/scout-studio-emblem-20260909.jpg',
     title: 'Scout Studio',
     eyebrow: 'Six-season NBA workspace',
     status: TOOL_STATUSES.LIVE,

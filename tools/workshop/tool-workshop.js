@@ -149,7 +149,16 @@ function renderExperience(definition, options = {}) {
   updateText('workshopEyebrow', tool.eyebrow);
   updateText('workshopTitle', tool.title);
   updateText('workshopSummary', tool.summary);
-  updateText('workshopMarker', tool.marker);
+  const marker = document.getElementById('workshopMarker');
+  if (marker) {
+    const emblem = document.createElement('img');
+    emblem.src = new URL('../../assets/games/workshop-emblem-20260909.jpg', import.meta.url).href;
+    emblem.alt = '';
+    emblem.width = 54;
+    emblem.height = 54;
+    emblem.decoding = 'async';
+    marker.replaceChildren(emblem);
+  }
   updateText('workshopCategory', definition.category);
   updateText('workshopPromptHeading', definition.prompt);
   updateText('workshopPrompt', 'This preview stores only setup choices in this browser. It does not run the tool or change shop data.');

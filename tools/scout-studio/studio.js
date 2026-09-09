@@ -83,7 +83,7 @@ function styleMatchesPanel(report, mode) {
     const gaps = [...match.gaps].sort((a, b) => a.normalizedGap - b.normalizedGap || a.key.localeCompare(b.key));
     card.append(el('p', `Closest components: ${gaps.slice(0, 2).map(gap => gap.label.toLowerCase()).join(', ')}.`));
     const largest = gaps[gaps.length - 1];
-    card.append(el('p', `Largest normalized gap: ${largest.label}. Target minus this profile: ${differenceLabel(largest.difference, largest.unit)}${largest.unit === 'per100' ? ' per 100 estimated possessions' : ''}.`));
+    card.append(el('p', `Largest relative difference: ${largest.label}. Target minus this profile: ${differenceLabel(largest.difference, largest.unit)}${largest.unit === 'per100' ? ' per 100 estimated possessions' : ''}.`));
     if (match.donorBlocks.length) card.append(el('p', `Recipe donor: ${match.donorBlocks.join(', ')}.`, 'studio-muted'));
     if (match.unreconciledComponents) card.append(el('p', `${match.unreconciledComponents} compared components have a target or candidate without complete independent box-score reconciliation.`, 'studio-muted'));
     const compare = el('button', `Compare with ${match.name}`, 'button-secondary'); compare.type = 'button';
@@ -358,11 +358,11 @@ function renderBlueprint() {
     card.append(el('span', metric?.family || 'Recorded component', 'studio-eyebrow'), el('h3', evidence.label),
       el('strong', format(evidence.value, evidence.unit)),
       el('p', evidence.unit === 'per100' ? 'Rate per 100 estimated team possessions' : 'Share of recorded attempts'),
-      el('p', `${format(evidence.numerator)} / ${format(evidence.denominator)} observed numerator / denominator`));
+      el('p', `${format(evidence.numerator)} recorded events / ${format(evidence.denominator)} opportunities in this sample`));
     const details = el('details'); details.append(el('summary', 'How this number is built'), el('p', metric?.method || 'No unique source component is available.'));
     if (evidence.status === 'unavailable') details.append(el('p', 'Missing or inconsistent coverage prevents this metric from being shown.'));
     details.append(el('p', `${statusLabel(evidence.status)}: ${evidence.reason}`));
-    card.append(el('p', `Other-player median: ${format(evidence.cohort.median, evidence.unit)} (${evidence.cohort.eligible}/${evidence.cohort.candidates} eligible). Difference: ${differenceLabel(evidence.cohort.difference, evidence.unit)}.`));
+    card.append(el('p', `Median among other players in this team sample: ${format(evidence.cohort.median, evidence.unit)} (${evidence.cohort.eligible}/${evidence.cohort.candidates} eligible). Difference: ${differenceLabel(evidence.cohort.difference, evidence.unit)}.`));
     card.append(details); metrics.append(card);
   }); root.append(metrics);
   const compare = players.find(item => item.id === byId('compareSelect').value);
@@ -517,7 +517,7 @@ function renderForge() {
   const dependencies = inspectForgeDependencies(roster, recipe);
   if (dependencies.length) {
     const review = el('details', undefined, 'studio-panel'); review.dataset.forgeDependencies = '';
-    review.append(el('summary', `${dependencies.length} cross-donor dependencies to review`));
+    review.append(el('summary', `${dependencies.length} donor relationships to review`));
     dependencies.forEach(item => review.append(el('p', item.reason)));
     review.append(el('p', 'These are untested relationships, not detected physical conflicts, penalties or proof the recipe cannot work.', 'studio-muted')); root.append(review);
   }
