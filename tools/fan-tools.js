@@ -28,6 +28,37 @@ const CARD_BULLETS = Object.freeze({
   'scout-studio': ['Explore the validated 2020–26 package', 'Inspect observed shared-floor evidence', 'Run Game, Season, or Career Labs'],
 });
 
+const CARD_DEFINITIONS = Object.freeze({
+  'lineup-lab': {
+    uses: 'The team, season, priorities, inclusions, and exclusions you choose.',
+    result: 'A lineup or rotation that follows the selected rules.',
+  },
+  'lineup-dna': {
+    uses: 'The five selected in Lineup Lab and their assigned roles.',
+    result: 'A role-coverage explanation and one-swap comparison.',
+  },
+  'fix-the-five': {
+    uses: 'The displayed lineup, replacement choices, and challenge rules.',
+    result: 'A comparison within that challenge’s allowed swaps.',
+  },
+  'draft-night': {
+    uses: 'The presented player pool and one choice for each role.',
+    result: 'A completed five and its board comparison.',
+  },
+  'card-matchup-explorer': {
+    uses: 'Your player search and verified player-to-card mappings.',
+    result: 'Matching card records from the DJHC collection.',
+  },
+  'workshop': {
+    uses: 'The preview tool and setup options you select locally.',
+    result: 'A saved local setup, not a finished tool result.',
+  },
+  'scout-studio': {
+    uses: 'The available player pool, board, and historical view you choose.',
+    result: 'An exploratory view of the selected records, not a prediction.',
+  },
+});
+
 export function filterPlayableTools(filter = 'all') {
   return TOOL_REGISTRY.filter(tool => tool.status === TOOL_STATUSES.LIVE && (filter === 'all' || (filter === 'games' ? tool.kind === 'game' : tool.kind === 'tool')));
 }
@@ -57,6 +88,29 @@ function appendMarker(parent, tool, className = 'tool-marker') {
   return marker;
 }
 
+function appendDefinitionRows(parent, tool) {
+  const definitions = CARD_DEFINITIONS[tool.id];
+  if (!definitions) return;
+  const list = document.createElement('dl');
+  list.className = 'tools-featured-card__definitions';
+  [['Uses', definitions.uses], ['Result', definitions.result]].forEach(([label, value]) => {
+    const row = document.createElement('div');
+    row.className = 'tools-featured-card__definition';
+    appendText(row, 'dt', '', label);
+    appendText(row, 'dd', '', value);
+    list.append(row);
+  });
+  parent.append(list);
+}
+
+function appendHighlights(parent, tool) {
+  if (!Array.isArray(tool.highlights) || !tool.highlights.length) return;
+  const highlights = document.createElement('div');
+  highlights.className = 'tools-featured-card__highlights';
+  tool.highlights.slice(0, 3).forEach(item => appendText(highlights, 'span', '', item));
+  parent.append(highlights);
+}
+
 function createFeaturedTool(tool) {
   const card = document.createElement('article');
   const titleId = `tool-title-${tool.id}`;
@@ -81,6 +135,8 @@ function createFeaturedTool(tool) {
   bullets.className = 'tools-featured-card__bullets';
   (CARD_BULLETS[tool.id] || tool.capabilities.slice(0, 3)).forEach(item => appendText(bullets, 'li', '', item));
   copy.append(bullets);
+  appendDefinitionRows(copy, tool);
+  appendHighlights(copy, tool);
   content.append(copy);
   card.append(content);
 

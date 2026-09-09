@@ -1,0 +1,775 @@
+/* Superdesign implementation layer: shared Fan Tools hierarchy, contrast, and identity treatment. */
+:root {
+  --sd-navy: #101b46;
+  --sd-blue: #2437b8;
+  --sd-red: #ef1823;
+  --sd-gold: #e4b141;
+  --sd-ink: #172033;
+  --sd-muted: #5c667f;
+  --sd-page: #f1f3f9;
+  --sd-surface: #ffffff;
+  --sd-raised: #e8edf6;
+  --sd-border: rgba(24, 37, 73, .16);
+  --sd-dark-page: #0a1128;
+  --sd-dark-surface: #141b33;
+  --sd-dark-raised: #1c2645;
+  --sd-dark-text: #f4f6ff;
+  --sd-dark-muted: #a8b8cc;
+  --sd-dark-border: rgba(255, 255, 255, .15);
+  --sd-radius: 24px;
+  --sd-shadow: 0 18px 44px rgba(16, 27, 70, .12);
+}
+
+body.court-themed {
+  background: var(--sd-page) !important;
+  color: var(--sd-ink);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.court-themed.dark-mode {
+  --sd-page: var(--sd-dark-page);
+  --sd-surface: var(--sd-dark-surface);
+  --sd-raised: var(--sd-dark-raised);
+  --sd-ink: var(--sd-dark-text);
+  --sd-muted: var(--sd-dark-muted);
+  --sd-border: var(--sd-dark-border);
+}
+
+body.court-themed .site-header,
+body.scout-studio-page .studio-header {
+  background: var(--sd-navy) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .15) !important;
+  color: #fff;
+}
+
+body.court-themed .site-header .brand,
+body.court-themed .site-header .brand-script,
+body.court-themed .site-header .brand-kicker,
+body.court-themed .site-header .primary-nav__link,
+body.court-themed .site-header .submenu-toggle,
+body.court-themed .site-header .nav-toggle {
+  color: #f4f6ff !important;
+}
+
+body.court-themed .site-header .primary-nav__link:focus-visible,
+body.court-themed .site-header .primary-nav__link:hover {
+  color: #fff !important;
+}
+
+body.court-themed .fan-suite-nav .primary-nav__list {
+  gap: .5rem;
+}
+
+body.court-themed .fan-suite-nav .fan-suite-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: .48rem;
+  min-height: 48px;
+  padding: .42rem .78rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+body.court-themed .fan-suite-nav .fan-suite-nav__link img {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 50%;
+  background: #fff;
+  object-fit: cover;
+}
+
+body.court-themed .fan-suite-nav .fan-suite-nav__link:hover,
+body.court-themed .fan-suite-nav .fan-suite-nav__link:focus-visible {
+  background: rgba(255, 255, 255, .12);
+  transform: translateY(-1px);
+}
+
+body.court-themed .fan-suite-nav .fan-suite-nav__link[aria-current="page"] {
+  background: #f8f9fd;
+  border-color: rgba(255, 255, 255, .55);
+  box-shadow: inset 0 -3px 0 var(--sd-gold), 0 8px 18px rgba(0, 0, 0, .18);
+  color: var(--sd-navy) !important;
+}
+
+body.court-themed .fan-suite-nav .fan-suite-nav__link[aria-current="page"] img {
+  border-color: rgba(24, 37, 73, .28);
+}
+
+body.court-themed .page-hero-card,
+body.court-themed .tools-featured-card,
+body.court-themed .matchup-search-card,
+body.court-themed .matchup-player-card,
+body.court-themed .matchup-results-section,
+body.court-themed .matchup-empty-state,
+body.court-themed .workshop-card,
+body.court-themed .fix-five-workspace,
+body.court-themed .fix-five-status-card,
+body.court-themed .fix-five-method-card {
+  background: var(--sd-surface) !important;
+  border: 1px solid var(--sd-border) !important;
+  border-radius: var(--sd-radius) !important;
+  box-shadow: var(--sd-shadow);
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed .page-title,
+body.court-themed .section-title,
+body.court-themed h2,
+body.court-themed h3,
+body.court-themed .tools-featured-card h3,
+body.court-themed .matchup-search-card h2,
+body.court-themed .workshop-card h2 {
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed p,
+body.court-themed li,
+body.court-themed label,
+body.court-themed .tools-intro,
+body.court-themed .tools-featured-card p,
+body.court-themed .matchup-hero-copy > p,
+body.court-themed .workshop-hero-copy > p {
+  color: var(--sd-muted) !important;
+}
+
+body.court-themed .button,
+body.court-themed button.button {
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--sd-blue) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(36, 55, 184, .2);
+  font-weight: 800;
+}
+
+body.court-themed .button:hover,
+body.court-themed .button:focus-visible,
+body.court-themed button.button:hover,
+body.court-themed button.button:focus-visible {
+  background: #17288f !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+body.court-themed .button-secondary,
+body.court-themed button.button-secondary {
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--sd-border) !important;
+  background: var(--sd-raised) !important;
+  color: var(--sd-ink) !important;
+  font-weight: 800;
+}
+
+body.court-themed input,
+body.court-themed select,
+body.court-themed textarea {
+  border-color: var(--sd-border) !important;
+  background: var(--sd-surface) !important;
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed input::placeholder,
+body.court-themed textarea::placeholder {
+  color: var(--sd-muted) !important;
+  opacity: .85;
+}
+
+body.court-themed .tools-hero-card,
+body.court-themed .matchup-hero-card,
+body.court-themed .workshop-hero-card,
+body.court-themed .fix-five-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-top: 4px solid var(--sd-gold) !important;
+}
+
+body.court-themed .tools-hero-card::before,
+body.court-themed .matchup-hero-card::before,
+body.court-themed .workshop-hero-card::before,
+body.court-themed .fix-five-hero-card::before {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(36, 55, 184, .1), transparent 42%);
+  content: '';
+  pointer-events: none;
+}
+
+body.court-themed .tools-hero-layout,
+body.court-themed .matchup-hero-layout,
+body.court-themed .workshop-hero-layout,
+body.court-themed .fix-five-hero-layout {
+  position: relative;
+  z-index: 1;
+}
+
+body.court-themed .tools-hero-kicker,
+body.court-themed .kicker {
+  color: var(--sd-blue) !important;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.court-themed.dark-mode .tools-hero-kicker,
+body.court-themed.dark-mode .kicker {
+  color: #ffd36b !important;
+}
+
+.tools-hero-kicker img {
+  width: 44px;
+  height: 44px;
+  margin-right: .6rem;
+  border: 2px solid var(--sd-gold);
+  border-radius: 12px;
+  object-fit: cover;
+  vertical-align: middle;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .16);
+}
+
+.tools-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin: 1.2rem 0 1.5rem;
+}
+
+.tools-status-strip span {
+  padding: .68rem .88rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+  background: var(--sd-raised);
+  color: var(--sd-muted);
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.tools-status-strip strong {
+  margin-right: .25rem;
+  color: var(--sd-ink);
+  font-size: 1.05rem;
+}
+
+body.court-themed .tools-featured {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+body.court-themed .tools-featured-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1.35rem;
+  border-top: 4px solid var(--sd-blue) !important;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+body.court-themed .tools-featured-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 52px rgba(16, 27, 70, .2);
+}
+
+body.court-themed .tools-featured-card__content {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+
+body.court-themed .tools-featured-card__marker,
+body.court-themed .tools-featured-card__marker.has-game-emblem {
+  display: grid;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--sd-border);
+  border-radius: 18px;
+  background: var(--sd-raised);
+  color: var(--sd-ink);
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+body.court-themed .tools-featured-card__marker img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+body.court-themed .tools-featured-card__content > div:last-child {
+  min-width: 0;
+}
+
+body.court-themed .tools-featured-card h3 {
+  margin: 0 0 .35rem;
+  font-size: clamp(1.3rem, 2vw, 1.75rem);
+  letter-spacing: -.02em;
+}
+
+body.court-themed .tools-featured-card__bullets {
+  margin: .85rem 0 0;
+  padding-left: 1.1rem;
+}
+
+body.court-themed .tools-featured-card__bullets li + li {
+  margin-top: .28rem;
+}
+
+body.court-themed .tools-play-path {
+  margin-top: .7rem;
+  color: var(--sd-ink) !important;
+  font-size: .9rem;
+  font-weight: 800;
+}
+
+.tools-featured-card__definitions {
+  display: grid;
+  gap: .55rem;
+  margin: 1rem 0 0;
+}
+
+.tools-featured-card__definition {
+  padding: .65rem .72rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 12px;
+  background: var(--sd-raised);
+}
+
+.tools-featured-card__definition dt {
+  color: var(--sd-blue);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.court-themed.dark-mode .tools-featured-card__definition dt {
+  color: #ffd36b;
+}
+
+.tools-featured-card__definition dd {
+  margin: .18rem 0 0;
+  color: var(--sd-ink);
+  font-size: .88rem;
+  line-height: 1.42;
+}
+
+.tools-featured-card__highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .8rem;
+}
+
+.tools-featured-card__highlights span {
+  padding: .3rem .5rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 999px;
+  color: var(--sd-muted);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+body.court-themed .tools-featured-card > .button {
+  align-self: flex-start;
+  margin-top: 1.1rem;
+}
+
+.suite-hero-identity,
+.game-brand-identity {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.suite-hero-identity__tile,
+.game-brand-identity__tile {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  padding: .35rem;
+  place-items: center;
+  border: 1px solid var(--sd-border);
+  border-radius: 18px;
+  background: var(--sd-raised);
+  box-shadow: 0 10px 22px rgba(16, 27, 70, .14);
+}
+
+.suite-hero-identity__tile img,
+.game-brand-identity__tile img {
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  object-fit: cover;
+}
+
+.suite-hero-identity__divider,
+.game-brand-identity__divider {
+  width: 1px;
+  height: 44px;
+  background: var(--sd-border);
+}
+
+.game-brand-lockup {
+  align-items: center;
+  gap: 1rem;
+}
+
+.game-brand-lockup .game-brand-identity {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.game-brand-lockup .game-badge {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  padding: .35rem;
+  place-items: center;
+  border: 1px solid var(--sd-border);
+  border-radius: 18px;
+  background: var(--sd-raised);
+}
+
+.game-brand-lockup .game-badge img {
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  object-fit: cover;
+}
+
+body.court-themed .matchup-hero-copy,
+body.court-themed .workshop-hero-copy,
+body.court-themed .fix-five-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+body.court-themed .matchup-hero-panel,
+body.court-themed .workshop-hero-panel,
+body.court-themed .tools-live-panel {
+  border: 1px solid var(--sd-border) !important;
+  border-radius: 20px !important;
+  background: var(--sd-raised) !important;
+  color: var(--sd-ink) !important;
+  box-shadow: none;
+}
+
+body.court-themed .matchup-hero-panel h2,
+body.court-themed .workshop-hero-panel h2,
+body.court-themed .tools-live-panel h2,
+body.court-themed .matchup-hero-panel p,
+body.court-themed .workshop-hero-panel p,
+body.court-themed .tools-live-panel p {
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed .matchup-panel-marker,
+body.court-themed .workshop-panel-marker {
+  border: 1px solid var(--sd-gold);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(16, 27, 70, .14);
+}
+
+body.court-themed .matchup-panel-marker img,
+body.court-themed .workshop-panel-marker img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+body.court-themed .workshop-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: workshop-step;
+}
+
+body.court-themed .workshop-stage-grid > li {
+  min-height: 150px;
+  padding: 1.1rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 18px;
+  background: var(--sd-raised);
+  color: var(--sd-ink) !important;
+  counter-increment: workshop-step;
+}
+
+body.court-themed .workshop-stage-grid > li::before {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  margin-bottom: .8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sd-blue);
+  color: #fff;
+  content: counter(workshop-step);
+  font-weight: 900;
+}
+
+body.court-themed .workshop-stage-grid > li strong,
+body.court-themed .workshop-stage-grid > li span {
+  display: block;
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed .workshop-stage-grid > li span {
+  margin-top: .35rem;
+  color: var(--sd-muted) !important;
+  line-height: 1.45;
+}
+
+body.court-themed .matchup-methodology,
+body.court-themed .matchup-handoff,
+body.court-themed .matchup-workspace .matchup-sidebar > section {
+  border-color: var(--sd-border) !important;
+  border-radius: 20px;
+  background: var(--sd-surface) !important;
+  color: var(--sd-ink) !important;
+  box-shadow: var(--sd-shadow);
+}
+
+body.court-themed .matchup-methodology h2,
+body.court-themed .matchup-handoff h2,
+body.court-themed .matchup-methodology strong {
+  color: var(--sd-ink) !important;
+}
+
+body.court-themed .matchup-methodology span,
+body.court-themed .matchup-handoff p,
+body.court-themed .matchup-methodology li span {
+  color: var(--sd-muted) !important;
+}
+
+body.fix-five-page .fix-five-hero-card,
+body.fix-five-page .fix-five-status-card,
+body.fix-five-page .fix-five-method-card {
+  color: var(--sd-ink) !important;
+}
+
+body.fix-five-page .fix-five-hero-card .breadcrumb-list a,
+body.fix-five-page .fix-five-hero-card .breadcrumb-current,
+body.fix-five-page .fix-five-hero-card .game-badge-hint {
+  color: var(--sd-muted) !important;
+}
+
+body.fix-five-page .fix-five-workspace,
+body.fix-five-page .fix-five-method-card,
+body.fix-five-page .fix-five-status-card {
+  background: var(--sd-surface) !important;
+}
+
+body.fix-five-page .fix-five-status-card > *,
+body.fix-five-page .fix-five-method-card > * {
+  color: var(--sd-ink) !important;
+}
+
+body.fix-five-page .fix-five-status-card p,
+body.fix-five-page .fix-five-method-card p,
+body.fix-five-page .fix-five-method-card li {
+  color: var(--sd-muted) !important;
+}
+
+body.fix-five-page .fix-five-candidate,
+body.fix-five-page .fix-five-slot,
+body.fix-five-page .draft-slot {
+  border-color: var(--sd-border) !important;
+  background: var(--sd-raised) !important;
+  color: var(--sd-ink) !important;
+}
+
+body.fix-five-page .fix-five-candidate:hover,
+body.fix-five-page .fix-five-candidate:focus-visible {
+  border-color: var(--sd-gold) !important;
+  transform: translateY(-2px);
+}
+
+body.scout-studio-page {
+  --studio-canvas: var(--sd-dark-page);
+  --studio-surface: var(--sd-dark-surface);
+  --studio-surface-strong: var(--sd-dark-raised);
+  --studio-text: var(--sd-dark-text);
+  --studio-muted: var(--sd-dark-muted);
+  --studio-border: var(--sd-dark-border);
+  background: var(--studio-canvas) !important;
+  color: var(--studio-text) !important;
+}
+
+body.scout-studio-page .studio-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+body.scout-studio-page .studio-header a,
+body.scout-studio-page .studio-header button,
+body.scout-studio-page .studio-header span {
+  color: var(--studio-text) !important;
+}
+
+body.scout-studio-page .studio-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--studio-border) !important;
+  border-top: 4px solid var(--sd-gold) !important;
+  border-radius: var(--sd-radius) !important;
+  background: linear-gradient(135deg, var(--studio-surface), #18264b) !important;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .22);
+}
+
+body.scout-studio-page .studio-hero h1,
+body.scout-studio-page .studio-hero p,
+body.scout-studio-page .studio-scope,
+body.scout-studio-page .studio-scope p,
+body.scout-studio-page .studio-scope strong,
+body.scout-studio-page .studio-eyebrow {
+  color: var(--studio-text) !important;
+}
+
+body.scout-studio-page .studio-hero p,
+body.scout-studio-page .studio-scope p {
+  color: var(--studio-muted) !important;
+}
+
+.studio-hero-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: .85rem;
+  margin-bottom: 1rem;
+  padding: .45rem .65rem .45rem .45rem;
+  border: 1px solid var(--studio-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--studio-text);
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.studio-hero-lockup img {
+  width: 68px;
+  height: 68px;
+  border: 2px solid var(--sd-gold);
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.studio-hero-lockup small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--studio-muted);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: none;
+}
+
+body.scout-studio-page .studio-scope,
+body.scout-studio-page .studio-workbench,
+body.scout-studio-page .studio-method,
+body.scout-studio-page .studio-field-guide,
+body.scout-studio-page .studio-sources,
+body.scout-studio-page .studio-samples,
+body.scout-studio-page .studio-roster {
+  border-color: var(--studio-border) !important;
+  background: var(--studio-surface) !important;
+  color: var(--studio-text) !important;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .18);
+}
+
+body.scout-studio-page .studio-workbench button,
+body.scout-studio-page .studio-mode-controls button,
+body.scout-studio-page .studio-workbench select,
+body.scout-studio-page .studio-workbench input {
+  min-height: 44px;
+  border: 1px solid var(--studio-border) !important;
+  border-radius: 12px;
+  background: var(--studio-surface-strong) !important;
+  color: var(--studio-text) !important;
+}
+
+body.scout-studio-page .studio-workbench button[aria-pressed="true"],
+body.scout-studio-page .studio-mode-controls button[aria-pressed="true"] {
+  border-color: var(--sd-gold) !important;
+  background: #293b78 !important;
+  box-shadow: inset 0 0 0 1px rgba(228, 177, 65, .25);
+}
+
+body.scout-studio-page .studio-workbench h2,
+body.scout-studio-page .studio-workbench h3,
+body.scout-studio-page .studio-workbench label,
+body.scout-studio-page .studio-method h2,
+body.scout-studio-page .studio-field-guide h2 {
+  color: var(--studio-text) !important;
+}
+
+body.scout-studio-page .studio-workbench p,
+body.scout-studio-page .studio-method p,
+body.scout-studio-page .studio-field-guide p,
+body.scout-studio-page .studio-sources p,
+body.scout-studio-page .studio-samples p {
+  color: var(--studio-muted) !important;
+}
+
+body.scout-studio-page .studio-status,
+body.scout-studio-page .studio-evidence,
+body.scout-studio-page .studio-definition,
+body.scout-studio-page .studio-note {
+  border-color: var(--studio-border) !important;
+  background: var(--studio-surface-strong) !important;
+  color: var(--studio-text) !important;
+}
+
+@media (max-width: 900px) {
+  body.court-themed .tools-featured {
+    grid-template-columns: 1fr;
+  }
+
+  body.court-themed .fan-suite-nav .primary-nav__list {
+    gap: .25rem;
+  }
+
+  body.court-themed .fan-suite-nav .fan-suite-nav__link {
+    min-height: 44px;
+    padding-inline: .58rem;
+    font-size: .86rem;
+  }
+
+  .suite-hero-identity__tile,
+  .game-brand-identity__tile {
+    width: 62px;
+    height: 62px;
+  }
+
+  body.court-themed .workshop-stage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.court-themed .fan-suite-nav .fan-suite-nav__link,
+  body.court-themed .tools-featured-card,
+  body.court-themed .button,
+  body.court-themed button {
+    transition: none;
+  }
+}
