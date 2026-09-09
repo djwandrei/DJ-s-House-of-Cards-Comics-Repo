@@ -1,5 +1,5 @@
-import { dailyMatchup, teamGameEvidence, simulateMatchup, GAME_LAB_POLICY } from './possession-simulator.js?v=20260907d';
-import { formatStudioValue as format } from './studio-model.js?v=20260906a';
+import { dailyMatchup, teamGameEvidence, simulateMatchup, GAME_LAB_POLICY } from './possession-simulator.js?v=20260908a';
+import { formatStudioValue as format } from './studio-model.js?v=20260908a';
 
 const node = (tag, text, className) => {
   const result = document.createElement(tag);

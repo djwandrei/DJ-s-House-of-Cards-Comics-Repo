@@ -600,6 +600,11 @@ body.dark-mode.fix-five-page .fix-five-candidate:focus-visible { outline-color:#
   display: block;
 }
 
+/* Keep the explanatory copy in the wide content column beside its step marker. */
+.fix-five-method-card li > span {
+  grid-column: 2;
+}
+
 .fix-five-contract-copy {
   color: var(--fix-muted);
   font-size: .82rem;

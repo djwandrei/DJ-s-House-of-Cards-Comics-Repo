@@ -1,11 +1,11 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260907f';
-import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260907f';
+import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260908a';
+import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260908a';
 import {
   clearWorkshopDraft,
   defaultWorkshopValues,
   loadWorkshopDraft,
   saveWorkshopDraft
-} from './workshop-state.js?v=20260907f';
+} from './workshop-state.js?v=20260908a';
 
 const FALLBACK_EXPERIENCE_ID = WORKSHOP_DEFINITIONS[0]?.id || '';
 
@@ -49,7 +49,7 @@ function renderStageList(definition) {
   definition.stages.forEach((stage, index) => {
     const item = document.createElement('li');
     item.className = 'workshop-stage-card';
-    appendText(item, 'span', 'workshop-stage-number', String(index + 2).padStart(2, '0'));
+    appendText(item, 'span', 'workshop-stage-number', String(index + 1).padStart(2, '0'));
     appendText(item, 'h3', '', stage.title);
     appendText(item, 'p', '', stage.summary);
     container.append(item);
@@ -152,22 +152,19 @@ function renderExperience(definition, options = {}) {
   updateText('workshopMarker', tool.marker);
   updateText('workshopCategory', definition.category);
   updateText('workshopPromptHeading', definition.prompt);
-  updateText('workshopPrompt', 'This route stores only setup choices in this browser. The future adapter will be limited to the data, scoring, and evidence boundary documented below.');
-  updateText('workshopNextMilestone', definition.nextMilestone);
-  document.title = `${tool.title} Framework | DJ's House of Cards & Comics`;
+  updateText('workshopPrompt', 'This preview stores only setup choices in this browser. It does not run the tool or change shop data.');
+  document.title = `${tool.title} Preview | DJ's House of Cards & Comics`;
 
   renderFields(definition, values);
   renderStageList(definition);
   renderDetailList('workshopResults', definition.resultContract);
   renderDetailList('workshopGuardrails', definition.guardrails);
-  renderTagList('workshopConnections', definition.connectionPoints);
-  renderTagList('workshopDataNeeds', tool.dependencies, 'workshop-data-tag');
   updateSavedState(draft);
   updateStatus(options.invalidRequest
     ? `${tool.title} is shown because the requested framework was not recognized.`
     : draft
       ? 'Your saved setup is loaded locally. Analytics and scoring remain disconnected.'
-      : 'Choose a setup to document the future run locally. Analytics and scoring remain disconnected.', 'info');
+      : 'Choose settings to save a local preview. The tool stays unfinished until its source and scoring are reviewed.', 'info');
 }
 
 function populatePicker(selectedId) {
@@ -207,7 +204,7 @@ function initializeWorkshop() {
     try {
       const draft = saveWorkshopDraft(browserStorage(), activeDefinition, formValues(activeDefinition));
       updateSavedState(draft);
-      updateStatus('Setup saved in this browser. The experience will remain in framework mode until its data and scoring adapters are reviewed.', 'success');
+      updateStatus('Setup saved in this browser. The tool remains a preview until its source and scoring are reviewed.', 'success');
       window.dispatchEvent(new CustomEvent('djhc:fan-tool-framework-save', { detail: draft }));
     } catch {
       updateStatus('This browser did not allow local setup storage. You can still inspect the framework and its requirements.', 'error');

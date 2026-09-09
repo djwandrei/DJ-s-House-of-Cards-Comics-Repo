@@ -1,5 +1,5 @@
-import { LEAGUE_POLICY, roundRobinSchedule } from './season-simulator.js?v=20260907e';
-import { GAME_LAB_POLICY, createScenarioRandom } from './possession-simulator.js?v=20260907e';
+import { LEAGUE_POLICY, roundRobinSchedule } from './season-simulator.js?v=20260908a';
+import { GAME_LAB_POLICY, createScenarioRandom } from './possession-simulator.js?v=20260908a';
 
 const integer = (value, min, max) => Number.isSafeInteger(value) && value >= min && value <= max;
 const finite = (value, min, max) => Number.isFinite(value) && value >= min && value <= max;

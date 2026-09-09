@@ -5,14 +5,14 @@ import {
   normalizeGameFamily,
   revealScoutDailyGame,
   scoutDailyGameUnavailableMessage,
-} from '../scout-daily-game-client.js?v=20260905g';
+} from '../scout-daily-game-client.js?v=20260908a';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260907f';
-import { createFanMilestones } from '../fan-telemetry.js?v=20260907f';
-import { createDecisionHistory } from '../game-decision-history.js?v=20260907f';
-import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260907f';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260908a';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260908a';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260908a';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260908a';
 
 const GAME_KIND = 'fix-the-five';
 const RUN_LENGTH = 5;

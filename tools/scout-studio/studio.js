@@ -1,13 +1,13 @@
-import { formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260906a';
-import { buildBlueprint, comparePlayerEvidence, analyzeChemistry, FORGE_BLOCKS, createForgeRecipe, buildComposite, explainForgeChange } from './studio-analysis.js?v=20260906a';
-import { loadForgeDraft, saveForgeDraft, clearForgeDraft } from './forge-state.js?v=20260906a';
-import { findPlayerStyleMatches, findCompositeStyleMatches } from './style-matches.js?v=20260907b';
-import { analyzePlayerContextLens, analyzeGroupContextLens } from './context-lens.js?v=20260907d';
-import { createGameLab } from './game-lab.js?v=20260907d';
-import { createLeagueLab } from './league-lab.js?v=20260907e';
-import { createCareerLab } from './career-lab.js?v=20260907f';
-import { SEASON_FORGE_BLOCKS, createSeasonForgeRecipe, buildSeasonComposite, seasonProfileLabel, validateSeasonDonorProfiles } from './season-composite.js?v=20260907f';
-import { captureChemistry, compareChemistry, compareForgeRecipes, inspectForgeDependencies, BLUEPRINT_QUESTIONS } from './workbench-comparisons.js?v=20260907e';
+import { formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260908a';
+import { buildBlueprint, comparePlayerEvidence, analyzeChemistry, FORGE_BLOCKS, createForgeRecipe, buildComposite, explainForgeChange } from './studio-analysis.js?v=20260908a';
+import { loadForgeDraft, saveForgeDraft, clearForgeDraft } from './forge-state.js?v=20260908a';
+import { findPlayerStyleMatches, findCompositeStyleMatches } from './style-matches.js?v=20260908a';
+import { analyzePlayerContextLens, analyzeGroupContextLens } from './context-lens.js?v=20260908a';
+import { createGameLab } from './game-lab.js?v=20260908a';
+import { createLeagueLab } from './league-lab.js?v=20260908a';
+import { createCareerLab } from './career-lab.js?v=20260908a';
+import { SEASON_FORGE_BLOCKS, createSeasonForgeRecipe, buildSeasonComposite, seasonProfileLabel, validateSeasonDonorProfiles } from './season-composite.js?v=20260908a';
+import { captureChemistry, compareChemistry, compareForgeRecipes, inspectForgeDependencies, BLUEPRINT_QUESTIONS } from './workbench-comparisons.js?v=20260908a';
 
 const byId = id => document.getElementById(id);
 const el = (tag, text, className) => {
@@ -24,6 +24,8 @@ let recipeHistory = [];
 let referenceRecipe = null, referenceChemistry = null;
 let seasonDonorProfiles = null, seasonForgeRecipe = null, seasonForgeBaseline = '';
 const contextCache = new Map();
+let publicIndexPromise = null;
+const publicBundleCache = new Map();
 const gameLab = createGameLab(byId('gamePanel'), api);
 const leagueLab = createLeagueLab(byId('leaguePanel'), api);
 const careerLab = createCareerLab(byId('careerPanel'), api);
@@ -215,6 +217,63 @@ function invalidate() {
   setBusy(false);
 }
 
+const localPreview = ['127.0.0.1', 'localhost'].includes(location.hostname);
+const publicDataUrl = path => new URL(`./data/${path}`, document.baseURI).toString();
+async function fetchPublicJson(url, signal) {
+  const response = await fetch(url, { cache: 'no-store', credentials: 'omit', signal });
+  if (!response.ok) throw new Error('The published six-season Scout projection is temporarily unavailable.');
+  return response.json();
+}
+async function publicBundle(teamId, signal) {
+  if (!publicIndexPromise) publicIndexPromise = fetchPublicJson(publicDataUrl('index.json'), signal);
+  const index = await publicIndexPromise;
+  const descriptor = index.teams?.find(team => team.id === teamId);
+  if (!descriptor || !/^t\d{1,2}$/.test(teamId)) throw new Error('Choose a listed team.');
+  if (!publicBundleCache.has(teamId)) {
+    const bundle = await fetchPublicJson(publicDataUrl(descriptor.file), signal);
+    if (bundle.snapshot !== index.snapshot || bundle.team !== teamId) throw new Error('Published Scout evidence changed. Refresh the page.');
+    publicBundleCache.set(teamId, bundle);
+  }
+  return { index, bundle: publicBundleCache.get(teamId) };
+}
+async function publicApi(route, params, signal) {
+  const index = !publicIndexPromise ? await (publicIndexPromise = fetchPublicJson(publicDataUrl('index.json'), signal)) : await publicIndexPromise;
+  if (route === 'status') return { phase: 'ready', snapshot: index.snapshot, source: index.source, missing: [], issues: [], warnings: [], modelEvidence: index.modelEvidence, teams: index.teams.map(({ id, name }) => ({ id, name })) };
+  const teamId = String(params.team || '');
+  const { bundle } = await publicBundle(teamId, signal);
+  if (route === 'roster') return { snapshot: bundle.snapshot, team: teamId, players: bundle.players };
+  if (route === 'team-contexts') return { snapshot: bundle.snapshot, team: teamId, contexts: bundle.teamContexts };
+  const playerId = String(params.player || '');
+  if (route === 'player-contexts') {
+    if (!/^p\d{1,4}$/.test(playerId)) throw new Error('Choose a player from this team and package.');
+    const contexts = bundle.onOff?.[playerId];
+    return contexts ? { snapshot: bundle.snapshot, team: teamId, player: playerId, ...contexts }
+      : { snapshot: bundle.snapshot, team: teamId, player: playerId, on: [], off: [], note: 'No player on/off context rows are available for this sample.' };
+  }
+  if (route === 'player-seasons') {
+    if (!/^p\d{1,4}$/.test(playerId)) throw new Error('Choose a player from this team and package.');
+    return { snapshot: bundle.snapshot, team: teamId, player: playerId, profiles: bundle.seasonProfiles?.[playerId] || [], note: 'Season and phase rows are observed records from the selected six-season package. Missing seasons are not imputed.' };
+  }
+  if (route === 'season-donors') return { snapshot: bundle.snapshot, team: teamId, profiles: bundle.seasonDonors || [], note: 'Season donors are observed rows from the selected six-season package. A recipe does not create a forecast or physically feasible player.' };
+  if (route === 'chemistry') {
+    const ids = String(params.players || '').split(',').filter(Boolean);
+    if (ids.length < 2 || ids.length > 5 || ids.some(id => !/^p\d{1,4}$/.test(id)) || new Set(ids).size !== ids.length) throw new Error('Choose two through five distinct players.');
+    const key = ids.slice().sort().join('|');
+    const pair = ids.length === 2 ? bundle.wowy?.[key] : null;
+    const names = new Map(bundle.players.map(player => [player.id, player.name]));
+    const wowy = pair ? pair.cells.map(cell => ({ ...cell,
+      label: cell.key === 'a_on_b_off' ? `${names.get(pair.first)} only` : cell.key === 'a_off_b_on' ? `${names.get(pair.second)} only` : cell.label })) : [];
+    const pairs = [];
+    if (ids.length > 2) for (let a = 0; a < ids.length; a += 1) for (let b = a + 1; b < ids.length; b += 1) {
+      const pairKey = [ids[a], ids[b]].sort().join('|');
+      const combination = bundle.combinations?.[pairKey];
+      pairs.push({ selection: [ids[a], ids[b]], combination: combination ? { kind: combination.kind, sample: combination.sample } : null });
+    }
+    return { snapshot: bundle.snapshot, team: teamId, selection: ids, combination: bundle.combinations?.[key] || null, wowy, pairs,
+      note: 'Observed together/apart samples are not adjusted teammate effects. No invented Synergy Score or unseen-combination bonus is used.' };
+  }
+  throw new Error('The published Scout projection does not support this request.');
+}
 async function api(route, params = {}, signal) {
   const ownController = new AbortController(); controllers.add(ownController);
   const abort = () => ownController.abort();
@@ -222,6 +281,7 @@ async function api(route, params = {}, signal) {
   if (signal?.aborted) abort();
   const timer = setTimeout(() => ownController.abort(), 90000);
   try {
+    if (!localPreview) return await publicApi(route, params, ownController.signal);
     const response = await fetch(`/api/scout-studio/${route}?${new URLSearchParams(params)}`, {
       cache: 'no-store', credentials: 'omit', signal: ownController.signal,
     });
@@ -239,7 +299,6 @@ async function refresh() {
   byId('sourceTitle').textContent = 'Checking the incoming package…';
   byId('sourceMessage').textContent = 'Reading compact validation metadata only; this does not restart or re-fit Scout.';
   try {
-    if (location.hostname !== '127.0.0.1') throw new Error('This is a local integration preview. Start the Scout Studio preview server to connect the incoming private package.');
     const result = await api('status');
     if (request !== generation) return;
     if (!['pending', 'blocked', 'ready'].includes(result.phase) || !Array.isArray(result.teams)) throw new Error('Unexpected preview contract. No evidence was loaded.');
@@ -247,9 +306,9 @@ async function refresh() {
     gameLab.setSource(result);
     leagueLab.setSource(result);
     const ready = result.phase === 'ready';
-    byId('sourceTitle').textContent = ready ? 'Validated for local integration review' : result.phase === 'blocked' ? 'Package validation needs attention' : 'Waiting for the current Scout build';
+    byId('sourceTitle').textContent = ready ? (localPreview ? 'Validated for local integration review' : 'Validated 2020–26 Scout package') : result.phase === 'blocked' ? 'Package validation needs attention' : 'Waiting for the current Scout build';
     byId('sourceMessage').textContent = ready
-      ? `Choose a team below. ${result.warnings?.length || 0} validation warning(s) remain available in the private reports for review.`
+      ? `${localPreview ? 'Choose a team below.' : 'Choose a team below to explore the published six-season projection.'} ${result.warnings?.length || 0} validation warning(s) remain available in the private reports for review.`
       : result.phase === 'blocked' ? 'The supplied evidence did not clear the integration checks. Results remain unavailable; review the private validation reports.'
         : 'The selected manifest and its matching validation reports are not available yet. Check the selected package paths.';
     byId('studioSeasonScope').textContent = result.source?.seasons?.length
@@ -263,7 +322,7 @@ async function refresh() {
     byId('workStatus').textContent = 'Select a team to begin. No team shards have been loaded.';
   } catch (error) {
     if (request !== generation) return;
-    state = null; byId('sourceTitle').textContent = 'Local Scout connection unavailable';
+    state = null; byId('sourceTitle').textContent = localPreview ? 'Local Scout connection unavailable' : 'Published Scout connection unavailable';
     byId('sourceMessage').textContent = error.name === 'AbortError' ? 'The read timed out. You can refresh the checkpoint.' : error.message;
   }
 }

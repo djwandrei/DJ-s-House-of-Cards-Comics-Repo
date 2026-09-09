@@ -1,5 +1,5 @@
-import { validateAnalysisRoster, analyzeChemistry, sampleEvidence, buildComposite, createForgeRecipe } from './studio-analysis.js?v=20260906a';
-import { analyzeGroupContextLens } from './context-lens.js?v=20260907d';
+import { validateAnalysisRoster, analyzeChemistry, sampleEvidence, buildComposite, createForgeRecipe } from './studio-analysis.js?v=20260908a';
+import { analyzeGroupContextLens } from './context-lens.js?v=20260908a';
 
 export const BLUEPRINT_QUESTIONS = Object.freeze({
   all: { keys: null, note: 'Review the full observable profile. None of these components is a latent talent grade or a forecast.' },

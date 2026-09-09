@@ -1,4 +1,4 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260907f';
+import { TOOL_REGISTRY, TOOL_STATUSES } from './registry.js?v=20260908a';
 
 const STATUS_LABELS = Object.freeze({
   [TOOL_STATUSES.LIVE]: 'Live',
@@ -11,19 +11,21 @@ const KIND_LABELS = Object.freeze({
   game: 'Fan game'
 });
 const PLAY_LABELS = Object.freeze({
-  'lineup-lab': ['Choose a team and season → set your priorities → meet your five', 'Open Lineup Lab'],
-  'lineup-dna': ['See the roles it covers → spot a gap → test one replacement', 'Explore Lineup DNA'],
-  'fix-the-five': ['Read the board → choose one legal swap → reveal your place', 'Play Fix the Five'],
-  'draft-night': ['Pick five players by role → lock your lineup → see the board result', 'Play Draft Night'],
-  'card-matchup-explorer': ['Search a player → review verified matches → explore the collection', 'Compare players & cards'],
+  'lineup-lab': ['Choose a team and season, set priorities, then review your five', 'Open Lineup Lab'],
+  'lineup-dna': ['Review role coverage, find a gap, then test one replacement', 'Explore Lineup DNA'],
+  'fix-the-five': ['Read the fixed board, choose one legal swap, then reveal your place', 'Play Fix the Five'],
+  'draft-night': ['Choose five players by role, lock the lineup, then read the board result', 'Play Draft Night'],
+  'card-matchup-explorer': ['Search a player, review identity-linked cards, then browse the collection', 'Compare players & cards'],
+  'scout-studio': ['Choose a team, inspect observed evidence, then run a repeatable lab', 'Open Scout Studio'],
 });
 
 const CARD_BULLETS = Object.freeze({
   'lineup-lab': ['Build a starting five or full rotation', 'Try a historical team-season', 'Lock or exclude players'],
-  'lineup-dna': ['See the roles your five covers', 'Find a thin or missing role', 'Test one replacement'],
+  'lineup-dna': ['See which roles your five covers', 'Find a thin or missing role', 'Test one replacement'],
   'fix-the-five': ['Choose one legal replacement', 'Lock your move', 'Reveal a board result'],
   'draft-night': ['Pick five players by role', 'Build your lineup', 'Reveal your place on the board'],
   'card-matchup-explorer': ['Search a player', 'See verified card matches', 'Jump back to the Lab'],
+  'scout-studio': ['Explore the validated 2020–26 package', 'Inspect observed shared-floor evidence', 'Run Game, Season, or Career Labs'],
 });
 
 export function filterPlayableTools(filter = 'all') {

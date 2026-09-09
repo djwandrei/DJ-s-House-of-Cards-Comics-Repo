@@ -363,6 +363,20 @@ body.dark-mode.tool-workshop-page :focus-visible { outline-color:#f5cb70; }
   align-items:start;
 }
 
+.workshop-build-boundary-card {
+  display:block;
+}
+
+.workshop-build-boundary-card h2 {
+  margin-bottom:.65rem;
+}
+
+.workshop-boundary-note {
+  margin-bottom:0;
+  color:var(--muted);
+  font-size:.9rem;
+}
+
 .workshop-connection-card strong {
   display:block;
   margin-bottom:.55rem;

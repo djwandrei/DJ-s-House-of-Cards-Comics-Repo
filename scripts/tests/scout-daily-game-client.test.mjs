@@ -42,9 +42,16 @@ const scope = {
 test('browser client accepts canonical public boards and rejects private Scout fields', () => {
   const result = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [scope] });
   assert.equal(assertScoutDailyGamePublicBoard(result.publicBoard, 'fix-the-five', '2026-09-05'), result.publicBoard);
+  assert.ok(result.publicBoard.challenges[0].candidates[0].id.startsWith('p'));
   const leaked = structuredClone(result.publicBoard);
   leaked.challenges[0].candidates[0].scout = { offense: 1.2 };
   assert.throws(() => assertScoutDailyGamePublicBoard(leaked), /not a public Scout game field/);
+  const providerFieldLeak = structuredClone(result.publicBoard);
+  providerFieldLeak.challenges[0].candidates[0].playerId = 'legacy-provider-id';
+  assert.throws(() => assertScoutDailyGamePublicBoard(providerFieldLeak), /not a public Scout game field/);
+  const providerIdLeak = structuredClone(result.publicBoard);
+  providerIdLeak.challenges[0].candidates[0].id = '550e8400-e29b-41d4-a716-446655440000';
+  assert.throws(() => assertScoutDailyGamePublicBoard(providerIdLeak), /identifier|opaque/i);
   assert.equal(normalizeDailySeed('2026-02-29'), '');
   assert.equal(normalizeDailySeed('2026-09-05'), '2026-09-05');
 });

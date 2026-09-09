@@ -1,4 +1,4 @@
-import { palettes, paletteForTeam, themeFor } from './basketball-palettes.js?v=20260907f';
+import { palettes, paletteForTeam, themeFor } from './basketball-palettes.js?v=20260908a';
 
 // Appearance is a one-way consumer. It never changes rosters, rules, or scores.
 const root = document.body;
@@ -11,6 +11,7 @@ const destinations = [
   ['Lineup Lab', '../lineup-lab/', '../assets/games/lineup-lab-emblem-20260907.webp'],
   ['Fix the Five', './fix-the-five/', '../assets/games/fix-the-five-emblem-20260907.webp'],
   ['Draft Night', './draft-night/', '../assets/games/draft-night-emblem-20260907.webp'],
+  ['Scout Studio', './scout-studio/', '../assets/games/fan-tools-emblem.svg'],
   ['Player & Cards', './player-card-matchups/', '../assets/games/card-matchups-emblem.svg'],
   ['Workshop', './workshop/', '../assets/games/workshop-emblem.svg'],
 ];

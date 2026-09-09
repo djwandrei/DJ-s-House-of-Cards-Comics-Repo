@@ -348,6 +348,9 @@ function Test-DeployablePath {
   # The public Fan Tools hub is a separate, browser-only surface. Keep its
   # release paths narrow and exclude any future private tool workspaces.
   if ($normalizedPath.StartsWith("tools/", [System.StringComparison]::OrdinalIgnoreCase)) {
+    if ($normalizedPath.StartsWith("tools/scout-studio/data/", [System.StringComparison]::OrdinalIgnoreCase)) {
+      return $normalizedPath -match '^tools/scout-studio/data/(?:index|team-\d{2})\.json$'
+    }
     return @(".html", ".js", ".css") -contains $extension
   }
 

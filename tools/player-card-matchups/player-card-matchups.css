@@ -773,6 +773,29 @@ body.dark-mode .matchup-player-card {
   background:linear-gradient(120deg,#182243,#151f36);
 }
 
+body.dark-mode .matchup-search-card,
+body.dark-mode .matchup-player-card,
+body.dark-mode .matchup-methodology,
+body.dark-mode .matchup-empty-state,
+body.dark-mode .matchup-result-card {
+  border-color:rgba(255,255,255,.13);
+  background:#111c32;
+}
+
+body.dark-mode .matchup-result-media {
+  background:linear-gradient(145deg,#18243d,#111c32);
+}
+
+body.dark-mode .matchup-result-media--empty::after,
+body.dark-mode .matchup-search-help,
+body.dark-mode .matchup-result-copy p,
+body.dark-mode .matchup-result-actions p,
+body.dark-mode .matchup-candidate-continuation p,
+body.dark-mode .matchup-empty-state p,
+body.dark-mode .matchup-methodology li {
+  color:#c4cce1;
+}
+
 body.dark-mode .matchup-page {
   --surface-muted:rgba(255,255,255,.08);
 }

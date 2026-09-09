@@ -98,6 +98,7 @@ test('Scout Daily Game returns a public board only and caches its private catalo
   const firstBody = await first.json();
   assertScoutDailyGamePublicBoard(firstBody.board);
   assertNoPrivateScoutFields(firstBody.board);
+  assert.ok(firstBody.board.challenges[0].lineup.every((player) => /^p[a-z0-9]{7}(?:-\d+)?$/i.test(player.id)));
   assert.equal(h.calls(), 1);
 
   const second = await h.run(request({ action: 'board', gameKind: 'draft-night', dailySeed: '2026-09-05' }));

@@ -14,7 +14,8 @@ export const SCOUT_DAILY_GAME_FAMILIES = Object.freeze([
   'multi-season-pool',
 ]);
 
-const PRIVATE_SCOUT_KEY = /^(?:scout|offen[sc]|defen[sc]|rapm|impact|coefficient|rawscore)/i;
+const PRIVATE_SCOUT_KEY = /^(?:scout|offen[sc]|defen[sc]|rapm|impact|coefficient|rawscore|provider(?:player)?id|playerid)/i;
+const PROVIDER_UUID_PATTERN = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function requireText(value, label) {
@@ -28,9 +29,15 @@ function assertNoPrivateScoutFields(value, path = 'payload') {
     value.forEach((item, index) => assertNoPrivateScoutFields(item, `${path}[${index}]`));
     return;
   }
+  if (typeof value === 'string' && PROVIDER_UUID_PATTERN.test(value)) {
+    throw new Error(`${path} is not a public Scout game identifier.`);
+  }
   if (!value || typeof value !== 'object') return;
   Object.entries(value).forEach(([key, nested]) => {
     if (PRIVATE_SCOUT_KEY.test(key)) throw new Error(`${path}.${key} is not a public Scout game field.`);
+    if (typeof nested === 'string' && PROVIDER_UUID_PATTERN.test(nested)) {
+      throw new Error(`${path}.${key} is not a public Scout game identifier.`);
+    }
     assertNoPrivateScoutFields(nested, `${path}.${key}`);
   });
 }

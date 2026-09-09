@@ -7,7 +7,10 @@
  */
 
 export const SCOUT_DAILY_GAME_CONTRACT_VERSION = 1;
-export const SCOUT_DAILY_GAME_MODEL_VERSION = 'scout-daily-games-v1';
+// v2 is the first public compiler release backed by the expanded, calibrated
+// 2020–26 Scout package.  The contract remains v1 so browser clients can keep
+// validating the same board/reveal shape while the model revision changes.
+export const SCOUT_DAILY_GAME_MODEL_VERSION = 'scout-daily-games-v2';
 export const SCOUT_DAILY_GAME_KINDS = Object.freeze(['fix-the-five', 'draft-night']);
 export const SCOUT_DAILY_GAME_FAMILIES = Object.freeze([
   'team-season',
@@ -39,7 +42,8 @@ const ALLOWED_POSITION_TOKENS = new Set(['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F'])
 const PUBLIC_STAT_KEYS = Object.freeze([
   'games', 'minutes', 'points', 'rebounds', 'assists', 'steals', 'blocks', 'turnovers', 'efgPct', 'threePct',
 ]);
-const PRIVATE_KEY_PATTERN = /(?:offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)?|rawscore)/i;
+const PRIVATE_KEY_PATTERN = /(?:offen[sc]|defen[sc]|rapm|impact|coefficient|scout(?:score|value|impact)?|rawscore|provider(?:player)?id|playerid)/i;
+const PROVIDER_UUID_PATTERN = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
 function requireText(value, label) {
   const text = String(value ?? '').trim();
@@ -74,6 +78,31 @@ function stableHash(value = '') {
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
+}
+
+/**
+ * Convert provider identifiers into deterministic, board-safe identifiers.
+ *
+ * Provider IDs are useful only while compiling a private scope.  A short
+ * hash keeps board/reveal requests reproducible without putting the source ID
+ * (often a UUID) into browser state, URLs, or public responses.  The suffix is
+ * deterministic and handles the unlikely 32-bit hash collision.
+ */
+function opaquePlayerIds(rawPlayers, scopeId) {
+  const sourceIds = [...new Set(rawPlayers.map((raw, index) => (
+    requireIdentifier(raw?.playerId, `Scout player ${index + 1} ID`)
+  )))].sort(stableCompare);
+  const used = new Set();
+  const result = new Map();
+  sourceIds.forEach((sourceId) => {
+    const base = `p${stableHash(`${scopeId}:${sourceId}`).toString(36).padStart(7, '0')}`;
+    let publicId = base;
+    let suffix = 1;
+    while (used.has(publicId)) publicId = `${base}-${suffix++}`;
+    used.add(publicId);
+    result.set(sourceId, publicId);
+  });
+  return result;
 }
 
 function stableCompare(left, right) {
@@ -128,18 +157,23 @@ function publicStatsFor(value) {
   }));
 }
 
-function normalizePlayer(raw, scope) {
+function normalizePlayer(raw, scope, playerIds) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error(`Scout scope ${scope.id} has an invalid player.`);
+  const sourcePlayerId = requireIdentifier(raw.playerId, 'Scout player ID');
   const sourceSeasonEndYear = Number(raw.sourceSeasonEndYear);
   if (!Number.isInteger(sourceSeasonEndYear) || !scope.seasonEndYears.includes(sourceSeasonEndYear)) {
-    throw new Error(`Scout player ${raw.playerId || '(unknown)'} is outside ${scope.id}'s model scope.`);
+    throw new Error(`A Scout player is outside ${scope.id}'s model scope.`);
   }
   const scout = raw.scout;
   if (!scout || typeof scout !== 'object' || Array.isArray(scout)) {
-    throw new Error(`Scout player ${raw.playerId || '(unknown)'} is missing private Scout evidence.`);
+    throw new Error('A Scout player is missing private Scout evidence.');
+  }
+  const publicId = playerIds.get(sourcePlayerId);
+  if (!publicId) {
+    throw new Error('Scout player ID could not be made public-safe.');
   }
   return Object.freeze({
-    id: requireIdentifier(raw.playerId, 'Scout player ID'),
+    id: publicId,
     name: requireText(raw.name, 'Scout player name'),
     positions: Object.freeze(normalizePositions(raw.positions)),
     teamCode: requireIdentifier(raw.teamCode, 'Scout player team code').toUpperCase(),
@@ -179,7 +213,9 @@ function normalizeScope(raw) {
     }),
     seasonEndYears: Object.freeze(seasonEndYears),
   };
-  const players = Array.isArray(raw.players) ? raw.players.map((player) => normalizePlayer(player, scope)) : [];
+  const rawPlayers = Array.isArray(raw.players) ? raw.players : [];
+  const playerIds = opaquePlayerIds(rawPlayers, id);
+  const players = rawPlayers.map((player) => normalizePlayer(player, scope, playerIds));
   if (!players.length) throw new Error(`${id} has no Scout-eligible players.`);
   return Object.freeze({ ...scope, players: Object.freeze(players) });
 }
@@ -499,6 +535,18 @@ function assertNoPrivateScoutFields(value, path = 'board') {
   }
 }
 
+function assertNoProviderIdentifiers(value, path = 'board') {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => assertNoProviderIdentifiers(item, `${path}[${index}]`));
+    return;
+  }
+  if (typeof value === 'string' && PROVIDER_UUID_PATTERN.test(value)) {
+    throw new Error(`${path} would expose a provider identifier.`);
+  }
+  if (!value || typeof value !== 'object') return;
+  Object.entries(value).forEach(([key, nested]) => assertNoProviderIdentifiers(nested, `${path}.${key}`));
+}
+
 /** Return only validated, in-range, ready-to-play Scout sources. */
 export function collectScoutDailyGameSources(scopes = []) {
   if (!Array.isArray(scopes)) throw new Error('Scout game scopes must be an array.');
@@ -549,6 +597,7 @@ export function buildScoutDailyGame({ gameKind, dailySeed, scopes, family = null
       challenges: Object.freeze(publicChallenges),
     });
     assertNoPrivateScoutFields(publicBoard);
+    assertNoProviderIdentifiers(publicBoard);
     return Object.freeze({ publicBoard, sealedResults: Object.freeze(sealedResults) });
   }
 
@@ -567,6 +616,7 @@ export function buildScoutDailyGame({ gameKind, dailySeed, scopes, family = null
     deck: built.publicBoard,
   });
   assertNoPrivateScoutFields(publicBoard);
+  assertNoProviderIdentifiers(publicBoard);
   return Object.freeze({ publicBoard, sealedResults: built.sealedResults });
 }
 
@@ -577,5 +627,6 @@ export function assertScoutDailyGamePublicBoard(value) {
   if (!SCOUT_DAILY_GAME_KINDS.includes(value.gameKind)) throw new Error('Scout public board has an invalid game kind.');
   normalizeDailySeed(value.dailySeed);
   assertNoPrivateScoutFields(value);
+  assertNoProviderIdentifiers(value);
   return value;
 }

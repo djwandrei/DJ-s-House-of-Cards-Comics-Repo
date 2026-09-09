@@ -4,6 +4,7 @@ import {
   assertScoutDailyGamePublicBoard,
   buildScoutDailyGame,
   collectScoutDailyGameSources,
+  SCOUT_DAILY_GAME_MODEL_VERSION,
 } from '../lib/scout-daily-games.mjs';
 
 function player(id, position, offense, defense, options = {}) {
@@ -50,10 +51,12 @@ const combinedScope = scope('combined-2023-26', [
 ], [2024, 2025]);
 
 test('Scout daily games are deterministic, legal, and score with private Scout input only', () => {
+  assert.equal(SCOUT_DAILY_GAME_MODEL_VERSION, 'scout-daily-games-v2');
   const first = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [singleSeasonScope] });
   const second = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [singleSeasonScope] });
   assert.deepEqual(first, second);
   assert.equal(first.publicBoard.challenges.length, 5);
+  assert.equal(first.publicBoard.compilerVersion, SCOUT_DAILY_GAME_MODEL_VERSION);
   for (const challenge of first.publicBoard.challenges) {
     assert.equal(challenge.lineup.length, 5);
     assert.equal(challenge.candidates.length, 3);
@@ -61,6 +64,7 @@ test('Scout daily games are deterministic, legal, and score with private Scout i
     const result = first.sealedResults[challenge.id];
     assert.equal(Object.keys(result).length, 3);
     assert.equal(Object.values(result).filter((entry) => entry.isBest).length, 1);
+    assert.ok([...challenge.lineup, ...challenge.candidates].every((entry) => /^p[a-z0-9]{7}(?:-\d+)?$/i.test(entry.id)));
   }
   assertScoutDailyGamePublicBoard(first.publicBoard);
   const collectKeys = (value) => Array.isArray(value)
@@ -73,6 +77,25 @@ test('Scout daily games are deterministic, legal, and score with private Scout i
     () => assertScoutDailyGamePublicBoard({ ...first.publicBoard, scout: { offense: 1 } }),
     /private Scout value/i,
   );
+});
+
+test('provider UUIDs are replaced by deterministic opaque player IDs', () => {
+  const uuidScope = structuredClone(singleSeasonScope);
+  uuidScope.id = 'uuid-provider-fixture';
+  uuidScope.players.forEach((entry, index) => {
+    entry.playerId = `550e8400-e29b-41d4-a716-44665544${String(index).padStart(4, '0')}`;
+  });
+  const first = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [uuidScope] });
+  const second = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [uuidScope] });
+  assert.deepEqual(first, second);
+  const serialized = JSON.stringify({ board: first.publicBoard, sealed: first.sealedResults });
+  assert.doesNotMatch(serialized, /550e8400-e29b-41d4-a716-44665544/i);
+  assert.ok(first.publicBoard.challenges.every((challenge) => (
+    [...challenge.lineup, ...challenge.candidates].every((entry) => /^p[a-z0-9]{7}(?:-\d+)?$/i.test(entry.id))
+  )));
+  const leaked = structuredClone(first.publicBoard);
+  leaked.challenges[0].candidates[0].id = '550e8400-e29b-41d4-a716-446655440000';
+  assert.throws(() => assertScoutDailyGamePublicBoard(leaked), /identifier|opaque/i);
 });
 
 test('Draft Night has all 243 legal paths and only returns relative Scout outcomes', () => {

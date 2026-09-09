@@ -1,5 +1,5 @@
-import { formatStudioValue as format } from './studio-model.js?v=20260906a';
-import { buildCareerTimeline, summarizeCareer, replayObservedCareer, CAREER_POLICY } from './career-simulator.js?v=20260907f';
+import { formatStudioValue as format } from './studio-model.js?v=20260908a';
+import { buildCareerTimeline, summarizeCareer, replayObservedCareer, CAREER_POLICY } from './career-simulator.js?v=20260908a';
 
 const node = (tag, text, className = '') => {
   const element = document.createElement(tag); if (text !== undefined) element.textContent = text;
@@ -96,4 +96,3 @@ export function createCareerLab(root, request) {
     load.disabled = !roster || !source; status.textContent = roster && source ? 'Choose a player and load observed season profiles.' : 'A loaded team and validated Scout snapshot are required.';
   } };
 }
-

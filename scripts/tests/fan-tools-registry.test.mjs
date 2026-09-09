@@ -33,12 +33,12 @@ test('fan tool registry has unique, complete metadata', () => {
 
       if (routeUrl.pathname === '/tools/workshop/') {
         assert.equal(routeUrl.searchParams.get('experience'), tool.id, `${tool.id} workshop route must identify its experience`);
-        assert.equal(tool.launchLabel, 'Open framework', `${tool.id} workshop route needs an honest launch label`);
+        assert.equal(tool.launchLabel, 'Preview setup', `${tool.id} workshop route needs an honest launch label`);
       }
       if (tool.status !== TOOL_STATUSES.LIVE) {
         assert.equal(tool.status, TOOL_STATUSES.PLANNED, `${tool.id} non-live route must be a planned framework`);
         assert.equal(routeUrl.pathname, '/tools/workshop/', `${tool.id} planned route must use the local workshop`);
-        assert.equal(tool.launchLabel, 'Open framework', `${tool.id} planned route needs an honest launch label`);
+        assert.equal(tool.launchLabel, 'Preview setup', `${tool.id} planned route needs an honest launch label`);
       }
     } else if (tool.status === TOOL_STATUSES.LIVE) {
       assert.fail(`${tool.id} is live but has no route`);
@@ -52,11 +52,9 @@ test('fan tools page keeps the roadmap isolated and accessible', () => {
   const html = fs.readFileSync(path.join(root, 'tools', 'index.html'), 'utf8');
   assert.match(html, /data-page="fan-tools"/);
   assert.match(html, /(?:name="robots"[^>]+content="noindex,follow|content="noindex,follow[^>]+name="robots")/i);
-  assert.match(html, /id="toolsGrid"/);
   assert.match(html, /id="toolsFeatured"/);
-  assert.match(html, /id="toolsResearch"/);
-  assert.match(html, /data-status-count="live"/);
-  assert.match(html, /href="#toolsRoadmap"/);
+  assert.match(html, /id="playNow"/);
+  assert.match(html, /id="toolsLiveSpotlight"/);
   assert.match(html, /type="module"[^>]+fan-tools\.js/);
   assert.match(html, /href="\/tools\/"[^>]+data-fan-tools-link="true"|data-fan-tools-link="true"[^>]+href="\/tools\/"/);
 });
@@ -78,7 +76,7 @@ test('fan tool filters preserve registry order and status boundaries', () => {
   assert.deepEqual(filterRegistry('all'), TOOL_REGISTRY);
   assert.deepEqual(
     filterRegistry(TOOL_STATUSES.LIVE).map((tool) => tool.id),
-    ['lineup-lab', 'lineup-dna', 'fix-the-five', 'draft-night', 'card-matchup-explorer']
+    ['lineup-lab', 'lineup-dna', 'fix-the-five', 'draft-night', 'card-matchup-explorer', 'scout-studio']
   );
   assert.equal(filterRegistry(TOOL_STATUSES.PLANNED).length, 6);
   assert.equal(filterRegistry(TOOL_STATUSES.RESEARCH).length, 4);
@@ -89,7 +87,7 @@ test('fan tool filters preserve registry order and status boundaries', () => {
 
 test('fan tool status summary is derived from the registry', () => {
   assert.deepEqual(countRegistryByStatus(), {
-    [TOOL_STATUSES.LIVE]: 5,
+    [TOOL_STATUSES.LIVE]: 6,
     [TOOL_STATUSES.PLANNED]: 6,
     [TOOL_STATUSES.RESEARCH]: 4
   });

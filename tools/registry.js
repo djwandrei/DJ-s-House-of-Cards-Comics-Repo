@@ -75,7 +75,7 @@ export const TOOL_REGISTRY = Object.freeze([
     marker: '5x',
     emblem: '../assets/games/fix-the-five-emblem-20260907.webp',
     title: 'Fix the Five',
-    eyebrow: 'Live daily Scout lineup game',
+    eyebrow: 'Daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './fix-the-five/',
     summary: 'Choose one legal replacement, lock your move, and reveal your place on that day’s fixed board.',
@@ -90,7 +90,7 @@ export const TOOL_REGISTRY = Object.freeze([
       'Local-only progress'
     ],
     dependencies: [
-      'Validated Scout O/D scope in the 2023–24 through 2025–26 window',
+      'Validated Scout O/D scope in the 2020–21 through 2025–26 window',
       'Service-only daily board compiler and sealed reveal endpoint'
     ],
     implementationNotes: 'Every result stays inside one source-labeled Scout board. Public stats are context only; raw Scout values remain private, and an unavailable source never falls back to an older fixture.'
@@ -100,11 +100,11 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'game',
     marker: 'Coach',
     title: 'Rotation Rescue',
-    eyebrow: 'Framework available',
+    eyebrow: 'Upcoming fan tool',
     status: TOOL_STATUSES.PLANNED,
     href: workshopHref('rotation-rescue'),
-    launchLabel: 'Open framework',
-    summary: 'Solve a historical coaching brief, build a five or full rotation, and compare the result with an exact optimizer target.',
+    launchLabel: 'Preview setup',
+    summary: 'Choose a historical team brief, build a five or rotation, and see which rules your choices satisfy.',
     capabilities: [
       'Seeded team-season challenge setup',
       'Five-player and full-rotation build modes',
@@ -121,11 +121,11 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'game',
     marker: 'Scout',
     title: "Scout's Call",
-    eyebrow: 'Framework available',
+    eyebrow: 'Upcoming fan tool',
     status: TOOL_STATUSES.PLANNED,
     href: workshopHref('scouts-call'),
-    launchLabel: 'Open framework',
-    summary: 'Read a historical opponent profile, choose priorities and a counter-lineup, then compare your call with a source-labeled game plan.',
+    launchLabel: 'Preview setup',
+    summary: 'Read a historical opponent profile, set priorities, and see how your counter-lineup compares with the reviewed plan.',
     capabilities: [
       'Opponent-profile challenge briefs',
       'Priority and counter-lineup choices',
@@ -143,7 +143,7 @@ export const TOOL_REGISTRY = Object.freeze([
     marker: 'Draft',
     emblem: '../assets/games/draft-night-emblem-20260907.webp',
     title: 'Draft Night',
-    eyebrow: 'Live daily Scout lineup game',
+    eyebrow: 'Daily Scout lineup game',
     status: TOOL_STATUSES.LIVE,
     href: './draft-night/',
     summary: 'Pick five players by role, lock your lineup, and see where it lands on the day’s fixed board.',
@@ -153,12 +153,12 @@ export const TOOL_REGISTRY = Object.freeze([
       'A reveal after you lock the lineup'
     ],
     highlights: [
-      '243 Scout-ranked paths per board',
+      'Up to 243 paths when the board supports it',
       'Five-pick replay loop',
       'Local-only score'
     ],
     dependencies: [
-      'Validated Scout O/D scope in the 2023–24 through 2025–26 window',
+      'Validated Scout O/D scope in the 2020–21 through 2025–26 window',
       'Service-only daily board compiler and sealed reveal endpoint'
     ],
     implementationNotes: 'The rank exists only inside the daily Scout board. Public stats label player context; raw model values stay private, and the game remains unavailable rather than using old fixtures.'
@@ -168,11 +168,11 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'game',
     marker: 'Fit',
     title: 'What Breaks This Five?',
-    eyebrow: 'Framework available',
+    eyebrow: 'Upcoming fan tool',
     status: TOOL_STATUSES.PLANNED,
     href: workshopHref('what-breaks-this-five'),
-    launchLabel: 'Open framework',
-    summary: 'Inspect a notable five-player lineup, identify its role weakness, and compare your answer with the role model explanation.',
+    launchLabel: 'Preview setup',
+    summary: 'Study one five-player lineup, choose the role or trade-off that matters most, and read the explanation.',
     capabilities: [
       'Curated lineup case files',
       'Role-gap prediction choices',
@@ -189,7 +189,7 @@ export const TOOL_REGISTRY = Object.freeze([
     kind: 'tool',
     marker: 'Cards',
     title: 'Player & Card Matchups',
-    eyebrow: 'Live collector tool',
+    eyebrow: 'Collector tool',
     status: TOOL_STATUSES.LIVE,
     href: './player-card-matchups/',
     summary: 'Search a player, see verified cards in the DJHC catalog, and keep the season context beside the match.',
@@ -264,6 +264,32 @@ export const TOOL_REGISTRY = Object.freeze([
       'No live transaction or inventory writes'
     ],
     implementationNotes: 'This is a simulation surface, not a transaction workflow; keep it independent of checkout and Shopify state.'
+  }),
+  freezeTool({
+    id: 'scout-studio',
+    kind: 'tool',
+    marker: 'Scout',
+    emblem: '../assets/games/fan-tools-emblem.svg',
+    title: 'Scout Studio',
+    eyebrow: 'Six-season NBA workspace',
+    status: TOOL_STATUSES.LIVE,
+    href: './scout-studio/',
+    summary: 'Explore player blueprints, observed shared-floor evidence, composite recipes, and repeatable game experiments across the validated 2020–26 Scout window.',
+    capabilities: [
+      'Player and season evidence from 2020–26',
+      'Observed chemistry, context, and donor views',
+      'Repeatable Game, Season, and Career Labs'
+    ],
+    highlights: [
+      'Six-season Scout package',
+      'Read-only evidence workspace',
+      'No private model values in the browser'
+    ],
+    dependencies: [
+      'Validated six-season Scout projection',
+      'Buyer-safe static data bridge'
+    ],
+    implementationNotes: 'The public projection retains observed stats and opaque ids only. Private source rows, provider ids, and fitted model components remain outside the storefront.'
   }),
   freezeTool({
     id: 'nba-analytics-explorer',

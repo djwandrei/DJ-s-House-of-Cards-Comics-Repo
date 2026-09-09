@@ -5,14 +5,14 @@ import {
   normalizeGameFamily,
   revealScoutDailyGame,
   scoutDailyGameUnavailableMessage,
-} from '../scout-daily-game-client.js?v=20260905g';
+} from '../scout-daily-game-client.js?v=20260908a';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine, validOnePickAlternatives } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260907f';
-import { createFanMilestones } from '../fan-telemetry.js?v=20260907f';
-import { createDecisionHistory } from '../game-decision-history.js?v=20260907f';
-import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260907f';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260908a';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260908a';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260908a';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260908a';
 
 const GAME_KIND = 'draft-night';
 const PICK_COUNT = 5;
@@ -92,6 +92,11 @@ function writeStore() {
 
 function deck() {
   return state.board?.deck || null;
+}
+
+function publishedPathCount() {
+  const count = Number(deck()?.publishedPathCount);
+  return Number.isInteger(count) && count > 0 ? String(count) : '';
 }
 
 function recordKey() {
@@ -189,7 +194,9 @@ function renderScoreboard() {
   const currentDeck = deck();
   elements.roundCount.textContent = `${Math.min(currentIndex() + 1, PICK_COUNT)}/${PICK_COUNT}`;
   elements.bestScore.textContent = localBest() ? `${localBest()}/100` : (state.outcome ? `${state.outcome.roundScore}/100` : '—');
-  elements.pathCount.textContent = String(currentDeck?.publishedPathCount || 243);
+  elements.pathCount.textContent = Number.isInteger(currentDeck?.publishedPathCount) && currentDeck.publishedPathCount > 0
+    ? String(currentDeck.publishedPathCount)
+    : '—';
   elements.runTitle.textContent = `Daily Scout draft · ${state.seed}`;
   elements.runDescription.textContent = isComplete()
     ? 'Your five is selected. The sealed Scout comparison uses this one source-labeled daily board.'
@@ -281,7 +288,7 @@ function createOnePickLearning(outcome) {
     const item = createElement('li');
     item.append(
       createElement('strong', '', `${alternative.title}: ${alternative.from.name} → ${alternative.to.name}`),
-      createElement('span', '', `+${alternative.scoreChange} board-score points · rank ${alternative.rank} of ${deck().publishedPathCount}`),
+      createElement('span', '', `+${alternative.scoreChange} board-score points · rank ${alternative.rank}${publishedPathCount() ? ` of ${publishedPathCount()}` : ''}`),
     );
     const tryChange = createElement('button', 'button-secondary', 'Try & reveal this one-pick change');
     tryChange.type = 'button'; tryChange.dataset.action = 'try-alternative';
@@ -311,14 +318,15 @@ function renderCompletion() {
   elements.completionPanel.hidden = false;
   elements.completionPanel.replaceChildren();
   const outcome = state.outcome;
+  const pathCount = publishedPathCount();
   if (outcome) recordCompletion();
   elements.completionPanel.append(createElement('span', 'kicker', outcome ? 'Scout draft complete' : 'Draft saved locally'));
   elements.completionPanel.append(createElement('h2', '', outcome?.isBest ? 'You drafted the top Scout-board fit.' : (outcome ? 'Your five has a Scout-board identity.' : 'Your five is awaiting its Scout-board reveal.')));
   elements.completionPanel.lastElementChild.id = 'completionTitle';
   elements.completionPanel.append(createElement('p', '', outcome
     ? (outcome.isBest
-      ? `Your five ranked first across ${deck().publishedPathCount} legal combinations on this source-labeled board.`
-      : `Your five ranked ${outcome.rank} of ${deck().publishedPathCount} legal combinations on this source-labeled board.`)
+      ? `Your five ranked first${pathCount ? ` across ${pathCount}` : ''} on this source-labeled board.`
+      : `Your five ranked ${outcome.rank}${pathCount ? ` of ${pathCount}` : ''} on this source-labeled board.`)
     : 'The picks are retained only in this browser. A score will appear only when the validated Scout service confirms this exact board.'));
 
   if (outcome) {
@@ -332,7 +340,7 @@ function renderCompletion() {
   if (outcome) {
     const resultPills = createElement('div', 'fix-five-result-pills');
     resultPills.append(
-      createElement('span', '', `Rank ${outcome.rank} of ${deck().publishedPathCount}`),
+      createElement('span', '', `Rank ${outcome.rank}${pathCount ? ` of ${pathCount}` : ''}`),
       createElement('span', '', deck().objective.label),
       createElement('span', '', sourceFamilyLabel(deck().source.family)),
     );

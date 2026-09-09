@@ -48,6 +48,7 @@ scripts/__pycache__/
 outputs/
 reports/
 dist/
+tools/scout-studio/data/
 **/supabase/.branches/
 **/supabase/.temp/
 

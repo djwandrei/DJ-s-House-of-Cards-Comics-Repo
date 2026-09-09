@@ -1,6 +1,6 @@
-import { simulateLeague, roundRobinSchedule } from './season-simulator.js?v=20260907e';
-import { teamGameEvidence } from './possession-simulator.js?v=20260907e';
-import { captureLeagueSummary, compareLeagueScenarios } from './league-comparisons.js?v=20260907e';
+import { simulateLeague, roundRobinSchedule } from './season-simulator.js?v=20260908a';
+import { teamGameEvidence } from './possession-simulator.js?v=20260908a';
+import { captureLeagueSummary, compareLeagueScenarios } from './league-comparisons.js?v=20260908a';
 
 const node = (tag, text, className = '') => {
   const element = document.createElement(tag); if (text !== undefined) element.textContent = text;
