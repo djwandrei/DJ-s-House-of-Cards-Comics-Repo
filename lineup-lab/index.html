@@ -11,15 +11,15 @@
   <meta name="theme-color" content="#15206b">
   <link rel="icon" href="../assets/games/lineup-lab-icon-20260907.png" sizes="32x32" type="image/png">
   <link rel="preload" href="../assets/fonts/manrope-400.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="storefront-shell.css?v=20260907f">
-  <link rel="stylesheet" href="styles.css?v=20260907f">
-  <link rel="stylesheet" href="workflow.css?v=20260907f">
-  <link rel="stylesheet" href="lab-experience.css?v=20260907f">
-  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260907f">
-  <link rel="stylesheet" href="lab-theme.css?v=20260907f">
+  <link rel="stylesheet" href="storefront-shell.css?v=20260909a">
+  <link rel="stylesheet" href="styles.css?v=20260909a">
+  <link rel="stylesheet" href="workflow.css?v=20260909a">
+  <link rel="stylesheet" href="lab-experience.css?v=20260909a">
+  <link rel="stylesheet" href="../tools/basketball-theme.css?v=20260909a">
+  <link rel="stylesheet" href="lab-theme.css?v=20260909a">
 </head>
 <body class="lab-guided court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
-  <script src="../theme-init.js?v=20260907f"></script>
+  <script src="../theme-init.js?v=20260909a"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
   <header class="site-header">
@@ -338,7 +338,7 @@
                     <span class="step-number">3</span>
                     <div>
                       <p class="eyebrow">Advanced rules</p>
-                      <h2 id="constraintsHeading">Edit who qualifies and what the plan must include</h2>
+                      <h2 id="constraintsHeading">Edit who qualifies and how roles are covered</h2>
                     </div>
                   </div>
 
@@ -361,8 +361,8 @@
                       <p class="helper" id="positionCoverageHelp">Multi-position players may cover any verified position, but only one court role at a time. Recommended uses this season’s listed positions plus limited verified career flexibility.</p>
                     </fieldset>
 
-                    <fieldset>
-                      <legend>Who can enter the search</legend>
+                    <fieldset id="playerEligibilityFilters">
+                      <legend>Player-pool floor</legend>
                       <div class="compact-fields compact-fields--two">
                         <label class="field"><span>Games with selected team — minimum</span><input id="minGamesInput" type="number" min="0" max="82" step="1" value="20"></label>
                         <label class="field"><span>Minutes per appearance — minimum</span><input id="minMinutesInput" type="number" min="0" max="48" step="0.5" value="6"></label>
@@ -370,7 +370,7 @@
                       <p class="helper" id="sampleFilterHelp">These requirements decide who may enter the search. They never determine assigned minutes.</p>
                     </fieldset>
 
-                    <fieldset class="constraint-group--wide" aria-describedby="productionRulesHelp">
+                    <fieldset class="constraint-group--wide" aria-describedby="productionRulesHelp" hidden>
                       <legend id="productionRulesLegend">Required group production <span>(optional)</span></legend>
                       <div class="compact-fields compact-fields--six">
                         <label class="field"><span>Points ≥</span><input id="minPointsInput" type="number" min="0" step="0.1" placeholder="Any"></label>
@@ -511,12 +511,12 @@
                           <caption>Lock and Exclude change the lineup search. Searching only changes which rows are visible. <span class="detailed-only">Compare and Save do not change the search.</span></caption>
                           <thead>
                             <tr>
-                              <th scope="col">Player</th>
-                              <th scope="col">Position</th>
-                              <th scope="col">MPG</th>
-                              <th scope="col">PTS</th>
-                              <th scope="col">REB</th>
-                              <th scope="col">AST</th>
+                              <th aria-sort="ascending" data-player-sort="name" scope="col"><button class="player-table-sort" type="button"><span>Player</span></button></th>
+                              <th data-player-sort="positions" scope="col"><button class="player-table-sort" type="button"><span>Position</span></button></th>
+                              <th data-player-sort="minutes" scope="col"><button class="player-table-sort" type="button"><span>MPG</span></button></th>
+                              <th data-player-sort="points" scope="col"><button class="player-table-sort" type="button"><span>PTS</span></button></th>
+                              <th data-player-sort="rebounds" scope="col"><button class="player-table-sort" type="button"><span>REB</span></button></th>
+                              <th data-player-sort="assists" scope="col"><button class="player-table-sort" type="button"><span>AST</span></button></th>
                               <th class="detailed-only-column" scope="col">STL</th>
                               <th class="detailed-only-column" scope="col">BLK</th>
                               <th class="detailed-only-column" scope="col">TOV</th>
@@ -684,13 +684,13 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
   <noscript><p class="noscript">This optimizer requires JavaScript. Enable it and reload the Lineup Lab.</p></noscript>
-  <script defer src="../backend-config.js?v=20260907f"></script>
-  <script defer src="../core.js?v=20260907f"></script>
-  <script defer src="../nav.js?v=20260907f"></script>
-  <script defer src="../supabase-client.js?v=20260907f"></script>
-  <script type="module" src="app.js?v=20260907f"></script>
-  <script type="module" src="lab-telemetry.js?v=20260907f"></script>
-  <script type="module" src="lab-experience.js?v=20260907f"></script>
-  <script type="module" src="../tools/basketball-branding.js?v=20260907f"></script>
+  <script defer src="../backend-config.js?v=20260909a"></script>
+  <script defer src="../core.js?v=20260909a"></script>
+  <script defer src="../nav.js?v=20260909a"></script>
+  <script defer src="../supabase-client.js?v=20260909a"></script>
+  <script type="module" src="app.js?v=20260909a"></script>
+  <script type="module" src="lab-telemetry.js?v=20260909a"></script>
+  <script type="module" src="lab-experience.js?v=20260909a"></script>
+  <script type="module" src="../tools/basketball-branding.js?v=20260909a"></script>
 </body>
 </html>

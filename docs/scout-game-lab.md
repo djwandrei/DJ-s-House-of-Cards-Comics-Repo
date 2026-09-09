@@ -93,7 +93,8 @@ rejected; the same seed alone is not a paired inference or significance test.
 ## Data and memory boundary
 
 The current read-only integration explicitly selects the completed six-season
-`2020-26-final-20260907-v1-six-season` base package. Exact paths, hashes and
+`2020-26-final-20260907-v2-comprehensive-model-evidence` base package. The
+earlier v1 directory was superseded and removed after v2 validation. Exact paths, hashes and
 commands are in [the roadmap](scout-studio-roadmap.md). A wider package does not
 broaden the game's three-season eligibility window. Player profiles elsewhere
 in the workbench remain pooled team/window evidence.

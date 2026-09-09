@@ -8,7 +8,7 @@
  * can replace a preset without changing the exact constraint/search layer.
  */
 
-import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260907f";
+import { WORKLOAD_CALIBRATION } from "./workload-calibration.js?v=20260909a";
 
 export const HISTORICAL_PROJECTION_MODEL_VERSION =
   "historical-rates-v8-paired-scout-workload";

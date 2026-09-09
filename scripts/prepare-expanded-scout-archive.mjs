@@ -3,12 +3,14 @@
 /**
  * Assemble a no-copy, private archive view for an expanded Scout package.
  *
- * Each selected season is represented by a directory junction (or directory
- * symlink outside Windows) to one canonical raw archive. This lets the normal
- * source validator and derivation accept one archive directory without keeping
- * a second physical copy of any raw season. The resulting view is intentionally
- * not source-attested by itself: callers must run the full validator for new
- * source seasons and then attest the composed view before derivation.
+ * Each selected season is represented by a filtered directory containing hard
+ * links to one canonical raw archive. Already-attested source manifests can be
+ * preserved byte-for-byte when composing multiple validated views. This lets
+ * the normal source validator and derivation accept one archive directory
+ * without keeping a second physical copy of raw game files. The resulting
+ * view is intentionally not source-attested by itself: callers must run the
+ * full validator for new source seasons and then attest the composed view
+ * before derivation.
  */
 
 import crypto from 'node:crypto';
@@ -24,6 +26,12 @@ const PLAN_VERSION = 'scout-expanded-archive-link-plan-v1';
 const GAME_FILE_PATTERN = /^games\/[^/]+\.json\.gz$/;
 const REQUIRED_PACKAGE_SCHEMA_VERSION = 4;
 const REQUIRED_METRICS_VERSION = 'nba-scout-metrics-v4';
+const PHASES = new Set(['preseason', 'regular', 'in_season_tournament', 'play_in', 'playoffs']);
+const DEFAULT_INCLUDED_PHASES = ['regular', 'in_season_tournament', 'play_in', 'playoffs'];
+// Only possessions may be empty in an otherwise structurally valid source
+// record: a source-ineligible game can have no reconstructable possessions.
+// Identity and structural sections must still contain at least one keyed row.
+const ALLOW_EMPTY_RAW_SECTIONS = new Set(['possessions']);
 const REQUIRED_RAW_FIELDS = {
   root: ['analytics', 'events', 'game', 'lineups', 'players', 'possessions', 'stints', 'teams'],
   game: ['providerGameId', 'seasonStartYear', 'seasonEndYear', 'primaryPhase', 'coverage', 'trackOnCourt', 'homeProviderTeamId', 'awayProviderTeamId'],
@@ -45,8 +53,34 @@ function parseSeasonList(value) {
   return normalized;
 }
 
+function normalizePhase(value) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function parsePhaseList(value) {
+  const phases = String(value).split(',').map((item) => normalizePhase(item)).filter(Boolean);
+  if (!phases.length || phases.some((phase) => !PHASES.has(phase))) {
+    throw new Error(`--phases must contain only: ${[...PHASES].join(', ')}.`);
+  }
+  return [...new Set(phases)];
+}
+
+function parseGameId(value) {
+  const gameId = String(value ?? '').trim();
+  if (!gameId) throw new Error('--exclude-game requires a non-empty game identifier.');
+  return gameId;
+}
+
 export function optionsFromArgs(argv) {
-  const options = { sourceRoots: [], expectedSeasons: null, outputDir: null, referencePackage: null };
+  const options = {
+    sourceRoots: [],
+    expectedSeasons: null,
+    outputDir: null,
+    referencePackage: null,
+    includedPhases: [...DEFAULT_INCLUDED_PHASES],
+    excludedGameIds: [],
+    preserveSeasons: [],
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     const [name, inlineValue] = token.split(/=(.*)/s, 2);
@@ -56,12 +90,17 @@ export function optionsFromArgs(argv) {
     else if (name === '--expect-seasons') options.expectedSeasons = parseSeasonList(value);
     else if (name === '--output-dir') options.outputDir = path.resolve(value);
     else if (name === '--reference-package') options.referencePackage = path.resolve(value);
+    else if (name === '--phases') options.includedPhases = parsePhaseList(value);
+    else if (name === '--exclude-game') options.excludedGameIds.push(parseGameId(value));
+    else if (name === '--preserve-season') options.preserveSeasons.push(...parseSeasonList(value));
     else throw new Error(`Unknown option: ${name}`);
   }
   if (options.sourceRoots.length < 2) throw new Error('At least two --source-root values are required.');
   if (!options.expectedSeasons?.length) throw new Error('--expect-seasons is required.');
   if (!options.outputDir) throw new Error('--output-dir is required.');
   if (!options.referencePackage) throw new Error('--reference-package is required.');
+  options.excludedGameIds = [...new Set(options.excludedGameIds)];
+  options.preserveSeasons = [...new Set(options.preserveSeasons)].sort((left, right) => left - right);
   return options;
 }
 
@@ -135,12 +174,50 @@ async function readReferenceMetricContract(referencePackage, privateRoot) {
   };
 }
 
+async function readSourceComposition(sourceRoot) {
+  const compositionPath = path.join(sourceRoot, 'archive-composition.json');
+  if (!await exists(compositionPath)) return null;
+  let raw;
+  let plan;
+  try {
+    raw = await fs.readFile(compositionPath, 'utf8');
+    plan = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`Source root has an unreadable archive-composition.json at ${compositionPath}: ${String(error?.message ?? error)}`);
+  }
+  return {
+    planPath: asPosix(path.relative(REPOSITORY_ROOT, compositionPath)),
+    planSha256: sha256(raw),
+    schemaVersion: plan?.schemaVersion ?? null,
+    mode: plan?.mode ?? null,
+    archiveScope: plan?.archiveScope ? {
+      seasonStartYears: Array.isArray(plan.archiveScope.seasonStartYears) ? plan.archiveScope.seasonStartYears : [],
+      seasonLabel: plan.archiveScope.seasonLabel ?? null,
+      includedPhases: Array.isArray(plan.archiveScope.includedPhases) ? plan.archiveScope.includedPhases : [],
+      excludedGameIds: Array.isArray(plan.archiveScope.excludedGameIds) ? plan.archiveScope.excludedGameIds : [],
+    } : null,
+    seasons: Array.isArray(plan?.seasons) ? plan.seasons.map((season) => ({
+      seasonStartYear: season?.seasonStartYear ?? null,
+      completedGames: season?.completedGames ?? null,
+      rawCompletedGames: season?.rawCompletedGames ?? null,
+      filteredManifestSha256: season?.filteredManifestSha256 ?? null,
+      excludedGameIds: Array.isArray(season?.excludedGameIds) ? season.excludedGameIds : [],
+      excludedGames: Array.isArray(season?.excludedGames) ? season.excludedGames : [],
+    })) : [],
+  };
+}
+
 function missingKeys(value, keys) {
   return keys.filter((key) => !Object.hasOwn(value ?? {}, key));
 }
 
-function anyEntryHasKeys(value, keys) {
-  return Array.isArray(value) && value.some((entry) => entry && typeof entry === 'object' && !missingKeys(entry, keys).length);
+function anyEntryHasKeys(value, keys, { allowEmpty = false } = {}) {
+  // A validated provider record may legitimately have an empty derived
+  // section (for example, an ineligible game with no reconstructable
+  // possessions). Require the contract when rows exist, while leaving the
+  // source validator responsible for the record-level eligibility decision.
+  return Array.isArray(value) && (allowEmpty && !value.length
+    || value.some((entry) => entry && typeof entry === 'object' && !missingKeys(entry, keys).length));
 }
 
 function inspectRawMetricFields(record, year, gameId) {
@@ -151,7 +228,9 @@ function inspectRawMetricFields(record, year, gameId) {
   const gameMissing = missingKeys(record.game, REQUIRED_RAW_FIELDS.game);
   const sectionFailures = Object.entries(REQUIRED_RAW_FIELDS)
     .filter(([section]) => section !== 'root' && section !== 'game')
-    .filter(([section, keys]) => !anyEntryHasKeys(record[section], keys))
+    .filter(([section, keys]) => !anyEntryHasKeys(record[section], keys, {
+      allowEmpty: ALLOW_EMPTY_RAW_SECTIONS.has(section),
+    }))
     .map(([section]) => section);
   if (rootMissing.length || gameMissing.length || sectionFailures.length) {
     throw new Error(`Season ${year} game ${gameId} does not satisfy the nba-scout-metrics-v4 raw-field contract: ${JSON.stringify({ rootMissing, gameMissing, sectionFailures })}`);
@@ -163,7 +242,13 @@ function inspectRawMetricFields(record, year, gameId) {
   };
 }
 
-async function inspectSeason(sourceRoot, year, { verifyMetricFields = false } = {}) {
+async function inspectSeason(sourceRoot, year, {
+  verifyMetricFields = false,
+  includedPhases = DEFAULT_INCLUDED_PHASES,
+  excludedGameIds = [],
+  preserveSourceManifest = false,
+  sourceComposition = null,
+} = {}) {
   const directory = path.join(sourceRoot, String(year));
   const manifestPath = path.join(directory, 'manifest.json');
   let raw;
@@ -184,22 +269,90 @@ async function inspectSeason(sourceRoot, year, { verifyMetricFields = false } = 
   if (!Number.isSafeInteger(expectedGames) || expectedGames <= 0 || gameEntries.length !== expectedGames) {
     throw new Error(`Season ${year} does not have a complete eligible-game manifest.`);
   }
-  const expectedNames = new Set();
+  // Preservation is deliberately an all-entry mode. Rewriting a manifest that
+  // is already covered by a passing source report would invalidate its hash
+  // and break the composition attestation chain.
+  const selectedPhaseSet = preserveSourceManifest
+    ? new Set(PHASES)
+    : new Set((includedPhases?.length ? includedPhases : DEFAULT_INCLUDED_PHASES).map(normalizePhase));
+  const excludedIds = new Set((excludedGameIds ?? []).map((gameId) => String(gameId).trim()).filter(Boolean));
+  const excludedFound = new Set();
+  const excludedGameEvidence = [];
+  const selectedCompletedEntries = [];
+  const selectedPhaseCounts = new Map();
+  const selectedFileDescriptors = [];
+  const selectedFilenames = new Set();
   const compatibility = { gamesChecked: 0, structuredStatisticEvents: 0, playersWithOfficialBoxScoreField: 0, reconstructedLineupPossessions: 0 };
   for (const [gameId, entry] of gameEntries) {
+    const primaryPhase = normalizePhase(entry?.primaryPhase ?? entry?.sourcePhases?.[0]);
+    if (!PHASES.has(primaryPhase)) {
+      throw new Error(`Season ${year} has an invalid primary phase for game ${gameId}.`);
+    }
+    if (!selectedPhaseSet.has(primaryPhase)) continue;
+    if (!gameId || entry?.status !== 'completed') {
+      throw new Error(`Season ${year} has an incomplete selected-phase game entry.`);
+    }
     const relativeGameFile = String(entry?.gameFile ?? '').replaceAll('\\', '/');
     const filename = relativeGameFile.slice('games/'.length);
-    if (!gameId || entry?.status !== 'completed' || !GAME_FILE_PATTERN.test(relativeGameFile) || expectedNames.has(filename)) {
-      throw new Error(`Season ${year} has an incomplete or invalid game entry.`);
+    if (!GAME_FILE_PATTERN.test(relativeGameFile) || selectedFilenames.has(filename)) {
+      throw new Error(`Season ${year} has an incomplete or invalid selected-phase game entry.`);
     }
-    expectedNames.add(filename);
+    selectedFilenames.add(filename);
     const gamePath = path.join(directory, relativeGameFile);
     const stats = await fs.stat(gamePath).catch(() => null);
-    if (!stats?.isFile() || stats.size <= 0) throw new Error(`Season ${year} is missing a completed game file: ${relativeGameFile}.`);
+    if (!stats?.isFile() || stats.size <= 0) throw new Error(`Season ${year} is missing a selected-phase completed game file: ${relativeGameFile}.`);
+    const compressed = await fs.readFile(gamePath);
+    if (preserveSourceManifest && excludedIds.has(String(gameId))) {
+      throw new Error(`Season ${year} cannot preserve its source manifest while excluding game ${gameId}.`);
+    }
+    if (excludedIds.has(String(gameId))) {
+      let record;
+      try {
+        record = JSON.parse(gunzipSync(compressed).toString('utf8'));
+      } catch (error) {
+        throw new Error(`Season ${year} excluded game ${gameId} cannot be decoded: ${String(error?.message ?? error)}`);
+      }
+      const manifestCoverageStatus = normalizePhase(entry?.coverageStatus);
+      const recordCoverageStatus = normalizePhase(record?.analytics?.coverageStatus);
+      const validationErrors = Array.isArray(record?.analytics?.validation?.errors)
+        ? [...new Set(record.analytics.validation.errors.map((error) => String(error).trim()).filter(Boolean))].sort()
+        : [];
+      if (record?.game?.providerGameId !== String(gameId)
+        || Number(record?.game?.seasonStartYear) !== year
+        || normalizePhase(record?.game?.primaryPhase) !== primaryPhase
+        || entry?.eligibleForPublication !== false
+        || manifestCoverageStatus !== 'ineligible'
+        || record?.analytics?.eligibleForPublication !== false
+        || recordCoverageStatus !== 'ineligible'
+        || !validationErrors.length) {
+        throw new Error(`Season ${year} game ${gameId} cannot be excluded because it lacks matching ineligible source evidence.`);
+      }
+      const finalScore = record.analytics?.validation?.finalScore ?? {};
+      excludedFound.add(String(gameId));
+      excludedGameEvidence.push({
+        gameId: String(gameId),
+        primaryPhase,
+        manifestCoverageStatus,
+        recordCoverageStatus,
+        validationErrors,
+        finalScore: {
+          expectedHomePoints: finalScore.expectedHomePoints ?? null,
+          expectedAwayPoints: finalScore.expectedAwayPoints ?? null,
+          observedHomePoints: finalScore.observedHomePoints ?? null,
+          observedAwayPoints: finalScore.observedAwayPoints ?? null,
+          verified: finalScore.verified === true,
+        },
+        gzipSha256: sha256(compressed),
+      });
+      continue;
+    }
+    const gzipSha256 = sha256(compressed);
+    let uncompressed = null;
     if (verifyMetricFields) {
       let record;
       try {
-        record = JSON.parse(gunzipSync(await fs.readFile(gamePath)).toString('utf8'));
+        uncompressed = gunzipSync(compressed);
+        record = JSON.parse(uncompressed.toString('utf8'));
       } catch (error) {
         throw new Error(`Season ${year} game ${gameId} cannot be decoded for metric compatibility: ${String(error?.message ?? error)}`);
       }
@@ -209,22 +362,53 @@ async function inspectSeason(sourceRoot, year, { verifyMetricFields = false } = 
       compatibility.playersWithOfficialBoxScoreField += fields.playersWithOfficialBoxScoreField;
       compatibility.reconstructedLineupPossessions += fields.reconstructedLineupPossessions;
     }
+    selectedCompletedEntries.push([gameId, entry]);
+    selectedPhaseCounts.set(primaryPhase, (selectedPhaseCounts.get(primaryPhase) ?? 0) + 1);
+    selectedFileDescriptors.push({
+      gameId,
+      filename,
+      relativePath: asPosix(relativeGameFile),
+      byteLength: compressed.byteLength,
+      gzipSha256,
+      uncompressedByteLength: uncompressed?.byteLength ?? null,
+      uncompressedSha256: uncompressed ? sha256(uncompressed) : null,
+    });
   }
-  const gamesDirectory = path.join(directory, 'games');
-  const actualNames = (await fs.readdir(gamesDirectory, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.json.gz'))
-    .map((entry) => entry.name)
-    .sort();
-  const expectedSorted = [...expectedNames].sort();
-  if (actualNames.length !== expectedSorted.length || actualNames.some((name, index) => name !== expectedSorted[index])) {
-    throw new Error(`Season ${year} has an incomplete or unexpected game-file inventory.`);
+  if (!selectedCompletedEntries.length) {
+    throw new Error(`Season ${year} has no completed games in the selected phase scope.`);
   }
+  const filteredManifest = preserveSourceManifest ? manifest : {
+    ...manifest,
+    uniqueEligibleGames: selectedCompletedEntries.length,
+    phases: Object.fromEntries([...selectedPhaseCounts.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([phase, count]) => [phase, { gamesDiscovered: count, eligibleGames: count }])),
+    games: Object.fromEntries(selectedCompletedEntries.map(([gameId, entry]) => [gameId, { ...entry }])),
+    progress: {
+      ...(manifest.progress ?? {}),
+      total: selectedCompletedEntries.length,
+      complete: selectedCompletedEntries.length,
+      failed: 0,
+      currentIndex: selectedCompletedEntries.length,
+    },
+  };
+  const filteredManifestRaw = preserveSourceManifest ? raw : `${JSON.stringify(filteredManifest, null, 2)}\n`;
   return {
     seasonStartYear: year,
     seasonEndYear: year + 1,
     sourceDirectory: directory,
-    manifestSha256: sha256(raw),
-    completedGames: expectedGames,
+    sourceComposition,
+    rawManifestSha256: sha256(raw),
+    rawCompletedGames: expectedGames,
+    completedGames: selectedCompletedEntries.length,
+    selectedPhases: [...selectedPhaseSet],
+    preserveSourceManifest,
+    excludedGameIds: [...excludedFound].sort(),
+    excludedGameEvidence: excludedGameEvidence.sort((left, right) => left.gameId.localeCompare(right.gameId)),
+    filteredManifest,
+    filteredManifestRaw,
+    filteredManifestSha256: sha256(filteredManifestRaw),
+    selectedFileDescriptors,
     rawMetricCompatibility: verifyMetricFields ? compatibility : null,
   };
 }
@@ -240,7 +424,17 @@ async function discoverSeasonSources(sourceRoots, expectedSeasons, options) {
       const year = Number(entry.name);
       if (!expectedSeasons.includes(year)) continue;
       if (byYear.has(year)) throw new Error(`Season ${year} appears in more than one source root.`);
-      byYear.set(year, await inspectSeason(sourceRoot, year, options));
+      byYear.set(year, await inspectSeason(sourceRoot, year, {
+        ...options,
+        // Preserved manifests are already bound to prior validator reports;
+        // re-running the stricter compatibility probe here can reject a
+        // valid, intentionally empty derived section (such as possessions on
+        // a source-ineligible game). The composition attestation and derive
+        // loader re-bind the actual compressed and uncompressed bytes.
+        verifyMetricFields: options.preserveSeasons?.has(year) !== true && options.verifyMetricFields === true,
+        preserveSourceManifest: options.preserveSeasons?.has(year) === true,
+        sourceComposition: options.sourceCompositions?.get(sourceRoot) ?? null,
+      }));
     }
   }
   const missing = expectedSeasons.filter((year) => !byYear.has(year));
@@ -253,11 +447,20 @@ async function removeIfPresent(target) {
 }
 
 /**
- * Create an atomic, junction-based archive view. This performs no network IO
+ * Create an atomic, hard-link-based archive view. This performs no network IO
  * and does not copy, mutate, or validate raw data beyond the completeness
  * preflight; callers must attach validation evidence afterwards.
  */
-export async function prepareExpandedScoutArchive({ sourceRoots, expectedSeasons, outputDir, referencePackage, privateRoot = DEFAULT_PRIVATE_ROOT }) {
+export async function prepareExpandedScoutArchive({
+  sourceRoots,
+  expectedSeasons,
+  outputDir,
+  referencePackage,
+  privateRoot = DEFAULT_PRIVATE_ROOT,
+  includedPhases = [...DEFAULT_INCLUDED_PHASES],
+  excludedGameIds = [],
+  preserveSeasons = [],
+}) {
   const resolvedPrivateRoot = path.resolve(privateRoot);
   const resolvedOutput = path.resolve(outputDir);
   const resolvedSources = sourceRoots.map((sourceRoot) => path.resolve(sourceRoot));
@@ -266,34 +469,106 @@ export async function prepareExpandedScoutArchive({ sourceRoots, expectedSeasons
   if (new Set(normalizedSeasons).size !== normalizedSeasons.length || normalizedSeasons.some((year) => !Number.isInteger(year))) {
     throw new Error('Expected seasons must be unique integers.');
   }
+  const normalizedPreserveSeasons = [...new Set((preserveSeasons ?? []).map(Number))].sort((left, right) => left - right);
+  if (normalizedPreserveSeasons.some((year) => !Number.isInteger(year))) {
+    throw new Error('Preserved seasons must be integer NBA season start years.');
+  }
+  const seasonsNotExpected = normalizedPreserveSeasons.filter((year) => !normalizedSeasons.includes(year));
+  if (seasonsNotExpected.length) {
+    throw new Error(`Preserved seasons must be included in the expected season list: ${seasonsNotExpected.join(', ')}.`);
+  }
   requirePrivateDescendant(resolvedOutput, resolvedPrivateRoot, 'Output directory');
   for (const sourceRoot of resolvedSources) requirePrivateDescendant(sourceRoot, resolvedPrivateRoot, 'Source root');
   if (await exists(resolvedOutput)) throw new Error(`Refusing to overwrite an existing expanded archive: ${resolvedOutput}`);
 
   const metricContract = await readReferenceMetricContract(referencePackage, resolvedPrivateRoot);
-  const seasons = await discoverSeasonSources(resolvedSources, normalizedSeasons, { verifyMetricFields: true });
+  const sourceCompositions = new Map();
+  for (const sourceRoot of resolvedSources) sourceCompositions.set(sourceRoot, await readSourceComposition(sourceRoot));
+  const seasons = await discoverSeasonSources(resolvedSources, normalizedSeasons, {
+    verifyMetricFields: true,
+    includedPhases: [...includedPhases],
+    excludedGameIds: [...new Set(excludedGameIds.map((gameId) => String(gameId).trim()).filter(Boolean))],
+    preserveSeasons: new Set(normalizedPreserveSeasons),
+    sourceCompositions,
+  });
+  const normalizedExcludedGameIds = [...new Set(excludedGameIds.map((gameId) => String(gameId).trim()).filter(Boolean))].sort();
+  const foundExcludedGameIds = [...new Set(seasons.flatMap((season) => season.excludedGameIds))].sort();
+  const missingExcludedGameIds = normalizedExcludedGameIds.filter((gameId) => !foundExcludedGameIds.includes(gameId));
+  if (missingExcludedGameIds.length) {
+    throw new Error(`Requested excluded game IDs were not found in the selected phase scope: ${missingExcludedGameIds.join(', ')}.`);
+  }
+  const inheritedExclusionSources = seasons.flatMap((season) => {
+    const sourceSeason = season.sourceComposition?.seasons?.find(
+      (candidate) => Number(candidate?.seasonStartYear) === season.seasonStartYear,
+    );
+    // A season-level list is authoritative, including an explicit empty list.
+    // Fall back to a global list only for a single-season source plan that has
+    // no season record; never attribute a multi-season global list to every
+    // season in the source root.
+    const sourceScopeYears = season.sourceComposition?.archiveScope?.seasonStartYears ?? [];
+    const inheritedIds = sourceSeason
+      ? sourceSeason.excludedGameIds
+      : sourceScopeYears.length === 1
+        ? season.sourceComposition?.archiveScope?.excludedGameIds
+        : [];
+    const gameIds = [...new Set((inheritedIds ?? []).map((gameId) => String(gameId).trim()).filter(Boolean))].sort();
+    if (!gameIds.length || !season.sourceComposition) return [];
+    return gameIds.map((gameId) => ({
+      seasonStartYear: season.seasonStartYear,
+      gameId,
+      sourcePlanPath: season.sourceComposition.planPath,
+      sourcePlanSha256: season.sourceComposition.planSha256,
+    }));
+  });
+  const inheritedExcludedGameIds = [...new Set(inheritedExclusionSources.map((entry) => entry.gameId))].sort();
   const temporary = `${resolvedOutput}.building-${process.pid}-${Date.now()}`;
-  const linkType = process.platform === 'win32' ? 'junction' : 'dir';
   try {
     await fs.mkdir(temporary, { recursive: false });
     for (const season of seasons) {
-      const link = path.join(temporary, String(season.seasonStartYear));
-      await fs.symlink(season.sourceDirectory, link, linkType);
-      const linkedManifest = await fs.readFile(path.join(link, 'manifest.json'), 'utf8');
-      if (sha256(linkedManifest) !== season.manifestSha256) throw new Error(`Link verification failed for season ${season.seasonStartYear}.`);
+      const seasonDirectory = path.join(temporary, String(season.seasonStartYear));
+      const gamesDirectory = path.join(seasonDirectory, 'games');
+      await fs.mkdir(gamesDirectory, { recursive: true });
+      for (const descriptor of season.selectedFileDescriptors) {
+        const sourceGamePath = path.join(season.sourceDirectory, descriptor.relativePath);
+        const targetGamePath = path.join(gamesDirectory, descriptor.filename);
+        await fs.link(sourceGamePath, targetGamePath);
+        const linkedBytes = await fs.readFile(targetGamePath);
+        if (linkedBytes.byteLength !== descriptor.byteLength || sha256(linkedBytes) !== descriptor.gzipSha256) {
+          throw new Error(`Link verification failed for season ${season.seasonStartYear} game ${descriptor.gameId}.`);
+        }
+      }
+      await fs.writeFile(path.join(seasonDirectory, 'manifest.json'), season.filteredManifestRaw, 'utf8');
+      if (sha256(season.filteredManifestRaw) !== season.filteredManifestSha256) {
+        throw new Error(`Manifest verification failed for season ${season.seasonStartYear}.`);
+      }
     }
     const plan = {
       schemaVersion: PLAN_VERSION,
-      mode: process.platform === 'win32' ? 'directory_junctions_no_raw_copy' : 'directory_symlinks_no_raw_copy',
+      mode: 'phase_filtered_hardlinks_no_raw_copy',
       createdAt: new Date().toISOString(),
-      archiveScope: { seasonStartYears: normalizedSeasons, seasonLabel: `${normalizedSeasons[0]}-${normalizedSeasons.at(-1) + 1}` },
+      archiveScope: {
+        seasonStartYears: normalizedSeasons,
+        seasonLabel: `${normalizedSeasons[0]}-${normalizedSeasons.at(-1) + 1}`,
+        includedPhases: [...includedPhases],
+        excludedGameIds: normalizedExcludedGameIds,
+        preservedSeasons: normalizedPreserveSeasons,
+        inheritedExcludedGameIds,
+        inheritedExclusionSources,
+      },
       metricContract,
       seasons: seasons.map((season) => ({
         seasonStartYear: season.seasonStartYear,
         seasonEndYear: season.seasonEndYear,
         completedGames: season.completedGames,
-        manifestSha256: season.manifestSha256,
+        rawCompletedGames: season.rawCompletedGames,
+        rawManifestSha256: season.rawManifestSha256,
+        filteredManifestSha256: season.filteredManifestSha256,
+        preserveSourceManifest: season.preserveSourceManifest,
         sourceDirectory: asPosix(path.relative(REPOSITORY_ROOT, season.sourceDirectory)),
+        sourceComposition: season.sourceComposition,
+        selectedPhases: season.selectedPhases,
+        excludedGameIds: season.excludedGameIds,
+        excludedGames: season.excludedGameEvidence,
         rawMetricCompatibility: season.rawMetricCompatibility,
       })),
       requiredPromotionGates: [

@@ -1,4 +1,4 @@
-import { WORKFLOW_STEPS, resolveWorkflowStep, saveWorkflowDraft, DRAFT_KEY } from "./workflow-state.js?v=20260907f";
+import { WORKFLOW_STEPS, resolveWorkflowStep, saveWorkflowDraft, DRAFT_KEY } from "./workflow-state.js?v=20260909a";
 
 const make = (tag, className = "", text = "") => {
   const node = document.createElement(tag);
@@ -82,6 +82,8 @@ export function createWorkflowView({ state, form, capture, validate, reset, stor
   stages.rules.append(q("#simpleModelSummary"), rules, reporting);
   stages.plan.append(plan);
   stages.players.append(players);
+  const eligibility = q("#playerEligibilityFilters");
+  if (eligibility) players.insertBefore(eligibility, q("#playerPoolDetails"));
   const groups = [...rules.querySelectorAll(".constraint-groups > fieldset")];
   groups.forEach((fieldset, index) => {
     const disclosure = make("details", "journey-rule-group");

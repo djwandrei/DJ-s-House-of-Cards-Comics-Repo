@@ -35,6 +35,12 @@ body.lab-guided.court-themed :is(.score-card strong,.lineup-player__rank) { font
 body.lab-guided.court-themed .score-card--primary { background:var(--court-accent); color:var(--court-on-accent); }
 body.lab-guided.court-themed .score-card--primary :is(strong,span) { color:var(--court-on-accent); }
 body.lab-guided.court-themed :is(.player-table,.alternatives-table,.compare-table,.counter-weight-table,.historical-benchmark) :is(th,caption) { background:var(--court-raised); color:var(--court-muted); }
+body.lab-guided.court-themed .player-table th[data-player-sort] { background:var(--court-raised); }
+body.lab-guided.court-themed .player-table-sort { color:var(--court-text); }
+body.lab-guided.court-themed .player-table th[aria-sort="ascending"],
+body.lab-guided.court-themed .player-table th[aria-sort="descending"] { box-shadow:inset 0 -3px var(--court-accent); }
+body.lab-guided.court-themed .player-table th[aria-sort="ascending"] .player-table-sort::after,
+body.lab-guided.court-themed .player-table th[aria-sort="descending"] .player-table-sort::after { color:var(--court-accent); }
 body.lab-guided.court-themed :is(.player-table tbody tr,.lineup-player,.opponent-player,.benchmark-explainer,.simple-result-model-note) { background:var(--court-surface); color:var(--court-text); }
 body.lab-guided.court-themed .player-table tbody tr:is(:hover,.is-locked,.is-ineligible) { background:var(--court-raised); }
 body.lab-guided.court-themed :is(.player-avatar,.lineup-player__portrait,.watch-card__avatar,.compare-legend__avatar,.opponent-player__avatar,.opponent-scout__logo) { background:var(--court-raised); }

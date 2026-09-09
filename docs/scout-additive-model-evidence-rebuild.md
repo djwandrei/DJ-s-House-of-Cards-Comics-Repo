@@ -187,8 +187,10 @@ uncertainty models—not to hard-code a star's identity into the solver.
 ## September 7 comprehensive additive build
 
 The user authorized this expanded build, with all existing/planned metrics
-retained. The base is the validated six-season `2020-26-final-20260907-v1-six-season`
-package, not the older interrupted four-season stage above. The output target
+retained. The base is the validated six-season
+`2020-26-final-20260907-v2-comprehensive-model-evidence` package; the earlier
+v1 base lineage was superseded and removed after v2 validation. It is not the
+older interrupted four-season stage above. The output target
 under the same private working prefix is:
 
 `scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/`

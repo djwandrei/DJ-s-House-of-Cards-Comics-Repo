@@ -3,16 +3,17 @@
 export const WORKFLOW_STEPS = Object.freeze([
   { id: "team", label: "Team & season", title: "Choose your team.", description: "Start with a historical roster. Load a team-season, or try the course demo." },
   { id: "plan", label: "Game plan", title: "Call the game plan.", description: "Build a starting five or a full rotation. Decide what your group should do best." },
-  { id: "players", label: "Your players", title: "Make your roster calls.", description: "Have a must-pick player? Lock them in. Exclude anyone you want to leave out—or let the Lab choose." },
-  { id: "rules", label: "Set the rules", title: "Set the boundaries.", description: "Keep the recommended settings or open Detailed to tailor eligibility, court roles, and hard limits." },
+  { id: "players", label: "Your players", title: "Build the player pool.", description: "Lock in must-have players, exclude anyone you want to leave out, and shape the eligibility floor for the search." },
+  { id: "rules", label: "Set the rules", title: "Set the boundaries.", description: "Keep the recommended settings or open Detailed to tailor court roles and hard limits." },
   { id: "review", label: "Review & build", title: "Ready to draw it up?", description: "Check your game-plan ticket. You can edit any section before the exact search starts." },
 ]);
 
-import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260907f";
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909a";
 
 export const WORKFLOW_FIELDS = Object.freeze({
   plan: ["modeInput", "sizeInput", "modelModeInput", "scoutObjectiveInput", "scoutOffenseWeightInput", "scoutDefenseWeightInput"],
-  rules: ["minGuardsInput", "minForwardsInput", "minCentersInput", "positionFlexibilityInput", "minGamesInput", "minMinutesInput", "minPointsInput", "minReboundsInput", "minAssistsInput", "minStealsInput", "minBlocksInput", "maxTurnoversInput", "rotationMinInput", "rotationMaxInput", "rotationMinutePlanInput", "rotationFlexibilityInput", "rotationAllocationStyleInput", "rotationScoringBasisInput", "rotationRateStabilityInput", "rotationPositionProfileInput", "projectionRiskInput", "roleBalanceInput", "alternativesInput", "analyticsViewInput"],
+  players: ["minGamesInput", "minMinutesInput"],
+  rules: ["minGuardsInput", "minForwardsInput", "minCentersInput", "positionFlexibilityInput", "rotationMinInput", "rotationMaxInput", "rotationMinutePlanInput", "rotationFlexibilityInput", "rotationAllocationStyleInput", "rotationScoringBasisInput", "rotationRateStabilityInput", "rotationPositionProfileInput", "projectionRiskInput", "roleBalanceInput", "alternativesInput", "analyticsViewInput"],
 });
 export const DRAFT_KEY = "djhc-lineup-lab-workflow-v1";
 const FIELD_IDS = new Set(Object.values(WORKFLOW_FIELDS).flat());
@@ -110,8 +111,8 @@ export function validateWorkflow({ datasetReady, datasetMatches, loading, config
   const eligible = players.filter(p => p.games >= config.minGames && p.minutes >= config.minMinutes);
   const available = eligible.filter(p => !excludedIds.includes(p.id));
   const unavailableLocks = lockedIds.filter(id => !available.some(p => p.id === id));
-  if (unavailableLocks.length) add("players", "activeSelectionTray", "A locked player is excluded or below the sample filters. Unlock that player, remove the exclusion, or lower the eligibility filters in Rules.");
-  if (available.length < size) add("rules", "minGamesInput", `Only ${available.length} eligible players remain for ${size} spots. Lower the sample filters, restore excluded players, or choose a smaller group.`);
+  if (unavailableLocks.length) add("players", "activeSelectionTray", "A locked player is excluded or below the eligibility filters. Unlock that player, remove the exclusion, or lower the player-pool floor.");
+  if (available.length < size) add("players", "minGamesInput", `Only ${available.length} eligible players remain for ${size} spots. Lower the eligibility filters, restore excluded players, or choose a smaller group.`);
   // Necessary distinct-role coverage checks (Hall subsets); the exact Worker
   // still proves the full selected group and every regulation minute.
   const roles = ["G", "F", "C"];
@@ -120,7 +121,7 @@ export function validateWorkflow({ datasetReady, datasetMatches, loading, config
     const needed = subset.reduce((sum, role) => sum + (positionMinimums[role] || 0), 0);
     const count = available.filter(p => p.positions?.some(role => subset.includes(role))).length;
     if (needed > count) {
-      add("rules", "positionFlexibilityInput", `The eligible pool has ${count} distinct ${subset.join("/")} players for ${needed} required slots. Relax the role requirements, position policy, or sample filters.`);
+      add("rules", "positionFlexibilityInput", `The eligible pool has ${count} distinct ${subset.join("/")} players for ${needed} required slots. Relax the role requirements, position policy, or player-pool floor.`);
       break;
     }
   }

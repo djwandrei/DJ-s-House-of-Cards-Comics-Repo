@@ -42,7 +42,7 @@ Provider authentication/quota failures stop the job without key switching.
 Current private working paths (relative to the repository):
 
 - Source: `outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/data-2020-2025-trial-composed-20260906-v1-six-season/`
-- Base build target: `outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/scout-analytics/2020-26-final-20260907-v1-six-season/`
+- Base build target: `outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/`
 - New overlays/progress: `outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/summary-overlays/2020-2025-20260907-v4-required-fields/`
 
 Before the restart, the six-season audit checked 8,202 archived games and
@@ -306,7 +306,7 @@ Site integrity reported zero issues. Re-run after further edits.
 
 The six-season base derivation completed with 30 team shards on September 7;
 full package validation is a separate ongoing step. The base manifest is
-`scout-analytics/2020-26-final-20260907-v1-six-season/nba-scout-analytics-2020-26.json`
+`scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/nba-scout-analytics-2020-26.json`
 under the private working prefix above. The Summary pass resumed with the
 user-confirmed additional authorized allowance after an earlier HTTP 429.
 

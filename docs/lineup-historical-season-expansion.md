@@ -11,20 +11,22 @@ pass.
 ## Storage model
 
 `scripts/prepare-expanded-scout-archive.mjs` creates a small linked archive
-view, not a second raw archive. On Windows it creates directory junctions:
+view, not a second raw archive. Game files are hard-linked to the validated
+source archives (the filtered manifests and composition plan are written into
+the view):
 
 ```
 data-2017-2025-trial-linked/
-  2017 -> data-2017-2019-trial/2017
-  2018 -> data-2017-2019-trial/2018
-  2019 -> data-2017-2019-trial/2019
-  2020 -> data-2020-2025-trial-composed-20260906-v1-six-season/2020
+  2017/  # game files hard-linked from data-2017-2019-trial/2017/games
+  2018/  # game files hard-linked from data-2017-2019-trial/2018/games
+  2019/  # game files hard-linked from data-2017-2019-trial/2019/games
+  2020/  # game files hard-linked from data-2020-2025-trial-composed-20260906-v1-six-season/2020/games
   ...
-  2025 -> data-2020-2025-trial-composed-20260906-v1-six-season/2025
+  2025/  # game files hard-linked from data-2020-2025-trial-composed-20260906-v1-six-season/2025/games
 ```
 
-The view contains only links plus `archive-composition.json`; no raw game file
-is copied. The script refuses incomplete, duplicate, unverified-inventory, or
+The game payload is not copied; hard-link verification binds each selected file
+to its source bytes. The script refuses incomplete, duplicate, unverified-inventory, or
 non-trial source seasons, and never overwrites an existing output directory.
 
 ## Promotion sequence
@@ -39,7 +41,7 @@ node .\scripts\prepare-expanded-scout-archive.mjs `
   --source-root "$root\data-2017-2019-trial" `
   --source-root "$root\data-2020-2025-trial-composed-20260906-v1-six-season" `
   --expect-seasons 2017,2018,2019,2020,2021,2022,2023,2024,2025 `
-  --reference-package "$root\scout-analytics\2020-26-final-20260907-v1-six-season\nba-scout-analytics-2020-26.json" `
+  --reference-package "$root\scout-analytics\2020-26-final-20260907-v2-comprehensive-model-evidence\nba-scout-analytics-2020-26.json" `
   --output-dir "$root\data-2017-2025-trial-linked"
 ```
 
@@ -60,12 +62,14 @@ as unavailable or partial only where the provider data genuinely lacks it.
 
 ```powershell
 node .\scripts\check-scout-package-metric-contract.mjs `
-  --reference-package "$root\scout-analytics\2020-26-final-20260907-v1-six-season\nba-scout-analytics-2020-26.json" `
+  --reference-package "$root\scout-analytics\2020-26-final-20260907-v2-comprehensive-model-evidence\nba-scout-analytics-2020-26.json" `
   --candidate-package "$root\scout-analytics\2017-26-final-YYYYMMDD-v1\nba-scout-analytics-2017-26.json" `
   --expect-seasons 2017,2018,2019,2020,2021,2022,2023,2024,2025 `
   --output-report "$root\scout-analytics\2017-26-final-YYYYMMDD-v1\metric-contract-report.json"
 ```
 
-The current `2020-26` output remains an unpromoted base build while its
-Summary refresh and additive evidence gates are running. This expansion
-framework deliberately leaves that work untouched.
+The active `2020-26` reference is the validated
+`2020-26-final-20260907-v2-comprehensive-model-evidence` output. The expanded
+`2017-26` package remains private and a comparison candidate until its source,
+metric-contract, and integration gates pass; this framework deliberately leaves
+the active public package untouched.

@@ -2076,6 +2076,49 @@ body[data-experience-mode="simple"] .simple-model-summary {
   letter-spacing: 0.025em;
 }
 
+.player-table th[data-player-sort] {
+  padding: 0;
+}
+
+.player-table-sort {
+  width: 100%;
+  min-height: 100%;
+  padding: 0.58rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.player-table-sort::after {
+  color: #8b95ab;
+  content: "";
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.player-table th[aria-sort="ascending"] .player-table-sort::after {
+  color: var(--blue);
+  content: "▲";
+}
+
+.player-table th[aria-sort="descending"] .player-table-sort::after {
+  color: var(--blue);
+  content: "▼";
+}
+
+.player-table-sort:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
 .player-table th:nth-child(n + 10) {
   width: 72px;
   white-space: normal;

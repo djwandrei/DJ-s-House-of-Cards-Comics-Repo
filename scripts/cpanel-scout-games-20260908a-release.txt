@@ -1,5 +1,4 @@
-# Reviewed buyer-facing Scout Studio, daily games, Player Card Matchups, Workshop preview, and shared cache release.
-# Lineup Lab remains a separate release until its current working-tree changes are validated and committed.
+# Reviewed buyer-facing Scout Studio, daily games, Player Card Matchups, Workshop preview, Lineup Lab, and shared cache release.
 about.html
 account.html
 admin.html
@@ -101,6 +100,38 @@ tools/workshop/index.html
 tools/workshop/tool-workshop.css
 tools/workshop/tool-workshop.js
 tools/workshop/workshop-state.js
+lineup-lab/index.html
+lineup-lab/app.js
+lineup-lab/workflow-state.js
+lineup-lab/workflow-view.js
+lineup-lab/workflow.css
+lineup-lab/lab-telemetry.js
+lineup-lab/lab-experience.js
+lineup-lab/lab-experience.css
+lineup-lab/lab-theme.css
+lineup-lab/storefront-shell.css
+lineup-lab/optimizer-config.js
+lineup-lab/projection-parameters.js
+lineup-lab/workload-calibration.js
+lineup-lab/workload-model.js
+lineup-lab/projection-evidence.js
+lineup-lab/player-projection.js
+lineup-lab/lineup-role-model.js
+lineup-lab/scout-impact.js
+lineup-lab/rotation-unit-planner.js
+lineup-lab/optimizer-core.js
+lineup-lab/optimizer-worker.js
+lineup-lab/player-data.js
+lineup-lab/supabase-nba-data.js
+lineup-lab/fan-analytics.js
+lineup-lab/individual-player-evaluation.js
+lineup-lab/product-analytics.js
+lineup-lab/basketball-simulation.js
+lineup-lab/opponent-gameplan.js
+lineup-lab/scenario-url.js
+lineup-lab/lineup-cache.js
+lineup-lab/styles.css
+lineup-lab/fixtures/timberwolves-2021-22.json
 analytics.js
 nav.js
 styles.css
@@ -119,6 +150,9 @@ assets/games/draft-night-emblem-20260907.webp
 assets/games/draft-night-icon-20260907.png
 assets/games/fix-the-five-emblem-20260907.webp
 assets/games/fix-the-five-icon-20260907.png
+assets/games/lineup-lab-emblem-20260907.webp
+assets/games/lineup-lab-icon-20260907.png
 assets/games/fan-tools-emblem.svg
+assets/games/lineup-dna-emblem.svg
 assets/games/card-matchups-emblem.svg
 assets/games/workshop-emblem.svg

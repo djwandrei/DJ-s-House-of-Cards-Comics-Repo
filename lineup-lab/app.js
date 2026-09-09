@@ -6,43 +6,43 @@ import {
   deriveHistoricalPositionMinuteRequirements,
   skillFamiliesFromMetricWeights,
   weightsFromSkillFamilies,
-} from "./optimizer-config.js?v=20260907f";
+} from "./optimizer-config.js?v=20260909a";
 import {
   datasetToCsv,
   normalizeDataset,
   parsePlayerCsv,
   validateDataset,
-} from "./player-data.js?v=20260907f";
+} from "./player-data.js?v=20260909a";
 import {
   fetchSupabaseNbaTeamDataset,
   fetchSupabaseScoutEvidence,
   listSupabaseNbaSeasons,
   listSupabaseNbaTeams,
   nbaSeasonLabel,
-} from "./supabase-nba-data.js?v=20260907f";
+} from "./supabase-nba-data.js?v=20260909a";
 import {
   derivePlayerRateViews,
   explainOptimizationSelection,
   explainLineupRoleChange,
-} from "./fan-analytics.js?v=20260907f";
+} from "./fan-analytics.js?v=20260909a";
 import {
   buildOpponentGamePlan,
-} from "./opponent-gameplan.js?v=20260907f";
+} from "./opponent-gameplan.js?v=20260909a";
 import {
   decodeScenarioQuery,
   encodeScenarioQuery,
-} from "./scenario-url.js?v=20260907f";
-import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260907f";
-import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260907f";
-import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260907f";
-import { createWorkflowView } from "./workflow-view.js?v=20260907f";
+} from "./scenario-url.js?v=20260909a";
+import { pruneLineupLabDatasetCache } from "./lineup-cache.js?v=20260909a";
+import { WORKFLOW_FIELDS, readWorkflowDraft, validateWorkflow } from "./workflow-state.js?v=20260909a";
+import { resolveScoutObjectiveWeights } from "./scout-impact.js?v=20260909a";
+import { createWorkflowView } from "./workflow-view.js?v=20260909a";
 
 // Keep every Lineup Lab dependency on the same reviewed release revision. The
 // storefront service worker caches by full request URL, so versioned module
 // requests prevent a newly deployed app shell from pairing with an old solver,
 // dataset adapter, worker, or course-fixture response.
-const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260907f";
-const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260907f", import.meta.url);
+const FIXTURE_URL = "./fixtures/timberwolves-2021-22.json?v=20260909a";
+const OPTIMIZER_WORKER_URL = new URL("./optimizer-worker.js?v=20260909a", import.meta.url);
 // Five-player lineup mode keeps its bounded-search watchdog. Rotation mode is
 // intentionally different: it has no candidate-count cutoff and therefore no
 // elapsed-time cutoff. That work stays in a background Worker until it finishes
@@ -82,7 +82,7 @@ const WATCHLIST_SNAPSHOT_FIELDS = Object.freeze([
 const NBA_CACHE_PREFIX = "djhc-lineup-lab-bref-supabase-v6";
 const NBA_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const NBA_CACHE_MAX_ENTRIES = 24;
-import { setCourtTeam } from "../tools/basketball-theme.js?v=20260907f";
+import { setCourtTeam } from "../tools/basketball-theme.js?v=20260909a";
 
 const DEFAULT_TEAM_CODE = "MIN";
 const DEFAULT_SEASON_PHASE = "regular";
@@ -346,6 +346,7 @@ const state = {
   compareIds: new Set(),
   watchlistIds: loadWatchlist(),
   watchlistSnapshots: loadWatchlistSnapshots(),
+  playerSort: { key: "name", direction: "asc" },
   lastResult: null,
   toastTimer: null,
   liveDataLoading: false,
@@ -971,14 +972,16 @@ function applySharedScenarioControls(scenario) {
   setInputValueIfPresent(elements.minMinutes, scenario.minMinutes);
   setInputValueIfPresent(elements.rotationMin, scenario.rotationMin);
   setInputValueIfPresent(elements.rotationMax, scenario.rotationMax);
-  setInputValueIfPresent(elements.maxTurnovers, scenario.maxTurnovers);
+  // Production thresholds were retired from the fan workflow. Clear values
+  // from older drafts or shared links so they cannot reactivate that path.
+  [elements.minPoints, elements.minRebounds, elements.minAssists, elements.minSteals,
+    elements.minBlocks, elements.maxTurnovers].forEach(input => { if (input) input.value = ""; });
 
   const positions = scenario.positionMinimums || {};
   setInputValueIfPresent(elements.minGuards, positions.G);
   setInputValueIfPresent(elements.minForwards, positions.F);
   setInputValueIfPresent(elements.minCenters, positions.C);
 
-  const statMinimums = scenario.statMinimums || {};
   if (["historical", "scout"].includes(scenario.modelMode)) $("#modelModeInput").value = scenario.modelMode;
   if (["balanced", "offense", "defense", "custom"].includes(scenario.scoutObjective)) $("#scoutObjectiveInput").value = scenario.scoutObjective;
   if (scenario.scoutObjectiveWeights) {
@@ -987,11 +990,7 @@ function applySharedScenarioControls(scenario) {
     setInputValueIfPresent($("#scoutDefenseWeightInput"), scenario.scoutObjectiveWeights.defense);
   }
   syncModelChoice();
-  setInputValueIfPresent(elements.minPoints, statMinimums.points);
-  setInputValueIfPresent(elements.minRebounds, statMinimums.rebounds);
-  setInputValueIfPresent(elements.minAssists, statMinimums.assists);
-  setInputValueIfPresent(elements.minSteals, statMinimums.steals);
-  setInputValueIfPresent(elements.minBlocks, statMinimums.blocks);
+  // Legacy production values are intentionally ignored.
 
   const requestedPreset = scenario.preset;
   const sharedWeights = scenario.weights && typeof scenario.weights === "object"
@@ -1091,17 +1090,6 @@ function sharedScenarioFromControls() {
   // programmatic invocation cannot create a misleading link.
   if (!liveDatasetMatchesControls()) return null;
   const loadedSelection = state.loadedLiveSelection;
-  const statMinimums = {};
-  for (const [metric, input] of Object.entries({
-    points: elements.minPoints,
-    rebounds: elements.minRebounds,
-    assists: elements.minAssists,
-    steals: elements.minSteals,
-    blocks: elements.minBlocks,
-  })) {
-    const value = optionalNumber(input);
-    if (value !== undefined) statMinimums[metric] = value;
-  }
   return {
     experience: state.experienceMode,
     modelMode: $("#modelModeInput").value,
@@ -1122,8 +1110,6 @@ function sharedScenarioFromControls() {
       F: numberFromInput(elements.minForwards, 0),
       C: numberFromInput(elements.minCenters, 0),
     },
-    statMinimums,
-    maxTurnovers: optionalNumber(elements.maxTurnovers),
     rotationMin: numberFromInput(elements.rotationMin, 8),
     rotationMax: numberFromInput(elements.rotationMax, 40),
     analyticsView: state.analyticsView,
@@ -2541,9 +2527,9 @@ function syncSampleFilterHelp(seasonPhase = null) {
   const recommendedGameRequirement = games > 0
     ? `${games} game${games === 1 ? "" : "s"} with this team`
     : "no games-with-this-team minimum";
-  const currentRule = `Current rule: ${activeGameRequirement} and at least ${activeMinutes} minutes per appearance.`;
+  const currentRule = `Current pool floor: ${activeGameRequirement} and at least ${activeMinutes} minutes per appearance.`;
   const recommendedRule = `Recommended ${phaseLabel} default: ${recommendedGameRequirement} and ${minutes} minutes per appearance.`;
-  elements.sampleFilterHelp.textContent = `These requirements decide who may enter the search. They never determine assigned minutes. ${currentRule} ${recommendedRule}`;
+  elements.sampleFilterHelp.textContent = `These eligibility filters shape the player pool. They never determine assigned minutes. ${currentRule} ${recommendedRule}`;
 }
 
 function solveActionLabel({ busy = false, update = false } = {}) {
@@ -2560,12 +2546,6 @@ function captureDetailedSettings() {
     "minGuards",
     "minForwards",
     "minCenters",
-    "minPoints",
-    "minRebounds",
-    "minAssists",
-    "minSteals",
-    "minBlocks",
-    "maxTurnovers",
     "rotationMin",
     "rotationMax",
     "rotationMinutePlan",
@@ -2933,12 +2913,57 @@ function restorePlayerControlFocus(focusTarget) {
   control?.focus({ preventScroll: true });
 }
 
+const PLAYER_SORT_DEFAULTS = Object.freeze({
+  name: "asc",
+  positions: "asc",
+  minutes: "desc",
+  points: "desc",
+  rebounds: "desc",
+  assists: "desc",
+});
+
+function comparePlayerValues(left, right, key, direction) {
+  const descending = direction === "desc";
+  const leftValue = key === "positions" ? (left.positions || []).join("/") : left[key];
+  const rightValue = key === "positions" ? (right.positions || []).join("/") : right[key];
+  const leftNumber = Number(leftValue);
+  const rightNumber = Number(rightValue);
+  const leftIsNumeric = Number.isFinite(leftNumber);
+  const rightIsNumeric = Number.isFinite(rightNumber);
+  if (leftIsNumeric && rightIsNumeric) return descending ? rightNumber - leftNumber : leftNumber - rightNumber;
+  const textComparison = String(leftValue ?? "").localeCompare(String(rightValue ?? ""), undefined, { numeric: true, sensitivity: "base" });
+  return descending ? -textComparison : textComparison;
+}
+
+function sortPlayers(players) {
+  const { key, direction } = state.playerSort;
+  return [...players].sort((left, right) => {
+    const primary = comparePlayerValues(left, right, key, direction);
+    if (primary !== 0) return primary;
+    return comparePlayerValues(left, right, "name", "asc");
+  });
+}
+
+function syncPlayerSortHeaders() {
+  document.querySelectorAll("[data-player-sort]").forEach((button) => {
+    const key = button.dataset.playerSort;
+    const active = key === state.playerSort.key;
+    const direction = active ? state.playerSort.direction : "none";
+    const directionLabel = direction === "asc" ? "ascending" : direction === "desc" ? "descending" : "unsorted";
+    const header = button.closest("th");
+    if (header) header.setAttribute("aria-sort", direction === "none" ? "none" : (direction === "asc" ? "ascending" : "descending"));
+    button.dataset.sortDirection = direction;
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute("aria-label", `${button.textContent.trim()}${active ? `, sorted ${directionLabel}` : ", sort"}`);
+  });
+}
+
 function renderPlayerTable({ focusTarget = null } = {}) {
   if (!state.dataset) return;
   const query = elements.playerSearch.value.trim().toLocaleLowerCase();
-  const players = state.dataset.players.filter((player) => (
+  const players = sortPlayers(state.dataset.players.filter((player) => (
     !query || `${player.name} ${player.team} ${player.positions.join(" ")}`.toLocaleLowerCase().includes(query)
-  ));
+  )));
   const fragment = document.createDocumentFragment();
 
   for (const player of players) {
@@ -3046,6 +3071,7 @@ function renderPlayerTable({ focusTarget = null } = {}) {
   renderActiveSelectionTray();
   renderPoolSummary(players.length);
   updateRunSummary();
+  syncPlayerSortHeaders();
   elements.compareCount.textContent = String(state.compareIds.size);
   elements.watchlistCount.textContent = String(state.watchlistIds.size);
   restorePlayerControlFocus(focusTarget);
@@ -3056,7 +3082,7 @@ function renderPoolSummary(visiblePlayers = state.dataset?.players.length || 0) 
   const eligible = state.dataset.players.filter(isPlayerEligible);
   elements.poolSummary.replaceChildren();
   const parts = [
-    `${eligible.length} of ${state.dataset.players.length} meet the sample filters`,
+    `${eligible.length} of ${state.dataset.players.length} meet the player-pool floor`,
     `${state.lockedIds.size} must include`,
     `${state.excludedIds.size} do not use`,
     `${visiblePlayers} player${visiblePlayers === 1 ? "" : "s"} shown`,
@@ -3270,19 +3296,6 @@ function handlePlayerControl(event) {
 }
 
 function buildOptimizerConfig() {
-  const statMinimums = {};
-  const statInputs = {
-    points: elements.minPoints,
-    rebounds: elements.minRebounds,
-    assists: elements.minAssists,
-    steals: elements.minSteals,
-    blocks: elements.minBlocks,
-  };
-  for (const [stat, input] of Object.entries(statInputs)) {
-    if (state.experienceMode === "simple") continue;
-    const value = optionalNumber(input);
-    if (value !== undefined) statMinimums[stat] = value;
-  }
   const config = {
     modelMode: $("#modelModeInput").value,
     scoutObjective: $("#modelModeInput").value === "scout" ? $("#scoutObjectiveInput").value : "balanced",
@@ -3306,12 +3319,7 @@ function buildOptimizerConfig() {
       F: numberFromInput(elements.minForwards, 0),
       C: numberFromInput(elements.minCenters, 0),
     },
-    statMinimums,
   };
-  const maxTurnovers = state.experienceMode === "detailed"
-    ? optionalNumber(elements.maxTurnovers)
-    : undefined;
-  if (maxTurnovers !== undefined) config.maxTurnovers = maxTurnovers;
   if (config.mode === "rotation") {
     config.rotationOptions = {
       minMinutes: numberFromInput(elements.rotationMin, 8),
@@ -6234,6 +6242,21 @@ function bindRemainingEvents() {
   elements.playerTableBody.addEventListener("change", handlePlayerControl);
   elements.playerTableBody.addEventListener("input", handlePlayerControl);
   elements.playerTableBody.addEventListener("click", handlePlayerControl);
+  document.querySelectorAll("[data-player-sort]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.playerSort;
+      if (!key) return;
+      if (state.playerSort.key === key) {
+        state.playerSort.direction = state.playerSort.direction === "asc" ? "desc" : "asc";
+      } else {
+        state.playerSort = {
+          key,
+          direction: PLAYER_SORT_DEFAULTS[key] || "asc",
+        };
+      }
+      renderPlayerTable();
+    });
+  });
   elements.activeSelectionTray.addEventListener("click", handleActiveSelectionRemoval);
   elements.resultContent.addEventListener("change", (event) => {
     const select = event.target.closest('[data-action="lineup-dna-replacement-choice"]');
@@ -6416,6 +6439,11 @@ function restoreWorkflowForm(draft) {
     if (!input || (input.tagName === "SELECT" && ![...input.options].some(option => option.value === value))) continue;
     input.value = value;
   }
+  // Drafts created before production thresholds were retired may still carry
+  // those field IDs. They remain in the DOM only for backward-compatible
+  // module references and must never affect a restored run.
+  [elements.minPoints, elements.minRebounds, elements.minAssists, elements.minSteals,
+    elements.minBlocks, elements.maxTurnovers].forEach(input => { if (input) input.value = ""; });
   state.familyWeights = { ...state.familyWeights, ...saved.familyWeights };
   state.weights = { ...saved.weights };
   state.activePreset = saved.activePreset;

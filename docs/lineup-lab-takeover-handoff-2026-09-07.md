@@ -18,12 +18,13 @@ inspect why the exact result was selected.
 
 The original task reached a substantial implementation checkpoint and then
 stalled because its selected model repeatedly hit capacity/usage errors. The
-latest completed checkpoint is commit `aa6372c6` (“Synchronize Lineup Lab
-responsibility evidence release”), which is present at `HEAD` and `origin/main`
-at the time of the original handoff. The continuation added the responsibility
-guardrail test and released the reviewed static fan-tool path list. No
-unfinished tool call from the original task needs to be replayed; future work
-should use the files and evidence described here.
+latest committed checkpoint recovered by the continuation is `71a86408`
+(“Record per-season workload stability evidence”), present at `HEAD` and
+`origin/main` before the current release consolidation. The continuation also
+completed the public six-season Scout package, the Scout Daily Games bridge,
+the fan-tool navigation pass, and the Lineup Lab UI parity build. No unfinished
+tool call from the original task needs to be replayed; future work should use
+the files and evidence described here.
 
 The original checkpoint included the following work:
 
@@ -76,7 +77,7 @@ Lineup Lab has two copies by design:
 - deployable mirror: `lineup-lab/`.
 
 `scripts/build-lineup-lab-release.mjs` owns the mirror. Its allowlist currently
-contains 32 files and uses release revision `20260907f`. Never hand-edit the
+contains 32 files and uses release revision `20260908a`. Never hand-edit the
 generated mirror or generated catalog files. After an approved source change,
 run the builder and then its full `--check` parity mode.
 
@@ -183,19 +184,26 @@ system temporary file and is not a release artifact.
 Previously completed release checks at the same source checkpoint also passed:
 
 - `node scripts/build-lineup-lab-release.mjs --check` — all 32 generated files
-  synchronized at `20260907f`;
+  synchronized at `20260908a`;
 - `node scripts/site-integrity-check.mjs` — 30 HTML pages, 3,270 catalog rows,
-  asset revision `20260907f`, and zero reported issues;
-- `node scripts/audit-fan-suite-release.mjs` — 105 reviewed static files, no
-  deletes, and no Scout Studio/private backend/catalog files included;
+  asset revision `20260908a`, and zero reported issues;
+- the reviewed public Scout package contains 30 team shards plus its manifest,
+  with 2,476 eligible player-season rows spanning 2020–21 through 2025–26;
+- the public Scout Daily Games endpoint returns compiler `scout-daily-games-v2`
+  with opaque player handles and no provider identifiers;
 - JavaScript syntax checks and focused model/adapter tests;
 - `git diff --check`.
 
-The test and handoff edits are recorded in commits `8264c060` and `70851bd3`.
-GitHub `origin/main` is synchronized at `70851bd3`, and the reviewed 105-file
-fan-suite path list was uploaded to cPanel over verified FTPS. HTTP byte parity
-after upload was 105/105 with zero differences and zero fetch errors. No
-Supabase write or production browser smoke claim has been made.
+The test and handoff edits are recorded in commits `8264c060`, `70851bd3`, and
+`71a86408`. The analytics catalog is currently ready with the validated
+2020–26 scope and 2,476 rows. The cPanel release is maintained as a reviewed
+path list that includes the 32-file Lineup Lab mirror, the public fan-tool
+dependencies, and the 31 ignored Scout Studio data shards; the data shards are
+deployment-only and remain outside Git history. Production Fix the Five and
+Draft Night browser smoke checks passed at desktop and mobile viewports with
+no request failures, console errors, or horizontal overflow. Re-run the final
+path-list byte audit after any source change before making another release
+claim.
 
 ## Season stability probe (2026-09-08)
 

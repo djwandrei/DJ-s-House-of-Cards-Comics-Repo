@@ -77,7 +77,7 @@ Private prefix:
 `outputs/01a0322f-56b6-7e02-8a5b-e31f0f6e3f4e/nba-last-five-seasons/`.
 
 - The six-season base manifest is
-  `scout-analytics/2020-26-final-20260907-v1-six-season/nba-scout-analytics-2020-26.json`.
+  `scout-analytics/2020-26-final-20260907-v2-comprehensive-model-evidence/nba-scout-analytics-2020-26.json`.
   Its saved package-validation report passed with 30 teams, 1,083 O/D RAPM
   players and 897,735 eligible exact-lineup possessions. This is the base
   package, not the unfinished additive player-game evidence package.

@@ -4,9 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { filterPlayableTools } from '../../tools/fan-tools.js';
 
 test('play filters never launch planned or research-gated tools', () => {
-  assert.equal(filterPlayableTools().length, 5);
+  assert.equal(filterPlayableTools().length, 6);
   assert.deepEqual(filterPlayableTools('games').map(tool => tool.id), ['fix-the-five', 'draft-night']);
-  assert.equal(filterPlayableTools('tools').length, 3);
+  assert.equal(filterPlayableTools('tools').length, 4);
   assert.ok(filterPlayableTools().every(tool => tool.status === 'live' && tool.href));
 });
 

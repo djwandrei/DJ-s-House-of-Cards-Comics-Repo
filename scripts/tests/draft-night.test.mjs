@@ -12,7 +12,9 @@ test('Draft Night live page uses the validation-gated Scout client and source di
   assert.match(html, /id="draftPanel"/);
   assert.match(html, /id="draftProgress"/);
   assert.match(html, /Board terms and scoring boundary/);
-  assert.match(html, /243 legal paths/);
+  assert.match(html, /Legal paths/);
+  assert.match(html, /board itself determines how many legal combinations are available/);
+  assert.doesNotMatch(html, /243 legal paths/);
   assert.match(html, /supabase-client\.js/);
   assert.match(html, /type="module"[^>]+scout-draft-night\.js/);
   assert.doesNotMatch(html, /type="module"[^>]+src="\.\/draft-night\.js/);

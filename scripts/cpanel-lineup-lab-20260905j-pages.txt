@@ -1,2 +1,0 @@
-# Upload only after the reviewed Lineup Lab assets pass live verification.
-lineup-lab/index.html
