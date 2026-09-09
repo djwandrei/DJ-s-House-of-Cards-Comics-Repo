@@ -3,6 +3,7 @@ tools/basketball-theme.css
 tools/basketball-theme.js
 tools/fan-tools.css
 tools/superdesign-suite.css
+tools/basketball-branding.js
 tools/fan-tools.js
 tools/index.html
 tools/registry.js
@@ -16,6 +17,7 @@ tools/workshop/tool-workshop.js
 tools/scout-studio/index.html
 tools/scout-studio/studio.css
 tools/scout-studio/studio.js
+lineup-lab/index.html
 assets/games/fan-tools-emblem-20260909.jpg
 assets/games/scout-studio-emblem-20260909.jpg
 assets/games/card-matchups-emblem-20260909.jpg

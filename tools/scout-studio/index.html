@@ -18,43 +18,42 @@
  <body class="scout-studio-page dark-mode" data-page="scout-studio">
   <script src="../../theme-init.js?v=20260908a"></script>
   <a class="skip-link" href="#mainContent">Skip to Scout Studio</a>
-  <header class="studio-header container">
-   <a class="studio-brand" href="../../index.html"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="58" height="58"><span>Scout Studio<small>DJ's House of Cards &amp; Comics · NBA evidence workspace</small></span></a>
-   <nav aria-label="Fan tools navigation">
-    <a href="../index.html">Fan Tools</a>
-    <a href="../../lineup-lab/index.html">Lineup Lab</a>
-    <a href="../fix-the-five/">Fix the Five</a>
-    <a href="../draft-night/">Draft Night</a>
-    <a href="../player-card-matchups/">Player &amp; Cards</a>
-    <a href="../workshop/">Workshop</a>
-    <a aria-current="page" href="./">Scout Studio</a>
-    <a class="studio-shop-link" href="../../shop.html">Shop</a>
-    <a href="../../account.html">Account</a>
-    <a href="../../cart.html">Cart</a>
-    <button type="button" id="themeToggle" class="theme-toggle">Dark Mode</button>
-   </nav>
+  <header class="studio-header">
+   <div class="studio-header__bar container">
+    <a class="studio-brand" href="../../index.html"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="58" height="58"><span>Scout Studio<small>DJ's House of Cards &amp; Comics</small></span></a>
+    <div class="studio-header__actions"><a href="../../shop.html">Shop</a><a href="../../account.html">Account</a><a href="../../cart.html">Cart</a><button type="button" id="themeToggle" class="theme-toggle">Dark Mode</button></div>
+   </div>
+   <nav class="studio-destination-nav" aria-label="Fan tools navigation"><div class="container studio-destination-nav__scroll">
+    <a href="../index.html"><span class="studio-destination-nav__icon"><img src="../../assets/games/fan-tools-emblem-20260909.jpg" alt="" width="28" height="28"></span>Fan Tools</a>
+    <a href="../../lineup-lab/"><span class="studio-destination-nav__icon"><img src="../../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="28" height="28"></span>Lineup Lab</a>
+    <a href="../fix-the-five/"><span class="studio-destination-nav__icon"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="28" height="28"></span>Fix the Five</a>
+    <a href="../draft-night/"><span class="studio-destination-nav__icon"><img src="../../assets/games/draft-night-emblem-20260907.webp" alt="" width="28" height="28"></span>Draft Night</a>
+    <a href="../player-card-matchups/"><span class="studio-destination-nav__icon"><img src="../../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="28" height="28"></span>Player &amp; Cards</a>
+    <a href="../workshop/"><span class="studio-destination-nav__icon"><img src="../../assets/games/workshop-emblem-20260909.jpg" alt="" width="28" height="28"></span>Workshop</a>
+    <a aria-current="page" href="./"><span class="studio-destination-nav__icon"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="28" height="28"></span>Scout Studio</a>
+   </div></nav>
   </header>
   <main id="mainContent" class="container" tabindex="-1">
    <section class="studio-hero" aria-labelledby="studioTitle">
-    <div><div class="studio-hero-lockup"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="88" height="88"><span>Scout Studio<small>Recorded basketball evidence</small></span></div><span class="studio-eyebrow">Scout Studio / six-season evidence workspace</span><h1 id="studioTitle">Know the player.<br>Understand the five.</h1><p>Explore recorded player, season, and shared-floor evidence from the published Scout package. These views describe the sample; they do not predict a future game.</p></div>
-    <aside class="studio-scope"><strong id="studioSeasonScope">Selected Scout window</strong><p>Player, Game Lab, and Season Lab evidence can draw from the validated 2020–21 through 2025–26 Scout window.</p><span>Observation ≠ projection</span></aside>
+    <div class="studio-hero__copy"><span class="studio-eyebrow">Basketball research</span><h1 id="studioTitle">Scout Studio</h1><p>For fans researching existing player pools and rotation boards. Choose an available view and inspect the historical records it presents; Scout Studio supports exploration rather than predictions.</p><a class="button studio-hero__cta" href="#workspace">Explore the workbenches <span aria-hidden="true">↓</span></a></div>
+    <aside class="studio-hero__aside"><div class="studio-hero__emblem"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="176" height="176"></div><div class="studio-scope"><strong id="studioSeasonScope">Selected Scout window</strong><p>Player, Game Lab, and Season Lab evidence can draw from the validated 2020–21 through 2025–26 Scout window.</p><span>Observation ≠ prediction</span></div></aside>
    </section>
    <section class="studio-source" aria-labelledby="sourceTitle">
      <div><span class="studio-eyebrow">Data availability</span><h2 id="sourceTitle">Checking the published package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after the validated 2020–26 projection loads.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the level of detail the package provides.</p></div>
     <button type="button" class="button-secondary" id="refreshSource">Check again</button>
    </section>
-   <section id="pendingPanel" class="studio-panel" aria-labelledby="pendingTitle">
+   <section id="pendingPanel" class="studio-panel studio-workbench-intro" aria-labelledby="pendingTitle">
      <span class="studio-eyebrow">Built around the validated package</span><h2 id="pendingTitle">The workbench is loading its evidence.</h2><p>Player Blueprint, Chemistry Lab, Composite Forge, Game Lab, Season Lab, and Career Lab use the published 2020–26 Scout projection. Evidence remains labeled at its observed grain.</p>
      <div class="studio-roadmap"><article><h3>Player Blueprint</h3><p>Compare production and inspect shot tendencies and context splits.</p></article><article><h3>Chemistry &amp; composites</h3><p>Pin a shared-floor group or donor recipe, then inspect what changed.</p></article><article><h3>Game, Season &amp; Career</h3><p>Explore a matchup, custom league, or observed season history with repeatable assumptions.</p></article></div>
    </section>
-   <section id="workspace" hidden aria-label="Scout analysis workspace">
+   <section id="workspace" class="studio-workbench-container" hidden aria-label="Scout analysis workspace">
     <div class="studio-mode-controls" role="group" aria-label="Choose a workbench"><button type="button" data-mode="blueprint" aria-pressed="true">Player Blueprint</button><button type="button" data-mode="chemistry" aria-pressed="false">Chemistry Lab</button><button type="button" data-mode="forge" aria-pressed="false">Composite Forge</button><button type="button" data-mode="game" aria-pressed="false">Game Lab</button><button type="button" data-mode="league" aria-pressed="false">Season Lab</button><button type="button" data-mode="career" aria-pressed="false">Career Lab</button></div>
     <section id="gamePanel" hidden aria-labelledby="gameLabTitle"></section>
     <section id="leaguePanel" hidden aria-labelledby="leagueLabTitle"></section>
     <section id="careerPanel" hidden aria-labelledby="careerLabTitle"></section>
     <form id="teamForm" class="studio-team-form"><label for="teamSelect">Choose a franchise sample<select id="teamSelect" required></select></label><button type="submit" class="button" id="loadTeam">Load team evidence</button><span class="studio-muted">One team read at a time. Nothing is uploaded.</span></form>
     <p role="status" aria-live="polite" id="workStatus"></p>
-    <div id="analysis" hidden>
+    <div id="analysis" class="studio-workbench-panel" hidden>
      <section id="blueprintPanel" aria-labelledby="blueprintTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Skills / tendencies / comparison</span><h2 id="blueprintTitle">Player Blueprint</h2></div><label for="playerSelect">Inspect player<select id="playerSelect"></select></label><label for="compareSelect">Compare with<select id="compareSelect"><option value="">No comparison</option></select></label></div>
       <label class="studio-question" for="blueprintQuestion">Choose an analysis question<select id="blueprintQuestion"><option value="all">Full observable profile</option><option value="shooting">Shooting choices and outcomes</option><option value="creation">Creation and ball security</option><option value="rebounding">Rebounding production</option><option value="disruption">Recorded defensive disruption</option></select></label>

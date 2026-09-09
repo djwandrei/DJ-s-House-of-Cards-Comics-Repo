@@ -3,6 +3,20 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const activeAnimations = new Set();
 const badges = [...document.querySelectorAll('[data-badge-replay]')];
 
+function loadFanSuitePresentation() {
+  if (!document.body?.classList.contains('lab-guided')) return;
+  if (!document.querySelector('link[data-superdesign-suite]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.dataset.superdesignSuite = 'true';
+    link.href = new URL('./superdesign-suite.css?v=20260909d', import.meta.url).href;
+    document.head.append(link);
+  }
+  import(`./basketball-theme.js?v=20260909d`).catch(() => {
+    // The lab remains usable with its local navigation if the optional suite shell fails.
+  });
+}
+
 function syncMotionPreference() {
   for (const animation of activeAnimations) animation.cancel();
   activeAnimations.clear();
@@ -34,3 +48,4 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { for (const animation of activeAnimations) animation.cancel(); activeAnimations.clear(); }
 });
 syncMotionPreference();
+loadFanSuitePresentation();
