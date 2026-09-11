@@ -9,10 +9,10 @@ function loadFanSuitePresentation() {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.dataset.superdesignSuite = 'true';
-    link.href = new URL('./superdesign-suite.css?v=20260909d', import.meta.url).href;
+    link.href = new URL('./superdesign-suite.css?v=20260909m', import.meta.url).href;
     document.head.append(link);
   }
-  import(`./basketball-theme.js?v=20260909d`).catch(() => {
+  import(`./basketball-theme.js?v=20260909m`).catch(() => {
     // The lab remains usable with its local navigation if the optional suite shell fails.
   });
 }

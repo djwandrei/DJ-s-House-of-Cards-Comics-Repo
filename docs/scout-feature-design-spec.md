@@ -237,12 +237,13 @@ current and best reveal ranks remain tied to the immutable board. Reload clears
 this history, while existing saved picks and personal records remain separate.
 
 Planned daily pool families: one team/one season, one franchise across seasons,
-and mixed-franchise/mixed-season pools. All use 2023–24 through 2025–26. Before
-publishing a board, validate identity uniqueness, eligible player-season grain,
-constraints, at least one feasible answer and meaningful alternatives. Keep a
-stable day/snapshot/rules seed and pin answers before accepting attempts. A
-data update must not alter a running day's scoring. If no valid board exists,
-show unavailable; do not silently fall back to Timberwolves-only or old fixtures.
+and mixed-franchise/mixed-season pools. The current source window is 2017–18
+through 2025–26. Before publishing a board, validate identity uniqueness,
+eligible player-season grain, constraints, at least one feasible answer and
+meaningful alternatives. Keep a stable day/snapshot/rules seed and pin answers
+before accepting attempts. A data update must not alter a running day's
+scoring. If no valid board exists, show unavailable; do not silently fall back
+to Timberwolves-only or old fixtures.
 
 Challenge success should be measured separately as valid completion, willingness
 to try an alternative, and comprehension of why a revealed result changed. A

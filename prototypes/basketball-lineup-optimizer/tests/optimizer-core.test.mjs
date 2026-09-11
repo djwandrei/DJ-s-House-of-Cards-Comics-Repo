@@ -8,7 +8,6 @@ const optimizer = await loadOptimizerCore();
 
 const {
   allocateRotationMinutes,
-  DEFAULT_MAX_CONSTRAINED_SOLVE_STATES,
   MAX_EXACT_ALTERNATIVES,
   optimizeLineups,
 } = optimizer;
@@ -1361,8 +1360,8 @@ test("checks more than the former rotation ceiling without downgrading the minut
   assert.equal(result.diagnostics.rejectedByConstraint.constraintSearchLimit, 0);
 });
 
-test("caps a high-upper-bound reviewer repro without returning an unproven result", {
-  timeout: 20000,
+test("proves a joint production bound without a fixed rotation state cap", {
+  timeout: 10000,
 }, () => {
   const players = ["a", "b", "c", "d", "e", "f", "g", "h", "i"].map((id, index) =>
     player(id, {
@@ -1386,22 +1385,17 @@ test("caps a high-upper-bound reviewer repro without returning an unproven resul
 
   assert.equal(result.ok, false);
   assert.equal(result.best, null);
-  assert.equal(result.diagnostics.category, "performance");
-  assert.equal(result.diagnostics.subcategory, "constraint-search-limit");
-  assert.equal(result.diagnostics.exactSearchCompleted, false);
-  assert.ok(
-    result.diagnostics.constraintSearchStatesUsed <= DEFAULT_MAX_CONSTRAINED_SOLVE_STATES,
-  );
-  assert.equal(
-    result.diagnostics.constraintSearchStateLimit,
-    5000,
-  );
+  assert.match(result.reason, /No feasible rotation/);
+  assert.equal(result.diagnostics.rejectedByConstraint.jointProduction, 9);
+  assert.equal(result.diagnostics.constraintSearchStatesUsed, 0);
+  assert.equal(result.diagnostics.constraintSearchStateLimit, null);
   assert.equal(result.combinationsEvaluated, 9);
   assert.equal(result.diagnostics.rotationBaselineAllocationsComputed, 9);
-  assert.equal(result.diagnostics.rotationConstrainedAllocationsComputed, 1);
+  assert.equal(result.diagnostics.rotationConstrainedAllocationsComputed, 0);
   assert.equal(result.diagnostics.constraintBoundPruned, 0);
-  assert.equal(result.diagnostics.exactTopKProven, false);
-  assert.ok(elapsedMs < 25000, `expected safe abort below 25s, received ${elapsedMs}ms`);
+  assert.equal(result.diagnostics.exactTopKProven, true);
+  assert.equal(result.diagnostics.exactAlternativeRankingCompleted, true);
+  assert.ok(elapsedMs < 5000, `expected joint infeasibility proof below 5s, received ${elapsedMs}ms`);
 });
 
 test("prunes a low-upper-bound hard roster after proving an exact top result", () => {

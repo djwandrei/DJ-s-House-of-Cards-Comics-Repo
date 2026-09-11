@@ -1,4 +1,4 @@
-import { assertScoutDailyGamePublicBoard } from './scout-daily-game-client.js?v=20260908a';
+import { assertScoutDailyGamePublicBoard } from './scout-daily-game-client.js?v=20260909m';
 
 // A tab-session learning record, not a leaderboard, saved answer key, or score
 // authority. Only successfully revealed legal decisions can enter this ledger.

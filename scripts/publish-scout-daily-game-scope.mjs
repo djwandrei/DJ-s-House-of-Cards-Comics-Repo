@@ -12,16 +12,15 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { createGunzip } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { streamTeamShardJson } from './validate-local-scout-analytics.mjs';
 
 const ROOT = process.cwd();
-const SEASON_START_YEARS = Object.freeze([2020, 2021, 2022, 2023, 2024, 2025]);
-const SEASON_END_YEARS = Object.freeze(SEASON_START_YEARS.map(year => year + 1));
 const ALLOWED_POSITIONS = new Set(['PG', 'SG', 'SF', 'PF', 'C', 'G', 'F']);
 const TEAM_CODES = Object.freeze({
   'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN', 'Charlotte Hornets': 'CHA',
   'Chicago Bulls': 'CHI', 'Cleveland Cavaliers': 'CLE', 'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN',
   'Detroit Pistons': 'DET', 'Golden State Warriors': 'GSW', 'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND',
-  'LA Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA',
+  'LA Clippers': 'LAC', 'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL', 'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA',
   'Milwaukee Bucks': 'MIL', 'Minnesota Timberwolves': 'MIN', 'New Orleans Pelicans': 'NOP', 'New York Knicks': 'NYK',
   'Oklahoma City Thunder': 'OKC', 'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHX',
   'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC', 'San Antonio Spurs': 'SAS', 'Toronto Raptors': 'TOR',
@@ -37,20 +36,52 @@ const PUBLIC_STAT_KEYS = Object.freeze([
 ]);
 const SEASON_PHASE = 'regular_in_season_tournament_play_in_playoffs_official_franchise_sportradar-nba-lineup-reconstruction-v3_possession_start_lineups';
 const TRANSIENT_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524]);
+const POSITION_VIEW = 'nba_lineup_player_pool';
+const POSITION_VIEW_SELECT = [
+  'player_id', 'player_name', 'player_primary_position', 'season_end_year', 'team_code',
+  'team_name', 'listed_position', 'career_profile_positions', 'career_profile_position_text',
+].join(',');
+
+function seasonWindow(manifest) {
+  const starts = manifest?.scope?.seasonStartYears;
+  if (!Array.isArray(starts) || starts.length < 2
+    || starts.some(year => !Number.isSafeInteger(year) || year < 1947)
+    || new Set(starts).size !== starts.length) {
+    throw new Error('The validated package must declare at least two distinct season start years.');
+  }
+  const sorted = [...starts].sort((left, right) => left - right);
+  if (sorted.some((year, index) => index > 0 && year !== sorted[index - 1] + 1)) {
+    throw new Error('The validated package season window must be chronological and contiguous.');
+  }
+  if (manifest.scope.seasonStartYear !== sorted[0]
+    || manifest.scope.latestSeasonStartYear !== sorted.at(-1)
+    || manifest.scope.seasonEndYear !== sorted.at(-1) + 1) {
+    throw new Error('The validated package season scope metadata is inconsistent.');
+  }
+  return { starts: sorted, ends: sorted.map(year => year + 1) };
+}
+
+function seasonLabel(starts) {
+  return `${starts[0]}–${String(starts.at(-1) + 1).slice(-2)}`;
+}
 
 function usage() {
   return `Usage:
   node .\\scripts\\publish-scout-daily-game-scope.mjs --manifest <path> --source-validation <path> [options]
 
 Options:
-  --manifest <path>            Validated 2020-26 Scout manifest (required)
+  --manifest <path>            Validated multi-season Scout manifest (required)
   --source-validation <path>   Matching source-validation report (required)
   --env-file <path>            Credential env file (default: codex_account_keys.env)
-  --scope-key <key>            Scope key (default: scout-2020-26-v2)
+  --scope-key <key>            Scope key (default: scout-2017-26-v3)
+  --positions-file <path>      Optional source-backed position crosswalk JSON
+  --fetch-positions            Read the position crosswalk from the analytics view
   --apply                      Register, ingest, and publish the scope remotely
   --help                       Show this help
 
-Dry-run is the default. --apply requires SCOUT_DAILY_GAME_IMPORT_ALLOW_WRITE=confirmed.
+Dry-run is the default. A package without embedded model-evidence positions needs
+--positions-file or --fetch-positions. --apply requires
+SCOUT_DAILY_GAME_IMPORT_ALLOW_WRITE=confirmed.
 `;
 }
 
@@ -66,14 +97,18 @@ function parseArgs(argv) {
     else flags.add(name);
   }
   if (flags.has('help')) return { help: true };
-  const known = new Set(['manifest', 'source-validation', 'env-file', 'scope-key', 'apply', 'help']);
+  const known = new Set(['manifest', 'source-validation', 'env-file', 'scope-key', 'positions-file', 'fetch-positions', 'apply', 'help']);
   for (const name of [...values.keys(), ...flags]) if (!known.has(name)) throw new Error(`Unknown option: --${name}`);
   const manifest = workspacePath(values.get('manifest'), '--manifest');
   const sourceValidation = workspacePath(values.get('source-validation'), '--source-validation');
   const envFile = workspacePath(values.get('env-file') || 'codex_account_keys.env', '--env-file');
-  const scopeKey = String(values.get('scope-key') || 'scout-2020-26-v2').trim().toLowerCase();
+  const scopeKey = String(values.get('scope-key') || 'scout-2017-26-v3').trim().toLowerCase();
   if (!/^[a-z0-9][a-z0-9-]{2,95}$/.test(scopeKey)) throw new Error('--scope-key is invalid.');
-  return { help: false, manifest, sourceValidation, envFile, scopeKey, apply: flags.has('apply') };
+  const positionsFile = values.has('positions-file')
+    ? workspacePath(values.get('positions-file'), '--positions-file') : null;
+  if (positionsFile && flags.has('fetch-positions')) throw new Error('Choose --positions-file or --fetch-positions, not both.');
+  return { help: false, manifest, sourceValidation, envFile, scopeKey, positionsFile,
+    fetchPositions: flags.has('fetch-positions'), apply: flags.has('apply') };
 }
 
 function workspacePath(value, label) {
@@ -133,10 +168,167 @@ function teamCode(teamName) {
 }
 
 function normalizePositions(value) {
-  const positions = [...new Set((Array.isArray(value) ? value : [])
-    .map(item => String(item || '').trim().toUpperCase()).filter(Boolean))];
-  if (!positions.length || positions.length > 3 || positions.some(position => !ALLOWED_POSITIONS.has(position))) return null;
-  return positions;
+  const aliases = {
+    'POINT GUARD': 'PG', 'SHOOTING GUARD': 'SG', 'SMALL FORWARD': 'SF',
+    'POWER FORWARD': 'PF', 'CENTER': 'C', 'CENTRE': 'C', 'GUARD': 'G', 'FORWARD': 'F',
+  };
+  const values = Array.isArray(value) ? value.flat(Infinity) : [value];
+  const positions = [];
+  for (const item of values) {
+    const raw = String(item || '').trim().toUpperCase();
+    if (!raw) continue;
+    const alias = aliases[raw];
+    const pieces = alias ? [alias] : raw.split(/[\s,\/|+;&-]+/).filter(Boolean);
+    for (const piece of pieces) {
+      const token = aliases[piece] || piece;
+      if (ALLOWED_POSITIONS.has(token) && !positions.includes(token)) positions.push(token);
+    }
+  }
+  if (!positions.length) return null;
+  if (positions.length <= 3) return positions;
+  // The source profile can list every position a player has held. The Daily
+  // Games contract allows three tokens, so collapse a longer verified list to
+  // its broad guard/forward/center eligibility without inventing a role.
+  const broad = [];
+  if (positions.some(position => ['PG', 'SG', 'G'].includes(position))) broad.push('G');
+  if (positions.some(position => ['SF', 'PF', 'F'].includes(position))) broad.push('F');
+  if (positions.includes('C')) broad.push('C');
+  return broad.length >= 1 && broad.length <= 3 ? broad : null;
+}
+
+function normalizeName(value) {
+  return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function normalizeTeamCode(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const upper = raw.toUpperCase();
+  if (Object.values(TEAM_CODES).includes(upper)) return upper;
+  return TEAM_CODES[raw] || '';
+}
+
+function positionValues(record) {
+  const preferred = [record?.listedPositions, record?.positions]
+    .find(value => Array.isArray(value) && value.length);
+  const values = preferred || [record?.listedPosition, record?.listed_position,
+    record?.playerPrimaryPosition, record?.player_primary_position,
+    record?.careerProfilePositions, record?.career_profile_positions,
+    record?.careerProfilePositionText, record?.career_profile_position_text];
+  return normalizePositions(values);
+}
+
+function addPositionCandidate(map, key, positions) {
+  if (!key || !positions) return;
+  const signature = positions.join('|');
+  const current = map.get(key) || [];
+  if (!current.some(item => item.join('|') === signature)) current.push(positions);
+  map.set(key, current);
+}
+
+function createPositionIndex(records) {
+  const index = { byId: new Map(), byNameTeamSeason: new Map(), byNameTeam: new Map(), byNameSeason: new Map(), byName: new Map(), records: 0 };
+  for (const record of records || []) {
+    const positions = positionValues(record);
+    if (!positions) continue;
+    const id = String(record?.playerId ?? record?.player_id ?? '').trim();
+    const name = normalizeName(record?.playerName ?? record?.player_name ?? record?.name);
+    const code = normalizeTeamCode(record?.teamCode ?? record?.team_code ?? record?.teamName ?? record?.team_name);
+    const rawEnd = Number(record?.seasonEndYear ?? record?.season_end_year);
+    const endYear = Number.isSafeInteger(rawEnd) ? rawEnd
+      : Number.isSafeInteger(Number(record?.seasonStartYear ?? record?.season_start_year))
+        ? Number(record.seasonStartYear ?? record.season_start_year) + 1 : null;
+    if (!id && !name) continue;
+    index.records += 1;
+    if (id && code && endYear) addPositionCandidate(index.byId, `${id}|${code}|${endYear}`, positions);
+    if (id && endYear) addPositionCandidate(index.byId, `${id}|${endYear}`, positions);
+    if (id) addPositionCandidate(index.byId, id, positions);
+    if (name && code && endYear) addPositionCandidate(index.byNameTeamSeason, `${name}|${code}|${endYear}`, positions);
+    if (name && code) addPositionCandidate(index.byNameTeam, `${name}|${code}`, positions);
+    if (name && endYear) addPositionCandidate(index.byNameSeason, `${name}|${endYear}`, positions);
+    if (name) addPositionCandidate(index.byName, name, positions);
+  }
+  return index;
+}
+
+function uniquePositionCandidate(candidates) {
+  if (!Array.isArray(candidates) || !candidates.length) return null;
+  const signatures = new Set(candidates.map(item => item.join('|')));
+  return signatures.size === 1 ? candidates[0] : null;
+}
+
+function lookupPositions(profile, team, endYear, index) {
+  const id = String(profile?.playerId ?? profile?.player_id ?? '').trim();
+  const name = normalizeName(profile?.player ?? profile?.playerName ?? profile?.name);
+  const code = team?.code || '';
+  const lookups = [
+    [index?.byId, id && code && `${id}|${code}|${endYear}`],
+    [index?.byId, id && `${id}|${endYear}`],
+    [index?.byId, id],
+    [index?.byNameTeamSeason, name && code && `${name}|${code}|${endYear}`],
+    [index?.byNameTeam, name && code && `${name}|${code}`],
+    [index?.byNameSeason, name && `${name}|${endYear}`],
+    [index?.byName, name],
+  ];
+  for (const [map, key] of lookups) {
+    if (!key) continue;
+    const found = uniquePositionCandidate(map?.get(key));
+    if (found) return found;
+  }
+  return null;
+}
+
+async function readPositionFile(file) {
+  const stat = await fsPromises.stat(file);
+  if (!stat.isFile() || stat.size > 32 * 1024 * 1024) throw new Error('The position crosswalk must be a JSON file no larger than 32 MiB.');
+  const parsed = JSON.parse(await fsPromises.readFile(file, 'utf8'));
+  let records;
+  if (Array.isArray(parsed)) records = parsed;
+  else if (Array.isArray(parsed?.players)) records = parsed.players;
+  else if (parsed && typeof parsed === 'object') records = Object.entries(parsed).map(([playerId, value]) => ({
+    ...(value && typeof value === 'object' ? value : {}), playerId,
+  }));
+  else throw new Error('The position crosswalk must be an array or an object containing players.');
+  if (records.length > 100000) throw new Error('The position crosswalk exceeds the 100,000-row safety limit.');
+  return records;
+}
+
+async function fetchPositionRecords(options) {
+  const env = { ...parseEnvFile(options.envFile), ...process.env };
+  const url = requiredEnv(env, ['SUPABASE_URL_2', 'NBA_ANALYTICS_SUPABASE_URL']).replace(/\/+$/, '');
+  const key = requiredEnv(env, ['SUPABASE_SERVICE_ROLE_KEY_2', 'SUPABASE_SERVICE_ROLE_KEY']);
+  let parsed;
+  try { parsed = new URL(url); } catch { throw new Error('The analytics Supabase URL is invalid.'); }
+  if (parsed.protocol !== 'https:' || parsed.hostname !== 'fbbmuqbdpgsmvnezowwn.supabase.co') {
+    throw new Error('Position fetching is restricted to the dedicated analytics Supabase project.');
+  }
+  const records = [];
+  const pageSize = 1000;
+  for (let offset = 0; ; offset += pageSize) {
+    if (offset >= 100000) throw new Error('The analytics position view exceeds the 100,000-row safety limit.');
+    const endpoint = new URL(`${url}/rest/v1/${POSITION_VIEW}`);
+    endpoint.searchParams.set('select', POSITION_VIEW_SELECT);
+    endpoint.searchParams.set('limit', String(pageSize));
+    endpoint.searchParams.set('offset', String(offset));
+    endpoint.searchParams.set('order', 'season_end_year.asc,player_name.asc');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+    let response;
+    try {
+      response = await fetch(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}` }, signal: controller.signal });
+    } catch (error) {
+      if (error?.name === 'AbortError') throw new Error('Analytics position view request timed out.');
+      throw new Error('Analytics position view request failed.');
+    } finally { clearTimeout(timer); }
+    if (!response.ok) throw new Error(`Analytics position view failed with HTTP ${response.status}.`);
+    const page = await response.json();
+    if (!Array.isArray(page)) throw new Error('Analytics position view returned an invalid response.');
+    records.push(...page);
+    process.stdout.write(`Read ${records.length} position rows from the analytics view.\n`);
+    if (page.length < pageSize) break;
+  }
+  return records;
 }
 
 function chooseProfile(current, candidate) {
@@ -161,9 +353,63 @@ function publicStats(row) {
   return stats;
 }
 
+function safeCount(value) {
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 0 ? number : null;
+}
+
+function safeNonNegative(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+function embeddedSeasonRow(profile, team, seasonStartYear, positionIndex) {
+  const direct = profile?.seasonDirectStats?.[String(seasonStartYear)];
+  if (!direct || typeof direct !== 'object' || direct.observed !== true) return null;
+  const scope = direct.scope || {};
+  const split = profile?.seasonSplits?.[String(seasonStartYear)]?.onCourt || {};
+  const games = safeCount(scope.verifiedGames ?? split.games);
+  const minutes = safeNonNegative(scope.matchingMinutes ?? split.minutes);
+  if (!games || minutes === null || minutes <= 0) return null;
+  const box = direct.boxScoreTotals && typeof direct.boxScoreTotals === 'object' ? direct.boxScoreTotals : {};
+  const total = key => safeNonNegative(box[key]);
+  const rebounds = total('rebounds') ?? ((total('offensiveRebounds') !== null && total('defensiveRebounds') !== null)
+    ? total('offensiveRebounds') + total('defensiveRebounds') : null);
+  const perGame = key => total(key) !== null ? total(key) / games : null;
+  const fga = total('fieldGoalAttempts');
+  const fgm = total('fieldGoalsMade');
+  const threes = total('threePointersMade');
+  const threeAttempts = total('threePointAttempts');
+  const shooting = direct.shooting && typeof direct.shooting === 'object' ? direct.shooting : {};
+  const rate = (value, numerator, denominator) => Number.isFinite(Number(value)) && Number(value) >= 0
+    ? Number(value) : (numerator !== null && denominator > 0 ? numerator / denominator : null);
+  const positions = normalizePositions(profile?.listedPositions || profile?.positions)
+    || lookupPositions(profile, team, seasonStartYear + 1, positionIndex);
+  if (!positions) return { missingPosition: true };
+  const name = String(profile?.player || profile?.playerName || '').trim();
+  if (name.length < 2 || name.length > 160) return null;
+  return {
+    playerId: String(profile.playerId || '').trim(), teamId: team.id, seasonStartYear,
+    names: [name], listedPositions: positions, games, officialMinutes: minutes,
+    perGame: {
+      points: perGame('points'), rebounds: rebounds === null ? null : rebounds / games,
+      assists: perGame('assists'), steals: perGame('steals'), blocks: perGame('blocks'),
+      turnovers: perGame('turnovers'),
+    },
+    officialRates: {
+      effectiveFieldGoalPercentage: rate(shooting.effectiveFieldGoalPercentage, fgm !== null && threes !== null ? fgm + threes * 0.5 : null, fga),
+      threePointPercentage: rate(shooting.threePointPercentage, threes, threeAttempts),
+    },
+  };
+}
+
 async function buildRows(options, manifest) {
+  const seasons = seasonWindow(manifest);
   const shards = Array.isArray(manifest.dataShards) ? manifest.dataShards : [];
-  const teams = new Map(shards.map(shard => [shard.teamId, { name: String(shard.team || '').trim(), code: teamCode(String(shard.team || '').trim()) }]));
+  const teams = new Map(shards.map(shard => {
+    const name = String(shard.team || '').trim();
+    return [shard.teamId, { id: shard.teamId, name, code: teamCode(name) }];
+  }));
   if (teams.size !== 30) throw new Error('The validated package must contain exactly 30 mapped team shards.');
   const odPlayers = manifest.rapm?.offenseDefense?.players;
   if (!Array.isArray(odPlayers) || !odPlayers.length) throw new Error('The validated package has no O/D player table.');
@@ -174,44 +420,95 @@ async function buildRows(options, manifest) {
       || !finite(player.pairedPossessions) || player.pairedPossessions < 0) throw new Error('The validated O/D player table is malformed.');
     od.set(id, player);
   }
-  const evidenceFile = path.resolve(path.dirname(options.manifest), manifest.modelEvidence?.files?.playerSeasonSkillProfiles?.path || 'model-evidence/playerSeasonSkillProfiles.jsonl.gz');
-  const selected = new Map();
-  const input = fs.createReadStream(evidenceFile).pipe(createGunzip());
-  const lines = readline.createInterface({ input, crlfDelay: Infinity });
-  for await (const line of lines) {
-    if (!line.trim()) continue;
-    const row = JSON.parse(line);
-    const seasonStartYear = Number(row.seasonStartYear);
-    if (row.teamId === 'ALL_TEAMS' || !SEASON_START_YEARS.includes(seasonStartYear) || !teams.has(row.teamId)) continue;
-    if (!od.has(row.playerId)) continue;
-    const key = `${row.playerId}|${seasonStartYear}|${row.teamId}`;
-    selected.set(key, chooseProfile(selected.get(key), row));
+
+  let positionRecords = [];
+  let positionSource = 'embedded model-evidence positions';
+  if (options.positionsFile) {
+    positionRecords = await readPositionFile(options.positionsFile);
+    positionSource = `crosswalk file: ${path.relative(ROOT, options.positionsFile)}`;
+  } else if (options.fetchPositions) {
+    positionRecords = await fetchPositionRecords(options);
+    positionSource = `analytics view: ${POSITION_VIEW}`;
   }
+  const positionIndex = createPositionIndex(positionRecords);
+  const selected = new Map();
+  let missingPositions = 0;
+  let evidenceFile = null;
+  const evidenceDescriptor = manifest.modelEvidence?.files?.playerSeasonSkillProfiles;
+  if (evidenceDescriptor) {
+    evidenceFile = path.resolve(path.dirname(options.manifest), evidenceDescriptor.path || '');
+    if (!fs.existsSync(evidenceFile)) throw new Error('The validated model-evidence file is missing.');
+  } else if (!options.positionsFile && !options.fetchPositions) {
+    // The completed 2017–26 package intentionally embeds direct season rows,
+    // but those profiles do not carry listed positions. Fail before scanning
+    // 69 GB of shards when the source-backed eligibility crosswalk is absent.
+    const candidate = path.resolve(path.dirname(options.manifest), 'model-evidence/playerSeasonSkillProfiles.jsonl.gz');
+    if (fs.existsSync(candidate)) evidenceFile = candidate;
+    else throw new Error('Embedded Scout season rows have no listed positions; supply --positions-file or --fetch-positions.');
+  }
+
+  if (evidenceFile) {
+    const input = fs.createReadStream(evidenceFile).pipe(createGunzip());
+    const lines = readline.createInterface({ input, crlfDelay: Infinity });
+    for await (const line of lines) {
+      if (!line.trim()) continue;
+      const sourceRow = JSON.parse(line);
+      const seasonStartYear = Number(sourceRow.seasonStartYear);
+      if (sourceRow.teamId === 'ALL_TEAMS' || !seasons.starts.includes(seasonStartYear) || !teams.has(sourceRow.teamId)) continue;
+      const playerId = String(sourceRow.playerId || '').trim();
+      if (!od.has(playerId)) continue;
+      const team = teams.get(sourceRow.teamId);
+      const positions = normalizePositions(sourceRow.listedPositions)
+        || lookupPositions({ ...sourceRow, playerId, player: sourceRow.names?.[0] }, team, seasonStartYear + 1, positionIndex);
+      if (!positions) { missingPositions += 1; continue; }
+      const row = { ...sourceRow, playerId, listedPositions: positions };
+      const key = `${playerId}|${seasonStartYear}|${sourceRow.teamId}`;
+      selected.set(key, chooseProfile(selected.get(key), row));
+    }
+  } else {
+    for (const descriptor of shards) {
+      const shardPath = path.resolve(path.dirname(options.manifest), descriptor.jsonPath || '');
+      if (!fs.existsSync(shardPath)) throw new Error(`The validated team shard is missing: ${descriptor.team}.`);
+      const team = teams.get(descriptor.teamId);
+      await streamTeamShardJson(shardPath, {
+        maxBufferedValueBytes: 64 * 1024 * 1024,
+        onArrayItem(field, _index, profile) {
+          if (field !== 'playerProfiles' || !profile?.playerId || !od.has(profile.playerId)) return;
+          for (const seasonStartYear of seasons.starts) {
+            const row = embeddedSeasonRow(profile, team, seasonStartYear, positionIndex);
+            if (!row) continue;
+            if (row.missingPosition) { missingPositions += 1; continue; }
+            const key = `${row.playerId}|${seasonStartYear}|${descriptor.teamId}`;
+            selected.set(key, chooseProfile(selected.get(key), row));
+          }
+        },
+      });
+    }
+    positionSource = positionSource === 'embedded model-evidence positions'
+      ? 'source-backed position crosswalk required for embedded profiles' : positionSource;
+  }
+
   const rows = [];
   const identity = new Set();
   for (const row of selected.values()) {
-    const model = od.get(row.playerId);
+    const model = od.get(String(row.playerId || '').trim());
     const team = teams.get(row.teamId);
-    const positions = normalizePositions(row.listedPositions);
-    const name = String(row.names?.[0] || '').trim();
+    const positions = normalizePositions(row.listedPositions)
+      || lookupPositions(row, team, Number(row.seasonStartYear) + 1, positionIndex);
+    const name = String(row.names?.[0] || row.playerName || row.player || '').trim();
     const endYear = Number(row.seasonStartYear) + 1;
-    if (!positions || name.length < 2 || name.length > 160 || !SEASON_END_YEARS.includes(endYear)) continue;
+    if (!positions || name.length < 2 || name.length > 160 || !seasons.ends.includes(endYear)) continue;
     if (!model.displayEligible || Number(model.pairedPossessions) < Number(model.displayMinimumPairedPossessions || 200)) continue;
     const lowerIdentity = `${endYear}|${team.code}|${name.toLocaleLowerCase()}`;
     if (identity.has(lowerIdentity)) throw new Error('The selected evidence contains duplicate player identities within a team season.');
     identity.add(lowerIdentity);
     const scout = {
-      source_season_end_year: endYear,
-      team_code: team.code,
-      team_name: team.name,
-      franchise_key: team.code.toLowerCase(),
-      player_name: name,
-      positions,
+      source_season_end_year: endYear, team_code: team.code, team_name: team.name,
+      franchise_key: team.code.toLowerCase(), player_name: name, positions,
       public_stats: publicStats(row),
       offensive_rapm_per_100: rounded(model.offensiveRapmPer100),
       defensive_rapm_per_100: rounded(model.defensiveRapmPer100),
-      paired_possessions: rounded(model.pairedPossessions, 3),
-      display_eligible: true,
+      paired_possessions: rounded(model.pairedPossessions, 3), display_eligible: true,
     };
     if (!finite(scout.offensive_rapm_per_100) || !finite(scout.defensive_rapm_per_100)
       || scout.offensive_rapm_per_100 < -100 || scout.offensive_rapm_per_100 > 100
@@ -222,27 +519,25 @@ async function buildRows(options, manifest) {
   }
   rows.sort((left, right) => left.source_season_end_year - right.source_season_end_year
     || left.team_code.localeCompare(right.team_code) || left.player_name.localeCompare(right.player_name));
-  if (rows.length < 15) throw new Error('The validated package produced too few display-eligible players.');
-  const bySeason = Object.fromEntries(SEASON_END_YEARS.map(year => [year, rows.filter(row => row.source_season_end_year === year).length]));
-  return { rows, bySeason, selectedProfiles: selected.size, evidenceFile };
+  if (rows.length < 15) throw new Error(`The validated package produced too few display-eligible players (${rows.length}); missing positions: ${missingPositions}.`);
+  const bySeason = Object.fromEntries(seasons.ends.map(year => [year, rows.filter(row => row.source_season_end_year === year).length]));
+  return { rows, bySeason, selectedProfiles: selected.size, evidenceFile, sourceSeasonStartYears: seasons.starts,
+    sourceSeasonEndYears: seasons.ends, positionSource, positionRecords: positionIndex.records, missingPositions };
 }
 
 function modelPayload(options, manifest, sourceValidationSha256, expectedPlayerCount) {
   const artifact = String(manifest.rapm?.offenseDefense?.inputSha256 || '').trim().toLowerCase();
   if (!/^[a-f0-9]{64}$/.test(artifact)) throw new Error('The validated manifest has no usable O/D artifact digest.');
+  const seasons = seasonWindow(manifest);
   return {
     scopeKey: options.scopeKey,
-    publicLabel: 'Validated Scout O/D model · 2020–26',
-    modelVersion: `${manifest.rapm.offenseDefense.modelVersion} · 2020–26`,
-    modelArtifactSha256: artifact,
-    modelScopeKind: 'combined-window',
-    sourceSeasonEndYears: [...SEASON_END_YEARS],
-    sourceValidationPassed: true,
-    sourceValidationReportSha256: sourceValidationSha256,
-    calibrationStatus: 'validated',
-    calibrationAllComponentsImproved: true,
-    seasonPhase: SEASON_PHASE,
-    expectedPlayerCount,
+    publicLabel: `Validated Scout O/D model · ${seasonLabel(seasons.starts)}`,
+    modelVersion: `${manifest.rapm.offenseDefense.modelVersion} · ${seasonLabel(seasons.starts)}`,
+    modelArtifactSha256: artifact, modelScopeKind: 'combined-window',
+    sourceSeasonEndYears: [...seasons.ends], sourceValidationPassed: true,
+    sourceValidationReportSha256: sourceValidationSha256, calibrationStatus: 'validated',
+    calibrationAllComponentsImproved: manifest.rapm.offenseDefense.calibration?.allComponentsImproved === true,
+    seasonPhase: SEASON_PHASE, expectedPlayerCount,
   };
 }
 
@@ -316,6 +611,8 @@ async function main() {
     mode: options.apply ? 'apply' : 'dry-run', scopeKey: options.scopeKey,
     sourceSeasonEndYears: payload.sourceSeasonEndYears, selectedProfiles: built.selectedProfiles,
     playerSeasonRows: built.rows.length, rowsBySeasonEndYear: built.bySeason,
+    positionSource: built.positionSource, positionRecords: built.positionRecords,
+    missingPositions: built.missingPositions,
     sourceValidationSha256: sourceValidationSha256.slice(0, 12),
     modelArtifactSha256: payload.modelArtifactSha256.slice(0, 12),
   }, null, 2) + '\n');
@@ -328,4 +625,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
   main().catch(error => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
 }
 
-export { buildRows, modelPayload, parseArgs };
+export { buildRows, modelPayload, parseArgs, normalizePositions, createPositionIndex, lookupPositions, embeddedSeasonRow };

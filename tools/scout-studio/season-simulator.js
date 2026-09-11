@@ -1,4 +1,4 @@
-import { GAME_LAB_POLICY, createScenarioRandom, createGameSampler, teamGameEvidence } from './possession-simulator.js?v=20260908a';
+import { GAME_LAB_POLICY, createScenarioRandom, createGameSampler, teamGameEvidence } from './possession-simulator.js?v=20260909m';
 
 export const LEAGUE_POLICY = Object.freeze({ version: 'scout-round-robin-v1', maxTeams: 30, maxGames: 100000, minTrials: 50, maxTrials: 500 });
 const publicTeam = id => typeof id === 'string' && /^t(?:[0-9]|[12][0-9])$/.test(id);

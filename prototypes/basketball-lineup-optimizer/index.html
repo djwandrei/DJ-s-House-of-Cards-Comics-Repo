@@ -17,8 +17,9 @@
   <link rel="stylesheet" href="lab-experience.css?v=__LINEUP_LAB_ASSET_VERSION__">
   <link rel="stylesheet" href="../../tools/basketball-theme.css?v=__LINEUP_LAB_ASSET_VERSION__">
   <link rel="stylesheet" href="lab-theme.css?v=__LINEUP_LAB_ASSET_VERSION__">
+  <link rel="stylesheet" href="superdesign-page.css?v=__LINEUP_LAB_ASSET_VERSION__">
 </head>
-<body class="lab-guided court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
+<body class="lab-guided lineup-superdesign court-themed dark-mode" data-experience-mode="simple" data-page="fan-tools">
   <script src="../../theme-init.js?v=__LINEUP_LAB_ASSET_VERSION__"></script>
   <a class="skip-link" href="#workspace">Skip to lineup tools</a>
 
@@ -67,7 +68,6 @@
     <a class="fan-suite-nav__link" href="../../tools/fix-the-five/"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="30" height="30">Fix the Five</a>
     <a class="fan-suite-nav__link" href="../../tools/draft-night/"><img src="../../assets/games/draft-night-emblem-20260907.webp" alt="" width="30" height="30">Draft Night</a>
     <a class="fan-suite-nav__link" href="../../tools/player-card-matchups/"><img src="../../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="30" height="30">Player &amp; Cards</a>
-    <a class="fan-suite-nav__link" href="../../tools/workshop/"><img src="../../assets/games/workshop-emblem-20260909.jpg" alt="" width="30" height="30">Workshop</a>
     <a class="fan-suite-nav__link" href="../../tools/scout-studio/"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="30" height="30">Scout Studio</a>
    </div>
   </nav>
@@ -684,15 +684,22 @@
     </section>
   </main>
 
-  <footer class="lab-footer">
+  <footer class="lab-footer site-footer">
     <picture class="lab-footer-art" aria-hidden="true">
       <source srcset="../../assets/basketball-footer.webp" type="image/webp">
       <img src="../../assets/basketball-footer.jpg" alt="" width="1400" height="593" loading="lazy" decoding="async">
     </picture>
-    <div class="shell">
-      <p><strong>DJ's Lineup Lab</strong> - historical NBA tools from DJ's House of Cards &amp; Comics.</p>
-      <a href="../../index.html">Return to the storefront</a>
+    <div class="shell lab-footer__inner">
+      <div class="lab-footer__brand">
+        <img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics logo" width="64" height="64" loading="lazy" decoding="async">
+        <div><strong>DJ's Lineup Lab</strong><p>Historical NBA tools from DJ's House of Cards &amp; Comics.</p></div>
+      </div>
+      <nav class="lab-footer__links" aria-label="Lineup Lab footer links">
+        <div><strong>Explore</strong><a href="../../tools/">Fan Tools</a><a href="../../tools/scout-studio/">Scout Studio</a><a href="../../index.html">Storefront</a></div>
+        <div><strong>Support</strong><a href="../../contact.html">Contact DJ</a><a href="../../shipping.html">Shipping</a><a href="../../policies.html">Policies</a></div>
+      </nav>
     </div>
+    <div class="shell lab-footer__bottom"><span>Observed historical evidence · no prediction</span><a href="../../index.html">Return to the storefront</a></div>
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -705,5 +712,6 @@
   <script type="module" src="lab-telemetry.js?v=__LINEUP_LAB_ASSET_VERSION__"></script>
   <script type="module" src="lab-experience.js?v=__LINEUP_LAB_ASSET_VERSION__"></script>
   <script type="module" src="../../tools/basketball-branding.js?v=__LINEUP_LAB_ASSET_VERSION__"></script>
+  <script type="module" src="superdesign-page.js?v=__LINEUP_LAB_ASSET_VERSION__"></script>
 </body>
 </html>

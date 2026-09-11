@@ -1,0 +1,1265 @@
+/* Fan Tools hub presentation layer.
+   This file is intentionally scoped to the real hub DOM. It borrows the
+   completed draft's navy / gold / card language without supplying content or
+   changing the registry-rendered destinations. */
+
+.fan-tools-page.court-themed {
+  --hub-navy: var(--sd-navy, #101b46);
+  --hub-blue: var(--court-accent, var(--sd-blue, #2437b8));
+  --hub-gold: var(--sd-gold, #e4b141);
+  --hub-red: var(--court-trim, var(--sd-red, #d63a4b));
+  --hub-page: var(--sd-page, #f1f3f9);
+  --hub-surface: var(--sd-surface, #fff);
+  --hub-raised: var(--sd-raised, #e8edf6);
+  --hub-text: var(--sd-ink, #172033);
+  --hub-muted: var(--sd-muted, #5c667f);
+  --hub-border: var(--sd-border, rgba(24, 37, 73, .16));
+  --hub-shadow: var(--sd-shadow, 0 18px 44px rgba(16, 27, 70, .12));
+  --hub-focus: var(--court-focus, #2449a4);
+  --hub-positive: var(--court-positive, #176444);
+  --hub-warning: var(--court-warning, #80520d);
+  --hub-on-accent: var(--court-on-accent, #fff);
+}
+
+.fan-tools-page.court-themed.dark-mode {
+  --hub-page: var(--sd-dark-page, #0a1128);
+  --hub-surface: var(--sd-dark-surface, #141b33);
+  --hub-raised: var(--sd-dark-raised, #1c2645);
+  --hub-text: var(--sd-dark-text, #f4f6ff);
+  --hub-muted: var(--sd-dark-muted, #a8b8cc);
+  --hub-border: var(--sd-dark-border, rgba(255, 255, 255, .15));
+  --hub-shadow: 0 20px 48px rgba(0, 0, 0, .26);
+  --hub-focus: var(--court-focus, #f4d37c);
+  --hub-positive: var(--court-positive, #80dbb0);
+  --hub-warning: var(--court-warning, #f4d37c);
+  --hub-on-accent: var(--court-on-accent, #111827);
+}
+
+.fan-tools-page.court-themed {
+  background: var(--hub-page) !important;
+  color: var(--hub-text);
+}
+
+.fan-tools-page.court-themed main {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(36, 55, 184, .08), transparent 26rem),
+    radial-gradient(circle at 92% 15%, rgba(214, 58, 75, .06), transparent 24rem),
+    var(--hub-page);
+}
+
+/* Header and destination rail: the draft keeps the brand chrome compact and
+   gives the tool destinations their own horizontally scrollable row. */
+.fan-tools-page.court-themed .site-header {
+  min-height: 76px;
+  background: var(--hub-navy) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .15) !important;
+  color: #fff;
+}
+
+.fan-tools-page.court-themed .site-header .brand-logo {
+  width: 52px;
+  height: 52px;
+}
+
+.fan-tools-page.court-themed .site-header .brand-script {
+  color: #fff !important;
+  font-size: 1.3rem;
+}
+
+.fan-tools-page.court-themed .site-header .brand-kicker {
+  color: #d9e2f2 !important;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav {
+  position: sticky;
+  top: 76px;
+  z-index: 40;
+  background: var(--hub-surface) !important;
+  border-top: 1px solid var(--hub-border) !important;
+  border-bottom: 1px solid var(--hub-border) !important;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__scroll {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  align-items: center;
+  gap: .5rem;
+  overflow-x: auto;
+  padding-block: .5rem;
+  scrollbar-width: thin;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  inline-size: max-content;
+  min-width: max-content;
+  min-height: 44px;
+  align-items: center;
+  gap: .5rem;
+  padding: .42rem .78rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent !important;
+  color: var(--hub-text) !important;
+  font-size: .78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__link {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__link img {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__link:hover,
+.fan-tools-page.court-themed .fan-suite-nav__link:focus-visible {
+  background: var(--hub-raised) !important;
+  border-color: var(--hub-border);
+  color: var(--hub-text) !important;
+  transform: translateY(-1px);
+}
+
+.fan-tools-page.court-themed .fan-suite-nav__link[aria-current="page"] {
+  background: #fff !important;
+  border-color: rgba(24, 37, 73, .2);
+  box-shadow: inset 0 -3px var(--hub-gold), 0 8px 18px rgba(16, 27, 70, .12);
+  color: var(--hub-navy) !important;
+}
+
+.fan-tools-page.court-themed:not(.dark-mode) .fan-suite-nav__link:not([aria-current="page"]) {
+  color: var(--hub-navy) !important;
+}
+
+/* The shared suite rail keeps a white fallback for dark pages. On this hub's
+   light rail, restate the full text treatment so the destination labels do not
+   inherit that fallback through the sticky header. */
+body[data-page="fan-tools"].court-themed:not(.dark-mode) .fan-suite-nav .fan-suite-nav__link:not([aria-current="page"]) {
+  color: var(--hub-navy) !important;
+  font-size: .78rem !important;
+  line-height: 1.2;
+  opacity: 1 !important;
+  text-indent: 0 !important;
+  -webkit-text-fill-color: var(--hub-navy);
+  visibility: visible !important;
+}
+
+.fan-tools-page.court-themed:not(.dark-mode) .fan-suite-nav__link:not([aria-current="page"]):hover,
+.fan-tools-page.court-themed:not(.dark-mode) .fan-suite-nav__link:not([aria-current="page"]):focus-visible {
+  color: var(--hub-navy) !important;
+}
+
+.fan-tools-page.court-themed.dark-mode .fan-suite-nav__link:not([aria-current="page"]) {
+  color: #f4f6ff !important;
+}
+
+/* Hero: use the local basketball art and the completed draft's dark,
+   high-contrast frame while retaining the live spotlight from the real hub. */
+.fan-tools-page.court-themed .page-hero {
+  padding-block: 1.25rem 2rem;
+}
+
+.fan-tools-page.court-themed .tools-hero-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 1280px;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid #68779a !important;
+  border-top: 4px solid var(--hub-gold) !important;
+  border-radius: 28px !important;
+  background:
+    linear-gradient(100deg, rgba(9, 17, 44, .98) 0%, rgba(16, 27, 70, .94) 58%, rgba(31, 47, 163, .78) 100%),
+    url("../assets/basketball-main.webp") center / cover no-repeat !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .08);
+  color: #fff !important;
+}
+
+.fan-tools-page.court-themed .tools-hero-card::before {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(36, 55, 184, .12), transparent 46%);
+  content: "";
+  pointer-events: none;
+}
+
+.fan-tools-page.court-themed .tools-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fan-tools-page.court-themed .tools-hero-card .breadcrumb-nav {
+  margin-bottom: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.fan-tools-page.court-themed .tools-hero-card .breadcrumb-nav a,
+.fan-tools-page.court-themed .tools-hero-card .breadcrumb-current,
+.fan-tools-page.court-themed .tools-hero-card .breadcrumb-list__item::after {
+  color: rgba(255, 255, 255, .78) !important;
+}
+
+.fan-tools-page.court-themed .tools-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.fan-tools-page.court-themed .tools-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  color: #f0cc72 !important;
+  font-size: .75rem;
+  font-weight: 900;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .tools-hero-kicker img {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .38);
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .16);
+}
+
+.fan-tools-page.court-themed .tools-hero-copy .page-title {
+  max-width: 14ch;
+  margin: .85rem 0 1rem;
+  color: #fff !important;
+  font-size: clamp(3rem, 6vw, 5.2rem);
+  line-height: .9;
+  letter-spacing: -.025em;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .tools-hero-copy > p {
+  max-width: 700px;
+  color: #f1f4fa !important;
+  font-size: clamp(.98rem, 1.35vw, 1.12rem);
+  line-height: 1.62;
+}
+
+.fan-tools-page.court-themed .tools-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1.45rem;
+}
+
+.fan-tools-page.court-themed .tools-hero-actions .button {
+  min-height: 50px;
+  padding-inline: 1.5rem;
+  border-color: var(--hub-gold) !important;
+  border-radius: 12px;
+  background: var(--hub-gold) !important;
+  color: #111827 !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+}
+
+.fan-tools-page.court-themed .tools-hero-actions .button:hover,
+.fan-tools-page.court-themed .tools-hero-actions .button:focus-visible {
+  background: #f7d47f !important;
+  color: #111827 !important;
+  transform: translateY(-2px);
+}
+
+.fan-tools-page.court-themed .tools-live-panel {
+  display: block;
+  padding: clamp(1.2rem, 2.5vw, 1.45rem);
+  border: 1px solid rgba(255, 255, 255, .3) !important;
+  border-radius: 24px !important;
+  background: var(--hub-navy) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, .24);
+}
+
+.fan-tools-page.court-themed .tools-live-panel__top {
+  align-items: center;
+  justify-content: flex-start;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-live-panel__label {
+  color: #f0cc72 !important;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .tools-live-marker {
+  width: 56px;
+  height: 56px;
+  border: 1px solid #9da9c3;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.fan-tools-page.court-themed .tools-live-marker.has-game-emblem {
+  width: 64px;
+  height: 64px;
+  padding: .25rem;
+  border: 1px solid #9da9c3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.fan-tools-page.court-themed .tools-live-panel h2 {
+  margin: 0 0 .55rem;
+  color: #fff !important;
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+}
+
+.fan-tools-page.court-themed .tools-live-panel > p {
+  color: #dce4f2 !important;
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+.fan-tools-page.court-themed .tools-live-link {
+  display: inline-flex;
+  margin-top: 1.05rem;
+  border-color: rgba(255, 255, 255, .35) !important;
+  background: #f8f9fd !important;
+  color: var(--hub-navy) !important;
+}
+
+.fan-tools-page.court-themed .tools-live-link:hover,
+.fan-tools-page.court-themed .tools-live-link:focus-visible {
+  border-color: #fff !important;
+  background: #fff !important;
+  color: #15223f !important;
+}
+
+/* Directory heading and controls. */
+.fan-tools-page.court-themed .tools-play-section {
+  /* The sticky brand header and fan-suite rail together are ~11rem tall on
+     desktop; keep the deep-linked section heading clear of both layers. */
+  scroll-margin-top: 11rem;
+  padding-top: .75rem;
+}
+
+.fan-tools-page.court-themed .section-heading {
+  gap: 1.5rem;
+}
+
+.fan-tools-page.court-themed .section-heading .kicker,
+.fan-tools-page.court-themed .tools-play-filter-label {
+  color: var(--hub-muted) !important;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .section-title {
+  margin-top: .3rem;
+  color: var(--hub-text) !important;
+  font-size: clamp(2.4rem, 4.6vw, 4.3rem);
+  line-height: .95;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .tools-intro {
+  color: var(--hub-muted) !important;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.fan-tools-page.court-themed .tools-play-controls {
+  align-items: end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--hub-border);
+  border-radius: 18px;
+  background: var(--hub-surface);
+  box-shadow: 0 10px 24px rgba(16, 27, 70, .06);
+}
+
+.fan-tools-page.court-themed .tools-play-filters {
+  gap: .5rem;
+}
+
+.fan-tools-page.court-themed .tools-play-filters button {
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid var(--hub-border);
+  border-radius: 12px;
+  background: var(--hub-raised) !important;
+  color: var(--hub-text) !important;
+  box-shadow: none;
+  font-weight: 800;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.fan-tools-page.court-themed .tools-play-filters button::before {
+  color: var(--hub-gold);
+}
+
+.fan-tools-page.court-themed .tools-play-filters button:hover {
+  border-color: var(--hub-blue);
+  box-shadow: 0 6px 14px rgba(16, 27, 70, .12);
+  transform: translateY(-1px);
+}
+
+.fan-tools-page.court-themed .tools-play-filters button[aria-pressed="true"] {
+  border-color: var(--hub-navy) !important;
+  background: var(--hub-navy) !important;
+  color: #fff !important;
+  box-shadow: inset 0 -3px var(--hub-gold), 0 8px 18px rgba(16, 27, 70, .18);
+}
+
+.fan-tools-page.court-themed .tools-play-suggestion {
+  justify-content: flex-end;
+  gap: .65rem;
+}
+
+.fan-tools-page.court-themed .tools-play-suggestion > span {
+  min-height: 1.5em;
+  color: var(--hub-muted) !important;
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.fan-tools-page.court-themed .tools-play-suggestion .button-secondary {
+  min-height: 44px;
+  border-color: var(--hub-border) !important;
+  border-radius: 12px;
+  background: var(--hub-surface) !important;
+  color: var(--hub-text) !important;
+}
+
+.fan-tools-page.court-themed .tools-play-suggestion .button-secondary:hover,
+.fan-tools-page.court-themed .tools-play-suggestion .button-secondary:focus-visible {
+  border-color: var(--hub-blue) !important;
+  background: var(--hub-raised) !important;
+  color: var(--hub-text) !important;
+}
+
+/* Registry-rendered live cards. */
+.fan-tools-page.court-themed .tools-featured {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.fan-tools-page.court-themed .tools-featured-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 100%;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--hub-border) !important;
+  border-top: 1px solid var(--hub-border) !important;
+  border-radius: 24px !important;
+  background: var(--hub-surface) !important;
+  color: var(--hub-text) !important;
+  box-shadow: var(--hub-shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.fan-tools-page.court-themed .tools-featured-card:hover,
+.fan-tools-page.court-themed .tools-featured-card:focus-within {
+  border-color: var(--hub-blue) !important;
+  box-shadow: 0 24px 52px rgba(16, 27, 70, .2);
+  transform: translateY(-4px);
+}
+
+.fan-tools-page.court-themed .tools-featured-card.is-suggested {
+  outline: 3px solid var(--hub-gold);
+  outline-offset: 4px;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__content {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  flex: 1;
+  align-items: start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__content > div:last-child {
+  min-width: 0;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__marker,
+.fan-tools-page.court-themed .tools-featured-card__marker.has-game-emblem {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--hub-border);
+  border-radius: 18px;
+  background: var(--hub-raised);
+  color: var(--hub-text);
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__marker img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fan-tools-page.court-themed .tools-featured-card.hub-card h3 {
+  margin: 0 0 .4rem;
+  max-width: calc(100% - 7.5rem);
+  color: var(--hub-text) !important;
+  font-size: clamp(1.45rem, 2vw, 1.9rem);
+  line-height: .95;
+  letter-spacing: -.02em;
+}
+
+.fan-tools-page.court-themed .tools-featured-card p {
+  max-width: 720px;
+  color: var(--hub-muted) !important;
+  font-size: .9rem;
+  line-height: 1.55;
+}
+
+.fan-tools-page.court-themed .tools-featured-card p.tools-play-path {
+  margin-top: .85rem;
+  padding-top: .85rem;
+  border-top: 1px solid var(--hub-border);
+  color: var(--hub-text) !important;
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__bullets {
+  display: grid;
+  gap: .28rem;
+  margin: .9rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--hub-text) !important;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__bullets li::marker {
+  color: var(--hub-positive);
+}
+
+/* The approved cards use a quiet two-row definition block rather than
+   decorative nested panels. This keeps Uses / Result scannable in every mode. */
+.fan-tools-page.court-themed :is(.tools-featured-card__definitions, .tool-roadmap-card__definitions, .tool-research-card__definitions) {
+  display: grid;
+  gap: .75rem;
+  margin: 1rem 0 0;
+  padding: .9rem 0;
+  border-top: 1px solid var(--hub-border);
+  border-bottom: 1px solid var(--hub-border);
+}
+
+.fan-tools-page.court-themed :is(.tools-featured-card__definition, .tool-roadmap-card__definition, .tool-research-card__definition) {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.fan-tools-page.court-themed :is(.tools-featured-card__definition dt, .tool-roadmap-card__definition dt, .tool-research-card__definition dt) {
+  color: var(--hub-text) !important;
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.fan-tools-page.court-themed :is(.tools-featured-card__definition dd, .tool-roadmap-card__definition dd, .tool-research-card__definition dd) {
+  margin: .18rem 0 0;
+  color: var(--hub-muted) !important;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .8rem;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__highlights span {
+  padding: .3rem .5rem;
+  border: 1px solid var(--hub-border);
+  border-radius: 999px;
+  color: var(--hub-muted);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.fan-tools-page.court-themed .tools-featured-card > .button {
+  align-self: flex-start;
+  min-height: 48px;
+  margin-top: 1.15rem;
+  border-radius: 12px;
+}
+
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="lineup-dna"] > .button {
+  border-color: var(--hub-border) !important;
+  background: var(--hub-raised) !important;
+  color: var(--hub-text) !important;
+}
+
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="lineup-dna"] > .button:hover,
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="lineup-dna"] > .button:focus-visible {
+  border-color: var(--hub-blue) !important;
+  background: var(--hub-raised) !important;
+  color: var(--hub-text) !important;
+}
+
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="fix-the-five"] > .button {
+  border-color: var(--hub-red) !important;
+  background: var(--hub-red) !important;
+  color: #fff !important;
+}
+
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="fix-the-five"] > .button:hover,
+.fan-tools-page.court-themed .tools-featured-card[data-tool-id="fix-the-five"] > .button:focus-visible {
+  background: #8f101c !important;
+  color: #fff !important;
+}
+
+/* hub-superdesign.js adds these labels only to the real live cards. */
+.fan-tools-page.court-themed .hub-card-status {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1;
+  padding: .32rem .62rem;
+  border: 1px solid rgba(76, 156, 130, .72);
+  border-radius: 999px;
+  background: #dff4eb;
+  color: #075f49;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.fan-tools-page.court-themed .hub-card-status[data-hub-status="embedded"] {
+  border-color: rgba(123, 137, 217, .75);
+  background: #e3e8ff;
+  color: #24358f;
+}
+
+.fan-tools-page.court-themed.dark-mode .hub-card-status {
+  border-color: #4fc7a1;
+  background: #123e36;
+  color: #9ff0d2;
+}
+
+.fan-tools-page.court-themed.dark-mode .hub-card-status[data-hub-status="embedded"] {
+  border-color: #8796e5;
+  background: #27366c;
+  color: #dbe1ff;
+}
+
+/* Planned and research content remains real registry content and stays behind
+   the existing disclosure. The closed state is explicit because older page
+   CSS contains a broad roadmap display rule. */
+.fan-tools-page.court-themed .tools-roadmap-disclosure {
+  margin-top: 1.5rem;
+  padding: .7rem;
+  border: 1px solid var(--hub-border) !important;
+  border-radius: 20px !important;
+  background: var(--hub-surface) !important;
+  box-shadow: 0 12px 30px rgba(16, 27, 70, .06);
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .55rem .7rem;
+  border-radius: 12px;
+  color: var(--hub-text) !important;
+  cursor: pointer;
+  list-style: none;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary span {
+  display: grid;
+  gap: .1rem;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary strong {
+  font-size: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary small {
+  color: var(--hub-muted) !important;
+  font-size: .8rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary::after {
+  display: inline-flex;
+  width: 1.8rem;
+  height: 1.8rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hub-border);
+  border-radius: 50%;
+  background: var(--hub-raised) !important;
+  color: var(--hub-text) !important;
+  content: "+";
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure[open] > summary {
+  margin-bottom: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure[open] > summary::after {
+  background: var(--hub-navy) !important;
+  color: #fff !important;
+  transform: rotate(45deg);
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure > summary:focus-visible {
+  outline: 3px solid var(--hub-focus);
+  outline-offset: 3px;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure:not([open]) :is(.tools-roadmap, .tools-research),
+.fan-tools-page.court-themed .tools-roadmap-disclosure:not([open]) #toolsGrid,
+.fan-tools-page.court-themed .tools-roadmap-disclosure:not([open]) #toolsResearch {
+  display: none !important;
+}
+
+.fan-tools-page.court-themed .tools-roadmap-disclosure[open] .tools-roadmap,
+.fan-tools-page.court-themed .tools-roadmap-disclosure[open] .tools-research {
+  display: block;
+}
+
+.fan-tools-page.court-themed .tools-roadmap .section-heading,
+.fan-tools-page.court-themed .tools-research > .section-heading {
+  margin-bottom: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card,
+.fan-tools-page.court-themed .tool-research-card {
+  min-width: 0;
+  border: 1px solid var(--hub-border) !important;
+  border-radius: 20px !important;
+  background: var(--hub-surface) !important;
+  box-shadow: 0 12px 30px rgba(16, 27, 70, .055);
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__marker,
+.fan-tools-page.court-themed .tool-research-card__marker {
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--hub-border);
+  border-radius: 16px;
+  background: var(--hub-raised);
+  color: var(--hub-text);
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card h3,
+.fan-tools-page.court-themed .tool-research-card h3 {
+  margin: .05rem 0 .35rem;
+  color: var(--hub-text) !important;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__summary,
+.fan-tools-page.court-themed .tool-research-card p {
+  color: var(--hub-muted) !important;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem;
+  margin-top: auto;
+  padding-top: .85rem;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__status,
+.fan-tools-page.court-themed .tool-research-card__status {
+  padding: .35rem .55rem;
+  border: 1px solid rgba(189, 132, 36, .6);
+  border-radius: 999px;
+  background: #fff0cc;
+  color: #754400;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__dependency,
+.fan-tools-page.court-themed .tool-research-card small {
+  color: var(--hub-muted) !important;
+  font-size: .7rem;
+}
+
+.fan-tools-page.court-themed .tool-roadmap-card__link {
+  border-color: var(--hub-border);
+  border-radius: 9px;
+  background: var(--hub-raised);
+  color: var(--hub-blue);
+}
+
+.fan-tools-page.court-themed .tools-research {
+  margin-top: 2rem;
+}
+
+.fan-tools-page.court-themed #toolsResearch {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.fan-tools-page.court-themed .tool-research-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem;
+  border-color: rgba(189, 132, 36, .4) !important;
+}
+
+.fan-tools-page.court-themed .tool-research-card__marker {
+  border-color: rgba(189, 132, 36, .55);
+  background: color-mix(in srgb, var(--hub-gold) 14%, var(--hub-surface));
+  color: var(--hub-warning);
+}
+
+.fan-tools-page.court-themed.dark-mode .tool-roadmap-card__status,
+.fan-tools-page.court-themed.dark-mode .tool-research-card__status {
+  border-color: #d5a13d;
+  background: #4c3513;
+  color: #ffe0a0;
+}
+
+.fan-tools-page.court-themed.dark-mode .tool-research-card__marker {
+  border-color: rgba(239, 194, 111, .45);
+  background: #211c15;
+  color: #f0c675;
+}
+
+/* Keep the actual footer links in the draft's navy family. */
+.fan-tools-page.court-themed .site-footer {
+  border-top: 1px solid #43517a;
+  background: var(--hub-navy) !important;
+  color: #fff;
+}
+
+.fan-tools-page.court-themed .site-footer p,
+.fan-tools-page.court-themed .site-footer a,
+.fan-tools-page.court-themed .site-footer .brand-kicker,
+.fan-tools-page.court-themed .site-footer .footer-bottom {
+  color: #a8b8cc;
+}
+
+.fan-tools-page.court-themed .site-footer a:hover,
+.fan-tools-page.court-themed .site-footer a:focus-visible {
+  color: #fff;
+}
+
+@media (min-width: 760px) {
+  .fan-tools-page.court-themed .tools-featured,
+  .fan-tools-page.court-themed .tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  .fan-tools-page.court-themed .tools-featured,
+  .fan-tools-page.court-themed .tools-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .fan-tools-page.court-themed .tools-play-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .fan-tools-page.court-themed .tools-play-suggestion {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 980px) {
+
+  .fan-tools-page.court-themed .tools-hero-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fan-tools-page.court-themed .tools-live-panel {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fan-tools-page.court-themed .tools-play-section {
+    scroll-margin-top: 7rem;
+  }
+
+  .fan-tools-page.court-themed .tools-play-controls {
+    align-items: stretch;
+  }
+
+  .fan-tools-page.court-themed .tools-play-filter-wrap,
+  .fan-tools-page.court-themed .tools-play-filters {
+    width: 100%;
+  }
+
+  .fan-tools-page.court-themed .tools-play-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fan-tools-page.court-themed .tools-play-filters button:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .fan-tools-page.court-themed .tools-play-suggestion {
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .fan-tools-page.court-themed .tools-play-suggestion .button-secondary {
+    justify-content: center;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card > .button {
+    width: 100%;
+  }
+
+  .fan-tools-page.court-themed .tool-research-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .fan-tools-page.court-themed .tool-research-card__status {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 600px) {
+  .fan-tools-page.court-themed .tools-hero-card {
+    padding: 1.25rem;
+    border-radius: 22px !important;
+  }
+
+  .fan-tools-page.court-themed .tools-hero-copy .page-title {
+    max-width: 12ch;
+    font-size: clamp(2.6rem, 12vw, 3.7rem);
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card {
+    padding: 1.15rem;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card__content {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: .8rem;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card__marker,
+  .fan-tools-page.court-themed .tools-featured-card__marker.has-game-emblem {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card.hub-card h3 {
+    max-width: calc(100% - 6.75rem);
+  }
+
+  .fan-tools-page.court-themed .hub-card-status {
+    top: 1.15rem;
+    right: 1.15rem;
+    font-size: .58rem;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Give the badge its own top band so narrow real titles keep readable words
+     instead of inheriting the badge reservation one character at a time. */
+  .fan-tools-page.court-themed .tools-featured-card.hub-card {
+    padding-top: 3.5rem;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card.hub-card h3 {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fan-tools-page.court-themed *,
+  .fan-tools-page.court-themed *::before,
+  .fan-tools-page.court-themed *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card:hover,
+  .fan-tools-page.court-themed .tools-featured-card:focus-within,
+  .fan-tools-page.court-themed .fan-suite-nav__link:hover {
+    transform: none;
+  }
+}
+
+/* Keep live registry copy contained when a real title or definition is long. */
+.fan-tools-page.court-themed :is(.tools-featured-card, .tools-play-suggestion, .tools-live-panel, .tools-roadmap-disclosure) {
+  min-width: 0;
+}
+
+.fan-tools-page.court-themed :is(.tools-featured-card__content, .tools-featured-card__definition, .tools-featured-card__bullets, .tools-play-path) {
+  overflow-wrap: anywhere;
+}
+
+/* Annotation pass: the hub should use the available canvas instead of leaving
+   a wide gutter around every section.  Keep the registry content and actions
+   intact while tightening the visual rhythm shared by the tool cards. */
+.fan-tools-page.court-themed > main > :is(.container, .page-hero) > .container,
+.fan-tools-page.court-themed > main > .container,
+.fan-tools-page.court-themed main .container,
+.fan-tools-page.court-themed > .site-footer > .container {
+  width: min(calc(100% - 2rem), 1380px);
+  max-width: 1380px;
+}
+
+.fan-tools-page.court-themed .page-hero {
+  padding-block: .65rem 1.2rem;
+}
+
+.fan-tools-page.court-themed .tools-hero-card {
+  padding: clamp(1.2rem, 2.8vw, 2rem);
+}
+
+.fan-tools-page.court-themed .tools-hero-card .breadcrumb-nav {
+  margin-bottom: clamp(.8rem, 2vw, 1.35rem);
+}
+
+.fan-tools-page.court-themed .tools-hero-layout {
+  align-items: start;
+  gap: clamp(1.15rem, 3vw, 2.4rem);
+}
+
+.fan-tools-page.court-themed .tools-hero-copy .page-title {
+  max-width: 16ch;
+  margin: .55rem 0 .7rem;
+  font-size: clamp(2.4rem, 4.7vw, 4.15rem);
+  line-height: .94;
+  letter-spacing: -.015em;
+}
+
+.fan-tools-page.court-themed .tools-hero-copy > p {
+  max-width: 62ch;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.fan-tools-page.court-themed .tools-hero-actions {
+  margin-top: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-live-panel {
+  align-self: start;
+  padding: 1.1rem 1.2rem;
+}
+
+.fan-tools-page.court-themed .tools-live-panel > p {
+  margin: .35rem 0 0;
+  line-height: 1.45;
+}
+
+.fan-tools-page.court-themed .tools-play-section {
+  padding-top: .25rem;
+}
+
+.fan-tools-page.court-themed .section-heading {
+  gap: 1rem;
+}
+
+.fan-tools-page.court-themed .section-title {
+  max-width: 20ch;
+  font-size: clamp(2rem, 3.8vw, 3.45rem);
+  line-height: .98;
+}
+
+.fan-tools-page.court-themed .tools-intro {
+  max-width: 52ch;
+  margin: .25rem 0 0;
+  line-height: 1.5;
+}
+
+.fan-tools-page.court-themed .tools-play-controls {
+  margin-top: 1rem;
+  padding: .8rem;
+}
+
+.fan-tools-page.court-themed .tools-featured {
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.fan-tools-page.court-themed .tools-featured-card {
+  padding: 1.15rem;
+  border-radius: 18px !important;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__content {
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: .8rem;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__marker,
+.fan-tools-page.court-themed .tools-featured-card__marker.has-game-emblem {
+  width: 64px;
+  height: 64px;
+  flex-basis: 64px;
+  border-radius: 15px;
+}
+
+.fan-tools-page.court-themed .tools-featured-card.hub-card h3 {
+  max-width: calc(100% - 6.75rem);
+  margin-bottom: .3rem;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: clamp(1.22rem, 1.7vw, 1.58rem);
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  text-transform: none;
+}
+
+.fan-tools-page.court-themed .tools-featured-card p {
+  margin: .35rem 0 0;
+  font-size: .84rem;
+  line-height: 1.48;
+}
+
+.fan-tools-page.court-themed .tools-featured-card p.tools-play-path {
+  margin-top: .65rem;
+  padding-top: .65rem;
+  line-height: 1.4;
+}
+
+.fan-tools-page.court-themed .tools-featured-card__bullets {
+  gap: .22rem;
+  margin-top: .65rem;
+  padding-left: 1rem;
+  font-size: .78rem;
+  line-height: 1.38;
+}
+
+.fan-tools-page.court-themed :is(.tools-featured-card__definitions, .tool-roadmap-card__definitions, .tool-research-card__definitions) {
+  gap: .55rem;
+  margin-top: .7rem;
+  padding: .7rem 0;
+}
+
+/* Annotation 25: these were decorative repetition, so keep them out of the
+   live card layout even if an older registry payload still supplies them. */
+.fan-tools-page.court-themed .tools-featured-card__highlights {
+  display: none !important;
+}
+
+.fan-tools-page.court-themed .tools-featured-card > .button {
+  min-height: 44px;
+  margin-top: .85rem;
+  padding-inline: 1rem;
+}
+
+@media (max-width: 760px) {
+  .fan-tools-page.court-themed > main > :is(.container, .page-hero) > .container,
+  .fan-tools-page.court-themed > main > .container,
+  .fan-tools-page.court-themed main .container,
+  .fan-tools-page.court-themed > .site-footer > .container {
+    width: min(calc(100% - 1.25rem), 1380px);
+  }
+
+  .fan-tools-page.court-themed .tools-hero-card {
+    padding: 1.05rem;
+  }
+
+  .fan-tools-page.court-themed .tools-hero-copy .page-title {
+    max-width: 13ch;
+    font-size: clamp(2.3rem, 11vw, 3.35rem);
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card {
+    padding: 1rem;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card__content {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: .7rem;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card__marker,
+  .fan-tools-page.court-themed .tools-featured-card__marker.has-game-emblem {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+  }
+
+  .fan-tools-page.court-themed .tools-featured-card.hub-card h3 {
+    max-width: calc(100% - 5.8rem);
+  }
+}

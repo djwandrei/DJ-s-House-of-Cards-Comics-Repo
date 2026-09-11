@@ -9,9 +9,9 @@ const number = value => value === null ? 'Unavailable' : value.toFixed(1);
 export function decisionBrief(board, action) {
   const section = node('section', undefined, 'game-decision-brief');
   section.setAttribute('aria-label', 'Your objective and rules');
-  section.append(node('strong', `Your objective: ${board.objective?.label || 'Scout board rank'}`),
-    node('p', board.focus || 'Find the highest-ranked legal choice under this board’s Scout objective.'),
-    node('p', action), node('small', boardRules(board)));
+  section.append(node('strong', `Goal: ${board.objective?.label || 'Scout board rank'}`),
+    node('p', board.focus || 'Choose the option that ranks highest on this fixed board.'),
+    node('p', action), node('small', `Legal choices: ${boardRules(board).replace(/^Role minimums:\s*/i, '')}`));
   return section;
 }
 export function candidateComparison(players, baseline = null) {

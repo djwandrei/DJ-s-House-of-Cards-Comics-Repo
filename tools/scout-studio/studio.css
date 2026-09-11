@@ -190,3 +190,8 @@ body.scout-studio-page.dark-mode :is(select,input,textarea) {
 }
 @media (max-width:900px) { .studio-hero { grid-template-columns:1fr; } .studio-scope { border-left:0; border-top:1px solid #657399; padding:1rem 0 0; } .studio-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .studio-chemistry-layout { grid-template-columns:1fr; } }
 @media (max-width:600px) { .studio-header { gap:.8rem; } .studio-brand { font-size:.95rem; } .studio-brand img { width:48px; height:48px; } .studio-header nav { width:100%; gap:.4rem; } .studio-source { flex-direction:column; align-items:stretch; } .studio-roadmap,.studio-metrics,.studio-field-guide dl { grid-template-columns:1fr; } .studio-team-form > *,.studio-section-heading > label { width:100%; } .studio-section-heading select { width:100%; } .studio-mode-controls button { flex:1; } .studio-footer { align-items:flex-start; flex-direction:column; } }
+
+/* Keep direct links to the workbench clear of the sticky destination rail. */
+body.scout-studio-page #workspace {
+  scroll-margin-top: calc(var(--fan-suite-header-offset, 88px) + 1rem);
+}

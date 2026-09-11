@@ -10,62 +10,77 @@
   <meta name="theme-color" content="#1f2fa3">
   <link rel="canonical" href="https://www.djshouseofcards-comics.com/tools/scout-studio/">
   <link rel="icon" href="../../assets/dj-logo.png" type="image/png">
-  <link rel="stylesheet" href="../../styles.css?v=20260908a">
-  <link rel="stylesheet" href="../../styles-mobile-overrides.css?v=20260908a">
-  <link rel="stylesheet" href="./studio.css?v=20260909b">
-  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909c">
+  <link rel="stylesheet" href="../../styles.css?v=20260909m">
+  <link rel="stylesheet" href="../../styles-mobile-overrides.css?v=20260909m">
+  <link rel="stylesheet" href="./studio.css?v=20260909m">
+  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909m">
+  <link rel="stylesheet" href="./workbenches/blueprint.css?v=20260909m">
+  <link id="scout-chemistry-lab-style" rel="stylesheet" href="./workbenches/chemistry.css?v=20260909m">
+  <link id="scout-composite-forge-style" rel="stylesheet" href="./workbenches/composite.css?v=20260909m">
+  <link rel="stylesheet" href="./workbenches/game.css?v=20260909m">
+  <link id="scout-season-lab-style" rel="stylesheet" href="./workbenches/season.css?v=20260909m">
+  <link rel="stylesheet" href="./workbenches/career.css?v=20260909m">
+  <link rel="stylesheet" href="./superdesign-page.css?v=20260909m">
  </head>
  <body class="scout-studio-page dark-mode" data-page="scout-studio">
-  <script src="../../theme-init.js?v=20260908a"></script>
+<script src="../../theme-init.js?v=20260909m"></script>
   <a class="skip-link" href="#mainContent">Skip to Scout Studio</a>
   <header class="studio-header">
    <div class="studio-header__bar container">
-    <a class="studio-brand" href="../../index.html"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="58" height="58"><span>Scout Studio<small>DJ's House of Cards &amp; Comics</small></span></a>
-    <div class="studio-header__actions"><a href="../../shop.html">Shop</a><a href="../../account.html">Account</a><a href="../../cart.html">Cart</a><button type="button" id="themeToggle" class="theme-toggle">Dark Mode</button></div>
-   </div>
-   <nav class="studio-destination-nav" aria-label="Fan tools navigation"><div class="container studio-destination-nav__scroll">
+    <a class="studio-brand" href="../../index.html"><img class="studio-brand__site-logo" src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics" width="48" height="48"><span class="studio-brand__divider" aria-hidden="true"></span><img class="studio-brand__tool-logo" src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="42" height="42"><span class="studio-brand__copy"><span class="studio-brand__title">Scout Studio</span><small class="studio-brand__kicker">DJ's House of Cards &amp; Comics</small></span></a>
+    <nav class="studio-destination-nav" aria-label="Fan tools navigation"><div class="studio-destination-nav__scroll">
     <a href="../index.html"><span class="studio-destination-nav__icon"><img src="../../assets/games/fan-tools-emblem-20260909.jpg" alt="" width="28" height="28"></span>Fan Tools</a>
     <a href="../../lineup-lab/"><span class="studio-destination-nav__icon"><img src="../../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="28" height="28"></span>Lineup Lab</a>
     <a href="../fix-the-five/"><span class="studio-destination-nav__icon"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="28" height="28"></span>Fix the Five</a>
     <a href="../draft-night/"><span class="studio-destination-nav__icon"><img src="../../assets/games/draft-night-emblem-20260907.webp" alt="" width="28" height="28"></span>Draft Night</a>
     <a href="../player-card-matchups/"><span class="studio-destination-nav__icon"><img src="../../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="28" height="28"></span>Player &amp; Cards</a>
-    <a href="../workshop/"><span class="studio-destination-nav__icon"><img src="../../assets/games/workshop-emblem-20260909.jpg" alt="" width="28" height="28"></span>Workshop</a>
     <a aria-current="page" href="./"><span class="studio-destination-nav__icon"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="28" height="28"></span>Scout Studio</a>
-   </div></nav>
+    </div></nav>
+    <div class="studio-header__actions"><a href="../../shop.html">Shop</a><a href="../../account.html">Account</a><a href="../../cart.html">Cart</a><button type="button" id="headerRefreshSource" class="studio-header__refresh">Check for updates</button><button type="button" id="themeToggle" class="theme-toggle">Dark Mode</button></div>
+   </div>
   </header>
   <main id="mainContent" class="container" tabindex="-1">
    <section class="studio-hero" aria-labelledby="studioTitle">
-    <div class="studio-hero__copy"><span class="studio-eyebrow">Basketball research</span><h1 id="studioTitle">Scout Studio</h1><p>For fans researching existing player pools and rotation boards. Choose an available view and inspect the historical records it presents; Scout Studio supports exploration rather than predictions.</p><a class="button studio-hero__cta" href="#workspace">Explore the workbenches <span aria-hidden="true">↓</span></a></div>
-    <aside class="studio-hero__aside"><div class="studio-hero__emblem"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="176" height="176"></div><div class="studio-scope"><strong id="studioSeasonScope">Selected Scout window</strong><p>Player, Game Lab, and Season Lab evidence can draw from the validated 2020–21 through 2025–26 Scout window.</p><span>Observation ≠ prediction</span></div></aside>
+    <div class="studio-hero__copy"><span class="studio-eyebrow">Nine seasons of NBA context</span><h1 id="studioTitle">Scout Studio</h1><p>Explore the player. Understand the lineup. Compare recorded skills, inspect shared-floor evidence, or build a hypothetical roster experiment from the published Scout data.</p><a class="button studio-hero__cta" href="#workspace">Explore Scout Studio <span aria-hidden="true">↓</span></a></div>
+    <aside class="studio-hero__aside"><div class="studio-hero__emblem"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="Scout Studio emblem" width="176" height="176"></div><div class="studio-scope"><strong id="studioSeasonScope">Published Scout window</strong><p>Player, Game Lab, and Season Lab views can draw from the validated 2017–18 through 2025–26 Scout window.</p><span>Observation ≠ prediction</span></div></aside>
    </section>
+   <nav class="studio-workbench-tabs" aria-label="Scout Studio workbenches"><div class="studio-workbench-tabs__scroll">
+    <button type="button" data-mode="blueprint" aria-pressed="true">Player Blueprint</button>
+    <button type="button" data-mode="chemistry" aria-pressed="false">Chemistry Lab</button>
+    <button type="button" data-mode="forge" aria-pressed="false">Composite Forge</button>
+    <button type="button" data-mode="game" aria-pressed="false">Game Lab</button>
+    <button type="button" data-mode="league" aria-pressed="false">Season Lab</button>
+    <button type="button" data-mode="career" aria-pressed="false">Career Lab</button>
+   </div></nav>
    <section class="studio-source" aria-labelledby="sourceTitle">
-     <div><span class="studio-eyebrow">Data availability</span><h2 id="sourceTitle">Checking the published package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after the validated 2020–26 projection loads.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the level of detail the package provides.</p></div>
-    <button type="button" class="button-secondary" id="refreshSource">Check again</button>
+     <div><span class="studio-eyebrow">Data availability</span><h2 id="sourceTitle">Checking the published package…</h2><p id="sourceMessage" role="status" aria-live="polite">NBA evidence appears only after the validated 2017–26 projection loads.</p><p id="sourceScope" class="studio-muted">Pooled team totals, observed season rows, and career gaps stay labeled at the level of detail the package provides.</p></div>
+     <button type="button" class="button-secondary" id="refreshSource">Check for updates</button>
    </section>
    <section id="pendingPanel" class="studio-panel studio-workbench-intro" aria-labelledby="pendingTitle">
-     <span class="studio-eyebrow">Built around the validated package</span><h2 id="pendingTitle">The workbench is loading its evidence.</h2><p>Player Blueprint, Chemistry Lab, Composite Forge, Game Lab, Season Lab, and Career Lab use the published 2020–26 Scout projection. Evidence remains labeled at its observed grain.</p>
+    <span class="studio-eyebrow">Built around the validated package</span><h2 id="pendingTitle">The workbench is loading its evidence.</h2><p>Player Blueprint, Chemistry Lab, Composite Forge, Game Lab, Season Lab, and Career Lab use the published 2017–26 Scout projection. Evidence remains labeled at its observed grain.</p>
      <div class="studio-roadmap"><article><h3>Player Blueprint</h3><p>Compare production and inspect shot tendencies and context splits.</p></article><article><h3>Chemistry &amp; composites</h3><p>Pin a shared-floor group or donor recipe, then inspect what changed.</p></article><article><h3>Game, Season &amp; Career</h3><p>Explore a matchup, custom league, or observed season history with repeatable assumptions.</p></article></div>
    </section>
    <section id="workspace" class="studio-workbench-container" hidden aria-label="Scout analysis workspace">
-    <div class="studio-mode-controls" role="group" aria-label="Choose a workbench"><button type="button" data-mode="blueprint" aria-pressed="true">Player Blueprint</button><button type="button" data-mode="chemistry" aria-pressed="false">Chemistry Lab</button><button type="button" data-mode="forge" aria-pressed="false">Composite Forge</button><button type="button" data-mode="game" aria-pressed="false">Game Lab</button><button type="button" data-mode="league" aria-pressed="false">Season Lab</button><button type="button" data-mode="career" aria-pressed="false">Career Lab</button></div>
+    <div class="studio-mode-controls" role="group" aria-label="Choose a workbench"><button type="button" data-mode="blueprint" aria-describedby="workbenchModeHelp" aria-pressed="true">Player Blueprint</button><button type="button" data-mode="chemistry" aria-describedby="workbenchModeHelp" aria-pressed="false">Chemistry Lab</button><button type="button" data-mode="forge" aria-describedby="workbenchModeHelp" aria-pressed="false">Composite Forge</button><button type="button" data-mode="game" aria-describedby="workbenchModeHelp" aria-pressed="false">Game Lab</button><button type="button" data-mode="league" aria-describedby="workbenchModeHelp" aria-pressed="false">Season Lab</button><button type="button" data-mode="career" aria-describedby="workbenchModeHelp" aria-pressed="false">Career Lab</button></div>
+    <p class="studio-mode-help" id="workbenchModeHelp" role="status" aria-live="polite">Player Blueprint reviews recorded production, shooting choices, and sample size for one selected player.</p>
     <section id="gamePanel" hidden aria-labelledby="gameLabTitle"></section>
     <section id="leaguePanel" hidden aria-labelledby="leagueLabTitle"></section>
     <section id="careerPanel" hidden aria-labelledby="careerLabTitle"></section>
-    <form id="teamForm" class="studio-team-form"><label for="teamSelect">Choose a franchise sample<select id="teamSelect" required></select></label><button type="submit" class="button" id="loadTeam">Load team evidence</button><span class="studio-muted">One team read at a time. Nothing is uploaded.</span></form>
+    <form id="teamForm" class="studio-team-form"><label for="teamSelect">Choose a team<select id="teamSelect" required></select></label><button type="submit" class="button" id="loadTeam">Load team data</button><span class="studio-muted">One team read at a time. Nothing is uploaded.</span></form>
     <p role="status" aria-live="polite" id="workStatus"></p>
     <div id="analysis" class="studio-workbench-panel" hidden>
      <section id="blueprintPanel" aria-labelledby="blueprintTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Skills / tendencies / comparison</span><h2 id="blueprintTitle">Player Blueprint</h2></div><label for="playerSelect">Inspect player<select id="playerSelect"></select></label><label for="compareSelect">Compare with<select id="compareSelect"><option value="">No comparison</option></select></label></div>
-      <label class="studio-question" for="blueprintQuestion">Choose an analysis question<select id="blueprintQuestion"><option value="all">Full observable profile</option><option value="shooting">Shooting choices and outcomes</option><option value="creation">Creation and ball security</option><option value="rebounding">Rebounding production</option><option value="disruption">Recorded defensive disruption</option></select></label>
+      <label class="studio-question" for="blueprintQuestion">Choose an analysis question<select id="blueprintQuestion"><option value="all">All available metrics</option><option value="shooting">Shooting choices and outcomes</option><option value="creation">Creation and ball security</option><option value="rebounding">Rebounding production</option><option value="disruption">Recorded defensive disruption</option></select></label>
       <div id="blueprintContent"></div>
      </section>
      <section id="forgePanel" hidden aria-labelledby="forgeTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Hypothetical / donor components</span><h2 id="forgeTitle">Composite Forge</h2></div><label for="forgeBaseline">Compare against<select id="forgeBaseline"></select></label><button type="button" id="forgeUseBaseline" class="button-secondary">Use baseline for all blocks</button></div>
-      <p>Choose a donor for each block from the loaded team. Related metrics travel together. The pooled recipe remains separate from the observed season-keyed donor view below.</p>
+       <p>Choose a donor for each block from the loaded team. Related metrics travel together. The pooled recipe remains separate from the observed season data below.</p>
       <div id="forgeDonors" class="studio-roadmap"></div>
       <div class="studio-team-form"><button type="button" id="forgeUndo" class="button-secondary" disabled>Undo last donor change</button><button type="button" id="forgeSave" class="button">Save recipe locally</button><button type="button" id="forgeReset" class="button-secondary">Clear recipe and saved draft</button></div>
       <p id="forgeStatus" role="status" aria-live="polite"></p><div id="forgeChange" aria-live="polite"></div><div id="forgeContent"></div>
-      <section id="seasonForgePanel" class="studio-panel" aria-labelledby="seasonForgeTitle"><span class="studio-eyebrow">Observed season rows</span><h3 id="seasonForgeTitle">Specific-season donor view</h3><p>Inspect components from one recorded season, phase, and team row. This tests a recipe at the same level of detail the package provides; it never predicts how a new player would perform.</p><button type="button" id="loadSeasonDonors" class="button-secondary">Load observed season donors</button><div id="seasonForgeContent" aria-live="polite"><p class="studio-muted">Load a team first, then read the bounded season table.</p></div></section>
+      <section id="seasonForgePanel" class="studio-panel" aria-labelledby="seasonForgeTitle"><span class="studio-eyebrow">Observed season rows</span><h3 id="seasonForgeTitle">Specific-season donor view</h3><p>Inspect components from one recorded season, phase, and team row. This tests a recipe at the same level of detail the package provides; it never predicts how a new player would perform.</p><button type="button" id="loadSeasonDonors" class="button-secondary">Load season data</button><div id="seasonForgeContent" aria-live="polite"><p class="studio-muted">Load a team first, then read the bounded season table.</p></div></section>
      </section>
      <section id="chemistryPanel" hidden aria-labelledby="chemistryTitle">
       <div class="studio-section-heading"><div><span class="studio-eyebrow">Observed shared-floor evidence</span><h2 id="chemistryTitle">Chemistry Lab</h2></div><p>Choose 2–5 players from this team sample.</p></div>
@@ -75,8 +90,10 @@
    </section>
    <section class="studio-method studio-panel"><span class="studio-eyebrow">Evidence field guide</span><h2>Know what each result can—and cannot—say.</h2><p class="studio-muted">The workbench is designed to make an argument from observed evidence without turning a sample, rate, or range into a prediction.</p><details class="studio-field-guide"><summary><span><strong>Read the terms before the numbers</strong><small>Clear labels for player cards, tables, and shared-floor views</small></span></summary><dl><div><dt>Observed</dt><dd>Recorded events or reconstructed shared-floor possessions in the stated package window. Always read the sample size and coverage beside the value.</dd></div><div><dt>Rate per 100 possessions</dt><dd>A pace-neutral description of the recorded sample. It is useful for comparison, not a promise about a future game.</dd></div><div><dt>Coverage</dt><dd>Which source fields were present and usable. Missing fields stay missing; the workbench does not fill them with an estimate.</dd></div><div><dt>Shared floor</dt><dd>Players who appeared together in recorded possessions. An unseen combination remains unknown rather than being labeled good or bad chemistry.</dd></div><div><dt>Together / apart</dt><dd>A descriptive same-game split. Different teammates, opponents, and situations can explain a difference.</dd></div><div><dt>Descriptive 95% range</dt><dd>A rough uncertainty band around the observed sample, not a forecast interval or proof of a player’s true talent.</dd></div></dl></details><div class="studio-roadmap"><article><h3>Observed evidence</h3><p>Structured event statistics and reconstructed shared-floor possessions. Check attempts, minutes, and coverage before drawing a conclusion.</p></article><article><h3>Outside this view</h3><p>Gravity, decision speed, screen navigation, and defender assignments cannot be read directly from steals, blocks, or shot percentages.</p></article><article><h3>Not a forecast</h3><p>These views do not predict wins, health, a player’s career, or an untested lineup. Adjusted model coefficients stay private.</p></article></div></section>
   </main>
-  <footer class="container studio-footer"><a class="studio-footer-brand" href="../../index.html"><img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics logo" width="42" height="42" loading="lazy" decoding="async"><span>DJ's House of Cards<small>Scout Studio · read-only evidence</small></span></a><p>No catalog, checkout, account, or database changes.</p></footer>
-  <script defer src="../../core.js?v=20260908a"></script>
-  <script type="module" src="./studio.js?v=20260909b"></script>
- </body>
+  <footer class="container studio-footer"><a class="studio-footer-brand" href="../../index.html"><img src="../../assets/dj-logo.png" alt="DJ's House of Cards &amp; Comics logo" width="42" height="42" loading="lazy" decoding="async"><span>DJ's House of Cards<small>Scout Studio · read-only evidence</small></span></a><p>Explore the sample, then bring your questions to the shop.</p></footer>
+  <script defer src="../../core.js?v=20260909m"></script>
+  <script type="module" src="./studio.js?v=20260909m"></script>
+  <script type="module" src="./superdesign-page.js?v=20260909m"></script>
+<script type="module" src="../superdesign-motion.js?v=20260909m"></script>
+</body>
 </html>

@@ -1,0 +1,105 @@
+/* Season Lab presentation layer. The controller remains league-lab.js; these
+   selectors style only its real #leaguePanel output. */
+#leaguePanel {
+  --season-ink: var(--studio-text, #172033);
+  --season-muted: var(--studio-muted, #5c667f);
+  --season-surface: var(--studio-surface, #fff);
+  --season-raised: var(--studio-raised, #e8edf7);
+  --season-border: var(--studio-border, rgba(24, 37, 73, .18));
+  --season-blue: #1f2fa3;
+  --season-gold: #e4b141;
+  color: var(--season-ink);
+}
+
+#leaguePanel > #leagueLabTitle {
+  margin-bottom: .45rem;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  letter-spacing: -.025em;
+}
+
+#leaguePanel > #leagueLabTitle + p { max-width: 62ch; }
+#leaguePanel > #leagueLabTitle + p + p {
+  max-width: 76ch;
+  padding: .75rem 1rem;
+  border-left: 3px solid var(--season-gold);
+  color: var(--season-muted);
+  background: color-mix(in srgb, var(--season-raised) 72%, transparent);
+}
+
+#leaguePanel > form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.45fr);
+  gap: 1rem 1.25rem;
+  margin-top: 1.5rem;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  border: 1px solid var(--season-border);
+  border-radius: 18px;
+  background: var(--season-surface);
+  box-shadow: 0 8px 20px rgba(16, 27, 70, .08);
+}
+
+#leaguePanel .studio-league-teams,
+#leaguePanel .studio-roadmap { margin-block: 0; }
+#leaguePanel .studio-league-teams { grid-column: 1; grid-row: 1 / span 2; }
+#leaguePanel > form > .studio-roadmap { grid-column: 2; }
+#leaguePanel > form > .studio-panel { grid-column: 2; }
+#leaguePanel > form > .studio-muted { grid-column: 1 / -1; }
+
+#leaguePanel .studio-league-teams label,
+#leaguePanel > form > .studio-roadmap label,
+#leaguePanel > form > .studio-panel label { min-width: 0; }
+#leaguePanel select, #leaguePanel input {
+  width: 100%;
+  min-width: 0;
+}
+
+#leaguePanel .studio-panel { background: var(--season-raised); background: color-mix(in srgb, var(--season-raised) 88%, var(--season-surface)); }
+#leaguePanel .studio-panel summary { font-weight: 850; }
+#leaguePanel .studio-panel summary:focus-visible,
+#leaguePanel .studio-team-form button:focus-visible,
+#leaguePanel #leagueRun:focus-visible { outline-offset: 4px; }
+#leaguePanel .studio-team-form {
+  grid-column: 1 / -1;
+  margin-block: .25rem 0;
+  padding-top: .4rem;
+  border-top: 1px solid var(--season-border);
+}
+#leaguePanel #leagueRun { background: var(--season-blue); }
+#leaguePanel #leagueRun:hover:not(:disabled) { box-shadow: 0 8px 18px rgba(31, 47, 163, .25); }
+
+#leaguePanel #leagueStatus,
+#leaguePanel #leagueReferenceStatus { color: var(--season-muted); }
+#leaguePanel #leagueStatus { min-height: 1.4em; margin-block: 1rem .25rem; }
+#leaguePanel #leagueReferenceStatus { margin-top: .25rem; }
+#leaguePanel #leagueResults > .studio-panel,
+#leaguePanel #leagueResults > details { border-top: 3px solid var(--season-gold); }
+#leaguePanel #leagueResults > h3 { margin-top: 1.75rem; font-size: clamp(1.35rem, 2.5vw, 1.9rem); }
+#leaguePanel #leagueResults > p { max-width: 78ch; }
+#leaguePanel .studio-table-wrap { border: 1px solid var(--season-border); border-radius: 12px; }
+#leaguePanel .studio-table th { background: var(--season-raised); }
+#leaguePanel .studio-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--season-raised) 54%, transparent); }
+#leaguePanel .studio-table tbody tr:hover { background: color-mix(in srgb, var(--season-gold) 12%, var(--season-surface)); }
+
+@media (prefers-reduced-motion: reduce) {
+  #leaguePanel *, #leaguePanel *::before, #leaguePanel *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  #leaguePanel > form { grid-template-columns: 1fr; }
+  #leaguePanel .studio-league-teams,
+  #leaguePanel > form > .studio-roadmap,
+  #leaguePanel > form > .studio-panel,
+  #leaguePanel > form > .studio-muted { grid-column: 1; grid-row: auto; }
+}
+
+@media (forced-colors: active) {
+  #leaguePanel > form,
+  #leaguePanel .studio-panel,
+  #leaguePanel .studio-table-wrap { border: 1px solid CanvasText; box-shadow: none; }
+  #leaguePanel #leagueRun { border: 1px solid ButtonText; }
+}

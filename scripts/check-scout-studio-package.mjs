@@ -37,7 +37,8 @@ assert.equal(roster.players.length, smallest.rows.playerProfiles);
 assert.ok(roster.players.some(player => player.metrics.some(metric => metric.status === 'observed')));
 assert.ok(roster.players.some(player => player.tendencies.labels.length));
 const selected = [...roster.players].sort((a, b) => b.minutes - a.minutes).slice(0, 2).map(player => player.id);
-const hasSeasonEvidence = Boolean(manifest.modelEvidence?.files?.playerSeasonSkillProfiles);
+const hasSeasonEvidence = Boolean(manifest.modelEvidence?.files?.playerSeasonSkillProfiles)
+  || status.source?.seasonEvidence === 'embedded playerProfiles[].seasonDirectStats';
 let careerPlayerId = selected[0];
 let careerResult = await source.playerSeasons(team.id, status.snapshot, careerPlayerId);
 // A package can contain a valid base roster row without a corresponding
@@ -82,7 +83,8 @@ const playerContext = analyzePlayerContextLens(roster, selected[0], playerContex
 assert.equal(playerContext.status, 'ready');
 assert.ok(playerContext.rows.some(row => row.key === 'all'));
 const teamContextResult = await source.teamContexts(team.id, status.snapshot);
-const gameEvidence = teamGameEvidence(teamContextResult, 2024);
+const gameSeason = status.source.seasonStartYears.includes(2024) ? 2024 : status.source.seasonStartYears.at(-1);
+const gameEvidence = teamGameEvidence(teamContextResult, gameSeason);
 assert.equal(gameEvidence.status, 'ready', gameEvidence.reason);
 const result = await source.chemistry(team.id, status.snapshot, selected);
 assert.ok(result.combination, 'Most-used pair must have an observed co-presence record.');
@@ -116,7 +118,7 @@ console.log(JSON.stringify({ passed: true, scope: 'one-team integration spot che
   team: team.name, profiles: roster.players.length, contextRows: playerContext.rows.length, chemistryStatus: result.combination.sample.status,
   career: { player: careerPlayerId, ...careerCheck }, seasonForge: seasonForgeCheck,
   pinnedComparisons: { recipeRows: recipeComparison.rows.length, changedDonorBlocks: recipeComparison.changedBlocks, groupContexts: groupComparison.contexts.length },
-  gameSample: { season: 2024, offensePossessions: gameEvidence.offense.possessions, defensePossessions: gameEvidence.defense.possessions },
+  gameSample: { season: gameSeason, offensePossessions: gameEvidence.offense.possessions, defensePossessions: gameEvidence.defense.possessions },
   fivePlayerPairCount: groupEvidence.pairs.length, observedPairs: groupEvidence.pairs.filter(pair => pair.status === 'observed').length,
   styleMatching: Object.fromEntries(Object.entries(styleMatches).map(([kind, value]) => [kind, { status: value.status, eligible: value.eligible, components: value.components.length }])),
   observedMetrics: roster.players.reduce((sum, player) => sum + player.metrics.filter(metric => metric.status === 'observed').length, 0),
@@ -126,18 +128,22 @@ console.log(JSON.stringify({ passed: true, scope: 'one-team integration spot che
 
 console.log(JSON.stringify({ stage: 'streaming_matchup_opponent', team: opponent.name, bytes: nextSmallest.jsonBytes }));
 const opponentContextResult = await source.teamContexts(opponent.id, status.snapshot);
-for (const season of [2023, 2024, 2025]) {
+// Exercise every advertised season in the selected package.  The team-context
+// payload is already bounded and cached, so this validates the expanded window
+// without rereading another shard.
+const matchupSeasons = [...status.source.seasonStartYears];
+for (const season of matchupSeasons) {
   for (const evidence of [teamContextResult, opponentContextResult]) {
     const sample = teamGameEvidence(evidence, season);
     assert.equal(sample.status, 'ready', `${evidence.team} ${season}: ${sample.reason}`);
   }
 }
 const matchup = await simulateMatchup({ a: teamContextResult, b: opponentContextResult,
-  season: 2024, seed: 'real-package-review', trials: 1000, format: 'best_of_7' });
+  season: gameSeason, seed: 'real-package-review', trials: 1000, format: 'best_of_7' });
 assert.equal(matchup.wins.a + matchup.wins.b + matchup.wins.unresolved, 1000);
 assert.doesNotMatch(JSON.stringify({ opponentContextResult, matchup }), /"(?:playerId|teamId|rapm|coefficient|archivePath|manifestSha256)"/);
 console.log(JSON.stringify({ gameLabIntegration: 'passed', teams: [team.name, opponent.name],
-  seasonSamplesChecked: [2023, 2024, 2025], series: 1000, elapsedSeconds: Math.round((Date.now() - started) / 1000) }));
+  seasonSamplesChecked: matchupSeasons, series: 1000, elapsedSeconds: Math.round((Date.now() - started) / 1000) }));
 
 if (leagueCheck) {
   const leagueTeams = [teamContextResult, opponentContextResult], names = [team.name, opponent.name];
@@ -146,12 +152,12 @@ if (leagueCheck) {
     console.log(JSON.stringify({ stage: 'streaming_league_team', team: selected.name, bytes: descriptor.jsonBytes }));
     leagueTeams.push(await source.teamContexts(selected.id, status.snapshot)); names.push(selected.name);
   }
-  const report = await simulateLeague({ teams: leagueTeams, season: 2024, seed: 'real-league-review', trials: 100 });
+  const report = await simulateLeague({ teams: leagueTeams, season: gameSeason, seed: 'real-league-review', trials: 100 });
   assert.equal(report.teams.reduce((sum, team) => sum + team.titles, 0) + report.unresolvedTitles, 100);
   assert.equal(report.example.table.reduce((sum, row) => sum + row.pointsFor - row.pointsAgainst, 0), 0);
   const reference = captureLeagueSummary(report);
   assert.equal(compareLeagueScenarios(reference, report).identical, true);
-  const changed = await simulateLeague({ teams: leagueTeams, season: 2024, seed: 'real-league-review', trials: 100, possessions: 110 });
+  const changed = await simulateLeague({ teams: leagueTeams, season: gameSeason, seed: 'real-league-review', trials: 100, possessions: 110 });
   const comparison = compareLeagueScenarios(reference, changed);
   assert.deepEqual(comparison.changes.map(row => row.key), ['possessions']);
   assert.doesNotMatch(JSON.stringify({ report, reference, comparison }), /"(?:playerId|teamId|rapm|coefficient|archivePath|manifestSha256)"/);
@@ -180,7 +186,7 @@ if (browserCheck) {
       await page.goto(`${base}/tools/scout-studio/`);
       await page.getByRole('heading', { name: 'Validated for local integration review' }).waitFor();
       await page.locator('#teamSelect').selectOption(team.id);
-      await page.getByRole('button', { name: 'Load team evidence' }).click();
+      await page.getByRole('button', { name: 'Load team data' }).click();
       await page.getByText(`${roster.players.length} source player profiles loaded.`, { exact: false }).waitFor();
       await page.locator('#playerSelect').selectOption(selected[0]);
       await page.locator('#compareSelect').selectOption(selected[1]);
@@ -230,7 +236,7 @@ if (browserCheck) {
       await page.locator('#forgeChange').screenshot({ path: path.join(output, `real-forge-change-${viewport.width}.png`) });
       await page.locator('#forgeContent').screenshot({ path: path.join(output, `real-forge-ledger-${viewport.width}.png`) });
       if (hasSeasonEvidence) {
-        await page.getByRole('button', { name: 'Load observed season donors', exact: true }).click();
+        await page.getByRole('button', { name: 'Load season data', exact: true }).click();
         await page.locator('#seasonForgeContent h4').filter({ hasText: /observed season blocks selected/ }).waitFor();
         assert.equal(await page.locator('#seasonForgeContent table tbody tr').count(), 10);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
@@ -240,11 +246,11 @@ if (browserCheck) {
       await page.getByRole('button', { name: 'Game Lab', exact: true }).click();
       await page.locator('#gameTeamA').selectOption(team.id);
       await page.locator('#gameTeamB').selectOption(opponent.id);
-      await page.locator('#gameSeason').selectOption('2024');
+      await page.locator('#gameSeason').selectOption(String(gameSeason));
       await page.getByRole('button', { name: 'Simulate matchup', exact: true }).click();
       await page.getByText('Experiment complete.', { exact: false }).waitFor({ timeout: 120000 });
       assert.equal(await page.locator('.studio-game-histogram progress').count(), 7);
-      assert.match(await page.locator('#gameResults').innerText(), /2024–25/);
+      assert.match(await page.locator('#gameResults').innerText(), new RegExp(`${gameSeason}–${String(gameSeason + 1).slice(-2)}`));
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       await page.locator('#gameResults').screenshot({ path: path.join(output, `real-game-lab-${viewport.width}.png`) });
       await page.close();

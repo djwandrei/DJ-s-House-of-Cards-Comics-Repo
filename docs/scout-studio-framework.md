@@ -113,8 +113,9 @@ injury, or future-career forecast.
 
 ### Season Lab
 
-Build a four-team league using 2023–24 through 2025–26 team-season samples.
-Choose pair meetings, postseason format and bounded scoring/repetition settings.
+Build a four-team league using season-keyed team samples from the current
+2017–18 through 2025–26 source window. Choose pair meetings, postseason format
+and bounded scoring/repetition settings.
 Inspect the first seeded schedule, standings and bracket, then win/seed/title
 frequencies across repeated seasons. Unresolved playoff games never award byes.
 Pin one compact result and change an assumption. Comparison validates result
@@ -173,9 +174,9 @@ separate from existing saved picks and personal-best records.
 
 Keep daily challenges reproducible from their date, challenge definition, and
 approved model snapshot. Do not change a day's hidden rules after play begins.
-Player-pool diversity should follow the existing requested 2023–24 through
-2025–26 daily-game scope once season-keyed evidence is available; this pooled
-window workbench must not be relabeled as those individual seasons.
+Player-pool diversity should follow the current 2017–18 through 2025–26
+daily-game scope once season-keyed evidence is available; this pooled window
+workbench must not be relabeled as those individual seasons.
 No retired tool concepts are restored by this research review.
 
 ## Code ownership and verification

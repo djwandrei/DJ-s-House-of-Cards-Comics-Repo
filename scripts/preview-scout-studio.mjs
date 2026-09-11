@@ -112,8 +112,8 @@ export function parseStudioArgs(argv) {
   }
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Port must be between 1024 and 65535.');
   const options = parseReadinessArgs(args);
-  if (!['2022,2023,2024,2025', '2020,2021,2022,2023,2024,2025'].includes(options.seasons.join(','))) {
-    throw new Error('Select the incoming four-season or six-season Scout window explicitly; other package scopes are unsupported.');
+  if (options.seasons.length < 2) {
+    throw new Error('Select at least two Scout season start years explicitly; other package scopes are unsupported.');
   }
   return { ...options, port };
 }

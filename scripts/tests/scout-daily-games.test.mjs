@@ -51,7 +51,7 @@ const combinedScope = scope('combined-2023-26', [
 ], [2024, 2025]);
 
 test('Scout daily games are deterministic, legal, and score with private Scout input only', () => {
-  assert.equal(SCOUT_DAILY_GAME_MODEL_VERSION, 'scout-daily-games-v2');
+  assert.equal(SCOUT_DAILY_GAME_MODEL_VERSION, 'scout-daily-games-v3');
   const first = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [singleSeasonScope] });
   const second = buildScoutDailyGame({ gameKind: 'fix-the-five', dailySeed: '2026-09-05', scopes: [singleSeasonScope] });
   assert.deepEqual(first, second);

@@ -21,7 +21,7 @@ from one validated team shard and presents only bounded, descriptive rows.
   baseline is observed.
 
 The current package's direct player profile remains a pooled team-window
-profile. A `season:2022` or `season:2025` context row is a possession partition,
+profile. A `season:2017` or `season:2025` context row is a possession partition,
 not a season-keyed direct player profile and not evidence of year-over-year
 skill change.
 
@@ -49,9 +49,8 @@ unavailable rather than being imputed.
 
 The context contract is covered by `scripts/tests/scout-context-lens.test.mjs`,
 the streamed source/route tests, and the synthetic browser smoke at 1440px and
-390px. The real-package checker passed against the completed six-season base
-package with its exact hash-bound source report: 67 New York profiles, 41 context
-rows and rendered player/group tables at both viewport sizes. The season
-allowlist now explicitly covers start years 2020–2025; Game Lab separately
-limits game samples to 2023–2025. No Supabase, catalog, deployment or model-fit
-state changes are part of this slice.
+390px. The real-package checker is scoped to the completed 2017–26 base package
+and reports its profile/context counts and rendered player/group tables for
+both viewport sizes. The season allowlist now explicitly covers start years
+2017–2025; Game Lab uses the same completed package window. No Supabase,
+catalog, deployment or model-fit state changes are part of this slice.

@@ -1,0 +1,370 @@
+/* Game Lab presentation layer. The renderer owns this DOM; this file owns its visual hierarchy. */
+#gamePanel {
+  --game-blue: #1f2fa3;
+  --game-navy: #101b46;
+  --game-gold: #e4b141;
+  --game-red: #ef1823;
+  --game-success: #08775b;
+  --game-shadow: 0 12px 28px rgba(16, 27, 70, .10);
+  display: grid;
+  grid-template-columns: minmax(15rem, .82fr) minmax(0, 1.65fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+#gamePanel[hidden] {
+  display: none !important;
+}
+
+#gamePanel > h2,
+#gamePanel > h2 + p,
+#gamePanel > #gameStatus {
+  grid-column: 1 / -1;
+}
+
+#gamePanel > h2 {
+  margin: 0;
+  color: var(--game-navy);
+  font-size: clamp(1.8rem, 3vw, 2.45rem);
+  letter-spacing: .045em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+body.scout-studio-page.dark-mode #gamePanel > h2 {
+  color: var(--studio-text);
+}
+
+#gamePanel > h2 + p {
+  margin: -.9rem 0 .15rem;
+  max-width: 72ch;
+  color: var(--studio-muted);
+}
+
+#gamePanel > form {
+  grid-column: 1;
+  grid-row: 3;
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--studio-border);
+  border-radius: 1rem;
+  background: var(--studio-surface);
+  box-shadow: var(--game-shadow);
+}
+
+#gamePanel > #gameResults {
+  grid-column: 2;
+  grid-row: 3;
+  min-width: 0;
+}
+
+#gamePanel > #gameStatus {
+  grid-row: 4;
+  min-height: 1.4rem;
+  margin: 0;
+  color: var(--studio-muted);
+}
+
+#gamePanel form > .studio-roadmap:first-child {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .9rem;
+  margin: 0;
+}
+
+#gamePanel form > .studio-roadmap:first-child > label:last-child {
+  grid-column: 1 / -1;
+}
+
+#gamePanel label {
+  display: grid;
+  gap: .4rem;
+  min-width: 0;
+  color: var(--studio-text);
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .075em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+#gamePanel select,
+#gamePanel input {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid var(--studio-border-strong, var(--studio-border));
+  border-radius: .75rem;
+  background: var(--studio-raised);
+  color: var(--studio-text);
+  font: inherit;
+  font-size: .95rem;
+  letter-spacing: normal;
+  padding: .7rem .8rem;
+  text-transform: none;
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+#gamePanel select:focus-visible,
+#gamePanel input:focus-visible {
+  border-color: var(--game-gold);
+  box-shadow: 0 0 0 3px rgba(228, 177, 65, .25);
+  outline: none;
+}
+
+#gamePanel form > .studio-team-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+  align-items: stretch;
+  margin: 0;
+}
+
+#gamePanel form > .studio-team-form > * {
+  min-width: 0;
+}
+
+#gamePanel #gameDaily,
+#gamePanel #gameCancel {
+  width: 100%;
+}
+
+#gamePanel #gameBrief {
+  margin: 0;
+  font-size: .83rem;
+  line-height: 1.45;
+}
+
+#gamePanel form > details.studio-panel {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--studio-border);
+  border-radius: .85rem;
+  background: var(--studio-raised);
+  box-shadow: none;
+}
+
+#gamePanel form > details > summary {
+  cursor: pointer;
+  padding: .95rem 1rem;
+  color: var(--game-navy);
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.scout-studio-page.dark-mode #gamePanel form > details > summary {
+  color: var(--studio-text);
+}
+
+#gamePanel form > details > .studio-roadmap,
+#gamePanel form > details > p {
+  margin-inline: 1rem;
+}
+
+#gamePanel form > details > .studio-roadmap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .9rem;
+  margin-block: .25rem 1rem;
+}
+
+#gamePanel form > details > p:last-child {
+  margin-bottom: 1rem;
+}
+
+#gamePanel #gameRun {
+  width: 100%;
+  border-color: var(--game-blue);
+  background: var(--game-blue);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+  transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+#gamePanel #gameRun:hover,
+#gamePanel #gameRun:focus-visible {
+  background: var(--game-navy);
+  box-shadow: 0 8px 18px rgba(31, 47, 163, .22);
+}
+
+#gamePanel #gameRun:hover {
+  transform: translateY(-1px);
+}
+
+#gamePanel #gameCancel {
+  border-color: rgba(239, 24, 35, .45);
+  color: var(--game-red);
+}
+
+#gamePanel #gameCancel:hover,
+#gamePanel #gameCancel:focus-visible {
+  background: rgba(239, 24, 35, .08);
+}
+
+#gameResults > * {
+  margin: 0 0 1rem;
+}
+
+#gameResults > .studio-panel {
+  border-radius: 1rem;
+  box-shadow: var(--game-shadow);
+}
+
+#gameResults > .studio-panel:first-child {
+  border-top: 4px solid var(--game-gold);
+}
+
+#gameResults .studio-panel h3 {
+  margin-bottom: .65rem;
+  color: var(--game-navy);
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+body.scout-studio-page.dark-mode #gameResults .studio-panel h3 {
+  color: var(--studio-text);
+}
+
+#gameResults .studio-game-score {
+  margin-block: 1rem;
+  color: var(--game-blue);
+  font-size: clamp(2.25rem, 6vw, 4.2rem);
+  line-height: .95;
+}
+
+#gameResults .studio-roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .85rem;
+  margin-block: 1rem;
+}
+
+#gameResults .studio-roadmap article {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--studio-border);
+  border-radius: .85rem;
+  background: var(--studio-raised);
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+#gameResults .studio-roadmap article:hover {
+  border-color: var(--game-gold);
+  transform: translateY(-1px);
+}
+
+#gameResults .studio-roadmap article h4 {
+  margin: 0 0 .45rem;
+  font-size: .76rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+#gameResults .studio-roadmap article strong {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--game-blue);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+#gameResults .studio-table-wrap {
+  border: 1px solid var(--studio-border);
+  border-radius: .75rem;
+}
+
+#gameResults .studio-table th {
+  background: var(--studio-raised);
+  color: var(--game-navy);
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+body.scout-studio-page.dark-mode #gameResults .studio-table th {
+  color: var(--studio-text);
+}
+
+#gameResults .studio-game-histogram {
+  display: grid;
+  gap: .65rem;
+  margin-block: 1.25rem;
+}
+
+#gameResults .studio-game-histogram > div {
+  display: grid;
+  grid-template-columns: 7.6rem minmax(0, 1fr) 3.8rem;
+  gap: .6rem;
+  align-items: center;
+  font-size: .82rem;
+}
+
+#gameResults .studio-game-histogram progress {
+  width: 100%;
+  accent-color: var(--game-gold);
+}
+
+#gameResults details.studio-panel {
+  padding: 1rem 1.1rem;
+}
+
+#gameResults details.studio-panel > summary {
+  cursor: pointer;
+  color: var(--game-navy);
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+body.scout-studio-page.dark-mode #gameResults details.studio-panel > summary {
+  color: var(--studio-text);
+}
+
+@media (max-width: 900px) {
+  #gamePanel {
+    grid-template-columns: 1fr;
+  }
+
+  #gamePanel > form,
+  #gamePanel > #gameResults,
+  #gamePanel > #gameStatus {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  #gamePanel > #gameResults {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  #gamePanel form > .studio-roadmap:first-child,
+  #gameResults .studio-roadmap {
+    grid-template-columns: 1fr;
+  }
+
+  #gamePanel form > .studio-roadmap:first-child > label:last-child {
+    grid-column: auto;
+  }
+
+  #gameResults .studio-game-histogram > div {
+    grid-template-columns: 6rem minmax(0, 1fr) 3.5rem;
+    gap: .4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gamePanel *,
+  #gamePanel *::before,
+  #gamePanel *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,8 +1,8 @@
-import { validateAnalysisRoster, analyzeChemistry, sampleEvidence, buildComposite, createForgeRecipe } from './studio-analysis.js?v=20260908a';
-import { analyzeGroupContextLens } from './context-lens.js?v=20260908a';
+import { validateAnalysisRoster, analyzeChemistry, sampleEvidence, buildComposite, createForgeRecipe } from './studio-analysis.js?v=20260909m';
+import { analyzeGroupContextLens } from './context-lens.js?v=20260909m';
 
 export const BLUEPRINT_QUESTIONS = Object.freeze({
-  all: { keys: null, note: 'Review the full observable profile. None of these components is a latent talent grade or a forecast.' },
+  all: { keys: null, note: 'Review all available metrics. None of these components is a talent grade or a forecast.' },
   shooting: { keys: ['threePointAccuracy', 'threePointFrequency', 'freeThrowAccuracy'], note: 'How often did this player take threes, and how accurately? Frequency describes choices; accuracy describes observed outcomes on its own attempt sample.' },
   creation: { keys: ['assists', 'turnovers', 'points', 'foulsDrawn'], note: 'What production accompanied creation responsibilities? Assists and turnovers do not measure decision speed, passing vision or ball dominance.' },
   rebounding: { keys: ['rebounds'], note: 'How much rebounding production was recorded? This rate is not adjusted for available rebound chances or defensive assignments.' },

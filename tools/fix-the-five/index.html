@@ -12,21 +12,22 @@
   <meta content="One move. Five roles. Make it work on source-labeled daily Scout boards spanning validated seasons." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/fix-the-five/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260908a" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260908a" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260909b" rel="stylesheet">
-  <link href="./fix-the-five.css?v=20260908a" rel="stylesheet">
-  <link href="../basketball-branding.css?v=20260908a" rel="stylesheet">
+  <link href="../../styles.css?v=20260909m" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260909m" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260909m" rel="stylesheet">
+  <link href="./fix-the-five.css?v=20260909m" rel="stylesheet">
+  <link href="../basketball-branding.css?v=20260909m" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/fix-the-five/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260908a" rel="manifest">
+  <link href="../../site.webmanifest?v=20260909m" rel="manifest">
   <link href="../../assets/games/fix-the-five-icon-20260907.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
   <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"Game","@id":"https://www.djshouseofcards-comics.com/tools/fix-the-five/#game","url":"https://www.djshouseofcards-comics.com/tools/fix-the-five/","name":"Fix the Five","description":"A five-round, source-labeled daily lineup challenge ranked by a validated Scout model on each fixed board.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US","gamePlatform":"Web browser","numberOfPlayers":{"@type":"QuantitativeValue","minValue":1,"maxValue":1}}</script>
-  <link rel="stylesheet" href="../basketball-theme.css?v=20260909b">
-  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909c">
+  <link rel="stylesheet" href="../basketball-theme.css?v=20260909m">
+  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909m">
+  <link rel="stylesheet" href="./superdesign-page.css?v=20260909m">
  </head>
 <body class="fan-tools-page fix-five-page dark-mode basketball-game court-themed" data-page="fan-tools">
-<script src="../../theme-init.js?v=20260908a"></script>
+<script src="../../theme-init.js?v=20260909m"></script>
   <a class="skip-link" href="#mainContent">Skip to Fix the Five</a>
   <header class="site-header">
    <div class="container header-inner">
@@ -49,53 +50,63 @@
     </nav>
     <button aria-controls="siteNav" aria-expanded="false" class="nav-toggle" id="navToggle" type="button">Menu</button>
     <button aria-label="Toggle color theme" class="theme-toggle theme-toggle--compact" id="themeToggle" type="button">Dark Mode</button>
+    <nav class="fan-suite-nav" aria-label="Fan tools navigation">
+     <div class="container fan-suite-nav__scroll">
+      <a class="fan-suite-nav__link" href="../index.html"><img src="../../assets/games/fan-tools-emblem-20260909.jpg" alt="" width="30" height="30">Fan Tools</a>
+      <a class="fan-suite-nav__link" href="../../lineup-lab/"><img src="../../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="30" height="30">Lineup Lab</a>
+      <a class="fan-suite-nav__link" aria-current="page" href="./"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="30" height="30">Fix the Five</a>
+      <a class="fan-suite-nav__link" href="../draft-night/"><img src="../../assets/games/draft-night-emblem-20260907.webp" alt="" width="30" height="30">Draft Night</a>
+      <a class="fan-suite-nav__link" href="../player-card-matchups/"><img src="../../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="30" height="30">Player &amp; Cards</a>
+      <a class="fan-suite-nav__link" href="../workshop/"><img src="../../assets/games/workshop-emblem-20260909.jpg" alt="" width="30" height="30">Workshop</a>
+      <a class="fan-suite-nav__link" href="../scout-studio/"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="30" height="30">Scout Studio</a>
+     </div>
+    </nav>
    </div>
   </header>
-  <main id="mainContent" tabindex="-1">
-   <section class="page-hero fix-five-hero">
-    <div class="container page-hero-card fix-five-hero-card">
-     <nav aria-label="Breadcrumb" class="breadcrumb-nav"><ol class="breadcrumb-list"><li class="breadcrumb-list__item"><a href="../../index.html">Home</a></li><li class="breadcrumb-list__item"><a href="../index.html">Fan Tools</a></li><li class="breadcrumb-list__item"><span aria-current="page" class="breadcrumb-current">Fix the Five</span></li></ol></nav>
-     <div class="fix-five-hero-layout">
-      <div class="fix-five-hero-copy">
-       <div class="game-brand-lockup">
-        <button class="game-badge" type="button" data-badge-replay="Animate the Fix the Five badge" data-badge-name="Fix the Five badge" aria-label="Fix the Five badge" disabled><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="256" height="256" alt="" decoding="async"><span class="game-badge-hint" aria-hidden="true">Tap for a bounce</span></button>
-        <div><span class="kicker">One swap. Your call.</span><h1 class="page-title">Fix the Five.</h1></div>
-       </div>
-       <p>Find the missing piece in five daily lineups. Choose one legal replacement and lock it. Your board rank is your place among the legal choices on that day’s board—not a win prediction or player rating.</p>
-      </div>
+  <main id="mainContent" class="sd-game-main" tabindex="-1">
+   <div class="sd-game-frame">
+    <section class="sd-game-hero" aria-labelledby="page-title">
+     <div class="sd-hero-copy">
+      <span class="sd-eyebrow">One lineup · one replacement · your call</span>
+      <h1 id="page-title" class="sd-display-title"><span>Fix the</span> <span class="sd-accent">Five</span></h1>
+      <p class="sd-hero-lede">Find the missing piece in five daily lineups. Choose one legal replacement, lock it, and compare that move with the other allowed choices on the same Scout board.</p>
+      <div class="sd-availability" role="status"><span class="sd-availability-dot" aria-hidden="true"></span><div><strong>Source check</strong><span>Your board only appears when today's lineup and player pool are ready.</span></div></div>
      </div>
-    </div>
-   </section>
-   <section class="container fix-five-workspace" id="gameBoard" tabindex="-1" aria-label="Fix the Five game">
-    <div class="fix-five-status-row">
-     <div><span class="kicker">Today’s run</span><h2 id="runTitle">Loading today’s Scout five…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div>
-     <div class="fix-five-scoreboard" aria-label="Local game progress" role="group"><div><span>Round</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Daily streak</span><strong id="streakCount">—</strong></div></div>
-    </div>
-    <div class="fix-five-progress" aria-label="Run progress" id="runProgress" role="group"></div>
-    <p aria-atomic="true" aria-live="polite" class="fix-five-live-status" id="gameStatus" role="status">Loading the validated Scout board.</p>
-    <div id="gameRecovery" class="game-recovery" hidden><button class="button" id="retryBoard" type="button">Try loading the board again</button><a class="button-secondary" href="../index.html">Explore fan tools</a></div>
-    <div class="fix-five-layout" id="gameWorkspace" hidden>
-     <section class="fix-five-main-card" aria-labelledby="challengeTitle" id="challengePanel"></section>
-     <aside aria-label="Game guidance and controls" class="fix-five-sidebar">
-      <section class="fix-five-method-card"><span class="kicker">How your board result works</span><h2>Make the move. Read the tradeoff.</h2><ol><li><strong>Choose a legal swap</strong><span>Pick one replacement that fits the disclosed role rules for this daily board.</span></li><li><strong>Lock the move</strong><span>Your result stays hidden until you commit, so each choice has a real reveal.</span></li><li><strong>Read the board result</strong><span>See a 0–100 board score and rank against the legal replacements on this one board.</span></li></ol><p class="fix-five-contract-copy">The validated Scout model determines the board-only comparison. Public historical stats identify the player and source; private values, coefficients, and archive details are never sent to the browser.</p><details class="fix-five-contract-details"><summary>Board terms and scoring boundary</summary><dl class="fix-five-term-list"><div><dt>Source-labeled board</dt><dd>A fixed player pool from one disclosed source window. It is not a current depth chart.</dd></div><div><dt>Legal swap</dt><dd>A replacement that meets the round’s stated role and board rules.</dd></div><div><dt>Sealed board rank</dt><dd>Your place among only the legal choices on this board after you lock a move—not a career rating or forecast.</dd></div><div><dt>Local best</dt><dd>Your strongest completed run saved only in this browser. It never changes your account or the shop.</dd></div></dl><p>Today’s rotation can use a single team-season, a franchise across validated seasons, or a randomized multi-season player pool. If a validated source is unavailable, the game does not substitute an old board or a non-Scout score.</p></details></section>
-      <section class="fix-five-source-card" aria-labelledby="sourceHeading"><span class="kicker">Daily source</span><h2 id="sourceHeading">Scout board loading</h2><p id="sourceCopy">This game appears only when a validated Scout source is ready.</p></section>
-      <section class="fix-five-run-actions" aria-label="Run controls"><button class="button-secondary" id="restartRun" type="button">Restart this run</button><a class="button-secondary" href="../index.html">More fan tools</a></section>
-     </aside>
-    </div>
-    <section class="fix-five-complete" id="completionPanel" hidden aria-labelledby="completionTitle"></section>
-   </section>
+     <div class="sd-emblem-card" aria-label="Fix the Five game identity"><div class="sd-emblem-frame"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" width="256" height="256" alt="Fix the Five emblem" decoding="async"></div><span>DJHC basketball fan game</span></div>
+    </section>
+
+    <section class="sd-game-board" id="gameBoard" tabindex="-1" aria-label="Fix the Five game">
+     <div class="sd-board-heading"><div><span class="sd-section-label">Today’s run</span><h2 id="runTitle">Loading today’s Scout five…</h2><p id="runDescription">Preparing a source-labeled board from the validated season window.</p></div><div class="sd-score-grid" aria-label="Local game progress" role="group"><div><span>Round</span><strong id="roundCount">—</strong></div><div><span>Local best</span><strong id="bestScore">—</strong></div><div><span>Streak</span><strong id="streakCount">—</strong></div></div></div>
+     <div class="sd-progress-line fix-five-progress" aria-label="Run progress" id="runProgress" role="group"></div>
+     <p aria-atomic="true" aria-live="polite" class="sd-live-status fix-five-live-status" id="gameStatus" role="status">Loading the validated Scout board.</p>
+     <div id="gameRecovery" class="sd-recovery game-recovery" hidden><button class="sd-primary button" id="retryBoard" type="button">Retry source</button><a class="sd-secondary button-secondary" href="../index.html">Explore Fan Tools</a></div>
+     <div class="sd-workspace" id="gameWorkspace" hidden>
+      <section class="sd-live-panel fix-five-main-card" aria-labelledby="challengeTitle" id="challengePanel"></section>
+      <aside aria-label="Game guidance and controls" class="sd-sidebar">
+       <section class="sd-info-card fix-five-method-card"><span class="sd-section-label">How the board works</span><h2>Make the move. Read the tradeoff.</h2><ol><li><b>Read the five-card board</b><span>One fixed lineup is built from the disclosed source window.</span></li><li><b>Choose an eligible player</b><span>Pick a replacement that satisfies this round’s role and board rules.</span></li><li><b>Lock the replacement</b><span>Confirm before the comparison is revealed.</span></li><li><b>Read the board result</b><span>See a 0–100 result and your place among this board’s legal choices.</span></li></ol><p class="fix-five-contract-copy">The validated Scout model supplies the board-only comparison. Public historical stats identify the player and source; private values and coefficients never reach the browser.</p><details class="fix-five-contract-details"><summary>Board terms and scoring boundary</summary><dl class="fix-five-term-list"><div><dt>Source-labeled board</dt><dd>A fixed five-card lineup and replacement pool from one disclosed source window.</dd></div><div><dt>Legal replacement</dt><dd>A player who fits the open role and every rule shown for that board.</dd></div><div><dt>Board result and rank</dt><dd>A comparison with the other allowed moves on this board, not a universal rating or forecast.</dd></div></dl></details></section>
+       <section class="sd-info-card fix-five-source-card" aria-labelledby="sourceHeading"><span class="sd-section-label">Daily source</span><h2 id="sourceHeading">Scout board loading</h2><p id="sourceCopy">This game appears only when a validated Scout source is ready.</p></section>
+       <section class="sd-action-stack fix-five-run-actions" aria-label="Run controls"><button class="sd-secondary button-secondary" id="restartRun" type="button">Restart this run</button><a class="sd-secondary button-secondary" href="../index.html">More Fan Tools</a></section>
+      </aside>
+     </div>
+     <section class="sd-completion fix-five-complete" id="completionPanel" hidden aria-labelledby="completionTitle"></section>
+    </section>
+
+    <section class="sd-data-section" aria-labelledby="data-title"><div><span class="sd-section-label">How today’s board works</span><h2 id="data-title">One fixed lineup. Three legal moves.</h2><p class="sd-data-lede">Every round starts from a disclosed historical source. You see the five, choose from the legal replacements, and then reveal the board result.</p></div><div class="sd-data-grid"><article><span class="sd-data-icon">1</span><h3>Read the board</h3><p>The lineup and source window stay fixed for the round.</p></article><article><span class="sd-data-icon">2</span><h3>Choose a move</h3><p>Only the three replacements shown are legal.</p></article><article><span class="sd-data-icon">3</span><h3>See the result</h3><p>The rank compares your move with the other choices on this board.</p></article></div></section>
+   </div>
   </main>
   <footer class="footer site-footer">
    <div class="container footer-inner"><div class="footer-brand"><div class="footer-logo-line"><img alt="DJ's House of Cards &amp; Comics logo" class="footer-logo" decoding="async" height="72" loading="lazy" src="../../assets/dj-logo.png" width="72"><div><div class="brand-script">DJ's House of Cards</div><div class="brand-kicker">Sports cards • Comics • Collector finds</div></div></div><p>A collector-focused storefront for vintage stars, graded cards, modern hobby finds, key comics, and direct conversations with DJ.</p></div><div class="footer-links"><div class="footer-link-groups"><div class="footer-link-group footer-link-group--browse"><strong>Browse</strong><a href="../../sports-cards.html">Sports Cards</a><a href="../../comics.html">Comics</a><a href="../../collectibles.html">Collectibles</a></div><div class="footer-link-group footer-link-group--support"><strong>Help &amp; Policies</strong><a href="../../contact.html">Contact DJ</a><a href="../../shipping.html">Shipping</a><a href="../../returns.html">Returns</a><a href="../../policies.html">Policies &amp; Authenticity</a></div><div class="footer-link-group footer-link-group--storefronts"><strong>Shop &amp; Follow</strong><a href="https://www.facebook.com/DJCardsComics/" rel="noopener noreferrer" target="_blank">Facebook</a><a href="https://www.whatnot.com/user/djshouseofcards" rel="noopener noreferrer" target="_blank">Whatnot</a><a href="https://xy2hik-nq.myshopify.com/" rel="noopener noreferrer" target="_blank">Shopify</a><a href="https://www.tiktok.com/@djshouseofcards/shop" rel="noopener noreferrer" target="_blank">TikTok Shop</a></div></div></div></div>
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics • Independent collector storefront</span><span>Actual-item photography • Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">↑</button>
-  <script defer src="../../core.js?v=20260908a"></script>
-  <script defer src="../../nav.js?v=20260908a"></script>
-  <script defer src="../../backend-config.js?v=20260908a"></script>
-  <script defer src="../../supabase-client.js?v=20260908a"></script>
-  <script type="module" src="./scout-fix-the-five.js?v=20260908a"></script>
-  <script type="module" src="../basketball-branding.js?v=20260908a"></script>
-  <script type="module" src="../basketball-theme.js?v=20260909b"></script>
+  <script defer src="../../core.js?v=20260909m"></script>
+  <script defer src="../../nav.js?v=20260909m"></script>
+  <script defer src="../../backend-config.js?v=20260909m"></script>
+  <script defer src="../../supabase-client.js?v=20260909m"></script>
+  <script type="module" src="./scout-fix-the-five.js?v=20260909m"></script>
+   <script type="module" src="../basketball-branding.js?v=20260909m"></script>
+   <script type="module" src="../basketball-theme.js?v=20260909m"></script>
+   <script type="module" src="../superdesign-motion.js?v=20260909m"></script>
+   <script type="module" src="./superdesign-page.js?v=20260909m"></script>
  </body>
 </html>

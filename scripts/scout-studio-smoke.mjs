@@ -18,6 +18,7 @@ assert.ok(executablePath, 'An installed Chromium browser is required.');
 const source = fixtureSource();
 source.roster = styleRoster;
 source.status = async () => ({ ...readyStatus(), teams: Array.from({ length: 4 }, (_, index) => ({ id: `t${index}`, name: `Test Franchise 0${index}` })) });
+const fixtureSeasonStarts = readyStatus().source.seasonStartYears;
 const server = createScoutStudioServer(source);
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
@@ -45,7 +46,7 @@ try {
     await page.keyboard.press('Tab');
     await page.getByRole('button', { name: 'Game Lab', exact: true }).click();
     assert.equal(await page.locator('#teamForm').isVisible(), false);
-    assert.ok(['2023', '2024', '2025'].includes(await page.locator('#gameSeason').inputValue()));
+    assert.ok(fixtureSeasonStarts.map(String).includes(await page.locator('#gameSeason').inputValue()));
     const dailyTeams = [await page.locator('#gameTeamA').inputValue(), await page.locator('#gameTeamB').inputValue()];
     assert.notEqual(...dailyTeams);
     await page.locator('#gameCall').selectOption('a');
@@ -125,7 +126,7 @@ try {
     await page.getByText('Choose four different franchises.', { exact: true }).waitFor();
     assert.equal(teamReads, 6, 'An illegal league does not trigger a read');
     await page.getByRole('button', { name: 'Player Blueprint', exact: true }).click();
-    await page.getByRole('button', { name: 'Load team evidence' }).click();
+    await page.getByRole('button', { name: 'Load team data' }).click();
     await page.getByText('6 source player profiles loaded.', { exact: false }).waitFor();
     await page.getByRole('button', { name: 'Career Lab', exact: true }).click();
     assert.equal(await page.locator('#careerPanel').isVisible(), true);
@@ -205,7 +206,7 @@ try {
     await page.screenshot({ path: path.join(output, `forge-${viewport.width}.png`), fullPage: true });
     await page.reload();
     await page.getByRole('heading', { name: 'Validated for local integration review' }).waitFor();
-    await page.getByRole('button', { name: 'Load team evidence' }).click();
+    await page.getByRole('button', { name: 'Load team data' }).click();
     await page.getByText('6 source player profiles loaded.', { exact: false }).waitFor();
     await page.getByRole('button', { name: 'Composite Forge', exact: true }).click();
     await page.getByText('Saved recipe restored for this exact team and snapshot.', { exact: true }).waitFor();

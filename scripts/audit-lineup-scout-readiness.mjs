@@ -19,7 +19,7 @@ export function parseReadinessArgs(argv) {
     values[name] = value;
   }
   if (Object.keys(values).length !== 4 || !/^\d{4}(,\d{4})+$/.test(values['--seasons'] ?? '')) {
-    throw new Error('Required: --manifest <json> --package-validation <json> --source-validation <json> --seasons 2020,2021,2022,2023,2024,2025');
+    throw new Error('Required: --manifest <json> --package-validation <json> --source-validation <json> --seasons 2017,2018,2019,2020,2021,2022,2023,2024,2025');
   }
   return {
     manifest: path.resolve(values['--manifest']),

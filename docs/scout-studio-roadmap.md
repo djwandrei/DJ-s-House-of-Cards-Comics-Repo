@@ -15,8 +15,8 @@ drafts are left untouched; no user data or historical source documents are delet
 
 Use the **explicitly validated current Scout package**, not the old single-season
 v10 package, as the private evidence foundation. The latest local integration
-uses the six-season package below. Keep observed evidence, hypothetical donor
-recipes and uncalibrated game experiments visibly distinct.
+uses the nine-season 2017–26 package below. Keep observed evidence, hypothetical
+donor recipes and uncalibrated game experiments visibly distinct.
 
 Six workbenches are implemented locally in `tools/scout-studio/`: Player
 Blueprint, Chemistry Lab, the hypothetical Composite Forge, Game Lab, Season
@@ -33,7 +33,35 @@ models. The latest local expansion adds a four-team Season Lab, pinned league
 experiments, Blueprint question lenses, pinned Chemistry/Forge comparisons and
 session-only checked-choice histories in Fix the Five and Draft Night.
 
-## Current package integration — September 7
+## Current package integration — September 9
+
+The completed 2017–26 package is the current Scout Studio source. It covers
+season start years 2017–2025 (the 2017–18 through 2025–26 seasons), all 30
+teams, and streams team shards with source and package hashes checked before
+projection. Public rows expose bounded observed season evidence; provider
+identifiers, raw archives, fitted coefficients and correction details remain
+private.
+
+- Directory under the same `nba-last-five-seasons` root:
+  `scout-analytics/2017-26-final-20260909-v2-career-season-package/`.
+- Manifest: `nba-scout-analytics-2017-26.json`.
+- Manifest SHA-256: `ffc36283137bd2b8d9b3ae7a59db48523f18def0c89bcb264a27f4e9c8e087b9`.
+- Package report: `nba-scout-analytics-validation-2017-26-final.json` (passed with zero errors and zero warnings).
+- Source validation report SHA-256:
+  `ad7a65df9018495bec93c953ed16ab3b189aa55ce5a5500a3e154e031515d62d`.
+- The embedded RAPM block contains 1,377 players with offensive and defensive
+  values plus paired-possession and display-eligibility fields. Position labels
+  are joined only from the read-only analytics position view or an equivalent
+  source-backed crosswalk; the publisher fails closed when that evidence is
+  absent.
+- The private Lineup Lab importer remains single-season by contract. This
+  package is wired to Scout Studio and the Daily Games publisher; it is not
+  silently imported into the private Lineup Lab tables.
+- The public bundle and Daily Games catalog still require their scoped release
+  audit, deployment, and live catalog registration before they can be called
+  production-ready.
+
+## Historical package integration — September 7
 
 The six-season base package is complete and passed an exact-scope readiness
 check with zero errors/warnings. This does not establish completion of a

@@ -19,6 +19,8 @@ const releaseFiles = [
   "workflow-state.js",
   "workflow-view.js",
   "workflow.css",
+  "superdesign-page.css",
+  "superdesign-page.js",
   "lab-telemetry.js",
   "lab-experience.js",
   "lab-experience.css",

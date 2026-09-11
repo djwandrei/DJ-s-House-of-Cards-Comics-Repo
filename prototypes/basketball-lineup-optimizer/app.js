@@ -5194,8 +5194,8 @@ function renderFailure(result) {
     elements.resultsHeading.textContent = "Check the model's evidence";
     elements.resultSummary.textContent = "The selected model could not run with the available data or access. No substitute result was calculated.";
   } else if (category === "performance") {
-    elements.resultsHeading.textContent = "Narrow the exact search";
-    elements.resultSummary.textContent = "This scenario is larger than the browser-safe exact-search limit.";
+    elements.resultsHeading.textContent = "Search stopped safely";
+    elements.resultSummary.textContent = "The exact search did not finish in this browser session. Your settings are still available to review.";
   } else if (category === "worker-unavailable") {
     elements.resultsHeading.textContent = "Background solver unavailable";
     elements.resultSummary.textContent = "This browser could not start the exact-search worker.";
@@ -5215,25 +5215,20 @@ function renderFailure(result) {
   heading.textContent = category === "data" || category === "scout-access"
     ? "Resolve access or coverage"
     : category === "performance"
-    ? "Reduce the search space"
+    ? "Review the run"
     : category === "worker-unavailable"
       ? "Use a current browser"
       : category === "worker-error"
         ? "Refresh and try again"
       : "Try loosening one rule";
   const list = document.createElement("ul");
-  for (const reason of result.reasons || ["No feasible group was found."]) {
+  const reasons = category === "performance"
+    ? ["This run ended before a result was available. You can change the setup or run the same setup again."]
+    : (result.reasons || ["No feasible group was found."]);
+  for (const reason of reasons) {
     const item = document.createElement("li");
     item.textContent = reason;
     list.append(item);
-  }
-  // A safety-limit message should tell a fan which visible controls actually
-  // shrink the proof, not merely expose an implementation limit. The live
-  // Groups-to-evaluate readout lets them confirm the effect before rerunning.
-  if (category === "performance") {
-    const recovery = document.createElement("li");
-    recovery.textContent = "Try raising Minimum games with this team or Minimum MPG, or excluding nonessential players. Check Groups to evaluate, then run the exact search again.";
-    list.append(recovery);
   }
   card.append(heading, list);
   const dataNotice = renderDataEligibilityNotice(result);

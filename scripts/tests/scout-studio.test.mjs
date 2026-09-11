@@ -190,12 +190,14 @@ test('local server permits only bounded read-only routes, not archives or cross-
   assert.equal(failure.status, 503); assert.doesNotMatch(await failure.text(), /DO-NOT-EXPOSE|private\/path/);
 });
 
-test('preview CLI is exact-scope and never accepts an older season window', () => {
+test('preview CLI accepts the completed window and still requires a multi-season scope', () => {
   const args = ['--manifest', 'a.json', '--package-validation', 'b.json', '--source-validation', 'c.json', '--seasons', '2022,2023,2024,2025'];
   assert.equal(parseStudioArgs(args).port, 4187);
   assert.deepEqual(parseStudioArgs([...args.slice(0, -1), '2020,2021,2022,2023,2024,2025']).seasons, [2020, 2021, 2022, 2023, 2024, 2025]);
   assert.throws(() => parseStudioArgs([...args, '--port', '0']), /Port/);
-  assert.throws(() => parseStudioArgs([...args.slice(0, -1), '2024,2025']), /incoming/);
+  assert.deepEqual(parseStudioArgs([...args.slice(0, -1), '2017,2018,2019,2020,2021,2022,2023,2024,2025']).seasons,
+    [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]);
+  assert.throws(() => parseStudioArgs([...args.slice(0, -1), '2024']), /Required/);
 });
 
 test('missing current manifest stays pending, even if an older package exists nearby', async t => {

@@ -10,7 +10,11 @@ body.court-themed {
   --court-accent:#3D63D4; --court-on-accent:#FFF; --court-focus:#2449A4;
   --court-trim:#D63A4B; --court-positive:#176444; --court-warning:#80520D; --court-error:#AA263F;
   --court-team-primary:#4169E1; --court-team-highlight:#E9B949; --court-team-trim:#D63A4B;
-  --font-body:Manrope,system-ui,sans-serif; --font-display:'Barlow Condensed',Impact,sans-serif;
+  /* Fan-suite pages share the storefront's established type system.  Keep
+     these variables as the single hook for all tool controls and headings so
+     the rail, forms, and workspaces read as one DJHC experience. */
+  --font-body:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-display:"Bebas Neue",Impact,sans-serif;
   --text:var(--court-text); --ink:var(--court-text); --muted:var(--court-muted);
   --heading-ink:var(--court-text);
   --bg:var(--court-canvas); --page:var(--court-canvas); --surface:var(--court-surface);
@@ -56,7 +60,7 @@ body.court-themed :is(.game-badge,.lab-emblem):disabled { opacity:1; filter:none
 body.court-themed main :is(input,select)[aria-invalid=true] { border-color:var(--court-error); }
 
 /* Current-page indicators stay readable and scroll within their own region. */
-.court-toolbar { width:min(1240px,calc(100% - 2rem)); margin:1rem auto .2rem; padding-top:.45rem; display:flex; align-items:start; gap:.75rem; position:relative; z-index:5; }
+.court-toolbar { width:min(1240px,calc(100% - 2rem)); margin:.35rem auto .2rem; padding-top:.45rem; display:flex; align-items:start; gap:.75rem; position:relative; z-index:5; }
 .court-toolbar::before { content:""; position:absolute; inset:0 0 auto; height:4px; border-radius:999px; background:linear-gradient(90deg,var(--court-team-primary),var(--court-team-highlight),var(--court-team-trim)); }
 .court-team-identity { flex:0 1 12.5rem; min-width:8.5rem; display:flex; align-items:center; gap:.55rem; min-height:46px; padding:.4rem .65rem; border:1px solid var(--court-border); border-left:4px solid var(--court-team-highlight); border-radius:10px; color:var(--court-text); background:var(--court-surface); }
 .court-team-identity__swatch { flex:0 0 1.45rem; width:1.45rem; height:1.45rem; border:2px solid var(--court-team-trim); border-radius:50%; background:linear-gradient(135deg,var(--court-team-primary) 0 50%,var(--court-team-highlight) 50%); box-shadow:0 0 0 2px var(--court-surface); }
@@ -112,7 +116,7 @@ body.court-themed :is(.page-hero-card,.hero) { box-shadow:inset 0 4px 0 var(--co
 body.court-themed :is(.fix-five-scoreboard,.tools-status-strip,.dataset-strip,.workflow-shell) { border-top-color:var(--court-team-highlight); }
 
 @media (max-width:700px) {
-  .court-toolbar { gap:.3rem; width:calc(100% - 1.4rem); margin-top:.55rem; }
+  .court-toolbar { gap:.3rem; width:calc(100% - 1.4rem); margin-top:.2rem; }
   .court-team-identity { flex-basis:10.75rem; min-width:8.5rem; padding-inline:.45rem; }
   .court-team-identity__eyebrow { display:none; }
   .court-team-identity__name { max-width:9rem; font-size:.78rem; }

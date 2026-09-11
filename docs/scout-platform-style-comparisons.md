@@ -69,8 +69,9 @@ fallback, source-package rewrite, fit, or import was performed.
 Compatibility testing explicitly selected the completed
 `2022-26-final-20260905-v1-recency-calibrated` package using the hash-bound command
 in `scout-studio-roadmap.md`. This tests the presentation contract, not readiness
-of the incoming rebuild. Daily-game scope remains 2023–24 through 2025–26; the
-pooled four-season preview is not relabeled as player-season evidence.
+of the incoming rebuild. The current daily-game source contract is now
+2017–18 through 2025–26; the pooled four-season preview described in this
+historical comparison is not relabeled as player-season evidence.
 
 The read-only Denver check loaded 38 profiles. Style matching had 17 eligible
 other-player candidates and 18 composite candidates on ten varying components.

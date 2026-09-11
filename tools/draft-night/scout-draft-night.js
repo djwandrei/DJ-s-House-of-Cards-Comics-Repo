@@ -5,14 +5,14 @@ import {
   normalizeGameFamily,
   revealScoutDailyGame,
   scoutDailyGameUnavailableMessage,
-} from '../scout-daily-game-client.js?v=20260908a';
+} from '../scout-daily-game-client.js?v=20260909m';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine, validOnePickAlternatives } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260908a';
-import { createFanMilestones } from '../fan-telemetry.js?v=20260908a';
-import { createDecisionHistory } from '../game-decision-history.js?v=20260908a';
-import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260908a';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief, draftChecklist } from '../game-decision-ui.js?v=20260909m';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260909m';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260909m';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260909m';
 
 const GAME_KIND = 'draft-night';
 const PICK_COUNT = 5;

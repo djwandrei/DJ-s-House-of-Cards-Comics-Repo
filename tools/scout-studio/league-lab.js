@@ -1,6 +1,6 @@
-import { simulateLeague, roundRobinSchedule } from './season-simulator.js?v=20260908a';
-import { teamGameEvidence } from './possession-simulator.js?v=20260908a';
-import { captureLeagueSummary, compareLeagueScenarios } from './league-comparisons.js?v=20260908a';
+import { simulateLeague, roundRobinSchedule } from './season-simulator.js?v=20260909m';
+import { teamGameEvidence } from './possession-simulator.js?v=20260909m';
+import { captureLeagueSummary, compareLeagueScenarios } from './league-comparisons.js?v=20260909m';
 
 const node = (tag, text, className = '') => {
   const element = document.createElement(tag); if (text !== undefined) element.textContent = text;
@@ -10,6 +10,18 @@ function choice(labelText, id, options) {
   const label = node('label', labelText), input = node('select'); input.id = id;
   for (const [value, text] of options) { const option = node('option', text); option.value = value; input.append(option); }
   label.append(input); return { label, input };
+}
+function rangeChoice(labelText, id, value, min, max, step, formatValue = current => current) {
+  const label = node('label', undefined, 'studio-range-control');
+  const heading = node('span', labelText, 'studio-range-control__label');
+  const output = node('output', formatValue(value), 'studio-range-control__value');
+  const input = node('input');
+  Object.assign(input, { id, type: 'range', value, min, max, step, required: true });
+  output.htmlFor = id;
+  input.setAttribute('aria-label', labelText);
+  const update = () => { const text = formatValue(input.value); output.value = text; output.textContent = text; };
+  input.addEventListener('input', update);
+  label.append(heading, output, input); return { label, input };
 }
 function table(title, headers, rows) {
   const block = node('div'), wrap = node('div', undefined, 'studio-table-wrap'), table = node('table', undefined, 'studio-table');
@@ -32,15 +44,15 @@ export function createLeagueLab(root, request) {
   entrants.forEach(entrant => field.append(entrant.label));
   const setup = node('div', undefined, 'studio-roadmap');
   const season = choice('Season sample', 'leagueSeason', [2020, 2021, 2022, 2023, 2024, 2025].map(year => [year, `${year}–${String(year + 1).slice(-2)}`]));
-  const cycles = choice('Meetings per pair', 'leagueCycles', [[2, 'Twice · six games per team'], [1, 'Once · three games per team'], [4, 'Four times · twelve games per team']]);
+  const cycles = rangeChoice('Meetings per pair', 'leagueCycles', 2, 1, 4, 1, value => `${value} · ${Number(value) * 3} games per team`);
   const playoffs = choice('Postseason', 'leaguePlayoffs', [[2, 'Top two · final'], [4, 'Top four · semifinals and final'], [0, 'Standings only']]);
   setup.append(season.label, cycles.label, playoffs.label);
   const more = node('details', undefined, 'studio-panel'); more.append(node('summary', 'League assumptions and workload'));
   const settings = node('div', undefined, 'studio-roadmap');
   const length = choice('Series length', 'leagueSeriesLength', [[3, 'Best of three'], [1, 'One game'], [7, 'Best of seven']]);
-  const pace = choice('Possessions per team', 'leaguePace', [[100, '100 · baseline'], [90, '90 · slower'], [110, '110 · faster']]);
-  const blend = choice('Scoring blend', 'leagueBlend', [[0.5, '50% offense / 50% opposing defense'], [0.75, '75% offense / 25% opposing defense'], [0.25, '25% offense / 75% opposing defense']]);
-  const trials = choice('Repeated seasons', 'leagueTrials', [[100, '100'], [250, '250'], [500, '500']]);
+  const pace = rangeChoice('Possessions per team', 'leaguePace', 100, 90, 110, 5, value => `${value} · scenario pace`);
+  const blend = rangeChoice('Scoring blend', 'leagueBlend', 0.5, 0, 1, 0.05, value => `${Math.round(Number(value) * 100)}% own offense`);
+  const trials = rangeChoice('Repeated seasons', 'leagueTrials', 100, 100, 500, 50, value => `${Number(value).toLocaleString()} seasons`);
   const seedLabel = node('label', 'Repeatable seed'), seed = node('input'); Object.assign(seed, { id: 'leagueSeed', value: 'league-v1', maxLength: 80, required: true, pattern: '[a-zA-Z0-9:._\\-]+' }); seedLabel.append(seed);
   settings.append(length.label, pace.label, blend.label, trials.label, seedLabel);
   more.append(settings, node('p', 'Custom standings use wins plus half a point for unresolved ties, then point differential, then a disclosed seeded lottery. These are not NBA tiebreakers. Tied playoff games beyond the overtime limit leave that bracket unresolved; they never grant an automatic bye.', 'studio-muted'));
@@ -160,6 +172,13 @@ export function createLeagueLab(root, request) {
   return { setSource(value) {
     active?.abort(); active = null; generation++; reference = null; currentReport = null; cache.clear(); results.replaceChildren(); busy(false);
     source = value?.phase === 'ready' && value.teams?.length >= 4 ? value : null;
+    const sourceSeasons = Array.isArray(source?.source?.seasonStartYears) && source.source.seasonStartYears.length
+      ? source.source.seasonStartYears : [2020, 2021, 2022, 2023, 2024, 2025];
+    const selectedSeason = Number(season.input.value);
+    season.input.replaceChildren(...sourceSeasons.map(year => {
+      const option = node('option', `${year}–${String(year + 1).slice(-2)}`); option.value = year; return option;
+    }));
+    if (sourceSeasons.includes(selectedSeason)) season.input.value = selectedSeason;
     entrants.forEach((entrant, index) => {
       entrant.input.replaceChildren(...(source?.teams || []).map(team => { const option = node('option', team.name); option.value = team.id; return option; }));
       if (source) entrant.input.value = source.teams[index].id;

@@ -1,0 +1,453 @@
+/*
+ * Scout Studio's page-local Superdesign adapter.
+ *
+ * The shared fan-suite layer owns the common chrome. This file only tightens
+ * Scout's evidence states, workbench surfaces, controls, and narrow layouts;
+ * it does not create content or change the studio's data and event flow.
+ */
+
+body.scout-studio-page {
+  --scout-page: var(--studio-canvas, var(--sd-page, #f1f3f9));
+  --scout-surface: var(--studio-surface, var(--sd-surface, #ffffff));
+  --scout-raised: var(--studio-surface-strong, var(--sd-raised, #e8edf6));
+  --scout-ink: var(--studio-text, var(--sd-ink, #172033));
+  --scout-muted: var(--studio-muted, var(--sd-muted, #5c667f));
+  --scout-line: var(--studio-border, var(--sd-border, rgba(24, 37, 73, .16)));
+  --scout-blue: var(--sd-blue, #2437b8);
+  --scout-red: var(--sd-red, #b51524);
+  --scout-gold: var(--sd-gold, #e4b141);
+  color: var(--scout-ink);
+  background: var(--scout-page);
+}
+
+body.scout-studio-page:not(.dark-mode) {
+  color-scheme: light;
+}
+
+body.scout-studio-page.dark-mode {
+  color-scheme: dark;
+}
+
+body.scout-studio-page :is(button, input, select, textarea) {
+  font: inherit;
+}
+
+body.scout-studio-page :is(button, input, select, textarea, a):focus-visible {
+  outline: 3px solid var(--scout-gold);
+  outline-offset: 3px;
+}
+
+/* Keep the evidence path visually ordered: source status, honest loading
+ * notice, then the interactive workspace once the real package is ready. */
+body.scout-studio-page .studio-source {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  border-color: var(--scout-line);
+  background: var(--scout-surface);
+}
+
+body.scout-studio-page .studio-source > div {
+  min-width: 0;
+}
+
+body.scout-studio-page .studio-source h2 {
+  color: var(--scout-ink);
+  text-wrap: balance;
+}
+
+body.scout-studio-page .studio-source :is(p, .studio-muted) {
+  color: var(--scout-muted);
+}
+
+body.scout-studio-page .studio-source .button-secondary {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+body.scout-studio-page .studio-workbench-intro,
+body.scout-studio-page .studio-method,
+body.scout-studio-page .studio-workbench-panel {
+  border-color: var(--scout-line);
+  background: var(--scout-surface);
+  color: var(--scout-ink);
+}
+
+body.scout-studio-page .studio-workbench-intro {
+  border-top: 3px solid var(--scout-blue);
+}
+
+body.scout-studio-page .studio-workbench-intro > :is(h2, p),
+body.scout-studio-page .studio-method > :is(h2, p) {
+  max-width: 72ch;
+}
+
+body.scout-studio-page .studio-workbench-intro .studio-roadmap {
+  gap: .85rem;
+}
+
+body.scout-studio-page .studio-workbench-intro .studio-roadmap article {
+  min-height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--scout-line);
+  border-radius: 14px;
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .studio-workbench-intro .studio-roadmap h3,
+body.scout-studio-page .studio-workbench-intro .studio-roadmap p {
+  margin-block: 0;
+}
+
+body.scout-studio-page .studio-workbench-intro .studio-roadmap p {
+  margin-top: .42rem;
+  color: var(--scout-muted);
+}
+
+/* The loaded workspace keeps the same surface language as the honest loading
+ * state without masking any of the existing hidden/visible behavior. */
+body.scout-studio-page .studio-workbench-container {
+  min-width: 0;
+}
+
+body.scout-studio-page .studio-workbench-panel {
+  min-width: 0;
+  box-shadow: 0 18px 42px rgba(16, 27, 70, .1);
+}
+
+body.scout-studio-page .studio-mode-help {
+  color: var(--scout-muted);
+}
+
+body.scout-studio-page .studio-team-form {
+  min-width: 0;
+  border-color: var(--scout-line);
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .studio-team-form > :is(label, .studio-muted) {
+  min-width: 0;
+}
+
+body.scout-studio-page .studio-team-form .studio-muted {
+  align-self: center;
+  color: var(--scout-muted);
+}
+
+body.scout-studio-page :is(#workStatus, #forgeStatus, #selectionStatus) {
+  min-height: 1.4em;
+  color: var(--scout-muted);
+}
+
+body.scout-studio-page :is(#workStatus, #forgeStatus):not(:empty) {
+  margin-block: .75rem 0;
+  padding: .7rem .85rem;
+  border-left: 3px solid var(--scout-gold);
+  border-radius: 0 10px 10px 0;
+  background: var(--scout-raised);
+}
+
+/* The generated blueprint, chemistry, game, season, and career views share
+ * these hooks. The rules stay content-agnostic so real rows and empty states
+ * retain their authored copy. */
+body.scout-studio-page .studio-section-heading {
+  gap: 1rem;
+  border-color: var(--scout-line);
+}
+
+body.scout-studio-page .studio-section-heading > :first-child {
+  min-width: min(100%, 18rem);
+}
+
+body.scout-studio-page :is(.studio-panel, .studio-sample, .studio-metric, .studio-roster) {
+  border-color: var(--scout-line);
+}
+
+body.scout-studio-page .studio-metrics {
+  gap: .85rem;
+}
+
+body.scout-studio-page .studio-metric {
+  min-height: 9.5rem;
+  border-top: 0;
+  border-left: 4px solid var(--scout-blue);
+  border-radius: 16px;
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .studio-metric:nth-child(3n + 2) {
+  border-left-color: var(--scout-red);
+}
+
+body.scout-studio-page .studio-metric:nth-child(3n) {
+  border-left-color: var(--scout-gold);
+}
+
+body.scout-studio-page .studio-metric strong {
+  color: var(--scout-ink);
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+}
+
+body.scout-studio-page .studio-metric :is(h3, p, dd) {
+  color: var(--scout-muted);
+}
+
+body.scout-studio-page .studio-table-wrap {
+  border: 1px solid var(--scout-line);
+  border-radius: 14px;
+  background: var(--scout-surface);
+  scrollbar-color: var(--scout-blue) transparent;
+}
+
+body.scout-studio-page .studio-table {
+  min-width: 42rem;
+}
+
+body.scout-studio-page .studio-table :is(th, td) {
+  border-color: var(--scout-line);
+}
+
+body.scout-studio-page .studio-table thead th {
+  background: var(--scout-raised);
+  color: var(--scout-ink);
+}
+
+body.scout-studio-page .studio-table tbody tr:is(:hover, :focus-within) {
+  background: color-mix(in srgb, var(--scout-raised) 72%, transparent);
+}
+
+body.scout-studio-page .studio-chemistry-layout {
+  align-items: stretch;
+}
+
+body.scout-studio-page .studio-chemistry-layout > .studio-panel {
+  min-width: 0;
+}
+
+body.scout-studio-page .studio-roster {
+  padding: .35rem;
+  border: 1px solid var(--scout-line);
+  border-radius: 14px;
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .studio-roster button {
+  min-height: 44px;
+  border-color: transparent;
+  background: var(--scout-surface);
+  color: var(--scout-ink);
+}
+
+body.scout-studio-page .studio-roster button:is(:hover, :focus-visible),
+body.scout-studio-page .studio-roster button[aria-pressed="true"] {
+  border-color: var(--scout-blue);
+}
+
+body.scout-studio-page .studio-roster button[aria-pressed="true"] {
+  box-shadow: inset 3px 0 var(--scout-gold);
+}
+
+body.scout-studio-page .studio-field-guide {
+  border-color: var(--scout-line);
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .studio-field-guide dl > div {
+  border-color: var(--scout-line);
+  background: var(--scout-surface);
+}
+
+body.scout-studio-page .studio-field-guide :is(dt, dd) {
+  color: var(--scout-ink);
+}
+
+body.scout-studio-page .studio-field-guide dd {
+  color: var(--scout-muted);
+}
+
+/* Do not let a narrow screen turn the evidence controls into clipped cards. */
+@media (max-width: 900px) {
+  body.scout-studio-page .studio-source {
+    grid-template-columns: 1fr;
+  }
+
+  body.scout-studio-page .studio-source .button-secondary {
+    justify-self: start;
+  }
+
+  body.scout-studio-page .studio-table {
+    min-width: 36rem;
+  }
+}
+
+@media (max-width: 600px) {
+  body.scout-studio-page .studio-source .button-secondary,
+  body.scout-studio-page .studio-team-form > *,
+  body.scout-studio-page .studio-section-heading > label {
+    width: 100%;
+  }
+
+  body.scout-studio-page .studio-section-heading > :first-child {
+    min-width: 0;
+  }
+
+  body.scout-studio-page .studio-table {
+    min-width: 32rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.scout-studio-page :is(*, *::before, *::after) {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Superdesign-inspired data visuals. These styles stay inside the workbench
+ * body; the shared DJHC header, footer, and identity remain untouched. */
+body.scout-studio-page .studio-range-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .45rem .8rem;
+  min-width: 0;
+  padding: .72rem .82rem;
+  border: 1px solid var(--scout-line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--scout-raised) 78%, transparent);
+}
+
+body.scout-studio-page .studio-range-control__label {
+  min-width: 0;
+  color: var(--scout-ink);
+  font-size: .82rem;
+  font-weight: 750;
+  letter-spacing: .015em;
+}
+
+body.scout-studio-page .studio-range-control__value {
+  color: var(--scout-blue);
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+body.scout-studio-page .studio-range-control input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  accent-color: var(--scout-blue);
+}
+
+body.scout-studio-page .scout-visual-chart {
+  min-width: 0;
+  margin: 1rem 0 0;
+  padding: 1rem;
+  border: 1px solid var(--scout-line);
+  border-top: 3px solid var(--scout-gold);
+  border-radius: 14px;
+  background: var(--scout-raised);
+}
+
+body.scout-studio-page .scout-visual-chart figcaption {
+  display: grid;
+  gap: .22rem;
+}
+
+body.scout-studio-page .scout-visual-chart figcaption strong {
+  color: var(--scout-ink);
+  font-size: 1rem;
+}
+
+body.scout-studio-page .scout-visual-chart figcaption small {
+  color: var(--scout-muted);
+  line-height: 1.45;
+}
+
+body.scout-studio-page .scout-visual-chart__plot {
+  display: grid;
+  gap: .62rem;
+  margin-top: .95rem;
+}
+
+body.scout-studio-page .scout-visual-chart__row {
+  display: grid;
+  grid-template-columns: minmax(7rem, .72fr) minmax(8rem, 1.5fr) auto;
+  align-items: center;
+  gap: .65rem;
+  min-width: 0;
+}
+
+body.scout-studio-page .scout-visual-chart__label,
+body.scout-studio-page .scout-visual-chart__value {
+  min-width: 0;
+  color: var(--scout-ink);
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+body.scout-studio-page .scout-visual-chart__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.scout-studio-page .scout-visual-chart__value {
+  color: var(--scout-muted);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+body.scout-studio-page .scout-visual-chart__track {
+  position: relative;
+  display: block;
+  min-height: .6rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--scout-line) 68%, transparent);
+}
+
+body.scout-studio-page .scout-visual-chart__fill {
+  display: block;
+  width: var(--scout-bar-size, 0%);
+  min-width: .18rem;
+  height: .6rem;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--scout-blue), #4d73e8);
+  transition: width .24s ease, left .24s ease;
+}
+
+body.scout-studio-page .scout-visual-chart--centered .scout-visual-chart__track {
+  overflow: visible;
+  background: linear-gradient(90deg, transparent 49.5%, var(--scout-line) 49.5%, var(--scout-line) 50.5%, transparent 50.5%), color-mix(in srgb, var(--scout-line) 68%, transparent);
+}
+
+body.scout-studio-page .scout-visual-chart--centered .scout-visual-chart__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+body.scout-studio-page .scout-visual-chart--centered .scout-visual-chart__fill[data-sign="positive"] {
+  left: 50%;
+}
+
+body.scout-studio-page .scout-visual-chart--centered .scout-visual-chart__fill[data-sign="negative"] {
+  left: calc(50% - var(--scout-bar-size, 0%));
+  background: linear-gradient(90deg, #d44758, var(--scout-red));
+}
+
+@media (max-width: 700px) {
+  body.scout-studio-page .scout-visual-chart__row {
+    grid-template-columns: minmax(6.5rem, .8fr) minmax(7rem, 1.3fr) auto;
+    gap: .45rem;
+  }
+
+  body.scout-studio-page .scout-visual-chart {
+    padding: .85rem;
+  }
+}

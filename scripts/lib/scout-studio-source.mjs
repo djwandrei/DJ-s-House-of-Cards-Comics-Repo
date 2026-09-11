@@ -7,7 +7,7 @@ import path from 'node:path';
 import { readReadinessMetadata } from '../audit-lineup-scout-readiness.mjs';
 import { assessLineupScoutReadiness } from './lineup-scout-readiness.mjs';
 import { streamTeamShardJson } from '../validate-local-scout-analytics.mjs';
-import { describeScoutPlayer, describeScoutSeasonProfile, describeScoutCombination, describeScoutOnOff, describeScoutTeamContexts, describeScoutWowy } from './scout-studio.mjs';
+import { describeScoutPlayer, describeScoutSeasonProfile, describeEmbeddedScoutSeasonProfiles, describeScoutCombination, describeScoutOnOff, describeScoutTeamContexts, describeScoutWowy } from './scout-studio.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 const keyFor = ids => [...ids].sort().join('|');
@@ -49,7 +49,8 @@ export function createScoutStudioSource(options) {
       source: { label: 'Selected Scout package', seasonStartYears: [...options.seasons], seasons: options.seasons.map(year => `${year}–${String(year + 1).slice(-2)}`),
         aggregation: modelEvidence
           ? 'Base player totals are team-specific and pooled across the window; the validated additive table supplies observed season/phase rows and all-team aggregates.'
-          : 'Team-specific pooled totals across the entire window; not single-season statistics.',
+          : 'Team-specific pooled totals include observed season rows embedded in each player profile; they are not single-season statistics unless a season row is explicitly selected.',
+        seasonEvidence: modelEvidence ? 'validated additive season/phase table' : 'embedded playerProfiles[].seasonDirectStats',
         phases: readiness.readyForIntegrationReview ? manifest.data.scope.includedPhases : [],
         caveat: 'Validated metadata permits local integration review only. Player coverage and sample gates still apply.' },
       missing: readiness.pending.map(item => item.split(' ')[0]),
@@ -91,7 +92,7 @@ export function createScoutStudioSource(options) {
       const hash = createHash('sha256');
       for await (const chunk of createReadStream(file)) hash.update(chunk);
       if (hash.digest('hex') !== descriptor.jsonSha256) throw new Error('Shard digest differs from the validated package.');
-      const players = new Map(), onOff = new Map(), combinations = new Map(), wowy = new Map(), seasonProfiles = new Map();
+      const players = new Map(), onOff = new Map(), combinations = new Map(), wowy = new Map(), seasonProfiles = new Map(), embeddedSeasonProfiles = new Map();
       let seenTeam = false, items = 0, teamContexts = [];
       const counts = { lineupsAndCombinations: 0, playerOnOff: 0, playerProfiles: 0, wowy: 0 };
       const { seenFields } = await streamTeamShardJson(file, {
@@ -118,6 +119,8 @@ export function createScoutStudioSource(options) {
           } else if (field === 'playerProfiles') {
             if (players.has(row.playerId)) throw new Error('Duplicate player profile.');
             players.set(row.playerId, describeScoutPlayer(row, `p${index}`));
+            const embedded = describeEmbeddedScoutSeasonProfiles(row, descriptor.team);
+            if (embedded.length) embeddedSeasonProfiles.set(row.playerId, embedded);
           } else if (field === 'lineupsAndCombinations' && row.size >= 2 && row.size <= 5) {
             if (!Array.isArray(row.playerIds) || row.playerIds.length !== row.size || new Set(row.playerIds).size !== row.size) throw new Error('Invalid combination membership.');
             const key = keyFor(row.playerIds);
@@ -183,6 +186,21 @@ export function createScoutStudioSource(options) {
         if (evidenceDescriptor) throw new Error('Validated model-evidence season table is missing.');
         // Older completed packages do not carry the additive table.
       }
+      // Schema-v4 packages can carry the bounded season rows directly in each
+      // player profile. Prefer the validated additive table when it exists,
+      // while retaining embedded rows as a complete fallback for newer
+      // packages that intentionally omit model-evidence files.
+      for (const [providerId, embedded] of embeddedSeasonProfiles) {
+        const existing = seasonProfiles.get(providerId) || [];
+        if (snapshot.modelEvidence && existing.length) continue;
+        const seen = new Set(existing.map(profile => `${profile.seasonStartYear}|${profile.phase}|${profile.team}|${profile.scope}`));
+        const merged = [...existing];
+        for (const profile of embedded) {
+          const key = `${profile.seasonStartYear}|${profile.phase}|${profile.team}|${profile.scope}`;
+          if (!seen.has(key) && merged.length < 240) { seen.add(key); merged.push(profile); }
+        }
+        if (merged.length) seasonProfiles.set(providerId, merged);
+      }
       cachedTeam = { id: teamId, token, players, onOff, combinations, wowy, seasonProfiles, teamContexts, file, size: after.size, mtimeMs: after.mtimeMs };
       return cachedTeam;
     } finally { loading = false; }
@@ -240,7 +258,7 @@ export function createScoutStudioSource(options) {
       if (!providerId) throw new Error('Choose a player from this team and package.');
       return { snapshot: token, team: teamId, player: id,
         profiles: (team.seasonProfiles.get(providerId) || []).sort((a, b) => (a.seasonStartYear || 0) - (b.seasonStartYear || 0) || String(a.phase).localeCompare(String(b.phase))),
-        note: 'Season and phase rows are available only when the selected package includes additive model evidence. Missing seasons are not imputed.' };
+        note: 'Season rows come from the selected package’s validated additive table or embedded direct-stat history. Missing seasons are not imputed.' };
     },
     async seasonDonors(teamId, token) {
       const team = await loadTeam(teamId, token);
@@ -256,7 +274,7 @@ export function createScoutStudioSource(options) {
       profiles.sort((a, b) => a.player.localeCompare(b.player) || (a.seasonStartYear || 0) - (b.seasonStartYear || 0)
         || String(a.phase).localeCompare(String(b.phase)) || String(a.team).localeCompare(String(b.team)));
       return { snapshot: token, team: teamId, profiles,
-        note: 'Season donors are observed rows from this team roster and its all-team aggregates. A recipe combines descriptive components; it does not create a forecast, impact estimate or physically feasible player.' };
+        note: 'Season donors are observed rows from this team roster. A recipe combines descriptive components; it does not create a forecast, impact estimate or physically feasible player.' };
     },
     async chemistry(teamId, token, ids) {
       if (!Array.isArray(ids) || ids.length < 2 || ids.length > 5 || new Set(ids).size !== ids.length) throw new Error('Choose two through five distinct players.');

@@ -3,6 +3,11 @@
    Keep the same <=900 drawer / 901–1180 horizontal desktop contract. */
 @font-face { font-family:'Lobster Two'; src:url('../assets/fonts/lobster-two-700.woff2') format('woff2'); font-weight:400 700; font-style:normal; font-display:swap; }
 body.lab-guided .site-header { position:sticky; top:0; z-index:50; color:#F4F6FA; background:linear-gradient(#080D1D,#0D142A); border-bottom:1px solid #ffffff20; }
+/* Fan tools use the destination rail as their only visible menu. Keep the
+   storefront menu's routes in the DOM, but do not render a second menu plane. */
+body.lab-guided .site-header .site-nav,
+body.lab-guided .site-header .nav-toggle { display:none !important; }
+body.lab-guided .site-header.fan-suite-header { border-bottom:0; }
 body.lab-guided .header-inner { width:calc(100% - 2rem); max-width:1600px; margin:auto; min-height:88px; display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
 body.lab-guided .site-header .brand { display:flex; align-items:center; gap:.8rem; text-decoration:none; flex-shrink:0; color:#F4F6FA; }
 body.lab-guided .brand-logo { width:60px; height:60px; object-fit:contain; }
@@ -87,3 +92,10 @@ body.lab-guided .site-header :focus-visible { outline:3px solid #F4D37C; outline
   body.lab-guided .home-header-utility__icon { width:34px; }
 }
 @media print { body.lab-guided .site-header { display:none; } }
+
+/* Keep the Lab's shared destination rail aligned with the other fan tools. */
+body.lab-guided .site-header.fan-suite-header { display:block !important; overflow:visible; }
+body.lab-guided .site-header.fan-suite-header > .fan-suite-nav { position:static !important; width:100%; border-top:1px solid #ffffff20; }
+body.lab-guided .site-header.fan-suite-header > .fan-suite-nav > .fan-suite-nav__scroll { width:calc(100% - 2rem); min-width:0 !important; max-width:1280px; margin-inline:auto; display:flex; align-items:stretch; gap:.35rem; overflow-x:auto; padding:.35rem 0; }
+body.lab-guided .fan-suite-nav__link { height:42px; min-height:42px; box-sizing:border-box; align-self:center; font-family:Manrope,system-ui,sans-serif; font-size:.75rem; font-weight:800; letter-spacing:0; line-height:1; transform:none; animation:none; }
+@media (max-width:600px) { body.lab-guided .site-header.fan-suite-header > .fan-suite-nav > .fan-suite-nav__scroll { width:calc(100% - 1rem); } body.lab-guided .fan-suite-nav__link { height:40px; min-height:40px; font-size:.7rem; } }

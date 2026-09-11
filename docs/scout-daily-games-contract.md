@@ -7,8 +7,8 @@ useful to a public visitor.
 
 ## Source window and readiness
 
-The allowed source window is 2023–24 through 2025–26 (season ending years
-2024, 2025, and 2026). A season is never selectable merely because a source
+The allowed source window is 2017–18 through 2025–26 (season ending years
+2018 through 2026). A season is never selectable merely because a source
 folder exists. It must have a ready archive and a validated O/D Scout model
 whose held-out calibration reports both components improved.
 
@@ -61,7 +61,9 @@ project directly.
 
 Activation order is intentionally gated:
 
-1. Apply `supabase-analytics/supabase/migrations/20260905090355_scout_daily_game_catalog.sql` to the analytics project.
+1. Apply the catalog migration followed by the forward 2017–26 window
+   migration (`20260909120000_expand_scout_daily_game_window_2017_26.sql`) to
+   the analytics project.
 2. Have the analytics pipeline register, ingest, reconcile, and finalize a
    scope only after its archive/source and O/D calibration reports pass.
 3. Set the commerce function's analytics service credentials, deploy
@@ -74,6 +76,7 @@ or heuristic/Lineup DNA scoring.
 
 ## Current gate
 
-The 2023–24 archive is not eligible until its active source and validation
-work completes. The daily catalog must fail closed for it rather than silently
-substitute a box-score score or a different season.
+The 2017–18 through 2025–26 rows remain individually subject to source and
+calibration gates. The daily catalog must fail closed for a missing or
+unvalidated season rather than silently substitute a box-score score or a
+different season.

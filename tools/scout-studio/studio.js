@@ -1,13 +1,18 @@
-import { formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260908a';
-import { buildBlueprint, comparePlayerEvidence, analyzeChemistry, FORGE_BLOCKS, createForgeRecipe, buildComposite, explainForgeChange } from './studio-analysis.js?v=20260908a';
-import { loadForgeDraft, saveForgeDraft, clearForgeDraft } from './forge-state.js?v=20260908a';
-import { findPlayerStyleMatches, findCompositeStyleMatches } from './style-matches.js?v=20260908a';
-import { analyzePlayerContextLens, analyzeGroupContextLens } from './context-lens.js?v=20260908a';
-import { createGameLab } from './game-lab.js?v=20260908a';
-import { createLeagueLab } from './league-lab.js?v=20260908a';
-import { createCareerLab } from './career-lab.js?v=20260908a';
-import { SEASON_FORGE_BLOCKS, createSeasonForgeRecipe, buildSeasonComposite, seasonProfileLabel, validateSeasonDonorProfiles } from './season-composite.js?v=20260908a';
-import { captureChemistry, compareChemistry, compareForgeRecipes, inspectForgeDependencies, BLUEPRINT_QUESTIONS } from './workbench-comparisons.js?v=20260908a';
+import { formatStudioValue as format, toggleStudioPlayer, validRoster } from './studio-model.js?v=20260909m';
+import { buildBlueprint, comparePlayerEvidence, analyzeChemistry, FORGE_BLOCKS, createForgeRecipe, buildComposite, explainForgeChange } from './studio-analysis.js?v=20260909m';
+import { loadForgeDraft, saveForgeDraft, clearForgeDraft } from './forge-state.js?v=20260909m';
+import { findPlayerStyleMatches, findCompositeStyleMatches } from './style-matches.js?v=20260909m';
+import { analyzePlayerContextLens, analyzeGroupContextLens } from './context-lens.js?v=20260909m';
+import { createGameLab } from './game-lab.js?v=20260909m';
+import { createLeagueLab } from './league-lab.js?v=20260909m';
+import { createCareerLab } from './career-lab.js?v=20260909m';
+import { SEASON_FORGE_BLOCKS, createSeasonForgeRecipe, buildSeasonComposite, seasonProfileLabel, validateSeasonDonorProfiles } from './season-composite.js?v=20260909m';
+import { captureChemistry, compareChemistry, compareForgeRecipes, inspectForgeDependencies, BLUEPRINT_QUESTIONS } from './workbench-comparisons.js?v=20260909m';
+import { mountBlueprintWorkbench } from './workbenches/blueprint.js?v=20260909m';
+import { mountChemistryWorkbench } from './workbenches/chemistry.js?v=20260909m';
+import { installCompositeForgePresentation } from './workbenches/composite.js?v=20260909m';
+import { installSeasonLabPresentation } from './workbenches/season.js?v=20260909m';
+import { enhanceCareerLab } from './workbenches/career.js?v=20260909m';
 
 const byId = id => document.getElementById(id);
 const el = (tag, text, className) => {
@@ -24,8 +29,29 @@ let recipeHistory = [];
 let referenceRecipe = null, referenceChemistry = null;
 let seasonDonorProfiles = null, seasonForgeRecipe = null, seasonForgeBaseline = '';
 const contextCache = new Map();
+const playerStyleMatchesCache = new Map();
+const rosterButtons = new Map();
 let publicIndexPromise = null;
 const publicBundleCache = new Map();
+const MODE_DESCRIPTIONS = Object.freeze({
+  blueprint: 'Player Blueprint reviews recorded production, shooting choices, and sample size for one selected player.',
+  chemistry: 'Chemistry Lab inspects recorded shared possessions for a group of 2–5 players; an unseen combination stays unknown.',
+  forge: 'Composite Forge combines selected skill blocks into a hypothetical recipe, not a real new player.',
+  game: 'Game Lab compares two rosters in a repeatable simulation; its result is not a prediction of a real game.',
+  league: 'Season Lab repeats a custom league experiment under the same rules and inputs.',
+  career: 'Career Lab follows recorded seasons and leaves missing seasons visible instead of filling the gaps.'
+});
+function seasonRangeLabel(starts, seasons = []) {
+  const years = (Array.isArray(starts) ? starts : []).filter(Number.isInteger);
+  if (years.length) {
+    const seasonName = year => `${year}–${String(year + 1).slice(-2)}`;
+    const first = seasonName(years[0]);
+    const last = seasonName(years.at(-1));
+    return years.length > 1 ? `${first} through ${last}` : first;
+  }
+  const labels = Array.isArray(seasons) ? seasons.filter(Boolean) : [];
+  return labels.length > 1 ? `${labels[0]} through ${labels.at(-1)}` : labels[0] || 'current';
+}
 const gameLab = createGameLab(byId('gamePanel'), api);
 const leagueLab = createLeagueLab(byId('leaguePanel'), api);
 const careerLab = createCareerLab(byId('careerPanel'), api);
@@ -64,7 +90,7 @@ function setBusy(value) {
   byId('loadTeam').disabled = value;
   byId('inspectChemistry').disabled = value || selected.length < 2;
   byId('clearSelection').disabled = value;
-  document.querySelectorAll('#chemistryPlayers button').forEach(button => { button.disabled = value; });
+  rosterButtons.forEach(button => { button.disabled = value; });
 }
 
 function styleMatchesPanel(report, mode) {
@@ -181,7 +207,7 @@ function seasonProfilePanel(player) {
   const section = el('details', undefined, 'studio-panel');
   section.dataset.seasonProfiles = player.id;
   section.append(el('summary', 'Inspect season and phase history'));
-  section.append(el('p', 'Load observed season-by-season production from the selected v2 Scout evidence package. Missing seasons remain blank; this history is not a career forecast.', 'studio-muted'));
+  section.append(el('p', 'Load observed season-by-season production from the selected Scout package. Missing seasons remain blank; this history is not a career forecast.', 'studio-muted'));
   const button = el('button', 'Load season history', 'button-secondary'); button.type = 'button';
   const body = el('div'); body.hidden = true; body.setAttribute('aria-live', 'polite');
   button.addEventListener('click', async () => {
@@ -196,7 +222,7 @@ function seasonProfilePanel(player) {
           format(profile.shooting?.fieldGoalPercentage, 'percent'), format(profile.shooting?.threePointPercentage, 'percent'),
           format(profile.shooting?.freeThrowPercentage, 'percent'), format(profile.involvement),
         ]), 'Each row is an observed season/phase sample. Percentages use only fields that passed their own evidence checks.')
-        : el('p', 'No additive season profiles are available in the selected package. The pooled player blueprint remains available.', 'studio-muted'));
+        : el('p', 'No observed season rows are available in the selected package. The pooled player blueprint remains available.', 'studio-muted'));
       if (result.note) body.append(el('p', result.note, 'studio-muted'));
     } catch (error) { body.replaceChildren(el('p', error.message, 'studio-muted')); }
   });
@@ -207,6 +233,8 @@ function invalidate() {
   generation++; controllers.forEach(controller => controller.abort()); controllers.clear();
   players = []; selected = []; loadedTeam = null; roster = null; recipe = null;
   contextCache.clear();
+  playerStyleMatchesCache.clear();
+  rosterButtons.clear(); byId('chemistryPlayers').replaceChildren();
   seasonDonorProfiles = null; seasonForgeRecipe = null; seasonForgeBaseline = '';
   referenceRecipe = null; referenceChemistry = null;
   recipeHistory = []; byId('forgeUndo').disabled = true; byId('forgeChange').replaceChildren();
@@ -221,7 +249,7 @@ const localPreview = ['127.0.0.1', 'localhost'].includes(location.hostname);
 const publicDataUrl = path => new URL(`./data/${path}`, document.baseURI).toString();
 async function fetchPublicJson(url, signal) {
   const response = await fetch(url, { cache: 'no-store', credentials: 'omit', signal });
-  if (!response.ok) throw new Error('The published six-season Scout projection is temporarily unavailable.');
+  if (!response.ok) throw new Error('The published Scout projection is temporarily unavailable.');
   return response.json();
 }
 async function publicBundle(teamId, signal) {
@@ -252,9 +280,9 @@ async function publicApi(route, params, signal) {
   }
   if (route === 'player-seasons') {
     if (!/^p\d{1,4}$/.test(playerId)) throw new Error('Choose a player from this team and package.');
-    return { snapshot: bundle.snapshot, team: teamId, player: playerId, profiles: bundle.seasonProfiles?.[playerId] || [], note: 'Season and phase rows are observed records from the selected six-season package. Missing seasons are not imputed.' };
+    return { snapshot: bundle.snapshot, team: teamId, player: playerId, profiles: bundle.seasonProfiles?.[playerId] || [], note: 'Season and phase rows are observed records from the selected package. Missing seasons are not imputed.' };
   }
-  if (route === 'season-donors') return { snapshot: bundle.snapshot, team: teamId, profiles: bundle.seasonDonors || [], note: 'Season donors are observed rows from the selected six-season package. A recipe does not create a forecast or physically feasible player.' };
+  if (route === 'season-donors') return { snapshot: bundle.snapshot, team: teamId, profiles: bundle.seasonDonors || [], note: 'Season donors are observed rows from the selected package. A recipe does not create a forecast or physically feasible player.' };
   if (route === 'chemistry') {
     const ids = String(params.players || '').split(',').filter(Boolean);
     if (ids.length < 2 || ids.length > 5 || ids.some(id => !/^p\d{1,4}$/.test(id)) || new Set(ids).size !== ids.length) throw new Error('Choose two through five distinct players.');
@@ -282,11 +310,18 @@ async function api(route, params = {}, signal) {
   const timer = setTimeout(() => ownController.abort(), 90000);
   try {
     if (!localPreview) return await publicApi(route, params, ownController.signal);
-    const response = await fetch(`/api/scout-studio/${route}?${new URLSearchParams(params)}`, {
-      cache: 'no-store', credentials: 'omit', signal: ownController.signal,
-    });
-    if (!response.ok) throw new Error('Current-package evidence is not ready for this request. Refresh the checkpoint or retry after validation.');
-    return await response.json();
+    // The static preview server does not provide the private /api endpoint.
+    // Use the same buyer-safe package as production when that endpoint is
+    // absent so local review exercises every workbench and its real controls.
+    try {
+      const response = await fetch(`/api/scout-studio/${route}?${new URLSearchParams(params)}`, {
+        cache: 'no-store', credentials: 'omit', signal: ownController.signal,
+      });
+      if (response.ok) return await response.json();
+    } catch (error) {
+      if (error?.name === 'AbortError') throw error;
+    }
+    return await publicApi(route, params, ownController.signal);
   } finally { clearTimeout(timer); signal?.removeEventListener('abort', abort); controllers.delete(ownController); }
 }
 
@@ -306,13 +341,18 @@ async function refresh() {
     gameLab.setSource(result);
     leagueLab.setSource(result);
     const ready = result.phase === 'ready';
-    byId('sourceTitle').textContent = ready ? (localPreview ? 'Validated for local integration review' : 'Validated 2020–26 Scout package') : result.phase === 'blocked' ? 'Package validation needs attention' : 'Waiting for the current Scout build';
+    const seasonStarts = Array.isArray(result.source?.seasonStartYears) ? result.source.seasonStartYears : [];
+    const seasonLabel = seasonStarts.length
+      ? `${seasonStarts[0]}–${String(seasonStarts.at(-1) + 1).slice(-2)}`
+      : (result.source?.seasons?.length ? result.source.seasons.join(' through ') : 'current');
+    byId('sourceTitle').textContent = ready ? (localPreview ? 'Validated for local integration review' : `Validated ${seasonLabel} Scout package`) : result.phase === 'blocked' ? 'Package validation needs attention' : 'Waiting for the current Scout build';
     byId('sourceMessage').textContent = ready
-      ? `${localPreview ? 'Choose a team below.' : 'Choose a team below to explore the published six-season projection.'} ${result.warnings?.length || 0} validation warning(s) remain available in the private reports for review.`
+      ? `${localPreview ? 'Choose a team below.' : 'Choose a team below to explore the published projection.'} ${result.warnings?.length || 0} validation warning(s) remain available in the private reports for review.`
       : result.phase === 'blocked' ? 'The supplied evidence did not clear the integration checks. Results remain unavailable; review the private validation reports.'
         : 'The selected manifest and its matching validation reports are not available yet. Check the selected package paths.';
-    byId('studioSeasonScope').textContent = result.source?.seasons?.length
-      ? `${result.source.seasons[0]} → ${result.source.seasons.at(-1)}` : 'Selected Scout window';
+    byId('studioSeasonScope').textContent = seasonStarts.length
+      ? `${seasonStarts[0]}–${String(seasonStarts.at(-1) + 1).slice(-2)}`
+      : (result.source?.seasons?.length ? result.source.seasons.join(' → ') : 'Selected Scout window');
     const phaseLabels = { regular: 'regular season', in_season_tournament: 'in-season tournament', play_in: 'play-in', playoffs: 'playoffs' };
     byId('sourceScope').textContent = `${result.source?.aggregation || ''} ${ready ? `Included phases: ${(result.source?.phases || []).map(phase => phaseLabels[phase] || phase).join(', ')}.` : ''}`;
     byId('workspace').hidden = !ready; byId('pendingPanel').hidden = ready;
@@ -349,7 +389,8 @@ function renderBlueprint() {
   sample.append(el('h3', player.name), el('p', `${format(player.games)} observed appearances · ${format(player.minutes)} reconstructed minutes · ${format(player.estimatedTeamPossessions)} estimated team possessions`),
     el('p', `${player.coverage.note} Event-field coverage: ${player.coverage.statistics}. Independent box-score check: ${player.coverage.independentBoxScore === 'complete_and_reconciled' ? 'complete and reconciled' : 'not fully reconciled; do not use as verified workload targets'}.`, 'studio-muted'));
   sample.append(el('p', blueprint.note, 'studio-muted'));
-  root.append(sample, styleMatchesPanel(findPlayerStyleMatches(roster, player.id), 'blueprint'), contextLensPanel(player), seasonProfilePanel(player));
+  if (!playerStyleMatchesCache.has(player.id)) playerStyleMatchesCache.set(player.id, findPlayerStyleMatches(roster, player.id));
+  root.append(sample, styleMatchesPanel(playerStyleMatchesCache.get(player.id), 'blueprint'), contextLensPanel(player), seasonProfilePanel(player));
   const metrics = el('div', undefined, 'studio-metrics');
   blueprint.components.filter(showMetric).forEach(evidence => {
     const matches = player.metrics.filter(item => item.key === evidence.key);
@@ -388,23 +429,23 @@ function renderBlueprint() {
 
 function renderRoster() {
   const filter = byId('playerSearch').value.trim().toLowerCase();
-  const buttons = players.map(player => {
-    const button = el('button', player.name); button.type = 'button';
+  const root = byId('chemistryPlayers');
+  const needsBuild = rosterButtons.size !== players.length || players.some(player => !rosterButtons.has(player.id));
+  if (needsBuild) {
+    rosterButtons.clear();
+    const fragment = document.createDocumentFragment();
+    players.forEach(player => {
+      const button = el('button', player.name); button.type = 'button'; button.dataset.playerId = player.id;
+      rosterButtons.set(player.id, button); fragment.append(button);
+    });
+    root.replaceChildren(fragment);
+  }
+  players.forEach(player => {
+    const button = rosterButtons.get(player.id);
     button.hidden = !player.name.toLowerCase().includes(filter);
-    button.setAttribute('aria-pressed', String(selected.includes(player.id))); button.disabled = busy;
-    button.addEventListener('click', () => {
-      if (busy) return;
-      const next = toggleStudioPlayer(selected, player.id);
-      if (next === selected) { byId('selectionStatus').textContent = 'Five selected. Deselect a player before adding another.'; return; }
-      selected = next;
-      byId('chemistryContent').replaceChildren(el('p', 'Selection changed. Inspect shared floor to load this exact group.'));
-      // Update in place so keyboard focus remains on the toggled player.
-      button.setAttribute('aria-pressed', String(selected.includes(player.id)));
-      byId('selectionStatus').textContent = `${selected.length} of 5 selected`;
-      byId('inspectChemistry').disabled = selected.length < 2;
-    }); return button;
+    button.setAttribute('aria-pressed', String(selected.includes(player.id)));
+    button.disabled = busy;
   });
-  byId('chemistryPlayers').replaceChildren(...buttons);
   byId('selectionStatus').textContent = `${selected.length} of 5 selected`;
   byId('inspectChemistry').disabled = busy || selected.length < 2;
 }
@@ -556,6 +597,12 @@ function changeForgeRecipe(next) {
 }
 
 byId('refreshSource').addEventListener('click', refresh);
+byId('headerRefreshSource')?.addEventListener('click', () => byId('refreshSource').click());
+mountBlueprintWorkbench();
+mountChemistryWorkbench();
+installCompositeForgePresentation();
+installSeasonLabPresentation();
+enhanceCareerLab(byId('careerPanel'));
 byId('teamSelect').addEventListener('change', () => { invalidate(); byId('workStatus').textContent = 'Team changed. Load its evidence before comparing players.'; });
 byId('teamForm').addEventListener('submit', async event => {
   event.preventDefault(); if (busy || state?.phase !== 'ready') return;
@@ -575,10 +622,23 @@ byId('playerSelect').addEventListener('change', renderBlueprint);
 byId('compareSelect').addEventListener('change', renderBlueprint);
 byId('blueprintQuestion').addEventListener('change', renderBlueprint);
 byId('playerSearch').addEventListener('input', renderRoster);
+byId('chemistryPlayers').addEventListener('click', event => {
+  const button = event.target.closest?.('button[data-player-id]');
+  if (!button || !byId('chemistryPlayers').contains(button) || busy) return;
+  const next = toggleStudioPlayer(selected, button.dataset.playerId);
+  if (next === selected) { byId('selectionStatus').textContent = 'Five selected. Deselect a player before adding another.'; return; }
+  selected = next;
+  byId('chemistryContent').replaceChildren(el('p', 'Selection changed. Inspect shared floor to load this exact group.'));
+  // Update in place so keyboard focus remains on the toggled player.
+  button.setAttribute('aria-pressed', String(selected.includes(button.dataset.playerId)));
+  byId('selectionStatus').textContent = `${selected.length} of 5 selected`;
+  byId('inspectChemistry').disabled = selected.length < 2;
+});
 byId('clearSelection').addEventListener('click', () => { selected = []; renderRoster(); byId('chemistryContent').replaceChildren(el('p', 'Selection cleared.')); });
 document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
   mode = button.dataset.mode;
-  document.querySelectorAll('[data-mode]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+  document.querySelectorAll('[data-mode]').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.mode === mode)));
+  byId('workbenchModeHelp').textContent = MODE_DESCRIPTIONS[mode] || '';
   byId('gamePanel').hidden = mode !== 'game';
   byId('leaguePanel').hidden = mode !== 'league';
   byId('careerPanel').hidden = mode !== 'career';

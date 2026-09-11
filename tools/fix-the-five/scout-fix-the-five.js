@@ -5,14 +5,14 @@ import {
   normalizeGameFamily,
   revealScoutDailyGame,
   scoutDailyGameUnavailableMessage,
-} from '../scout-daily-game-client.js?v=20260908a';
+} from '../scout-daily-game-client.js?v=20260909m';
 
 import { createNextPlay, focusGameStage } from '../fan-journey.js?v=20260905ui';
 import { publicStatLine } from '../game-decision-model.js?v=20260907b';
-import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260908a';
-import { createFanMilestones } from '../fan-telemetry.js?v=20260908a';
-import { createDecisionHistory } from '../game-decision-history.js?v=20260908a';
-import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260908a';
+import { decisionBrief, candidateComparison, decisionPreview, decisionDebrief } from '../game-decision-ui.js?v=20260909m';
+import { createFanMilestones } from '../fan-telemetry.js?v=20260909m';
+import { createDecisionHistory } from '../game-decision-history.js?v=20260909m';
+import { decisionHistoryPanel } from '../game-decision-ui.js?v=20260909m';
 
 const GAME_KIND = 'fix-the-five';
 const RUN_LENGTH = 5;
@@ -153,6 +153,56 @@ function playerStatText(player) {
   return publicStatLine(player);
 }
 
+function initials(name) {
+  return String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || '?';
+}
+
+function trustedImageUrl(value) {
+  try {
+    const url = new URL(String(value || '').trim());
+    return url.protocol === 'https:' && ['www.basketball-reference.com', 'cdn.ssref.net', 'iili.io'].includes(url.hostname)
+      ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function createIdentityBadge(player, label = 'Player identity') {
+  const badge = createElement('span', 'fix-five-identity-badge');
+  badge.setAttribute('aria-label', label);
+  const imageUrl = trustedImageUrl(player?.headshotUrl);
+  if (imageUrl) {
+    const image = document.createElement('img');
+    image.src = imageUrl;
+    image.alt = `${player.name} profile`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.replaceWith(createElement('span', '', initials(player.name))), { once: true });
+    badge.append(image);
+  } else {
+    badge.append(createElement('span', '', initials(player?.name)));
+  }
+  return badge;
+}
+
+function createTeamBadge(player) {
+  const source = player?.source || {};
+  const mark = createElement('span', 'fix-five-team-badge');
+  const logoUrl = trustedImageUrl(source.teamLogoUrl);
+  if (logoUrl) {
+    const image = document.createElement('img');
+    image.src = logoUrl;
+    image.alt = `${source.teamName || 'Team'} logo`;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.replaceWith(createElement('span', '', initials(source.teamName))), { once: true });
+    mark.append(image);
+  } else {
+    mark.append(createElement('span', '', initials(source.teamName)));
+  }
+  return mark;
+}
+
 function sourceFamilyLabel(family) {
   return ({
     'team-season': 'Team season',
@@ -163,9 +213,17 @@ function sourceFamilyLabel(family) {
 
 function createPlayerChip(player, removed = false) {
   const item = createElement('li', `fix-five-player-chip${removed ? ' is-removed' : ''}`);
-  item.append(
-    createElement('span', '', player.name),
+  const identity = createElement('div', 'fix-five-player-chip__identity');
+  identity.append(createIdentityBadge(player), createTeamBadge(player));
+  const copy = createElement('div', 'fix-five-player-chip__copy');
+  copy.append(
+    createElement('strong', '', player.name),
     createElement('small', '', `${positionText(player)} · ${playerContext(player)}`),
+    createElement('small', 'fix-five-player-chip__stats', playerStatText(player)),
+  );
+  item.append(
+    identity,
+    copy,
   );
   return item;
 }
@@ -185,8 +243,15 @@ function createCandidateButton(challenge, candidate) {
   button.setAttribute('aria-pressed', String(state.previewId === candidate.id));
   button.disabled = state.pending;
   button.setAttribute('aria-label', `Choose ${candidate.name}`);
+  const identity = createElement('div', 'fix-five-candidate__identity');
+  identity.append(createIdentityBadge(candidate), createTeamBadge(candidate));
+  const copy = createElement('div', 'fix-five-candidate__copy');
   button.append(
+    identity,
     createElement('span', 'fix-five-candidate-position', positionText(candidate)),
+    copy,
+  );
+  copy.append(
     createElement('strong', '', candidate.name),
     createElement('small', '', playerContext(candidate)),
     createElement('small', 'fix-five-candidate-statline', playerStatText(candidate)),
@@ -253,12 +318,12 @@ function renderChallenge() {
   header.append(createElement('div', 'fix-five-round-label', `Round ${state.activeIndex + 1} of ${RUN_LENGTH}`));
   header.append(createElement('h2', '', challenge.title));
   header.lastElementChild.id = 'challengeTitle';
-  header.append(createElement('p', '', challenge.brief));
+  header.append(createElement('p', '', 'Pick the player who replaces the marked spot. Every choice shown below is legal for this board.'));
   elements.challengePanel.append(header);
 
   const sourceBadge = createElement('p', 'fix-five-focus', `${sourceFamilyLabel(challenge.source.family)} · ${challenge.source.seasonLabels.join(', ')} · ${challenge.objective.label}`);
   elements.challengePanel.append(sourceBadge);
-  elements.challengePanel.append(decisionBrief(challenge, 'Keep four players. Preview one replacement, then confirm to reveal its rank. Trying another swap keeps the same board and objective.'));
+  elements.challengePanel.append(decisionBrief(challenge, 'Keep the other four players fixed. Preview one replacement, then confirm to reveal its rank.'));
   elements.challengePanel.append(createElement('h3', 'fix-five-section-title', `The five — replace ${challenge.lineup.find((player) => player.id === challenge.removeId)?.name || 'the marked player'}`));
   const lineup = createElement('ul', 'fix-five-lineup-list');
   challenge.lineup.forEach((player) => lineup.append(createPlayerChip(player, player.id === challenge.removeId)));

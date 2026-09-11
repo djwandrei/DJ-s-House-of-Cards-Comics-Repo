@@ -25,7 +25,7 @@ const CARD_BULLETS = Object.freeze({
   'fix-the-five': ['Choose one legal replacement', 'Lock your move', 'Reveal a board result'],
   'draft-night': ['Pick five players by role', 'Build your lineup', 'Reveal your place on the board'],
   'card-matchup-explorer': ['Search a player', 'See verified card matches', 'Jump back to the Lab'],
-  'scout-studio': ['Explore the validated 2020–26 package', 'Inspect observed shared-floor evidence', 'Run Game, Season, or Career Labs'],
+  'scout-studio': ['Explore the validated 2017–26 package', 'Inspect observed shared-floor evidence', 'Run Game, Season, or Career Labs'],
 });
 
 const CARD_DEFINITIONS = Object.freeze({
@@ -38,12 +38,12 @@ const CARD_DEFINITIONS = Object.freeze({
     result: 'A role-coverage explanation and one-swap comparison.',
   },
   'fix-the-five': {
-    uses: 'The displayed lineup, replacement choices, and challenge rules.',
-    result: 'A comparison within that challenge’s allowed swaps.',
+    uses: 'A fixed player pool and the rules for one challenge board.',
+    result: 'Your place among the allowed swaps on that same board; a 0–100 score compares choices only within it.',
   },
   'draft-night': {
-    uses: 'The presented player pool and one choice for each role.',
-    result: 'A completed five and its board comparison.',
+    uses: 'The presented player pool and role rules for one challenge board.',
+    result: 'A legal five and its rank among the combinations on that same board.',
   },
   'card-matchup-explorer': {
     uses: 'Your player search and verified player-to-card mappings.',
@@ -52,6 +52,46 @@ const CARD_DEFINITIONS = Object.freeze({
   'workshop': {
     uses: 'The preview tool and setup options you select locally.',
     result: 'A saved local setup, not a finished tool result.',
+  },
+  'rotation-rescue': {
+    uses: 'A historical team brief, build mode, and the constraints you choose.',
+    result: 'A reviewable setup for a five or full rotation; the connected optimizer is still being built.',
+  },
+  'scouts-call': {
+    uses: 'A source-labeled opponent brief and the counter-lineup priorities you select.',
+    result: 'A planned coaching comparison, not a live matchup or player assignment.',
+  },
+  'what-breaks-this-five': {
+    uses: 'A defined five-player case file and the role trade-off you want to inspect.',
+    result: 'An explainable role-coverage review once the reviewed case definitions are connected.',
+  },
+  'collection-lineup-builder': {
+    uses: 'Your local or explicitly saved player-card collection and challenge rules.',
+    result: 'A collection-limited lineup without changing catalog inventory or sale state.',
+  },
+  'era-roster-challenges': {
+    uses: 'A versioned historical brief, roster facts, and the selected challenge rules.',
+    result: 'A replayable historical challenge with a disclosed scoring boundary.',
+  },
+  'trade-package-builder': {
+    uses: 'A hypothetical player package and the before-and-after lineup context.',
+    result: 'A resettable role and skill-family comparison, never a transaction.',
+  },
+  'nba-analytics-explorer': {
+    uses: 'A validated play-by-play package, cohort, and comparison recipe.',
+    result: 'A research view only after licensed source coverage and model outputs are ready.',
+  },
+  'role-evolution-reel': {
+    uses: 'Public multi-season player summaries and labeled denominator rules.',
+    result: 'A source-scoped career role-shift comparison without causal claims.',
+  },
+  'era-translation-challenge': {
+    uses: 'Complete league-season cohorts, position filters, and minimum samples.',
+    result: 'An era-relative comparison whose cohort and thresholds are visible.',
+  },
+  'archetype-cohort-lab': {
+    uses: 'Era, position, style preferences, and an explicit similarity recipe.',
+    result: 'A cohort-bounded historical similarity view, not a player-equivalence verdict.',
   },
   'scout-studio': {
     uses: 'The available player pool, board, and historical view you choose.',
@@ -88,14 +128,14 @@ function appendMarker(parent, tool, className = 'tool-marker') {
   return marker;
 }
 
-function appendDefinitionRows(parent, tool) {
+function appendDefinitionRows(parent, tool, className = 'tools-featured-card__definitions') {
   const definitions = CARD_DEFINITIONS[tool.id];
   if (!definitions) return;
   const list = document.createElement('dl');
-  list.className = 'tools-featured-card__definitions';
+  list.className = className;
   [['Uses', definitions.uses], ['Result', definitions.result]].forEach(([label, value]) => {
     const row = document.createElement('div');
-    row.className = 'tools-featured-card__definition';
+    row.className = className.replace(/s$/, '');
     appendText(row, 'dt', '', label);
     appendText(row, 'dd', '', value);
     list.append(row);
@@ -104,11 +144,7 @@ function appendDefinitionRows(parent, tool) {
 }
 
 function appendHighlights(parent, tool) {
-  if (!Array.isArray(tool.highlights) || !tool.highlights.length) return;
-  const highlights = document.createElement('div');
-  highlights.className = 'tools-featured-card__highlights';
-  tool.highlights.slice(0, 3).forEach(item => appendText(highlights, 'span', '', item));
-  parent.append(highlights);
+  return;
 }
 
 function createFeaturedTool(tool) {
@@ -160,11 +196,12 @@ function createRoadmapCard(tool) {
   const copy = document.createElement('div');
   appendText(copy, 'h3', '', tool.title).id = titleId;
   appendText(copy, 'p', 'tool-roadmap-card__summary', tool.summary);
+  appendDefinitionRows(copy, tool, 'tool-roadmap-card__definitions');
 
   const footer = document.createElement('div');
   footer.className = 'tool-roadmap-card__footer';
   appendText(footer, 'span', 'tool-roadmap-card__status', STATUS_LABELS[tool.status]);
-  appendText(footer, 'span', 'tool-roadmap-card__dependency', `Depends on: ${tool.dependencies[0]}`);
+  appendText(footer, 'span', 'tool-roadmap-card__dependency', `Needs: ${tool.dependencies[0]}`);
   if (tool.href) {
     const link = document.createElement('a');
     link.className = 'tool-roadmap-card__link';
@@ -191,6 +228,7 @@ function createResearchTool(tool) {
   const copy = document.createElement('div');
   appendText(copy, 'h3', '', tool.title).id = titleId;
   appendText(copy, 'p', '', tool.summary);
+  appendDefinitionRows(copy, tool, 'tool-research-card__definitions');
   appendText(copy, 'small', '', `Required evidence: ${tool.dependencies[0]}`);
   card.append(copy);
   appendText(card, 'span', 'tool-research-card__status', STATUS_LABELS[tool.status]);

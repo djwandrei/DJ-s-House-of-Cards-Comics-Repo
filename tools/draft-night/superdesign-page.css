@@ -1,0 +1,1358 @@
+/* Draft Night's page-local Superdesign layer. The game module owns content and
+   state; this file only supplies the reference composition, contrast, and
+   finite motion for the real board. */
+
+body.draft-night-page {
+  --dn-canvas: #0c1326;
+  --dn-surface: #19233b;
+  --dn-raised: #23304c;
+  --dn-text: #f4f6fa;
+  --dn-muted: #94a3b8;
+  --dn-border: rgba(148, 163, 184, .46);
+  --dn-accent: #f2c35b;
+  --dn-accent-soft: rgba(242, 195, 91, .18);
+  --dn-focus: #e4b141;
+  --dn-trim: #d63a4b;
+  --dn-error: #ffa9b4;
+  --dn-positive: #80dbb0;
+  background: var(--dn-canvas) !important;
+  color: var(--dn-text);
+  color-scheme: dark;
+}
+
+body.draft-night-page:not(.dark-mode) {
+  --dn-canvas: #f1f3f9;
+  --dn-surface: #fff;
+  --dn-raised: #e8ecf4;
+  --dn-text: #172238;
+  --dn-muted: #5c667f;
+  --dn-border: rgba(24, 37, 73, .18);
+  --dn-accent: #294fb8;
+  --dn-accent-soft: rgba(41, 79, 184, .12);
+  --dn-focus: #b87800;
+  --dn-trim: #c62f43;
+  --dn-error: #aa263f;
+  --dn-positive: #176444;
+  background: var(--dn-canvas) !important;
+  color-scheme: light;
+}
+
+body.draft-night-page .sd-game-main {
+  width: min(calc(100% - 2rem), 1100px);
+  margin-inline: auto;
+  padding: clamp(1.2rem, 3vw, 2.6rem) 0 3.6rem;
+}
+
+body.draft-night-page .sd-game-frame {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  width: min(100%, 1024px);
+  margin-inline: auto;
+}
+
+body.draft-night-page .sd-game-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(1.25rem, 5vw, 4rem);
+  padding-block: clamp(1.2rem, 4vw, 3rem) .25rem;
+}
+
+body.draft-night-page .sd-hero-copy {
+  min-width: 0;
+}
+
+body.draft-night-page .sd-eyebrow,
+body.draft-night-page .sd-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  color: var(--dn-accent) !important;
+  font-family: var(--font-body, Manrope, system-ui, sans-serif);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-eyebrow {
+  padding: .42rem .7rem;
+  border: 1px solid color-mix(in srgb, var(--dn-accent) 65%, var(--dn-border));
+  border-radius: 999px;
+  background: var(--dn-accent-soft);
+}
+
+body.draft-night-page .sd-eyebrow::before {
+  width: .42rem;
+  height: .42rem;
+  border-radius: 50%;
+  background: var(--dn-trim);
+  content: '';
+}
+
+body.draft-night-page .sd-display-title {
+  margin: .7rem 0 .7rem;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: clamp(3.4rem, 8vw, 6.35rem);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: .86;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-display-title .sd-accent {
+  color: var(--dn-accent) !important;
+}
+
+body.draft-night-page .sd-hero-lede {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--dn-muted) !important;
+  font-family: var(--font-body, Manrope, system-ui, sans-serif);
+  font-size: clamp(.96rem, 1.6vw, 1.12rem);
+  line-height: 1.65;
+}
+
+body.draft-night-page .sd-availability {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .7rem;
+  align-items: start;
+  max-width: 62ch;
+  margin-top: 1.25rem;
+  padding: .85rem 1rem;
+  border: 1px dashed var(--dn-border);
+  border-left: 3px solid var(--dn-accent);
+  border-radius: 14px;
+  background: var(--dn-surface);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+body.draft-night-page .sd-availability-dot {
+  display: block;
+  width: .62rem;
+  height: .62rem;
+  margin-top: .28rem;
+  border-radius: 50%;
+  background: var(--dn-positive);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--dn-positive) 18%, transparent);
+}
+
+body.draft-night-page .sd-availability strong,
+body.draft-night-page .sd-availability span {
+  display: block;
+}
+
+body.draft-night-page .sd-availability strong {
+  color: var(--dn-text);
+  font-size: .83rem;
+  letter-spacing: .02em;
+}
+
+body.draft-night-page .sd-availability span {
+  margin-top: .18rem;
+  color: var(--dn-muted);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+body.draft-night-page .sd-emblem-card {
+  display: grid;
+  justify-items: center;
+  gap: .65rem;
+  width: clamp(9.5rem, 18vw, 12.5rem);
+  padding: .8rem;
+  border: 2px solid var(--dn-accent);
+  border-radius: 24px;
+  background: var(--dn-surface);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .16);
+}
+
+body.draft-night-page .sd-emblem-frame {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #101b46;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+body.draft-night-page .sd-emblem-frame img {
+  display: block;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .3));
+}
+
+body.draft-night-page .sd-emblem-card > span {
+  color: var(--dn-muted);
+  font-size: .66rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-game-board {
+  display: grid;
+  gap: 1.35rem;
+  padding: clamp(1rem, 3vw, 1.65rem);
+  border: 1px solid var(--dn-border);
+  border-radius: 28px;
+  background: var(--dn-surface);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .16);
+  color: var(--dn-text);
+  scroll-margin-top: 8rem;
+}
+
+body.draft-night-page .sd-game-board:focus-visible {
+  outline: 3px solid var(--dn-focus) !important;
+  outline-offset: 4px;
+}
+
+body.draft-night-page .sd-board-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1rem;
+}
+
+body.draft-night-page .sd-board-heading h2 {
+  margin: .35rem 0 .3rem;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: .01em;
+  line-height: .98;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-board-heading p {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--dn-muted) !important;
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+body.draft-night-page .sd-score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: .5rem;
+  width: min(100%, 310px);
+}
+
+body.draft-night-page .sd-score-grid > div,
+body.draft-night-page .sd-draft-metrics > article {
+  min-width: 0;
+  padding: .68rem .72rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 14px;
+  background: var(--dn-raised);
+}
+
+body.draft-night-page .sd-score-grid > div {
+  text-align: center;
+}
+
+body.draft-night-page .sd-score-grid span,
+body.draft-night-page .sd-draft-metrics article > span,
+body.draft-night-page .sd-draft-metrics small {
+  display: block;
+  color: var(--dn-muted);
+  font-size: .66rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-score-grid strong {
+  display: block;
+  margin-top: .18rem;
+  overflow: hidden;
+  color: var(--dn-accent);
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.35rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+}
+
+body.draft-night-page .sd-draft-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .65rem;
+}
+
+body.draft-night-page .sd-draft-metrics > article {
+  display: grid;
+  gap: .26rem;
+  border-top: 3px solid var(--dn-trim);
+}
+
+body.draft-night-page .sd-draft-metrics article > strong {
+  color: var(--dn-text);
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.3rem;
+  letter-spacing: .02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-draft-metrics small {
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+body.draft-night-page .sd-progress-line {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: .2rem 0 0;
+  padding: .65rem .25rem .15rem;
+  border-top: 1px solid var(--dn-border);
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 4.75rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .45rem;
+  padding: 0 .2rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--dn-muted);
+  cursor: default;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step::before {
+  z-index: 1;
+  display: grid;
+  width: 3.6rem;
+  height: 3.6rem;
+  flex: 0 0 3.6rem;
+  place-items: center;
+  border: 2px dashed var(--dn-border);
+  border-radius: 50%;
+  background: var(--dn-surface);
+  color: var(--dn-muted);
+  content: attr(data-round);
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step:not(:last-child)::after {
+  position: absolute;
+  z-index: 0;
+  top: 1.8rem;
+  left: calc(50% + 1.9rem);
+  width: calc(100% - 3.8rem);
+  height: 2px;
+  background: var(--dn-border);
+  content: '';
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step.is-current {
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step.is-current::before {
+  border-style: solid;
+  border-color: var(--dn-accent);
+  background: var(--dn-accent-soft);
+  color: var(--dn-text);
+  box-shadow: 0 0 0 5px var(--dn-accent-soft);
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step.is-complete {
+  color: var(--dn-positive);
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step.is-complete::before {
+  border-style: solid;
+  border-color: var(--dn-positive);
+  background: var(--dn-positive);
+  color: #10251e;
+  content: '✓';
+}
+
+body.draft-night-page .sd-progress-line .fix-five-progress-step.is-complete::after {
+  background: var(--dn-positive);
+}
+
+body.draft-night-page .sd-live-status {
+  min-height: 1.45rem;
+  margin: 0;
+  color: var(--dn-muted) !important;
+  font-size: .83rem;
+  line-height: 1.45;
+}
+
+body.draft-night-page .sd-live-status.is-error {
+  color: var(--dn-error) !important;
+  font-weight: 800;
+}
+
+body.draft-night-page .sd-recovery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  padding: .2rem 0 .35rem;
+}
+
+body.draft-night-page .sd-recovery[hidden],
+body.draft-night-page .sd-workspace[hidden],
+body.draft-night-page .sd-completion[hidden] {
+  display: none;
+}
+
+body.draft-night-page .sd-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(250px, .95fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+body.draft-night-page .sd-live-panel,
+body.draft-night-page .sd-info-card,
+body.draft-night-page .sd-completion {
+  border: 1px solid var(--dn-border) !important;
+  border-radius: 22px !important;
+  background: var(--dn-surface) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+  color: var(--dn-text) !important;
+}
+
+body.draft-night-page .sd-live-panel {
+  min-width: 0;
+  padding: clamp(1rem, 2.6vw, 1.6rem) !important;
+}
+
+body.draft-night-page .sd-sidebar {
+  display: grid;
+  gap: .85rem;
+  min-width: 0;
+}
+
+body.draft-night-page .sd-info-card {
+  padding: 1.1rem !important;
+}
+
+body.draft-night-page .sd-info-card h2 {
+  margin: .35rem 0 .85rem;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.7rem;
+  letter-spacing: .015em;
+  line-height: .98;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-info-card p,
+body.draft-night-page .sd-info-card li,
+body.draft-night-page .sd-data-section p {
+  color: var(--dn-muted) !important;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+
+body.draft-night-page .fix-five-method-card ol {
+  display: grid;
+  gap: .85rem;
+}
+
+body.draft-night-page .fix-five-method-card li::before {
+  border: 1px solid var(--dn-border);
+  background: var(--dn-accent-soft);
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .fix-five-method-card li > b {
+  display: block;
+  color: var(--dn-text);
+  font-size: .84rem;
+  line-height: 1.35;
+}
+
+body.draft-night-page .fix-five-contract-copy {
+  color: var(--dn-muted) !important;
+  font-size: .77rem;
+}
+
+body.draft-night-page .fix-five-contract-details {
+  border-top-color: var(--dn-border);
+}
+
+body.draft-night-page .fix-five-contract-details summary {
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .fix-five-contract-details summary::before {
+  border-color: var(--dn-border);
+  background: var(--dn-raised);
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .fix-five-term-list > div {
+  border-color: var(--dn-border);
+  background: var(--dn-raised);
+}
+
+body.draft-night-page .fix-five-term-list dt {
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .fix-five-term-list dd {
+  color: var(--dn-muted);
+}
+
+body.draft-night-page .fix-five-challenge-header {
+  border-bottom-color: var(--dn-border);
+}
+
+body.draft-night-page .fix-five-challenge-header h2,
+body.draft-night-page .fix-five-section-title {
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  letter-spacing: .015em;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .fix-five-challenge-header h2 {
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  line-height: .98;
+}
+
+body.draft-night-page .fix-five-challenge-header p {
+  color: var(--dn-muted) !important;
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+body.draft-night-page .fix-five-round-label {
+  color: var(--dn-accent);
+}
+
+body.draft-night-page .fix-five-round-label::before {
+  background: var(--dn-trim);
+}
+
+body.draft-night-page .fix-five-focus {
+  margin: 1rem 0;
+  border-left-color: var(--dn-accent);
+  border-radius: 0 12px 12px 0;
+  background: var(--dn-raised);
+  color: var(--dn-muted) !important;
+  font-size: .82rem;
+}
+
+body.draft-night-page .game-decision-brief,
+body.draft-night-page .game-draft-needs {
+  display: grid;
+  gap: .3rem;
+  margin: 1rem 0;
+  padding: .85rem .95rem;
+  border: 1px solid var(--dn-border);
+  border-left: 3px solid var(--dn-accent);
+  border-radius: 14px;
+  background: var(--dn-raised);
+}
+
+body.draft-night-page .game-decision-brief strong,
+body.draft-night-page .game-draft-needs strong {
+  color: var(--dn-text);
+  font-size: .84rem;
+}
+
+body.draft-night-page .game-decision-brief p,
+body.draft-night-page .game-draft-needs p,
+body.draft-night-page .game-decision-brief small,
+body.draft-night-page .game-draft-needs small {
+  margin: 0;
+  color: var(--dn-muted) !important;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+body.draft-night-page .draft-night-selection-section {
+  margin: 1.15rem 0;
+  padding: 0 0 1rem;
+  border-bottom-color: var(--dn-border);
+}
+
+body.draft-night-page .draft-night-picked-list,
+body.draft-night-page .draft-night-result-lineup {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+body.draft-night-page .draft-night-player-chip {
+  display: flex;
+  min-width: 0;
+  min-height: 5.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: .28rem;
+  padding: .65rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 14px;
+  background: var(--dn-raised);
+  color: var(--dn-text);
+}
+
+body.draft-night-page .draft-night-player-chip strong {
+  overflow-wrap: anywhere;
+  color: var(--dn-text);
+  font-size: .75rem;
+  line-height: 1.25;
+}
+
+body.draft-night-page .draft-night-player-chip small {
+  color: var(--dn-muted);
+  font-size: .67rem;
+  line-height: 1.3;
+}
+
+body.draft-night-page .draft-night-player-number {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--dn-accent-soft);
+  color: var(--dn-accent);
+  font-size: .68rem;
+  font-weight: 900;
+}
+
+body.draft-night-page .draft-night-open-slot {
+  border-style: dashed;
+  background: transparent;
+}
+
+body.draft-night-page .draft-night-open-slot[aria-current="step"] {
+  border-style: solid;
+  border-color: var(--dn-accent);
+  box-shadow: inset 0 -3px var(--dn-trim);
+}
+
+body.draft-night-page .draft-night-candidate-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .65rem;
+}
+
+body.draft-night-page .fix-five-candidate {
+  display: grid;
+  grid-template-columns: minmax(3.4rem, auto) minmax(0, 1fr) minmax(9rem, auto);
+  grid-template-areas:
+    'position name action'
+    'position context action'
+    'position stats action';
+  column-gap: .8rem;
+  align-items: center;
+  min-height: 6.2rem;
+  padding: .8rem 1rem;
+  border: 1px solid var(--dn-border);
+  border-top: 3px solid var(--dn-accent);
+  border-radius: 16px;
+  background: var(--dn-surface);
+  color: var(--dn-text);
+  font: inherit;
+  text-align: left;
+}
+
+body.draft-night-page .fix-five-candidate-position {
+  grid-area: position;
+  display: grid;
+  min-width: 3.4rem;
+  min-height: 3.4rem;
+  place-items: center;
+  border: 1px solid var(--dn-border);
+  border-radius: 12px;
+  background: var(--dn-accent-soft);
+  color: var(--dn-accent);
+  font-size: .72rem;
+  text-align: center;
+}
+
+body.draft-night-page .fix-five-candidate > strong {
+  grid-area: name;
+  margin: 0;
+  color: var(--dn-text);
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+body.draft-night-page .fix-five-candidate > :nth-child(3) {
+  grid-area: context;
+  color: var(--dn-muted);
+  font-size: .76rem;
+}
+
+body.draft-night-page .fix-five-candidate > :nth-child(4) {
+  grid-area: stats;
+  color: var(--dn-muted);
+  font-size: .73rem;
+}
+
+body.draft-night-page .fix-five-candidate .game-choice-action {
+  grid-area: action;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  color: var(--dn-accent);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  line-height: 1.35;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .fix-five-candidate[aria-pressed="true"] {
+  border-color: var(--dn-accent);
+  box-shadow: 0 0 0 3px var(--dn-accent-soft), 0 10px 24px rgba(0, 0, 0, .14);
+}
+
+body.draft-night-page .game-decision-details,
+body.draft-night-page .game-decision-preview,
+body.draft-night-page .game-decision-debrief {
+  margin-top: 1rem;
+  padding: .9rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 16px;
+  background: var(--dn-raised);
+}
+
+body.draft-night-page .game-decision-details summary {
+  cursor: pointer;
+  color: var(--dn-text);
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+body.draft-night-page .game-decision-details > p,
+body.draft-night-page .game-decision-details > small,
+body.draft-night-page .game-decision-debrief li,
+body.draft-night-page .game-decision-preview p {
+  color: var(--dn-muted) !important;
+  font-size: .76rem;
+  line-height: 1.5;
+}
+
+body.draft-night-page .game-decision-table {
+  margin-top: .7rem;
+  overflow-x: auto;
+  border: 1px solid var(--dn-border);
+  border-radius: 10px;
+}
+
+body.draft-night-page .game-decision-table table {
+  min-width: 34rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .72rem;
+}
+
+body.draft-night-page .game-decision-table caption {
+  padding: .55rem .65rem;
+  color: var(--dn-muted);
+  text-align: left;
+}
+
+body.draft-night-page .game-decision-table th,
+body.draft-night-page .game-decision-table td {
+  padding: .48rem .55rem;
+  border-top: 1px solid var(--dn-border);
+  color: var(--dn-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+body.draft-night-page .game-decision-table thead th,
+body.draft-night-page .game-decision-table tbody th {
+  color: var(--dn-text);
+  font-weight: 900;
+}
+
+body.draft-night-page .game-decision-preview {
+  border-left: 3px solid var(--dn-accent);
+}
+
+body.draft-night-page .game-decision-preview h3,
+body.draft-night-page .game-decision-debrief h3 {
+  margin: 0;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 1.55rem;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .game-decision-debrief ul {
+  display: grid;
+  gap: .45rem;
+  margin: .65rem 0 0;
+  padding-left: 1.1rem;
+}
+
+body.draft-night-page .fix-five-result-actions,
+body.draft-night-page .fix-five-complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  align-items: center;
+  margin-top: .9rem;
+}
+
+body.draft-night-page .fix-five-result-actions > *,
+body.draft-night-page .fix-five-complete-actions > * {
+  flex: 1 1 10rem;
+}
+
+body.draft-night-page .sd-action-stack {
+  display: grid;
+  gap: .55rem;
+}
+
+body.draft-night-page .sd-action-stack > * {
+  width: 100%;
+  justify-content: center;
+}
+
+body.draft-night-page .sd-completion {
+  display: grid;
+  gap: .75rem;
+  padding: clamp(1.1rem, 3vw, 1.7rem);
+  border-top: 4px solid var(--dn-accent) !important;
+}
+
+body.draft-night-page .sd-completion > .kicker {
+  color: var(--dn-accent) !important;
+}
+
+body.draft-night-page .sd-completion h2 {
+  margin: 0;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: .95;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-completion > p {
+  margin: 0;
+  color: var(--dn-muted) !important;
+  line-height: 1.55;
+}
+
+body.draft-night-page .fix-five-total-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .65rem 1rem;
+  padding: .8rem 1rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 14px;
+  background: var(--dn-raised);
+}
+
+body.draft-night-page .fix-five-total-score strong {
+  color: var(--dn-accent);
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: 2.4rem;
+  line-height: .9;
+}
+
+body.draft-night-page .fix-five-total-score span {
+  color: var(--dn-muted);
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+body.draft-night-page .fix-five-result-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: .1rem 0;
+}
+
+body.draft-night-page .fix-five-result-pills span {
+  padding: .38rem .6rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 999px;
+  background: var(--dn-accent-soft);
+  color: var(--dn-text);
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+body.draft-night-page .draft-night-learning {
+  margin: .2rem 0 0;
+  padding: .9rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 14px;
+  background: var(--dn-raised);
+  text-align: left;
+}
+
+body.draft-night-page .draft-night-learning h3 {
+  margin: 0;
+  color: var(--dn-text) !important;
+  font-size: .95rem;
+}
+
+body.draft-night-page .draft-night-learning > p,
+body.draft-night-page .draft-night-learning li,
+body.draft-night-page .fix-five-result-caveat {
+  color: var(--dn-muted) !important;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+body.draft-night-page .draft-night-learning ol {
+  display: grid;
+  gap: .45rem;
+  margin: .7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.draft-night-page .draft-night-learning li {
+  display: grid;
+  gap: .15rem;
+  padding: .6rem .7rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 10px;
+  background: var(--dn-surface);
+}
+
+body.draft-night-page .draft-night-learning li strong {
+  color: var(--dn-text);
+  font-size: .78rem;
+}
+
+body.draft-night-page .fix-five-result-caveat {
+  margin: .1rem 0 0;
+}
+
+body.draft-night-page .fan-next-play {
+  display: grid;
+  gap: .55rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--dn-border);
+}
+
+body.draft-night-page .fan-next-play h3 {
+  margin: 0;
+  color: var(--dn-text) !important;
+  font-size: 1rem;
+}
+
+body.draft-night-page .fan-next-play p {
+  margin: 0;
+  color: var(--dn-muted) !important;
+  font-size: .78rem;
+}
+
+body.draft-night-page .fan-next-play > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+}
+
+body.draft-night-page .sd-data-section {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.5fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding-top: .4rem;
+}
+
+body.draft-night-page .sd-data-section h2 {
+  margin: .35rem 0 0;
+  color: var(--dn-text) !important;
+  font-family: var(--font-display, 'Barlow Condensed', Impact, sans-serif);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  line-height: .96;
+  text-transform: uppercase;
+}
+
+body.draft-night-page .sd-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .7rem;
+}
+
+body.draft-night-page .sd-data-grid article {
+  min-height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--dn-border);
+  border-radius: 16px;
+  background: var(--dn-surface);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+body.draft-night-page .sd-data-icon {
+  color: var(--dn-accent);
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+body.draft-night-page .sd-data-grid h3 {
+  margin: .35rem 0 .2rem;
+  color: var(--dn-text) !important;
+  font-size: .95rem;
+}
+
+body.draft-night-page .sd-data-grid p {
+  margin: 0;
+}
+
+body.draft-night-page :is(button, a, summary):focus-visible {
+  outline: 3px solid var(--dn-focus) !important;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.draft-night-page .sd-game-hero,
+  body.draft-night-page .sd-game-board,
+  body.draft-night-page .sd-data-section {
+    animation: draft-night-enter 420ms cubic-bezier(.2, .7, .2, 1) both;
+  }
+
+  body.draft-night-page .sd-game-board {
+    animation-delay: 70ms;
+  }
+
+  body.draft-night-page .sd-data-section {
+    animation-delay: 130ms;
+  }
+
+  body.draft-night-page .sd-emblem-frame img {
+    transition: transform 200ms ease, filter 200ms ease;
+  }
+
+  body.draft-night-page .sd-emblem-card:hover .sd-emblem-frame img {
+    transform: rotate(3deg) scale(1.02);
+    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, .34));
+  }
+
+  body.draft-night-page .fix-five-candidate,
+  body.draft-night-page .sd-info-card,
+  body.draft-night-page .sd-data-grid article,
+  body.draft-night-page .sd-action-stack > *,
+  body.draft-night-page .fix-five-result-actions > *,
+  body.draft-night-page .fix-five-complete-actions > * {
+    transition: transform 180ms ease, border-color 160ms ease, box-shadow 180ms ease, background-color 160ms ease;
+  }
+
+  body.draft-night-page .fix-five-candidate:hover,
+  body.draft-night-page .fix-five-candidate:focus-visible,
+  body.draft-night-page .sd-data-grid article:hover {
+    transform: translateY(-2px);
+    border-color: var(--dn-accent);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .16);
+  }
+
+  body.draft-night-page .sd-draft-metrics > article,
+  body.draft-night-page .draft-night-candidate-grid > .fix-five-candidate,
+  body.draft-night-page .sd-stage-enter {
+    animation: draft-night-enter 320ms cubic-bezier(.2, .7, .2, 1) both;
+  }
+
+  body.draft-night-page .draft-night-candidate-grid > .fix-five-candidate:nth-child(2) { animation-delay: 35ms; }
+  body.draft-night-page .draft-night-candidate-grid > .fix-five-candidate:nth-child(3) { animation-delay: 70ms; }
+  body.draft-night-page .draft-night-candidate-grid > .fix-five-candidate:nth-child(4) { animation-delay: 105ms; }
+}
+
+@keyframes draft-night-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 900px) {
+  body.draft-night-page .sd-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  body.draft-night-page .sd-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.draft-night-page .sd-sidebar .fix-five-method-card,
+  body.draft-night-page .sd-sidebar .sd-action-stack {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  body.draft-night-page .sd-game-main {
+    width: min(calc(100% - 1.25rem), 1100px);
+  }
+
+  body.draft-night-page .sd-game-hero,
+  body.draft-night-page .sd-board-heading,
+  body.draft-night-page .sd-data-section {
+    grid-template-columns: 1fr;
+  }
+
+  body.draft-night-page .sd-emblem-card {
+    width: min(11rem, 100%);
+    justify-self: start;
+  }
+
+  body.draft-night-page .sd-score-grid {
+    width: 100%;
+  }
+
+  body.draft-night-page .sd-sidebar,
+  body.draft-night-page .sd-draft-metrics,
+  body.draft-night-page .sd-data-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.draft-night-page .draft-night-picked-list,
+  body.draft-night-page .draft-night-result-lineup {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.draft-night-page .fix-five-candidate {
+    grid-template-columns: minmax(3rem, auto) minmax(0, 1fr);
+    grid-template-areas:
+      'position name'
+      'position context'
+      'position stats'
+      'action action';
+    align-items: center;
+    row-gap: .25rem;
+  }
+
+  body.draft-night-page .fix-five-candidate .game-choice-action {
+    justify-self: start;
+    padding-top: .35rem;
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  body.draft-night-page .sd-game-board {
+    padding: .85rem;
+    border-radius: 20px;
+  }
+
+  body.draft-night-page .sd-score-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.draft-night-page .sd-score-grid > div {
+    padding-inline: .4rem;
+  }
+
+  body.draft-night-page .sd-score-grid strong {
+    font-size: 1.12rem;
+  }
+
+  body.draft-night-page .sd-progress-line .fix-five-progress-step::before {
+    width: 3rem;
+    height: 3rem;
+    flex-basis: 3rem;
+    font-size: 1.15rem;
+  }
+
+  body.draft-night-page .sd-progress-line .fix-five-progress-step:not(:last-child)::after {
+    top: 1.5rem;
+    left: calc(50% + 1.55rem);
+    width: calc(100% - 3.1rem);
+  }
+
+  body.draft-night-page .fix-five-candidate {
+    padding-inline: .75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.draft-night-page *,
+  body.draft-night-page *::before,
+  body.draft-night-page *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Dynamic board labels and source notes must not widen the game shell. */
+body.draft-night-page :is(.sd-game-hero > *, .sd-board-heading > *, .sd-hero-copy, .sd-action-stack, .fix-five-candidate) {
+  min-width: 0;
+}
+
+body.draft-night-page :is(#runTitle, #runDescription, .fix-five-candidate, .fix-five-result-caveat) {
+  overflow-wrap: anywhere;
+}
+
+/* Keep direct links to the live board clear of the sticky fan-suite rail. */
+body.draft-night-page :is(#mainContent, #gameBoard) {
+  scroll-margin-top: 11rem;
+}
+
+/* The game module moves focus to these live headings after each pick/reveal.
+   Keep the focused stage below the sticky storefront and fan-tool chrome. */
+body.draft-night-page :is(#draftTitle, #completionTitle, #decisionPreviewTitle) {
+  scroll-margin-top: 11rem;
+}
+
+@media (max-width: 700px) {
+  /* The fan rail becomes part of the fixed mobile header after basketball
+     branding mounts. Move the focus target below that rail while keeping the
+     visible hero at the same position by trading outer margin for padding. */
+  body.draft-night-page #mainContent {
+    margin-top: 0 !important;
+  }
+
+  body.draft-night-page .sd-game-main {
+    padding-top: .35rem !important;
+  }
+
+  body.draft-night-page :is(#mainContent, #gameBoard),
+  body.draft-night-page :is(#draftTitle, #completionTitle, #decisionPreviewTitle) {
+    scroll-margin-top: 10rem;
+  }
+}
+
+/* The toolbar is the first page control after the sticky fan-suite header.
+   Keep it visually attached to that header instead of inheriting the hero's
+   larger editorial top padding. */
+body.draft-night-page .sd-game-main {
+  padding-top: .35rem !important;
+}
+
+@media (max-width: 700px) {
+  body.draft-night-page .sd-game-hero {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "copy"
+      "emblem" !important;
+    align-items: start !important;
+  }
+
+  body.draft-night-page .sd-hero-copy {
+    grid-area: copy !important;
+    order: 0 !important;
+  }
+
+  body.draft-night-page .sd-emblem-card {
+    grid-area: emblem !important;
+    order: 0 !important;
+    justify-self: start;
+  }
+}
+
+/* Keep the existing DJHC footer identity, but give its lockup and link groups
+   stable tracks at the widths where the shared storefront footer compresses. */
+@media (max-width: 900px) {
+  body.draft-night-page .site-footer .footer-inner {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+
+  body.draft-night-page .site-footer .footer-brand,
+  body.draft-night-page .site-footer .footer-links {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-brand {
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.draft-night-page .site-footer .footer-logo-line {
+    display: grid !important;
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: .75rem !important;
+    min-width: 0 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-logo {
+    width: 62px !important;
+    height: 62px !important;
+    flex: 0 0 62px !important;
+  }
+
+  body.draft-night-page .site-footer .footer-logo-line > div {
+    min-width: 0 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-logo-line .brand-script {
+    display: block !important;
+    max-width: 100% !important;
+    font-size: clamp(1.05rem, 4.8vw, 1.25rem) !important;
+    line-height: 1.05 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.draft-night-page .site-footer .footer-logo-line .brand-kicker {
+    display: block !important;
+    max-width: 100% !important;
+    margin-top: .18rem !important;
+    font-size: clamp(.56rem, 2.25vw, .68rem) !important;
+    line-height: 1.2 !important;
+    letter-spacing: .06em !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+  }
+
+  body.draft-night-page .site-footer .footer-brand > p {
+    max-width: 42ch !important;
+    line-height: 1.45 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-link-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: .75rem 1rem !important;
+    min-width: 0 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-link-group {
+    min-width: 0 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-link-group--storefronts {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.draft-night-page .site-footer .footer-bottom {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: .4rem !important;
+  }
+}

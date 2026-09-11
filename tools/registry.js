@@ -90,7 +90,7 @@ export const TOOL_REGISTRY = Object.freeze([
       'Local-only progress'
     ],
     dependencies: [
-      'Validated Scout O/D scope in the 2020–21 through 2025–26 window',
+      'Validated Scout O/D scope from 2017–18 through 2025–26',
       'Service-only daily board compiler and sealed reveal endpoint'
     ],
     implementationNotes: 'Every result stays inside one source-labeled Scout board. Public stats are context only; raw Scout values remain private, and an unavailable source never falls back to an older fixture.'
@@ -158,7 +158,7 @@ export const TOOL_REGISTRY = Object.freeze([
       'Local-only score'
     ],
     dependencies: [
-      'Validated Scout O/D scope in the 2020–21 through 2025–26 window',
+      'Validated Scout O/D scope from 2017–18 through 2025–26',
       'Service-only daily board compiler and sealed reveal endpoint'
     ],
     implementationNotes: 'The rank exists only inside the daily Scout board. Public stats label player context; raw model values stay private, and the game remains unavailable rather than using old fixtures.'
@@ -271,22 +271,22 @@ export const TOOL_REGISTRY = Object.freeze([
     marker: 'Scout',
     emblem: '../assets/games/scout-studio-emblem-20260909.jpg',
     title: 'Scout Studio',
-    eyebrow: 'Six-season NBA workspace',
+    eyebrow: 'Nine-season NBA workspace',
     status: TOOL_STATUSES.LIVE,
     href: './scout-studio/',
-    summary: 'Explore player blueprints, observed shared-floor evidence, composite recipes, and repeatable game experiments across the validated 2020–26 Scout window.',
+    summary: 'Explore player blueprints, observed shared-floor evidence, composite recipes, and repeatable game experiments across the validated 2017–26 Scout window.',
     capabilities: [
-      'Player and season evidence from 2020–26',
+      'Player and season evidence from 2017–26',
       'Observed chemistry, context, and donor views',
       'Repeatable Game, Season, and Career Labs'
     ],
     highlights: [
-      'Six-season Scout package',
+      'Nine-season Scout package',
       'Read-only evidence workspace',
       'No private model values in the browser'
     ],
     dependencies: [
-      'Validated six-season Scout projection',
+      'Validated 2017–26 Scout projection',
       'Buyer-safe static data bridge'
     ],
     implementationNotes: 'The public projection retains observed stats and opaque ids only. Private source rows, provider ids, and fitted model components remain outside the storefront.'

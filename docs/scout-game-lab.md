@@ -8,7 +8,7 @@ learned matchup analytics remain separate, unimplemented models.
 
 ## Playable loop
 
-1. Choose two different franchises and a season from 2023–24 through 2025–26,
+1. Choose two different franchises and a season from 2017–18 through 2025–26,
    or use today's reproducible matchup. The date uses America/Chicago.
 2. Optionally call the winner of the first seeded draw. No leaderboard or
    competitive score is attached to this editable experiment.
@@ -59,7 +59,7 @@ Player-versus-defender assignments and an authentic NBA calendar are not modeled
 
 ## Season Lab: composing the same experiment
 
-The UI accepts four different franchises from one snapshot and a 2023–2025
+The UI accepts four different franchises from one snapshot and a 2017–2025
 season start year. One, two or four meetings per pair yield three, six or twelve
 regular games per team. Users can omit playoffs, take the top two into a final,
 or seed all four into semifinals. Best-of-one/three/seven UI choices reuse the
@@ -92,11 +92,9 @@ rejected; the same seed alone is not a paired inference or significance test.
 
 ## Data and memory boundary
 
-The current read-only integration explicitly selects the completed six-season
-`2020-26-final-20260907-v2-comprehensive-model-evidence` base package. The
-earlier v1 directory was superseded and removed after v2 validation. Exact paths, hashes and
-commands are in [the roadmap](scout-studio-roadmap.md). A wider package does not
-broaden the game's three-season eligibility window. Player profiles elsewhere
+The current read-only integration explicitly selects the completed nine-season
+`2017-26-final-20260909-v2-career-season-package` base package. Exact paths,
+hashes and commands are in [the roadmap](scout-studio-roadmap.md). Player profiles elsewhere
 in the workbench remain pooled team/window evidence.
 
 `/api/scout-studio/team-contexts` projects allowlisted sample/outcome fields only.

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Build the buyer-safe, six-season Scout Studio release projection.  The
+// Build the buyer-safe, multi-season Scout Studio release projection.  The
 // source package remains local/private; this command keeps only the bounded
 // presentation maps used by the browser and rewrites provider-keyed maps to
 // opaque player ids.  It is intentionally separate from the archive importer.
@@ -27,15 +27,13 @@ const TEAM_CODE = Object.freeze({
 function parseArgs(argv) {
   const args = [...argv];
   const outputIndex = args.indexOf('--output');
-  const output = outputIndex >= 0 ? path.resolve(args.splice(outputIndex, 2)[1] || '') : path.resolve('outputs/scout-studio-public-2020-26');
+  const output = outputIndex >= 0 ? path.resolve(args.splice(outputIndex, 2)[1] || '') : path.resolve('outputs/scout-studio-public-2017-26');
   const concurrencyIndex = args.indexOf('--concurrency');
   const concurrency = concurrencyIndex >= 0 ? Number(args.splice(concurrencyIndex, 2)[1]) : 3;
   if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new Error('--concurrency must be an integer from 1 through 4.');
   if (!output || output.endsWith(path.sep)) throw new Error('--output requires a directory.');
   const readiness = parseReadinessArgs(args);
-  if (readiness.seasons.join(',') !== '2020,2021,2022,2023,2024,2025') {
-    throw new Error('The public Scout Studio builder requires the exact 2020-26 season window.');
-  }
+  if (readiness.seasons.length < 2) throw new Error('The public Scout Studio builder requires at least two season start years.');
   return { ...readiness, output, concurrency };
 }
 
@@ -79,7 +77,7 @@ async function main() {
   const source = createScoutStudioSource(options);
   const status = await source.status();
   if (status.phase !== 'ready' || status.source?.seasonStartYears?.join(',') !== options.seasons.join(',')) {
-    throw new Error('The selected Scout package is not ready for the exact six-season public projection.');
+    throw new Error('The selected Scout package is not ready for the requested public projection.');
   }
   await fs.rm(options.output, { recursive: true, force: true });
   await fs.mkdir(options.output, { recursive: true });

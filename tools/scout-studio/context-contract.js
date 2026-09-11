@@ -17,9 +17,10 @@ export const SCOUT_CONTEXT_GROUPS = Object.freeze([
 ]);
 
 const allowedContextValues = Object.freeze({
-  // These are the season-start years supported by the current Scout Studio
-  // contract. A future package must update this allowlist deliberately.
-  season: new Set(['2020', '2021', '2022', '2023', '2024', '2025']),
+  // These are the season-start years supported by the completed 2017–26
+  // Scout Studio package. Keep the explicit list so malformed context keys
+  // remain rejected at the browser/private-adapter boundary.
+  season: new Set(['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025']),
   phase: new Set(['regular', 'in_season_tournament', 'play_in', 'playoffs', 'unclassified']),
   venue: new Set(['home', 'away', 'unclassified']),
   period: new Set(['q1', 'q2', 'q3', 'q4', 'overtime', 'unclassified']),

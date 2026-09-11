@@ -1,5 +1,5 @@
-import { formatStudioValue as format } from './studio-model.js?v=20260908a';
-import { buildCareerTimeline, summarizeCareer, replayObservedCareer, CAREER_POLICY } from './career-simulator.js?v=20260908a';
+import { formatStudioValue as format } from './studio-model.js?v=20260909m';
+import { buildCareerTimeline, summarizeCareer, replayObservedCareer, CAREER_POLICY } from './career-simulator.js?v=20260909m';
 
 const node = (tag, text, className = '') => {
   const element = document.createElement(tag); if (text !== undefined) element.textContent = text;
@@ -21,6 +21,16 @@ function numberInput(labelText, id, value, min, max, step = 1) {
   const label = node('label', labelText), input = node('input');
   Object.assign(input, { id, type: 'number', value, min, max, step, required: true }); label.append(input); return { label, input };
 }
+function rangeInput(labelText, id, value, min, max, step = 1) {
+  const label = node('label', undefined, 'studio-range-control');
+  const heading = node('span', labelText, 'studio-range-control__label');
+  const output = node('output', `${Number(value).toLocaleString()} runs`, 'studio-range-control__value');
+  const input = node('input');
+  Object.assign(input, { id, type: 'range', value, min, max, step, required: true });
+  input.setAttribute('aria-label', labelText);
+  input.addEventListener('input', () => { output.value = `${Number(input.value).toLocaleString()} runs`; output.textContent = output.value; });
+  label.append(heading, output, input); return { label, input };
+}
 
 export function createCareerLab(root, request) {
   let source = null, roster = null, active = null, generation = 0, timeline = null, summary = null;
@@ -30,7 +40,7 @@ export function createCareerLab(root, request) {
     node('p', 'This is an evidence timeline and descriptive replay. It does not estimate aging, future availability, role development, contracts or a future career outcome.', 'studio-muted'));
   const form = node('form'), controls = node('div', undefined, 'studio-roadmap');
   const playerLabel = node('label', 'Player'); const player = node('select'); player.id = 'careerPlayerSelect'; playerLabel.append(player);
-  const trials = numberInput('Replay trials', 'careerTrials', 100, CAREER_POLICY.minTrials, CAREER_POLICY.maxTrials, 50);
+  const trials = rangeInput('Replay trials', 'careerTrials', 100, CAREER_POLICY.minTrials, CAREER_POLICY.maxTrials, 50);
   const seedLabel = node('label', 'Replay seed'); const seed = node('input'); Object.assign(seed, { id: 'careerSeed', type: 'text', value: 'career-replay', maxLength: 80, pattern: '[a-zA-Z0-9:._\\-]+' }); seedLabel.append(seed);
   controls.append(playerLabel, trials.label, seedLabel);
   const buttons = node('div', undefined, 'studio-team-form');

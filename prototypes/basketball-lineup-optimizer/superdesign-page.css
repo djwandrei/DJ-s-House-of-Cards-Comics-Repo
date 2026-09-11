@@ -1,0 +1,1127 @@
+/*
+ * Lineup Lab's Superdesign adapter.
+ *
+ * This file intentionally maps the completed design reference onto the live
+ * optimizer's existing semantic hooks. It owns presentation only: no roster,
+ * input, result, route, or event-handler state is created here.
+ */
+
+body.lineup-superdesign {
+  /* The destination rail and coaching steps scroll inside their own boxes;
+     keep viewport-sized chrome from creating a second page scrollbar. */
+  overflow-x: hidden;
+  --court-canvas: #f1f3f9;
+  --court-surface: #ffffff;
+  --court-raised: #e8ecf4;
+  --court-text: #172238;
+  --court-muted: #536177;
+  --court-border: #7c889c;
+  --court-accent: #3d63d4;
+  --court-on-accent: #ffffff;
+  --court-focus: #2449a4;
+  --court-trim: #d63a4b;
+  --court-positive: #176444;
+  --court-warning: #80520d;
+  --court-error: #aa263f;
+  --court-team-primary: #4169e1;
+  --court-team-highlight: #e9b949;
+  --court-team-trim: #d63a4b;
+  --sd-rail: #101b46;
+  --sd-rail-text: #ffffff;
+  --sd-rail-muted: #cbd5f3;
+  --sd-rail-accent: #f4d37c;
+  --sd-shadow: 0 16px 38px rgb(16 27 70 / 0.1);
+  --sd-shadow-large: 0 28px 62px rgb(10 19 54 / 0.18);
+  --page: var(--court-canvas);
+  --surface: var(--court-surface);
+  --surface-soft: var(--court-raised);
+  --surface-strong: var(--court-surface);
+  --surface-muted: var(--court-raised);
+  --ink: var(--court-text);
+  --text: var(--court-text);
+  --muted: var(--court-muted);
+  --line: var(--court-border);
+  --border: var(--court-border);
+  --heading-ink: var(--court-text);
+  --blue: var(--court-accent);
+  --blue-2: var(--court-accent);
+  --red: var(--court-trim);
+  --gold: var(--court-team-highlight);
+  --success: var(--court-positive);
+  --warning: var(--court-warning);
+  --danger: var(--court-error);
+  --navy: var(--sd-rail);
+  --radius: 18px;
+  --shell: 1280px;
+  color: var(--court-text);
+  background:
+    radial-gradient(circle at 5% 0%, color-mix(in srgb, var(--court-team-primary) 12%, transparent), transparent 31rem),
+    radial-gradient(circle at 97% 10%, color-mix(in srgb, var(--court-team-highlight) 10%, transparent), transparent 26rem),
+    var(--court-canvas);
+  font-family: Manrope, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-rendering: optimizeLegibility;
+}
+
+body.lineup-superdesign.dark-mode {
+  --court-canvas: #0c1326;
+  --court-surface: #19233b;
+  --court-raised: #23304c;
+  --court-text: #f4f6fa;
+  --court-muted: #b1bed2;
+  --court-border: #6c7a8e;
+  --court-accent: #e9b949;
+  --court-on-accent: #111827;
+  --court-focus: #f4d37c;
+  --court-positive: #80dbb0;
+  --court-warning: #f4d37c;
+  --court-error: #ffa9b4;
+  --sd-shadow: 0 16px 42px rgb(0 0 0 / 0.28);
+  --sd-shadow-large: 0 30px 72px rgb(0 0 0 / 0.36);
+  color-scheme: dark;
+}
+
+body.lineup-superdesign:not(.dark-mode) {
+  color-scheme: light;
+}
+
+body.lineup-superdesign :is(h1, h2, h3, h4, .score-card strong, .lineup-player__rank) {
+  font-family: "Barlow Condensed", "Bebas Neue", Impact, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+body.lineup-superdesign :is(button, input, select, textarea) {
+  font-family: inherit;
+}
+
+body.lineup-superdesign :focus-visible {
+  outline: 3px solid var(--court-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--court-surface);
+}
+
+/* Header and the retained fan-suite rail use the dark coaching-journey shell
+ * in both themes so navigation remains distinct from changing team palettes. */
+body.lineup-superdesign .site-header {
+  color: var(--sd-rail-text);
+  background: linear-gradient(180deg, #080d1d, #101b46);
+  border-color: rgb(255 255 255 / 0.13);
+}
+
+body.lineup-superdesign .header-inner {
+  width: min(1440px, calc(100% - 2rem));
+  min-height: 78px;
+  max-width: none;
+}
+
+body.lineup-superdesign .site-header .brand {
+  color: var(--sd-rail-text);
+}
+
+body.lineup-superdesign .brand-logo {
+  width: 56px;
+  height: 56px;
+}
+
+body.lineup-superdesign .brand-copy strong {
+  color: var(--sd-rail-text);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.8vw, 1.22rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+body.lineup-superdesign .brand-copy small {
+  margin-top: 0.2rem;
+  color: var(--sd-rail-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.lineup-superdesign .primary-nav__link {
+  color: #dce6fa;
+  background: rgb(255 255 255 / 0.035);
+}
+
+body.lineup-superdesign .primary-nav__link:is(:hover, :focus-visible) {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.13);
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+body.lineup-superdesign .primary-nav__link.is-current,
+body.lineup-superdesign .primary-nav__link[aria-current="page"] {
+  color: #15223f;
+  background: #f4f7fc;
+  border-color: #ffffff;
+  box-shadow: inset 0 -3px var(--court-team-trim);
+}
+
+body.lineup-superdesign .lineup-header-actions {
+  gap: 0.45rem;
+}
+
+body.lineup-superdesign :is(.lineup-header-shop, .lineup-header-icon) {
+  min-width: 42px;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0.45rem 0.68rem;
+  color: var(--sd-rail-text);
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+
+body.lineup-superdesign .lineup-header-icon {
+  position: relative;
+  width: 42px;
+  padding: 0;
+}
+
+body.lineup-superdesign .lineup-header-icon [data-cart-count] {
+  position: absolute;
+  top: -0.42rem;
+  right: -0.38rem;
+  min-width: 1.12rem;
+  height: 1.12rem;
+  display: grid;
+  place-items: center;
+  padding: 0 0.15rem;
+  color: #111827;
+  background: var(--sd-rail-accent);
+  border-radius: 999px;
+  font-size: 0.62rem;
+}
+
+body.lineup-superdesign :is(.lineup-header-shop, .lineup-header-icon):is(:hover, :focus-visible) {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.14);
+}
+
+body.lineup-superdesign .fan-suite-nav {
+  color: var(--sd-rail-text);
+  background: #101b46;
+  border-bottom: 1px solid rgb(255 255 255 / 0.12);
+}
+
+body.lineup-superdesign .fan-suite-nav__scroll {
+  width: min(1440px, calc(100% - 2rem));
+  display: flex;
+  gap: 0.4rem;
+  margin-inline: auto;
+  padding: 0.45rem 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+body.lineup-superdesign .fan-suite-nav__link {
+  min-height: 42px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.4rem 0.62rem;
+  color: #dce6fa;
+  background: rgb(255 255 255 / 0.035);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+body.lineup-superdesign .fan-suite-nav__link img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+body.lineup-superdesign .fan-suite-nav__link:is(:hover, :focus-visible) {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.13);
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+body.lineup-superdesign .fan-suite-nav__link[aria-current="page"] {
+  color: #15223f;
+  background: #f4f7fc;
+  border-color: #ffffff;
+  box-shadow: inset 0 -3px var(--court-team-trim);
+}
+
+/* The live introductory copy becomes a compact coaching-journey briefing.
+ * Its existing links and controls stay visible; only the visual hierarchy
+ * changes from the older oversized hero treatment. */
+body.lineup-superdesign .hero {
+  color: #f4f6fa;
+  background:
+    radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--court-team-highlight) 22%, transparent), transparent 23rem),
+    linear-gradient(112deg, #0c1326, #19233b);
+  box-shadow: inset 0 4px 0 var(--court-team-highlight);
+}
+
+body.lineup-superdesign .hero::before {
+  opacity: 0.24;
+  mask-image: none;
+}
+
+body.lineup-superdesign .hero__grid {
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+  gap: clamp(1.5rem, 5vw, 4.5rem);
+  padding-block: clamp(2.25rem, 5vw, 4rem);
+}
+
+body.lineup-superdesign .hero h1 {
+  max-width: 11ch;
+  color: #f4f6fa;
+  font-family: "Barlow Condensed", "Bebas Neue", Impact, sans-serif;
+  font-size: clamp(2.5rem, 5.3vw, 4.6rem);
+  font-weight: 700;
+  letter-spacing: 0.012em;
+  line-height: 0.97;
+}
+
+body.lineup-superdesign .hero h1 span {
+  color: #f4f6fa;
+}
+
+body.lineup-superdesign .hero h1 span:last-child {
+  color: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .hero .eyebrow {
+  color: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .hero__lede {
+  max-width: 61ch;
+  margin-top: 0.85rem;
+  color: #cbd5e8 !important;
+  font-size: 1rem;
+  line-height: 1.62;
+}
+
+body.lineup-superdesign .hero .eyebrow,
+body.lineup-superdesign .hero__proof li {
+  color: var(--sd-rail-accent) !important;
+}
+
+body.lineup-superdesign .hero__proof li {
+  color: #d9e2f2 !important;
+}
+
+body.lineup-superdesign .hero__actions {
+  display: flex;
+  margin-top: 1.25rem;
+}
+
+body.lineup-superdesign .hero__proof {
+  display: flex;
+  margin-top: 1.3rem;
+}
+
+body.lineup-superdesign .hero__proof li {
+  color: #d9e2f2;
+  font-size: 0.8rem;
+}
+
+body.lineup-superdesign .hero__proof li::before {
+  color: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .hero-outcomes {
+  width: 100%;
+  display: block;
+  justify-self: stretch;
+  padding: 1.2rem;
+  color: #f4f6fa;
+  background: rgb(255 255 255 / 0.075);
+  border-color: rgb(255 255 255 / 0.18);
+  border-radius: 18px;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+}
+
+body.lineup-superdesign .hero-outcomes__eyebrow {
+  color: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .hero-outcomes__list li {
+  min-height: 64px;
+  padding-left: 2.85rem;
+  background: rgb(255 255 255 / 0.07);
+  border-color: rgb(255 255 255 / 0.1);
+}
+
+body.lineup-superdesign .hero-outcomes__list li::before {
+  color: #111827;
+  background: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .hero-outcomes__list strong {
+  color: #ffffff;
+}
+
+body.lineup-superdesign .hero-outcomes__list span {
+  color: #dce5f5;
+}
+
+/* Cards, inputs, and the live step sequence. */
+body.lineup-superdesign .workspace {
+  padding: 0 0 5.5rem;
+}
+
+body.lineup-superdesign .workspace > .shell {
+  position: relative;
+}
+
+body.lineup-superdesign :is(.panel, .live-data-panel, .dataset-strip, .results, .empty-result) {
+  color: var(--court-text);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+  box-shadow: var(--sd-shadow);
+}
+
+body.lineup-superdesign .experience-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: -1.25rem;
+  padding: 0.9rem 1rem 0.9rem 1.2rem;
+  border-radius: 16px;
+}
+
+body.lineup-superdesign .experience-switcher__copy strong {
+  color: var(--court-text);
+  font-size: 0.94rem;
+}
+
+body.lineup-superdesign .experience-switcher__copy span {
+  max-width: 72ch;
+  color: var(--court-muted);
+  font-size: 0.82rem;
+}
+
+body.lineup-superdesign .experience-switcher__buttons {
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  background: var(--court-raised);
+  border: 1px solid var(--court-border);
+  border-radius: 10px;
+}
+
+body.lineup-superdesign .experience-switcher__button {
+  min-height: 40px;
+  color: var(--court-muted);
+  background: transparent;
+  border-color: transparent;
+  border-radius: 8px;
+}
+
+body.lineup-superdesign .experience-switcher__button:is(:hover, :focus-visible) {
+  color: var(--court-text);
+  background: color-mix(in srgb, var(--court-surface) 60%, transparent);
+}
+
+body.lineup-superdesign.lab-guided .experience-switcher__button.is-active {
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border-color: var(--court-accent);
+  box-shadow: none;
+}
+
+body.lineup-superdesign .tool-nav {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: 0.25rem;
+  margin: 1.15rem 0;
+  padding: 0.3rem;
+  overflow-x: auto;
+  background: var(--court-raised);
+  border: 1px solid var(--court-border);
+  border-radius: 12px;
+  scrollbar-width: thin;
+}
+
+body.lineup-superdesign .tool-nav__button {
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 42px;
+  color: var(--court-muted);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+body.lineup-superdesign.lab-guided .tool-nav__button.is-active {
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border-color: var(--court-accent);
+  box-shadow: none;
+}
+
+body.lineup-superdesign .tool-nav__button span {
+  color: inherit;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+body.lineup-superdesign .live-data-panel {
+  margin-top: 0;
+  padding: clamp(1.15rem, 2.8vw, 1.7rem);
+  border: 1px solid var(--court-border);
+  border-radius: 20px;
+}
+
+body.lineup-superdesign .workflow-heading,
+body.lineup-superdesign .step-heading {
+  align-items: center;
+  gap: 0.9rem;
+}
+
+body.lineup-superdesign .step-number {
+  width: 42px;
+  height: 42px;
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border: 1px solid var(--court-accent);
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--court-accent) 18%, transparent);
+  font-family: "Barlow Condensed", "Bebas Neue", Impact, sans-serif;
+  font-size: 1.35rem;
+}
+
+body.lineup-superdesign :is(.live-data-panel__intro h2, .step-heading h2, .view-heading h2, .results__heading h2, .run-card h2, .empty-result h2) {
+  color: var(--court-text);
+  font-family: "Barlow Condensed", "Bebas Neue", Impact, sans-serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.05rem);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+body.lineup-superdesign .eyebrow {
+  color: var(--court-accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+body.lineup-superdesign .live-data-panel__intro > p:last-child {
+  max-width: 78ch;
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .live-data-panel__controls {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--court-border);
+}
+
+body.lineup-superdesign .dataset-strip {
+  margin: 0.85rem 0 1.25rem;
+  padding: 1rem 1.15rem;
+  background: var(--court-raised);
+  border: 1px solid var(--court-border);
+  border-top: 4px solid var(--court-team-highlight);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+body.lineup-superdesign .dataset-strip__mark {
+  color: var(--court-accent);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign :is(.dataset-strip__label, .dataset-strip__media, .dataset-strip dt) {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign :is(.dataset-strip strong, .dataset-strip dd) {
+  color: var(--court-text);
+}
+
+body.lineup-superdesign .step-panel {
+  padding: clamp(1.15rem, 2.7vw, 1.7rem);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+  border-radius: 20px;
+}
+
+body.lineup-superdesign .preset-grid {
+  gap: 0.85rem;
+}
+
+body.lineup-superdesign .preset-card {
+  min-height: 124px;
+  padding: 1rem;
+  color: var(--court-text);
+  background: var(--court-raised);
+  border-color: var(--court-border);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+body.lineup-superdesign .preset-card strong {
+  font-family: "Barlow Condensed", "Bebas Neue", Impact, sans-serif;
+  font-size: 1.32rem;
+  letter-spacing: 0.015em;
+}
+
+body.lineup-superdesign .preset-card span {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .preset-card:is(:hover, :focus-visible) {
+  color: var(--court-text);
+  background: color-mix(in srgb, var(--court-raised) 70%, var(--court-surface));
+  border-color: var(--court-accent);
+}
+
+body.lineup-superdesign.lab-guided .preset-card.is-active {
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border-color: var(--court-accent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--court-accent) 24%, transparent);
+}
+
+body.lineup-superdesign.lab-guided .preset-card.is-active span,
+body.lineup-superdesign.lab-guided .preset-card.is-active strong {
+  color: var(--court-on-accent);
+}
+
+body.lineup-superdesign .field {
+  color: var(--court-text);
+}
+
+body.lineup-superdesign .field :is(input, select),
+body.lineup-superdesign .search-field input {
+  min-height: 48px;
+  color: var(--court-text);
+  background-color: var(--court-raised);
+  border-color: var(--court-border);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+body.lineup-superdesign :is(.field select, .analytics-panel select, .opponent-scout select) {
+  color: var(--court-text);
+  background-color: var(--court-raised);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--court-muted) 50%),
+    linear-gradient(135deg, var(--court-muted) 50%, transparent 50%);
+  background-position: calc(100% - 19px) 50%, calc(100% - 13px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  border-color: var(--court-border);
+  box-shadow: none;
+}
+
+body.lineup-superdesign :is(.field input, .field select, .search-field input):is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--court-accent);
+}
+
+body.lineup-superdesign :is(.field__help, .helper) {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .field__help {
+  padding-left: 0.72rem;
+  border-left: 3px solid color-mix(in srgb, var(--court-accent) 56%, var(--court-border));
+}
+
+body.lineup-superdesign :is(.weights-panel, .model-choice, .simple-model-summary, .rotation-model-intro, .rotation-static-policy, .rotation-evidence-preview, .metric-field-guide, .analytics-panel, .opponent-scout, .player-pool-details, .active-selection-tray) {
+  color: var(--court-text);
+  background: var(--court-raised);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign :is(.weights-panel, .metric-field-guide, .analytics-panel, .opponent-scout, .player-pool-details) {
+  border-radius: 14px;
+}
+
+body.lineup-superdesign :is(.weights-panel, .analytics-panel, .metric-field-guide, .opponent-scout, .player-pool-details) > summary {
+  min-height: 48px;
+  color: var(--court-text);
+}
+
+body.lineup-superdesign .weights-panel > summary {
+  color: var(--court-accent);
+}
+
+body.lineup-superdesign .weight-share-summary {
+  color: var(--court-text);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign :is(.range-field, .range-field output) {
+  color: var(--court-text);
+}
+
+body.lineup-superdesign .range-field small {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .range-field input {
+  accent-color: var(--court-accent);
+}
+
+body.lineup-superdesign .constraint-groups fieldset,
+body.lineup-superdesign .metric-field-guide__grid article {
+  color: var(--court-text);
+  background: var(--court-raised);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign .constraint-groups legend,
+body.lineup-superdesign .metric-field-guide__grid h3 {
+  color: var(--court-text);
+}
+
+body.lineup-superdesign :is(.metric-field-guide__grid p, .opponent-scout__heading p, .rotation-model-intro p, .rotation-static-policy span) {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .player-pool-details > summary::after,
+body.lineup-superdesign .opponent-scout > summary::after {
+  color: var(--court-accent);
+  background: var(--court-surface);
+}
+
+body.lineup-superdesign :is(.player-table, .alternatives-table, .compare-table) :is(th, caption) {
+  color: var(--court-muted);
+  background: var(--court-raised);
+}
+
+body.lineup-superdesign :is(.player-table, .alternatives-table, .compare-table) :is(th, td) {
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign .player-table tbody tr {
+  color: var(--court-text);
+  background: var(--court-surface);
+}
+
+body.lineup-superdesign .player-table tbody tr:is(:hover, .is-locked, .is-ineligible) {
+  background: var(--court-raised);
+}
+
+/* The result action becomes the live equivalent of the draft's final review
+ * ticket: it remains the same submit button, simply promoted visually. */
+body.lineup-superdesign .builder-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 320px);
+  align-items: start;
+  gap: 1.15rem;
+}
+
+body.lineup-superdesign .builder-main {
+  grid-column: 1;
+  grid-row: 1;
+  gap: 1.15rem;
+}
+
+body.lineup-superdesign .builder-sidebar {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: 1rem;
+  margin-top: 0;
+}
+
+body.lineup-superdesign.lab-guided .run-card {
+  position: relative;
+  overflow: hidden;
+  color: var(--sd-rail-text);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--court-team-primary) 28%, #101b46), #101b46 68%);
+  border-color: color-mix(in srgb, var(--court-team-highlight) 65%, #ffffff 35%);
+  box-shadow: var(--sd-shadow-large);
+}
+
+body.lineup-superdesign .run-card::before {
+  content: "Game-plan ticket";
+  display: block;
+  margin-bottom: 0.38rem;
+  color: var(--sd-rail-accent);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.lineup-superdesign .run-card :is(h2, .eyebrow, .run-card__intro) {
+  color: var(--sd-rail-text);
+}
+
+body.lineup-superdesign .run-card .eyebrow {
+  color: var(--sd-rail-accent);
+}
+
+body.lineup-superdesign .run-card__summary {
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+body.lineup-superdesign .run-card__summary div,
+body.lineup-superdesign .run-card .search-scope {
+  color: var(--sd-rail-text);
+  background: rgb(255 255 255 / 0.075);
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+body.lineup-superdesign .run-card :is(.run-card__summary dt, .run-card__intro, .run-card__note, .search-scope span) {
+  color: var(--sd-rail-muted);
+}
+
+body.lineup-superdesign .run-card :is(.run-card__summary dd, .search-scope strong) {
+  color: var(--sd-rail-text);
+}
+
+body.lineup-superdesign main .button,
+body.lineup-superdesign main .button--solve {
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border-color: var(--court-accent);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+body.lineup-superdesign main .button:is(:hover, :focus-visible) {
+  filter: brightness(1.06);
+}
+
+body.lineup-superdesign main :is(.button--quiet, .text-button) {
+  color: var(--court-text);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+body.lineup-superdesign .run-card :is(.button--quiet, .text-button) {
+  color: var(--sd-rail-text);
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.2);
+}
+
+body.lineup-superdesign .run-card .button--solve {
+  color: var(--court-on-accent);
+  background: var(--court-accent);
+  border-color: var(--court-accent);
+}
+
+body.lineup-superdesign .results {
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border: 1px solid var(--court-border);
+  border-top: 4px solid var(--court-team-highlight);
+  border-radius: 20px;
+  box-shadow: var(--sd-shadow-large);
+}
+
+body.lineup-superdesign .results__heading {
+  border-bottom-color: var(--court-border);
+}
+
+body.lineup-superdesign .empty-result {
+  color: var(--court-text);
+  background: var(--court-raised);
+  border: 1px dashed var(--court-border);
+  box-shadow: none;
+}
+
+body.lineup-superdesign .empty-result__mark {
+  color: var(--court-accent);
+  opacity: 0.65;
+}
+
+body.lineup-superdesign :is(.simple-result-insight, .lineup-dna__swap, .lineup-dna__counts > div, .simple-result-model-note, .result-evidence > div, .result-ranking-context > div, .benchmark-explainer, .unit-proof-frame, .fan-report, .compare-card, .watch-card, .lineup-player) {
+  color: var(--court-text);
+  background: var(--court-raised);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign :is(.simple-result-insight p, .lineup-dna__header p:not(.eyebrow), .lineup-dna__swap > p, .simple-result-model-note p) {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .lineup-dna__source {
+  color: var(--court-accent);
+  background: var(--court-raised);
+  border-color: var(--court-border);
+}
+
+body.lineup-superdesign :is(.model-card, .data-note) {
+  color: var(--court-text);
+  background: var(--court-surface);
+  border-color: var(--court-border);
+  box-shadow: var(--sd-shadow);
+}
+
+body.lineup-superdesign :is(.model-card p, .data-note p) {
+  color: var(--court-muted);
+}
+
+body.lineup-superdesign .model-card__number {
+  color: color-mix(in srgb, var(--court-accent) 72%, var(--court-muted));
+}
+
+body.lineup-superdesign .lab-footer {
+  color: #e6edf9;
+  background: #0c1326;
+}
+
+body.lineup-superdesign .lab-footer a {
+  color: var(--sd-rail-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.lineup-superdesign .hero__copy { animation: sd-arrive 360ms ease-out both; }
+  body.lineup-superdesign .hero-outcomes { animation: sd-arrive 420ms 60ms ease-out both; }
+  body.lineup-superdesign .experience-switcher { animation: sd-arrive 300ms 100ms ease-out both; }
+  body.lineup-superdesign .tool-view:not([hidden]),
+  body.lineup-superdesign .results:not([hidden]) { animation: sd-arrive 240ms ease-out both; }
+  body.lineup-superdesign :is(.weights-panel, .analytics-panel, .metric-field-guide, .opponent-scout, .player-pool-details)[open] > :not(summary) { animation: sd-arrive 180ms ease-out both; }
+  @media (hover: hover) {
+    body.lineup-superdesign .preset-card { transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
+    body.lineup-superdesign .preset-card:hover { transform: translateY(-2px); }
+    body.lineup-superdesign .button { transition: transform 180ms ease, filter 180ms ease, background-color 180ms ease; }
+    body.lineup-superdesign .button:hover { transform: translateY(-1px); }
+  }
+}
+
+@keyframes sd-arrive {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1080px) {
+  body.lineup-superdesign .hero__grid { grid-template-columns: 1fr; }
+  body.lineup-superdesign .hero h1 { max-width: 13ch; }
+  body.lineup-superdesign .hero-outcomes { max-width: none; }
+  body.lineup-superdesign .builder-grid { grid-template-columns: minmax(0, 1fr); }
+  body.lineup-superdesign .builder-sidebar { grid-column: 1; grid-row: auto; position: static; margin-top: 0; }
+  body.lineup-superdesign .run-card__summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  body.lineup-superdesign .header-inner { min-height: 76px; }
+  body.lineup-superdesign .fan-suite-nav__scroll { width: calc(100% - 1rem); }
+  body.lineup-superdesign .experience-switcher { align-items: stretch; flex-direction: column; }
+  body.lineup-superdesign .experience-switcher__buttons { display: grid; grid-template-columns: 1fr 1fr; }
+  body.lineup-superdesign .tool-nav { justify-content: flex-start; }
+  body.lineup-superdesign .live-data-panel__controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.lineup-superdesign .live-data-panel__controls .field:first-child,
+  body.lineup-superdesign .live-data-panel__controls .button { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+  body.lineup-superdesign .hero__grid { padding-block: 1.8rem 2.25rem; }
+  body.lineup-superdesign .lab-brand-lockup { align-items: flex-start; }
+  body.lineup-superdesign .lab-emblem { width: 74px; }
+  body.lineup-superdesign .hero h1 { font-size: clamp(2.1rem, 10vw, 3rem); }
+  body.lineup-superdesign .hero__actions .button { flex: 1 1 12rem; }
+  body.lineup-superdesign .hero__proof { display: grid; gap: 0.45rem; }
+  body.lineup-superdesign .dataset-strip { grid-template-columns: 1fr; }
+  body.lineup-superdesign .dataset-strip dl { justify-content: space-between; }
+  body.lineup-superdesign .field-row--three,
+  body.lineup-superdesign .constraint-groups,
+  body.lineup-superdesign .rotation-model-grid,
+  body.lineup-superdesign .weight-grid { grid-template-columns: 1fr; }
+  body.lineup-superdesign .range-field { grid-template-columns: minmax(0, 1fr) 42px; }
+  body.lineup-superdesign .range-field input { grid-column: 1 / -1; grid-row: 2; }
+  body.lineup-superdesign .run-card__summary { grid-template-columns: 1fr; }
+  body.lineup-superdesign .results__heading,
+  body.lineup-superdesign .view-heading--actions { align-items: stretch; flex-direction: column; }
+  body.lineup-superdesign .results__actions { width: 100%; }
+  body.lineup-superdesign .results__actions .button { flex: 1 1 11rem; }
+}
+
+@media (max-width: 460px) {
+  body.lineup-superdesign .header-inner { width: calc(100% - 1rem); }
+  body.lineup-superdesign .brand-logo { width: 46px; height: 46px; }
+  body.lineup-superdesign .lineup-header-shop { display: none; }
+  body.lineup-superdesign .fan-suite-nav__link { padding-inline: 0.5rem; }
+  body.lineup-superdesign .live-data-panel__controls { grid-template-columns: 1fr; }
+  body.lineup-superdesign .live-data-panel__controls :is(.field, .button) { grid-column: auto; }
+  body.lineup-superdesign .step-heading { align-items: flex-start; }
+  body.lineup-superdesign .hero__copy,
+  body.lineup-superdesign .lab-brand-lockup,
+  body.lineup-superdesign .lab-brand-lockup > div,
+  body.lineup-superdesign .hero h1 {
+    min-width: 0;
+    max-width: 100%;
+  }
+  body.lineup-superdesign .hero h1,
+  body.lineup-superdesign .hero__lede {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.lineup-superdesign *,
+  body.lineup-superdesign *::before,
+  body.lineup-superdesign *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body.lineup-superdesign {
+    --court-canvas: #ffffff !important;
+    --court-surface: #ffffff !important;
+    --court-raised: #f4f4f4 !important;
+    --court-text: #111111 !important;
+    --court-muted: #333333 !important;
+    --court-border: #777777 !important;
+    --court-accent: #172238 !important;
+    --court-on-accent: #ffffff !important;
+  }
+  body.lineup-superdesign :is(.fan-suite-nav, .experience-switcher, .tool-nav, .builder-sidebar, .mobile-solve-bar) { display: none !important; }
+}
+
+/* Keep observed labels and result explanations inside their responsive cards. */
+body.lineup-superdesign :is(.live-data-panel__intro, .step-heading, .view-heading, .results__heading, .run-card__summary > div, .dataset-strip dl) {
+  min-width: 0;
+}
+
+body.lineup-superdesign :is(.live-data-panel__intro p, .step-heading p, .view-heading p, .run-card__intro, .run-card__note, .dataset-strip dd) {
+  overflow-wrap: anywhere;
+}
+
+/* The sticky storefront header and fan-tools rail share the top of the
+   viewport; keep a focused workflow heading fully visible after each step. */
+body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+  scroll-margin-top: calc(var(--fan-suite-header-offset, 88px) + 3rem);
+}
+
+@media (max-width: 760px) {
+  body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+    scroll-margin-top: calc(var(--fan-suite-header-offset, 88px) + 4.6rem);
+  }
+}
+
+/* The retained storefront header changes height when its action group or
+   tool rail wraps at intermediate widths; keep step transitions below that
+   chrome instead of assuming the desktop offset. */
+@media (min-width: 761px) and (max-width: 900px) {
+  body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+    scroll-margin-top: 9.6rem;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 912px) {
+  body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+    scroll-margin-top: 11.65rem;
+  }
+}
+
+@media (min-width: 913px) and (max-width: 1180px) {
+  body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+    scroll-margin-top: 11rem;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1364px) {
+  body.lineup-superdesign.lab-guided.court-themed .journey-heading {
+    scroll-margin-top: 10.1rem;
+  }
+}
+
+/* Keep direct links to the workspace clear of the sticky fan-suite rail. */
+body.lineup-superdesign :is(#workspace, #optimizerView) {
+  scroll-margin-top: calc(var(--fan-suite-header-offset, 88px) + 1rem);
+}
+
+/* Annotation pass: make the identity row and destinations one readable bar,
+   then keep the workflow itself dense and explicit. */
+body.lineup-superdesign .site-header.fan-suite-header > .header-inner {
+  display:flex !important;
+  align-items:center !important;
+  gap:.8rem !important;
+  min-height:76px;
+}
+body.lineup-superdesign .site-header.fan-suite-header .site-nav[hidden] { display:none !important; }
+body.lineup-superdesign .site-header.fan-suite-header > .header-inner > .fan-suite-nav {
+  display:block !important;
+  flex:1 1 auto;
+  width:auto !important;
+  min-width:0;
+  position:static !important;
+  border:0 !important;
+  background:transparent !important;
+}
+body.lineup-superdesign .site-header.fan-suite-header > .header-inner > .fan-suite-nav > .fan-suite-nav__scroll {
+  display:flex !important;
+  align-items:center;
+  gap:.35rem;
+  width:100% !important;
+  max-width:none !important;
+  min-width:0;
+  overflow-x:auto;
+  padding:.2rem 0;
+}
+body.lineup-superdesign .site-header.fan-suite-header .fan-suite-nav__link {
+  flex:0 0 auto;
+  min-height:44px;
+  height:44px;
+  padding:.38rem .68rem;
+  border-radius:999px;
+  color:#dce6fa;
+  background:#ffffff0a;
+  border:1px solid #ffffff20;
+  font:800 .76rem/1 Manrope,system-ui,sans-serif;
+  white-space:nowrap;
+}
+body.lineup-superdesign .site-header.fan-suite-header .fan-suite-nav__link img { width:30px !important; height:30px !important; object-fit:contain; background:transparent; }
+body.lineup-superdesign .site-header.fan-suite-header .fan-suite-nav__link[aria-current="page"] { color:#15223f; background:#f4f7fc; border-color:#f4f7fc; box-shadow:inset 0 -3px var(--court-team-trim); }
+body.lineup-superdesign .hero__grid { padding-block:1.3rem 2.15rem; }
+body.lineup-superdesign .lab-brand-lockup { align-items:center; }
+body.lineup-superdesign .lab-brand-lockup .lab-emblem { background:transparent !important; }
+body.lineup-superdesign .lab-brand-lockup .lab-emblem img { width:clamp(108px,13vw,168px); height:auto; object-fit:contain; }
+body.lineup-superdesign .journey-heading { padding-top:.5rem; margin-top:0; }
+body.lineup-superdesign .journey-heading__brand img { width:clamp(88px,10vw,132px); height:auto; object-fit:contain; background:transparent; }
+body.lineup-superdesign .player-pool-details__content { padding:1rem; }
+body.lineup-superdesign .player-pool-details__content .player-table { font-size:.9rem; }
+body.lineup-superdesign .player-pool-details__content .player-table thead th { position:sticky; top:0; z-index:2; }
+body.lineup-superdesign .player-pool-details__content .player-table tbody tr:hover { background:color-mix(in srgb,var(--court-accent) 10%,var(--court-surface)); }
+body.lineup-superdesign .journey-stage--rules .field input:checked + label,
+body.lineup-superdesign .journey-stage--rules .field select:focus-visible,
+body.lineup-superdesign .journey-stage--rules .range-field input:focus-visible { outline:3px solid var(--court-focus); outline-offset:2px; }
+body.lineup-superdesign .journey-stage--rules .weights-panel,
+body.lineup-superdesign .journey-stage--rules .constraint-groups fieldset { box-shadow:inset 3px 0 var(--court-accent); }
+body.lineup-superdesign .journey-stage--review .run-card { color:var(--court-text); background:var(--court-surface); border-color:var(--court-border); }
+body.lineup-superdesign:not(.dark-mode) .journey-stage--review .run-card :is(h2,.eyebrow,.run-card__intro,.run-card__summary dd) { color:var(--court-text); }
+body.lineup-superdesign:not(.dark-mode) .journey-stage--review .run-card :is(.run-card__summary div,.search-scope) { color:var(--court-text); background:var(--court-raised); border-color:var(--court-border); }
+body.lineup-superdesign .lab-footer { padding:2.5rem 0 1rem; background:#0c1326; }
+body.lineup-superdesign .lab-footer__inner { position:relative; z-index:1; display:flex; justify-content:space-between; gap:2rem; }
+body.lineup-superdesign .lab-footer__brand { display:flex; align-items:center; gap:.8rem; max-width:30rem; }
+body.lineup-superdesign .lab-footer__brand img { width:64px; height:64px; object-fit:contain; }
+body.lineup-superdesign .lab-footer__brand strong { color:#f4f6fa; font:700 1.35rem/1 "Barlow Condensed",sans-serif; }
+body.lineup-superdesign .lab-footer__brand p { margin:.3rem 0 0; color:#b1bed2; font-size:.85rem; }
+body.lineup-superdesign .lab-footer__links { display:flex; gap:3rem; }
+body.lineup-superdesign .lab-footer__links div { display:grid; gap:.35rem; align-content:start; }
+body.lineup-superdesign .lab-footer__links strong { color:#f4d37c; font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; }
+body.lineup-superdesign .lab-footer__links a { color:#dce6fa; font-size:.85rem; text-decoration:none; }
+body.lineup-superdesign .lab-footer__bottom { position:relative; z-index:1; display:flex; justify-content:space-between; gap:1rem; margin-top:1.6rem; padding-top:.8rem; border-top:1px solid #ffffff20; color:#b1bed2; font-size:.75rem; }
+@media (max-width:900px) {
+  body.lineup-superdesign .site-header.fan-suite-header > .header-inner { flex-wrap:wrap; min-height:0; padding-block:.55rem; }
+  body.lineup-superdesign .site-header.fan-suite-header > .header-inner > .fan-suite-nav { order:3; flex-basis:100%; }
+  body.lineup-superdesign .lab-footer__inner, body.lineup-superdesign .lab-footer__bottom { flex-direction:column; }
+  body.lineup-superdesign .lab-footer__links { gap:1.5rem; }
+}

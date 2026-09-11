@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width,initial-scale=1" name="viewport">
   <title>Fan Tool Workshop | DJ's House of Cards &amp; Comics</title>
-  <meta content="Preview upcoming fan tools, their setup choices, planned steps, and what is still being built." name="description">
+  <meta content="Configure and explore upcoming fan tools." name="description">
   <meta content="noindex,follow,max-image-preview:large" name="robots">
   <meta content="#1f2fa3" name="theme-color">
   <meta content="light dark" name="color-scheme">
@@ -12,20 +12,21 @@
   <meta content="Preview the framework for upcoming DJHC analytics games and fan tools." property="og:description">
   <meta content="https://www.djshouseofcards-comics.com/tools/workshop/" property="og:url">
   <meta content="https://www.djshouseofcards-comics.com/assets/dj-logo.png" property="og:image">
-  <link href="../../styles.css?v=20260908a" rel="stylesheet">
-  <link href="../../styles-mobile-overrides.css?v=20260908a" rel="stylesheet">
-  <link href="../fan-tools.css?v=20260909b" rel="stylesheet">
-  <link href="./tool-workshop.css?v=20260909b" rel="stylesheet">
+  <link href="../../styles.css?v=20260909m" rel="stylesheet">
+  <link href="../../styles-mobile-overrides.css?v=20260909m" rel="stylesheet">
+  <link href="../fan-tools.css?v=20260909m" rel="stylesheet">
+  <link href="./tool-workshop.css?v=20260909m" rel="stylesheet">
   <link href="https://www.djshouseofcards-comics.com/tools/workshop/" rel="canonical">
-  <link href="../../site.webmanifest?v=20260908a" rel="manifest">
+  <link href="../../site.webmanifest?v=20260909m" rel="manifest">
   <link href="../../assets/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png">
   <link href="../../assets/icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
-  <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","@id":"https://www.djshouseofcards-comics.com/tools/workshop/#webpage","url":"https://www.djshouseofcards-comics.com/tools/workshop/","name":"Fan Tool Workshop | DJ's House of Cards & Comics","description":"Preview upcoming fan tools, their setup choices, planned steps, and what is still being built.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
-  <link rel="stylesheet" href="../basketball-theme.css?v=20260909b">
-  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909c">
+  <script id="seo-structured-data" type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","@id":"https://www.djshouseofcards-comics.com/tools/workshop/#webpage","url":"https://www.djshouseofcards-comics.com/tools/workshop/","name":"Fan Tool Workshop | DJ's House of Cards & Comics","description":"Configure and explore upcoming fan tools.","isPartOf":{"@id":"https://www.djshouseofcards-comics.com/#website"},"inLanguage":"en-US"}</script>
+  <link rel="stylesheet" href="../basketball-theme.css?v=20260909m">
+  <link rel="stylesheet" href="../superdesign-suite.css?v=20260909m">
+  <link rel="stylesheet" href="./superdesign-page.css?v=20260909m">
  </head>
 <body class="fan-tools-page tool-workshop-page dark-mode court-themed" data-page="fan-tools">
-<script src="../../theme-init.js?v=20260908a"></script>
+<script src="../../theme-init.js?v=20260909m"></script>
   <a class="skip-link" href="#mainContent">Skip to the fan tool framework</a>
   <header class="site-header">
    <div class="container header-inner">
@@ -64,6 +65,17 @@
     <button aria-label="Toggle color theme" class="theme-toggle theme-toggle--compact" id="themeToggle" type="button">Dark Mode</button>
    </div>
   </header>
+  <nav class="fan-suite-nav" aria-label="Fan tools navigation">
+   <div class="container fan-suite-nav__scroll">
+    <a class="fan-suite-nav__link" href="../index.html"><img src="../../assets/games/fan-tools-emblem-20260909.jpg" alt="" width="30" height="30">Fan Tools</a>
+    <a class="fan-suite-nav__link" href="../../lineup-lab/"><img src="../../assets/games/lineup-lab-emblem-20260907.webp" alt="" width="30" height="30">Lineup Lab</a>
+    <a class="fan-suite-nav__link" href="../fix-the-five/"><img src="../../assets/games/fix-the-five-emblem-20260907.webp" alt="" width="30" height="30">Fix the Five</a>
+    <a class="fan-suite-nav__link" href="../draft-night/"><img src="../../assets/games/draft-night-emblem-20260907.webp" alt="" width="30" height="30">Draft Night</a>
+    <a class="fan-suite-nav__link" href="../player-card-matchups/"><img src="../../assets/games/card-matchups-emblem-20260909.jpg" alt="" width="30" height="30">Player &amp; Cards</a>
+
+    <a class="fan-suite-nav__link" href="../scout-studio/"><img src="../../assets/games/scout-studio-emblem-20260909.jpg" alt="" width="30" height="30">Scout Studio</a>
+   </div>
+  </nav>
   <main id="mainContent" tabindex="-1">
    <section class="page-hero workshop-hero">
     <div class="container page-hero-card workshop-hero-card">
@@ -78,7 +90,7 @@
       <div class="workshop-hero-copy">
        <span class="kicker" id="workshopEyebrow">Upcoming fan tool</span>
        <h1 class="page-title" id="workshopTitle">Fan Tool Workshop</h1>
-       <p id="workshopSummary">Choose an upcoming tool to see its settings, steps, evidence boundary, and what is still being built.</p>
+       <p id="workshopSummary">Choose an upcoming idea to see how it would work and what it needs before launch.</p>
       </div>
       <aside aria-label="Workshop boundary" class="workshop-hero-panel">
        <div class="workshop-panel-top"><span class="workshop-status-label">Upcoming tool</span><span class="workshop-panel-marker" id="workshopMarker">Tool</span></div>
@@ -92,11 +104,12 @@
    <section class="container workshop-shell" id="workshop">
     <aside aria-label="Workshop controls" class="workshop-sidebar">
      <section aria-labelledby="experiencePickerHeading" class="workshop-card workshop-picker-card">
-      <span class="kicker">Choose a tool</span>
+      <span class="kicker">Step 1</span>
       <h2 id="experiencePickerHeading">Choose a tool</h2>
       <label for="experiencePicker">Upcoming tool</label>
       <select aria-describedby="experiencePickerHelp" id="experiencePicker" name="experience"></select>
       <p id="experiencePickerHelp">Each choice shows the settings and steps currently defined for that tool.</p>
+      <div class="workshop-tool-picker" id="workshopToolPicker" role="group" aria-label="Upcoming tool previews"></div>
      </section>
      <section aria-labelledby="boundaryHeading" class="workshop-card workshop-boundary-card">
       <span class="kicker">Still being built</span>
@@ -122,7 +135,7 @@
      </section>
      <section aria-labelledby="setupHeading" class="workshop-card workshop-setup-card">
        <div class="workshop-section-heading">
-       <div><span class="kicker">Your setup</span><h2 id="setupHeading">Choose your settings</h2></div>
+       <div><span class="kicker">Step 2 · Your setup</span><h2 id="setupHeading">Choose your settings</h2></div>
        <span class="workshop-state-badge" id="workshopState">Not saved</span>
       </div>
       <form id="workshopSetupForm">
@@ -176,9 +189,11 @@
    <div class="container footer-bottom"><span>DJ's House of Cards &amp; Comics &bull; Independent collector storefront</span><span>Actual-item photography &bull; Questions welcomed</span></div>
   </footer>
   <button aria-label="Back to top" class="back-to-top" id="backToTop" type="button">&uarr;</button>
-  <script defer src="../../core.js?v=20260908a"></script>
-  <script defer src="../../nav.js?v=20260908a"></script>
-  <script type="module" src="./tool-workshop.js?v=20260909b"></script>
-  <script type="module" src="../basketball-theme.js?v=20260909b"></script>
+  <script defer src="../../core.js?v=20260909m"></script>
+  <script defer src="../../nav.js?v=20260909m"></script>
+   <script type="module" src="./tool-workshop.js?v=20260909m"></script>
+   <script type="module" src="../basketball-theme.js?v=20260909m"></script>
+   <script type="module" src="../superdesign-motion.js?v=20260909m"></script>
+   <script type="module" src="./superdesign-page.js?v=20260909m"></script>
  </body>
 </html>

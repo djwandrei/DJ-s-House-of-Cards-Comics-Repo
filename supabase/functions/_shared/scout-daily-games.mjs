@@ -7,17 +7,18 @@
  */
 
 export const SCOUT_DAILY_GAME_CONTRACT_VERSION = 1;
-// v2 is the first public compiler release backed by the expanded, calibrated
-// 2020–26 Scout package.  The contract remains v1 so browser clients can keep
+// v3 is the public compiler release backed by the completed, calibrated
+// 2017–26 Scout package. The contract remains v1 so browser clients can keep
 // validating the same board/reveal shape while the model revision changes.
-export const SCOUT_DAILY_GAME_MODEL_VERSION = 'scout-daily-games-v2';
+export const SCOUT_DAILY_GAME_MODEL_VERSION = 'scout-daily-games-v3';
 export const SCOUT_DAILY_GAME_KINDS = Object.freeze(['fix-the-five', 'draft-night']);
 export const SCOUT_DAILY_GAME_FAMILIES = Object.freeze([
   'team-season',
   'franchise-window',
   'multi-season-pool',
 ]);
-export const SCOUT_DAILY_GAME_SEASONS = Object.freeze([2021, 2022, 2023, 2024, 2025, 2026]);
+// Values are season end years: 2017–18 through 2025–26.
+export const SCOUT_DAILY_GAME_SEASONS = Object.freeze([2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]);
 
 const GAME_SEASON_SET = new Set(SCOUT_DAILY_GAME_SEASONS);
 const SLOT_ORDER = Object.freeze(['G', 'G', 'F', 'F', 'C']);
@@ -201,8 +202,9 @@ function normalizeScope(raw) {
   }
   const seasonEndYears = [...new Set((Array.isArray(model.seasonEndYears) ? model.seasonEndYears : []).map(Number))]
     .sort((left, right) => left - right);
-  if (!seasonEndYears.length || seasonEndYears.some((year) => !GAME_SEASON_SET.has(year))) {
-    throw new Error(`${id} must cover only 2020\u201321 through 2025\u201326 Scout seasons.`);
+  if (!seasonEndYears.length || seasonEndYears.length > SCOUT_DAILY_GAME_SEASONS.length
+    || seasonEndYears.some((year) => !GAME_SEASON_SET.has(year))) {
+    throw new Error(`${id} must cover only 2017\u201318 through 2025\u201326 Scout seasons.`);
   }
   const scope = {
     id,

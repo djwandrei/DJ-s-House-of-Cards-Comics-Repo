@@ -209,6 +209,102 @@ export function describeScoutSeasonProfile(row) {
   };
 }
 
+// The completed schema-v4 package carries seasonDirectStats directly on each
+// team player profile.  Older Scout packages supplied the same presentation
+// shape through a separate additive JSONL table; keep this adapter deliberately
+// narrow so the embedded event totals never cross the public boundary.
+export function describeEmbeddedScoutSeasonProfiles(row, teamName = null) {
+  const source = row?.seasonDirectStats;
+  if (!source || typeof source !== 'object' || Array.isArray(source)) return [];
+  const safeTeam = typeof teamName === 'string' && teamName.trim() ? teamName.trim() : text(row?.team);
+  const positions = (Array.isArray(row?.listedPositions) ? row.listedPositions : Array.isArray(row?.positions) ? row.positions : [])
+    .map(value => typeof value === 'string' ? value.trim() : '')
+    .filter(value => value && value.length <= 20)
+    .slice(0, 8);
+  const finiteNonNegative = value => number(value) !== null && number(value) >= 0 ? number(value) : null;
+  const integerNonNegative = value => count(value);
+  const ratioValue = (numerator, denominator) => {
+    const n = finiteNonNegative(numerator), d = finiteNonNegative(denominator);
+    return n !== null && d !== null && d > 0 ? round(n / d) : null;
+  };
+  const component = (key, value, numerator, denominator, games, unit) => {
+    const knownGames = integerNonNegative(games);
+    const observed = number(value) !== null && number(value) >= 0 && knownGames !== null && knownGames > 0;
+    return { value: observed ? round(value) : null,
+      numerator: integerNonNegative(numerator), denominator: integerNonNegative(denominator),
+      knownGames, unit, status: observed ? (knownGames < 5 ? 'limited_sample' : 'observed') : 'unavailable' };
+  };
+  return Object.entries(source)
+    .sort(([left], [right]) => Number(left) - Number(right))
+    .map(([seasonRaw, direct]) => {
+      const seasonStartYear = Number(seasonRaw);
+      if (!Number.isSafeInteger(seasonStartYear) || seasonStartYear < 1947
+        || !direct || typeof direct !== 'object' || Array.isArray(direct)) return null;
+      const box = direct.boxScoreTotals && typeof direct.boxScoreTotals === 'object' ? direct.boxScoreTotals : {};
+      const split = row?.seasonSplits?.[seasonRaw]?.onCourt || {};
+      const games = integerNonNegative(direct.scope?.verifiedGames ?? split.games);
+      const minutes = finiteNonNegative(direct.scope?.matchingMinutes ?? split.minutes);
+      const totals = {
+        points: integerNonNegative(box.points),
+        fieldGoalAttempts: integerNonNegative(box.fieldGoalAttempts),
+        fieldGoalsMade: integerNonNegative(box.fieldGoalsMade),
+        twoPointAttempts: integerNonNegative(box.twoPointAttempts),
+        twoPointMakes: integerNonNegative(box.twoPointMakes),
+        threePointAttempts: integerNonNegative(box.threePointAttempts),
+        threePointersMade: integerNonNegative(box.threePointersMade),
+        freeThrowAttempts: integerNonNegative(box.freeThrowAttempts),
+        freeThrowsMade: integerNonNegative(box.freeThrowsMade),
+        assists: integerNonNegative(box.assists),
+        rebounds: integerNonNegative(box.rebounds) ?? (
+          integerNonNegative(box.offensiveRebounds) !== null && integerNonNegative(box.defensiveRebounds) !== null
+            ? integerNonNegative(box.offensiveRebounds) + integerNonNegative(box.defensiveRebounds) : null),
+        turnovers: integerNonNegative(box.turnovers),
+        steals: integerNonNegative(box.steals),
+        blocks: integerNonNegative(box.blocks),
+        personalFouls: integerNonNegative(box.personalFouls),
+      };
+      const observed = direct.observed === true
+        || (number(direct.coverage?.structuredStatisticRows) !== null && direct.coverage.structuredStatisticRows > 0)
+        || (games !== null && games > 0);
+      if (!observed || games === null || minutes === null) return null;
+      const perGame = Object.fromEntries(['points', 'assists', 'rebounds', 'turnovers', 'steals', 'blocks', 'personalFouls']
+        .map(key => [key, totals[key] !== null && games > 0 ? round(totals[key] / games) : null]));
+      const shooting = direct.shooting && typeof direct.shooting === 'object' ? direct.shooting : {};
+      const involvementTotal = finiteNonNegative(direct.possessionEndingInvolvementProxy?.value);
+      const involvement = involvementTotal !== null && minutes > 0 ? round(36 * involvementTotal / minutes) : null;
+      const components = {
+        fieldGoalAccuracy: component('fieldGoalAccuracy', shooting.fieldGoalPercentage, totals.fieldGoalsMade, totals.fieldGoalAttempts, games, 'percent'),
+        threePointAccuracy: component('threePointAccuracy', shooting.threePointPercentage, totals.threePointersMade, totals.threePointAttempts, games, 'percent'),
+        threePointFrequency: component('threePointFrequency', ratioValue(totals.threePointAttempts, totals.fieldGoalAttempts), totals.threePointAttempts, totals.fieldGoalAttempts, games, 'percent'),
+        freeThrowAccuracy: component('freeThrowAccuracy', shooting.freeThrowPercentage, totals.freeThrowsMade, totals.freeThrowAttempts, games, 'percent'),
+        ...Object.fromEntries(['points', 'assists', 'turnovers', 'rebounds', 'steals', 'blocks']
+          .map(key => [key, component(key, perGame[key], totals[key], games, games, 'perGame')])),
+      };
+      const completeness = ['points', 'fieldGoalAttempts', 'fieldGoalsMade', 'assists', 'rebounds']
+        .map(key => ({ field: key, knownGames: games }));
+      return {
+        seasonStartYear,
+        season: `${seasonStartYear}–${String(seasonStartYear + 1).slice(-2)}`,
+        phase: 'all phases', scope: 'team', team: safeTeam || null, positions,
+        firstGameAt: null, lastGameAt: null, games, minutes,
+        perGame,
+        shooting: {
+          fieldGoalPercentage: finiteNonNegative(shooting.fieldGoalPercentage),
+          threePointPercentage: finiteNonNegative(shooting.threePointPercentage),
+          freeThrowPercentage: finiteNonNegative(shooting.freeThrowPercentage),
+          threePointAttemptShare: ratioValue(totals.threePointAttempts, totals.fieldGoalAttempts),
+          trueShootingPercentage: finiteNonNegative(shooting.trueShootingPercentage),
+        },
+        involvement,
+        components,
+        completeness,
+        player: text(row?.player), playerName: text(row?.player),
+        note: 'Observed season totals from the package’s embedded direct-stat rows. Missing seasons remain gaps; this is descriptive history, not a forecast.',
+      };
+    })
+    .filter(Boolean);
+}
+
 export function describeScoutSample(metrics) {
   const offensePossessions = count(metrics?.offensivePossessions);
   const defensePossessions = count(metrics?.defensivePossessions);

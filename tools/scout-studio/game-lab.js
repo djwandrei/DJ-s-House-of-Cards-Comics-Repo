@@ -1,5 +1,5 @@
-import { dailyMatchup, teamGameEvidence, simulateMatchup, GAME_LAB_POLICY } from './possession-simulator.js?v=20260908a';
-import { formatStudioValue as format } from './studio-model.js?v=20260908a';
+import { dailyMatchup, teamGameEvidence, simulateMatchup, GAME_LAB_POLICY } from './possession-simulator.js?v=20260909m';
+import { formatStudioValue as format } from './studio-model.js?v=20260909m';
 
 const node = (tag, text, className) => {
   const result = document.createElement(tag);
@@ -23,6 +23,16 @@ function numberInput(labelText, id, value, min, max, step = 1) {
   const label = node('label', labelText), input = node('input');
   Object.assign(input, { id, type: 'number', value, min, max, step, required: true });
   label.append(input); return { label, input };
+}
+function rangeInput(labelText, id, value, min, max, step = 1, formatValue = value => value) {
+  const label = node('label', undefined, 'studio-range-control');
+  const heading = node('span', labelText, 'studio-range-control__label');
+  const output = node('output', formatValue(value), 'studio-range-control__value');
+  const input = node('input');
+  Object.assign(input, { id, type: 'range', value, min, max, step, required: true });
+  input.setAttribute('aria-label', labelText);
+  input.addEventListener('input', () => { output.value = formatValue(input.value); output.textContent = formatValue(input.value); });
+  label.append(heading, output, input); return { label, input };
 }
 function evidenceTable(headers, rows, label) {
   const wrap = node('div', undefined, 'studio-table-wrap'); wrap.tabIndex = 0;
@@ -52,10 +62,11 @@ export function createGameLab(root, request) {
   const brief = node('p', '', 'studio-muted'); brief.id = 'gameBrief'; setup.append(daily, brief);
   const assumptions = node('details', undefined, 'studio-panel'); assumptions.append(node('summary', 'Scenario settings and assumptions'));
   const fields = node('div', undefined, 'studio-roadmap');
-  const possessions = numberInput('Regulation possessions per team', 'gamePossessions', 100, 60, 140);
-  const weight = control('Weight on each team’s offense', 'gameOffenseWeight', [[0.5, '50% offense / 50% opposing defense'], [0.75, '75% offense / 25% opposing defense'], [0.25, '25% offense / 75% opposing defense'], [1, 'Own offense only'], [0, 'Opposing defense only']]);
+  const possessions = rangeInput('Regulation possessions per team', 'gamePossessions', 100, 60, 140, 1, value => `${value} poss.`);
+  const weight = rangeInput('Weight on each team’s offense', 'gameOffenseWeight', 0.5, 0, 1, 0.05,
+    value => `${Math.round(Number(value) * 100)}% own offense · ${Math.round((1 - Number(value)) * 100)}% opposing defense`);
   const gameFormat = control('Experiment', 'gameFormat', [['game', 'One game'], ['best_of_7', 'Best of seven']]);
-  const trials = numberInput('Repeated experiments', 'gameTrials', 1000, 100, 5000, 100);
+  const trials = rangeInput('Repeated experiments', 'gameTrials', 1000, 100, 5000, 100, value => `${Number(value).toLocaleString()} runs`);
   const seedLabel = node('label', 'Repeatable seed'), seed = node('input');
   Object.assign(seed, { id: 'gameSeed', type: 'text', maxLength: 80, pattern: '[a-zA-Z0-9:._\\-]+', required: true }); seedLabel.append(seed);
   fields.append(possessions.label, weight.label, gameFormat.label, trials.label, seedLabel);
@@ -84,7 +95,7 @@ export function createGameLab(root, request) {
     if (!source) return;
     const challenge = dailyMatchup(source.teams, source.snapshot, challengeDate());
     clearResult(); lastReport = null; a.input.value = challenge.a; b.input.value = challenge.b; season.input.value = challenge.season;
-    seed.value = challenge.seed; possessions.input.value = 100; weight.input.value = 0.5; trials.input.value = 1000; gameFormat.input.value = 'game'; call.input.value = '';
+    seed.value = challenge.seed; possessions.input.value = 100; weight.input.value = 0.5; weight.input.dispatchEvent(new Event('input')); trials.input.value = 1000; gameFormat.input.value = 'game'; call.input.value = '';
     brief.textContent = `Daily setup · ${challenge.date} (Central) · ${seasonLabel(challenge.season)}. One sample and seed for this Scout snapshot.`;
     status.textContent = 'Choose your side or explore without a pick. Team evidence loads when you run.';
   }
@@ -173,6 +184,11 @@ export function createGameLab(root, request) {
     source = value?.phase === 'ready' ? value : null;
     for (const field of [a.input, b.input]) field.replaceChildren(...(source?.teams || []).map(team => {
       const option = node('option', team.name); option.value = team.id; return option; }));
+    const sourceSeasons = Array.isArray(source?.source?.seasonStartYears) && source.source.seasonStartYears.length
+      ? source.source.seasonStartYears : GAME_LAB_POLICY.seasons;
+    season.input.replaceChildren(...sourceSeasons.map(year => {
+      const option = node('option', seasonLabel(year)); option.value = year; return option;
+    }));
     if (source) chooseDaily(); else status.textContent = 'A validated Scout snapshot is required.';
   } };
 }

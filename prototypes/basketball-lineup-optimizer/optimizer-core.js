@@ -214,12 +214,14 @@ const PLAYER_NUMERIC_FIELDS = Object.freeze([
   "points",
 ]);
 
-// A constrained minute state costs roughly 0.4 ms on the slow path observed in
-// browser QA. This is a per-candidate proof guard for an unusually difficult
-// set of production thresholds; it is not a ceiling on how many candidate
-// rotations the outer exact search may inspect.
-export const DEFAULT_MAX_CONSTRAINED_SOLVE_STATES = 10000;
-export const MAX_CONSTRAINED_SOLVE_STATES = 15000;
+// Rotation searches run in a cancellable Worker, so a production rule must
+// never silently turn into a fixed state-count cutoff. These names remain
+// exported for integrations that imported the old constants; Infinity now
+// explicitly means that the default exact proof is unbounded. Callers that
+// need a development/test watchdog may still pass a finite
+// `maxConstraintSearchStates` value.
+export const DEFAULT_MAX_CONSTRAINED_SOLVE_STATES = Number.POSITIVE_INFINITY;
+export const MAX_CONSTRAINED_SOLVE_STATES = Number.POSITIVE_INFINITY;
 // The browser only needs a handful of alternatives. Capping this protects the
 // exact enumerator from retaining an unbounded number of otherwise feasible
 // groups when this module is called outside the visible UI.
@@ -376,10 +378,23 @@ function normalizeIdList(value, label, reasons) {
   return ids.sort(compareIds);
 }
 
-function normalizeNonNegativeNumber(value, fallback, label, reasons, integer = false) {
+function normalizeNonNegativeNumber(
+  value,
+  fallback,
+  label,
+  reasons,
+  integer = false,
+  allowInfinity = false,
+) {
   if (value === undefined || value === null) return fallback;
   const number = Number(value);
-  if (!Number.isFinite(number) || number < 0 || (integer && !Number.isInteger(number))) {
+  const validNumber = Number.isFinite(number) ||
+    (allowInfinity && number === Number.POSITIVE_INFINITY);
+  if (
+    !validNumber ||
+    number < 0 ||
+    (integer && number !== Number.POSITIVE_INFINITY && !Number.isInteger(number))
+  ) {
     reasons.push(`${label} must be a non-negative${integer ? " integer" : " number"}.`);
     return fallback;
   }
@@ -576,11 +591,19 @@ function normalizeConfig(config = {}) {
     "maxConstraintSearchStates",
     reasons,
     true,
+    true,
   );
-  if (maxConstraintSearchStates < 1) {
+  if (maxConstraintSearchStates !== Number.POSITIVE_INFINITY && maxConstraintSearchStates < 1) {
     reasons.push("maxConstraintSearchStates must be at least 1.");
   }
-  if (maxConstraintSearchStates > MAX_CONSTRAINED_SOLVE_STATES) {
+  // Rotation's default is deliberately unbounded. Keep the legacy upper-bound
+  // validation only for finite values in callers that still opt into a local
+  // watchdog; Infinity is the documented exact-search default.
+  if (
+    Number.isFinite(maxConstraintSearchStates) &&
+    Number.isFinite(MAX_CONSTRAINED_SOLVE_STATES) &&
+    maxConstraintSearchStates > MAX_CONSTRAINED_SOLVE_STATES
+  ) {
     reasons.push(
       `maxConstraintSearchStates cannot exceed the browser-safe limit of ${MAX_CONSTRAINED_SOLVE_STATES}.`,
     );
@@ -4227,13 +4250,18 @@ function deriveHistoricalGuidanceBounds(
 
 const ROTATION_CONSTRAINT_TOLERANCE = 1e-9;
 // Side constraints are normally resolved in the first few exchanges (often a
-// single minute). Mixed-role states are much more expensive than all-flex
-// states because every neighbor requires another role-flow proof. Browser/Node
-// QA observed one 10,000-state mixed-role roster take more than 21 seconds, so
-// the per-roster ceiling is deliberately lower than the solve-wide allowance.
-// Reaching either limit remains a truthful exact-search abort, never a heuristic
-// answer mislabeled as optimal.
-const MAX_CONSTRAINED_ALLOCATION_STATES = 5000;
+// single minute). Mixed-role states can be expensive, but rotation mode runs in
+// a cancellable Worker and must finish the exact proof rather than returning a
+// heuristic answer at an arbitrary state count. A finite budget is still
+// accepted when an embedding explicitly supplies `maxConstraintSearchStates`.
+const MAX_CONSTRAINED_ALLOCATION_STATES = Number.POSITIVE_INFINITY;
+
+// Diagnostics travel through structured clone and, in some integrations, are
+// later JSON-serialized. Report an explicit null for an unbounded proof rather
+// than leaking JavaScript Infinity (which JSON turns into a misleading null).
+function diagnosticConstraintSearchLimit(limit) {
+  return Number.isFinite(limit) ? limit : null;
+}
 // A constraint-targeted seed is a performance aid, not a fallback answer. It
 // walks at most this many strictly improving violation steps, then inserts any
 // feasible plan into the ordinary best-first proof queue. The queue must still
@@ -4361,6 +4389,7 @@ function proveProjectedConstraintInfeasibility(
         bound(field, false) + ROTATION_CONSTRAINT_TOLERANCE < required).map(([field]) => field),
       impossibleTurnovers: Number.isFinite(constraints.maxTurnovers)
         && bound("turnovers", true) - ROTATION_CONSTRAINT_TOLERANCE > constraints.maxTurnovers,
+      impossibleJoint: null,
     };
   }
   const sortedIds = players.map((player) => player.id).sort(compareIds);
@@ -4399,7 +4428,138 @@ function proveProjectedConstraintInfeasibility(
       minimum - ROTATION_CONSTRAINT_TOLERANCE > constraints.maxTurnovers;
   }
 
-  return { impossibleStats, impossibleTurnovers };
+  // A roster can pass every independent bound while still failing the joint
+  // production request. A small family of non-negative weighted sums gives an
+  // exact infeasibility certificate for that case: every feasible plan must
+  // meet the weighted threshold, while objectivePositionAllocation computes
+  // the exact maximum weighted production under the same role and minute
+  // bounds. This catches common complementary-stat requests (for example,
+  // rebounds and assists) without walking the enormous exchange graph.
+  const impossibleJoint = proveJointProjectedConstraintInfeasibility(
+    players,
+    bounds,
+    requirements,
+    constraints,
+    failedStatus,
+    projectedRates,
+  );
+
+  return { impossibleStats, impossibleTurnovers, impossibleJoint };
+}
+
+/**
+ * Prove a joint linear production request impossible with a weighted-sum
+ * relaxation. The certificate is one-sided and therefore cannot reject a
+ * feasible plan: a maximum below the weighted threshold is conclusive. Keep
+ * the candidate set intentionally small (failed rules paired with each other
+ * active rule) so this remains cheap during the outer roster enumeration.
+ */
+function proveJointProjectedConstraintInfeasibility(
+  players,
+  bounds,
+  requirements,
+  constraints,
+  failedStatus = null,
+  projectedRates = null,
+) {
+  // Curves make production nonlinear in assigned minutes; combining their
+  // endpoint rates would not be a valid certificate. The exact exchange
+  // solver remains authoritative for that path.
+  if (projectedRates?.productionCurvesById?.size) return null;
+
+  const rules = [
+    ...Object.entries(constraints.statMinimums).map(([field, threshold]) => ({
+      key: `minimum-${field}`,
+      field,
+      sign: 1,
+      threshold,
+      failed: Boolean(failedStatus?.failedStatMinimums?.includes(field)),
+    })),
+    ...(Number.isFinite(constraints.maxTurnovers)
+      ? [{
+          key: "maximum-turnovers",
+          field: "turnovers",
+          sign: -1,
+          threshold: -constraints.maxTurnovers,
+          failed: Boolean(failedStatus?.failedMaxTurnovers),
+        }]
+      : []),
+  ];
+  if (rules.length < 2) return null;
+
+  const failedRules = rules.filter((rule) => rule.failed);
+  if (failedRules.length === 0) return null;
+  const candidateSets = [];
+  const seenSets = new Set();
+  const addSet = (set) => {
+    const ordered = set.slice().sort((left, right) => left.key.localeCompare(right.key));
+    const key = ordered.map((rule) => rule.key).join("|");
+    if (ordered.length >= 2 && !seenSets.has(key)) {
+      seenSets.add(key);
+      candidateSets.push(ordered);
+    }
+  };
+  for (const failed of failedRules) {
+    for (const other of rules) {
+      if (other.key !== failed.key) addSet([failed, other]);
+    }
+  }
+  // When several rules fail together, also test their full sum. This remains
+  // a single exact flow solve and often certifies an overloaded request that
+  // no pair catches.
+  if (failedRules.length >= 3) addSet(failedRules);
+
+  const sortedIds = players.map((player) => player.id).sort(compareIds);
+  const rateById = new Map(players.map((player) => [
+    player.id,
+    new Map(rules.map((rule) => [
+      rule.key,
+      rule.sign * playerPerMinuteRate(player, rule.field, projectedRates),
+    ])),
+  ]));
+
+  for (const set of candidateSets) {
+    const weightVariants = [
+      set.map(() => 1),
+      set.map((rule) => 1 / Math.max(1, Math.abs(Number(rule.threshold) || 0))),
+    ];
+    for (const weights of weightVariants) {
+      const weightedThreshold = set.reduce(
+        (total, rule, index) => total + weights[index] * rule.threshold,
+        0,
+      );
+      const weightedRates = new Map(sortedIds.map((id) => [
+        id,
+        set.reduce(
+          (total, rule, index) => total + weights[index] * rateById.get(id).get(rule.key),
+          0,
+        ),
+      ]));
+      if ([...weightedRates.values()].some((value) => !Number.isFinite(value))) continue;
+      const maximumFlow = objectivePositionAllocation(players, bounds, weightedRates, requirements);
+      if (!maximumFlow.feasible) continue;
+      const maximumMinutes = new Map(
+        sortedIds.map((id) => [id, maximumFlow.totalsByPlayer[id]]),
+      );
+      const maximum = [...maximumMinutes].reduce(
+        (total, [id, minutes]) => total + minutes * weightedRates.get(id),
+        0,
+      );
+      if (
+        Number.isFinite(maximum) &&
+        Number.isFinite(weightedThreshold) &&
+        maximum + ROTATION_CONSTRAINT_TOLERANCE < weightedThreshold
+      ) {
+        return {
+          ruleKeys: set.map((rule) => rule.key),
+          maximum,
+          required: weightedThreshold,
+          weights,
+        };
+      }
+    }
+  }
+  return null;
 }
 
 function allocationObjective(minutes, scores, roleConditionedScorePlan = null) {
@@ -5192,7 +5352,11 @@ function constrainedPositionAllocation(
   const sharedLimitReached = () =>
     sharedBudget && sharedBudget.used >= sharedBudget.limit;
   const consumeState = () => {
-    if (statesExamined >= MAX_CONSTRAINED_ALLOCATION_STATES || sharedLimitReached()) {
+    if (
+      (Number.isFinite(MAX_CONSTRAINED_ALLOCATION_STATES) &&
+        statesExamined >= MAX_CONSTRAINED_ALLOCATION_STATES) ||
+      sharedLimitReached()
+    ) {
       return false;
     }
     statesExamined += 1;
@@ -5209,7 +5373,9 @@ function constrainedPositionAllocation(
     projectedTotals: closestTotals,
     constraintSearchStates: statesExamined,
     solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
-    solveConstraintSearchStateLimit: sharedBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+    solveConstraintSearchStateLimit: diagnosticConstraintSearchLimit(
+      sharedBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+    ),
     constraintFeasibleSeedFound: Boolean(feasibleSeed),
     constraintFeasibleSeedRepairSteps: feasibleSeed?.repairSteps ?? 0,
     constraintFeasibleSeedSource: feasibleSeed?.source ?? null,
@@ -5252,7 +5418,7 @@ function constrainedPositionAllocation(
   // Cheap exact single-constraint bounds avoid searching obviously impossible
   // requests. The same proof is reused by the solve-wide first pass so a
   // provably impossible roster never enters the expensive contender queue.
-  const { impossibleStats, impossibleTurnovers } =
+  const { impossibleStats, impossibleTurnovers, impossibleJoint } =
     proveProjectedConstraintInfeasibility(
       players,
       bounds,
@@ -5261,12 +5427,13 @@ function constrainedPositionAllocation(
       initialStatus,
       projectedRates,
     );
-  if (impossibleStats.length > 0 || impossibleTurnovers) {
+  if (impossibleStats.length > 0 || impossibleTurnovers || impossibleJoint) {
     return {
       feasible: false,
       constraintInfeasible: true,
       failedStatMinimums: impossibleStats,
       failedMaxTurnovers: impossibleTurnovers,
+      constraintJointInfeasible: impossibleJoint,
       projectedTotals: initialTotals,
       constraintSearchStates: 0,
       solveConstraintSearchStatesUsed: sharedBudget?.used ?? statesExamined,
@@ -5405,8 +5572,9 @@ function constrainedPositionAllocation(
         projectedTotals: initialTotals,
         constraintSearchStates: 0,
         solveConstraintSearchStatesUsed: sharedBudget?.used ?? 0,
-        solveConstraintSearchStateLimit:
+        solveConstraintSearchStateLimit: diagnosticConstraintSearchLimit(
           sharedBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+        ),
         constraintFeasibleSeedFound: Boolean(feasibleSeed),
         constraintFeasibleSeedRepairSteps: feasibleSeed?.repairSteps ?? 0,
         constraintFeasibleSeedSource: feasibleSeed?.source ?? null,
@@ -5734,7 +5902,8 @@ export function allocateRotationMinutes(players, options = {}) {
   if (sharedConstraintSearchBudget !== null) {
     if (
       !isPlainObject(sharedConstraintSearchBudget) ||
-      !Number.isInteger(sharedConstraintSearchBudget.limit) ||
+      (sharedConstraintSearchBudget.limit !== Number.POSITIVE_INFINITY &&
+        !Number.isInteger(sharedConstraintSearchBudget.limit)) ||
       sharedConstraintSearchBudget.limit < 1 ||
       !Number.isInteger(sharedConstraintSearchBudget.used) ||
       sharedConstraintSearchBudget.used < 0
@@ -6018,8 +6187,11 @@ export function allocateRotationMinutes(players, options = {}) {
         usesRoleConditionedScoring ? roleConditionedScorePlan : null,
       );
       if (!constrainedFlow.feasible) {
+        const constraintSearchLimit = constrainedFlow.solveConstraintSearchStateLimit;
         const reason = constrainedFlow.constraintSearchLimitReached
-          ? `The constrained minute search reached its ${MAX_CONSTRAINED_ALLOCATION_STATES.toLocaleString()}-state safety limit before proving a plan.`
+          ? Number.isFinite(constraintSearchLimit)
+            ? `The constrained minute search reached its ${constraintSearchLimit.toLocaleString()}-state safety limit before proving a plan.`
+            : "The constrained minute search was stopped before proving a plan. Run it again or cancel it when needed."
           : "No role-feasible 240-minute plan can satisfy the requested projected production constraints.";
         return rotationFailure([reason], {
           category: constrainedFlow.constraintSearchLimitReached
@@ -6028,6 +6200,7 @@ export function allocateRotationMinutes(players, options = {}) {
           selectedPlayers: players.length,
           failedStatMinimums: constrainedFlow.failedStatMinimums,
           failedMaxTurnovers: constrainedFlow.failedMaxTurnovers,
+          constraintJointInfeasible: constrainedFlow.constraintJointInfeasible ?? null,
           closestProjectedTotals: constrainedFlow.projectedTotals,
           constraintSearchStates: constrainedFlow.constraintSearchStates,
           solveConstraintSearchStatesUsed: constrainedFlow.solveConstraintSearchStatesUsed,
@@ -6254,8 +6427,9 @@ export function allocateRotationMinutes(players, options = {}) {
         partitionedExactFrontierStates:
           positionFlow?.constraintPartitionedExactFrontierStates ?? 0,
         solveSearchStatesUsed: positionFlow?.solveConstraintSearchStatesUsed ?? 0,
-        solveSearchStateLimit:
+        solveSearchStateLimit: diagnosticConstraintSearchLimit(
           sharedConstraintSearchBudget?.limit ?? MAX_CONSTRAINED_ALLOCATION_STATES,
+        ),
       },
       ...(positionFlow
         ? {
@@ -7053,9 +7227,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       upperBound,
     };
   }
-  // Production-threshold proofs retain a bounded state search *inside each
-  // individual candidate*. The allowance is intentionally recreated per
-  // roster: the number of candidate rotations can never exhaust a shared
+  // Production-threshold proofs use a finite state budget only when a caller
+  // explicitly supplies one as a local watchdog. The default is unbounded and
+  // the allowance is recreated per roster: one candidate can never exhaust a
   // solve-wide budget or become a hidden candidate-count cap.
   const perCandidateConstraintSearchLimit = Math.min(
     normalizedConfig.maxConstraintSearchStates,
@@ -7170,6 +7344,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     positionMinimums: 0,
     statMinimums: Object.fromEntries(Object.keys(normalizedConfig.statMinimums).map((stat) => [stat, 0])),
     maxTurnovers: 0,
+    jointProduction: 0,
     rotationMinutes: 0,
     rotationPositionMinutes: 0,
     historicalWorkload: 0,
@@ -7260,7 +7435,9 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
           // solve-wide diagnostic separately reports states spent by other
           // candidates and must not leak into this rotation's audit.
           solveSearchStatesUsed: 0,
-          solveSearchStateLimit: perCandidateConstraintSearchLimit,
+          solveSearchStateLimit: diagnosticConstraintSearchLimit(
+            perCandidateConstraintSearchLimit,
+          ),
         },
       },
     };
@@ -7387,11 +7564,12 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
         status,
         rotationProjectedRates,
       );
-      if (proof.impossibleStats.length > 0 || proof.impossibleTurnovers) {
+      if (proof.impossibleStats.length > 0 || proof.impossibleTurnovers || proof.impossibleJoint) {
         recordProjectedConstraintRejection(
           proof.impossibleStats,
           proof.impossibleTurnovers,
         );
+        if (proof.impossibleJoint) rejectedByConstraint.jointProduction += 1;
         return;
       }
 
@@ -7613,7 +7791,7 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
             requiredPositionMinutes: { ...rotationPositionMinuteRequirements },
             constraintSearchStatesUsed,
             constraintSearchStateLimit: hasRotationProjectedConstraints
-              ? perCandidateConstraintSearchLimit
+              ? diagnosticConstraintSearchLimit(perCandidateConstraintSearchLimit)
               : null,
             ...(hasRotationProjectedConstraints
               ? {
@@ -7643,8 +7821,11 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
   let diagnostics = buildDiagnostics();
   if (exactSearchAbort) {
     const triggeredLimit = perCandidateConstraintSearchLimit;
+    const triggeredLimitLabel = Number.isFinite(triggeredLimit)
+      ? `${triggeredLimit.toLocaleString()}-state production-constraint proof limit`
+      : "explicit constrained-search stop";
     return failureResult(mode, size, [
-      `One candidate reached the per-roster ${triggeredLimit.toLocaleString()}-state production-constraint proof limit. No lineup was returned because that unresolved candidate could still be better than the feasible candidates already found. The outer rotation search has no candidate-count cap.`,
+      `One candidate reached an ${triggeredLimitLabel}. No lineup was returned because that unresolved candidate could still be better than the feasible candidates already found. The default rotation proof has no state-count cap.`,
     ], {
       ...diagnostics,
       category: "performance",
@@ -7652,8 +7833,8 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
       exactSearchCompleted: false,
       feasibleCombinationsBeforeAbort: feasibleCombinations,
       constraintSearchStatesUsed,
-      constraintSearchStateLimit: triggeredLimit,
-      solveConstraintSearchStateLimit: triggeredLimit,
+      constraintSearchStateLimit: diagnosticConstraintSearchLimit(triggeredLimit),
+      solveConstraintSearchStateLimit: diagnosticConstraintSearchLimit(triggeredLimit),
       solveWideConstraintSearchLimitReached: false,
       candidateConstraintSearchLimitReached: true,
       allocationDiagnostics: exactSearchAbort.diagnostics,
@@ -7676,6 +7857,11 @@ export function optimizeLineups(players, config = {}, runtime = {}) {
     if (rejectedByConstraint.maxTurnovers > 0) {
       reasons.push(
         `${rejectedByConstraint.maxTurnovers} candidate combination${rejectedByConstraint.maxTurnovers === 1 ? "" : "s"} exceeded the turnover maximum.`,
+      );
+    }
+    if (rejectedByConstraint.jointProduction > 0) {
+      reasons.push(
+        `${rejectedByConstraint.jointProduction} candidate rotation${rejectedByConstraint.jointProduction === 1 ? "" : "s"} failed a joint production bound under the exact role and minute limits.`,
       );
     }
     if (rejectedByConstraint.rotationMinutes > 0) {

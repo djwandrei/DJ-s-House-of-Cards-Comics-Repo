@@ -1,4 +1,4 @@
-import { palettes, paletteForTeam, themeFor } from './basketball-palettes.js?v=20260908a';
+import { palettes, paletteForTeam, themeFor } from './basketball-palettes.js?v=20260909m';
 
 // Appearance is a one-way consumer. It never changes rosters, rules, or scores.
 const root = document.body;
@@ -11,9 +11,8 @@ const destinations = [
   ['Lineup Lab', '../lineup-lab/', '../assets/games/lineup-lab-emblem-20260907.webp'],
   ['Fix the Five', './fix-the-five/', '../assets/games/fix-the-five-emblem-20260907.webp'],
   ['Draft Night', './draft-night/', '../assets/games/draft-night-emblem-20260907.webp'],
-  ['Scout Studio', './scout-studio/', '../assets/games/scout-studio-emblem-20260909.jpg'],
   ['Player & Cards', './player-card-matchups/', '../assets/games/card-matchups-emblem-20260909.jpg'],
-  ['Workshop', './workshop/', '../assets/games/workshop-emblem-20260909.jpg'],
+  ['Scout Studio', './scout-studio/', '../assets/games/scout-studio-emblem-20260909.jpg'],
 ];
 
 function readStoredTeam() {
@@ -89,6 +88,22 @@ function isCurrentDestination(url, label) {
 }
 
 function mountFanSuiteHeader() {
+  // Updated pages render their destination rail in HTML, including without JS.
+  // Keep that one source of truth, but place it inside the sticky site header
+  // so the identity row and the fan-tool destinations share one header plane.
+  const destinationRail = document.querySelector('.fan-suite-nav');
+  const header = document.querySelector('.site-header');
+  if (destinationRail) {
+    const headerInner = header?.querySelector('.header-inner');
+    const commerceNav = headerInner?.querySelector('.site-nav');
+    if (headerInner && !headerInner.contains(destinationRail)) headerInner.append(destinationRail);
+    if (commerceNav) {
+      commerceNav.hidden = true;
+      commerceNav.setAttribute('aria-hidden', 'true');
+    }
+    header?.classList.add('fan-suite-header');
+    return;
+  }
   const list = document.querySelector('.site-nav .primary-nav__list');
   if (!list || list.dataset.fanSuiteMounted === 'true') return;
   list.dataset.fanSuiteMounted = 'true';

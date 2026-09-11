@@ -1,11 +1,11 @@
-import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260908a';
-import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260908a';
+import { TOOL_REGISTRY, TOOL_STATUSES } from '../registry.js?v=20260909m';
+import { WORKSHOP_DEFINITIONS, getWorkshopDefinition } from './definitions.js?v=20260909m';
 import {
   clearWorkshopDraft,
   defaultWorkshopValues,
   loadWorkshopDraft,
   saveWorkshopDraft
-} from './workshop-state.js?v=20260908a';
+} from './workshop-state.js?v=20260909m';
 
 const FALLBACK_EXPERIENCE_ID = WORKSHOP_DEFINITIONS[0]?.id || '';
 
@@ -146,9 +146,12 @@ function renderExperience(definition, options = {}) {
 
   const draft = loadWorkshopDraft(browserStorage(), definition);
   const values = draft?.values || defaultWorkshopValues(definition);
-  updateText('workshopEyebrow', tool.eyebrow);
-  updateText('workshopTitle', tool.title);
-  updateText('workshopSummary', tool.summary);
+  updateText('workshopEyebrow', 'Upcoming fan-tool previews');
+  updateText('workshopTitle', 'Fan Tool Workshop');
+  updateText('workshopSummary', 'Explore the setup ideas for upcoming basketball tools. Choose a preview, review its inputs and planned steps, and save your settings on this device. A preview is not a playable game or a finished result.');
+  document.querySelectorAll('[data-workshop-tool]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.workshopTool === definition.id));
+  });
   const marker = document.getElementById('workshopMarker');
   if (marker) {
     const emblem = document.createElement('img');
@@ -159,9 +162,9 @@ function renderExperience(definition, options = {}) {
     emblem.decoding = 'async';
     marker.replaceChildren(emblem);
   }
-  updateText('workshopCategory', definition.category);
+  updateText('workshopCategory', `${tool.title} · ${definition.category}`);
   updateText('workshopPromptHeading', definition.prompt);
-  updateText('workshopPrompt', 'This preview stores only setup choices in this browser. It does not run the tool or change shop data.');
+  updateText('workshopPrompt', `${tool.summary} This is the planned workflow; only the setup preview is connected today.`);
   document.title = `${tool.title} Preview | DJ's House of Cards & Comics`;
 
   renderFields(definition, values);
@@ -180,6 +183,8 @@ function populatePicker(selectedId) {
   const picker = document.getElementById('experiencePicker');
   if (!picker) return;
   picker.replaceChildren();
+  const cards = document.getElementById('workshopToolPicker');
+  cards?.replaceChildren();
   WORKSHOP_DEFINITIONS.forEach((definition) => {
     const tool = getToolForDefinition(definition);
     if (!tool) return;
@@ -188,6 +193,22 @@ function populatePicker(selectedId) {
     option.textContent = tool.title;
     option.selected = definition.id === selectedId;
     picker.append(option);
+    if (cards) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'workshop-tool-choice';
+      button.dataset.workshopTool = definition.id;
+      button.setAttribute('aria-pressed', String(definition.id === selectedId));
+      appendText(button, 'strong', '', tool.title);
+      appendText(button, 'span', '', tool.summary);
+      appendText(button, 'small', '', 'Setup preview');
+      button.addEventListener('click', () => {
+        if (picker.value === definition.id) return;
+        picker.value = definition.id;
+        picker.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      cards.append(button);
+    }
   });
 }
 

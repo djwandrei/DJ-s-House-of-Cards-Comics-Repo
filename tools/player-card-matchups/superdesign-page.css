@@ -1,0 +1,1336 @@
+/* Page-only Superdesign layer for Player & Card Matchups.
+   The existing markup and lookup module remain the source of truth. */
+
+body.matchup-page {
+  --matchup-canvas:#edf3fb;
+  --matchup-surface:#fff;
+  --matchup-surface-raised:#f7f9fc;
+  --matchup-surface-soft:#e8eef8;
+  --matchup-ink:#172033;
+  --matchup-muted:#59667c;
+  --matchup-subtle:#7e8ba2;
+  --matchup-border:rgba(24,37,73,.14);
+  --matchup-border-strong:rgba(24,37,73,.24);
+  --matchup-accent:#1f2fa3;
+  --matchup-accent-hover:#182683;
+  --matchup-on-accent:#fff;
+  --matchup-gold:#e4b141;
+  --matchup-gold-soft:rgba(228,177,65,.16);
+  --matchup-success:#08775b;
+  --matchup-danger:#b51524;
+  --matchup-shadow:0 10px 24px rgba(16,27,57,.1);
+  --matchup-shadow-large:0 18px 36px rgba(16,27,57,.14);
+  background:var(--matchup-canvas);
+  color:var(--matchup-ink);
+}
+
+body.dark-mode.matchup-page {
+  --matchup-canvas:#0a1128;
+  --matchup-surface:#141b33;
+  --matchup-surface-raised:#202d49;
+  --matchup-surface-soft:#101a30;
+  --matchup-ink:#f0f4ff;
+  --matchup-muted:#aebbd0;
+  --matchup-subtle:#7c8aa5;
+  --matchup-border:rgba(255,255,255,.1);
+  --matchup-border-strong:rgba(255,255,255,.2);
+  --matchup-accent:#f0c35a;
+  --matchup-accent-hover:#f7d47f;
+  --matchup-on-accent:#111827;
+  --matchup-gold:#f0c35a;
+  --matchup-gold-soft:rgba(240,195,90,.16);
+  --matchup-success:#65d9b2;
+  --matchup-danger:#ff9aa5;
+  --matchup-shadow:0 10px 24px rgba(0,0,0,.24);
+  --matchup-shadow-large:0 18px 36px rgba(0,0,0,.32);
+}
+
+@keyframes matchup-superdesign-in {
+  from { opacity:0; transform:translateY(14px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@keyframes matchup-superdesign-scale {
+  from { opacity:0; transform:scale(.96); }
+  to { opacity:1; transform:scale(1); }
+}
+
+@keyframes matchup-superdesign-card-in {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+body.matchup-page main {
+  background:
+    radial-gradient(circle at 8% 8%,rgba(31,47,163,.1),transparent 24rem),
+    radial-gradient(circle at 92% 18%,rgba(228,177,65,.1),transparent 22rem),
+    var(--matchup-canvas);
+  color:var(--matchup-ink);
+}
+
+body.dark-mode.matchup-page main {
+  background:
+    radial-gradient(circle at 8% 8%,rgba(87,113,255,.14),transparent 25rem),
+    radial-gradient(circle at 92% 18%,rgba(240,195,90,.1),transparent 22rem),
+    var(--matchup-canvas);
+}
+
+body.matchup-page .fan-suite-nav {
+  border-color:#43517a;
+  background:#101b46;
+}
+
+body.matchup-page .fan-suite-nav__scroll {
+  scrollbar-color:#43517a transparent;
+}
+
+body.matchup-page .fan-suite-nav__link {
+  min-height:44px;
+  border:1px solid transparent;
+  border-radius:12px;
+  color:#fff;
+  transition:background-color .18s ease,border-color .18s ease,transform .18s ease;
+}
+
+body.matchup-page .fan-suite-nav__link:hover,
+body.matchup-page .fan-suite-nav__link:focus-visible {
+  border-color:rgba(255,255,255,.2);
+  background:#2c3b6d;
+  transform:translateY(-1px);
+}
+
+body.matchup-page .fan-suite-nav__link[aria-current="page"] {
+  border-color:rgba(228,177,65,.66);
+  background:#fff;
+  box-shadow:inset 0 -3px var(--matchup-gold),0 5px 12px rgba(5,12,30,.16);
+  color:#101b46;
+}
+
+body.matchup-page .fan-suite-nav__link img {
+  border-radius:7px;
+  background:#fff;
+  box-shadow:0 0 0 1px rgba(255,255,255,.2);
+}
+
+body.matchup-page .matchup-hero {
+  padding-block:clamp(1rem,2.5vw,1.7rem) .7rem;
+}
+
+body.matchup-page .matchup-hero-card {
+  position:relative;
+  isolation:isolate;
+  min-height:clamp(300px,31vw,390px);
+  padding:clamp(1.4rem,3vw,2.7rem);
+  border:1px solid rgba(255,255,255,.38);
+  border-radius:28px;
+  background:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    url("../../assets/grass.jpg") center/cover no-repeat;
+  box-shadow:inset 0 4px 0 var(--matchup-gold),0 20px 42px rgba(5,12,30,.2);
+}
+
+body.matchup-page .matchup-hero-card {
+  background-image:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    image-set(url("../../assets/grass.webp") type("image/webp"),url("../../assets/grass.jpg") type("image/jpeg"));
+}
+
+/* The shared suite gives generic hero cards a surface fill. Matchups is one
+   of the approved finals whose hero is intentionally the dark court panel. */
+body.matchup-page .matchup-hero-card {
+  background:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    url("../../assets/grass.jpg") center/cover no-repeat !important;
+}
+
+body.matchup-page .matchup-hero-card {
+  background-image:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    image-set(url("../../assets/grass.webp") type("image/webp"),url("../../assets/grass.jpg") type("image/jpeg")) !important;
+}
+
+body.matchup-page .matchup-hero-card::before {
+  position:absolute;
+  inset:auto -6rem -8rem auto;
+  z-index:-1;
+  width:24rem;
+  height:24rem;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:50%;
+  box-shadow:0 0 0 2rem rgba(255,255,255,.03),0 0 0 4rem rgba(255,255,255,.02);
+  content:'';
+  opacity:.7;
+  pointer-events:none;
+}
+
+body.matchup-page .matchup-hero-card .breadcrumb-nav {
+  width:max-content;
+  max-width:100%;
+  margin-bottom:clamp(1.7rem,4vw,3rem);
+  padding:.4rem .68rem;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:10px;
+  background:rgba(8,15,35,.3);
+  backdrop-filter:blur(7px);
+}
+
+body.matchup-page .matchup-hero-layout {
+  align-items:center;
+  gap:clamp(2rem,5vw,4.2rem);
+}
+
+body.matchup-page .matchup-hero-copy {
+  animation:matchup-superdesign-in .6s cubic-bezier(.4,0,.2,1) .08s both;
+}
+
+body.matchup-page .matchup-hero-copy .kicker,
+body.matchup-page .matchup-hero-panel .matchup-live-label {
+  color:#f5d57f;
+}
+
+body.matchup-page .matchup-hero-copy .page-title {
+  max-width:12ch;
+  margin:.65rem 0 1.1rem;
+  color:#fff !important;
+  font-size:clamp(2.75rem,5.3vw,5rem);
+  font-weight:800;
+  line-height:.9;
+  letter-spacing:.01em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-hero-copy > p {
+  max-width:62ch;
+  color:#f1f4fa !important;
+  font-size:clamp(.98rem,1.35vw,1.12rem);
+  line-height:1.7;
+}
+
+body.matchup-page .matchup-hero-panel {
+  align-self:stretch;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+  padding:clamp(1.25rem,2.5vw,1.75rem);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:24px;
+  background:#101b46 !important;
+  box-shadow:0 12px 24px rgba(5,12,30,.25);
+  color:#fff !important;
+  animation:matchup-superdesign-scale .55s cubic-bezier(.4,0,.2,1) .14s both;
+}
+
+body.matchup-page .matchup-panel-top {
+  margin-bottom:1.05rem;
+}
+
+body.matchup-page .matchup-live-label {
+  display:inline-flex;
+  align-items:center;
+  gap:.55rem;
+  font-size:.69rem;
+  font-weight:800;
+  letter-spacing:.16em;
+}
+
+body.matchup-page .matchup-live-label::before {
+  width:.52rem;
+  height:.52rem;
+  border-radius:50%;
+  background:#65d9b2;
+  box-shadow:0 0 0 .28rem rgba(101,217,178,.15);
+  content:'';
+}
+
+body.matchup-page .matchup-panel-marker {
+  width:54px;
+  height:54px;
+  border:1px solid rgba(255,255,255,.32);
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);
+}
+
+body.matchup-page .matchup-hero-panel h2 {
+  margin:0 0 .65rem;
+  color:#fff !important;
+  font-size:clamp(1.55rem,2.2vw,2rem);
+  letter-spacing:.01em;
+  text-transform:uppercase;
+  text-shadow:none;
+}
+
+body.matchup-page .matchup-hero-panel p {
+  color:#d7def0 !important;
+  font-size:.84rem;
+  line-height:1.65;
+}
+
+body.matchup-page .matchup-pills {
+  gap:.5rem;
+  margin-top:1.2rem;
+}
+
+body.matchup-page .matchup-pills span {
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.09);
+  color:#eef4ff;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-workspace {
+  margin-top:clamp(2rem,4.5vw,3.5rem);
+  margin-bottom:clamp(3.5rem,7vw,6rem);
+}
+
+body.matchup-page .matchup-layout {
+  gap:clamp(1.4rem,3vw,2.1rem);
+}
+
+body.matchup-page .matchup-main,
+body.matchup-page .matchup-sidebar {
+  min-width:0;
+}
+
+body.matchup-page .matchup-search-card,
+body.matchup-page .matchup-player-card,
+body.matchup-page .matchup-methodology,
+body.matchup-page .matchup-empty-state,
+body.matchup-page .matchup-result-card {
+  border-color:var(--matchup-border);
+  background:var(--matchup-surface);
+  box-shadow:var(--matchup-shadow);
+}
+
+body.matchup-page .matchup-search-card {
+  position:relative;
+  overflow:hidden;
+  padding:0;
+  border-radius:24px;
+  animation:matchup-superdesign-in .55s cubic-bezier(.4,0,.2,1) .16s both;
+}
+
+body.matchup-page .matchup-search-card::before,
+body.matchup-page .matchup-methodology::before {
+  position:absolute;
+  inset:0 0 auto;
+  height:3px;
+  background:linear-gradient(90deg,var(--matchup-gold),var(--matchup-accent));
+  content:'';
+}
+
+body.matchup-page .matchup-search-heading {
+  padding:clamp(1.35rem,3vw,1.85rem) clamp(1.25rem,3vw,1.95rem) 0;
+}
+
+body.matchup-page .matchup-search-heading h2 {
+  margin:.25rem 0 .55rem;
+  color:var(--matchup-ink);
+  font-size:clamp(1.8rem,3.2vw,2.45rem);
+  line-height:.98;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-search-heading p {
+  max-width:64ch;
+  color:var(--matchup-muted);
+  font-size:.86rem;
+  line-height:1.65;
+}
+
+body.matchup-page .matchup-search-form {
+  margin-top:1.35rem;
+  padding:0 clamp(1.25rem,3vw,1.95rem) clamp(1.35rem,3vw,1.8rem);
+}
+
+body.matchup-page .matchup-search-form > label {
+  margin-bottom:.55rem;
+  color:var(--matchup-ink);
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-search-row {
+  gap:.7rem;
+}
+
+body.matchup-page .matchup-search-row input {
+  min-height:54px;
+  padding:.8rem 1rem;
+  border:1px solid var(--matchup-border-strong);
+  border-radius:12px;
+  background:var(--matchup-surface-soft);
+  color:var(--matchup-ink);
+  font-size:.95rem;
+  transition:border-color .16s ease,box-shadow .16s ease,background-color .16s ease;
+}
+
+body.matchup-page .matchup-search-row input::placeholder {
+  color:var(--matchup-subtle);
+  opacity:1;
+}
+
+body.matchup-page .matchup-search-row input:hover {
+  border-color:var(--matchup-muted);
+}
+
+body.matchup-page .matchup-search-row input:focus-visible {
+  border-color:var(--matchup-gold);
+  box-shadow:0 0 0 3px var(--matchup-gold-soft);
+  outline:none;
+}
+
+body.matchup-page .matchup-search-row .button {
+  min-height:54px;
+  padding-inline:1.15rem;
+  border:1px solid var(--matchup-accent);
+  border-radius:12px;
+  background:var(--matchup-accent);
+  color:#fff;
+  font-weight:800;
+  box-shadow:0 5px 12px rgba(31,47,163,.2);
+  transition:transform .18s ease,background-color .16s ease,box-shadow .18s ease;
+}
+
+body.dark-mode.matchup-page .matchup-search-row .button {
+  border-color:var(--matchup-gold);
+  background:var(--matchup-gold);
+  color:#111827;
+  box-shadow:0 5px 12px rgba(0,0,0,.24);
+}
+
+body.matchup-page .matchup-search-row .button:hover:not(:disabled),
+body.matchup-page .matchup-search-row .button:focus-visible {
+  background:var(--matchup-accent-hover);
+  box-shadow:0 8px 16px rgba(31,47,163,.28);
+  transform:translateY(-2px);
+}
+
+body.dark-mode.matchup-page .matchup-search-row .button:hover:not(:disabled),
+body.dark-mode.matchup-page .matchup-search-row .button:focus-visible {
+  background:var(--matchup-accent-hover);
+  box-shadow:0 8px 16px rgba(0,0,0,.3);
+}
+
+body.matchup-page .matchup-search-help {
+  display:flex;
+  gap:.45rem;
+  margin-top:.7rem;
+  color:var(--matchup-muted);
+  font-size:.72rem;
+  line-height:1.55;
+}
+
+body.matchup-page .matchup-search-help::before {
+  flex:0 0 auto;
+  color:var(--matchup-gold);
+  content:'i';
+  font-family:Georgia,serif;
+  font-size:.82rem;
+  font-style:italic;
+  font-weight:700;
+}
+
+body.matchup-page .matchup-status {
+  min-height:2.8rem;
+  margin:1rem 0 1.3rem;
+  padding:.7rem .9rem;
+  border-color:var(--matchup-border);
+  border-radius:12px;
+  background:var(--matchup-surface-raised);
+  color:var(--matchup-muted);
+  font-size:.75rem;
+  line-height:1.55;
+  box-shadow:0 4px 10px rgba(16,27,57,.04);
+}
+
+body.matchup-page .matchup-status::before {
+  background:var(--matchup-subtle);
+}
+
+body.matchup-page .matchup-status[data-state="loading"] {
+  border-color:var(--matchup-gold-soft);
+  color:var(--matchup-ink);
+}
+
+body.matchup-page .matchup-status[data-state="loading"]::before {
+  background:var(--matchup-gold);
+  box-shadow:0 0 0 .28rem var(--matchup-gold-soft);
+}
+
+body.matchup-page .matchup-status[data-state="error"] {
+  border-color:color-mix(in srgb,var(--matchup-danger) 28%,transparent);
+  color:var(--matchup-danger);
+}
+
+body.matchup-page .matchup-status[data-state="error"]::before {
+  background:var(--matchup-danger);
+  box-shadow:0 0 0 .28rem color-mix(in srgb,var(--matchup-danger) 14%,transparent);
+}
+
+body.matchup-page .matchup-player-card {
+  position:relative;
+  overflow:hidden;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:1.2rem;
+  margin-bottom:1.55rem;
+  padding:1.3rem 1.4rem;
+  border-left:4px solid var(--matchup-gold);
+  border-radius:18px;
+  background:linear-gradient(120deg,var(--matchup-surface-raised),var(--matchup-surface));
+  animation:matchup-superdesign-scale .45s cubic-bezier(.4,0,.2,1) both;
+}
+
+body.matchup-page .matchup-player-avatar {
+  width:78px;
+  height:78px;
+  border:2px solid var(--matchup-gold);
+  background:linear-gradient(145deg,#2637b9,#101b46);
+  box-shadow:0 0 0 4px var(--matchup-gold-soft),0 8px 18px rgba(16,27,57,.18);
+}
+
+body.matchup-page .matchup-player-name-row h2 {
+  color:var(--matchup-ink);
+  font-size:clamp(1.55rem,3vw,2.2rem);
+  line-height:1;
+  letter-spacing:.01em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-player-badge,
+body.matchup-page .matchup-result-badge {
+  border:1px solid color-mix(in srgb,var(--matchup-success) 24%,transparent);
+  background:color-mix(in srgb,var(--matchup-success) 12%,transparent);
+  color:var(--matchup-success);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-player-facts {
+  gap:.45rem .9rem;
+  margin-top:.65rem;
+  color:var(--matchup-muted);
+  font-size:.72rem;
+}
+
+body.matchup-page .matchup-player-facts span {
+  padding:.2rem .48rem;
+  border:1px solid var(--matchup-border);
+  border-radius:8px;
+  background:var(--matchup-surface);
+}
+
+body.matchup-page .matchup-player-facts strong {
+  color:var(--matchup-ink);
+  font-weight:800;
+}
+
+body.matchup-page .matchup-results-section {
+  margin-top:.55rem;
+}
+
+body.matchup-page .matchup-results-heading {
+  align-items:center;
+  margin:0 .2rem .85rem;
+}
+
+body.matchup-page .matchup-results-heading h2 {
+  margin:0;
+  color:var(--matchup-ink);
+  font-size:clamp(1.45rem,2.7vw,2.1rem);
+  line-height:1;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-result-count {
+  border:1px solid var(--matchup-border);
+  background:var(--matchup-surface-raised);
+  color:var(--matchup-muted);
+  letter-spacing:.03em;
+  white-space:nowrap;
+}
+
+body.matchup-page .matchup-results-grid {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1rem;
+}
+
+body.matchup-page .matchup-result-card {
+  overflow:hidden;
+  border-radius:18px;
+  transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s ease,border-color .2s ease;
+  animation:matchup-superdesign-card-in .45s cubic-bezier(.4,0,.2,1) both;
+}
+
+body.matchup-page .matchup-result-card:nth-child(2) { animation-delay:.06s; }
+body.matchup-page .matchup-result-card:nth-child(3) { animation-delay:.12s; }
+body.matchup-page .matchup-result-card:nth-child(4) { animation-delay:.18s; }
+body.matchup-page .matchup-result-card:nth-child(5) { animation-delay:.24s; }
+body.matchup-page .matchup-result-card:nth-child(6) { animation-delay:.3s; }
+
+body.matchup-page .matchup-result-card:hover,
+body.matchup-page .matchup-result-card:focus-within {
+  border-color:var(--matchup-gold);
+  box-shadow:var(--matchup-shadow-large);
+  transform:translateY(-3px);
+}
+
+body.matchup-page .matchup-result-media {
+  background:linear-gradient(145deg,var(--matchup-surface-soft),var(--matchup-surface-raised));
+}
+
+body.matchup-page .matchup-result-media img {
+  transition:transform .28s ease,filter .28s ease;
+}
+
+body.matchup-page .matchup-result-card:hover .matchup-result-media img {
+  filter:saturate(1.04);
+  transform:scale(1.025);
+}
+
+body.matchup-page .matchup-result-badge {
+  top:.7rem;
+  left:.7rem;
+  padding:.4rem .58rem;
+  box-shadow:0 4px 10px rgba(5,12,30,.14);
+}
+
+body.matchup-page .matchup-result-copy {
+  padding:1.05rem;
+}
+
+body.matchup-page .matchup-result-kicker {
+  margin-bottom:.4rem;
+  color:var(--matchup-accent);
+  font-size:.65rem;
+  font-weight:800;
+  letter-spacing:.1em;
+}
+
+body.dark-mode.matchup-page .matchup-result-kicker {
+  color:var(--matchup-gold);
+}
+
+body.matchup-page .matchup-result-copy h3 {
+  min-height:2.5em;
+  margin:0;
+  color:var(--matchup-ink);
+  font-size:.93rem;
+  line-height:1.35;
+}
+
+body.matchup-page .matchup-card-meta {
+  gap:.36rem;
+  margin:.85rem 0 1rem;
+}
+
+body.matchup-page .matchup-card-meta span {
+  border:1px solid var(--matchup-border);
+  background:var(--matchup-surface-raised);
+  color:var(--matchup-muted);
+  line-height:1.35;
+}
+
+body.matchup-page .matchup-result-bottom {
+  padding-top:.75rem;
+  border-top:1px solid var(--matchup-border);
+}
+
+body.matchup-page .matchup-result-price {
+  color:var(--matchup-ink);
+  font-size:1.3rem;
+  font-weight:800;
+}
+
+body.matchup-page .matchup-result-link {
+  min-height:36px;
+  padding:.42rem .62rem;
+  border:1px solid color-mix(in srgb,var(--matchup-accent) 28%,transparent);
+  border-radius:9px;
+  background:color-mix(in srgb,var(--matchup-accent) 7%,transparent);
+  color:var(--matchup-accent);
+  font-size:.7rem;
+  transition:background-color .16s ease,border-color .16s ease,transform .16s ease;
+}
+
+body.dark-mode.matchup-page .matchup-result-link {
+  border-color:rgba(240,195,90,.34);
+  background:rgba(240,195,90,.1);
+  color:var(--matchup-gold);
+}
+
+body.matchup-page .matchup-result-link:hover,
+body.matchup-page .matchup-result-link:focus-visible {
+  border-color:var(--matchup-gold);
+  background:var(--matchup-gold-soft);
+  transform:translateY(-1px);
+}
+
+body.matchup-page .matchup-result-actions,
+body.matchup-page .matchup-candidate-continuation {
+  margin-top:1.15rem;
+  padding:1rem 1.1rem;
+  border-color:var(--matchup-border);
+  border-radius:14px;
+  background:var(--matchup-surface-raised);
+}
+
+body.matchup-page .matchup-result-actions p,
+body.matchup-page .matchup-candidate-continuation p {
+  color:var(--matchup-muted);
+  font-size:.75rem;
+  line-height:1.55;
+}
+
+body.matchup-page .matchup-result-actions .button-secondary,
+body.matchup-page .matchup-candidate-continuation .button-secondary {
+  min-height:44px;
+  border:1px solid var(--matchup-border-strong);
+  border-radius:10px;
+  background:var(--matchup-surface);
+  color:var(--matchup-ink);
+  font-size:.75rem;
+  font-weight:800;
+  transition:transform .18s ease,background-color .16s ease,border-color .16s ease;
+}
+
+body.matchup-page .matchup-result-actions .button-secondary:hover,
+body.matchup-page .matchup-result-actions .button-secondary:focus-visible,
+body.matchup-page .matchup-candidate-continuation .button-secondary:hover,
+body.matchup-page .matchup-candidate-continuation .button-secondary:focus-visible {
+  border-color:var(--matchup-gold);
+  background:var(--matchup-surface-raised);
+  transform:translateY(-1px);
+}
+
+body.matchup-page .matchup-empty-state {
+  margin-top:1.4rem;
+  padding:clamp(1.7rem,4vw,2.4rem);
+  border-style:dashed;
+  border-color:var(--matchup-border-strong);
+  border-radius:22px;
+  background:var(--matchup-surface-raised);
+  animation:matchup-superdesign-in .45s cubic-bezier(.4,0,.2,1) both;
+}
+
+body.matchup-page .matchup-empty-icon {
+  width:58px;
+  height:58px;
+  margin-bottom:.85rem;
+  border:1px solid var(--matchup-border);
+  border-radius:16px;
+  background:var(--matchup-surface-soft);
+  color:var(--matchup-gold);
+  font-size:2rem;
+  box-shadow:0 5px 12px rgba(16,27,57,.08);
+}
+
+body.matchup-page .matchup-empty-state h2 {
+  color:var(--matchup-ink);
+  font-size:1.6rem;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-empty-state p {
+  max-width:65ch;
+  color:var(--matchup-muted);
+  font-size:.8rem;
+  line-height:1.7;
+}
+
+body.matchup-page .matchup-sidebar {
+  gap:1rem;
+}
+
+body.matchup-page .matchup-methodology {
+  position:relative;
+  overflow:hidden;
+  padding:1.45rem 1.3rem 1.35rem;
+  border-radius:22px;
+  animation:matchup-superdesign-in .55s cubic-bezier(.4,0,.2,1) .2s both;
+}
+
+body.matchup-page .matchup-methodology h2 {
+  margin:.3rem 0 1.15rem;
+  color:var(--matchup-ink);
+  font-size:1.7rem;
+  line-height:1;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-methodology ol {
+  gap:1rem;
+}
+
+body.matchup-page .matchup-methodology li {
+  grid-template-columns:30px minmax(0,1fr);
+  gap:.7rem;
+}
+
+body.matchup-page .matchup-methodology li::before {
+  width:30px;
+  height:30px;
+  border:1px solid var(--matchup-border);
+  border-radius:9px;
+  background:var(--matchup-surface-raised);
+  color:var(--matchup-ink);
+  box-shadow:inset 0 2px 0 var(--matchup-gold);
+}
+
+body.matchup-page .matchup-methodology li:nth-child(1) { animation:matchup-superdesign-in .4s ease-out .08s both; }
+body.matchup-page .matchup-methodology li:nth-child(2) { animation:matchup-superdesign-in .4s ease-out .15s both; }
+body.matchup-page .matchup-methodology li:nth-child(3) { animation:matchup-superdesign-in .4s ease-out .22s both; }
+
+body.matchup-page .matchup-methodology strong {
+  margin:.1rem 0 .25rem;
+  color:var(--matchup-ink);
+  font-size:.78rem;
+}
+
+body.matchup-page .matchup-methodology span {
+  color:var(--matchup-muted);
+  font-size:.72rem;
+  line-height:1.6;
+}
+
+body.matchup-page .matchup-handoff {
+  position:relative;
+  overflow:hidden;
+  padding:1.4rem;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:22px;
+  background:linear-gradient(145deg,#101b46,#172963);
+  box-shadow:0 14px 30px rgba(5,12,30,.22);
+  animation:matchup-superdesign-in .55s cubic-bezier(.4,0,.2,1) .28s both;
+}
+
+body.matchup-page .matchup-handoff::after {
+  position:absolute;
+  right:-3rem;
+  bottom:-5rem;
+  width:12rem;
+  height:12rem;
+  border:1px solid rgba(228,177,65,.2);
+  border-radius:50%;
+  content:'';
+  pointer-events:none;
+}
+
+body.matchup-page .matchup-handoff-heading > span {
+  background:rgba(228,177,65,.16);
+  color:var(--matchup-gold);
+}
+
+body.matchup-page .matchup-handoff h2 {
+  font-size:1.35rem;
+  letter-spacing:.015em;
+  text-transform:uppercase;
+}
+
+body.matchup-page .matchup-handoff p {
+  color:#d7def0;
+  font-size:.75rem;
+  line-height:1.65;
+}
+
+body.matchup-page .matchup-handoff .button-secondary {
+  position:relative;
+  z-index:1;
+  min-height:44px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:10px;
+  background:#fff;
+  color:#101b46;
+  font-size:.77rem;
+  font-weight:800;
+  transition:transform .18s ease,background-color .16s ease,border-color .16s ease;
+}
+
+body.matchup-page .matchup-handoff .button-secondary.is-disabled {
+  cursor:not-allowed;
+  opacity:.72;
+}
+
+body.matchup-page .matchup-handoff .button-secondary:not(.is-disabled):hover,
+body.matchup-page .matchup-handoff .button-secondary:not(.is-disabled):focus-visible {
+  border-color:var(--matchup-gold);
+  background:#f7d47f;
+  color:#101b46;
+  transform:translateY(-2px);
+}
+
+body.matchup-page :is(.matchup-search-row .button,.matchup-result-link,.matchup-result-actions .button-secondary,.matchup-candidate-continuation .button-secondary,.matchup-handoff .button-secondary):focus-visible {
+  outline:3px solid var(--matchup-gold) !important;
+  outline-offset:3px !important;
+}
+
+@media (max-width:960px) {
+  body.matchup-page .matchup-hero-card {
+    min-height:0;
+  }
+
+  body.matchup-page .matchup-hero-panel {
+    max-width:none;
+  }
+
+  body.matchup-page .matchup-sidebar {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  body.matchup-page .matchup-handoff {
+    grid-column:auto;
+  }
+}
+
+@media (max-width:700px) {
+  body.matchup-page .matchup-hero-card {
+    padding:1.35rem 1.05rem 1.2rem;
+    border-radius:22px;
+  }
+
+  body.matchup-page .matchup-hero-card .breadcrumb-nav {
+    margin-bottom:1.5rem;
+  }
+
+  body.matchup-page .matchup-hero-copy .page-title {
+    max-width:14ch;
+    font-size:clamp(2.6rem,13vw,3.65rem);
+  }
+
+  body.matchup-page .matchup-sidebar,
+  body.matchup-page .matchup-results-grid {
+    grid-template-columns:1fr;
+  }
+
+  body.matchup-page .matchup-handoff {
+    grid-column:auto;
+  }
+
+  body.matchup-page .matchup-result-actions,
+  body.matchup-page .matchup-candidate-continuation {
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  body.matchup-page .matchup-result-actions .button-secondary,
+  body.matchup-page .matchup-candidate-continuation .button-secondary {
+    width:100%;
+  }
+}
+
+/* Player/catalog labels are real data and can be longer than the draft copy. */
+body.matchup-page :is(.matchup-hero-copy, .matchup-hero-panel, .matchup-player-card, .matchup-result-copy, .matchup-result-actions) {
+  min-width: 0;
+}
+
+body.matchup-page :is(.matchup-player-name, .matchup-result-kicker, .matchup-result-copy, .matchup-card-meta, .matchup-handoff p) {
+  overflow-wrap: anywhere;
+}
+
+body.matchup-page .matchup-player-facts span,
+body.matchup-page .matchup-result-actions p,
+body.matchup-page .matchup-candidate-continuation p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Keep direct links to the explorer clear of the sticky fan-suite rail. */
+body.matchup-page #explorer {
+  scroll-margin-top: calc(var(--fan-suite-header-offset, 88px) + 4.5rem);
+}
+
+@media (max-width:520px) {
+  body.matchup-page .matchup-results-heading {
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+
+  body.matchup-page .matchup-result-count {
+    white-space:normal;
+  }
+
+  body.matchup-page .matchup-search-row {
+    display:grid;
+  }
+
+  body.matchup-page .matchup-search-row .button {
+    width:100%;
+  }
+
+  body.matchup-page .matchup-player-card {
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  body.matchup-page .matchup-player-avatar {
+    margin:0 auto;
+  }
+
+  body.matchup-page .matchup-player-name-row,
+  body.matchup-page .matchup-player-facts {
+    justify-content:center;
+  }
+
+  body.matchup-page .matchup-player-facts span {
+    justify-content:center;
+  }
+}
+
+@media (max-width:600px) {
+  /* The shared mobile header is fixed above the rail. Keep this page's rail
+     visible when it becomes sticky instead of letting it sit behind the
+     header at viewport top. */
+  body.matchup-page .fan-suite-nav {
+    top:var(--header-h,82px);
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  body.matchup-page *,
+  body.matchup-page *::before,
+  body.matchup-page *::after {
+    scroll-behavior:auto !important;
+    animation:none !important;
+    transition:none !important;
+  }
+
+  body.matchup-page :is(.matchup-hero-copy,.matchup-hero-panel,.matchup-search-card,.matchup-player-card,.matchup-result-card,.matchup-empty-state,.matchup-methodology,.matchup-methodology li,.matchup-handoff) {
+    opacity:1 !important;
+    transform:none !important;
+  }
+
+  body.matchup-page .matchup-result-card:hover,
+  body.matchup-page .matchup-result-card:focus-within,
+  body.matchup-page .fan-suite-nav__link:hover,
+  body.matchup-page .fan-suite-nav__link:focus-visible {
+    transform:none;
+  }
+}
+
+/* The shared fan-suite layer intentionally marks its common surfaces and
+   controls as important. Keep this page's hero and evidence boundary aligned
+   with the draft when that shared layer is present. */
+body.matchup-page.court-themed .matchup-hero-card {
+  border-radius:28px !important;
+  background:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    url("../../assets/grass.jpg") center/cover no-repeat !important;
+}
+
+body.matchup-page.court-themed .matchup-hero-card {
+  background-image:
+    linear-gradient(100deg,rgba(9,17,44,.98),rgba(16,27,70,.93) 58%,rgba(31,47,163,.74)),
+    image-set(url("../../assets/grass.webp") type("image/webp"),url("../../assets/grass.jpg") type("image/jpeg")) !important;
+}
+
+body.matchup-page.court-themed .matchup-hero-copy .page-title {
+  color:#fff !important;
+  text-shadow:0 2px 18px rgba(0,0,0,.34) !important;
+}
+
+body.matchup-page.court-themed .matchup-hero-copy > p {
+  color:#f1f4fa !important;
+}
+
+body.matchup-page.court-themed .matchup-hero-panel {
+  border-color:rgba(255,255,255,.28) !important;
+  border-radius:24px !important;
+  background:#101b46 !important;
+  color:#fff !important;
+}
+
+body.matchup-page.court-themed .matchup-search-row input {
+  border-color:var(--matchup-border-strong) !important;
+  background:var(--matchup-surface-soft) !important;
+  color:var(--matchup-ink) !important;
+}
+
+body.matchup-page.court-themed .matchup-search-row input::placeholder {
+  color:var(--matchup-subtle) !important;
+  opacity:1;
+}
+
+body.matchup-page.court-themed .matchup-search-row input:focus-visible {
+  border-color:var(--matchup-gold) !important;
+  outline:3px solid var(--matchup-gold) !important;
+  outline-offset:2px !important;
+}
+
+body.matchup-page.court-themed .matchup-search-row .button {
+  border-color:var(--matchup-accent) !important;
+  background:var(--matchup-accent) !important;
+  color:var(--matchup-on-accent) !important;
+}
+
+body.matchup-page.court-themed .matchup-search-row .button:hover:not(:disabled),
+body.matchup-page.court-themed .matchup-search-row .button:focus-visible {
+  background:var(--matchup-accent-hover) !important;
+  color:var(--matchup-on-accent) !important;
+}
+
+body.matchup-page.court-themed .matchup-player-card {
+  border-left:4px solid var(--matchup-gold) !important;
+  border-radius:18px !important;
+  background:linear-gradient(120deg,var(--matchup-surface-raised),var(--matchup-surface)) !important;
+}
+
+body.matchup-page.court-themed .matchup-empty-state {
+  border-style:dashed !important;
+  border-color:var(--matchup-border-strong) !important;
+  border-radius:22px !important;
+  background:var(--matchup-surface-raised) !important;
+}
+
+body.matchup-page.court-themed .matchup-result-actions .button-secondary,
+body.matchup-page.court-themed .matchup-candidate-continuation .button-secondary {
+  border-color:var(--matchup-border-strong) !important;
+  background:var(--matchup-surface) !important;
+  color:var(--matchup-ink) !important;
+}
+
+body.matchup-page.court-themed .matchup-result-actions .button-secondary:hover,
+body.matchup-page.court-themed .matchup-result-actions .button-secondary:focus-visible,
+body.matchup-page.court-themed .matchup-candidate-continuation .button-secondary:hover,
+body.matchup-page.court-themed .matchup-candidate-continuation .button-secondary:focus-visible {
+  border-color:var(--matchup-gold) !important;
+  background:var(--matchup-surface-raised) !important;
+  color:var(--matchup-ink) !important;
+}
+
+body.matchup-page.court-themed .matchup-handoff {
+  border-color:rgba(255,255,255,.14) !important;
+  background:linear-gradient(145deg,#101b46,#172963) !important;
+  color:#fff !important;
+}
+
+body.matchup-page.court-themed .matchup-handoff h2 {
+  color:#fff !important;
+}
+
+body.matchup-page.court-themed .matchup-handoff p {
+  color:#d7def0 !important;
+}
+
+body.matchup-page.court-themed .matchup-handoff .button-secondary {
+  border-color:rgba(255,255,255,.24) !important;
+  background:#fff !important;
+  color:#101b46 !important;
+}
+
+body.matchup-page.court-themed .matchup-handoff .button-secondary:not(.is-disabled):hover,
+body.matchup-page.court-themed .matchup-handoff .button-secondary:not(.is-disabled):focus-visible {
+  border-color:var(--matchup-gold) !important;
+  background:#f7d47f !important;
+  color:#101b46 !important;
+}
+
+@media (max-width:700px) {
+  body.matchup-page.court-themed .matchup-hero-card {
+    padding:1.35rem 1.05rem 1.2rem !important;
+    border-radius:22px !important;
+  }
+
+  body.matchup-page.court-themed .matchup-hero-panel {
+    border-radius:22px !important;
+  }
+}
+
+/* Annotation pass: the matchups hero is an entry point, so keep its content
+   above the fold and let the lookup workspace carry the detail. Widen the
+   page canvas to remove the oversized side gutters seen on desktop while
+   retaining a one-column mobile layout. */
+body.matchup-page main > :is(.container, .page-hero) > .container,
+body.matchup-page main > .container,
+body.matchup-page main .container,
+body.matchup-page > .site-footer > .container {
+  width: min(calc(100% - 2rem), 1380px);
+  max-width: 1380px;
+}
+
+body.matchup-page .matchup-hero {
+  padding-block: .65rem .9rem;
+}
+
+body.matchup-page .matchup-hero-card,
+body.matchup-page.court-themed .matchup-hero-card {
+  min-height: 0;
+  padding: clamp(1.15rem, 2.5vw, 1.9rem) !important;
+}
+
+body.matchup-page .matchup-hero-card .breadcrumb-nav {
+  margin-bottom: clamp(.8rem, 2vw, 1.3rem);
+}
+
+body.matchup-page .matchup-hero-layout {
+  align-items: start;
+  gap: clamp(1.1rem, 2.8vw, 2.5rem);
+}
+
+body.matchup-page .matchup-hero-copy .page-title {
+  max-width: 14ch;
+  margin: .45rem 0 .75rem;
+  font-size: clamp(2.35rem, 4.7vw, 4.2rem);
+  line-height: .94;
+  letter-spacing: -.01em;
+}
+
+body.matchup-page .matchup-hero-copy > p {
+  max-width: 64ch;
+  line-height: 1.5;
+}
+
+body.matchup-page .matchup-hero-panel {
+  align-self: start;
+  padding: 1.05rem 1.15rem;
+}
+
+body.matchup-page .matchup-hero-panel h2 {
+  margin-bottom: .45rem;
+  line-height: 1.08;
+}
+
+body.matchup-page .matchup-hero-panel p {
+  line-height: 1.45;
+}
+
+body.matchup-page .matchup-workspace {
+  margin-top: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+body.matchup-page .matchup-search-heading,
+body.matchup-page .matchup-search-form {
+  padding-inline: clamp(1rem, 2.2vw, 1.45rem);
+}
+
+body.matchup-page .matchup-search-heading {
+  padding-top: 1.1rem;
+}
+
+body.matchup-page .matchup-search-form {
+  padding-bottom: 1.15rem;
+}
+
+body.matchup-page .matchup-search-heading h2 {
+  font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+  line-height: 1.05;
+}
+
+body.matchup-page .matchup-search-heading p,
+body.matchup-page .matchup-search-help {
+  line-height: 1.48;
+}
+
+@media (max-width: 760px) {
+  body.matchup-page main > :is(.container, .page-hero) > .container,
+  body.matchup-page main > .container,
+  body.matchup-page main .container,
+  body.matchup-page > .site-footer > .container {
+    width: min(calc(100% - 1.25rem), 1380px);
+  }
+
+  body.matchup-page .matchup-hero-card,
+  body.matchup-page.court-themed .matchup-hero-card {
+    padding: 1rem !important;
+  }
+
+  body.matchup-page .matchup-hero-copy .page-title {
+    max-width: 13ch;
+    font-size: clamp(2.25rem, 11vw, 3.35rem);
+  }
+
+  body.matchup-page .matchup-workspace {
+    margin-top: .75rem;
+  }
+}
+
+/* Keep the existing DJHC footer identity, but give its lockup and link groups
+   stable tracks at the widths where the shared storefront footer compresses. */
+@media (max-width: 900px) {
+  body.matchup-page .site-footer .footer-inner {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+
+  body.matchup-page .site-footer .footer-brand,
+  body.matchup-page .site-footer .footer-links {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.matchup-page .site-footer .footer-brand {
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.matchup-page .site-footer .footer-logo-line {
+    display: grid !important;
+    grid-template-columns: 62px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: .75rem !important;
+    min-width: 0 !important;
+  }
+
+  body.matchup-page .site-footer .footer-logo {
+    width: 62px !important;
+    height: 62px !important;
+    flex: 0 0 62px !important;
+  }
+
+  body.matchup-page .site-footer .footer-logo-line > div {
+    min-width: 0 !important;
+  }
+
+  body.matchup-page .site-footer .footer-logo-line .brand-script {
+    display: block !important;
+    max-width: 100% !important;
+    font-size: clamp(1.05rem, 4.8vw, 1.25rem) !important;
+    line-height: 1.05 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.matchup-page .site-footer .footer-logo-line .brand-kicker {
+    display: block !important;
+    max-width: 100% !important;
+    margin-top: .18rem !important;
+    font-size: clamp(.56rem, 2.25vw, .68rem) !important;
+    line-height: 1.2 !important;
+    letter-spacing: .06em !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+  }
+
+  body.matchup-page .site-footer .footer-brand > p {
+    max-width: 42ch !important;
+    line-height: 1.45 !important;
+  }
+
+  body.matchup-page .site-footer .footer-link-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: .75rem 1rem !important;
+    min-width: 0 !important;
+  }
+
+  body.matchup-page .site-footer .footer-link-group {
+    min-width: 0 !important;
+  }
+
+  body.matchup-page .site-footer .footer-link-group--storefronts {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.matchup-page .site-footer .footer-bottom {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: .4rem !important;
+  }
+}
